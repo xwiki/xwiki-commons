@@ -11,15 +11,16 @@
 <!-- Checkstyle properties for XWiki projects -->
 <module name="Checker">
 
+  <!-- Other modules -->
+  <module name="SuppressionFilter">
+    <property name="file" value="${checkstyle.suppressions.file}"/>
+  </module>
+
   <!--
      ======================================================================================
        Checks that do not require a TreeWalker (sorted alphabetically)
      ======================================================================================
   -->
-
-  <module name="FileLength"/>
-
-  <module name="FileTabCharacter"/>
 
   <!-- Subversion has a config file in which you specify how to treat end of lines/end of files.
        The recommendation is to use "svn:eol-style=native".
@@ -35,12 +36,6 @@
   <module name="PackageHtml"/>
   -->
 
-  <!-- No @author tags -->
-  <module name="RegexpSingleline">
-    <property name="format" value="@author"/>
-    <property name="message" value="No @author tag allowed"/>
-  </module>
-
   <!-- We cannot use this rule as it fails on our license headers, considering them as copy-pastes!
   <module name="StrictDuplicateCode"/>
   -->
@@ -55,7 +50,7 @@
   <module name="TreeWalker">
 
     <!-- Note: for some checks we have defined a warning severity instead of the default error
-         severity. This is because we'd like to make the build fail on error for those checks
+         severity. This is because we'd like to make the build fail on error for thise checks
          but there are errors to fix first -->
 
     <module name="AbstractClassName"/>
@@ -91,15 +86,14 @@
 
     <module name="DefaultComesLast"/>
 
-    <!-- The default values for this one allow everything to pass. Unneeded.
     <module name="DescendantToken"/>
-    -->
-
-    <!--module name="DesignForExtension"/-->
 
     <module name="DoubleCheckedLocking"/>
 
+    <!--module name="DesignForExtension"/-->
+
     <module name="EmptyBlock">
+      <property name="tokens" value="LITERAL_CATCH"/>
       <property name="option" value="text"/>
     </module>
 
@@ -109,6 +103,8 @@
 
     <module name="EmptyStatement"/>
 
+    <module name="j2ee.EntityBean"/>
+
     <module name="EqualsHashCode"/>
 
     <module name="ExecutableStatementCount"/>
@@ -117,26 +113,34 @@
 
     <module name="FallThrough"/>
 
+    <module name="FileLength"/>
+
     <module name="FinalClass"/>
 
     <!--module name="FinalLocalVariable"/-->
 
     <!--module name="FinalParameters"/-->
 
+    <module name="j2ee.FinalStatic"/>
+
     <!-- Avoid finalizers (this will not find violations that contain linebreaks) -->
-    <module name="RegexpSinglelineJava">
+    <module name="GenericIllegalRegexp">
       <property name="format" value="((public)|(protected))\s+void\s+finalize\(\s*\)"/>
       <property name="message" value="Avoid finalizers"/>
-      <property name="ignoreComments" value="true"/>
     </module>
 
     <!-- No direct printing to System.out or System.err -->
-    <module name="RegexpSinglelineJava">
-      <!-- . matches any character, so we need to
-           escape it and use \. to match dots. -->
+    <module name="GenericIllegalRegexp">
       <property name="format" value="System\.(out|err)\."/>
-      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Don't write directly to System.out our System.err"/>
     </module>
+
+    <!-- No @author tags -->
+    <!-- We're commenting this out until we have sorted out if we want author tags or not.
+    <module name="GenericIllegalRegexp">
+      <property name="format" value="@author"/>
+      <property name="message" value="No @author tag allowed"/>
+    </module>-->
 
     <!-- Need to put this back when we find a way of making it work
     <module name="Header">
@@ -145,9 +149,7 @@
     </module>
     -->
 
-    <module name="HiddenField">
-      <property name="tokens" value="VARIABLE_DEF"/>
-    </module>
+    <!--module name="HiddenField"/-->
 
     <module name="HideUtilityClassConstructor"/>
 
@@ -163,7 +165,7 @@
 
     <!--module name="IllegalToken"/-->
 
-    <!--module name="IllegalTokenText"/-->
+    <module name="IllegalTokenText"/>
 
     <module name="IllegalType"/>
 
@@ -185,6 +187,7 @@
     <module name="JavadocStyle"/>
 
     <module name="JavadocType">
+      <property name="scope" value="private"/>
       <property name="versionFormat" value="\$Id.*\$"/>
     </module>
 
@@ -202,18 +205,23 @@
     </module>
 
     <module name="LineLength">
-      <!-- @(\w+\.)+\w+::\w+\( stands for JSNI method calls: @my.package.MyClass::myMethod() -->
-      <property name="ignorePattern" value="(@version|@see|@link|^import|@(\w+\.)+\w+::\w+\()"/>
-      <property name="max" value="120"/>
+      <property name="ignorePattern" value="(@version|@see|^import)"/>
+      <property name="max" value="100"/>
     </module>
 
     <module name="LocalFinalVariableName"/>
+
+    <module name="j2ee.LocalHomeInterface"/>
+
+    <module name="j2ee.LocalInterface"/>
 
     <module name="LocalVariableName"/>
 
     <!--module name="MagicNumber"/-->
 
     <module name="MemberName"/>
+
+    <module name="j2ee.MessageBean"/>
 
     <module name="MethodLength"/>
 
@@ -233,10 +241,7 @@
     <module name="ModifierOrder"/>
 
     <module name="MultipleStringLiterals">
-      <property name="ignoreStringsRegexp" value='^("")|("[0-9]")|(" ")|("\]")|("\] = \[")|("unchecked")$'/>
-      <!--  Newer versions of the checkstyle plugin (not the one used by the maven plugin) allow to ignore annotations.
-      <property name="ignoreOccurrenceContext" value="ANNOTATION"/>
-      -->
+      <property name="ignoreStringsRegexp" value='^("")|("[0-9]")$'/>
     </module>
 
     <module name="MultipleVariableDeclarations"/>
@@ -273,15 +278,19 @@
 
     <module name="RedundantImport"/>
 
-    <module name="RedundantModifier"/>
-
     <module name="RedundantThrows">
       <property name="allowUnchecked" value="true"/>
     </module>
 
+    <module name="RedundantModifier"/>
+
     <!--module name="Regexp"/-->
 
     <!--module name="RegexpHeader"/-->
+
+    <module name="j2ee.RemoteHomeInterface"/>
+
+    <module name="j2ee.RemoteInterface"/>
 
     <!--module name="RequireThis">
       <property name="checkMethods" value="false"/>
@@ -289,13 +298,11 @@
 
     <!--module name="RequiredRegexp"/-->
 
-    <!-- Increasing the maximum number of allowed return statements, as otherwise
-         the code will simply use workarounds to hide the same amount of exit points. -->
-    <module name="ReturnCount">
-      <property name="max" value="5"/>
-    </module>
+    <module name="ReturnCount"/>
 
     <module name="RightCurly"/>
+
+    <module name="j2ee.SessionBean"/>
 
     <module name="SimplifyBooleanExpression"/>
 
@@ -305,25 +312,20 @@
 
     <module name="StringLiteralEquality"/>
 
-    <!-- We allow clone() implementations that don't call super.clone(), since
-         some of our classes have this call nested in another method. -->
-    <!--<module name="SuperClone"/>-->
+    <module name="SuperClone"/>
 
     <module name="SuperFinalize"/>
+
+    <module name="TabCharacter"/>
+
+    <module name="j2ee.ThisParameter"/>
+
+    <module name="j2ee.ThisReturn"/>
 
     <!--module name="ThrowsCount"-->
 
     <module name="TodoComment">
       <property name="severity" value="warning"/>
-      <property name="format" value="TODO"/>
-    </module>
-    <module name="TodoComment">
-      <property name="severity" value="warning"/>
-      <property name="format" value="FIXME"/>
-    </module>
-    <module name="TodoComment">
-      <property name="severity" value="warning"/>
-      <property name="format" value="@todo"/>
     </module>
 
     <module name="TrailingComment"/>
@@ -349,9 +351,7 @@
 
     <module name="WhitespaceAfter"/>
 
-    <module name="WhitespaceAround">
-      <property name="tokens" value="ASSIGN,BAND,BAND_ASSIGN,BOR,BOR_ASSIGN,BSR,BSR_ASSIGN,BXOR,BXOR_ASSIGN,COLON,DIV,DIV_ASSIGN,EQUAL,GE,GT,LAND,LCURLY,LE,LITERAL_ASSERT,LITERAL_CATCH,LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_FOR,LITERAL_IF,LITERAL_RETURN,LITERAL_SYNCHRONIZED,LITERAL_TRY,LITERAL_WHILE,LOR,LT,MINUS,MINUS_ASSIGN,MOD,MOD_ASSIGN,NOT_EQUAL,PLUS,PLUS_ASSIGN,QUESTION,RCURLY,SL,SLIST,SL_ASSIGN,SR,SR_ASSIGN,STAR,STAR_ASSIGN,LITERAL_ASSERT,TYPE_EXTENSION_AND,WILDCARD_TYPE"/>
-    </module>
+    <module name="WhitespaceAround"/>
 
   </module>
   
