@@ -2,8 +2,8 @@
 
 <!--
  *
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
+ * Copyright 2006-2007, XpertNet SARL, and individual contributors as indicated
+ * by the contributors.txt.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -27,53 +27,32 @@
   <parent>
     <groupId>com.xpn.xwiki.platform</groupId>
     <artifactId>xwiki-build-tools</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-xar-plugin</artifactId>
-  <name>XWiki Platform - Tools - XAR Plugin</name>
+  <artifactId>xwiki-build-xar-plugin</artifactId>
+  <name>XWiki Platform - Tools - Build - XAR Plugin</name>
   <packaging>maven-plugin</packaging>
-  <description>XWiki Platform - Tools - XAR Plugin</description>
+  <description>XWiki Platform - Tools - Build - XAR Plugin</description>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
       <version>2.0</version>
-    </dependency>
+      </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>2.0.4</version>
-    </dependency>	
-	<dependency>
-	  <groupId>org.codehaus.plexus</groupId>
-	  <artifactId>plexus-archiver</artifactId>
-	  <version>1.0-alpha-9</version>
-	</dependency>
+      <artifactId>maven-archiver</artifactId>
+      <version>2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>1.4</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact</artifactId>
       <version>2.0</version>
     </dependency>
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>
-    </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>com.xpn.xwiki.platform</groupId>
-            <artifactId>xwiki-verification-resources</artifactId>
-            <version>${pom.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
-  </build>
 </project>
