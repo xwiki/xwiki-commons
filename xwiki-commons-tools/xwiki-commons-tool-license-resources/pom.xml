@@ -25,22 +25,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-tools</artifactId>
-    <version>30-SNAPSHOT</version>
+    <groupId>com.xpn.xwiki.platform.tools</groupId>
+    <artifactId>xwiki-tools</artifactId>
+    <version>7-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-license-resources</artifactId>
-  <name>XWiki Commons - Tools - XWiki License Resources</name>
-  <version>1.2-SNAPSHOT</version>
+  <artifactId>xwiki-license-resources</artifactId>
+  <name>XWiki Platform - Tools - XWiki License Resources</name>
+  <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>
     XWiki License file (License + Notice file containing copyrights).
   </description>
-  <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/trunk/xwiki-commons-license-resources</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/trunk/xwiki-commons-license-resources</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/trunk/xwiki-commons-license-resources</url>
-  </scm>
   <build>
     <plugins>
      <plugin>
