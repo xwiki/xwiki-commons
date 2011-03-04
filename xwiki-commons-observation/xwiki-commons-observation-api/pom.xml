@@ -26,36 +26,27 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
-    <version>40-SNAPSHOT</version>
-    <relativePath>../xwiki-commons-pom</relativePath>
+    <artifactId>xwiki-commons-observation</artifactId>
+    <version>3.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.xwiki.commons</groupId>
-  <artifactId>xwiki-commons-core</artifactId>
-  <version>3.0-SNAPSHOT</version>
-  <name>XWiki Commons - Core - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Core - Parent POM</description>
-  <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</url>
-  </scm>
-  <issueManagement>
-    <system>jira</system>
-    <url>http://jira.xwiki.org/jira/browse/XCOMMONS</url>
-  </issueManagement>
-  <modules>
-    <module>xwiki-commons-component</module>
-    <module>xwiki-commons-observation</module>
-  </modules>
+  <artifactId>xwiki-commons-observation-api</artifactId>
+  <name>XWiki Commons - Observation - API</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Observation - API</description>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.1</version>
-      <scope>test</scope>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
-       
