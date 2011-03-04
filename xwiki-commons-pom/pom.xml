@@ -36,7 +36,7 @@
     <!-- The version to the license tool module must always be to a released version as otherwise there's a dependency
          issue since every module, including tool modules depend on this top level POM -->
     <commons.tool.license.version>1.2-SNAPSHOT</commons.tool.license.version>
-    <platform.tool.verification.version>1.15</platform.tool.verification.version>
+    <commons.tool.verification.version>1.16-SNAPSHOT</commons.tool.verification.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <url>http://xwiki.org</url>
@@ -219,15 +219,15 @@
           <version>2.6</version>
           <dependencies>
             <dependency>
-              <groupId>org.xwiki.platform.tools</groupId>
-              <artifactId>xwiki-verification-resources</artifactId>
-              <version>${platform.tool.verification.version}</version>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-verification-resources</artifactId>
+              <version>${commons.tool.verification.version}</version>
             </dependency>
           </dependencies>
           <configuration>
             <consoleOutput>true</consoleOutput>
             <configLocation>checkstyle.xml</configLocation>
-            <headerLocation>checkstyle.license</headerLocation>
+            <headerLocation>license.txt</headerLocation>
             <!-- We use this to disable checkstyle when the clover profile is executed since there's a
                  conflict between checkstyle and clover. Namely the clovered code doesn't pass our
                  checkstyle rules -->
