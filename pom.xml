@@ -26,20 +26,20 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki</artifactId>
+    <artifactId>xwiki-commons</artifactId>
     <version>40-SNAPSHOT</version>
     <relativePath>../xwiki-commons-pom</relativePath>
   </parent>
   <groupId>org.xwiki.commons</groupId>
-  <artifactId>xwiki-commons</artifactId>
+  <artifactId>xwiki-commons-core</artifactId>
   <version>3.0-SNAPSHOT</version>
-  <name>XWiki Commons - Parent POM</name>
+  <name>XWiki Commons - Core - Parent POM</name>
   <packaging>pom</packaging>
-  <description>XWiki Commons - Parent POM</description>
+  <description>XWiki Commons - Core - Parent POM</description>
   <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/trunk</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/trunk</url>
+    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</connection>
+    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</developerConnection>
+    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</url>
   </scm>
   <issueManagement>
     <system>jira</system>
