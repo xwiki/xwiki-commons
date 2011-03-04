@@ -26,16 +26,27 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-component</artifactId>
     <version>3.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-component</artifactId>
-  <name>XWiki Commons - Component - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Component - Parent POM</description>
-  <modules>
-    <module>xwiki-commons-component-api</module>
-    <module>xwiki-commons-component-observation</module>
-  </modules>
+  <artifactId>xwiki-commons-component-observation</artifactId>
+  <name>XWiki Commons - Component - Observation</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Component - Observation</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-observation-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
-       
