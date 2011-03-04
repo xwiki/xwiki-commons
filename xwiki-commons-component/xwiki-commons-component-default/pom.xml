@@ -61,8 +61,7 @@
             org/xwiki/component/embed/EmbeddableComponentManager.java,
             org/xwiki/component/internal/Composable.java,
             org/xwiki/component/internal/RoleHint.java,
-            org/xwiki/component/internal/StackingComponentEventManager.java,
-            org/xwiki/component/logging/CommonsLoggingLogger.java
+            org/xwiki/component/internal/StackingComponentEventManager.java
           </excludes>
         </configuration>
       </plugin>

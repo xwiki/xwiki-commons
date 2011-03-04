@@ -30,9 +30,14 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CommonsLoggingLogger extends AbstractLogger
 {
-    /** Wrapped Commons Logging logger object. This communicates with the underlying logging framework. */
+    /**
+     * Wrapped Commons Logging logger object. This communicates with the underlying logging framework.
+     */
     private Log logger;
-    
+
+    /**
+     * @param clazz the class to use when logging messages
+     */
     public CommonsLoggingLogger(Class< ? > clazz)
     {
         this.logger = LogFactory.getLog(clazz);
@@ -40,7 +45,6 @@ public class CommonsLoggingLogger extends AbstractLogger
 
     /**
      * {@inheritDoc}
-     * @see Logger#debug(String, Object...)
      */
     public void debug(String message, Object... objects)
     {
@@ -51,7 +55,6 @@ public class CommonsLoggingLogger extends AbstractLogger
 
     /**
      * {@inheritDoc}
-     * @see Logger#debug(String, Throwable, Object...)
      */
     public void debug(String message, Throwable throwable, Object... objects)
     {
@@ -62,7 +65,6 @@ public class CommonsLoggingLogger extends AbstractLogger
 
     /**
      * {@inheritDoc}
-     * @see Logger#debug(String, Throwable)
      */
     public void debug(String message, Throwable throwable)
     {
@@ -71,13 +73,15 @@ public class CommonsLoggingLogger extends AbstractLogger
 
     /**
      * {@inheritDoc}
-     * @see Logger#debug(String)
      */
     public void debug(String message)
     {
         this.logger.debug(message);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void error(String message, Object... objects)
     {
         if (this.logger.isErrorEnabled()) {
@@ -85,6 +89,9 @@ public class CommonsLoggingLogger extends AbstractLogger
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void error(String message, Throwable throwable, Object... objects)
     {
         if (this.logger.isErrorEnabled()) {
@@ -92,16 +99,25 @@ public class CommonsLoggingLogger extends AbstractLogger
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void error(String message, Throwable throwable)
     {
         this.logger.error(message, throwable);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void error(String message)
     {
         this.logger.error(message);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void info(String message, Object... objects)
     {
         if (this.logger.isInfoEnabled()) {
@@ -109,6 +125,9 @@ public class CommonsLoggingLogger extends AbstractLogger
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void info(String message, Throwable throwable, Object... objects)
     {
         if (this.logger.isInfoEnabled()) {
@@ -116,36 +135,57 @@ public class CommonsLoggingLogger extends AbstractLogger
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void info(String message, Throwable throwable)
     {
         this.logger.info(message, throwable);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void info(String message)
     {
         this.logger.info(message);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isDebugEnabled()
     {
         return this.logger.isDebugEnabled();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isErrorEnabled()
     {
         return this.logger.isErrorEnabled();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isInfoEnabled()
     {
         return this.logger.isInfoEnabled();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isWarnEnabled()
     {
         return this.logger.isWarnEnabled();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void warn(String message, Object... objects)
     {
         if (this.logger.isWarnEnabled()) {
@@ -153,6 +193,9 @@ public class CommonsLoggingLogger extends AbstractLogger
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void warn(String message, Throwable throwable, Object... objects)
     {
         if (this.logger.isWarnEnabled()) {
@@ -160,11 +203,17 @@ public class CommonsLoggingLogger extends AbstractLogger
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void warn(String message, Throwable throwable)
     {
         this.logger.warn(message, throwable);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void warn(String message)
     {
         this.logger.warn(message);
