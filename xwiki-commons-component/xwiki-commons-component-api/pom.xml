@@ -41,12 +41,9 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-            org/xwiki/component/logging/Logger.java,
-            org/xwiki/component/logging/VoidLogger.java,
             org/xwiki/component/logging/AbstractLogEnabled.java,
             org/xwiki/component/phase/InitializationException.java,
             org/xwiki/component/phase/LogEnabled.java,
-            org/xwiki/component/phase/Initializable.java,
             org/xwiki/component/manager/ComponentManager.java,
             org/xwiki/component/manager/ComponentLifecycleException.java,
             org/xwiki/component/manager/ComponentRepositoryException.java,

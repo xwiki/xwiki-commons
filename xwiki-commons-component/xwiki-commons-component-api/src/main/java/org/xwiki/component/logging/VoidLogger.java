@@ -33,7 +33,6 @@ public class VoidLogger implements Logger
 {
     /**
      * {@inheritDoc}
-     * #see Logger#debug(String)
      */
     public void debug(String message)
     {
@@ -42,7 +41,6 @@ public class VoidLogger implements Logger
 
     /**
      * {@inheritDoc}
-     * #see Logger#debug(String, Throwable)
      */
     public void debug(String message, Throwable throwable)
     {
@@ -51,7 +49,6 @@ public class VoidLogger implements Logger
 
     /**
      * {@inheritDoc}
-     * #see Logger#debug(String, Object...)
      */
     public void debug(String message, Object... objects)
     {
@@ -60,88 +57,135 @@ public class VoidLogger implements Logger
 
     /**
      * {@inheritDoc}
-     * #see Logger#debug(String, Throwable, Object...)
      */
     public void debug(String message, Throwable throwable, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void error(String message)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void error(String message, Throwable throwable)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void error(String message, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void error(String message, Throwable throwable, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void info(String message)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void info(String message, Throwable throwable)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void info(String message, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void info(String message, Throwable throwable, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isDebugEnabled()
     {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isErrorEnabled()
     {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isInfoEnabled()
     {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isWarnEnabled()
     {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void warn(String message)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void warn(String message, Throwable throwable)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void warn(String message, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void warn(String message, Throwable throwable, Object... objects)
     {
         // Don't do anything voluntarily

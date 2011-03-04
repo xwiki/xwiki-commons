@@ -30,14 +30,14 @@ package org.xwiki.component.logging;
 public interface Logger
 {
     /**
-     * Log a message with the <code>debug</code> priority.
+     * Log a message with the {@code debug} priority.
      * 
      * @param message The message to be logged. No further processing of the message is performed.
      */
     void debug(String message);
 
     /**
-     * Log a message with the <code>debug</code> priority, also printing the exception that caused this message, along
+     * Log a message with the {@code debug} priority, also printing the exception that caused this message, along
      * with its stack trace.
      * 
      * @param message The message to be logged. No further processing of the message is performed.
@@ -47,20 +47,21 @@ public interface Logger
 
     /**
      * <p>
-     * Logs the {@code message} to the logger with <code>debug</code> priority while expanding the message with the
+     * Logs the {@code message} to the logger with {@code debug} priority while expanding the message with the
      * objects passed. The message uses the {@link java.text.MessageFormat} syntax.
      * </p>
      * <p>
-     * Example:<br/> <code>
+     * Example:
+     * {@code
      * log.debug("Doc was created on {0} and was changed {1} times", date, 5);
      * log.debug("There {0,choice,0#are|1#is|1<are} {0,choice,0#no|1#one|1<{0}} file{0,choice,0#s|1#|1<s}", nrFiles);
-     * </code>
+     * }
      * </p>
      * <p>
      * The logged message will only be formatted if the message is actually logged.
      * </p>
      * 
-     * @param message The message to be formatted via {@link java.text.MessageFormat#format()}
+     * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
      */
@@ -68,20 +69,21 @@ public interface Logger
 
     /**
      * <p>
-     * Logs the {@code message} to the logger with <code>debug</code> priority while expanding the message with the
+     * Logs the {@code message} to the logger with {@code debug} priority while expanding the message with the
      * objects passed, also printing the exception that caused this message, along with its stack trace. The message
      * uses the {@link java.text.MessageFormat} syntax.
      * </p>
      * <p>
-     * Example:<br/> <code>
+     * Example:
+     * {@code
      * log.debug("Unhandled exception while executing the query [{0}]", exception, query);
-     * </code>
+     * }
      * </p>
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
      * 
-     * @param message The message to be formatted via {@link java.text.MessageFormat#format()}
+     * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param throwable The exception associated with the message, for stack trace output.
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
@@ -89,22 +91,21 @@ public interface Logger
     void debug(String message, Throwable throwable, Object... objects);
 
     /**
-     * Check if the <code>debug</code> priority is enabled.
+     * Check if the {@code debug} priority is enabled.
      * 
-     * @return <code>true</code> if messages with <code>debug</code> priority will be logged, <code>false</code>
-     *         otherwise
+     * @return {@code true} if messages with {@code debug} priority will be logged, {@code false} otherwise
      */
     boolean isDebugEnabled();
 
     /**
-     * Log a message with the <code>info</code> priority.
+     * Log a message with the {@code info} priority.
      * 
      * @param message The message to be logged. No further processing of the message is performed.
      */
     void info(String message);
 
     /**
-     * Log a message with the <code>info</code> priority, also printing the exception that caused this message, along
+     * Log a message with the {@code info} priority, also printing the exception that caused this message, along
      * with its stack trace.
      * 
      * @param message The message to be logged. No further processing of the message is performed.
@@ -114,20 +115,21 @@ public interface Logger
 
     /**
      * <p>
-     * Logs the {@code message} to the logger with <code>info</code> priority while expanding the message with the
+     * Logs the {@code message} to the logger with {@code info} priority while expanding the message with the
      * objects passed. The message uses the {@link java.text.MessageFormat} syntax. <br>
      * </p>
      * <p>
-     * Example:<br/> <code>
+     * Example:
+     * {@code
      * log.info("Doc was created on {0} and was changed {1} times", date, 5);
      * log.info("There {0,choice,0#are|1#is|1<are} {0,choice,0#no|1#one|1<{0}} file{0,choice,0#s|1#|1<s}", nrFiles);
-     * </code>
+     * }
      * </p>
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
      * 
-     * @param message The message to be formatted via {@link java.text.MessageFormat#format()}
+     * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
      */
@@ -135,20 +137,21 @@ public interface Logger
 
     /**
      * <p>
-     * Logs the {@code message} to the logger with <code>info</code> priority while expanding the message with the
+     * Logs the {@code message} to the logger with {@code info} priority while expanding the message with the
      * objects passed, also printing the exception that caused this message, along with its stack trace. The message
      * uses the {@link java.text.MessageFormat} syntax.
      * </p>
      * <p>
-     * Example:<br/> <code>
+     * Example:
+     * {@code
      * log.info("Unhandled exception while executing the query [{0}]", exception, query);
-     * </code>
+     * }
      * </p>
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
      * 
-     * @param message The message to be formatted via {@link java.text.MessageFormat#format()}
+     * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param throwable The exception associated with the message, for stack trace output.
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
@@ -156,22 +159,21 @@ public interface Logger
     void info(String message, Throwable throwable, Object... objects);
 
     /**
-     * Check if the <code>info</code> priority is enabled.
+     * Check if the {@code info} priority is enabled.
      * 
-     * @return <code>true</code> if messages with <code>info</code> priority will be logged, <code>false</code>
-     *         otherwise
+     * @return {@code true} if messages with {@code info} priority will be logged, {@code false} otherwise
      */
     boolean isInfoEnabled();
 
     /**
-     * Log a message with the <code>warn</code> priority.
+     * Log a message with the {@code warn} priority.
      * 
      * @param message The message to be logged. No further processing of the message is performed.
      */
     void warn(String message);
 
     /**
-     * Log a message with the <code>warn</code> priority, also printing the exception that caused this message, along
+     * Log a message with the {@code warn} priority, also printing the exception that caused this message, along
      * with its stack trace.
      * 
      * @param message The message to be logged. No further processing of the message is performed.
@@ -181,20 +183,21 @@ public interface Logger
 
     /**
      * <p>
-     * Logs the {@code message} to the logger with <code>warn</code> priority while expanding the message with the
+     * Logs the {@code message} to the logger with {@code warn} priority while expanding the message with the
      * objects passed. The message uses the {@link java.text.MessageFormat} syntax.
      * </p>
      * <p>
-     * Example:<br/> <code>
+     * Example:
+     * {@code
      * log.warn("Doc was created on {0} and was changed {1} times", date, 5);
      * log.warn("There {0,choice,0#are|1#is|1<are} {0,choice,0#no|1#one|1<{0}} file{0,choice,0#s|1#|1<s}", nrFiles);
-     * </code>
+     * }
      * </p>
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
      * 
-     * @param message The message to be formatted via {@link java.text.MessageFormat#format()}
+     * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
      */
@@ -202,20 +205,21 @@ public interface Logger
 
     /**
      * <p>
-     * Logs the {@code message} to the logger with <code>warn</code> priority while expanding the message with the
+     * Logs the {@code message} to the logger with {@code warn} priority while expanding the message with the
      * objects passed, also printing the exception that caused this message, along with its stack trace. The message
      * uses the {@link java.text.MessageFormat} syntax.
      * </p>
      * <p>
-     * Example:<br/> <code>
+     * Example:
+     * {@code
      * log.warn("Unhandled exception while executing the query [{0}]", exception, query);
-     * </code>
+     * }
      * </p>
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
      * 
-     * @param message The message to be formatted via {@link java.text.MessageFormat#format()}
+     * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param throwable The exception associated with the message, for stack trace output.
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
@@ -223,22 +227,21 @@ public interface Logger
     void warn(String message, Throwable throwable, Object... objects);
 
     /**
-     * Check if the <code>warn</code> priority is enabled.
+     * Check if the {@code warn} priority is enabled.
      * 
-     * @return <code>true</code> if messages with <code>warn</code> priority will be logged, <code>false</code>
-     *         otherwise
+     * @return {@code true} if messages with {@code warn} priority will be logged, {@code false} otherwise
      */
     boolean isWarnEnabled();
 
     /**
-     * Log a message with the <code>error</code> priority.
+     * Log a message with the {@code error} priority.
      * 
      * @param message The message to be logged. No further processing of the message is performed.
      */
     void error(String message);
 
     /**
-     * Log a message with the <code>error</code> priority, also printing the exception that caused this message, along
+     * Log a message with the {@code error} priority, also printing the exception that caused this message, along
      * with its stack trace.
      * 
      * @param message The message to be logged. No further processing of the message is performed.
@@ -248,20 +251,21 @@ public interface Logger
 
     /**
      * <p>
-     * Logs the {@code message} to the logger with <code>error</code> priority while expanding the message with the
+     * Logs the {@code message} to the logger with {@code error} priority while expanding the message with the
      * objects passed. The message uses the {@link java.text.MessageFormat} syntax.
      * </p>
      * <p>
-     * Example:<br/> <code>
+     * Example:
+     * {@code
      * log.error("Doc was created on {0} and was changed {1} times", date, 5);
      * log.error("There {0,choice,0#are|1#is|1<are} {0,choice,0#no|1#one|1<{0}} file{0,choice,0#s|1#|1<s}", nrFiles);
-     * </code>
+     * }
      * </p>
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
      * 
-     * @param message The message to be formatted via {@link java.text.MessageFormat#format()}
+     * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
      */
@@ -269,20 +273,21 @@ public interface Logger
 
     /**
      * <p>
-     * Logs the {@code message} to the logger with <code>error</code> priority while expanding the message with the
+     * Logs the {@code message} to the logger with {@code error} priority while expanding the message with the
      * objects passed, also printing the exception that caused this message, along with its stack trace. The message
      * uses the {@link java.text.MessageFormat} syntax.
      * </p>
      * <p>
-     * Example:<br/> <code>
+     * Example:
+     * {@code
      * log.error("Unhandled exception while executing the query [{0}]", exception, query);
-     * </code>
+     * }
      * </p>
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
      * 
-     * @param message The message to be formatted via {@link java.text.MessageFormat#format()}
+     * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param throwable The exception associated with the message, for stack trace output.
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
@@ -290,10 +295,9 @@ public interface Logger
     void error(String message, Throwable throwable, Object... objects);
 
     /**
-     * Check if the <code>error</code> priority is enabled.
+     * Check if the {@code error} priority is enabled.
      * 
-     * @return <code>true</code> if messages with <code>error</code> priority will be logged, <code>false</code>
-     *         otherwise
+     * @return {@code true} if messages with {@code error} priority will be logged, {@code false} otherwise
      */
     boolean isErrorEnabled();
 }
