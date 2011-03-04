@@ -49,6 +49,7 @@
     <module>xwiki-commons-component</module>
     <module>xwiki-commons-observation</module>
     <module>xwiki-commons-context</module>
+    <module>xwiki-commons-configuration</module>
   </modules>
   <dependencies>
     <dependency>
