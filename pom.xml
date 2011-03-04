@@ -51,6 +51,7 @@
     <module>xwiki-commons-context</module>
     <module>xwiki-commons-configuration</module>
     <module>xwiki-commons-tests</module>
+    <module>xwiki-commons-xml</module>
   </modules>
   <dependencies>
     <dependency>
