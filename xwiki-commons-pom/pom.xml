@@ -33,9 +33,9 @@
     <!-- By default Checkstyle and Clirr are on by default -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.clirr.skip>false</xwiki.clirr.skip>
-    <!-- The version to the license tool module must always be to a released version as otherwise there's a dependency issue
-         since every module, including tool modules depend on this top level POM -->
-    <platform.tool.license.version>1.1</platform.tool.license.version>
+    <!-- The version to the license tool module must always be to a released version as otherwise there's a dependency
+         issue since every module, including tool modules depend on this top level POM -->
+    <commons.tool.license.version>1.2-SNAPSHOT</commons.tool.license.version>
     <platform.tool.verification.version>1.15</platform.tool.verification.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -194,7 +194,7 @@
             </goals>
             <configuration>
               <resourceBundles>
-                <resourceBundle>org.xwiki.platform.tools:xwiki-license-resources:${platform.tool.license.version}</resourceBundle>
+                <resourceBundle>org.xwiki.commons:xwiki-commons-license-resources:${commons.tool.license.version}</resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>
