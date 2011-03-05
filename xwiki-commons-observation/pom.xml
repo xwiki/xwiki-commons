@@ -30,9 +30,9 @@
     <version>3.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-observation</artifactId>
-  <name>XWiki Commons - Observation - Parent</name>
+  <name>XWiki Commons - Observation - Parent POM</name>
   <packaging>pom</packaging>
-  <description>XWiki Commons - Observation - Parent</description>
+  <description>XWiki Commons - Observation - Parent POM</description>
   <modules>
     <module>xwiki-commons-observation-api</module>
   </modules>
