@@ -53,6 +53,7 @@
     <module>xwiki-commons-tests</module>
     <module>xwiki-commons-xml</module>
     <module>xwiki-commons-properties</module>
+    <module>xwiki-commons-management</module>
   </modules>
   <dependencies>
     <dependency>
