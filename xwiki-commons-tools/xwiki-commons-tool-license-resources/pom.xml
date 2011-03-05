@@ -30,7 +30,7 @@
     <version>30-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-license-resources</artifactId>
-  <name>XWiki Commons - Tools - XWiki License Resources</name>
+  <name>XWiki Commons - Tools - License Resources</name>
   <version>1.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>
