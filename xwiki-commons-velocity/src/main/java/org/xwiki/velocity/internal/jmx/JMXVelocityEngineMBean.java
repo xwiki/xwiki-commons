@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,25 +16,24 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package org.xwiki.velocity.internal.jmx;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
-    <version>3.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-management</artifactId>
-  <name>XWiki Commons - Management</name>
-  <packaging>jar</packaging>
-  <description>XWiki Commons - Management</description>
-  <dependencies>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
-</project>
+import javax.management.openmbean.TabularData;
+
+/**
+ * MBean API related to Velocity Engines. Supports the following features:
+ * <ul>
+ *   <li>Retrieve list of template namespaces along with the name of macros registered in each template namespace</li>
+ * </ul>
+ *
+ * @version $Id$
+ * @since 2.4M2
+ */
+public interface JMXVelocityEngineMBean
+{
+    /**
+     * @return the list of template namespaces along with the name of macros registered in each template namespace
+     */
+    TabularData getTemplates();
+}
