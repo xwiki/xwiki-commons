@@ -27,46 +27,53 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>40-SNAPSHOT</version>
-    <relativePath>../xwiki-commons-pom</relativePath>
+    <version>3.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.xwiki.commons</groupId>
-  <artifactId>xwiki-commons-core</artifactId>
-  <version>3.0-SNAPSHOT</version>
-  <name>XWiki Commons - Core - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Core - Parent POM</description>
-  <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</url>
-  </scm>
-  <issueManagement>
-    <system>jira</system>
-    <url>http://jira.xwiki.org/jira/browse/XCOMMONS</url>
-  </issueManagement>
-  <modules>
-    <module>xwiki-commons-component</module>
-    <module>xwiki-commons-observation</module>
-    <module>xwiki-commons-context</module>
-    <module>xwiki-commons-configuration</module>
-    <module>xwiki-commons-tests</module>
-    <module>xwiki-commons-xml</module>
-    <module>xwiki-commons-properties</module>
-  </modules>
+  <artifactId>xwiki-commons-properties</artifactId>
+  <name>XWiki Commons - Properties</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Properties</description>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.0.0.GA</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <!-- Tests dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tests</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <version>2.5.1</version>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>4.0.2.GA</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Maven Repository Group</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+    </repository>
+  </repositories>
   <build>
     <plugins>
       <plugin>
@@ -77,3 +84,4 @@
     </plugins>
   </build>
 </project>
+       
