@@ -33,8 +33,9 @@ public class ScriptServiceNotFoundException extends Exception
     private static final long serialVersionUID = 8940300614005225360L;
 
     /**
-     * {@inheritDoc}
+     * Creates a new exception with the given message.
      *
+     * @param message the exception message
      * @see Exception#Exception(String)
      */
     public ScriptServiceNotFoundException(String message)
@@ -43,8 +44,10 @@ public class ScriptServiceNotFoundException extends Exception
     }
 
     /**
-     * {@inheritDoc}
+     * Creates a new exception with the given message, wrapping the specified throwable object.
      *
+     * @param message the exception message
+     * @param throwable the throwable object to wrap
      * @see Exception#Exception(String, Throwable)
      */
     public ScriptServiceNotFoundException(String message, Throwable throwable)

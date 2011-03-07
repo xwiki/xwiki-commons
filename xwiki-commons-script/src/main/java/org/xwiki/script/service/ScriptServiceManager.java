@@ -38,6 +38,7 @@ public interface ScriptServiceManager
      *
      * @param serviceName the name of the service to look for
      * @return the service asked
+     * @throws ScriptServiceNotFoundException if there is no script service registered with the specified name
      */
     ScriptService get(String serviceName) throws ScriptServiceNotFoundException;
 }
