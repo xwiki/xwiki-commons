@@ -28,15 +28,15 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Root POM</name>
   <packaging>pom</packaging>
-  <version>40-SNAPSHOT</version>
+  <version>40</version>
   <properties>
     <!-- By default Checkstyle and Clirr are on by default -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.clirr.skip>false</xwiki.clirr.skip>
     <!-- The version to the license tool module must always be to a released version as otherwise there's a dependency
          issue since every module, including tool modules depend on this top level POM -->
-    <commons.tool.license.version>1.2-SNAPSHOT</commons.tool.license.version>
-    <commons.tool.verification.version>1.16-SNAPSHOT</commons.tool.verification.version>
+    <commons.tool.license.version>1.2</commons.tool.license.version>
+    <commons.tool.verification.version>1.16</commons.tool.verification.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <url>http://xwiki.org</url>
