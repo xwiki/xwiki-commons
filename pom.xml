@@ -32,14 +32,14 @@
   </parent>
   <groupId>org.xwiki.commons</groupId>
   <artifactId>xwiki-commons-core</artifactId>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.0-milestone-3</version>
   <name>XWiki Commons - Core - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Core - Parent POM</description>
   <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</url>
+    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/tags/xwiki-commons-core-3.0-milestone-3</connection>
+    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/tags/xwiki-commons-core-3.0-milestone-3</developerConnection>
+    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/tags/xwiki-commons-core-3.0-milestone-3</url>
   </scm>
   <issueManagement>
     <system>jira</system>
