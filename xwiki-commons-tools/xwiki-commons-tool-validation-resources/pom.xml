@@ -31,12 +31,12 @@
   </parent>
   <artifactId>xwiki-commons-verification-resources</artifactId>
   <name>XWiki Commons - Tools - Verification Resources</name>
-  <version>1.16-SNAPSHOT</version>
+  <version>1.16</version>
   <packaging>jar</packaging>
   <description>XWiki Commons - Tools - Verification Resources (Checkstyle files, etc)</description>
   <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/trunk/xwiki-commons-verification-resources</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/trunk/xwiki-commons-verification-resources</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/trunk/xwiki-commons-verification-resources</url>
+    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/tags/xwiki-commons-verification-resources-1.16</connection>
+    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/tags/xwiki-commons-verification-resources-1.16</developerConnection>
+    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/tags/xwiki-commons-verification-resources-1.16</url>
   </scm>
 </project>
