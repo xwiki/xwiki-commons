@@ -27,7 +27,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tools</artifactId>
-    <version>1-SNAPSHOT</version>
+    <version>1</version>
   </parent>
   <artifactId>xwiki-commons-license-resources</artifactId>
   <name>XWiki Commons - Tools - License Resources</name>
