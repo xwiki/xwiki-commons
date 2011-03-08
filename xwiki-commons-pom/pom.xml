@@ -35,7 +35,7 @@
     <xwiki.clirr.skip>false</xwiki.clirr.skip>
     <!-- The version to the license tool module must always be to a released version as otherwise there's a dependency
          issue since every module, including tool modules depend on this top level POM -->
-    <commons.tool.license.version>1.3-SNAPSHOT</commons.tool.license.version>
+    <commons.tool.license.version>1.2</commons.tool.license.version>
     <commons.tool.verification.version>1.17-SNAPSHOT</commons.tool.verification.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -189,6 +189,24 @@
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
+      <!-- We want to force packaging the license resources in the produced XWiki artifacts -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>xwiki-license-resources</id>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.xwiki.commons:xwiki-commons-license-resources:${commons.tool.license.version}</resourceBundle>
+              </resourceBundles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <!-- Ensure that we lock down all plugin versions -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -553,40 +571,6 @@ mmmm]]></license>
     </plugins>
   </reporting>
   <profiles>
-    <!-- Profile used to activate adding license information to generated artifacts (jars). We need this in a profile
-         since the License Tool is a XWiki Tools module that depends on this top level POM and thus we need to ensure
-         that it's not executed when this POM module is executed. Thus we're only activating the addition of licenses
-         when there's a src directory (couldn't find any better idea...). We need Maven 3.1 Mixin... -->
-    <profile>
-      <id>license</id>
-      <activation>
-        <file>
-          <exists>src</exists>
-        </file>
-      </activation>
-      <build>
-        <plugins>
-          <!-- We want to force packaging the license resources in the produced XWiki artifacts -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-remote-resources-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>xwiki-license-resources</id>
-                <goals>
-                  <goal>process</goal>
-                </goals>
-                <configuration>
-                  <resourceBundles>
-                    <resourceBundle>org.xwiki.commons:xwiki-commons-license-resources:${commons.tool.license.version}</resourceBundle>
-                  </resourceBundles>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <!-- Profile used when the release plugin executes. We want javadocs and source jars to be released. -->
       <id>release</id>
