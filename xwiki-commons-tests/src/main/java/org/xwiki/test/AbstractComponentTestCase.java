@@ -30,7 +30,9 @@ import org.xwiki.component.embed.EmbeddableComponentManager;
  * available. Use this class for JUnit 4.x tests. For JUnit 3.x tests use {@link AbstractXWikiComponentTestCase}
  * instead.
  *
- * Since XWiki 2.2M1 you should prefer using {@link org.xwiki.test.AbstractMockingComponentTestCase} instead.
+ * XWiki 2.2M1 also introduced {@link org.xwiki.test.AbstractMockingComponentTestCase} which provides automatic
+ * mocking for injected component dependencies and which is thus better when writing pure unit tests, isolated from
+ * the rest.
  */
 public class AbstractComponentTestCase extends AbstractMockingTestCase
 {
