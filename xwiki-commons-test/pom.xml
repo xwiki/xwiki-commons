@@ -29,7 +29,7 @@
     <artifactId>xwiki-commons-core</artifactId>
     <version>3.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-tests</artifactId>
+  <artifactId>xwiki-commons-test</artifactId>
   <name>XWiki Commons - Test Framework</name>
   <packaging>jar</packaging>
   <description>XWiki Test framework</description>
