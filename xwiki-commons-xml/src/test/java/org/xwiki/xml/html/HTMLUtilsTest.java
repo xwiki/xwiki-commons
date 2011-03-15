@@ -16,14 +16,18 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.xml.html;
 
 import java.io.StringReader;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.w3c.dom.Document;
-import org.xwiki.test.AbstractXWikiComponentTestCase;
+import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.annotation.MockingRequirement;
+import org.xwiki.xml.html.filter.HTMLFilter;
+import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
 
 /**
@@ -32,36 +36,27 @@ import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
  * @version $Id$
  * @since 1.8.3
  */
-public class HTMLUtilsTest extends AbstractXWikiComponentTestCase
+public class HTMLUtilsTest extends AbstractMockingComponentTestCase
 {
-    private HTMLCleaner cleaner;
+    @MockingRequirement(exceptions = {HTMLFilter.class})
+    private DefaultHTMLCleaner cleaner;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.test.AbstractXWikiComponentTestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-        cleaner = (HTMLCleaner) getComponentManager().lookup(HTMLCleaner.class, "default");
-    }
-
+    @Test
     public void testStripHTMLEnvelope() throws Exception
     {
         Document document =
-            cleaner.clean(new StringReader("<html><head><body><p>test1</p><p>test2</p></body></html>"));
+            this.cleaner.clean(new StringReader("<html><head><body><p>test1</p><p>test2</p></body></html>"));
         HTMLUtils.stripHTMLEnvelope(document);
-        assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><p>test1</p><p>test2</p></html>\n", 
+        Assert.assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><p>test1</p><p>test2</p></html>\n",
             HTMLUtils.toString(document));
     }
     
+    @Test
     public void testStripTopLevelParagraph() throws Exception
     {
-        Document document = cleaner.clean(new StringReader("<html><head /><body><p>test</p></body></html>"));
+        Document document = this.cleaner.clean(new StringReader("<html><head /><body><p>test</p></body></html>"));
         HTMLUtils.stripFirstElementInside(document, "body", "p");
-        assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body>test</body></html>\n", 
+        Assert.assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body>test</body></html>\n",
             HTMLUtils.toString(document));
     }
 }
