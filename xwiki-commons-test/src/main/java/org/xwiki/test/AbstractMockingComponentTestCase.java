@@ -42,7 +42,7 @@ import org.xwiki.test.annotation.MockingRequirement;
  * To use this class, add a private field of the type of the component class being tested and annotate it with
  * {@link org.xwiki.test.annotation.MockingRequirement}. This test case will then find all Requirements of the
  * component class being tested and inject mocks for each of them. To set expectations simply look them up in
- * setUp() (for exzample) and define their expectations in your test methods or setUp().
+ * setUp() (for example) and define their expectations in your test methods or setUp().
  *
  * For example:
  * <code><pre>
