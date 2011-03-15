@@ -186,7 +186,7 @@
           <!-- Exclude JUnit since JMock draws an oldish version of JUnit and we wish to use a newer one -->
           <exclusion>
             <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <artifactId>junit-dep</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
