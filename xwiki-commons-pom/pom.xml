@@ -190,6 +190,11 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock-legacy</artifactId>
+        <version>2.5.1</version>
+      </dependency>
 
       <!-- Most plugins depend on the servlet API -->
       <dependency>
