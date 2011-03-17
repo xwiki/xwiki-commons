@@ -168,10 +168,19 @@
       </dependency>
 
       <!-- Everybody tests -->
+      <!-- Note: We're using junit-dep and not junit because the junit artifact bundles the Hamcrest jar, leading to
+           JAR Classloader hell with incompatible versions between the Hamcrest version bundled in JUnit and the
+           version used by JMock. See http://jira.xwiki.org/jira/browse/XPOM-5 -->
       <dependency>
         <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
+        <artifactId>junit-dep</artifactId>
         <version>4.8.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>1.1</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
@@ -249,6 +258,25 @@
                   <banRelease>false</banRelease>
                   <banSnapshots>false</banSnapshots>
                 </requirePluginVersions>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-correct-junit-dependency</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <message>
+Use the junit-dep artifact instead of the junit one which wrongly bundles hamcrest
+(see http://jira.xwiki.org/jira/browse/XPOM-5)
+                  </message>
+                  <excludes>
+                    <exclude>junit:junit</exclude>
+                  </excludes>
+                </bannedDependencies>
               </rules>
             </configuration>
           </execution>
