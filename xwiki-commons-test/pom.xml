@@ -36,7 +36,11 @@
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <artifactId>junit-dep</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jmock</groupId>
