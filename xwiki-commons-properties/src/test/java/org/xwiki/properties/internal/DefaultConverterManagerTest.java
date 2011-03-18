@@ -21,17 +21,19 @@ package org.xwiki.properties.internal;
 
 import java.awt.Color;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.AbstractXWikiComponentTestCase;
+import org.xwiki.test.AbstractComponentTestCase;
 
 /**
  * Validate {@link DefaultConverterManager}.
  * 
  * @version $Id$
  */
-public class DefaultConverterManagerTest extends AbstractXWikiComponentTestCase
+public class DefaultConverterManagerTest extends AbstractComponentTestCase
 {
-    public ConverterManager defaultConverterManager;
+    private ConverterManager defaultConverterManager;
 
     public enum TestEnum
     {
@@ -39,23 +41,26 @@ public class DefaultConverterManagerTest extends AbstractXWikiComponentTestCase
     }
 
     @Override
-    public void setUp() throws Exception
+    protected void registerComponents() throws Exception
     {
         this.defaultConverterManager = getComponentManager().lookup(ConverterManager.class);
     }
 
+    @Test
     public void testConvert()
     {
-        assertEquals(Integer.valueOf(42), this.defaultConverterManager.convert(Integer.class, "42"));
+        Assert.assertEquals(Integer.valueOf(42), this.defaultConverterManager.convert(Integer.class, "42"));
     }
 
+    @Test
     public void testConvertEnum()
     {
-        assertEquals(TestEnum.ENUMVALUE, this.defaultConverterManager.convert(TestEnum.class, "ENUMVALUE"));
+        Assert.assertEquals(TestEnum.ENUMVALUE, this.defaultConverterManager.convert(TestEnum.class, "ENUMVALUE"));
     }
 
+    @Test
     public void testConvertColor()
     {
-        assertEquals(Color.WHITE, this.defaultConverterManager.convert(Color.class, "#ffffff"));
+        Assert.assertEquals(Color.WHITE, this.defaultConverterManager.convert(Color.class, "#ffffff"));
     }
 }
