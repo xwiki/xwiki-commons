@@ -22,27 +22,30 @@ package org.xwiki.properties.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.PropertyException;
 import org.xwiki.properties.PropertyMandatoryException;
 import org.xwiki.properties.internal.DefaultBeanDescriptorTest.BeanTest;
-import org.xwiki.test.AbstractXWikiComponentTestCase;
+import org.xwiki.test.AbstractComponentTestCase;
 
 /**
  * Validate {@link DefaultBeanManager}.
  * 
  * @version $Id$
  */
-public class DefaultPropertiesManagerTest extends AbstractXWikiComponentTestCase
+public class DefaultPropertiesManagerTest extends AbstractComponentTestCase
 {
-    BeanManager defaultPropertiesManager;
+    private BeanManager defaultPropertiesManager;
 
     @Override
-    public void setUp() throws Exception
+    protected void registerComponents() throws Exception
     {
         this.defaultPropertiesManager = getComponentManager().lookup(BeanManager.class);
     }
 
+    @Test
     public void testPopulate() throws PropertyException
     {
         BeanTest beanTest = new BeanTest();
@@ -58,25 +61,17 @@ public class DefaultPropertiesManagerTest extends AbstractXWikiComponentTestCase
 
         this.defaultPropertiesManager.populate(beanTest, values);
 
-        assertEquals("lowerpropvalue", beanTest.getLowerprop());
-        assertEquals("upperPropvalue", beanTest.getUpperProp());
-        assertEquals(42, beanTest.getProp2());
-        assertEquals(true, beanTest.getProp3());
-        assertEquals(null, beanTest.getHiddenProperty());
-        assertEquals("publicFieldvalue", beanTest.publicField);
+        Assert.assertEquals("lowerpropvalue", beanTest.getLowerprop());
+        Assert.assertEquals("upperPropvalue", beanTest.getUpperProp());
+        Assert.assertEquals(42, beanTest.getProp2());
+        Assert.assertEquals(true, beanTest.getProp3());
+        Assert.assertEquals(null, beanTest.getHiddenProperty());
+        Assert.assertEquals("publicFieldvalue", beanTest.publicField);
     }
 
+    @Test(expected = PropertyMandatoryException.class)
     public void testPopulateWhenMissingMandatoryProperty() throws PropertyException
     {
-        BeanTest beanTest = new BeanTest();
-
-        Map<String, String> values = new HashMap<String, String>();
-
-        try {
-            this.defaultPropertiesManager.populate(beanTest, values);
-            fail("Should have thrown a PropertyMandatoryException exception");
-        } catch (PropertyMandatoryException e) {
-            // expected
-        }
+        this.defaultPropertiesManager.populate(new BeanTest(), new HashMap<String, String>());
     }
 }
