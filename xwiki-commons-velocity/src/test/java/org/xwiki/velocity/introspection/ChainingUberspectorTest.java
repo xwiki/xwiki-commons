@@ -28,36 +28,44 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.util.introspection.SecureUberspector;
 import org.apache.velocity.util.introspection.UberspectImpl;
-import org.jmock.Mock;
-import org.jmock.core.stub.DefaultResultStub;
+import org.jmock.Expectations;
+import org.jmock.States;
+import org.junit.Assert;
+import org.junit.Test;
 import org.xwiki.component.logging.Logger;
-import org.xwiki.test.AbstractXWikiComponentTestCase;
+import org.xwiki.test.AbstractComponentTestCase;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.internal.DefaultVelocityEngine;
 
 /**
  * Unit tests for {@link ChainingUberspector}.
  */
-public class ChainingUberspectorTest extends AbstractXWikiComponentTestCase
+public class ChainingUberspectorTest extends AbstractComponentTestCase
 {
     private DefaultVelocityEngine engine;
 
-    private Mock mockLogger;
-    
-    protected void setUp() throws Exception
+    private Logger mockLogger;
+
+    private States loggingVerification  = getMockery().states("loggingVerification");
+
+    @Override
+    protected void registerComponents() throws Exception
     {
-        super.setUp();
         this.engine = (DefaultVelocityEngine) getComponentManager().lookup(VelocityEngine.class);
         
-        this.mockLogger = mock(Logger.class);
-        this.mockLogger.setDefaultStub(new DefaultResultStub());
-        this.engine.enableLogging((Logger) this.mockLogger.proxy());
+        this.mockLogger = getMockery().mock(Logger.class);
+        getMockery().checking(new Expectations() {{
+            ignoring(mockLogger); when(loggingVerification.isNot("on"));
+        }});
+
+        this.engine.enableLogging(this.mockLogger);
     }
 
     /*
      * Tests that the uberspectors in the chain are called, and without a real uberspector no
      * methods are found.
      */
+    @Test
     public void testEmptyChain() throws Exception
     {
         Properties prop = new Properties();
@@ -70,14 +78,15 @@ public class ChainingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
-        assertEquals("$bar", writer.toString());
-        assertEquals(1, TestingUberspector.methodCalls);
+        Assert.assertEquals("$bar", writer.toString());
+        Assert.assertEquals(1, TestingUberspector.methodCalls);
     }
 
     /*
      * Tests that using several uberspectors in the chain works, and methods are correctly found by
      * the last uberspector in the chain.
      */
+    @Test
     public void testBasicChaining() throws Exception
     {
         Properties prop = new Properties();
@@ -92,14 +101,15 @@ public class ChainingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
-        assertEquals("hello", writer.toString());
-        assertEquals(1, TestingUberspector.methodCalls);
-        assertEquals(0, TestingUberspector.getterCalls);
+        Assert.assertEquals("hello", writer.toString());
+        Assert.assertEquals(1, TestingUberspector.methodCalls);
+        Assert.assertEquals(0, TestingUberspector.getterCalls);
     }
 
     /*
      * Tests that invalid uberspectors classnames are ignored.
      */
+    @Test
     public void testInvalidUberspectorsAreIgnored() throws Exception
     {
         Properties prop = new Properties();
@@ -119,14 +129,15 @@ public class ChainingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
-        assertEquals("hello", writer.toString());
-        assertEquals(1, TestingUberspector.methodCalls);
-        assertEquals(0, InvalidUberspector.methodCalls);
+        Assert.assertEquals("hello", writer.toString());
+        Assert.assertEquals(1, TestingUberspector.methodCalls);
+        Assert.assertEquals(0, InvalidUberspector.methodCalls);
     }
 
     /*
      * Tests that a non-chainable entry in the chain does not forward calls.
      */
+    @Test
     public void testChainBreakingOnNonChainableEntry() throws Exception
     {
         Properties prop = new Properties();
@@ -140,13 +151,14 @@ public class ChainingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
-        assertEquals("hello", writer.toString());
-        assertEquals(0, TestingUberspector.methodCalls);
+        Assert.assertEquals("hello", writer.toString());
+        Assert.assertEquals(0, TestingUberspector.methodCalls);
     }
 
     /*
      * Checks that the default (non-secure) uberspector works and allows calling restricted methods.
      */
+    @Test
     public void testDefaultUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
@@ -159,12 +171,13 @@ public class ChainingUberspectorTest extends AbstractXWikiComponentTestCase
         engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')"
                 + "#set($bar = $foo.getClass().getConstructors())$bar"));
-        assertTrue(writer.toString().startsWith("[Ljava.lang.reflect.Constructor"));
+        Assert.assertTrue(writer.toString().startsWith("[Ljava.lang.reflect.Constructor"));
     }
 
     /*
      * Checks that the secure uberspector works and does not allow calling restricted methods.
      */
+    @Test
     public void testSecureUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
@@ -177,13 +190,14 @@ public class ChainingUberspectorTest extends AbstractXWikiComponentTestCase
         engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')"
                 + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
-        assertEquals("hello$bar", writer.toString());
+        Assert.assertEquals("hello$bar", writer.toString());
     }
 
     /*
      * Checks that when the chain property is not configured, by default the secure ubespector is
      * used.
      */
+    @Test
     public void testSecureUberspectorEnabledByDefault() throws Exception
     {
         Properties prop = new Properties();
@@ -195,13 +209,14 @@ public class ChainingUberspectorTest extends AbstractXWikiComponentTestCase
         engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')"
                 + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
-        assertEquals("hello$bar", writer.toString());
+        Assert.assertEquals("hello$bar", writer.toString());
     }
 
     /*
      * Checks that the deprecated check uberspector works.
      */
     @SuppressWarnings("deprecation")
+    @Test
     public void testDeprecatedUberspector() throws Exception
     {
         Properties prop = new Properties();
@@ -215,23 +230,24 @@ public class ChainingUberspectorTest extends AbstractXWikiComponentTestCase
             + DeprecatedCheckUberspector.class.getCanonicalName());
         TestingUberspector.methodCalls = 0;
         TestingUberspector.getterCalls = 0;
-        engine.initialize(prop);
+        this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
         VelocityContext context = new org.apache.velocity.VelocityContext();
         Date d = new Date();
         context.put("date", d);
 
         // Define expectations on the Logger
-        this.mockLogger.expects(once()).method("warn").with(eq(
-            "Deprecated usage of method [java.util.Date.getYear] in mytemplate@1,19"));
-        this.mockLogger.expects(once()).method("warn").with(eq(
-            "Deprecated usage of getter [java.util.Date.getMonth] in mytemplate@1,40"));
+        this.loggingVerification.become("on");
+        getMockery().checking(new Expectations() {{
+            oneOf(mockLogger).warn("Deprecated usage of method [java.util.Date.getYear] in mytemplate@1,19");
+            oneOf(mockLogger).warn("Deprecated usage of getter [java.util.Date.getMonth] in mytemplate@1,40");
+        }});
 
-        engine.evaluate(context, writer, "mytemplate",
+        this.engine.evaluate(context, writer, "mytemplate",
             new StringReader("#set($foo = $date.getYear())$foo $date.month"));
 
-        assertEquals(d.getYear() + " " + d.getMonth(), writer.toString());
-        assertEquals(1, TestingUberspector.methodCalls);
-        assertEquals(1, TestingUberspector.getterCalls);
+        Assert.assertEquals(d.getYear() + " " + d.getMonth(), writer.toString());
+        Assert.assertEquals(1, TestingUberspector.methodCalls);
+        Assert.assertEquals(1, TestingUberspector.getterCalls);
     }
 }
