@@ -16,14 +16,15 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.xml.internal.html;
 
 import java.io.StringReader;
 import java.util.Collections;
 
-import org.xwiki.test.AbstractXWikiComponentTestCase;
+import org.junit.Assert;
+import org.junit.Test;
+import org.xwiki.test.AbstractComponentTestCase;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLUtils;
@@ -35,7 +36,7 @@ import org.xwiki.xml.html.filter.HTMLFilter;
  * @version $Id$
  * @since 1.6M1
  */
-public class DefaultHTMLCleanerTest extends AbstractXWikiComponentTestCase
+public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
 {
     public static final String HEADER =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
@@ -47,12 +48,13 @@ public class DefaultHTMLCleanerTest extends AbstractXWikiComponentTestCase
 
     private HTMLCleaner cleaner;
 
-    protected void setUp() throws Exception
+    @Override
+    protected void registerComponents() throws Exception
     {
-        super.setUp();
-        cleaner = getComponentManager().lookup(HTMLCleaner.class, "default");
+        this.cleaner = getComponentManager().lookup(HTMLCleaner.class, "default");
     }
 
+    @Test
     public void testElementExpansion()
     {
         assertHTML("<p><textarea></textarea></p>", "<textarea/>");
@@ -62,6 +64,7 @@ public class DefaultHTMLCleanerTest extends AbstractXWikiComponentTestCase
         assertHTML("<hr/>", "<hr>");
     }
 
+    @Test
     public void testSpecialCharacters()
     {
         // TODO: We still have a problem I think in that if there are characters such as "&" or quote in the source
@@ -75,13 +78,15 @@ public class DefaultHTMLCleanerTest extends AbstractXWikiComponentTestCase
         
         // Verify that double quotes are escaped in attribute values
         assertHTML("<p value=\"script:&quot;&quot;\"></p>", "<p value='script:\"\"'");
-}
+    }
 
+    @Test
     public void testCloseUnbalancedTags()
     {
         assertHTML("<hr/><p>hello</p>", "<hr><p>hello");
     }
 
+    @Test
     public void testConversionsFromHTML()
     {
         assertHTML("<p>this <strong>is</strong> bold</p>", "this <b>is</b> bold");
@@ -96,6 +101,7 @@ public class DefaultHTMLCleanerTest extends AbstractXWikiComponentTestCase
         "<font size=\"+3\">This is some text!</font>");
     }
 
+    @Test
     public void testConvertImplicitParagraphs()
     {
         assertHTML("<p>word1</p><p>word2</p><p>word3</p><hr/><p>word4</p>", "word1<p>word2</p>word3<hr />word4");
@@ -115,6 +121,7 @@ public class DefaultHTMLCleanerTest extends AbstractXWikiComponentTestCase
             "<!-- comment --><span>hello</span><!-- comment --><p>world</p>");
     }
 
+    @Test
     public void testCleanNonXHTMLLists()
     {
         assertHTML("<ul><li>item1<ul><li>item2</li></ul></li></ul>", "<ul><li>item1</li><ul><li>item2</li></ul></ul>");
@@ -141,6 +148,7 @@ public class DefaultHTMLCleanerTest extends AbstractXWikiComponentTestCase
     /**
      * Verify that scripts are not cleaned and that we can have a CDATA section inside. Also verify CADATA behaviors.
      */
+    @Test
     public void testScriptAndCData()
     {
         assertHTML("<script type=\"text/javascript\">//<![CDATA[\n//\nalert(\"Hello World\")\n// \n//]]></script>", 
@@ -173,6 +181,7 @@ public class DefaultHTMLCleanerTest extends AbstractXWikiComponentTestCase
     /**
      * Verify that we can control what filters are used for cleaning.
      */
+    @Test
     public void testExplicitFilterList()
     {
         HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
@@ -180,11 +189,11 @@ public class DefaultHTMLCleanerTest extends AbstractXWikiComponentTestCase
         String result = HTMLUtils.toString(this.cleaner.clean(new StringReader("something"), configuration));
         // Note that if the default Body filter had been executed the result would have been:
         // <p>something</p>.
-        assertEquals(HEADER_FULL + "something" + FOOTER, result);
+        Assert.assertEquals(HEADER_FULL + "something" + FOOTER, result);
     }
 
     private void assertHTML(String expected, String actual)
     {
-        assertEquals(HEADER_FULL + expected + FOOTER, HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
+        Assert.assertEquals(HEADER_FULL + expected + FOOTER, HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
     }
 }
