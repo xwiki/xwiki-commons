@@ -35,14 +35,14 @@ import org.xwiki.test.AbstractComponentTestCase;
  * 
  * @version $Id$
  */
-public class DefaultPropertiesManagerTest extends AbstractComponentTestCase
+public class DefaultBeanManagerTest extends AbstractComponentTestCase
 {
-    private BeanManager defaultPropertiesManager;
+    private BeanManager defaultBeanManager;
 
     @Override
     protected void registerComponents() throws Exception
     {
-        this.defaultPropertiesManager = getComponentManager().lookup(BeanManager.class);
+        this.defaultBeanManager = getComponentManager().lookup(BeanManager.class);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class DefaultPropertiesManagerTest extends AbstractComponentTestCase
         values.put("hiddenProperty", "hiddenPropertyvalue");
         values.put("publicField", "publicFieldvalue");
 
-        this.defaultPropertiesManager.populate(beanTest, values);
+        this.defaultBeanManager.populate(beanTest, values);
 
         Assert.assertEquals("lowerpropvalue", beanTest.getLowerprop());
         Assert.assertEquals("upperPropvalue", beanTest.getUpperProp());
@@ -72,6 +72,6 @@ public class DefaultPropertiesManagerTest extends AbstractComponentTestCase
     @Test(expected = PropertyMandatoryException.class)
     public void testPopulateWhenMissingMandatoryProperty() throws PropertyException
     {
-        this.defaultPropertiesManager.populate(new BeanTest(), new HashMap<String, String>());
+        this.defaultBeanManager.populate(new BeanTest(), new HashMap<String, String>());
     }
 }
