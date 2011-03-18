@@ -16,7 +16,6 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.velocity.introspection;
 
@@ -28,27 +27,30 @@ import java.util.Properties;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.util.introspection.SecureUberspector;
 import org.apache.velocity.util.introspection.UberspectImpl;
-import org.xwiki.test.AbstractXWikiComponentTestCase;
+import org.junit.Assert;
+import org.junit.Test;
+import org.xwiki.test.AbstractComponentTestCase;
 import org.xwiki.velocity.VelocityEngine;
-
 
 /**
  * Unit tests for {@link LinkingUberspector}.
+ *
+ * @version $Id$
  */
-public class LinkingUberspectorTest extends AbstractXWikiComponentTestCase
+public class LinkingUberspectorTest extends AbstractComponentTestCase
 {
     private VelocityEngine engine;
 
     @Override
-    protected void setUp() throws Exception
+    protected void registerComponents() throws Exception
     {
-        super.setUp();
-        this.engine = (VelocityEngine) getComponentManager().lookup(VelocityEngine.class);
+        this.engine = getComponentManager().lookup(VelocityEngine.class);
     }
 
     /*
      * Tests that the uberspectors in the list are called, and without a real uberspector no methods are found.
      */
+    @Test
     public void testEmptyArray() throws Exception
     {
         Properties prop = new Properties();
@@ -59,14 +61,15 @@ public class LinkingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
             "#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
-        assertEquals("$bar", writer.toString());
-        assertEquals(1, TestingUberspector.methodCalls);
+        Assert.assertEquals("$bar", writer.toString());
+        Assert.assertEquals(1, TestingUberspector.methodCalls);
     }
 
     /*
      * Tests that using several uberspectors in the array works, methods are correctly found by a valid uberspector in
      * the chain, and after a method is found no further calls are performed.
      */
+    @Test
     public void testBasicArray() throws Exception
     {
         Properties prop = new Properties();
@@ -80,14 +83,15 @@ public class LinkingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
             "#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
-        assertEquals("hello", writer.toString());
-        assertEquals(2, TestingUberspector.methodCalls);
-        assertEquals(0, TestingUberspector.getterCalls);
+        Assert.assertEquals("hello", writer.toString());
+        Assert.assertEquals(2, TestingUberspector.methodCalls);
+        Assert.assertEquals(0, TestingUberspector.getterCalls);
     }
 
     /*
      * Tests that invalid uberspectors classnames are ignored.
      */
+    @Test
     public void testInvalidUberspectorsAreIgnored() throws Exception
     {
         Properties prop = new Properties();
@@ -101,14 +105,15 @@ public class LinkingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
             "#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
-        assertEquals("hello", writer.toString());
-        assertEquals(1, TestingUberspector.methodCalls);
-        assertEquals(0, InvalidUberspector.methodCalls);
+        Assert.assertEquals("hello", writer.toString());
+        Assert.assertEquals(1, TestingUberspector.methodCalls);
+        Assert.assertEquals(0, InvalidUberspector.methodCalls);
     }
 
     /*
      * Checks that the default (non-secure) uberspector works and allows calling restricted methods.
      */
+    @Test
     public void testDefaultUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
@@ -118,12 +123,13 @@ public class LinkingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
             "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$bar"));
-        assertTrue(writer.toString().startsWith("[Ljava.lang.reflect.Constructor"));
+        Assert.assertTrue(writer.toString().startsWith("[Ljava.lang.reflect.Constructor"));
     }
 
     /*
      * Checks that the secure uberspector works and does not allow calling restricted methods.
      */
+    @Test
     public void testSecureUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
@@ -133,12 +139,13 @@ public class LinkingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
             "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
-        assertEquals("hello$bar", writer.toString());
+        Assert.assertEquals("hello$bar", writer.toString());
     }
 
     /*
      * Checks that when the array property is not configured, by default the secure ubespector is used.
      */
+    @Test
     public void testSecureUberspectorEnabledByDefault() throws Exception
     {
         Properties prop = new Properties();
@@ -148,6 +155,6 @@ public class LinkingUberspectorTest extends AbstractXWikiComponentTestCase
         StringWriter writer = new StringWriter();
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
             "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
-        assertEquals("hello$bar", writer.toString());
+        Assert.assertEquals("hello$bar", writer.toString());
     }
 }
