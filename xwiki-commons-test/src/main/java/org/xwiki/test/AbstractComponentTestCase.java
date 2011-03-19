@@ -27,8 +27,7 @@ import org.xwiki.component.embed.EmbeddableComponentManager;
 
 /**
  * Tests which needs to have XWiki Components set up should extend this class which makes the Component Manager
- * available. Use this class for JUnit 4.x tests. For JUnit 3.x tests use {@link AbstractXWikiComponentTestCase}
- * instead.
+ * available. Use this class for JUnit 4.x tests.
  *
  * XWiki 2.2M1 also introduced {@link org.xwiki.test.AbstractMockingComponentTestCase} which provides automatic
  * mocking for injected component dependencies and which is thus better when writing pure unit tests, isolated from
