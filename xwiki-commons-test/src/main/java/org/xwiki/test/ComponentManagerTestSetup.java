@@ -34,11 +34,11 @@ import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.manager.ComponentManager;
 
 /**
- * JUnit Test Setup that initializes the Component Manager. Test suite that want to initialize the Component manager
- * only once should use this class instead of {@link AbstractXWikiComponentTestCase}.
+ * JUnit Test Setup that initializes the Component Manager.
  * 
  * @version $Id$
  * @since 2.0M1
+ * @deprecated use JUnit4's @RunWith instead of the older JUnit3 Test Suite/Test Setup notion
  */
 public class ComponentManagerTestSetup extends TestSetup
 {
