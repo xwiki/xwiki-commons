@@ -70,10 +70,6 @@
       <version>1.2.0</version>
     </dependency>
     <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-default</artifactId>
       <version>${project.version}</version>
@@ -87,16 +83,6 @@
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-configuration-api</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>cpsuite</groupId>
-      <artifactId>cpsuite</artifactId>
-      <version>1.2.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.ant</groupId>
-      <artifactId>ant</artifactId>
-      <version>1.7.0</version>
     </dependency>
 
     <!-- Make sure we provide a default implementation of slf4j for any test indirectly use it -->
@@ -119,11 +105,7 @@
             org/xwiki/test/AbstractMockingTestCase.java,
             org/xwiki/test/annotation/MockingRequirement.java,
             org/xwiki/test/MockConfigurationSource.java,
-            org/xwiki/test/XWikiComponentInitializer.java,
-            org/xwiki/test/integration/AntBuildListener.java,
-            org/xwiki/test/integration/XWikiExecutor.java,
-            org/xwiki/test/integration/XWikiTestSetup.java,
-            org/xwiki/test/integration/XWikiExecutorSuite.java
+            org/xwiki/test/XWikiComponentInitializer.java
           </excludes>
         </configuration>
       </plugin>
