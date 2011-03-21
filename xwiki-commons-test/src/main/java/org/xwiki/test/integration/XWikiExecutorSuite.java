@@ -91,7 +91,7 @@ public class XWikiExecutorSuite extends ClasspathSuite
     {
         // Construct as many executors as specified in the Executors annotation or 1 if annotation is not present.
         int executorNb = 1;
-        Executors executorsAnnotation = getClass().getAnnotation(Executors.class);
+        Executors executorsAnnotation = getTestClass().getJavaClass().getAnnotation(Executors.class);
         if (executorsAnnotation != null) {
             executorNb = executorsAnnotation.value();
         }
@@ -102,7 +102,7 @@ public class XWikiExecutorSuite extends ClasspathSuite
 
         // Callback to setup executors in the suite class.
         try {
-            for (Method method : getClass().getMethods()) {
+            for (Method method : getTestClass().getJavaClass().getMethods()) {
                 Initialized initializedAnnotation = method.getAnnotation(Initialized.class);
                 if (initializedAnnotation != null) {
                     // Call it!
