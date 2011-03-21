@@ -19,6 +19,11 @@
  */
 package org.xwiki.test.integration;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +46,23 @@ public class XWikiExecutorSuite extends ClasspathSuite
 {
     public static final String PATTERN = ".*" + System.getProperty("pattern", "");
 
+    private List<XWikiExecutor> executors = new ArrayList<XWikiExecutor>();
+
     public XWikiExecutorSuite(Class<?> klass, RunnerBuilder builder) throws InitializationError
     {
         super(klass, builder);
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface Executors {
+        public int value() default 1;
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public static @interface Initialized
+    {
     }
 
     /**
@@ -70,10 +89,34 @@ public class XWikiExecutorSuite extends ClasspathSuite
     @Override
     public void run(RunNotifier notifier)
     {
-        XWikiExecutor executor = new XWikiExecutor(0);
+        // Construct as many executors as specified in the Executors annotation or 1 if annotation is not present.
+        int executorNb = 1;
+        Executors executorsAnnotation = getClass().getAnnotation(Executors.class);
+        if (executorsAnnotation != null) {
+            executorNb = executorsAnnotation.value();
+        }
+
+        for (int i = 0; i < executorNb; i++) {
+            this.executors.add(new XWikiExecutor(i));
+        }
+
+        // Callback to setup executors in the suite class.
+        try {
+            for (Method method : getClass().getMethods()) {
+                Initialized initializedAnnotation = method.getAnnotation(Initialized.class);
+                if (initializedAnnotation != null) {
+                    // Call it!
+                    method.invoke(this, this.executors);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize XWiki Executors", e);
+        }
 
         try {
-            executor.start();
+            for (XWikiExecutor executor : this.executors) {
+                executor.start();
+            }
         } catch (Exception e) {
             throw new RuntimeException("Failed to start XWiki", e);
         }
@@ -82,7 +125,9 @@ public class XWikiExecutorSuite extends ClasspathSuite
             super.run(notifier);
         } finally {
             try {
-                executor.stop();
+                for (XWikiExecutor executor : this.executors) {
+                    executor.stop();
+                }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to stop XWiki", e);
             }
