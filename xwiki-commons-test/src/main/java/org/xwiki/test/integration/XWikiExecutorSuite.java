@@ -106,7 +106,8 @@ public class XWikiExecutorSuite extends ClasspathSuite
                 Initialized initializedAnnotation = method.getAnnotation(Initialized.class);
                 if (initializedAnnotation != null) {
                     // Call it!
-                    method.invoke(this, this.executors);
+                    Object instance = getTestClass().getJavaClass().newInstance();
+                    method.invoke(instance, this.executors);
                 }
             }
         } catch (Exception e) {
