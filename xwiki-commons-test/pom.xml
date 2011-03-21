@@ -89,6 +89,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>cpsuite</groupId>
+      <artifactId>cpsuite</artifactId>
+      <version>1.2.5</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.ant</groupId>
       <artifactId>ant</artifactId>
       <version>1.7.0</version>
@@ -112,14 +117,13 @@
             org/xwiki/test/AbstractComponentTestCase.java,
             org/xwiki/test/AbstractMockingComponentTestCase.java,
             org/xwiki/test/AbstractMockingTestCase.java,
-            org/xwiki/test/AbstractXWikiComponentTestCase.java,
             org/xwiki/test/annotation/MockingRequirement.java,
-            org/xwiki/test/AntBuildListener.java,
-            org/xwiki/test/ComponentManagerTestSetup.java,
             org/xwiki/test/MockConfigurationSource.java,
             org/xwiki/test/XWikiComponentInitializer.java,
-            org/xwiki/test/XWikiExecutor.java,
-            org/xwiki/test/XWikiTestSetup.java
+            org/xwiki/test/integration/AntBuildListener.java,
+            org/xwiki/test/integration/XWikiExecutor.java,
+            org/xwiki/test/integration/XWikiTestSetup.java,
+            org/xwiki/test/integration/XWikiExecutorSuite.java
           </excludes>
         </configuration>
       </plugin>

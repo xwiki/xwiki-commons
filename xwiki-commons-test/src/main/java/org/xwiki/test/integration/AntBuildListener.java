@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-package org.xwiki.test;
+package org.xwiki.test.integration;
 
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
@@ -26,7 +26,7 @@ import org.apache.tools.ant.Project;
 
 /**
  * Allow logging Ant messages to the console. This is used by the {@link
- * org.xwiki.test.XWikiTestSetup} class which uses Ant tasks to start/stop XWiki.
+ * org.xwiki.test.integration.XWikiTestSetup} class which uses Ant tasks to start/stop XWiki.
  */
 public class AntBuildListener implements BuildListener
 {
