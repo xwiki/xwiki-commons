@@ -36,7 +36,7 @@
     <!-- The version to the license tool module must always be to a released version as otherwise there's a dependency
          issue since every module, including tool modules depend on this top level POM -->
     <commons.tool.license.version>1.2</commons.tool.license.version>
-    <commons.tool.verification.version>1.16</commons.tool.verification.version>
+    <commons.tool.verification.version>1.17-SNAPSHOT</commons.tool.verification.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <url>http://xwiki.org</url>
