@@ -28,7 +28,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Root POM</name>
   <packaging>pom</packaging>
-  <version>41-SNAPSHOT</version>
+  <version>41</version>
   <properties>
     <!-- By default Checkstyle and Clirr are on by default -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -59,9 +59,9 @@
     <url>http://xwiki.org/</url>
   </organization>
   <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/trunk</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/trunk</url>
+    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/tags/xwiki-commons-41</connection>
+    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/tags/xwiki-commons-41</developerConnection>
+    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/tags/xwiki-commons-41</url>
   </scm>
   <mailingLists>
     <mailingList>
