@@ -34,11 +34,13 @@ import java.lang.annotation.Target;
  * 
  * @version $Id$
  * @since 1.8.1
+ * @deprecated starting with 3.1M1 use the JSR330 Inject and Named annotations instead
  */
 @Documented
 @Retention(RUNTIME)
 @Target(FIELD)
 @Inherited
+@Deprecated
 public @interface Requirement
 {
     /**

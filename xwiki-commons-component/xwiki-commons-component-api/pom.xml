@@ -33,6 +33,15 @@
   <name>XWiki Commons - Component - API</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Component - API</description>
+  <dependencies>
+    <!-- We add this dependency here so that users of the Component API just need to depend on this artifact and
+         don't have to explicitely add a dependency on javax.inject:java.inject. -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>

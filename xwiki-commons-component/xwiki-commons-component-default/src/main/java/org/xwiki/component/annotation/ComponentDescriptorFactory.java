@@ -28,6 +28,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
@@ -123,7 +126,57 @@ public class ComponentDescriptorFactory
      */
     private ComponentDependency createComponentDependency(Field field)
     {
+        // We support both the XWiki @Requirement annotation and the JSR330 @Inject one.
+        ComponentDependency dependency = createComponentDependencyFromInjectAnnotation(field);
+        if (dependency == null) {
+            dependency = createComponentDependencyFromRequirementAnnotation(field);
+        }
+
+        return dependency;
+    }
+
+    /**
+     * @param field the field for which to extract a Component Dependency if it has an {@link Inject} annotation
+     *        or null otherwise
+     * @return the Component Dependency instance created from the passed field
+     */
+    private ComponentDependency createComponentDependencyFromInjectAnnotation(Field field)
+    {
         DefaultComponentDependency dependency = null;
+        Inject inject = field.getAnnotation(Inject.class);
+        if (inject != null) {
+            dependency = new DefaultComponentDependency();
+            dependency.setMappingType(field.getType());
+            dependency.setName(field.getName());
+
+            // Handle case of list or map
+            Class< ? > role = getFieldRole(field);
+
+            if (role == null) {
+                return null;
+            }
+
+            dependency.setRole(role);
+
+            // Look for a Qualifier or Named annotation
+            Named named = field.getAnnotation(Named.class);
+            if (named != null) {
+                dependency.setRoleHint(named.value());
+            }
+        }
+
+        return dependency;
+    }
+
+    /**
+     * @param field the field for which to extract a Component Dependency if it has a {@link Requirement} annotation
+     *        or null otherwise
+     * @return the Component Dependency instance created from the passed field
+     */
+    private ComponentDependency createComponentDependencyFromRequirementAnnotation(Field field)
+    {
+        DefaultComponentDependency dependency = null;
+
         Requirement requirement = field.getAnnotation(Requirement.class);
         if (requirement != null) {
             dependency = new DefaultComponentDependency();
@@ -153,7 +206,18 @@ public class ComponentDescriptorFactory
     }
 
     /**
-     * Extract component role frol the field to inject.
+     * Extract component role from the field to inject.
+     *
+     * @param field the field to inject
+     * @return the role of the field to inject
+     */
+    private Class< ? > getFieldRole(Field field)
+    {
+        return getFieldRole(field, null);
+    }
+
+    /**
+     * Extract component role from the field to inject.
      * 
      * @param field the field to inject
      * @param requirement the Requirement attribute
@@ -161,13 +225,13 @@ public class ComponentDescriptorFactory
      */
     private Class< ? > getFieldRole(Field field, Requirement requirement)
     {
-        Class< ? > role = null;
+        Class< ? > role;
 
         // Handle case of list or map
         if (isRequirementListType(field.getType())) {
             // Only add the field to the descriptor if the user has specified a role class different than an
             // Object since we use Object as the default value when no role is specified.
-            if (!requirement.role().getName().equals(Object.class.getName())) {
+            if (requirement != null && !requirement.role().getName().equals(Object.class.getName())) {
                 role = requirement.role();
             } else {
                 role = getGenericRole(field);
