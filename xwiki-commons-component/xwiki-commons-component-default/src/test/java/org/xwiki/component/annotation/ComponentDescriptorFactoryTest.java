@@ -145,6 +145,12 @@ public class ComponentDescriptorFactoryTest
     {
     }
 
+    @Component
+    @Named("special")
+    public class SpecialImpl implements Role
+    {
+    }
+
     @Test
     public void testCreateComponentDescriptor()
     {
@@ -182,6 +188,17 @@ public class ComponentDescriptorFactoryTest
 
         Assert.assertEquals(1, descriptors.size());
         Assert.assertEquals(ComponentInstantiationStrategy.SINGLETON, descriptors.get(0).getInstantiationStrategy());
+    }
+
+    @Test
+    public void testNamedAnnotationForComponent()
+    {
+        ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
+        List<ComponentDescriptor> descriptors =
+            factory.createComponentDescriptors(SpecialImpl.class, Role.class);
+
+        Assert.assertEquals(1, descriptors.size());
+        Assert.assertEquals("special", descriptors.get(0).getRoleHint());
     }
 
     private void assertComponentDescriptor(Class< ? > componentClass, String fieldRoleName)

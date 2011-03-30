@@ -61,17 +61,23 @@ public class ComponentDescriptorFactory
     {
         List<ComponentDescriptor> descriptors = new ArrayList<ComponentDescriptor>();
 
-        // If the Component annotation has several hints specified ignore the default hint value and for each specified
-        // hint create a Component Descriptor
+        // If there's a @Named annotation, use it and ignore hints specified in the @Component annotation.
         String[] hints;
-        Component component = componentClass.getAnnotation(Component.class);
-        if (component != null && component.hints().length > 0) {
-            hints = component.hints();
+        Named named = componentClass.getAnnotation(Named.class);
+        if (named != null) {
+            hints = new String[] {named.value()};
         } else {
-            if (component != null && component.value().trim().length() > 0) {
-                hints = new String[] {component.value().trim()};
+            // If the Component annotation has several hints specified ignore the default hint value and for each
+            // specified hint create a Component Descriptor
+            Component component = componentClass.getAnnotation(Component.class);
+            if (component != null && component.hints().length > 0) {
+                hints = component.hints();
             } else {
-                hints = new String[] {"default"};
+                if (component != null && component.value().trim().length() > 0) {
+                    hints = new String[] {component.value().trim()};
+                } else {
+                    hints = new String[] {"default"};
+                }
             }
         }
 

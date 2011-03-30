@@ -44,6 +44,7 @@ public @interface Component
     /**
      * The hint value. Can be any text value. It's used to differentiate one component implementation
      * from another one.
+     * @deprecated since 3.1M1 use the @Named annotation instead
      */
     String value() default "";
 
