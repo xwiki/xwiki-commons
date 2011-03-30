@@ -40,7 +40,7 @@ import com.google.inject.name.Names;
  * @version $Id$
  * @since 3.M1
  */
-public class GuiceTest
+public class GuiceCompatibilityTest
 {
     @ComponentRole
     public interface FieldRole
