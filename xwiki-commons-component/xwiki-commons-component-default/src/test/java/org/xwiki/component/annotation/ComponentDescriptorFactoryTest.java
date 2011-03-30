@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -139,6 +140,12 @@ public class ComponentDescriptorFactoryTest
     {
     }
 
+    @Component
+    @Singleton
+    public class SingletonImpl implements Role
+    {
+    }
+
     @Test
     public void testCreateComponentDescriptor()
     {
@@ -165,6 +172,17 @@ public class ComponentDescriptorFactoryTest
         Assert.assertEquals(2, descriptors.size());
         Assert.assertEquals("hint1", descriptors.get(0).getRoleHint());
         Assert.assertEquals("hint2", descriptors.get(1).getRoleHint());
+    }
+
+    @Test
+    public void testSingletonAnnotationForComponent()
+    {
+        ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
+        List<ComponentDescriptor> descriptors =
+            factory.createComponentDescriptors(SingletonImpl.class, Role.class);
+
+        Assert.assertEquals(1, descriptors.size());
+        Assert.assertEquals(ComponentInstantiationStrategy.SINGLETON, descriptors.get(0).getInstantiationStrategy());
     }
 
     private void assertComponentDescriptor(Class< ? > componentClass, String fieldRoleName)

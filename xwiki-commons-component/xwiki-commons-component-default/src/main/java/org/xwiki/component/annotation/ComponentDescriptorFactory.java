@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -97,14 +98,7 @@ public class ComponentDescriptorFactory
         descriptor.setRole(componentRoleClass);
         descriptor.setImplementation(componentClass);
         descriptor.setRoleHint(hint);
-
-        // Set the instantiation strategy
-        InstantiationStrategy instantiationStrategy = componentClass.getAnnotation(InstantiationStrategy.class);
-        if (instantiationStrategy != null) {
-            descriptor.setInstantiationStrategy(instantiationStrategy.value());
-        } else {
-            descriptor.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
-        }
+        descriptor.setInstantiationStrategy(createComponentInstantiationStrategy(componentClass));
 
         // Set the requirements.
         // Note: that we need to find all fields since we can have some inherited fields which are annotated in a
@@ -118,6 +112,33 @@ public class ComponentDescriptorFactory
         }
 
         return descriptor;
+    }
+
+    /**
+     * @param componentClass the component class from which to extract the component instantiation strategy
+     * @return the component instantiation strategy to use
+     */
+    private ComponentInstantiationStrategy createComponentInstantiationStrategy(Class< ? > componentClass)
+    {
+        ComponentInstantiationStrategy strategy;
+
+        // Support both InstantiationStrategy and JSR 330's Singleton annotations.
+        Singleton singleton = componentClass.getAnnotation(Singleton.class);
+        if (singleton != null) {
+            strategy = ComponentInstantiationStrategy.SINGLETON;
+        } else {
+            InstantiationStrategy instantiationStrategy = componentClass.getAnnotation(InstantiationStrategy.class);
+            if (instantiationStrategy != null) {
+                strategy = instantiationStrategy.value();
+            } else {
+                // TODO: In order to be JSR330 compliant we need to change this behavior and consider components are
+                // per lookup when no annotation is specified. Before we can do this we need to modify the full xwiki
+                // code base and possibly introduce a configuration option. To be discussed.
+                strategy = ComponentInstantiationStrategy.SINGLETON;
+            }
+        }
+
+        return strategy;
     }
 
     /**
