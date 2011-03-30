@@ -48,6 +48,14 @@
       <artifactId>xwiki-commons-component-observation</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Used to verify that XWiki Components using JSR330 annotations can be used with Guice. This is to prove that
+         we're kind of spec-compliant (even if not fully implementing the spec). -->
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>3.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
