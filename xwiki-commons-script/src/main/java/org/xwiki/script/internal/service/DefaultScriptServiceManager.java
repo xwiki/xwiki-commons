@@ -19,8 +19,10 @@
  */
 package org.xwiki.script.internal.service;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;
@@ -34,6 +36,7 @@ import org.xwiki.script.service.ScriptServiceNotFoundException;
  * @since 2.3M1
  */
 @Component
+@Singleton
 public class DefaultScriptServiceManager implements ScriptServiceManager
 {
     /**
@@ -41,7 +44,7 @@ public class DefaultScriptServiceManager implements ScriptServiceManager
      * can be added on the fly in the classloader and they'll be found (after they've been registered against the
      * component manager obviously). 
      */
-    @Requirement
+    @Inject
     private ComponentManager componentManager;
 
     /**

@@ -20,10 +20,12 @@
 package org.xwiki.script.internal.service;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.script.ScriptContextInitializer;
 import org.xwiki.script.service.ScriptServiceManager;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.script.ScriptContext;
 
 /**
@@ -32,13 +34,15 @@ import javax.script.ScriptContext;
  * @version $Id$
  * @since 2.3M1
  */
-@Component("services")
+@Component
+@Named("services")
+@Singleton
 public class ServicesScriptContextInitializer implements ScriptContextInitializer
 {
     /**
      * The Script Service Manager to bind in the Script Context.
      */
-    @Requirement
+    @Inject
     private ScriptServiceManager scriptServiceManager;
 
     /**

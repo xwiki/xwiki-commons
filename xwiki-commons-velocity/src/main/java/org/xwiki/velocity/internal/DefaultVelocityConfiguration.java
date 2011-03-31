@@ -21,6 +21,9 @@ package org.xwiki.velocity.internal;
 
 import java.util.Properties;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.velocity.tools.generic.ComparisonDateTool;
 import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.tools.generic.MathTool;
@@ -28,7 +31,6 @@ import org.apache.velocity.tools.generic.NumberTool;
 import org.apache.velocity.tools.generic.SortTool;
 import org.apache.velocity.util.introspection.SecureUberspector;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
@@ -45,6 +47,7 @@ import org.xwiki.velocity.tools.RegexTool;
  * @since 2.0M1
  */
 @Component
+@Singleton
 public class DefaultVelocityConfiguration implements Initializable, VelocityConfiguration
 {
     /**
@@ -55,7 +58,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
     /**
      * Defines from where to read the rendering configuration data.
      */
-    @Requirement
+    @Inject
     private ConfigurationSource configuration;
 
     /**

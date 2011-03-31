@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.inject.Inject;
+
 import org.apache.velocity.context.Context;
 import org.apache.velocity.context.InternalContextAdapterImpl;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -35,7 +37,6 @@ import org.apache.velocity.runtime.log.LogChute;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.component.manager.ComponentManager;
@@ -58,13 +59,13 @@ public class DefaultVelocityEngine extends AbstractLogEnabled implements Velocit
      * Used to set it as a Velocity Application Attribute so that Velocity extensions done by XWiki can use it to
      * lookup other components.
      */
-    @Requirement
+    @Inject
     private ComponentManager componentManager;
 
     /**
      * Velocity configuration to get the list of configured Velocity properties.
      */
-    @Requirement
+    @Inject
     private VelocityConfiguration velocityConfiguration;
 
     /**

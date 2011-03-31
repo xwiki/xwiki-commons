@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidationException;
@@ -31,7 +33,6 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.BeanManager;
@@ -54,6 +55,7 @@ import org.xwiki.properties.RawProperties;
  * @since 2.0M2
  */
 @Component
+@Singleton
 public class DefaultBeanManager extends AbstractLogEnabled implements BeanManager
 {
     /**
@@ -65,7 +67,7 @@ public class DefaultBeanManager extends AbstractLogEnabled implements BeanManage
     /**
      * The {@link ConverterManager} component.
      */
-    @Requirement
+    @Inject
     private ConverterManager converterManager;
 
     /**

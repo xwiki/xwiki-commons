@@ -16,17 +16,18 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.velocity.internal;
 
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -43,19 +44,20 @@ import org.xwiki.velocity.XWikiVelocityException;
  * @version $Id$
  */
 @Component
+@Singleton
 public class DefaultVelocityContextFactory extends AbstractLogEnabled implements VelocityContextFactory, Initializable
 {
     /**
      * The component manager we used to find all components implementing the
      * {@link org.xwiki.velocity.VelocityContextInitializer} role.
      */
-    @Requirement
+    @Inject
     private ComponentManager componentManager;
 
     /**
      * Velocity configuration to get the list of configured Velocity tools.
      */
-    @Requirement
+    @Inject
     private VelocityConfiguration velocityConfiguration;
 
     /**

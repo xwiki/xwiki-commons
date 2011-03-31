@@ -16,7 +16,6 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.xml.internal.html;
 
@@ -24,6 +23,9 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -36,7 +38,7 @@ import org.htmlcleaner.TagTransformation;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
-import org.xwiki.component.annotation.Requirement;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.xml.html.HTMLCleaner;
@@ -51,6 +53,8 @@ import org.xwiki.xml.html.filter.HTMLFilter;
  * @version $Id$
  * @since 1.6M1
  */
+@Component
+@Singleton
 public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
 {
     /**
@@ -61,19 +65,22 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     /**
      * {@link HTMLFilter} for filtering html lists.
      */
-    @Requirement("list")
+    @Inject
+    @Named("list")
     private HTMLFilter listFilter;
 
     /**
      * {@link HTMLFilter} for filtering HTML font elements.
      */
-    @Requirement("font")
+    @Inject
+    @Named("font")
     private HTMLFilter fontFilter;
 
     /**
      * {@link HTMLFilter} for wrapping invalid body elements with paragraphs.
      */
-    @Requirement("body")
+    @Inject
+    @Named("body")
     private HTMLFilter bodyFilter;
 
     /**

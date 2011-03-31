@@ -16,24 +16,26 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.context.internal;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextInitializer;
 import org.xwiki.context.ExecutionContextManager;
 
 @Component
+@Singleton
 public class DefaultExecutionContextManager implements ExecutionContextManager
 {
-    @Requirement
+    @Inject
     private List<ExecutionContextInitializer> initializers = new ArrayList<ExecutionContextInitializer>();
     
     public ExecutionContext clone(ExecutionContext context) throws ExecutionContextException

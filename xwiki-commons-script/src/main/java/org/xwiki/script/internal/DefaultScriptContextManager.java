@@ -21,10 +21,11 @@ package org.xwiki.script.internal;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.script.ScriptContext;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.context.Execution;
 import org.xwiki.script.ScriptContextInitializer;
@@ -36,18 +37,19 @@ import org.xwiki.script.ScriptContextManager;
  * @version $Id$
  */
 @Component
+@Singleton
 public class DefaultScriptContextManager extends AbstractLogEnabled implements ScriptContextManager
 {
     /**
      * Used to get and insert script context in current execution context.
      */
-    @Requirement
+    @Inject
     private Execution execution;
 
     /**
      * The {@link ScriptContextInitializer} list used to initialize {@link ScriptContext}.
      */
-    @Requirement
+    @Inject
     private List<ScriptContextInitializer> scriptContextInitializerList;
 
     /**

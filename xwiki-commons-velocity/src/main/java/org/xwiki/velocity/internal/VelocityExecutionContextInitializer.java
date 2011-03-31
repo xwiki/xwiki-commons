@@ -16,13 +16,15 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.velocity.internal;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.velocity.VelocityContext;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextInitializer;
 import org.xwiki.context.ExecutionContextException;
@@ -37,7 +39,9 @@ import org.xwiki.velocity.XWikiVelocityException;
  * @since 1.5M1
  * @version $Id$
  */
-@Component("velocity")
+@Component
+@Named("velocity")
+@Singleton
 public class VelocityExecutionContextInitializer implements ExecutionContextInitializer
 {
     /**
@@ -49,7 +53,7 @@ public class VelocityExecutionContextInitializer implements ExecutionContextInit
      * The Velocity context factory component used for creating the Velocity Context (injected automatically by the
      * Component subsystem).
      */
-    @Requirement
+    @Inject
     private VelocityContextFactory velocityContextFactory;
 
     /**

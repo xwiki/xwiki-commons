@@ -19,9 +19,12 @@
  */
 package org.xwiki.velocity.internal;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.velocity.VelocityContext;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.script.service.ScriptServiceManager;
 import org.xwiki.velocity.VelocityContextInitializer;
 
@@ -32,13 +35,15 @@ import org.xwiki.velocity.VelocityContextInitializer;
  * @since 2.3M1
  */
 // TODO: In the future Velocity will be implemented using the JSR 223 API and this class won't be required anymore.
-@Component("scriptservices")
+@Component
+@Named("scriptservices")
+@Singleton
 public class ServicesVelocityContextInitializer implements VelocityContextInitializer
 {
     /**
      * The Script Service Manager to bind in the Script Context.
      */
-    @Requirement
+    @Inject
     private ScriptServiceManager scriptServiceManager;
 
     /**

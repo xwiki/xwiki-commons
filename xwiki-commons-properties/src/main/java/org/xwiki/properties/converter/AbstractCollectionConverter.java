@@ -27,8 +27,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang.StringUtils;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.properties.ConverterManager;
 
 /**
@@ -52,7 +53,7 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
     /**
      * Used to convert collection elements.
      */
-    @Requirement
+    @Inject
     private ConverterManager converterManager;
 
     /**
@@ -61,7 +62,7 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
     private char delimiter = ',';
 
     /**
-     * @see #setAllowedChars(char)
+     * @see #setAllowedChars(char[])
      */
     private char[] allowedChars = new char[] {'.', '-'};
 
