@@ -23,6 +23,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.management.JMXBeanRegistration;
 
+import javax.inject.Singleton;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.lang.management.ManagementFactory;
@@ -34,6 +35,7 @@ import java.lang.management.ManagementFactory;
  * @since 2.4M2
  */
 @Component
+@Singleton
 public class DefaultJMXBeanRegistration extends AbstractLogEnabled implements JMXBeanRegistration
 {
     /**

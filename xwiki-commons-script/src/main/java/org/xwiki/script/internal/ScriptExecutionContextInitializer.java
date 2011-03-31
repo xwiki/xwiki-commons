@@ -19,6 +19,8 @@
  */
 package org.xwiki.script.internal;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.script.SimpleScriptContext;
 
 import org.xwiki.component.annotation.Component;
@@ -32,7 +34,9 @@ import org.xwiki.context.ExecutionContextInitializer;
  * 
  * @version $Id$
  */
-@Component("scriptContext")
+@Component
+@Named("scriptContext")
+@Singleton
 public class ScriptExecutionContextInitializer implements ExecutionContextInitializer
 {
     /**

@@ -22,6 +22,8 @@ package org.xwiki.properties.internal.converter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import javax.inject.Singleton;
+
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -39,6 +41,7 @@ import org.xwiki.properties.converter.Converter;
  * @since 2.0M2
  */
 @Component
+@Singleton
 public class ConvertUtilsConverter implements Converter, Initializable
 {
     /**

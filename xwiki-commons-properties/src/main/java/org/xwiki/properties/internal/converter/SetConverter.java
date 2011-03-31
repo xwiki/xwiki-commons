@@ -22,6 +22,8 @@ package org.xwiki.properties.internal.converter;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.properties.converter.AbstractCollectionConverter;
 
@@ -29,6 +31,7 @@ import org.xwiki.properties.converter.AbstractCollectionConverter;
  * @version $Id$
  */
 @Component(hints = {"java.util.Set", "java.util.LinkedHashSet", "java.util.HashSet" })
+@Singleton
 public class SetConverter extends AbstractCollectionConverter
 {
     /**

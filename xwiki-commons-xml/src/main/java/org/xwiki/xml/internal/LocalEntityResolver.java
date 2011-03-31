@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.inject.Singleton;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xwiki.component.annotation.Component;
@@ -39,6 +41,7 @@ import org.xwiki.xml.EntityResolver;
  * @version $Id$
  */
 @Component
+@Singleton
 public class LocalEntityResolver extends AbstractLogEnabled implements EntityResolver
 {
     /**

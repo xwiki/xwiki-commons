@@ -21,6 +21,7 @@ package org.xwiki.xml.internal;
 
 import java.lang.reflect.Method;
 
+import javax.inject.Singleton;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -41,6 +42,7 @@ import org.xwiki.xml.XMLReaderFactory;
  * @since 1.7.1
  */
 @Component
+@Singleton
 public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
 {
     /**

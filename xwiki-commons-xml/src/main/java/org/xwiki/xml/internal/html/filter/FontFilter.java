@@ -23,6 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xwiki.component.annotation.Component;
@@ -34,7 +37,9 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
  * @version $Id$
  * @since 1.8RC2
  */
-@Component("font")
+@Component
+@Named("font")
+@Singleton
 public class FontFilter extends AbstractHTMLFilter
 {
     /**

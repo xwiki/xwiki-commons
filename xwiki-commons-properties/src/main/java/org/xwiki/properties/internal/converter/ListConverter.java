@@ -19,6 +19,8 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.properties.converter.AbstractCollectionConverter;
 
@@ -26,6 +28,7 @@ import org.xwiki.properties.converter.AbstractCollectionConverter;
  * @version $Id$
  */
 @Component(hints = {"java.util.List", "java.util.Collection", "java.util.ArrayList" })
+@Singleton
 public class ListConverter extends AbstractCollectionConverter
 {
 }

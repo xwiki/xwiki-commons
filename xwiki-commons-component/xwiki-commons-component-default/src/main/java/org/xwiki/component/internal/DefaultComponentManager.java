@@ -22,6 +22,8 @@ package org.xwiki.component.internal;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.manager.ComponentEventManager;
@@ -38,6 +40,7 @@ import org.xwiki.component.manager.ComponentRepositoryException;
  * @since 2.0M1
  */
 @Component
+@Singleton
 public class DefaultComponentManager implements ComponentManager, Composable
 {
     /**

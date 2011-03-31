@@ -21,6 +21,9 @@ package org.xwiki.xml.internal.html.filter;
 
 import java.util.Map;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -51,10 +54,11 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
  * @version $Id$
  * @since 1.6M1
  */
-@Component("list")
+@Component
+@Named("list")
+@Singleton
 public class ListFilter extends AbstractHTMLFilter
 {
-
     /**
      * {@inheritDoc}
      * <p>

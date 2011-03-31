@@ -21,6 +21,9 @@ package org.xwiki.properties.internal.converter;
 
 import java.lang.reflect.Type;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.properties.converter.AbstractConverter;
 import org.xwiki.properties.converter.ConversionException;
@@ -31,7 +34,9 @@ import org.xwiki.properties.converter.ConversionException;
  * @version $Id$
  * @since 2.0M2
  */
-@Component("enum")
+@Component
+@Named("enum")
+@Singleton
 public class EnumConverter extends AbstractConverter
 {
     /**

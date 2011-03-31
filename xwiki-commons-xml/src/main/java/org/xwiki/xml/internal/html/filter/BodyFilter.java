@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,7 +41,9 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
  * @version $Id$
  * @since 1.8RC3
  */
-@Component("body")
+@Component
+@Named("body")
+@Singleton
 public class BodyFilter extends AbstractHTMLFilter
 {
     /**

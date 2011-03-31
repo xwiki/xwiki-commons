@@ -22,6 +22,8 @@ package org.xwiki.context.internal;
 
 import java.util.Stack;
 
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -35,6 +37,7 @@ import org.xwiki.context.ExecutionContext;
  * @since 1.5M2
  */
 @Component
+@Singleton
 public class DefaultExecution implements Execution
 {
     private ThreadLocal<Stack<ExecutionContext>> context =

@@ -24,6 +24,9 @@ import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.StringTokenizer;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.properties.converter.AbstractConverter;
 import org.xwiki.properties.converter.ConversionException;
@@ -34,7 +37,9 @@ import org.xwiki.properties.converter.ConversionException;
  * @version $Id$
  * @since 2.0M2
  */
-@Component("java.awt.Color")
+@Component
+@Named("java.awt.Color")
+@Singleton
 public class ColorConverter extends AbstractConverter
 {
     /**
@@ -45,8 +50,7 @@ public class ColorConverter extends AbstractConverter
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.properties.converter.AbstractConverter#convertToType(org.xwiki.properties.PropertyType,
-     *      java.lang.Object)
+     * @see org.xwiki.properties.converter.AbstractConverter#convertToType(java.lang.reflect.Type, Object)
      */
     @Override
     protected Color convertToType(Type type, Object value)
