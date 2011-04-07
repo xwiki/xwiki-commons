@@ -26,28 +26,28 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-core-extension</artifactId>
+    <artifactId>xwiki-platform-extension</artifactId>
     <version>3.1-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-core-extension-script</artifactId>
-  <name>XWiki Platform - Core - Extension - Script</name>
-  <packaging>jar</packaging>
-  <description>XWiki Platform - Core - Extension - Script</description>
+  <artifactId>xwiki-platform-extension-repositories</artifactId>
+  <name>XWiki Platform - Extension - Repository - Parent POM</name>
+  <packaging>pom</packaging>
+  <description>XWiki Platform - Extension - Repository - Parent POM</description>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-core-extension-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  
-    <!-- Scripting -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-bridge</artifactId>
+      <artifactId>xwiki-platform-extension-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-extension-api</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-test</artifactId>
@@ -55,4 +55,8 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <modules>
+    <module>xwiki-platform-extension-repository-aether</module>
+  </modules>
 </project>
+       
