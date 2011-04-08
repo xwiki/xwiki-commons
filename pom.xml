@@ -22,23 +22,787 @@
  *
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
-    <version>42-SNAPSHOT</version>
-    <relativePath>xwiki-commons-pom</relativePath>
-  </parent>
-  <artifactId>xwiki-commons-externals</artifactId>
-  <name>XWiki Commons - Externals POM</name>
-  <!-- We don't use a real version here since we're not releasing this file -->
-  <version>UNVERSIONED</version>
+  <groupId>org.xwiki.commons</groupId>
+  <artifactId>xwiki-commons</artifactId>
+  <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <description>XWiki Commons - Externals POM</description>
+  <version>3.1-SNAPSHOT</version>
+  <properties>
+    <!-- By default Checkstyle and Clirr are on by default -->
+    <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
+    <xwiki.clirr.skip>false</xwiki.clirr.skip>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <url>http://xwiki.org</url>
+  <inceptionYear>2004</inceptionYear>
+  <licenses>
+    <license>
+      <name>LGPL 2.1</name>
+      <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.xwiki.org/jira/browse/XCOMMONS</url>
+  </issueManagement>
+  <developers />
+  <contributors />
+  <organization>
+    <name>XWiki</name>
+    <url>http://xwiki.org/</url>
+  </organization>
+  <scm>
+    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/trunk</connection>
+    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/trunk</developerConnection>
+    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/trunk</url>
+  </scm>
+  <mailingLists>
+    <mailingList>
+      <name>XWiki Users List</name>
+      <post>users@xwiki.org</post>
+      <subscribe>http://lists.xwiki.org/mailman/listinfo/users</subscribe>
+      <unsubscribe>http://lists.xwiki.org/mailman/listinfo/users</unsubscribe>
+      <archive>http://lists.xwiki.org/pipermail/users/</archive>
+      <otherArchives>
+        <otherArchive>http://xwiki.markmail.org/</otherArchive>
+        <otherArchive>http://www.nabble.com/XWiki-f2563.html</otherArchive>
+        <otherArchive>http://gmane.org/find.php?list=xwiki</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>XWiki Developers List</name>
+      <post>devs@xwiki.org</post>
+      <subscribe>http://lists.xwiki.org/mailman/listinfo/devs</subscribe>
+      <unsubscribe>http://lists.xwiki.org/mailman/listinfo/devs</unsubscribe>
+      <archive>http://lists.xwiki.org/pipermail/devs/</archive>
+      <otherArchives>
+        <otherArchive>http://xwiki.markmail.org/</otherArchive>
+        <otherArchive>http://www.nabble.com/XWiki-f2563.html</otherArchive>
+        <otherArchive>http://gmane.org/find.php?list=xwiki</otherArchive>
+      </otherArchives>
+    </mailingList>
+  </mailingLists>
+  <dependencyManagement>
+    <!-- Standard dependencies used in several XWiki build modules. Ensures all modules
+         use the same version for these dependencies -->
+    <dependencies>
+      <!-- Apache Commons -->
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.6</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>3.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-net</groupId>
+        <artifactId>commons-net</artifactId>
+        <version>2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>3.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-dbcp</groupId>
+        <artifactId>commons-dbcp</artifactId>
+        <version>1.3</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.8.3</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <version>1.6</version>
+      </dependency>
+
+      <!-- Everybody logs -->
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.16</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+
+      <!-- Everybody tests -->
+      <!-- Note: We're using junit-dep and not junit because the junit artifact bundles the Hamcrest jar, leading to
+           JAR Classloader hell with incompatible versions between the Hamcrest version bundled in JUnit and the
+           version used by JMock. See http://jira.xwiki.org/jira/browse/XPOM-5 -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit-dep</artifactId>
+        <version>4.8.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>1.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock</artifactId>
+        <version>2.5.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock-junit4</artifactId>
+        <version>2.5.1</version>
+        <exclusions>
+          <!-- Exclude JUnit since JMock draws an oldish version of JUnit and we wish to use a newer one -->
+          <exclusion>
+            <groupId>junit</groupId>
+            <artifactId>junit-dep</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock-legacy</artifactId>
+        <version>2.5.1</version>
+      </dependency>
+
+      <!-- Most plugins depend on the servlet API -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <!-- Note: The 2.4 version is not technically correct as 2.4 corresponds to a specification
+             # and is not an implementation version. The central repo would need to be fixed... -->
+        <version>2.4</version>
+        <!-- It should always be provided, otherwise containers will complain about it. -->
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <!-- Ensure that we lock down all plugin versions -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <!-- Lock down plugin version for build reproducibility -->
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <id>enforce-plugins</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requirePluginVersions>
+                  <message>Best Practice is to always define plugin versions!</message>
+                  <banLatest>false</banLatest>
+                  <banRelease>false</banRelease>
+                  <banSnapshots>false</banSnapshots>
+                </requirePluginVersions>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-correct-junit-dependency</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <message>
+Use the junit-dep artifact instead of the junit one which wrongly bundles hamcrest
+(see http://jira.xwiki.org/jira/browse/XPOM-5)
+                  </message>
+                  <excludes>
+                    <exclude>junit:junit</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.1</version>
+        </plugin>
+        <plugin>
+          <!-- Since 2.0-beta-9 maven-release-plugin uses remote tagging by default. Remote tagging implies that SCM
+               information is not fetched from the local working copy but from the SCM pom configuration. This forces
+               us to specify SCM configuration in every module which has its own lifecycle. Inheritance can't be used
+               for SCM configuration since a released parent pom contains SCM information about its tag and not about
+               the trunk. We could have globally set remoteTagging to false but we haven't since it would have
+               prevented us from using SVN 1.5. We also prefer to follow maven conventions as much as possible. -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.1</version>
+          <configuration>
+            <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
+                 "install". This is causing problems since several modules will fail to build during release:prepare.
+                 See http://tinyurl.com/354vwe for more details. Thus we're forcing the execution of the "install"
+                 goal. -->
+            <preparationGoals>clean install</preparationGoals>
+            <!-- Avoid site generation during the release:perform to speed up release process -->
+            <goals>deploy</goals>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.4.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.1.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.7</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.3.2</version>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.7.2</version>
+          <!-- XWiki rule is to put test in *Test classes -->
+          <configuration>
+            <includes>
+              <include>**/*Test.class</include>
+            </includes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <!-- There is blocker issues with 2.6.1 so don't use it. See http://jira.codehaus.org/browse/MJAVADOC-275. -->
+          <!-- Still not fixed in 2.7 it seems... -->
+          <version>2.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.5</version>
+          <!-- We're deploying using the SCP protocol so we need the SSH Wagon for Maven 3 to work -->
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.wagon</groupId>
+              <artifactId>wagon-ssh</artifactId>
+              <version>1.0-beta-7</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>aspectj-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.6</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-invoker-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.8</version>
+        </plugin>
+        <plugin>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>maven-jetty-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>6.1.11</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>xml-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.0-beta-3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.izpack</groupId>
+          <artifactId>izpack-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.0-alpha-4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>sablecc-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>clirr-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.3</version>
+          <executions>
+            <execution>
+              <id>clirr-check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <skip>${xwiki.clirr.skip}</skip>
+            <excludes>
+              <exclude>**/internal/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-archetype-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>findbugs-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.3.4</version>
+        </plugin>
+        <plugin>
+          <groupId>com.atlassian.maven.plugins</groupId>
+          <artifactId>maven-clover2-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>3.0.2</version>
+          <configuration>
+            <license><![CDATA[qMMmoWpgqUnIUUslQCCkHArdnnrCaAmCJwHJQSxBxKtXsI
+mi2K5DKKCB6NcT1JsMzl8KbR2KsRSMhv4kKAw73vcpeScU
+PrmNWuONRNMnMoPnQRMWWNQPqnnrqRmMrqTuWtUVwStROo
+PrnmqmUUnounqquummmmmUUnounqquummmmmUUONfhfUUn
+mmmm]]></license>
+            <!-- For some reason there's currently a problem in the Rendering Include Macro test execution when
+                 IncludeMacroTest is clovered. Needs to be investigated. -->
+            <includesTestSourceRoots>false</includesTestSourceRoots>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>cobertura-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.0-beta-2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
+               the repository locations of the dependencies in the report. -->
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>summary</report>
+              <report>index</report>
+              <report>dependencies</report>
+              <report>dependency-convergence</report>
+              <report>mailing-list</report>
+              <report>issue-tracking</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <!-- Always exclude the internal package since it's not user-public -->
+          <excludePackageNames>*.internal.*</excludePackageNames>
+          <!-- Make sure javadoc has enough memory -->
+          <maxmemory>300m</maxmemory>
+        </configuration>
+        <!-- Don't generate test javadoc -->
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+  <profiles>
+    <profile>
+      <!-- Profile used when the release plugin executes. We want javadocs and source jars to be released. -->
+      <id>release</id>
+      <activation>
+        <property>
+          <!-- This property is automatically defined by the Maven release plugin when executing
+               a release. Thus this profile will be automatically enabled when releasing -->
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-java</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireJavaVersion>
+                      <message>You must release with Java 5!</message>
+                      <version>[1.5,1.6)</version>
+                    </requireJavaVersion>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- We run Clirr in a profile so that we can decide not to run it when we run the Cobertura profile (since
+           Cobertura interferes with Clirr). When the Cobertura profile is executed, the Clirr one isn't). -->
+      <id>clirr</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>clirr-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!-- Warning: Clover 3.0.2 doesn't seem to work with Maven 3.0. It works with Maven 2.2.x though -->
+    <!-- To generate Clover reports, see http://dev.xwiki.org/xwiki/bin/view/Community/Testing#HTestCoverage -->
+    <profile>
+      <id>clover</id>
+      <properties>
+        <!-- We need to skip checkstyle execution since otherwise it conflicts with Clover -->
+        <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+        <!-- Skip Clirr since we don't need it when computing test coverage and it speeds up the build not to run it -->
+        <xwiki.clirr.skip>true</xwiki.clirr.skip>
+      </properties>
+    </profile>
+    <profile>
+      <!-- We run Cobertura in a profile since Cobertura interferes with Clirr and thus we run
+           Cobertura instrumentation in a special profile (when the Cobertura profile is
+           executed, the Clirr one isn't). -->
+      <id>cobertura</id>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cobertura-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </reporting>      
+    </profile>
+    <!-- Profile for m2eclipse which is used for:
+         1) Tell m2eclipse to use a different output directory
+         2) Allow m2eclipse to perform incremental builds
+    --> 
+    <profile>
+      <id>m2e</id>
+      <properties>
+        <m2BuildDirectory>target-eclipse</m2BuildDirectory>
+      </properties>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <directory>${m2BuildDirectory}</directory>
+        <plugins>
+          <plugin>
+            <groupId>org.maven.ide.eclipse</groupId>
+            <artifactId>lifecycle-mapping</artifactId>
+            <version>0.9.9-SNAPSHOT</version>
+            <configuration>
+              <mappingId>customizable</mappingId>
+              <configurators>
+                <configurator id="org.maven.ide.eclipse.jdt.javaConfigurator" />
+              </configurators>
+              <mojoExecutions>
+                <mojoExecution>org.apache.maven.plugins:maven-resources-plugin::</mojoExecution>
+              </mojoExecutions>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  <distributionManagement>
+    <site>
+      <id>maven.xwiki.org</id>
+      <url>scp://maven.xwiki.org/home/maven/public_html/site</url>
+    </site>
+    <repository>
+      <id>maven.xwiki.org</id>
+      <name>XWiki Maven2 Remote Repository for Releases</name>
+      <url>scp://maven.xwiki.org/home/maven/public_html/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>maven.xwiki.org</id>
+      <name>XWiki Maven2 Development Repository for Snapshots</name>
+      <url>scp://maven.xwiki.org/home/maven/public_html/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <repositories>
+    <!-- This is XWiki's custom remote repository containing artifacts that are not present on
+         Maven's main remote repository. -->
+    <repository>
+      <id>xwiki-externals</id>
+      <name>XWiki Maven2 Remote Repository for Third Party Dependencies</name>
+      <url>http://maven.xwiki.org/externals</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>xwiki-releases</id>
+      <name>XWiki Maven2 Remote Repository for Releases</name>
+      <url>http://maven.xwiki.org/releases</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>xwiki-snapshots</id>
+      <name>XWiki Maven2 Remote Repository for Snapshots</name>
+      <url>http://maven.xwiki.org/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>xwiki-plugins-externals</id>
+      <name>XWiki Maven2 Plugin Remote Repository for Third Party Plugins</name>
+      <url>http://maven.xwiki.org/externals</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>xwiki-plugins-releases</id>
+      <name>XWiki Maven2 Plugin Remote Repository for Releases</name>
+      <url>http://maven.xwiki.org/releases</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>xwiki-plugins-snapshots</id>
+      <name>XWiki Maven2 Plugin Remote Repository for Snapshots</name>
+      <url>http://maven.xwiki.org/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
   <modules>
-    <module>xwiki-commons-core</module>
     <module>xwiki-commons-tools</module>
+    <module>xwiki-commons-pom</module>
+    <module>xwiki-commons-core</module>
   </modules>
 </project>

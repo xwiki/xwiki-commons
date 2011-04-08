@@ -27,18 +27,14 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>42-SNAPSHOT</version>
-    <relativePath>../xwiki-commons-pom</relativePath>
+    <version>3.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.xwiki.commons</groupId>
   <artifactId>xwiki-commons-tools</artifactId>
-  <name>XWiki Commons - Tools - Externals POM</name>
-  <!-- We don't use a real version here since we're not releasing this file -->
-  <version>UNVERSIONED</version>
+  <name>XWiki Commons - Tools - Parent POM</name>
   <packaging>pom</packaging>
-  <description>XWiki Commons - Tools - Externals POM</description>
+  <description>XWiki Commons - Tools - Parent POM</description>
   <modules>
     <module>xwiki-commons-tool-license-resources</module>
-    <module>xwiki-commons-tool-verification-resources</module>
+    <module>xwiki-commons-tool-validation-resources</module>
   </modules>
 </project>

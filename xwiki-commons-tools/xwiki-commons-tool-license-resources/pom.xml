@@ -26,23 +26,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
-    <version>42-SNAPSHOT</version>
-    <relativePath>../xwiki-commons-pom</relativePath>
+    <artifactId>xwiki-commons-tools</artifactId>
+    <version>3.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.xwiki.commons</groupId>
   <artifactId>xwiki-commons-tool-license-resources</artifactId>
   <name>XWiki Commons - Tools - License Resources</name>
-  <version>1.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>
     XWiki License file (License + Notice file containing copyrights).
   </description>
-  <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/trunk/xwiki-commons-license-resources</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/trunk/xwiki-commons-license-resources</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-tools/trunk/xwiki-commons-license-resources</url>
-  </scm>
   <build>
     <plugins>
      <plugin>

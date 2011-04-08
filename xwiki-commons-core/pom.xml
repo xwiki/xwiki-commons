@@ -26,25 +26,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
-    <version>42-SNAPSHOT</version>
+    <artifactId>xwiki-commons-pom</artifactId>
+    <version>3.1-SNAPSHOT</version>
     <relativePath>../xwiki-commons-pom</relativePath>
   </parent>
-  <groupId>org.xwiki.commons</groupId>
   <artifactId>xwiki-commons-core</artifactId>
-  <version>3.1-SNAPSHOT</version>
   <name>XWiki Commons - Core - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Core - Parent POM</description>
-  <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/trunk</url>
-  </scm>
-  <issueManagement>
-    <system>jira</system>
-    <url>http://jira.xwiki.org/jira/browse/XCOMMONS</url>
-  </issueManagement>
   <modules>
     <module>xwiki-commons-component</module>
     <module>xwiki-commons-observation</module>
@@ -96,6 +85,7 @@
                 <bannedDependencies>
                   <excludes>
                     <exclude>org.xwiki.platform:*</exclude>
+                    <exclude>org.xwiki.rendering:*</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
