@@ -55,9 +55,9 @@
     <url>http://xwiki.org/</url>
   </organization>
   <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/trunk</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/trunk</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-pom/trunk</url>
+    <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
+    <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
+    <url>https://github.com/xwiki/xwiki-commons</url>
   </scm>
   <mailingLists>
     <mailingList>
