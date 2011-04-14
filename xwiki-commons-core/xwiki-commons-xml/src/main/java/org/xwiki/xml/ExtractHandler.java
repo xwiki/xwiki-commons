@@ -269,7 +269,8 @@ public class ExtractHandler extends DefaultHandler
         if (remainingLength <= length) {
             String content = new String(ch, start, remainingLength);
             int spaceIndex = remainingLength;
-            if (remainingLength == length || ch[remainingLength] != ' ') {
+            // If we're in the middle of a word, try to cut before it, so that we don't output half-words
+            if (length > remainingLength && ch[start + remainingLength] != ' ') {
                 spaceIndex = content.lastIndexOf(' ');
             }
             if (spaceIndex >= 0) {
