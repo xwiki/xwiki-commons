@@ -36,5 +36,7 @@
   <modules>
     <module>xwiki-commons-tool-license-resources</module>
     <module>xwiki-commons-tool-validation-resources</module>
+    <module>xwiki-commons-tool-xar-handlers</module>
+    <module>xwiki-commons-tool-xar-plugin</module>
   </modules>
 </project>
