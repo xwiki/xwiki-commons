@@ -100,15 +100,33 @@
   <build>
     <plugins>
       <plugin>
-        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
+        <!-- Note: We duplicate the configuration located in xwiki-commons-pom since commons tools use xwiki-commons
+             as their parent pom and not xwiki-commons-pom. This is to avoid a circular dependency since
+             xwiki-commons-pom uses the xwiki-commons-tool-validation-resources artifact. -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
         <configuration>
+          <configLocation>checkstyle.xml</configLocation>
+          <headerLocation>license.txt</headerLocation>
           <excludes>
               **/UnXarMojo.java,
               **/XarMojo.java
           </excludes>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

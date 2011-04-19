@@ -61,8 +61,6 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
           <dependencies>
             <dependency>
               <groupId>org.xwiki.commons</groupId>
@@ -71,13 +69,8 @@
             </dependency>
           </dependencies>
           <configuration>
-            <consoleOutput>true</consoleOutput>
             <configLocation>checkstyle.xml</configLocation>
             <headerLocation>license.txt</headerLocation>
-            <!-- We use this to disable checkstyle when the clover profile is executed since there's a
-                 conflict between checkstyle and clover. Namely the clovered code doesn't pass our
-                 checkstyle rules -->
-            <skip>${xwiki.checkstyle.skip}</skip>
           </configuration>
           <executions>
             <execution>

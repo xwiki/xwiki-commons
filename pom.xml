@@ -265,6 +265,19 @@ Use the junit-dep artifact instead of the junit one which wrongly bundles hamcre
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.6</version>
+          <configuration>
+            <consoleOutput>true</consoleOutput>
+            <!-- We use this to disable checkstyle when the clover profile is executed since there's a
+                 conflict between checkstyle and clover. Namely the clovered code doesn't pass our
+                 checkstyle rules -->
+            <skip>${xwiki.checkstyle.skip}</skip>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-remote-resources-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.1</version>
