@@ -26,7 +26,7 @@ import org.xwiki.properties.converter.Converter;
 import org.xwiki.test.AbstractComponentTestCase;
 
 /**
- * Validate {@link ConvertConverter} component.
+ * Validate {@link ConvertUtilsConverter} component.
  * 
  * @version $Id$
  */
