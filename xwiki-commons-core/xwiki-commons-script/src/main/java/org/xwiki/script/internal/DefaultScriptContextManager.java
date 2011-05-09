@@ -26,7 +26,6 @@ import javax.inject.Singleton;
 import javax.script.ScriptContext;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.context.Execution;
 import org.xwiki.script.ScriptContextInitializer;
 import org.xwiki.script.ScriptContextManager;
@@ -38,7 +37,7 @@ import org.xwiki.script.ScriptContextManager;
  */
 @Component
 @Singleton
-public class DefaultScriptContextManager extends AbstractLogEnabled implements ScriptContextManager
+public class DefaultScriptContextManager implements ScriptContextManager
 {
     /**
      * Used to get and insert script context in current execution context.

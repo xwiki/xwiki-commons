@@ -24,7 +24,9 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.component.descriptor.DefaultComponentDependency;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -47,6 +49,16 @@ public class EmbeddableComponentManagerTest
 
     public static class OtherRoleImpl implements Role
     {
+    }
+
+    public static class LoggingRoleImpl implements Role
+    {
+        private Logger logger;
+
+        public Logger getLogger()
+        {
+            return this.logger;
+        }
     }
 
     @Test
@@ -170,16 +182,6 @@ public class EmbeddableComponentManagerTest
         Assert.assertSame(roleImpl, instances.get("default"));
     }
 
-    private ComponentManager createParentComponentManager() throws Exception
-    {
-        EmbeddableComponentManager parent = new EmbeddableComponentManager();
-        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
-        cd.setImplementation(RoleImpl.class);
-        parent.registerComponent(cd);
-        return parent;
-    }
-    
     @Test
     public void testHasComponent() throws Exception
     {
@@ -192,5 +194,35 @@ public class EmbeddableComponentManagerTest
 
         Assert.assertTrue(ecm.hasComponent(Role.class));
         Assert.assertTrue(ecm.hasComponent(Role.class, "default"));
+    }
+
+    @Test
+    public void testLoggingInjection() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> d = new DefaultComponentDescriptor<Role>();
+        d.setRole(Role.class);
+        d.setImplementation(LoggingRoleImpl.class);
+
+        DefaultComponentDependency dependencyDescriptor = new DefaultComponentDependency();
+        dependencyDescriptor.setMappingType(Logger.class);
+        dependencyDescriptor.setName("logger");
+
+        d.addComponentDependency(dependencyDescriptor);
+        ecm.registerComponent(d);
+
+        LoggingRoleImpl impl = (LoggingRoleImpl) ecm.lookup(Role.class);
+        Assert.assertNotNull(impl.getLogger());
+    }
+
+    private ComponentManager createParentComponentManager() throws Exception
+    {
+        EmbeddableComponentManager parent = new EmbeddableComponentManager();
+        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        cd.setRole(Role.class);
+        cd.setImplementation(RoleImpl.class);
+        parent.registerComponent(cd);
+        return parent;
     }
 }

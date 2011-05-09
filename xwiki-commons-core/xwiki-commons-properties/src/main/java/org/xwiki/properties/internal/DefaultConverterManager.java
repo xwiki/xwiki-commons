@@ -26,8 +26,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.properties.ConverterManager;
@@ -49,7 +49,7 @@ import org.xwiki.properties.converter.Converter;
  */
 @Component
 @Singleton
-public class DefaultConverterManager extends AbstractLogEnabled implements ConverterManager
+public class DefaultConverterManager implements ConverterManager
 {
     /**
      * Use to find the proper {@link Converter} component for provided target type.
@@ -70,6 +70,12 @@ public class DefaultConverterManager extends AbstractLogEnabled implements Conve
      */
     @Inject
     private Converter defaultConverter;
+
+    /**
+     * The logger to use for logging.
+     */
+    @Inject
+    private Logger logger;
 
     /**
      * {@inheritDoc}
@@ -103,14 +109,14 @@ public class DefaultConverterManager extends AbstractLogEnabled implements Conve
         try {
             converter = this.componentManager.lookup(Converter.class, getTypeGenericName(targetType));
         } catch (ComponentLookupException e) {
-            getLogger().debug("Failed to find a proper Converter for type [" + typeGenericName + "]", e);
+            this.logger.debug("Failed to find a proper Converter for type [" + typeGenericName + "]", e);
 
             if (targetType instanceof ParameterizedType) {
                 String typeName = getTypeName(targetType);
                 try {
                     converter = this.componentManager.lookup(Converter.class, typeName);
                 } catch (ComponentLookupException e2) {
-                    getLogger().debug("Failed to find a proper Converter for class [" + typeName + "]", e);
+                    this.logger.debug("Failed to find a proper Converter for class [" + typeName + "]", e);
                 }
             }
         }
@@ -119,7 +125,7 @@ public class DefaultConverterManager extends AbstractLogEnabled implements Conve
             if (targetType instanceof Class && Enum.class.isAssignableFrom((Class< ? >) targetType)) {
                 converter = this.enumConverter;
             } else {
-                getLogger().debug("Trying default Converter for target type [" + typeGenericName + "]");
+                this.logger.debug("Trying default Converter for target type [" + typeGenericName + "]");
 
                 converter = this.defaultConverter;
             }

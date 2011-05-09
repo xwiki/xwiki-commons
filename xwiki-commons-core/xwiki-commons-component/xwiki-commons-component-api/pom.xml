@@ -34,8 +34,13 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Component - API</description>
   <dependencies>
+    <!-- Make it easy for components that wish to log - They don't have to explicitly import SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
     <!-- We add this dependency here so that users of the Component API just need to depend on this artifact and
-         don't have to explicitely add a dependency on javax.inject:java.inject. -->
+         don't have to explicitly add a dependency on javax.inject:java.inject. -->
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>

@@ -85,12 +85,19 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!-- Make sure we provide a default implementation of slf4j for any test indirectly use it -->
+    <!-- Make sure we provide a default implementation of SLF4J for any test indirectly use it -->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>0.9.28</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
   </dependencies>
   <build>
     <plugins>

@@ -19,10 +19,11 @@
  */
 package org.xwiki.management.internal;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.management.JMXBeanRegistration;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -36,8 +37,14 @@ import java.lang.management.ManagementFactory;
  */
 @Component
 @Singleton
-public class DefaultJMXBeanRegistration extends AbstractLogEnabled implements JMXBeanRegistration
+public class DefaultJMXBeanRegistration implements JMXBeanRegistration
 {
+    /**
+     * The logger to use for logging.
+     */
+    @Inject
+    private Logger logger;
+
     /**
      * {@inheritDoc}
      * @see org.xwiki.management.JMXBeanRegistration#registerMBean(Object, String)
@@ -49,10 +56,10 @@ public class DefaultJMXBeanRegistration extends AbstractLogEnabled implements JM
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             ObjectName oname = new ObjectName("org.xwiki:" + name);
             mbs.registerMBean(mbean, oname);
-            getLogger().debug("Registered resource with name [" + name + "] successfully");
+            this.logger.debug("Registered resource with name [" + name + "] successfully");
         } catch (Exception e) {
             // Failed to register the MBean, log a warning
-            getLogger().warn("Failed to register resource with name [" + name + "]. Reason = [" + e.getMessage() + "]");
+            this.logger.warn("Failed to register resource with name [" + name + "]. Reason = [" + e.getMessage() + "]");
         }
     }
 }

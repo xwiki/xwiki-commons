@@ -32,8 +32,8 @@ import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.ConverterManager;
@@ -56,13 +56,19 @@ import org.xwiki.properties.RawProperties;
  */
 @Component
 @Singleton
-public class DefaultBeanManager extends AbstractLogEnabled implements BeanManager
+public class DefaultBeanManager implements BeanManager
 {
     /**
      * Cache the already parsed classes.
      */
     private Map<Class< ? >, BeanDescriptor> beanDescriptorCache = Collections
         .synchronizedMap(new HashMap<Class< ? >, BeanDescriptor>());
+
+    /**
+     * The logger to use for logging.
+     */
+    @Inject
+    private Logger logger;
 
     /**
      * The {@link ConverterManager} component.
@@ -84,7 +90,7 @@ public class DefaultBeanManager extends AbstractLogEnabled implements BeanManage
             try {
                 this.validatorFactory = Validation.buildDefaultValidatorFactory();
             } catch (ValidationException e) {
-                getLogger().warn("Unable to find default JSR 303 provider. There will be no Java bean validation.");
+                this.logger.warn("Unable to find default JSR 303 provider. There will be no Java bean validation.");
             }
         }
 

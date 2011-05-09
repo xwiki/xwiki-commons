@@ -25,12 +25,13 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.xml.EntityResolver;
 
 /**
@@ -42,8 +43,14 @@ import org.xwiki.xml.EntityResolver;
  */
 @Component
 @Singleton
-public class LocalEntityResolver extends AbstractLogEnabled implements EntityResolver
+public class LocalEntityResolver implements EntityResolver
 {
+    /**
+     * The logger to use for logging.
+     */
+    @Inject
+    private Logger logger;
+
     /**
      * Allow the application to resolve external entities.
      * <p/>
@@ -81,7 +88,7 @@ public class LocalEntityResolver extends AbstractLogEnabled implements EntityRes
                 if (istream != null) {
                     source = new InputSource(istream);
                 } else {
-                    getLogger().warn(String.format("Failed to load resource [%s] locally. "
+                    this.logger.warn(String.format("Failed to load resource [%s] locally. "
                         + "Will try to get it online at [%s]", filename, systemId));
                 }
             } else {
@@ -92,18 +99,18 @@ public class LocalEntityResolver extends AbstractLogEnabled implements EntityRes
                 // xhtml1-symbol.ent relatively. Normally these relative declarations generate a
                 // URL with a "file" scheme but apparently there are some cases when the raw
                 // entity file names is passed to this resolveEntity method...
-                getLogger().debug(String.format("Unknown URI scheme [%s] for entity [%s]. "
+                this.logger.debug(String.format("Unknown URI scheme [%s] for entity [%s]. "
                     + "Assuming the entity is already resolved and looking for it in the file system.",
                     uri.getScheme(), systemId));
                 InputStream istream = getClass().getClassLoader().getResourceAsStream(systemId);
                 if (istream != null) {
                     source = new InputSource(istream);
                 } else {
-                    getLogger().warn("Failed to load resource [" + systemId + "] locally.");
+                    this.logger.warn("Failed to load resource [" + systemId + "] locally.");
                 }
             }
         } catch (URISyntaxException e) {
-            getLogger().warn(String.format("Invalid URI [%s]", systemId), e);
+            this.logger.warn(String.format("Invalid URI [%s]", systemId), e);
         }
         // Returning null causes the caller to try accessing the entity online
         return source;

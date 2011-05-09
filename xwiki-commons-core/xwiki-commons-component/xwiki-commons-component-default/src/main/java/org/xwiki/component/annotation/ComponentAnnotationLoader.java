@@ -16,7 +16,6 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.component.annotation;
 
@@ -35,10 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.internal.RoleHint;
-import org.xwiki.component.logging.AbstractLogEnabled;
-import org.xwiki.component.logging.VoidLogger;
 import org.xwiki.component.manager.ComponentManager;
 
 /**
@@ -47,7 +46,7 @@ import org.xwiki.component.manager.ComponentManager;
  * @version $Id$
  * @since 1.8.1
  */
-public class ComponentAnnotationLoader extends AbstractLogEnabled
+public class ComponentAnnotationLoader
 {
     /**
      * Location in the classloader of the file defining the list of component implementation class to parser for
@@ -72,13 +71,9 @@ public class ComponentAnnotationLoader extends AbstractLogEnabled
     private ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
 
     /**
-     * Default constructor.
+     * Logger to use for logging...
      */
-    public ComponentAnnotationLoader()
-    {
-        // make sure to not fail even if no one provided a logger
-        enableLogging(new VoidLogger());
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComponentAnnotationLoader.class);
 
     /**
      * Loads all components defined using annotations.
@@ -139,7 +134,7 @@ public class ComponentAnnotationLoader extends AbstractLogEnabled
                                     descriptor);
 
                                 if (!componentOverrideClassNames.contains(descriptor.getImplementation().getName())) {
-                                    getLogger().warn(
+                                    LOGGER.warn(
                                         "Component [" + existingDescriptor.getImplementation().getName()
                                             + "] is being overwritten by component ["
                                             + descriptor.getImplementation().getName() + "] for Role/Hint [" + roleHint

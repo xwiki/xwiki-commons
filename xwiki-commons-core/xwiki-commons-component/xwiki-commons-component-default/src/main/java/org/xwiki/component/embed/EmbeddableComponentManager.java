@@ -25,14 +25,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.internal.Composable;
 import org.xwiki.component.internal.RoleHint;
-import org.xwiki.component.logging.CommonsLoggingLogger;
-import org.xwiki.component.logging.Logger;
+import org.xwiki.component.logging.DefaultLogger;
 import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -60,7 +61,7 @@ public class EmbeddableComponentManager implements ComponentManager
 
     private Map<RoleHint< ? >, Object> components = new ConcurrentHashMap<RoleHint< ? >, Object>();
 
-    private Logger logger = new CommonsLoggingLogger(EmbeddableComponentManager.class);
+    private Logger logger = LoggerFactory.getLogger(EmbeddableComponentManager.class);
 
     /**
      * Load all component annotations and register them as components.
@@ -70,7 +71,6 @@ public class EmbeddableComponentManager implements ComponentManager
     public void initialize(ClassLoader classLoader)
     {
         ComponentAnnotationLoader loader = new ComponentAnnotationLoader();
-        loader.enableLogging(new CommonsLoggingLogger(loader.getClass()));
         loader.initialize(this, classLoader);
 
         // Extension point to allow component to manipulate ComponentManager initialized state.
@@ -194,8 +194,7 @@ public class EmbeddableComponentManager implements ComponentManager
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.component.manager.ComponentManager#registerComponent(org.xwiki.component.descriptor.ComponentDescriptor,
-     *      java.lang.Object)
+     * @see org.xwiki.component.manager.ComponentManager#registerComponent(ComponentDescriptor, java.lang.Object)
      */
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
     {
@@ -361,7 +360,9 @@ public class EmbeddableComponentManager implements ComponentManager
                             instance = createInstance(descriptor);
                             if (instance == null) {
                                 throw new ComponentLookupException("Failed to lookup component [" + roleHint + "]");
-                            } else if (this.descriptors.get(roleHint).getInstantiationStrategy() == ComponentInstantiationStrategy.SINGLETON) {
+                            } else if (this.descriptors.get(
+                                roleHint).getInstantiationStrategy() == ComponentInstantiationStrategy.SINGLETON)
+                            {
                                 this.components.put(roleHint, instance);
                             }
                         } catch (Exception e) {
@@ -395,9 +396,16 @@ public class EmbeddableComponentManager implements ComponentManager
 
             // Handle different field types
             Object fieldValue;
-            if ((dependency.getMappingType() != null) && List.class.isAssignableFrom(dependency.getMappingType())) {
+            // Note: We handle Logger in a special manner and inject the logger corresponding to the class.
+            if ((dependency.getMappingType() != null) && Logger.class.isAssignableFrom(dependency.getMappingType())) {
+                fieldValue = LoggerFactory.getLogger(instance.getClass());
+            } else if ((dependency.getMappingType() != null)
+                && List.class.isAssignableFrom(dependency.getMappingType()))
+            {
                 fieldValue = lookupList(dependency.getRole());
-            } else if ((dependency.getMappingType() != null) && Map.class.isAssignableFrom(dependency.getMappingType())) {
+            } else if ((dependency.getMappingType() != null)
+                && Map.class.isAssignableFrom(dependency.getMappingType()))
+            {
                 fieldValue = lookupMap(dependency.getRole());
             } else {
                 fieldValue = lookup(dependency.getRole(), dependency.getRoleHint());
@@ -411,9 +419,9 @@ public class EmbeddableComponentManager implements ComponentManager
 
         // Call Lifecycle
 
-        // LogEnabled
+        // LogEnabled - Now deprecated - We hande it for backward compatibility
         if (LogEnabled.class.isAssignableFrom(descriptor.getImplementation())) {
-            ((LogEnabled) instance).enableLogging(new CommonsLoggingLogger(instance.getClass()));
+            ((LogEnabled) instance).enableLogging(new DefaultLogger(instance.getClass()));
         }
 
         // Composable

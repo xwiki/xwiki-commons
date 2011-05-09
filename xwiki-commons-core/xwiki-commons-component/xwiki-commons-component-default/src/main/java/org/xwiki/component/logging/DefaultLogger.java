@@ -19,28 +19,29 @@
  */
 package org.xwiki.component.logging;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 /**
- * Bridge between XWiki Logging and Commons Logging.
- * 
+ * Bridge between XWiki Logging and SLF4J Logging.
+ *
  * @version $Id$
- * @since 2.0M1
+ * @since 3.1M2
+ * @deprecated already deprecated since 3.1M2, use {@link javax.inject.Inject} annotation to get injected a SLF4J
+ *             Logger instead
  */
-public class CommonsLoggingLogger extends AbstractLogger
+public class DefaultLogger extends AbstractLogger
 {
     /**
-     * Wrapped Commons Logging logger object. This communicates with the underlying logging framework.
+     * Wrapped SLF4J logger object. This communicates with the underlying logging framework.
      */
-    private Log logger;
+    private org.slf4j.Logger logger;
 
     /**
      * @param clazz the class to use when logging messages
      */
-    public CommonsLoggingLogger(Class< ? > clazz)
+    public DefaultLogger(Class<?> clazz)
     {
-        this.logger = LogFactory.getLog(clazz);
+        this.logger = LoggerFactory.getLogger(clazz);
     }
 
     /**

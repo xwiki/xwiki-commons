@@ -26,18 +26,20 @@ import java.text.MessageFormat;
  * 
  * @version $Id$
  * @since 2.0M1
+ * @deprecated starting with 3.1M2 use SLF4J instead
  */
+@Deprecated
 public abstract class AbstractLogger implements Logger
 {
     /**
      * Formats the message like {@code MessageFormat.format(String, Object...)} but also checks for Exceptions and
      * catches them as logging should be robust and not interfere with normal program flow. The Exception caught will be
      * passed to the loggers debug output.
-     * 
+     *
      * @param message message in Formatter format syntax
      * @param objects Objects to fill in
      * @return the formatted String if possible, else the message and all objects concatenated.
-     * @see MessageFormat
+     * @see java.text.MessageFormat
      */
     protected String formatMessage(String message, Object... objects)
     {

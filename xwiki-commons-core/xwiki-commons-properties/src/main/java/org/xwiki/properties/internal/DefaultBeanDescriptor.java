@@ -29,7 +29,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.xwiki.component.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.annotation.PropertyDescription;
@@ -43,8 +44,13 @@ import org.xwiki.properties.annotation.PropertyName;
  * @version $Id$
  * @since 2.0M2
  */
-public class DefaultBeanDescriptor extends AbstractLogEnabled implements BeanDescriptor
+public class DefaultBeanDescriptor implements BeanDescriptor
 {
+    /**
+     * The logger to use to log.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBeanDescriptor.class);
+
     /**
      * @see #getBeanClass()
      */
@@ -75,7 +81,7 @@ public class DefaultBeanDescriptor extends AbstractLogEnabled implements BeanDes
         try {
             defaultInstance = getBeanClass().newInstance();
         } catch (Exception e) {
-            getLogger().error(
+            LOGGER.error(
                 "Failed to create a new default instance for class " + this.beanClass
                     + ". The BeanDescriptor will not contains any default value information.", e);
         }
@@ -101,7 +107,7 @@ public class DefaultBeanDescriptor extends AbstractLogEnabled implements BeanDes
                 }
             }
         } catch (Exception e) {
-            getLogger().error("Failed to load bean descriptor for class " + this.beanClass, e);
+            LOGGER.error("Failed to load bean descriptor for class " + this.beanClass, e);
         }
     }
 
@@ -150,7 +156,7 @@ public class DefaultBeanDescriptor extends AbstractLogEnabled implements BeanDes
                     try {
                         desc.setDefaultValue(readMethod.invoke(defaultInstance));
                     } catch (Exception e) {
-                        getLogger().error(
+                        LOGGER.error(
                             MessageFormat.format("Failed to get default property value from getter {0} in class {1}",
                                 readMethod.getName(), this.beanClass), e);
                     }
@@ -202,7 +208,7 @@ public class DefaultBeanDescriptor extends AbstractLogEnabled implements BeanDes
                 try {
                     desc.setDefaultValue(field.get(defaultInstance));
                 } catch (Exception e) {
-                    getLogger().error(
+                    LOGGER.error(
                         MessageFormat.format("Failed to get default prperty value from field {0} in class {1}",
                             field.getName(), this.beanClass), e);
                 }

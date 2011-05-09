@@ -27,8 +27,8 @@ import javax.inject.Singleton;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.Context;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -45,7 +45,7 @@ import org.xwiki.velocity.XWikiVelocityException;
  */
 @Component
 @Singleton
-public class DefaultVelocityContextFactory extends AbstractLogEnabled implements VelocityContextFactory, Initializable
+public class DefaultVelocityContextFactory implements VelocityContextFactory, Initializable
 {
     /**
      * The component manager we used to find all components implementing the
@@ -59,6 +59,12 @@ public class DefaultVelocityContextFactory extends AbstractLogEnabled implements
      */
     @Inject
     private VelocityConfiguration velocityConfiguration;
+
+    /**
+     * The logger to use for logging.
+     */
+    @Inject
+    private Logger logger;
 
     /**
      * An internal read-only Velocity Context containing the Tools defined in the component's configuration. We reuse
@@ -88,7 +94,7 @@ public class DefaultVelocityContextFactory extends AbstractLogEnabled implements
                     throw new InitializationException("Failed to initialize tool [" + value + "]", e);
                 }
                 this.toolsContext.put(key, toolInstance);
-                getLogger().debug("Setting tool [" + key + "] = [" + value + "]");
+                this.logger.debug("Setting tool [" + key + "] = [" + value + "]");
             }
         }
     }

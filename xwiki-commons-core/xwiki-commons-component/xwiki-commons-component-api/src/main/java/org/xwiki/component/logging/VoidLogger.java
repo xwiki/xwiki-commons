@@ -16,7 +16,6 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.component.logging;
 
@@ -28,7 +27,9 @@ package org.xwiki.component.logging;
  *  
  * @version $Id$
  * @since 1.8RC3
+ * @deprecated starting with 3.1M2 use SLF4J's NOPLogger instead
  */
+@Deprecated
 public class VoidLogger implements Logger
 {
     /**

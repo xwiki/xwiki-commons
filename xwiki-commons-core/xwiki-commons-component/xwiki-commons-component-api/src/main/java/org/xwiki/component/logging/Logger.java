@@ -16,7 +16,6 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.component.logging;
 
@@ -26,12 +25,14 @@ package org.xwiki.component.logging;
  * logging is to extend {@link AbstractLogEnabled}.
  * 
  * @version $Id$
+ * @deprecated starting with 3.1M2 use SLF4J instead
  */
+@Deprecated
 public interface Logger
 {
     /**
      * Log a message with the {@code debug} priority.
-     * 
+     *
      * @param message The message to be logged. No further processing of the message is performed.
      */
     void debug(String message);
@@ -39,7 +40,7 @@ public interface Logger
     /**
      * Log a message with the {@code debug} priority, also printing the exception that caused this message, along
      * with its stack trace.
-     * 
+     *
      * @param message The message to be logged. No further processing of the message is performed.
      * @param throwable The exception associated with the message, for stack trace output.
      */
@@ -60,7 +61,7 @@ public interface Logger
      * <p>
      * The logged message will only be formatted if the message is actually logged.
      * </p>
-     * 
+     *
      * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
@@ -82,7 +83,7 @@ public interface Logger
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
-     * 
+     *
      * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param throwable The exception associated with the message, for stack trace output.
      * @param objects The objects to be filled into the message
@@ -92,14 +93,14 @@ public interface Logger
 
     /**
      * Check if the {@code debug} priority is enabled.
-     * 
+     *
      * @return {@code true} if messages with {@code debug} priority will be logged, {@code false} otherwise
      */
     boolean isDebugEnabled();
 
     /**
      * Log a message with the {@code info} priority.
-     * 
+     *
      * @param message The message to be logged. No further processing of the message is performed.
      */
     void info(String message);
@@ -107,7 +108,7 @@ public interface Logger
     /**
      * Log a message with the {@code info} priority, also printing the exception that caused this message, along
      * with its stack trace.
-     * 
+     *
      * @param message The message to be logged. No further processing of the message is performed.
      * @param throwable The exception associated with the message, for stack trace output.
      */
@@ -128,7 +129,7 @@ public interface Logger
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
-     * 
+     *
      * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
@@ -150,7 +151,7 @@ public interface Logger
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
-     * 
+     *
      * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param throwable The exception associated with the message, for stack trace output.
      * @param objects The objects to be filled into the message
@@ -160,14 +161,14 @@ public interface Logger
 
     /**
      * Check if the {@code info} priority is enabled.
-     * 
+     *
      * @return {@code true} if messages with {@code info} priority will be logged, {@code false} otherwise
      */
     boolean isInfoEnabled();
 
     /**
      * Log a message with the {@code warn} priority.
-     * 
+     *
      * @param message The message to be logged. No further processing of the message is performed.
      */
     void warn(String message);
@@ -175,7 +176,7 @@ public interface Logger
     /**
      * Log a message with the {@code warn} priority, also printing the exception that caused this message, along
      * with its stack trace.
-     * 
+     *
      * @param message The message to be logged. No further processing of the message is performed.
      * @param throwable The exception associated with the message, for stack trace output.
      */
@@ -196,7 +197,7 @@ public interface Logger
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
-     * 
+     *
      * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
@@ -218,7 +219,7 @@ public interface Logger
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
-     * 
+     *
      * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param throwable The exception associated with the message, for stack trace output.
      * @param objects The objects to be filled into the message
@@ -228,14 +229,14 @@ public interface Logger
 
     /**
      * Check if the {@code warn} priority is enabled.
-     * 
+     *
      * @return {@code true} if messages with {@code warn} priority will be logged, {@code false} otherwise
      */
     boolean isWarnEnabled();
 
     /**
      * Log a message with the {@code error} priority.
-     * 
+     *
      * @param message The message to be logged. No further processing of the message is performed.
      */
     void error(String message);
@@ -243,7 +244,7 @@ public interface Logger
     /**
      * Log a message with the {@code error} priority, also printing the exception that caused this message, along
      * with its stack trace.
-     * 
+     *
      * @param message The message to be logged. No further processing of the message is performed.
      * @param throwable The exception associated with the message, for stack trace output.
      */
@@ -264,7 +265,7 @@ public interface Logger
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
-     * 
+     *
      * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param objects The objects to be filled into the message
      * @see java.text.MessageFormat
@@ -286,7 +287,7 @@ public interface Logger
      * <p>
      * The logged message will only be assembled if the message is actually logged.
      * </p>
-     * 
+     *
      * @param message The message to be formatted via {@link java.text.MessageFormat}
      * @param throwable The exception associated with the message, for stack trace output.
      * @param objects The objects to be filled into the message
@@ -296,7 +297,7 @@ public interface Logger
 
     /**
      * Check if the {@code error} priority is enabled.
-     * 
+     *
      * @return {@code true} if messages with {@code error} priority will be logged, {@code false} otherwise
      */
     boolean isErrorEnabled();

@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.management.JMXBeanRegistration;
@@ -45,7 +44,7 @@ import org.xwiki.velocity.internal.jmx.JMXVelocityEngineMBean;
  */
 @Component
 @Singleton
-public class DefaultVelocityFactory extends AbstractLogEnabled implements VelocityFactory
+public class DefaultVelocityFactory implements VelocityFactory
 {
     /**
      * The Component manager we use to lookup (and thus create since it's a singleton) the VelocityEngine component.

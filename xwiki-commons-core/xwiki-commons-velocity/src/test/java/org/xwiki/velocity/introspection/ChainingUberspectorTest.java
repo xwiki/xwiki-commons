@@ -32,33 +32,33 @@ import org.jmock.Expectations;
 import org.jmock.States;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xwiki.component.logging.Logger;
+import org.slf4j.Logger;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.AbstractComponentTestCase;
 import org.xwiki.velocity.VelocityEngine;
-import org.xwiki.velocity.internal.DefaultVelocityEngine;
 
 /**
  * Unit tests for {@link ChainingUberspector}.
  */
 public class ChainingUberspectorTest extends AbstractComponentTestCase
 {
-    private DefaultVelocityEngine engine;
+    private VelocityEngine engine;
 
     private Logger mockLogger;
 
-    private States loggingVerification  = getMockery().states("loggingVerification");
+    private States loggingVerification = getMockery().states("loggingVerification");
 
     @Override
     protected void registerComponents() throws Exception
     {
-        this.engine = (DefaultVelocityEngine) getComponentManager().lookup(VelocityEngine.class);
+        this.engine = getComponentManager().lookup(VelocityEngine.class);
         
         this.mockLogger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{
             ignoring(mockLogger); when(loggingVerification.isNot("on"));
         }});
 
-        this.engine.enableLogging(this.mockLogger);
+        ReflectionUtils.setFieldValue(this.engine, "logger", this.mockLogger);
     }
 
     /*

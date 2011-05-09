@@ -35,10 +35,10 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.log.LogChute;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
-import org.xwiki.component.logging.AbstractLogEnabled;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityEngine;
@@ -53,7 +53,7 @@ import org.xwiki.velocity.XWikiVelocityException;
  */
 @Component
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class DefaultVelocityEngine extends AbstractLogEnabled implements VelocityEngine, LogChute
+public class DefaultVelocityEngine implements VelocityEngine, LogChute
 {
     /**
      * Used to set it as a Velocity Application Attribute so that Velocity extensions done by XWiki can use it to
@@ -67,6 +67,12 @@ public class DefaultVelocityEngine extends AbstractLogEnabled implements Velocit
      */
     @Inject
     private VelocityConfiguration velocityConfiguration;
+
+    /**
+     * The logger to use for logging.
+     */
+    @Inject
+    private Logger logger;
 
     /**
      * The Velocity engine we're wrapping.
@@ -127,7 +133,7 @@ public class DefaultVelocityEngine extends AbstractLogEnabled implements Velocit
                 if (!overridingProperties.containsKey(key)) {
                     String value = configurationProperties.getProperty(key);
                     velocityEngine.setProperty(key, value);
-                    getLogger().debug("Setting property [" + key + "] = [" + value + "]");
+                    this.logger.debug("Setting property [" + key + "] = [" + value + "]");
                 }
             }
         }
@@ -138,7 +144,7 @@ public class DefaultVelocityEngine extends AbstractLogEnabled implements Velocit
                 String key = e.nextElement().toString();
                 String value = overridingProperties.getProperty(key);
                 velocityEngine.setProperty(key, value);
-                getLogger().debug("Overriding property [" + key + "] = [" + value + "]");
+                this.logger.debug("Overriding property [" + key + "] = [" + value + "]");
             }
         }
     }
@@ -280,20 +286,20 @@ public class DefaultVelocityEngine extends AbstractLogEnabled implements Velocit
     {
         switch (level) {
             case LogChute.WARN_ID:
-                getLogger().warn(message);
+                this.logger.warn(message);
                 break;
             case LogChute.INFO_ID:
                 // Velocity info messages are too verbose, just consider them as debug messages...
-                getLogger().debug(message);
+                this.logger.debug(message);
                 break;
             case LogChute.DEBUG_ID:
-                getLogger().debug(message);
+                this.logger.debug(message);
                 break;
             case LogChute.ERROR_ID:
-                getLogger().error(message);
+                this.logger.error(message);
                 break;
             default:
-                getLogger().debug(message);
+                this.logger.debug(message);
                 break;
         }
     }
@@ -307,20 +313,20 @@ public class DefaultVelocityEngine extends AbstractLogEnabled implements Velocit
     {
         switch (level) {
             case LogChute.WARN_ID:
-                getLogger().warn(message, throwable);
+                this.logger.warn(message, throwable);
                 break;
             case LogChute.INFO_ID:
                 // Velocity info messages are too verbose, just consider them as debug messages...
-                getLogger().debug(message, throwable);
+                this.logger.debug(message, throwable);
                 break;
             case LogChute.DEBUG_ID:
-                getLogger().debug(message, throwable);
+                this.logger.debug(message, throwable);
                 break;
             case LogChute.ERROR_ID:
-                getLogger().error(message, throwable);
+                this.logger.error(message, throwable);
                 break;
             default:
-                getLogger().debug(message, throwable);
+                this.logger.debug(message, throwable);
                 break;
         }
     }
@@ -336,20 +342,20 @@ public class DefaultVelocityEngine extends AbstractLogEnabled implements Velocit
 
         switch (level) {
             case LogChute.WARN_ID:
-                isEnabled = getLogger().isWarnEnabled();
+                isEnabled = this.logger.isWarnEnabled();
                 break;
             case LogChute.INFO_ID:
                 // Velocity info messages are too verbose, just consider them as debug messages...
-                isEnabled = getLogger().isDebugEnabled();
+                isEnabled = this.logger.isDebugEnabled();
                 break;
             case LogChute.DEBUG_ID:
-                isEnabled = getLogger().isDebugEnabled();
+                isEnabled = this.logger.isDebugEnabled();
                 break;
             case LogChute.ERROR_ID:
-                isEnabled = getLogger().isErrorEnabled();
+                isEnabled = this.logger.isErrorEnabled();
                 break;
             default:
-                isEnabled = getLogger().isDebugEnabled();
+                isEnabled = this.logger.isDebugEnabled();
                 break;
         }
 

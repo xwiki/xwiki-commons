@@ -22,15 +22,15 @@ package org.xwiki.velocity.internal.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.xwiki.component.logging.AbstractLogEnabled;
-import org.xwiki.component.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provide helpers to parse velocity scripts.
  * 
  * @version $Id$
  */
-public class VelocityParser extends AbstractLogEnabled
+public class VelocityParser
 {
     /**
      * The directives which start a new level which will have to be close by a #end.
@@ -57,6 +57,11 @@ public class VelocityParser extends AbstractLogEnabled
      */
     public static final Set<String> VELOCITYDIRECTIVE_ALL = new HashSet<String>();
 
+    /**
+     * The Logger to use for logging.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(VelocityParser.class);
+
     static {
         VELOCITYDIRECTIVE_BEGIN.add("if");
         VELOCITYDIRECTIVE_BEGIN.add("foreach");
@@ -79,14 +84,6 @@ public class VelocityParser extends AbstractLogEnabled
 
         VELOCITYDIRECTIVE_ALL.addAll(VELOCITYDIRECTIVE_PARAM);
         VELOCITYDIRECTIVE_ALL.addAll(VELOCITYDIRECTIVE_NOPARAM);
-    }
-
-    /**
-     * @param logger the logger to use
-     */
-    public VelocityParser(Logger logger)
-    {
-        enableLogging(logger);
     }
 
     /**
@@ -458,7 +455,7 @@ public class VelocityParser extends AbstractLogEnabled
                 try {
                     i = getMethodOrProperty(array, i, null, context);
                 } catch (InvalidVelocityException e) {
-                    getLogger().debug("Not a valid method at char [" + i + "]", e);
+                    LOGGER.debug("Not a valid method at char [" + i + "]", e);
                     break;
                 }
             } else if (array[i] == '[') {
@@ -607,7 +604,7 @@ public class VelocityParser extends AbstractLogEnabled
                         i = getVar(array, i, null, context);
                         continue;
                     } catch (InvalidVelocityException e) {
-                        getLogger().debug("Not a valid variable at char [" + i + "]", e);
+                        LOGGER.debug("Not a valid variable at char [" + i + "]", e);
                     }
                 } else if (array[i] == escapeChar) {
                     ++i;
@@ -719,7 +716,7 @@ public class VelocityParser extends AbstractLogEnabled
                     i = getVar(array, i, null, context);
                     break;
                 } catch (InvalidVelocityException e) {
-                    getLogger().debug("Not a valid velocity variable at char [" + i + "]", e);
+                    LOGGER.debug("Not a valid velocity variable at char [" + i + "]", e);
                 }
             } else if (array[i] == '"' || array[i] == '\'') {
                 i = getEscape(array, i, null, context);
