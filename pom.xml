@@ -153,6 +153,12 @@
         <artifactId>jcl-over-slf4j</artifactId>
         <version>1.6.1</version>
       </dependency>
+      <!-- External libraries using Log4J will delegate to SLF4J -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>log4j-over-slf4j</artifactId>
+        <version>1.6.1</version>
+      </dependency>
 
       <!-- Everybody tests -->
       <!-- Note: We're using junit-dep and not junit because the junit artifact bundles the Hamcrest jar, leading to
