@@ -26,8 +26,7 @@ import junit.framework.TestCase;
  * 
  * @version $Id$
  * @since 1.8RC3
- * @deprecated starting with 3.1M2 use {@link javax.inject.Inject} annotation to get injected a
- *             {@link org.xwiki.logging.Logger} instead.
+ * @deprecated starting with 3.1M2 use {@link javax.inject.Inject} annotation to get injected a SLF4J Logger instead
  */
 @Deprecated
 public class LoggerTest extends TestCase
