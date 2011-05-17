@@ -51,7 +51,7 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>0.9.28</version>
-      <scope>runtime</scope>
+      <scope>test</scope>
     </dependency>
 
     <!-- Used to verify that XWiki Components using JSR330 annotations can be used with Guice. This is to prove that
