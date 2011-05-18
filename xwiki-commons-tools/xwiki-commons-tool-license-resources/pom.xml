@@ -50,4 +50,8 @@
      </plugin>
     </plugins>
   </build>
+  <properties>
+    <!-- Don't run CLIRR since we don't have java code in this module -->
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+  </properties>
 </project>

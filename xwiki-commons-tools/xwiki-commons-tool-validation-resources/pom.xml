@@ -33,4 +33,8 @@
   <name>XWiki Commons - Tools - Verification Resources</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Tools - Verification Resources (Checkstyle files, etc)</description>
+  <properties>
+    <!-- Don't run CLIRR since we don't have java code in this module -->
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+  </properties>
 </project>
