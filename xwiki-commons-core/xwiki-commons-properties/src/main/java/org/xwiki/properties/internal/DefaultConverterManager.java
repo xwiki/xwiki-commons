@@ -90,7 +90,7 @@ public class DefaultConverterManager implements ConverterManager
         if (converter != null) {
             return (T) converter.convert(targetType, value);
         } else {
-            throw new ConversionException("Can't find converter to convert value [" + value + "] to type ["
+            throw new ConversionException("Cannot find Converter to convert value [" + value + "] to type ["
                 + targetType + "] ");
         }
     }
@@ -109,14 +109,14 @@ public class DefaultConverterManager implements ConverterManager
         try {
             converter = this.componentManager.lookup(Converter.class, getTypeGenericName(targetType));
         } catch (ComponentLookupException e) {
-            this.logger.debug("Failed to find a proper Converter for type [" + typeGenericName + "]", e);
+            this.logger.debug("Failed to find a specific Converter for type [" + typeGenericName + "]");
 
             if (targetType instanceof ParameterizedType) {
                 String typeName = getTypeName(targetType);
                 try {
                     converter = this.componentManager.lookup(Converter.class, typeName);
                 } catch (ComponentLookupException e2) {
-                    this.logger.debug("Failed to find a proper Converter for class [" + typeName + "]", e);
+                    this.logger.debug("Failed to find a specific Converter for class [" + typeName + "]");
                 }
             }
         }
@@ -125,7 +125,7 @@ public class DefaultConverterManager implements ConverterManager
             if (targetType instanceof Class && Enum.class.isAssignableFrom((Class< ? >) targetType)) {
                 converter = this.enumConverter;
             } else {
-                this.logger.debug("Trying default Converter for target type [" + typeGenericName + "]");
+                this.logger.debug("Using the default Converter for type [" + typeGenericName + "]");
 
                 converter = this.defaultConverter;
             }
