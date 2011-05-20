@@ -36,8 +36,7 @@ public interface ComponentManager
     /**
      * @param <T> the component role type
      * @param role the class (aka role) that the component implements
-     * @return true if the component has already been instantiated or not. Always return false for components with a
-     *         per-lookup instantiation strategy
+     * @return true if the component is registered or false otherwise
      */
     <T> boolean hasComponent(Class<T> role);
 
@@ -46,8 +45,7 @@ public interface ComponentManager
      * @param role the class (aka role) that the component implements
      * @param roleHint the hint that differentiates a component implementation from another one (each component is
      *            registered with a hint; the "default" hint being the default)
-     * @return true if the component has already been instantiated or not. Always return false for components with a
-     *         per-lookup instantiation strategy
+     * @return true if the component is registered for the passed hint or false otherwise
      */
     <T> boolean hasComponent(Class<T> role, String roleHint);
 
