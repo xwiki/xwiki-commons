@@ -17,18 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.event;
+package org.xwiki.extension.repository.xwiki.internal;
 
-import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.AbstractExtensionDependency;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 
-public class ExtensionInstalled extends AbstractExtensionEvent
+public class XWikiExtensionDependency extends AbstractExtensionDependency
 {
-    public ExtensionInstalled()
+    public XWikiExtensionDependency(ExtensionDependency dependency)
     {
-    }
-
-    public ExtensionInstalled(ExtensionId extensionId)
-    {
-        super(extensionId);
+        super(dependency.getId(), dependency.getVersion());
     }
 }

@@ -21,13 +21,26 @@ package org.xwiki.extension.event;
 
 import org.xwiki.extension.ExtensionId;
 
-public class ExtensionUpgraded extends AbstractExtensionEvent
+/**
+ * An event triggered when a extension has been installed.
+ * 
+ * @version $Id$
+ */
+public class ExtensionInstalledEvent extends AbstractExtensionEvent
 {
-    public ExtensionUpgraded()
+    /**
+     * Matches all extensions.
+     */
+    public ExtensionInstalledEvent()
     {
     }
 
-    public ExtensionUpgraded(ExtensionId extensionId)
+    /**
+     * Matches only the specified extension id or/and version.
+     * 
+     * @param extensionId the extension identifier
+     */
+    public ExtensionInstalledEvent(ExtensionId extensionId)
     {
         super(extensionId);
     }

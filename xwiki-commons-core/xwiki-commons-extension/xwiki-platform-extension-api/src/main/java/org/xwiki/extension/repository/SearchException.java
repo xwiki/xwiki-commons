@@ -17,9 +17,16 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension;
+package org.xwiki.extension.repository;
 
-public class ExtensionCollectException extends ExtensionException
+import org.xwiki.extension.ExtensionException;
+
+/**
+ * Error when search for exetension in a repository.
+ * 
+ * @version $Id$
+ */
+public class SearchException extends ExtensionException
 {
     /**
      * Constructs a new exception with the specified detail message. The cause is not initialized, and may subsequently
@@ -27,7 +34,7 @@ public class ExtensionCollectException extends ExtensionException
      * 
      * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method)
      */
-    public ExtensionCollectException(String message)
+    public SearchException(String message)
     {
         super(message);
     }
@@ -39,7 +46,7 @@ public class ExtensionCollectException extends ExtensionException
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). A null value is
      *            permitted, and indicates that the cause is nonexistent or unknown
      */
-    public ExtensionCollectException(String message, Throwable cause)
+    public SearchException(String message, Throwable cause)
     {
         super(message, cause);
     }
