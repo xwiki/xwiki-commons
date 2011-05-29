@@ -190,4 +190,11 @@ public class XMLUtilsTest
         Assert.assertEquals("Extra decimal entities were unescaped", "&#65;", XMLUtils.unescape("&#65;"));
         Assert.assertEquals("Extra hexadecimal entities were unescaped", "&#x5;", XMLUtils.unescape("&#x5;"));
     }
+
+    @Test
+    public void testGetDomDocument()
+    {
+        // Nothing much that we can test here...
+        Assert.assertNotNull(XMLUtils.createDOMDocument());
+    }
 }

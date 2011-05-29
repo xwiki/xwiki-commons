@@ -19,14 +19,29 @@
  */
 package org.xwiki.xml;
 
+import java.io.StringWriter;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSParser;
+import org.w3c.dom.ls.LSSerializer;
 
 /**
  * XML Utility methods.
@@ -36,6 +51,9 @@ import org.w3c.dom.Node;
  */
 public final class XMLUtils
 {
+    /** Logging helper object. */
+    private static final Logger LOG = LoggerFactory.getLogger(XMLUtils.class);
+
     /** XML encoding of the "ampersand" character. */
     private static final String AMP = "&#38;";
 
@@ -65,6 +83,23 @@ public final class XMLUtils
 
     /** Regular expression recognizing XML-escaped "greater than" characters. */
     private static final Pattern GT_PATTERN = Pattern.compile("&(?:gt|#0*+62|#x0*+3[eE]);");
+
+    /** Helper object for manipulating DOM Level 3 Load and Save APIs. */
+    private static final DOMImplementationLS LS_IMPL;
+
+    /** Xerces configuration parameter for disabling fetching and checking XMLs against their DTD. */
+    private static final String DISABLE_DTD_PARAM = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+
+    static {
+        DOMImplementationLS implementation = null;
+        try {
+            implementation =
+                (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
+        } catch (Exception ex) {
+            LOG.warn("Cannot initialize the XML Script Service: {}", ex.getMessage());
+        }
+        LS_IMPL = implementation;
+    }
 
     /**
      * Private constructor since this is a utility class that shouldn't be instantiated (all methods are static).
@@ -276,5 +311,109 @@ public final class XMLUtils
         str = AMP_PATTERN.matcher(str).replaceAll("&");
 
         return str;
+    }
+
+    /**
+     * Construct a new (empty) DOM Document and return it.
+     *
+     * @return an empty DOM Document
+     */
+    public static Document createDOMDocument()
+    {
+        try {
+            return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        } catch (ParserConfigurationException ex) {
+            LOG.error("Cannot create DOM Documents", ex);
+            return null;
+        }
+    }
+
+    /**
+     * Parse a DOM Document from a source.
+     *
+     * @param source the source input to parse
+     * @return the equivalent DOM Document, or {@code null} if the parsing failed.
+     */
+    public static Document parse(LSInput source)
+    {
+        try {
+            LSParser p = LS_IMPL.createLSParser(DOMImplementationLS.MODE_SYNCHRONOUS, null);
+            // Disable validation, since this takes a lot of time and causes unneeded network traffic
+            p.getDomConfig().setParameter("validate", false);
+            if (p.getDomConfig().canSetParameter(DISABLE_DTD_PARAM, false)) {
+                p.getDomConfig().setParameter(DISABLE_DTD_PARAM, false);
+            }
+            return p.parse(source);
+        } catch (Exception ex) {
+            LOG.warn("Cannot parse XML document: {}", ex.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Serialize a DOM Node into a string, including the XML declaration at the start.
+     *
+     * @param node the node to export
+     * @return the serialized node, or an empty string if the serialization fails
+     */
+    public static String serialize(Node node)
+    {
+        return serialize(node, true);
+    }
+
+    /**
+     * Serialize a DOM Node into a string, with an optional XML declaration at the start.
+     *
+     * @param node the node to export
+     * @param withXmlDeclaration whether to output the XML declaration or not
+     * @return the serialized node, or an empty string if the serialization fails or the node is {@code null}
+     */
+    public static String serialize(Node node, boolean withXmlDeclaration)
+    {
+        if (node == null) {
+            return "";
+        }
+        try {
+            LSOutput output = LS_IMPL.createLSOutput();
+            StringWriter result = new StringWriter();
+            output.setCharacterStream(result);
+            LSSerializer serializer = LS_IMPL.createLSSerializer();
+            serializer.getDomConfig().setParameter("xml-declaration", withXmlDeclaration);
+            serializer.setNewLine("\n");
+            String encoding = "UTF-8";
+            if (node instanceof Document) {
+                encoding = ((Document) node).getXmlEncoding();
+            } else if (node.getOwnerDocument() != null) {
+                encoding = node.getOwnerDocument().getXmlEncoding();
+            }
+            output.setEncoding(encoding);
+            serializer.write(node, output);
+            return result.toString();
+        } catch (Exception ex) {
+            LOG.warn("Failed to serialize node to XML String: {}", ex.getMessage());
+            return "";
+        }
+    }
+
+    /**
+     * Apply an XSLT transformation to a Document.
+     *
+     * @param xml the document to transform
+     * @param xslt the stylesheet to apply
+     * @return the transformation result, or {@code null} if an error occurs or {@code null} xml or xslt input
+     */
+    public static String transform(Source xml, Source xslt)
+    {
+        if (xml != null && xslt != null) {
+            try {
+                StringWriter output = new StringWriter();
+                Result result = new StreamResult(output);
+                javax.xml.transform.TransformerFactory.newInstance().newTransformer(xslt).transform(xml, result);
+                return output.toString();
+            } catch (Exception ex) {
+                LOG.warn("Failed to apply XSLT transformation: {}", ex.getMessage());
+            }
+        }
+        return null;
     }
 }
