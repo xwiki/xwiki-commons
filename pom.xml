@@ -27,8 +27,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>42-SNAPSHOT</version>
-    <relativePath>../xwiki-commons-pom</relativePath>
+    <version>41</version>
   </parent>
   <groupId>org.xwiki.commons</groupId>
   <artifactId>xwiki-commons-core</artifactId>
@@ -37,9 +36,9 @@
   <packaging>pom</packaging>
   <description>XWiki Commons - Core - Parent POM</description>
   <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/branches/xwiki-commons-core-3.0</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/branches/xwiki-commons-core-3.0</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/commons/xwiki-commons-core/branches/xwiki-commons-core-3.0</url>
+    <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
+    <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
+    <url>https://github.com/xwiki/xwiki-commons</url>
   </scm>
   <issueManagement>
     <system>jira</system>
