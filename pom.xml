@@ -734,7 +734,6 @@ mmmm]]></license>
     </profile>
     <!-- Profile for m2eclipse which is used for:
          1) Tell m2eclipse to use a different output directory
-         2) Allow m2eclipse to perform incremental builds
     --> 
     <profile>
       <id>m2e</id>
@@ -748,22 +747,6 @@ mmmm]]></license>
       </activation>
       <build>
         <directory>${m2BuildDirectory}</directory>
-        <plugins>
-          <plugin>
-            <groupId>org.maven.ide.eclipse</groupId>
-            <artifactId>lifecycle-mapping</artifactId>
-            <version>0.9.9-SNAPSHOT</version>
-            <configuration>
-              <mappingId>customizable</mappingId>
-              <configurators>
-                <configurator id="org.maven.ide.eclipse.jdt.javaConfigurator" />
-              </configurators>
-              <mojoExecutions>
-                <mojoExecution>org.apache.maven.plugins:maven-resources-plugin::</mojoExecution>
-              </mojoExecutions>
-            </configuration>
-          </plugin>
-        </plugins>
       </build>
     </profile>
   </profiles>
