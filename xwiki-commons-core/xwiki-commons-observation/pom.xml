@@ -35,5 +35,6 @@
   <description>XWiki Commons - Observation - Parent POM</description>
   <modules>
     <module>xwiki-commons-observation-api</module>
+    <module>xwiki-commons-observation-local</module>
   </modules>
 </project>
