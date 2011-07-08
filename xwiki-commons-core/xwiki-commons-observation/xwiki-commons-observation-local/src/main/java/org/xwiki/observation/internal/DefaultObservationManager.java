@@ -29,7 +29,6 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.event.ComponentDescriptorAddedEvent;
 import org.xwiki.component.event.ComponentDescriptorEvent;
@@ -73,7 +72,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     /**
      * Used to find all components implementing {@link EventListener} to register them automatically.
      */
-    @Requirement
+    @Inject
     private ComponentManager componentManager;
 
     /**

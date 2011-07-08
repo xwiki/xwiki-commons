@@ -54,6 +54,14 @@ public class LogEvent implements Event
     private Throwable throwable;
 
     /**
+     * Matches any {@link LogEvent}.
+     */
+    public LogEvent()
+    {
+
+    }
+
+    /**
      * @param level the log level
      * @param message the log message
      * @param argumentArray the event arguments to insert in the message
@@ -85,7 +93,7 @@ public class LogEvent implements Event
     {
         return this.level;
     }
-    
+
     /**
      * @return the log message
      */
@@ -93,7 +101,7 @@ public class LogEvent implements Event
     {
         return this.message;
     }
-    
+
     /**
      * @return the event arguments to insert in the message
      */
@@ -101,7 +109,7 @@ public class LogEvent implements Event
     {
         return this.argumentArray;
     }
-    
+
     /**
      * @return the throwable associated to the event
      */
