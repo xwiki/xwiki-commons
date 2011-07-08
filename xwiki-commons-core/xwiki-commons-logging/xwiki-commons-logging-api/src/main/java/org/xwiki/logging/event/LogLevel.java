@@ -22,7 +22,8 @@ package org.xwiki.logging.event;
 /**
  * Defines the set of levels used in logging events.
  * 
- * @version $Id$
+ * @version $Id: 21a6e61f5c7a97c29d8d3087a731b53ac2c5862b $
+ * @since 3.2M1
  */
 public enum LogLevel
 {

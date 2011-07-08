@@ -47,7 +47,8 @@ import ch.qos.logback.core.AppenderBase;
 /**
  * Bridge converting log to events.
  * 
- * @version $Id$
+ * @version $Id: 45dd5c7bf7dbebe37c375a5f625ab18c3b1931ae $
+ * @since 3.2M1
  */
 @Component
 @Singleton
