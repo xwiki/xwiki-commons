@@ -17,35 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal;
+package org.xwiki.extension.job;
 
-import junit.framework.Assert;
+import org.xwiki.observation.event.Event;
 
-import org.junit.Before;
-import org.junit.Test;
-
-public class DefaultVersionManagerTest
+/**
+ * Indicate to the progress listener that a new step level is ending.
+ * 
+ * @version $Id$
+ */
+public class PopLevelProgressEvent implements Event
 {
-    private VersionManager versionManager;
-    
-    @Before
-    public void setUp() throws Exception
+    @Override
+    public boolean matches(Object arg0)
     {
-        this.versionManager = new DefaultVersionManager();
-    }
-    
-    @Test
-    public void testWithIntegers()
-    {
-        Assert.assertEquals(1, versionManager.compareVersions("1.1", "1.0"));
-        Assert.assertEquals(8, versionManager.compareVersions("1.10", "1.2"));
-    }
-    
-    @Test
-    public void testWithStrings()
-    {
-        Assert.assertEquals(8, versionManager.compareVersions("1.10-sometext", "1.2"));
-        Assert.assertEquals(1, versionManager.compareVersions("1.1-sometext", "1.1"));
-        Assert.assertEquals(67, versionManager.compareVersions("1.sometext", "1.0"));
+        return true;
     }
 }

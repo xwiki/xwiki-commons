@@ -17,13 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.task.internal;
+package org.xwiki.extension.job.internal;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -38,11 +38,10 @@ import org.xwiki.extension.event.ExtensionInstalledEvent;
 import org.xwiki.extension.event.ExtensionUpgradedEvent;
 import org.xwiki.extension.handler.ExtensionHandlerManager;
 import org.xwiki.extension.internal.VersionManager;
+import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.LocalExtensionRepository;
-import org.xwiki.extension.task.InstallRequest;
-import org.xwiki.observation.ObservationManager;
 
 /**
  * Extension installation related task.
@@ -53,9 +52,8 @@ import org.xwiki.observation.ObservationManager;
  * @version $Id$
  */
 @Component
-@Singleton
 @Named("install")
-public class InstallTask extends AbstractTask<InstallRequest>
+public class InstallJob extends AbstractJob<InstallRequest>
 {
     /**
      * Used to resolve extensions to install.
@@ -88,27 +86,41 @@ public class InstallTask extends AbstractTask<InstallRequest>
     private ExtensionHandlerManager extensionHandlerManager;
 
     /**
-     * Used to send extensions installation and upgrade related events.
-     */
-    @Inject
-    private ObservationManager observationManager;
-
-    /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.extension.task.internal.AbstractTask#start()
+     * @see org.xwiki.extension.job.internal.AbstractJob#start()
      */
     @Override
     protected void start() throws Exception
     {
-        for (ExtensionId extensionId : getRequest().getExtensions()) {
-            if (getRequest().hasNamespaces()) {
-                for (String namespace : getRequest().getNamespaces()) {
-                    installExtension(extensionId, namespace);
+        List<ExtensionId> extensions = getRequest().getExtensions();
+
+        notifyPushLevelProgress(extensions.size());
+
+        try {
+            for (ExtensionId extensionId : extensions) {
+                if (getRequest().hasNamespaces()) {
+                    List<String> namespaces = getRequest().getNamespaces();
+
+                    notifyPushLevelProgress(namespaces.size());
+
+                    try {
+                        for (String namespace : namespaces) {
+                            installExtension(extensionId, namespace);
+
+                            notifyStepPropress();
+                        }
+                    } finally {
+                        notifyPopLevelProgress();
+                    }
+                } else {
+                    installExtension(extensionId, null);
                 }
-            } else {
-                installExtension(extensionId, null);
+
+                notifyStepPropress();
             }
+        } finally {
+            notifyPopLevelProgress();
         }
     }
 
@@ -139,6 +151,12 @@ public class InstallTask extends AbstractTask<InstallRequest>
     {
         if (this.coreExtensionRepository.exists(extensionId.getId())) {
             throw new InstallException(MessageFormat.format("[{0}]: core extension", extensionId.getId()));
+        }
+
+        if (namespace != null) {
+            this.logger.info("Installing extension [{0}] on namespace [{1}]", extensionId, namespace);
+        } else {
+            this.logger.info("Installing extension [{0}]", extensionId);
         }
 
         LocalExtension previousExtension = null;
@@ -214,18 +232,26 @@ public class InstallTask extends AbstractTask<InstallRequest>
     private LocalExtension installExtension(LocalExtension previousExtension, ExtensionId extensionId,
         boolean dependency, String namespace) throws InstallException
     {
-        // Resolve extension
-        Extension remoteExtension;
-        try {
-            remoteExtension = this.repositoryManager.resolve(extensionId);
-        } catch (ResolveException e) {
-            throw new InstallException(MessageFormat.format("Failed to resolve extension [{0}]", extensionId), e);
-        }
+        notifyPushLevelProgress(2);
 
         try {
-            return installExtension(previousExtension, remoteExtension, dependency, namespace);
-        } catch (Exception e) {
-            throw new InstallException("Failed to install extension", e);
+            // Resolve extension
+            Extension remoteExtension;
+            try {
+                remoteExtension = this.repositoryManager.resolve(extensionId);
+            } catch (ResolveException e) {
+                throw new InstallException(MessageFormat.format("Failed to resolve extension [{0}]", extensionId), e);
+            }
+
+            notifyStepPropress();
+
+            try {
+                return installExtension(previousExtension, remoteExtension, dependency, namespace);
+            } catch (Exception e) {
+                throw new InstallException("Failed to install extension", e);
+            }
+        } finally {
+            notifyPopLevelProgress();
         }
     }
 
@@ -245,30 +271,37 @@ public class InstallTask extends AbstractTask<InstallRequest>
             installExtensionDependency(dependencyDependency, namespace);
         }
 
-        // Store extension in local repository
-        LocalExtension localExtension =
-            this.localExtensionRepository.installExtension(remoteExtension, previousExtension != null
-                ? previousExtension.isDependency() : dependency, namespace);
+        notifyPushLevelProgress(2);
 
-        if (previousExtension != null) {
-            this.extensionHandlerManager.upgrade(previousExtension, localExtension, namespace);
+        try {
+            // Store extension in local repository
+            LocalExtension localExtension =
+                this.localExtensionRepository.installExtension(remoteExtension, previousExtension != null
+                    ? previousExtension.isDependency() : dependency, namespace);
 
-            try {
-                this.localExtensionRepository.uninstallExtension(previousExtension, namespace);
-            } catch (UninstallException e) {
-                // TODO should probably log something here even if that should not happen since we are sure this
-                // extension exists
+            notifyStepPropress();
+
+            if (previousExtension != null) {
+                this.extensionHandlerManager.upgrade(previousExtension, localExtension, namespace);
+
+                try {
+                    this.localExtensionRepository.uninstallExtension(previousExtension, namespace);
+                } catch (UninstallException e) {
+                    this.logger.error("Failed to uninstall extension [" + previousExtension + "]", e);
+                }
+
+                this.observationManager.notify(new ExtensionUpgradedEvent(localExtension.getId()), localExtension,
+                    previousExtension);
+            } else {
+                this.extensionHandlerManager.install(localExtension, namespace);
+
+                this.observationManager.notify(new ExtensionInstalledEvent(localExtension.getId()), localExtension,
+                    previousExtension);
             }
 
-            this.observationManager.notify(new ExtensionUpgradedEvent(localExtension.getId()), localExtension,
-                previousExtension);
-        } else {
-            this.extensionHandlerManager.install(localExtension, namespace);
-
-            this.observationManager.notify(new ExtensionInstalledEvent(localExtension.getId()), localExtension,
-                previousExtension);
+            return localExtension;
+        } finally {
+            notifyPopLevelProgress();
         }
-
-        return localExtension;
     }
 }
