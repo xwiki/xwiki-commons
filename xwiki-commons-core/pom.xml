@@ -140,9 +140,7 @@
               <excludes>
                 <exclude>**/internal/**</exclude>
                 <exclude>**/test/**</exclude>
-                <!-- To be removed when we release 3.1 -->
-                <exclude>org/xwiki/component/annotation/ComponentAnnotationLoader</exclude>
-                <exclude>org/xwiki/component/logging/CommonsLoggingLogger</exclude>
+                <!-- To be removed when we release 3.2 -->
               </excludes>
             </configuration>
           </plugin>
