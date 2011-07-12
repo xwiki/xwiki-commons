@@ -49,7 +49,7 @@ import org.xwiki.observation.event.Event;
  * {@link java.util.concurrent.ConcurrentHashMap} everywhere because it's more efficient since most of methods access to
  * several maps and generally do enumerations.
  * 
- * @version $Id: 45e23773f34edfa6c3e986179c34a972ec203477 $
+ * @version $Id$
  */
 @Component
 public class DefaultObservationManager implements ObservationManager, Initializable

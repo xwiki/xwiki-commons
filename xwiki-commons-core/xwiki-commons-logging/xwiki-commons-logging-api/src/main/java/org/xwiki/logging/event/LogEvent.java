@@ -27,7 +27,7 @@ import org.xwiki.observation.event.Event;
 /**
  * Sent when logger is called.
  * 
- * @version $Id: 312cb6c06a8b196f474ed82aa82299a2e49ea2f0 $
+ * @version $Id$
  * @since 3.2M1
  */
 @Component
