@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -52,6 +53,7 @@ import ch.qos.logback.core.AppenderBase;
  */
 @Component
 @Singleton
+@Named("LogbackEventGenerator")
 public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implements EventListener, Initializable
 {
     /**
