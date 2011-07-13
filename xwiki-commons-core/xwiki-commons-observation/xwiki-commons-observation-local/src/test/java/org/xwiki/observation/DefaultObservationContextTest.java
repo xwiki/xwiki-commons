@@ -57,30 +57,19 @@ public class DefaultObservationContextTest extends AbstractComponentTestCase
         final EndEvent endEvent1 = getMockery().mock(EndEvent.class, "end1");
         final EndEvent endEvent2 = getMockery().mock(EndEvent.class, "end2");
 
-        getMockery().checking(new Expectations()
-        {
-            {
-                allowing(beginEvent1).matches(with(same(beginEvent1)));
-                will(returnValue(true));
-                allowing(beginEvent1).matches(with(IsNot.not(same(beginEvent1))));
-                will(returnValue(false));
+        getMockery().checking(new Expectations() {{
+            allowing(beginEvent1).matches(with(same(beginEvent1))); will(returnValue(true));
+            allowing(beginEvent1).matches(with(IsNot.not(same(beginEvent1)))); will(returnValue(false));
 
-                allowing(beginEvent2).matches(with(same(beginEvent2)));
-                will(returnValue(true));
-                allowing(beginEvent2).matches(with(IsNot.not(same(beginEvent2))));
-                will(returnValue(false));
+            allowing(beginEvent2).matches(with(same(beginEvent2))); will(returnValue(true));
+            allowing(beginEvent2).matches(with(IsNot.not(same(beginEvent2)))); will(returnValue(false));
 
-                allowing(endEvent1).matches(with(same(endEvent1)));
-                will(returnValue(true));
-                allowing(endEvent1).matches(with(IsNot.not(same(endEvent1))));
-                will(returnValue(false));
+            allowing(endEvent1).matches(with(same(endEvent1))); will(returnValue(true));
+            allowing(endEvent1).matches(with(IsNot.not(same(endEvent1)))); will(returnValue(false));
 
-                allowing(endEvent2).matches(with(same(endEvent2)));
-                will(returnValue(true));
-                allowing(endEvent2).matches(with(IsNot.not(same(endEvent2))));
-                will(returnValue(false));
-            }
-        });
+            allowing(endEvent2).matches(with(same(endEvent2))); will(returnValue(true));
+            allowing(endEvent2).matches(with(IsNot.not(same(endEvent2)))); will(returnValue(false));
+        }});
 
         Assert.assertFalse(this.observationContext.isIn(beginEvent1));
         Assert.assertFalse(this.observationContext.isIn(beginEvent2));
