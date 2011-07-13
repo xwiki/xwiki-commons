@@ -34,7 +34,7 @@ import org.xwiki.test.AbstractComponentTestCase;
  * 
  * @version $Id$
  */
-public class DefaultObservationContextTest extends AbstractComponentTestCase
+public class ObservationContextTest extends AbstractComponentTestCase
 {
     private ObservationManager manager;
 

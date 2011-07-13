@@ -20,24 +20,16 @@
  */
 package org.xwiki.observation.internal;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Stack;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationContext;
-import org.xwiki.observation.event.AllEvent;
 import org.xwiki.observation.event.BeginEvent;
-import org.xwiki.observation.event.EndEvent;
-import org.xwiki.observation.event.Event;
 
 /**
  * Default implementation of {@link ObservationContext}.
@@ -47,30 +39,18 @@ import org.xwiki.observation.event.Event;
  */
 @Component
 @Singleton
-@Named("DefaultObservationContext")
-public class DefaultObservationContext implements ObservationContext, EventListener
+public class DefaultObservationContext implements ObservationContext
 {
     /**
      * The name of the property storing current events.
      */
-    private static final String KEY_EVENTS = "observation.currentevents";
-
-    /**
-     * The events to match.
-     */
-    private static final List<Event> EVENTS = Collections.<Event> singletonList(AllEvent.ALLEVENT);
+    static final String KEY_EVENTS = "observation.currentevents";
 
     /**
      * The execution.
      */
     @Inject
     private Execution execution;
-
-    /**
-     * The logger to log.
-     */
-    @Inject
-    private Logger logger;
 
     /**
      * @return the events stacked in the execution context
@@ -86,26 +66,6 @@ public class DefaultObservationContext implements ObservationContext, EventListe
 
         return events;
     }
-
-    /**
-     * @param event the event stack
-     */
-    private void pushCurrentEvent(BeginEvent event)
-    {
-        ExecutionContext context = execution.getContext();
-        if (context != null) {
-            Stack<BeginEvent> events = (Stack<BeginEvent>) context.getProperty(KEY_EVENTS);
-
-            if (events == null) {
-                events = new Stack<BeginEvent>();
-                context.setProperty(KEY_EVENTS, events);
-            }
-
-            events.push(event);
-        }
-    }
-
-    // ObservationContext
 
     /**
      * {@inheritDoc}
@@ -125,51 +85,5 @@ public class DefaultObservationContext implements ObservationContext, EventListe
             }
         }
         return false;
-    }
-
-    // EventListener
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.EventListener#getName()
-     */
-    @Override
-    public String getName()
-    {
-        return "DefaultObservationContext";
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.EventListener#getEvents()
-     */
-    @Override
-    public List<Event> getEvents()
-    {
-        return EVENTS;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.EventListener#onEvent(org.xwiki.observation.event.Event, java.lang.Object,
-     *      java.lang.Object)
-     */
-    @Override
-    public void onEvent(Event event, Object source, Object data)
-    {
-        if (event instanceof BeginEvent) {
-            pushCurrentEvent((BeginEvent) event);
-        } else if (event instanceof EndEvent) {
-            Stack<BeginEvent> events = getCurrentEvents();
-
-            if (events != null && !events.isEmpty()) {
-                events.pop();
-            } else {
-                this.logger.error("Can't find any begin event corresponding to [{}]", event);
-            }
-        }
     }
 }
