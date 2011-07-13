@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Stack;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ import org.xwiki.observation.event.Event;
  */
 @Component
 @Singleton
+@Named("ObservationContextListener")
 public class ObservationContextListener implements EventListener
 {
     /**
@@ -107,7 +109,7 @@ public class ObservationContextListener implements EventListener
     @Override
     public String getName()
     {
-        return "DefaultObservationContext";
+        return "ObservationContextListener";
     }
 
     /**
