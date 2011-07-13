@@ -107,7 +107,7 @@ public class EscapeToolTest
     public void testQWithSpecialChars()
     {
         EscapeTool tool = new EscapeTool();
-        Assert.assertEquals("=?UTF-8?Q?a=3Db=3F=0A?=", tool.q("a=b?\n"));
+        Assert.assertEquals("=?UTF-8?Q?a=3Db=3F=5F=0A?=", tool.q("a=b?_\n"));
     }
 
     @Test
