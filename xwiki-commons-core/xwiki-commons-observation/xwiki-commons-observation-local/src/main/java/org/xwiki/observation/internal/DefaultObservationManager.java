@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -52,6 +53,7 @@ import org.xwiki.observation.event.Event;
  * @version $Id$
  */
 @Component
+@Singleton
 public class DefaultObservationManager implements ObservationManager, Initializable
 {
     /**
