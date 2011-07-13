@@ -156,11 +156,10 @@ public class DefaultObservationManager implements ObservationManager, Initializa
 
         // If the passed event listener name is already registered, log a warning
         if (previousListener != null) {
-            this.logger.warn(
-                "The [" + eventListener.getClass().getName() + "] listener has overwritten a previously "
-                    + "registered listener [" + previousListener.getClass().getName()
-                    + "] since they both are registered under the same id [" + eventListener.getName() + "]."
-                    + " In the future consider removing a Listener first if you really want to register it again.");
+            this.logger.warn("The [" + eventListener.getClass().getName() + "] listener has overwritten a previously "
+                + "registered listener [" + previousListener.getClass().getName()
+                + "] since they both are registered under the same id [" + eventListener.getName() + "]."
+                + " In the future consider removing a Listener first if you really want to register it again.");
         }
 
         // For each event defined for this listener, add it to the Event Map.
@@ -304,7 +303,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     {
         notify(event, source, null);
     }
-
+    
     /**
      * A component as been modified.
      * 
