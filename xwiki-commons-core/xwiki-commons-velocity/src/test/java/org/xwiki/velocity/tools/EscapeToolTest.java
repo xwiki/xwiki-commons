@@ -67,4 +67,88 @@ public class EscapeToolTest
 
         Assert.assertTrue("Non-ASCII characters shouldn't be escaped", tool.xml("\u0123").equals("\u0123"));
     }
+
+    @Test
+    public void testQuotedPrintableWithSimpleText()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("Hello World", tool.quotedPrintable("Hello World"));
+    }
+
+    @Test
+    public void testQuotedPrintableWithSpecialChars()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("a=3Db=0A", tool.quotedPrintable("a=b\n"));
+    }
+
+    @Test
+    public void testQuotedPrintableWithNonAsciiChars()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("=C4=A3", tool.quotedPrintable("\u0123"));
+    }
+
+    @Test
+    public void testQuotedPrintableWithNull()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertNull(tool.quotedPrintable(null));
+    }
+
+    @Test
+    public void testQWithSimpleText()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("=?UTF-8?Q?Hello_World?=", tool.q("Hello World"));
+    }
+
+    @Test
+    public void testQWithSpecialChars()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("=?UTF-8?Q?a=3Db=3F=0A?=", tool.q("a=b?\n"));
+    }
+
+    @Test
+    public void testQWithNonAsciiChars()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("=?UTF-8?Q?=C4=A3?=", tool.q("\u0123"));
+    }
+
+    @Test
+    public void testQWithNull()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertNull(tool.q(null));
+    }
+
+    @Test
+    public void testBWithSimpleText()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("=?UTF-8?B?SGVsbG8gV29ybGQ=?=", tool.b("Hello World"));
+    }
+
+    @Test
+    public void testBWithSpecialChars()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("=?UTF-8?B?YT1iPwo=?=", tool.b("a=b?\n"));
+    }
+
+    @Test
+    public void testBWithNonAsciiChars()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("=?UTF-8?B?xKM=?=", tool.b("\u0123"));
+    }
+
+    @Test
+    public void testBWithNull()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertNull(tool.b(null));
+    }
 }

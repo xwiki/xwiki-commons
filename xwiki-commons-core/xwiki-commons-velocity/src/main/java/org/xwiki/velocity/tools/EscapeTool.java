@@ -19,6 +19,10 @@
  */
 package org.xwiki.velocity.tools;
 
+import org.apache.commons.codec.EncoderException;
+import org.apache.commons.codec.net.BCodec;
+import org.apache.commons.codec.net.QCodec;
+import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.xwiki.xml.XMLUtils;
 
 /**
@@ -32,20 +36,86 @@ import org.xwiki.xml.XMLUtils;
  * increases the HTML length considerably, while also making the source unreadable.
  * </p>
  * 
- * @version $Id$
- * @since 2.7RC1
- */
-public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
-{
-    /**
-     * Escapes the XML special characters in a <code>String</code> using numerical XML entities.
-     * 
-     * @param content the text to escape, may be {@code null}
-     * @return a new escaped {@code String}, {@code null} if {@code null} input
-     */
-    @Override
-    public String xml(Object content)
+ * @version $Id$return XMLUtils.escape(conte
+    {
+        return XMLUtils.escape(conte
+    {
+        return XMLUtils.escape(conte
+    {
+        return XMLUtils.escape(conte
+    {
+        return XMLUtils.escape(conte
+    {
+        return XMLUtils.escape(conte
+    {
+        return XMLUtils.escape(conte
+    {
+        return XMLUtils.escape(conte
+    {
+        return XMLUtils.escape(conte
+    {
+        return XMLUtils.escape(conte
     {
         return XMLUtils.escape(content);
+    }
+
+    /**
+     * Encode a text using the Quoted-Printable format, as specified in section 6.7 of <a
+     * href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>. UTF-8 is used as the character encoding, and no line
+     * breaking is performed.
+     * 
+     * @param content the text to encode
+     * @return the text converted into the Quoted-Printable format
+     */
+    public String quotedPrintable(Object content)
+    {
+        if (content != null) {
+            try {
+                return new QuotedPrintableCodec().encode(String.valueOf(content));
+            } catch (EncoderException ex) {
+                // Just return null
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Encode a text using the Q encoding specified in <a href="http://www.ietf.org/rfc/rfc2047.txt">RFC 2047</a>. UTF-8
+     * is used as the character encoding, and no line breaking is performed. The resulting text is already wrapped with
+     * the encoded word markers, starting with {@code =?UTF-8?Q?} and ending with {@code ?=}.
+     * 
+     * @param content the text to encode
+     * @return the text converted into an encoded word using the Q encoding
+     */
+    public String q(Object content)
+    {
+        if (content != null) {
+            try {
+                return new QCodec().encode(String.valueOf(content)).replace(' ', '_');
+            } catch (EncoderException ex) {
+                // Just return null
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Encode a text using the B encoding specified in <a href="http://www.ietf.org/rfc/rfc2047.txt">RFC 2047</a>. UTF-8
+     * is used as the character encoding, and no line breaking is performed. The resulting text is already wrapped with
+     * the encoded word markers, starting with {@code =?UTF-8?B?} and ending with {@code ?=}.
+     * 
+     * @param content the text to encode
+     * @return the text converted into an encoded word using the B encoding
+     */
+    public String b(Object content)
+    {
+        if (content != null) {
+            try {
+                return new BCodec().encode(String.valueOf(content));
+            } catch (EncoderException ex) {
+                // Just return null
+            }
+        }
+        return null;
     }
 }
