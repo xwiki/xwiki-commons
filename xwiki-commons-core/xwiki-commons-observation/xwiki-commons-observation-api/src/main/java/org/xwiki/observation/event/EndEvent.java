@@ -21,13 +21,12 @@
 package org.xwiki.observation.event;
 
 /**
- * Implemented by event indicating some task is starting. This should only be used when there is a corresponding
- * {@link EndEvent}.
+ * Implemented by event indicating some task is stopping. This should only be used when there is a corresponding
+ * {@link BeginEvent}.
  * 
  * @version $Id$
  * @since 3.2M1
  */
 public interface EndEvent extends Event
 {
-
 }
