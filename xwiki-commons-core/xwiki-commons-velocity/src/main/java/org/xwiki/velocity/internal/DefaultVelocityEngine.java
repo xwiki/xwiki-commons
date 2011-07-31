@@ -133,7 +133,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
                 if (!overridingProperties.containsKey(key)) {
                     String value = configurationProperties.getProperty(key);
                     velocityEngine.setProperty(key, value);
-                    this.logger.debug("Setting property [" + key + "] = [" + value + "]");
+                    this.logger.debug("Setting property [{}] = [{}]", key, value);
                 }
             }
         }
@@ -144,7 +144,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
                 String key = e.nextElement().toString();
                 String value = overridingProperties.getProperty(key);
                 velocityEngine.setProperty(key, value);
-                this.logger.debug("Overriding property [" + key + "] = [" + value + "]");
+                this.logger.debug("Overriding property [{}] = [{}]", key, value);
             }
         }
     }
