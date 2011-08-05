@@ -16,7 +16,6 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.component.annotation;
 
@@ -44,7 +43,7 @@ public @interface Component
     /**
      * The hint value. Can be any text value. It's used to differentiate one component implementation
      * from another one.
-     * @deprecated since 3.1M1 use the @Named annotation instead
+     * @deprecated since 3.1M1 use the {@code @Named} annotation instead
      */
     String value() default "";
 
