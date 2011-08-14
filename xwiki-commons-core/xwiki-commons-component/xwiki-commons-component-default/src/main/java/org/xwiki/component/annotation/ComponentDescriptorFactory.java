@@ -110,7 +110,18 @@ public class ComponentDescriptorFactory
         // Note: that we need to find all fields since we can have some inherited fields which are annotated in a
         // superclass. Since Java doesn't offer a method to return all fields we have to traverse all parent classes
         // looking for declared fields.
-        for (Field field : ReflectionUtils.getAllFields(componentClass)) {
+        Collection<Field> fields;
+        try {
+            fields = ReflectionUtils.getAllFields(componentClass);
+        } catch (NoClassDefFoundError e) {
+            // Provide a better exception message to more easily debug component loading issue. Specifically with this
+            // error message we'll known which component failed to be initialized.
+            throw new NoClassDefFoundError("Failed to load class [" + e.getMessage()
+                + "] required by a field of component class [" + componentClass.getName() + "], hint ["
+                + hint + "], role [" + componentRoleClass.getName() + "]");
+        }
+
+        for (Field field : fields) {
             ComponentDependency dependency = createComponentDependency(field);
             if (dependency != null) {
                 descriptor.addComponentDependency(dependency);
