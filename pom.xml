@@ -304,6 +304,7 @@ Use the junit-dep artifact instead of the junit one which wrongly bundles hamcre
             <preparationGoals>clean install</preparationGoals>
             <!-- Avoid site generation during the release:perform to speed up release process -->
             <goals>deploy</goals>
+            <mavenExecutorId>forked-path</mavenExecutorId>
           </configuration>
         </plugin>
         <plugin>
