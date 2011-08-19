@@ -145,7 +145,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2</version>
       </dependency>
       <!-- SLF4J implementation we use -->
       <dependency>
@@ -157,13 +157,13 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2</version>
       </dependency>
       <!-- External libraries using Log4J will delegate to SLF4J -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>log4j-over-slf4j</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2</version>
       </dependency>
 
       <!-- Everybody tests -->
