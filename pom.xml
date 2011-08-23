@@ -48,8 +48,14 @@
     <system>jira</system>
     <url>http://jira.xwiki.org/jira/browse/XCOMMONS</url>
   </issueManagement>
-  <developers />
-  <contributors />
+  <developers>
+    <!-- Fake Developer to satisfy Maven Central requirements. We prefer to list developers and contributors on our
+         wiki at http://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame -->
+    <developer>
+      <id>devs</id>
+      <name>All XWiki Developers</name>
+    </developer>
+  </developers>
   <organization>
     <name>XWiki</name>
     <url>http://xwiki.org/</url>
