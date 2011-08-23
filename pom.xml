@@ -29,12 +29,7 @@
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
   <version>3.2-SNAPSHOT</version>
-  <properties>
-    <!-- By default Checkstyle and Clirr are on by default -->
-    <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
-    <xwiki.clirr.skip>false</xwiki.clirr.skip>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+  <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <url>http://xwiki.org</url>
   <inceptionYear>2004</inceptionYear>
   <licenses>
@@ -91,6 +86,12 @@
       </otherArchives>
     </mailingList>
   </mailingLists>
+  <properties>
+    <!-- By default Checkstyle and Clirr are on by default -->
+    <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
+    <xwiki.clirr.skip>false</xwiki.clirr.skip>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <dependencyManagement>
     <!-- Standard dependencies used in several XWiki build modules. Ensures all modules
          use the same version for these dependencies -->
