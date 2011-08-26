@@ -22,6 +22,7 @@ package org.xwiki.logging.event;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.logging.LogLevel;
 import org.xwiki.observation.event.Event;
 
 /**

@@ -17,38 +17,38 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.logging.event;
+package org.xwiki.logging;
+
+import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.observation.EventListener;
 
 /**
- * Defines the set of levels used in logging events.
+ * Provide several log related tools.
  * 
  * @version $Id$
- * @since 3.2M1
+ * @since 3.2M3
  */
-public enum LogLevel
+@ComponentRole
+public interface LoggerManager
 {
     /**
-     * Designates error events which may or not be fatal to the application.
+     * Grab log produced by the current thread and send them to the provided listener.
+     * 
+     * @param listener the listener that will receive logging events.
      */
-    ERROR,
+    void pushLogListener(EventListener listener);
 
     /**
-     * Designates potentially harmful situations.
+     * Grab log produced by the current thread and add it to the provided queue.
+     * 
+     * @param queue the queue where to store log events
      */
-    WARN,
+    void puchLogQueue(LogQueue queue);
 
     /**
-     * Designates informational messages highlighting overall progress of the application.
+     * Remove the current listener from the current thread stack.
+     * 
+     * @return the previous log events listener for the current thread
      */
-    INFO,
-
-    /**
-     * Designates informational events of lower importance.
-     */
-    DEBUG,
-
-    /**
-     * Designates informational events of very low importance.
-     */
-    TRACE
+    EventListener popLogListener();
 }

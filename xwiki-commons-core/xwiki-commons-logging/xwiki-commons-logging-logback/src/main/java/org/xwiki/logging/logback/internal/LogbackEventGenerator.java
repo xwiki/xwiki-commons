@@ -27,19 +27,17 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.event.LogLevel;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 
-import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.ThrowableProxy;
@@ -99,8 +97,7 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
     public void initialize() throws InitializationException
     {
         // Register appender
-        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-        ch.qos.logback.classic.Logger rootLogger = lc.getLogger(Logger.ROOT_LOGGER_NAME);
+        ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
         setContext(rootLogger.getLoggerContext());
         rootLogger.addAppender(this);
         start();

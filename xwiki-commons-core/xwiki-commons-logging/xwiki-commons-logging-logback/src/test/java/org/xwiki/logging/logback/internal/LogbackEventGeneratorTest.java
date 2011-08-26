@@ -1,3 +1,22 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.xwiki.logging.logback.internal;
 
 import java.util.Arrays;
@@ -6,8 +25,8 @@ import org.jmock.Expectations;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.event.LogLevel;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
@@ -26,7 +45,7 @@ public class LogbackEventGeneratorTest extends AbstractComponentTestCase
         
         this.observationManager = getComponentManager().lookup(ObservationManager.class);
         
-        this.logger = LoggerFactory.getLogger(LogbackEventGeneratorTest.class);   
+        this.logger = LoggerFactory.getLogger(getClass());   
     }
 
     @Test
