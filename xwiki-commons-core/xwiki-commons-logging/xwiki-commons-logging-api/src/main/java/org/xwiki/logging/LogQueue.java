@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.xwiki.logging.event.LogEvent;
 
 /**
+ * A queue of {@link LogEvent}s.
  * 
  * @version $Id$
  * @since 3.2M3

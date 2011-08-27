@@ -109,10 +109,10 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.logging.LoggerManager#puchLogQueue(org.xwiki.logging.LogQueue)
+     * @see org.xwiki.logging.LoggerManager#pushLogQueue(org.xwiki.logging.LogQueue)
      */
     @Override
-    public void puchLogQueue(LogQueue queue)
+    public void pushLogQueue(LogQueue queue)
     {
         pushLogListener(new LogQueueListener(UUID.randomUUID().toString(), queue));
     }

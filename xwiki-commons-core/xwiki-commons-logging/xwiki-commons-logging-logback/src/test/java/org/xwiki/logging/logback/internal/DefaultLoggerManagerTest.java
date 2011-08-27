@@ -93,7 +93,7 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
 
         LogQueue queue = new LogQueue();
 
-        this.loggerManager.puchLogQueue(queue);
+        this.loggerManager.pushLogQueue(queue);
 
         this.logger.error("[test] after push");
 

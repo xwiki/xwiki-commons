@@ -32,18 +32,23 @@ import org.xwiki.observation.EventListener;
 public interface LoggerManager
 {
     /**
-     * Grab log produced by the current thread and send them to the provided listener.
+     * Grab logs produced by the current thread and send them to the provided listener.
+     * <p>
+     * They are not sent to the standard log implementation appender or whatever other system is used by the default
+     * slf4j implementation. It also override any previous call to {@link #pushLogListener(EventListener)} or
+     * {@link #pushLogQueue(LogQueue)} (which will get in on front after a pop).
      * 
      * @param listener the listener that will receive logging events.
      */
     void pushLogListener(EventListener listener);
 
     /**
-     * Grab log produced by the current thread and add it to the provided queue.
+     * Automatically create and push a listener to fill the provided queue.
      * 
      * @param queue the queue where to store log events
+     * @see #pushLogListener(EventListener)
      */
-    void puchLogQueue(LogQueue queue);
+    void pushLogQueue(LogQueue queue);
 
     /**
      * Remove the current listener from the current thread stack.

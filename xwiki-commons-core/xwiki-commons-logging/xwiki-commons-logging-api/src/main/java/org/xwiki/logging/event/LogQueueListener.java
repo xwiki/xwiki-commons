@@ -23,6 +23,8 @@ import org.xwiki.logging.LogQueue;
 import org.xwiki.observation.event.Event;
 
 /**
+ * Fill the provided {@link LogQueue} with received {@link LogEvent}s.
+ * 
  * @version $Id$
  * @since 3.2M3
  */
