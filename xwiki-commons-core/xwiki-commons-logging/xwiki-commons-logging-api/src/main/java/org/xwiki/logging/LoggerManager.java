@@ -32,7 +32,7 @@ import org.xwiki.observation.EventListener;
 public interface LoggerManager
 {
     /**
-     * Grab logs produced by the current thread and send them to the provided listener.
+     * Grab subsequent logs produced by the current thread and send them to the provided listener.
      * <p>
      * They are not sent to the standard log implementation appender or whatever other system is used by the default
      * slf4j implementation. It also override any previous call to {@link #pushLogListener(EventListener)} or
@@ -52,6 +52,8 @@ public interface LoggerManager
 
     /**
      * Remove the current listener from the current thread stack.
+     * <p>
+     * If several listeners has been pushed it restore previous one.
      * 
      * @return the previous log events listener for the current thread
      */
