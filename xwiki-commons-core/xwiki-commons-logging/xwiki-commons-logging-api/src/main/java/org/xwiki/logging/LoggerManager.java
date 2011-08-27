@@ -23,7 +23,8 @@ import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.observation.EventListener;
 
 /**
- * Provide several log related tools.
+ * Provide some logging management APIs such as the ability to redirect logs to an {@link EventListener} or to a
+ * {@link LogQueue}.
  * 
  * @version $Id$
  * @since 3.2M3
@@ -34,18 +35,19 @@ public interface LoggerManager
     /**
      * Grab subsequent logs produced by the current thread and send them to the provided listener.
      * <p>
-     * They are not sent to the standard log implementation appender or whatever other system is used by the default
-     * slf4j implementation. It also override any previous call to {@link #pushLogListener(EventListener)} or
-     * {@link #pushLogQueue(LogQueue)} (which will get in on front after a pop).
+     * Note that the logs are not sent anymore to SLF4J. In addition, it also overrides any previous call to
+     * {@link #pushLogListener(EventListener)} or {@link #pushLogQueue(LogQueue)} (which will get active again after
+     * a call to {@link #popLogListener()}).
      * 
-     * @param listener the listener that will receive logging events.
+     * @param listener the listener that will receive all future logging events
      */
     void pushLogListener(EventListener listener);
 
     /**
-     * Automatically create and push a listener to fill the provided queue.
+     * Automatically creates and pushes a listener to fill the provided queue. To disable logging to the passed queue
+     * you need to call {@link #popLogListener()} which will remove the Listener that has been automatically created.
      * 
-     * @param queue the queue where to store log events
+     * @param queue the queue where all future log events will be stored
      * @see #pushLogListener(EventListener)
      */
     void pushLogQueue(LogQueue queue);
@@ -53,7 +55,7 @@ public interface LoggerManager
     /**
      * Remove the current listener from the current thread stack.
      * <p>
-     * If several listeners has been pushed it restore previous one.
+     * If several listeners have been pushed it makes the previous one active again.
      * 
      * @return the previous log events listener for the current thread
      */
