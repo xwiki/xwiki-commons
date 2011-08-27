@@ -21,16 +21,13 @@ package org.xwiki.logging.logback.internal;
 
 import java.util.Iterator;
 import java.util.Stack;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
-import org.xwiki.logging.event.LogQueueListener;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
@@ -104,17 +101,6 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
             grabLog(Thread.currentThread());
         }
         listenerStack.push(listener);
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.logging.LoggerManager#pushLogQueue(org.xwiki.logging.LogQueue)
-     */
-    @Override
-    public void pushLogQueue(LogQueue queue)
-    {
-        pushLogListener(new LogQueueListener(UUID.randomUUID().toString(), queue));
     }
 
     /**

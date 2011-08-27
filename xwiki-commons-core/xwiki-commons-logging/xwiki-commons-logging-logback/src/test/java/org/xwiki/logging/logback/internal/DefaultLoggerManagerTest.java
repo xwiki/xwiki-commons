@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.event.LogQueueListener;
 import org.xwiki.test.AbstractComponentTestCase;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -62,7 +63,7 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
                 if (event.getMessage() != null && event.getMessage().startsWith("[test]")) {
                     return FilterReply.DENY;
                 }
-                
+
                 return FilterReply.NEUTRAL;
             }
         };
@@ -93,7 +94,7 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
 
         LogQueue queue = new LogQueue();
 
-        this.loggerManager.pushLogQueue(queue);
+        this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid", queue));
 
         this.logger.error("[test] after push");
 

@@ -44,15 +44,6 @@ public interface LoggerManager
     void pushLogListener(EventListener listener);
 
     /**
-     * Automatically creates and pushes a listener to fill the provided queue. To disable logging to the passed queue
-     * you need to call {@link #popLogListener()} which will remove the Listener that has been automatically created.
-     * 
-     * @param queue the queue where all future log events will be stored
-     * @see #pushLogListener(EventListener)
-     */
-    void pushLogQueue(LogQueue queue);
-
-    /**
      * Remove the current listener from the current thread stack.
      * <p>
      * If several listeners have been pushed it makes the previous one active again.
