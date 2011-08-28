@@ -407,12 +407,6 @@ Use the junit-dep artifact instead of the junit one which wrongly bundles hamcre
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <!-- Lock down plugin version for build reproducibility -->
-          <version>2.8</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.7</version>
@@ -568,6 +562,18 @@ mmmm]]></license>
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.4</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.8</version>
+          <configuration>
+            <!-- Always exclude the internal package since it's not user-public -->
+            <excludePackageNames>*.internal.*</excludePackageNames>
+            <!-- Make sure javadoc has enough memory -->
+            <maxmemory>300m</maxmemory>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -600,12 +606,6 @@ mmmm]]></license>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.8</version>
-        <configuration>
-          <!-- Always exclude the internal package since it's not user-public -->
-          <excludePackageNames>*.internal.*</excludePackageNames>
-          <!-- Make sure javadoc has enough memory -->
-          <maxmemory>300m</maxmemory>
-        </configuration>
         <!-- Don't generate test javadoc -->
         <reportSets>
           <reportSet>
