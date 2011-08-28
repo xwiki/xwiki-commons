@@ -23,8 +23,7 @@ import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.observation.EventListener;
 
 /**
- * Provide some logging management APIs such as the ability to redirect logs to an {@link EventListener} or to a
- * {@link LogQueue}.
+ * Provide some logging management APIs such as the ability to redirect logs to an {@link EventListener}.
  * 
  * @version $Id$
  * @since 3.2M3
