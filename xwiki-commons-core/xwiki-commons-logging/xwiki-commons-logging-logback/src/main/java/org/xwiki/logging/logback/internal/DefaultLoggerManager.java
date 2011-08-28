@@ -77,11 +77,6 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.logging.LoggerManager#pushLogListener(org.xwiki.observation.EventListener)
-     */
     @Override
     public void pushLogListener(EventListener listener)
     {
@@ -103,11 +98,6 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
         listenerStack.push(listener);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.logging.LoggerManager#popLogListener()
-     */
     @Override
     public EventListener popLogListener()
     {

@@ -39,11 +39,6 @@ public class ForbiddenThreadsFilter extends Filter<ILoggingEvent>
      */
     private Set<Thread> threads = Collections.newSetFromMap(new ConcurrentHashMap<Thread, Boolean>());
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ch.qos.logback.core.filter.Filter#decide(java.lang.Object)
-     */
     @Override
     public FilterReply decide(ILoggingEvent event)
     {
