@@ -35,9 +35,8 @@ public interface LoggerManager
     /**
      * Grab subsequent logs produced by the current thread and send them to the provided listener.
      * <p>
-     * Note that the logs are not sent anymore to SLF4J. In addition, it also overrides any previous call to
-     * {@link #pushLogListener(EventListener)} or {@link #pushLogQueue(LogQueue)} (which will get active again after
-     * a call to {@link #popLogListener()}).
+     * Note that the logs will not be sent anymore to SLF4J. In addition, it also overrides any previous call to
+     * {@link #pushLogListener(EventListener)} (which will get active again after a call to {@link #popLogListener()}).
      * 
      * @param listener the listener that will receive all future logging events
      */
