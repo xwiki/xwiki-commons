@@ -21,6 +21,7 @@ package org.xwiki.logging.event;
 
 import javax.inject.Singleton;
 
+import org.slf4j.helpers.MessageFormatter;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.observation.event.Event;
@@ -54,6 +55,11 @@ public class LogEvent implements Event
      * @see LogEvent#getThrowable()
      */
     private Throwable throwable;
+
+    /**
+     * Formatted version of the message.
+     */
+    private transient String formattedMessage;
 
     /**
      * Matches any {@link LogEvent}.
@@ -118,5 +124,22 @@ public class LogEvent implements Event
     public Throwable getThrowable()
     {
         return this.throwable;
+    }
+
+    /**
+     * @return the formated version of the message
+     */
+    public String getFormattedMessage()
+    {
+        if (this.formattedMessage != null) {
+            return this.formattedMessage;
+        }
+        if (this.argumentArray != null) {
+            this.formattedMessage = MessageFormatter.arrayFormat(this.message, this.argumentArray).getMessage();
+        } else {
+            this.formattedMessage = this.message;
+        }
+
+        return this.formattedMessage;
     }
 }
