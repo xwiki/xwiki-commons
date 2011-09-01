@@ -47,7 +47,7 @@
             </goals>
             <configuration>
               <resourceBundles>
-                <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${project.version}</resourceBundle>
+                <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${commons.version}</resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>
@@ -65,7 +65,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-verification-resources</artifactId>
-              <version>${project.version}</version>
+              <version>${commons.version}</version>
             </dependency>
           </dependencies>
           <configuration>
