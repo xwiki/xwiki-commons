@@ -33,10 +33,6 @@
   <name>XWiki Commons - Tools - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Tools - Parent POM</description>
-  <properties>
-    <!-- The previous stable version of this project, used to catch API breakages. -->
-    <clirr.previous.version>3.0</clirr.previous.version>
-  </properties>
   <modules>
     <module>xwiki-commons-tool-license-resources</module>
     <module>xwiki-commons-tool-validation-resources</module>

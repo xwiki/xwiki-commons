@@ -34,10 +34,6 @@
   <name>XWiki Commons - Core - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Core - Parent POM</description>
-  <properties>
-    <!-- The previous stable version of this project, used to catch API breakages. -->
-    <clirr.previous.version>3.1</clirr.previous.version>
-  </properties>
   <modules>
     <module>xwiki-commons-component</module>
     <module>xwiki-commons-observation</module>

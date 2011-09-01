@@ -33,6 +33,19 @@
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <url>http://xwiki.org</url>
   <inceptionYear>2004</inceptionYear>
+  <properties>
+    <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
+         commons children anyway -->
+    <commons.version>3.2-SNAPSHOT</commons.version>
+
+    <!-- The previous stable version of this project, used to catch API breakages. -->
+    <xwiki.clirr.previous.version>3.1</xwiki.clirr.previous.version>
+    <xwiki.clirr.skip>false</xwiki.clirr.skip>
+
+    <!-- By default Checkstyle and Clirr are on -->
+    <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <licenses>
     <license>
       <name>LGPL 2.1</name>
@@ -87,12 +100,6 @@
       </otherArchives>
     </mailingList>
   </mailingLists>
-  <properties>
-    <!-- By default Checkstyle and Clirr are on by default -->
-    <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
-    <xwiki.clirr.skip>false</xwiki.clirr.skip>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
   <dependencyManagement>
     <!-- Standard dependencies used in several XWiki build modules. Ensures all modules
          use the same version for these dependencies -->
