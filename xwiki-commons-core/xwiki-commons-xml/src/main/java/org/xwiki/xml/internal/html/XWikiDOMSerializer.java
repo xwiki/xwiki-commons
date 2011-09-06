@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.CommentToken;
 import org.htmlcleaner.ContentToken;
@@ -146,13 +146,13 @@ public class XWikiDOMSerializer
         Matcher matcher = CDATA_PATTERN.matcher(content);
         int cursor = 0;
         while (matcher.find()) {
-            result.append(StringEscapeUtils.unescapeHtml(content.substring(cursor, matcher.start())));
+            result.append(StringEscapeUtils.unescapeHtml4(content.substring(cursor, matcher.start())));
             result.append(content.substring(matcher.start() + 9, matcher.end() - matcher.group(1).length()));
             cursor = matcher.end() - matcher.group(1).length() + 3;
         }
         // Copy the remaining text data in the result buffer
         if (cursor < content.length()) {
-            result.append(StringEscapeUtils.unescapeHtml(content.substring(cursor)));
+            result.append(StringEscapeUtils.unescapeHtml4(content.substring(cursor)));
         }
         // Ensure ther's no invalid <![CDATA[ or ]]> remaining.
         String contentResult = result.toString().replace("<![CDATA[", "").replace("]]>", "");

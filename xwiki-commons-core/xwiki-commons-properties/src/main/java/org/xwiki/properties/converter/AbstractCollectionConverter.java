@@ -29,7 +29,7 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.properties.ConverterManager;
 
 /**
