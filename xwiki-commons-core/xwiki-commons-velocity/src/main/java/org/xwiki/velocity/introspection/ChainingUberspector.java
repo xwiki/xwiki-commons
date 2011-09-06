@@ -56,338 +56,123 @@ import org.apache.velocity.util.introspection.UberspectLoggable;
  * 
  * @since 1.5M1
  * @see ChainableUberspector
- * @version $Id$erspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
-        }
-        return (Uberspect) o;
-  
+ * @version $Id$
+ */
+public class ChainingUberspector extends AbstractChainableUberspector implements Uberspect, RuntimeServicesAware,
+    UberspectLoggable
+{
+    /** The key of the parameter that allows defining the list of chained uberspectors. */
+    public static final String UBERSPECT_CHAIN_CLASSNAMES = "runtime.introspector.uberspect.chainClasses";
+
+    /** The runtime is needed for accessing the configuration. */
+    private RuntimeServices runtime;
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.apache.velocity.util.RuntimeServicesAware#setRuntimeServices(
+     *      org.apache.velocity.runtime.RuntimeServices)
+     */
+    public void setRuntimeServices(RuntimeServices rs)
+    {
+        this.runtime = rs;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation initializes the uberspector chain.
+     * </p>
+     * 
+     * @see org.apache.velocity.util.introspection.Uberspect#init()
+     */
+    @Override
+    public void init()
+    {
+        this.log.debug("Initializing the chaining uberspector.");
+        // Create the chain
+        // TODO Since we're in Plexus already, should we use components?
+        String[] chainClassnames = this.runtime.getConfiguration().getStringArray(UBERSPECT_CHAIN_CLASSNAMES);
+        for (String classname : chainClassnames) {
+            initializeUberspector(classname);
+        }
+        // If the chain is empty, use a SecureUberspector
+        if (this.inner == null) {
+            this.log.error("No chained uberspectors defined! "
+                + "This uberspector is just a placeholder that relies on a real uberspector "
+                + "to actually allow method calls. Using SecureUberspect instead as a fallback.");
+            initializeUberspector(SecureUberspector.class.getCanonicalName());
+        }
+        // Initialize all the uberspectors in the chain
+        try {
+            this.inner.init();
+        } catch (Exception e) {
+            this.log.warn(e.getMessage());
+        }
+    }
+
+    /**
+     * Instantiates an uberspector class and adds it to the chain. Also set the log and runtime services, if the class
+     * implements the proper interfaces. The {@link Uberspect#init()} method is not called.
+     * 
+     * @param classname The name of the uberspector class to add to the chain.
+     */
+    protected void initializeUberspector(String classname)
+    {
+        // Avoids direct recursive calls
+        if (!StringUtils.isEmpty(classname) && !classname.equals(this.getClass().getCanonicalName())) {
+            Uberspect u = instantiateUberspector(classname);
+            if (u == null) {
+                return;
+            }
+
+            // Set the log and runtime services, if applicable
+            if (u instanceof UberspectLoggable) {
+                ((UberspectLoggable) u).setLog(this.log);
+            }
+            if (u instanceof RuntimeServicesAware) {
+                ((RuntimeServicesAware) u).setRuntimeServices(this.runtime);
+            }
+
+            // Link it in the chain
+            if (u instanceof ChainableUberspector) {
+                ((ChainableUberspector) u).wrap(this.inner);
+            }
+            this.inner = u;
+        }
+    }
+
+    /**
+     * Tries to create an uberspector instance using reflection.
+     * 
+     * @param classname The name of the uberspector class to instantiate.
+     * @return An instance of the specified Uberspector. If the class cannot be instantiated using the default
+     *         constructor, or does not implement {@link Uberspect}, <code>null</code> is returned.
+     */
+    protected Uberspect instantiateUberspector(String classname)
+    {
+        Object o = null;
+        try {
+            o = ClassUtils.getNewInstance(classname);
+        } catch (ClassNotFoundException cnfe) {
+            this.log.warn(String.format("The specified uberspector [%s]"
+                + " does not exist or is not accessible to the current classloader.", classname));
+        } catch (IllegalAccessException e) {
+            this.log.warn(String.format("The specified uberspector [%s] does not have a public default constructor.",
+                classname));
+        } catch (InstantiationException e) {
+            this.log.warn(String.format("The specified uberspector [%s] cannot be instantiated.", classname));
+        } catch (ExceptionInInitializerError e) {
+            this.log.warn(String.format("Exception while instantiating the Uberspector [%s]: %s", classname, e
+                .getMessage()));
+        }
+
+        if (!(o instanceof Uberspect)) {
+            if (o != null) {
+                this.log.warn("The specified class for Uberspect [" + classname + "] does not implement "
+                    + Uberspect.class.getName());
+            }
+            return null;
         }
         return (Uberspect) o;
     }
