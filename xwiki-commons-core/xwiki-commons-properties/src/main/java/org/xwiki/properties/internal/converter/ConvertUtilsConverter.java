@@ -72,11 +72,7 @@ public class ConvertUtilsConverter implements Converter, Initializable
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.converter.Converter#convert(java.lang.reflect.Type, java.lang.Object)
-     */
+    @Override
     public <T> T convert(Type targetType, Object sourceValue)
     {
         Class<T> clazz;

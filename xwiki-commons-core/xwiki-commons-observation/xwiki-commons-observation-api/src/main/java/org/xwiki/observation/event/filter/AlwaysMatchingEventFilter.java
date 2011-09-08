@@ -35,21 +35,13 @@ public class AlwaysMatchingEventFilter implements EventFilter, Serializable
      */
     private static final long serialVersionUID = 1L;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see EventFilter#getFilter()
-     */
+    @Override
     public String getFilter()
     {
         return ".*";
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see EventFilter#matches(EventFilter)
-     */
+    @Override
     public boolean matches(EventFilter eventFilter)
     {
         return true;

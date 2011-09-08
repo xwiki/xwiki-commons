@@ -81,11 +81,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      */
     private Method writeMethod;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#getId()
-     */
+    @Override
     public String getId()
     {
         return this.id;
@@ -101,11 +97,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         this.id = id;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#getName()
-     */
+    @Override
     public String getName()
     {
         return this.name;
@@ -121,11 +113,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         this.name = name;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#getDescription()
-     */
+    @Override
     public String getDescription()
     {
         return this.description;
@@ -140,11 +128,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         this.description = description;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#getPropertyClass()
-     */
+    @Override
     @Deprecated
     public Class< ? > getPropertyClass()
     {
@@ -160,11 +144,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         return clazz;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#getPropertyType()
-     */
+    @Override
     public Type getPropertyType()
     {
         return this.propertyType;
@@ -179,11 +159,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         this.propertyType = propertyType;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#getDefaultValue()
-     */
+    @Override
     public Object getDefaultValue()
     {
         return this.defaultValue;
@@ -198,11 +174,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         this.defaultValue = defaultValue;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#isMandatory()
-     */
+    @Override
     public boolean isMandatory()
     {
         return this.mandatory;
@@ -226,11 +198,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         this.field = field;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#getFied()
-     */
+    @Override
     public Field getFied()
     {
         return this.field;
@@ -245,11 +213,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         this.readMethod = readMethod;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#getReadMethod()
-     */
+    @Override
     public Method getReadMethod()
     {
         return this.readMethod;
@@ -264,11 +228,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
         this.writeMethod = writeMethod;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.PropertyDescriptor#getWriteMethod()
-     */
+    @Override
     public Method getWriteMethod()
     {
         return this.writeMethod;

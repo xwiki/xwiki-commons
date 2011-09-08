@@ -56,11 +56,7 @@ public class VelocityExecutionContextInitializer implements ExecutionContextInit
     @Inject
     private VelocityContextFactory velocityContextFactory;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.context.ExecutionContextInitializer#initialize(org.xwiki.context.ExecutionContext)
-     */
+    @Override
     public void initialize(ExecutionContext executionContext) throws ExecutionContextException
     {
         try {

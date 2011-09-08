@@ -86,51 +86,31 @@ public class EmbeddableComponentManager implements ComponentManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#hasComponent(Class, String)
-     */
+    @Override
     public <T> boolean hasComponent(Class<T> role, String roleHint)
     {
         return this.descriptors.containsKey(new RoleHint<T>(role, roleHint));
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#hasComponent(Class)
-     */
+    @Override
     public <T> boolean hasComponent(Class<T> role)
     {
         return this.descriptors.containsKey(new RoleHint<T>(role));
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#lookup(Class)
-     */
+    @Override
     public <T> T lookup(Class<T> role) throws ComponentLookupException
     {
         return initialize(new RoleHint<T>(role));
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#lookup(Class, String)
-     */
+    @Override
     public <T> T lookup(Class<T> role, String roleHint) throws ComponentLookupException
     {
         return initialize(new RoleHint<T>(role, roleHint));
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#lookupList(Class)
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> List<T> lookupList(Class<T> role) throws ComponentLookupException
     {
@@ -151,11 +131,7 @@ public class EmbeddableComponentManager implements ComponentManager
         return objects;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#lookupMap(Class)
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException
     {
@@ -181,21 +157,13 @@ public class EmbeddableComponentManager implements ComponentManager
         return objects;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#registerComponent(ComponentDescriptor)
-     */
+    @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor) throws ComponentRepositoryException
     {
         registerComponent(componentDescriptor, null);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.manager.ComponentManager#registerComponent(ComponentDescriptor, java.lang.Object)
-     */
+    @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
     {
         synchronized (this) {
@@ -218,11 +186,7 @@ public class EmbeddableComponentManager implements ComponentManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.manager.ComponentManager#unregisterComponent(java.lang.Class, java.lang.String)
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public void unregisterComponent(Class< ? > role, String roleHint)
     {
@@ -245,11 +209,7 @@ public class EmbeddableComponentManager implements ComponentManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#getComponentDescriptor(Class, String)
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String roleHint)
     {
@@ -258,11 +218,7 @@ public class EmbeddableComponentManager implements ComponentManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#getComponentDescriptorList(Class)
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
     {
@@ -279,11 +235,7 @@ public class EmbeddableComponentManager implements ComponentManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#release(Object)
-     */
+    @Override
     public <T> void release(T component) throws ComponentLifecycleException
     {
         synchronized (this) {
@@ -302,41 +254,25 @@ public class EmbeddableComponentManager implements ComponentManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#getComponentEventManager()
-     */
+    @Override
     public ComponentEventManager getComponentEventManager()
     {
         return this.eventManager;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#setComponentEventManager(ComponentEventManager)
-     */
+    @Override
     public void setComponentEventManager(ComponentEventManager eventManager)
     {
         this.eventManager = eventManager;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#getParent()
-     */
+    @Override
     public ComponentManager getParent()
     {
         return this.parent;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ComponentManager#setParent(ComponentManager)
-     */
+    @Override
     public void setParent(ComponentManager parentComponentManager)
     {
         this.parent = parentComponentManager;

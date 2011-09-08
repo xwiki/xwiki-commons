@@ -34,11 +34,6 @@ import org.xwiki.properties.converter.AbstractCollectionConverter;
 @Singleton
 public class SetConverter extends AbstractCollectionConverter
 {
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.converter.AbstractCollectionConverter#newCollection()
-     */
     @Override
     protected Collection newCollection()
     {

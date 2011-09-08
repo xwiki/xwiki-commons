@@ -69,6 +69,7 @@ public class FontFilter extends AbstractHTMLFilter
      * 
      * <p>The {@link FontFilter} does not use any cleaningParameters passed in.</p>
      */
+    @Override
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
         List<Element> fontTags = filterDescendants(document.getDocumentElement(), new String[] {TAG_FONT});

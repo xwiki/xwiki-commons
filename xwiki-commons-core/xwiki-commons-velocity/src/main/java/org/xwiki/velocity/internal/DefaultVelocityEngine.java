@@ -87,11 +87,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
     /** Counter for the number of active rendering processes using each namespace. */
     private final Map<String, Integer> namespaceUsageCount = new HashMap<String, Integer>();
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see VelocityEngine#initialize(Properties)
-     */
+    @Override
     public void initialize(Properties overridingProperties) throws XWikiVelocityException
     {
         org.apache.velocity.app.VelocityEngine velocityEngine = new org.apache.velocity.app.VelocityEngine();

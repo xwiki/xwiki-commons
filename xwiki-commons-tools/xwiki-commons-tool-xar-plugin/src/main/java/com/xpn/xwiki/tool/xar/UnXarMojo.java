@@ -71,11 +71,7 @@ public class UnXarMojo extends AbstractXarMojo
      */
     private File outputDirectory;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.maven.plugin.AbstractMojo#execute()
-     */
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         this.outputDirectory.mkdirs();

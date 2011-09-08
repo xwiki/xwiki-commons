@@ -48,21 +48,13 @@ public class FixedNameEventFilter implements EventFilter, Serializable
         this.filter = filter;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see EventFilter#getFilter()
-     */
+    @Override
     public String getFilter()
     {
         return this.filter;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see EventFilter#getFilter()
-     */
+    @Override
     public boolean matches(EventFilter eventFilter)
     {
         return (getFilter().equals(eventFilter.getFilter()));

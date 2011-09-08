@@ -97,11 +97,7 @@ public class DefaultBeanManager implements BeanManager
         return this.validatorFactory;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.BeanManager#populate(java.lang.Object, java.util.Map)
-     */
+    @Override
     public void populate(Object bean, Map<String, ? > values) throws PropertyException
     {
         Map<String, Object> remainingValues = new HashMap<String, Object>(values);
@@ -189,11 +185,7 @@ public class DefaultBeanManager implements BeanManager
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.BeanManager#getBeanDescriptor(java.lang.Class)
-     */
+    @Override
     public BeanDescriptor getBeanDescriptor(Class< ? > beanClass)
     {
         BeanDescriptor beanDescriptor = null;

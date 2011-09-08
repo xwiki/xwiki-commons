@@ -47,11 +47,6 @@ public class ColorConverter extends AbstractConverter
      */
     private static final String USAGE = "Color value should be in the form of '#xxxxxx' or 'r,g,b'";
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.converter.AbstractConverter#convertToType(java.lang.reflect.Type, Object)
-     */
     @Override
     protected Color convertToType(Type type, Object value)
     {
@@ -63,11 +58,6 @@ public class ColorConverter extends AbstractConverter
         return color;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.commons.beanutils.converters.AbstractConverter#convertToString(java.lang.Object)
-     */
     @Override
     protected String convertToString(Object value)
     {

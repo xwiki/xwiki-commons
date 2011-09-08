@@ -135,6 +135,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
      * 
      * @see Initializable#initialize()
      */
+    @Override
     public void initialize() throws InitializationException
     {
         try {
@@ -146,11 +147,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ObservationManager#addListener(EventListener)
-     */
+    @Override
     public void addListener(EventListener eventListener)
     {
         // Register the listener by name. If already registered, override it.
@@ -186,11 +183,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ObservationManager#removeListener(String)
-     */
+    @Override
     public void removeListener(String listenerName)
     {
         this.listenersByName.remove(listenerName);
@@ -203,11 +196,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ObservationManager#addEvent(String, Event)
-     */
+    @Override
     public void addEvent(String listenerName, Event event)
     {
         Map<String, RegisteredListener> listeners = this.listenersByEvent.get(event.getClass());
@@ -217,11 +206,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ObservationManager#removeEvent(String, Event)
-     */
+    @Override
     public void removeEvent(String listenerName, Event event)
     {
         Map<String, RegisteredListener> listeners = this.listenersByEvent.get(event.getClass());
@@ -231,21 +216,13 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ObservationManager#getListener(String)
-     */
+    @Override
     public EventListener getListener(String listenerName)
     {
         return this.listenersByName.get(listenerName);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ObservationManager#notify(org.xwiki.observation.event.Event, Object, Object)
-     */
+    @Override
     public void notify(Event event, Object source, Object data)
     {
         // Find all listeners for this event
@@ -296,11 +273,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ObservationManager#notify(org.xwiki.observation.event.Event, Object)
-     */
+    @Override
     public void notify(Event event, Object source)
     {
         notify(event, source, null);

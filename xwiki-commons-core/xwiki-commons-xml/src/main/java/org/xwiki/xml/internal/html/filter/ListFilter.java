@@ -64,6 +64,7 @@ public class ListFilter extends AbstractHTMLFilter
      * <p>
      * The {@link ListFilter} does not use any cleaningParameters passed in.
      */
+    @Override
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
         // Iterate all lists and fix them.

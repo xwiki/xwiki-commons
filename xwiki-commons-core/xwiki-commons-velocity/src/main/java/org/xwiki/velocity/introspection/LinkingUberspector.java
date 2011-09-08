@@ -74,11 +74,7 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
     /** The array of uberspectors to use. */
     private List<Uberspect> uberspectors;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.velocity.util.RuntimeServicesAware#setRuntimeServices(org.apache.velocity.runtime.RuntimeServices)
-     */
+    @Override
     public void setRuntimeServices(RuntimeServices rs)
     {
         this.runtime = rs;
@@ -181,12 +177,6 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
         return (Uberspect) o;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.velocity.util.introspection.Uberspect#getIterator(java.lang.Object,
-     *      org.apache.velocity.util.introspection.Info)
-     */
     @SuppressWarnings("unchecked")
     @Override
     public Iterator getIterator(Object obj, Info i) throws Exception
@@ -201,12 +191,6 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.velocity.util.introspection.Uberspect#getMethod(java.lang.Object, java.lang.String,
-     *      java.lang.Object[], org.apache.velocity.util.introspection.Info)
-     */
     @Override
     public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i) throws Exception
     {
@@ -220,12 +204,6 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.velocity.util.introspection.Uberspect#getPropertyGet(java.lang.Object, java.lang.String,
-     *      org.apache.velocity.util.introspection.Info)
-     */
     @Override
     public VelPropertyGet getPropertyGet(Object obj, String identifier, Info i) throws Exception
     {
@@ -239,12 +217,6 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.velocity.util.introspection.Uberspect#getPropertySet(java.lang.Object, java.lang.String,
-     *      java.lang.Object, org.apache.velocity.util.introspection.Info)
-     */
     @Override
     public VelPropertySet getPropertySet(Object obj, String identifier, Object arg, Info i) throws Exception
     {

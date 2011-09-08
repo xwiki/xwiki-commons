@@ -72,11 +72,7 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
      */
     private Context toolsContext;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see Initializable#initialize()
-     */
+    @Override
     public void initialize() throws InitializationException
     {
         this.toolsContext = new VelocityContext();
@@ -99,11 +95,7 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see VelocityContextFactory#createContext()
-     */
+    @Override
     public VelocityContext createContext() throws XWikiVelocityException
     {
         // Note: This constructor uses the passed context as an internal read-only context.

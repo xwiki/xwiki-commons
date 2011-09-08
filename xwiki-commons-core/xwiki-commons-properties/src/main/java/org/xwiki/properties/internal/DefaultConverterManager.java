@@ -77,11 +77,7 @@ public class DefaultConverterManager implements ConverterManager
     @Inject
     private Logger logger;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.ConverterManager#convert(java.lang.reflect.Type, java.lang.Object)
-     */
+    @Override
     public <T> T convert(Type targetType, Object value)
     {
         // Convert

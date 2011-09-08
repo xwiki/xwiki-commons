@@ -241,31 +241,19 @@ public class DefaultBeanDescriptor implements BeanDescriptor
         return parameterDescription;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.BeanDescriptor#getBeanClass()
-     */
+    @Override
     public Class< ? > getBeanClass()
     {
         return this.beanClass;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.BeanDescriptor#getProperties()
-     */
+    @Override
     public Collection<PropertyDescriptor> getProperties()
     {
         return this.parameterDescriptorMap.values();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.BeanDescriptor#getProperty(java.lang.String)
-     */
+    @Override
     public PropertyDescriptor getProperty(String propertyName)
     {
         return this.parameterDescriptorMap.get(propertyName);

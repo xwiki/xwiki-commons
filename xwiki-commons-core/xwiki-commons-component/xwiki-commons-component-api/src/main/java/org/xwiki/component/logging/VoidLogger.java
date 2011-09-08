@@ -32,161 +32,121 @@ package org.xwiki.component.logging;
 @Deprecated
 public class VoidLogger implements Logger
 {
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void debug(String message)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void debug(String message, Throwable throwable)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void debug(String message, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void debug(String message, Throwable throwable, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void error(String message)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void error(String message, Throwable throwable)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void error(String message, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void error(String message, Throwable throwable, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void info(String message)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void info(String message, Throwable throwable)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void info(String message, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void info(String message, Throwable throwable, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isDebugEnabled()
     {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isErrorEnabled()
     {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isInfoEnabled()
     {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isWarnEnabled()
     {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void warn(String message)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void warn(String message, Throwable throwable)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void warn(String message, Object... objects)
     {
         // Don't do anything voluntarily
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void warn(String message, Throwable throwable, Object... objects)
     {
         // Don't do anything voluntarily

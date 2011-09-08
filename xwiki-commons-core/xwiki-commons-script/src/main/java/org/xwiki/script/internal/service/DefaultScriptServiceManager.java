@@ -47,10 +47,7 @@ public class DefaultScriptServiceManager implements ScriptServiceManager
     @Inject
     private ComponentManager componentManager;
 
-    /**
-     * {@inheritDoc}
-     * @see org.xwiki.script.service.ScriptServiceManager#get(String)
-     */
+    @Override
     public ScriptService get(String serviceName) throws ScriptServiceNotFoundException
     {
         ScriptService scriptService;

@@ -57,10 +57,7 @@ public class JMXVelocityEngine implements JMXVelocityEngineMBean
         this.engine = engine;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see JMXVelocityEngineMBean#getTemplates()
-     */
+    @Override
     public TabularData getTemplates()
     {
         TabularData data;

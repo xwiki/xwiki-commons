@@ -54,21 +54,13 @@ public class RegexEventFilter implements EventFilter, Serializable
         this.pattern = Pattern.compile(filter);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see EventFilter#getFilter()
-     */
+    @Override
     public String getFilter()
     {
         return this.filter;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see EventFilter#getFilter()
-     */
+    @Override
     public boolean matches(EventFilter eventFilter)
     {
         Matcher matcher = this.pattern.matcher(eventFilter.getFilter());

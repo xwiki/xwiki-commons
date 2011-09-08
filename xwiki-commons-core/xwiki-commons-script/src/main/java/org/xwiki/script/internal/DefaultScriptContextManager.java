@@ -51,11 +51,7 @@ public class DefaultScriptContextManager implements ScriptContextManager
     @Inject
     private List<ScriptContextInitializer> scriptContextInitializerList;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.script.ScriptContextManager#getScriptContext()
-     */
+    @Override
     public ScriptContext getScriptContext()
     {
         // The Script Context is set in ScriptExecutionContextInitializer, when the XWiki Execution Context is

@@ -69,42 +69,26 @@ public abstract class AbstractCancelableEvent extends AbstractFilterableEvent im
         super(eventFilter);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.event.CancelableEvent#isCanceled()
-     */
+    @Override
     public boolean isCanceled()
     {
         return this.canceled;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.event.CancelableEvent#cancel()
-     */
+    @Override
     public void cancel()
     {
         this.canceled = true;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.event.CancelableEvent#cancel(java.lang.String)
-     */
+    @Override
     public void cancel(String reason)
     {
         this.canceled = true;
         this.reason = reason;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.event.CancelableEvent#getReason()
-     */
+    @Override
     public String getReason()
     {
         return this.reason;

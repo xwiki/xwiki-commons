@@ -40,11 +40,7 @@ public final class AllEvent implements Event
     {
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.event.Event#matches(java.lang.Object)
-     */
+    @Override
     public boolean matches(Object otherEvent)
     {
         return true;

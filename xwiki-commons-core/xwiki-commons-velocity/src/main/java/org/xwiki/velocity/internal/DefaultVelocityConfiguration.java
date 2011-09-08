@@ -72,11 +72,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
      */
     private Properties defaultProperties = new Properties();
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.phase.Initializable#initialize()
-     */
+    @Override
     public void initialize() throws InitializationException
     {
         // Default Velocity tools.
@@ -100,11 +96,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
             SecureUberspector.class.getName() + "," + DeprecatedCheckUberspector.class.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see VelocityConfiguration#getProperties()
-     */
+    @Override
     public Properties getProperties()
     {
         // Merge default properties and properties defined in the configuration
@@ -114,11 +106,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         return props;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see VelocityConfiguration#getTools()
-     */
+    @Override
     public Properties getTools()
     {
         // Merge default tools and tools defined in the configuration

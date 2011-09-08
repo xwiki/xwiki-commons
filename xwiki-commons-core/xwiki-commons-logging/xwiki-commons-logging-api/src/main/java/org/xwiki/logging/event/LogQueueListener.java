@@ -50,11 +50,6 @@ public class LogQueueListener extends AbstractLogEventListener
         this.queue = queue;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.EventListener#getName()
-     */
     @Override
     public String getName()
     {

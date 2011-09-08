@@ -42,11 +42,6 @@ public class ListConverterTest extends AbstractComponentTestCase
 
     public List<List<Integer>> field2;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
     @Before
     @Override
     public void setUp() throws Exception

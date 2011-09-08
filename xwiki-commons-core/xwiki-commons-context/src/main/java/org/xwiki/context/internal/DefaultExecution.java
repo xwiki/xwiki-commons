@@ -43,38 +43,26 @@ public class DefaultExecution implements Execution
     private ThreadLocal<Stack<ExecutionContext>> context =
         new ThreadLocal<Stack<ExecutionContext>>();
 
-    /**
-     * {@inheritDoc}
-     * @see Execution#pushContext(ExecutionContext)
-     */
+    @Override
     public void pushContext(ExecutionContext context)
     {
         this.context.get().push(context);
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Execution#popContext()
-     */
+    @Override
     public void popContext()
     {
         this.context.get().pop();
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Execution#getContext()
-     */
+    @Override
     public ExecutionContext getContext()
     {
         Stack<ExecutionContext> stack = this.context.get();
         return stack == null ? null : stack.peek();
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Execution#setContext(ExecutionContext)
-     */
+    @Override
     public void setContext(ExecutionContext context)
     {
         Stack<ExecutionContext> stack = new Stack<ExecutionContext>();
@@ -82,10 +70,7 @@ public class DefaultExecution implements Execution
         this.context.set(stack);
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Execution#removeContext()
-     */
+    @Override
     public void removeContext()
     {
         this.context.remove();

@@ -28,10 +28,7 @@ package org.xwiki.observation.event;
  */
 public class ApplicationStartedEvent implements Event
 {
-    /**
-     * {@inheritDoc}
-     * @see Event#matches(Object)
-     */
+    @Override
     public boolean matches(Object otherEvent)
     {
         return this.getClass().isAssignableFrom(otherEvent.getClass());

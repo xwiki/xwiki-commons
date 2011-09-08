@@ -75,10 +75,7 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
         this.eventFilter = eventFilter;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see FilterableEvent#getEventFilter()
-     */
+    @Override
     public EventFilter getEventFilter()
     {
         return this.eventFilter;
@@ -94,6 +91,7 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
      * @see Event#matches(Object)
      * @see EventFilter#matches(EventFilter)
      */
+    @Override
     public boolean matches(Object otherEvent)
     {
         boolean isMatching = false;

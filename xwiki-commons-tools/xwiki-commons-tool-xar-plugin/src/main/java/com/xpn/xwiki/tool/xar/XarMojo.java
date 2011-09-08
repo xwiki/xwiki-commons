@@ -60,11 +60,7 @@ public class XarMojo extends AbstractXarMojo
      */
     protected ArchiverManager archiverManager;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.maven.plugin.AbstractMojo#execute()
-     */
+    @Override
     public void execute() throws MojoExecutionException
     {
         if (this.project.getResources().size() < 1) {

@@ -87,11 +87,6 @@ public final class HTMLUtils
             this.omitDocType = omitDocType;
         }
 
-        /**
-         * {@inheritDoc}
-         * 
-         * @see XMLOutputter#escapeElementEntities(String)
-         */
         @Override
         public String escapeElementEntities(String text)
         {
@@ -121,11 +116,6 @@ public final class HTMLUtils
             return result;
         }
 
-        /**
-         * {@inheritDoc}
-         * 
-         * @see XMLOutputter#escapeAttributeEntities(String)
-         */
         @Override
         public String escapeAttributeEntities(String text)
         {
@@ -164,11 +154,6 @@ public final class HTMLUtils
             return buffer.toString();
         }
 
-        /**
-         * {@inheritDoc}
-         * 
-         * @see XMLOutputter#printDocType
-         */
         @Override
         protected void printDocType(Writer out, DocType docType) throws IOException
         {

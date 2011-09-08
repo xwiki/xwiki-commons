@@ -79,11 +79,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
         return this.roleHint;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.event.Event#matches(java.lang.Object)
-     */
+    @Override
     public boolean matches(Object otherEvent)
     {
         boolean result = false;

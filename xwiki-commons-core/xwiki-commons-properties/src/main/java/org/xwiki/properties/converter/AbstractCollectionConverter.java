@@ -215,11 +215,6 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
         return st;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.properties.converter.AbstractConverter#convertToString(java.lang.Object)
-     */
     @Override
     protected String convertToString(Object value)
     {

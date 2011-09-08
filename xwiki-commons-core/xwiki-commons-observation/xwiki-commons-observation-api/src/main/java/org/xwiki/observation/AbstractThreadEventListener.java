@@ -51,12 +51,6 @@ public abstract class AbstractThreadEventListener implements EventListener
         this.thread = thread;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.EventListener#onEvent(org.xwiki.observation.event.Event, java.lang.Object,
-     *      java.lang.Object)
-     */
     @Override
     public void onEvent(Event event, Object source, Object data)
     {

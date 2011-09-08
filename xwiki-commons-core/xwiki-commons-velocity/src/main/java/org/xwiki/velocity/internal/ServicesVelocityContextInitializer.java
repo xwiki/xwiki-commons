@@ -46,10 +46,7 @@ public class ServicesVelocityContextInitializer implements VelocityContextInitia
     @Inject
     private ScriptServiceManager scriptServiceManager;
 
-    /**
-     * {@inheritDoc}
-     * @see org.xwiki.velocity.VelocityContextInitializer#initialize(org.apache.velocity.VelocityContext)
-     */
+    @Override
     public void initialize(VelocityContext context)
     {
         context.put("services", this.scriptServiceManager);

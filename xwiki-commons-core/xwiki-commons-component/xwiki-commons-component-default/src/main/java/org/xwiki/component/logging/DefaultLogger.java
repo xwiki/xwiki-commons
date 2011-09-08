@@ -44,9 +44,7 @@ public class DefaultLogger extends AbstractLogger
         this.logger = LoggerFactory.getLogger(clazz);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void debug(String message, Object... objects)
     {
         if (this.logger.isDebugEnabled()) {
@@ -54,9 +52,7 @@ public class DefaultLogger extends AbstractLogger
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void debug(String message, Throwable throwable, Object... objects)
     {
         if (this.logger.isDebugEnabled()) {
@@ -64,25 +60,19 @@ public class DefaultLogger extends AbstractLogger
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void debug(String message, Throwable throwable)
     {
         this.logger.debug(message, throwable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void debug(String message)
     {
         this.logger.debug(message);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void error(String message, Object... objects)
     {
         if (this.logger.isErrorEnabled()) {
@@ -90,9 +80,7 @@ public class DefaultLogger extends AbstractLogger
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void error(String message, Throwable throwable, Object... objects)
     {
         if (this.logger.isErrorEnabled()) {
@@ -100,25 +88,19 @@ public class DefaultLogger extends AbstractLogger
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void error(String message, Throwable throwable)
     {
         this.logger.error(message, throwable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void error(String message)
     {
         this.logger.error(message);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void info(String message, Object... objects)
     {
         if (this.logger.isInfoEnabled()) {
@@ -126,9 +108,7 @@ public class DefaultLogger extends AbstractLogger
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void info(String message, Throwable throwable, Object... objects)
     {
         if (this.logger.isInfoEnabled()) {
@@ -136,57 +116,43 @@ public class DefaultLogger extends AbstractLogger
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void info(String message, Throwable throwable)
     {
         this.logger.info(message, throwable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void info(String message)
     {
         this.logger.info(message);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isDebugEnabled()
     {
         return this.logger.isDebugEnabled();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isErrorEnabled()
     {
         return this.logger.isErrorEnabled();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isInfoEnabled()
     {
         return this.logger.isInfoEnabled();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean isWarnEnabled()
     {
         return this.logger.isWarnEnabled();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void warn(String message, Object... objects)
     {
         if (this.logger.isWarnEnabled()) {
@@ -194,9 +160,7 @@ public class DefaultLogger extends AbstractLogger
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void warn(String message, Throwable throwable, Object... objects)
     {
         if (this.logger.isWarnEnabled()) {
@@ -204,17 +168,13 @@ public class DefaultLogger extends AbstractLogger
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void warn(String message, Throwable throwable)
     {
         this.logger.warn(message, throwable);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void warn(String message)
     {
         this.logger.warn(message);

@@ -44,41 +44,25 @@ public class DefaultHTMLCleanerConfiguration implements HTMLCleanerConfiguration
      */
     private Map<String, String> parameters = Collections.emptyMap();
     
-    /**
-     * {@inheritDoc}
-     * 
-     * @see HTMLCleanerConfiguration#getFilters()
-     */
+    @Override
     public List<HTMLFilter> getFilters()
     {
         return this.filters;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see HTMLCleanerConfiguration#getParameters()
-     */
+    @Override
     public Map<String, String> getParameters()
     {
         return this.parameters;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see HTMLCleanerConfiguration#setFilters(List)
-     */
+    @Override
     public void setFilters(List<HTMLFilter> filters)
     {
         this.filters = filters;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see HTMLCleanerConfiguration#setParameters(Map)
-     */
+    @Override
     public void setParameters(Map<String, String> parameters)
     {
         this.parameters = parameters;

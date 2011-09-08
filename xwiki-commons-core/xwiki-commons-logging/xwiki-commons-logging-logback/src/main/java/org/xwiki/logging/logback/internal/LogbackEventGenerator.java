@@ -66,33 +66,18 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
     @Inject
     private ComponentManager componentManager;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ch.qos.logback.core.AppenderBase#getName()
-     */
     @Override
     public String getName()
     {
         return "LogbackEventGenerator";
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.EventListener#getEvents()
-     */
     @Override
     public List<Event> getEvents()
     {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.phase.Initializable#initialize()
-     */
     @Override
     public void initialize() throws InitializationException
     {
@@ -103,12 +88,6 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
         start();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.EventListener#onEvent(org.xwiki.observation.event.Event, java.lang.Object,
-     *      java.lang.Object)
-     */
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
@@ -124,11 +103,6 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
         return this.componentManager.lookup(ObservationManager.class);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see ch.qos.logback.core.AppenderBase#append(java.lang.Object)
-     */
     @Override
     protected void append(ILoggingEvent event)
     {

@@ -52,11 +52,7 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
      */
     private Object xercesGrammarPool;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see Initializable#initialize()
-     */    
+    @Override
     public void initialize() throws InitializationException
     {
         try {
@@ -66,11 +62,7 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
         }
     }
     
-    /**
-     * {@inheritDoc}
-     * 
-     * @see XMLReaderFactory#createXMLReader()
-     */    
+    @Override
     public XMLReader createXMLReader() throws SAXException, ParserConfigurationException
     {
         XMLReader xmlReader;

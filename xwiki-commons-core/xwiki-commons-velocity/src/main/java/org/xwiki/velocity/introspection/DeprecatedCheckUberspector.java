@@ -43,23 +43,13 @@ import org.apache.velocity.util.introspection.VelPropertySet;
 public class DeprecatedCheckUberspector extends AbstractChainableUberspector implements Uberspect,
     ChainableUberspector, UberspectLoggable
 {
-    /**
-     * {@inheritDoc}
-     * 
-     * @see Uberspect#init()
-     */
+    @Override
     public void init()
     {
         super.init();
         this.introspector = new Introspector(log);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see Uberspect#getMethod(java.lang.Object, java.lang.String, java.lang.Object[],
-     *      org.apache.velocity.util.introspection.Info)
-     */
     @Override
     public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i)
         throws Exception
@@ -74,12 +64,6 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
         return method;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see Uberspect#getPropertyGet(java.lang.Object, java.lang.String,
-     *      org.apache.velocity.util.introspection.Info)
-     */
     @Override
     public VelPropertyGet getPropertyGet(Object obj, String identifier, Info i) throws Exception
     {
@@ -94,12 +78,6 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
         return method;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see Uberspect#getPropertySet(java.lang.Object, java.lang.String, java.lang.Object,
-     *      org.apache.velocity.util.introspection.Info)
-     */
     @Override
     public VelPropertySet getPropertySet(Object obj, String identifier, Object arg, Info i)
         throws Exception

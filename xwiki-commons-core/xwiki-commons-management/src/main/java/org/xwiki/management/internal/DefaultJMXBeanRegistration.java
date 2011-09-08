@@ -45,10 +45,7 @@ public class DefaultJMXBeanRegistration implements JMXBeanRegistration
     @Inject
     private Logger logger;
 
-    /**
-     * {@inheritDoc}
-     * @see org.xwiki.management.JMXBeanRegistration#registerMBean(Object, String)
-     */
+    @Override
     public void registerMBean(Object mbean, String name)
     {
         // Make sure we never fail since XWiki should execute correctly even if there's no MBean Server running.
