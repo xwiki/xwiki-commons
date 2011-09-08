@@ -32,6 +32,12 @@ import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 import org.xwiki.test.AbstractComponentTestCase;
 
+/**
+ * Unit tests for {@link LogbackEventGenerator}.
+ *
+ * @version $Id$
+ * @since 3.2M3
+ */
 public class LogbackEventGeneratorTest extends AbstractComponentTestCase
 {
     private Logger logger;
@@ -48,6 +54,9 @@ public class LogbackEventGeneratorTest extends AbstractComponentTestCase
         this.logger = LoggerFactory.getLogger(getClass());   
     }
 
+    /**
+     * Verify that logging an error will generate a Log Event.
+     */
     @Test
     public void test()
     {

@@ -37,6 +37,12 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.FilterReply;
 
+/**
+ * Unit tests for {@link DefaultLoggerManager}.
+ *
+ * @version $Id$
+ * @since 3.2M3
+ */
 public class DefaultLoggerManagerTest extends AbstractComponentTestCase
 {
     private Logger logger;
