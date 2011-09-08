@@ -44,11 +44,7 @@ public class ScriptExecutionContextInitializer implements ExecutionContextInitia
      */
     public static final String SCRIPT_CONTEXT_ID = "scriptContext";
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.context.ExecutionContextInitializer#initialize(org.xwiki.context.ExecutionContext)
-     */
+    @Override
     public void initialize(ExecutionContext executionContext) throws ExecutionContextException
     {
         // We're storing an instance of the Script Context class in the Execution Context so that it can be

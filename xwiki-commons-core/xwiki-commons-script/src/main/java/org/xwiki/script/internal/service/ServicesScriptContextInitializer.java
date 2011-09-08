@@ -45,10 +45,7 @@ public class ServicesScriptContextInitializer implements ScriptContextInitialize
     @Inject
     private ScriptServiceManager scriptServiceManager;
 
-    /**
-     * {@inheritDoc}
-     * @see org.xwiki.script.ScriptContextInitializer#initialize(javax.script.ScriptContext)
-     */
+    @Override
     public void initialize(ScriptContext context)
     {
         context.setAttribute("services", this.scriptServiceManager, ScriptContext.ENGINE_SCOPE);

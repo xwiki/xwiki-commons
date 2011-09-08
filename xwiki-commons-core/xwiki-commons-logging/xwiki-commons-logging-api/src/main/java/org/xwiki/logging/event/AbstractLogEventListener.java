@@ -38,11 +38,6 @@ public abstract class AbstractLogEventListener implements EventListener
      */
     private static final List<Event> EVENTS = Collections.<Event> singletonList(new LogEvent());
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.EventListener#getEvents()
-     */
     @Override
     public List<Event> getEvents()
     {

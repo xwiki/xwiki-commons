@@ -149,11 +149,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see VelocityEngine#evaluate(Context, java.io.Writer, String, String)
-     */
+    @Override
     public boolean evaluate(Context context, Writer out, String templateName, String source)
         throws XWikiVelocityException
     {
@@ -162,10 +158,9 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
 
     /**
      * {@inheritDoc}
-     * 
-     * @see VelocityEngine#evaluate(Context, java.io.Writer, String, String)
      * @see #init(RuntimeServices)
      */
+    @Override
     public boolean evaluate(Context context, Writer out, String templateName, Reader source)
         throws XWikiVelocityException
     {
@@ -207,10 +202,9 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
 
     /**
      * {@inheritDoc}
-     * 
-     * @see VelocityEngine#clearMacroNamespace(String)
      * @since 2.4M2
      */
+    @Override
     public void clearMacroNamespace(String templateName)
     {
         this.rsvc.dumpVMNamespace(templateName);
@@ -218,10 +212,9 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
 
     /**
      * {@inheritDoc}
-     * 
-     * @see VelocityEngine#startedUsingMacroNamespace(String)
      * @since 2.4RC1
      */
+    @Override
     public void startedUsingMacroNamespace(String namespace)
     {
         synchronized (this.namespaceUsageCount) {
@@ -236,10 +229,9 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
 
     /**
      * {@inheritDoc}
-     * 
-     * @see VelocityEngine#stoppedUsingMacroNamespace(String)
      * @since 2.4RC1
      */
+    @Override
     public void stoppedUsingMacroNamespace(String namespace)
     {
         synchronized (this.namespaceUsageCount) {
@@ -259,11 +251,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see LogChute#init(org.apache.velocity.runtime.RuntimeServices)
-     */
+    @Override
     public void init(RuntimeServices runtimeServices)
     {
         // We save the RuntimeServices instance in order to be able to override the
@@ -277,11 +265,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
         this.rsvc = runtimeServices;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see LogChute#log(int, String)
-     */
+    @Override
     public void log(int level, String message)
     {
         switch (level) {
@@ -304,11 +288,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see LogChute#log(int, String, Throwable)
-     */
+    @Override
     public void log(int level, String message, Throwable throwable)
     {
         switch (level) {
@@ -331,11 +311,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see LogChute#isLevelEnabled(int)
-     */
+    @Override
     public boolean isLevelEnabled(int level)
     {
         boolean isEnabled;

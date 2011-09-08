@@ -216,11 +216,6 @@ public class ExtractHandler extends DefaultHandler
         return this.lowerBound <= this.counter && this.counter <= this.upperBound;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see DefaultHandler#startDocument()
-     */
     @Override
     public void startDocument() throws SAXException
     {
@@ -231,11 +226,6 @@ public class ExtractHandler extends DefaultHandler
         this.finished = false;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see DefaultHandler#startElement(String, String, String, Attributes)
-     */
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException
     {
@@ -245,11 +235,6 @@ public class ExtractHandler extends DefaultHandler
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see DefaultHandler#characters(char[], int, int)
-     */
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException
     {
@@ -288,11 +273,6 @@ public class ExtractHandler extends DefaultHandler
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see DefaultHandler#endElement(String, String, String)
-     */
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException
     {
@@ -304,11 +284,6 @@ public class ExtractHandler extends DefaultHandler
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see DefaultHandler#endDocument()
-     */
     @Override
     public void endDocument() throws SAXException
     {

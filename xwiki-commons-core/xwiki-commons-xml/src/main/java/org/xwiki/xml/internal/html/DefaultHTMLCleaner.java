@@ -83,11 +83,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     @Named("body")
     private HTMLFilter bodyFilter;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.phase.Initializable#initialize()
-     */
+    @Override
     public void initialize() throws InitializationException
     {
         // The clean method below is thread safe. However it seems that DOMOutputter.output() is not fully thread safe
@@ -104,11 +100,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         clean(new StringReader(""));
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.xml.html.HTMLCleaner#clean(java.io.Reader)
-     */
+    @Override
     public Document clean(Reader originalHtmlContent)
     {
         return clean(originalHtmlContent, getDefaultConfiguration());
@@ -116,10 +108,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
 
     /**
      * {@inheritDoc}
-     * 
-     * @see org.xwiki.xml.html.HTMLCleaner#clean(Reader, HTMLCleanerConfiguration)
      * @since 1.8.1
      */
+    @Override
     public Document clean(Reader originalHtmlContent, HTMLCleanerConfiguration configuration)
     {
         Document result = null;
@@ -180,10 +171,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
 
     /**
      * {@inheritDoc}
-     * 
-     * @see HTMLCleaner#getDefaultConfiguration()
      * @since 1.8.1
      */
+    @Override
     public HTMLCleanerConfiguration getDefaultConfiguration()
     {
         HTMLCleanerConfiguration configuration = new DefaultHTMLCleanerConfiguration();

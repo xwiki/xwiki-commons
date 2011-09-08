@@ -64,31 +64,19 @@ public class DefaultVelocityFactory implements VelocityFactory
      */
     private Map<String, VelocityEngine> velocityEngines = new HashMap<String, VelocityEngine>();
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see VelocityFactory#hasVelocityEngine(String)
-     */
+    @Override
     public synchronized boolean hasVelocityEngine(String key)
     {
         return this.velocityEngines.containsKey(key);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see VelocityFactory#getVelocityEngine(String)
-     */
+    @Override
     public synchronized VelocityEngine getVelocityEngine(String key)
     {
         return this.velocityEngines.get(key);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see VelocityFactory#createVelocityEngine(String, Properties)
-     */
+    @Override
     public synchronized VelocityEngine createVelocityEngine(String key, Properties properties)
         throws XWikiVelocityException
     {

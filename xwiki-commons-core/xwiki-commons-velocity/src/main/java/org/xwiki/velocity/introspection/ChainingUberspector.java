@@ -67,12 +67,7 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
     /** The runtime is needed for accessing the configuration. */
     private RuntimeServices runtime;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.velocity.util.RuntimeServicesAware#setRuntimeServices(
-     *      org.apache.velocity.runtime.RuntimeServices)
-     */
+    @Override
     public void setRuntimeServices(RuntimeServices rs)
     {
         this.runtime = rs;

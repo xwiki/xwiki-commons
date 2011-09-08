@@ -52,11 +52,7 @@ public class ComponentDescriptorAddedEvent extends AbstractComponentDescriptorEv
         super(role, roleHint);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see AbstractComponentDescriptorEvent#matches(java.lang.Object)
-     */
+    @Override
     public boolean matches(Object otherEvent)
     {
         boolean result = false;

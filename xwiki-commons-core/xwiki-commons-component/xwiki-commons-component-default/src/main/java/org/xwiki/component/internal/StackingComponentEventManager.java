@@ -44,22 +44,14 @@ public class StackingComponentEventManager implements ComponentEventManager
 
     private boolean shouldStack = true;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.manager.ComponentEventManager#notifyComponentRegistered(ComponentDescriptor)
-     */
+    @Override
     public void notifyComponentRegistered(ComponentDescriptor< ? > descriptor)
     {
         notifyComponentEvent(new ComponentDescriptorAddedEvent(descriptor.getRole(), descriptor.getRoleHint()),
             descriptor);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.manager.ComponentEventManager#notifyComponentUnregistered(ComponentDescriptor)
-     */
+    @Override
     public void notifyComponentUnregistered(ComponentDescriptor< ? > descriptor)
     {
         notifyComponentEvent(new ComponentDescriptorRemovedEvent(descriptor.getRole(), descriptor.getRoleHint()),

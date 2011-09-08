@@ -41,11 +41,6 @@ public class EnumConverterTest extends AbstractComponentTestCase
         Value2
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
     @Before
     @Override
     public void setUp() throws Exception

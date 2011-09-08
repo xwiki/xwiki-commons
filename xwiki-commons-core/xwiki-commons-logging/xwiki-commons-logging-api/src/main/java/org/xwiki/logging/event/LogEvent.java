@@ -83,11 +83,6 @@ public class LogEvent implements Event
         this.throwable = throwable;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.event.Event#matches(java.lang.Object)
-     */
     @Override
     public boolean matches(Object otherEvent)
     {

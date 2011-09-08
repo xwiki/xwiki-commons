@@ -39,11 +39,6 @@ import org.xwiki.properties.converter.ConversionException;
 @Singleton
 public class EnumConverter extends AbstractConverter
 {
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.commons.beanutils.converters.AbstractConverter#convertToType(java.lang.Class, java.lang.Object)
-     */
     @Override
     protected <T> T convertToType(Type type, Object value)
     {

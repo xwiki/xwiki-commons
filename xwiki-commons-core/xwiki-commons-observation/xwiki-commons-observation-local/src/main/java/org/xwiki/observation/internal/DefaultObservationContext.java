@@ -67,11 +67,6 @@ public class DefaultObservationContext implements ObservationContext
         return events;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.observation.ObservationContext#isIn(org.xwiki.observation.event.BeginEvent)
-     */
     @Override
     public boolean isIn(BeginEvent event)
     {

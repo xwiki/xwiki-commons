@@ -56,10 +56,7 @@ public class BodyFilter extends AbstractHTMLFilter
         HTMLConstants.TAG_H1, HTMLConstants.TAG_H2, HTMLConstants.TAG_H3, HTMLConstants.TAG_H4, HTMLConstants.TAG_H5,
         HTMLConstants.TAG_H6, HTMLConstants.TAG_DL, HTMLConstants.TAG_OL, HTMLConstants.TAG_UL);
     
-    /**
-     * {@inheritDoc}
-     * @see AbstractHTMLFilter#filter(Document, Map)
-     */
+    @Override
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
         Node body = document.getElementsByTagName(HTMLConstants.TAG_BODY).item(0);

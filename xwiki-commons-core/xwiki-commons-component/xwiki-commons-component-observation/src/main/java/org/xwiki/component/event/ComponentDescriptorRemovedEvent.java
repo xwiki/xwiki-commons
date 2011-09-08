@@ -52,11 +52,7 @@ public class ComponentDescriptorRemovedEvent extends AbstractComponentDescriptor
         super(role, roleHint);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see AbstractComponentDescriptorEvent#matches(java.lang.Object)
-     */
+    @Override
     public boolean matches(Object otherEvent)
     {
         boolean result = false;
