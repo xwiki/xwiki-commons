@@ -31,7 +31,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.CleanerTransformations;
-import org.htmlcleaner.ContentToken;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.TagTransformation;
@@ -113,11 +112,11 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     @Override
     public Document clean(Reader originalHtmlContent, HTMLCleanerConfiguration configuration)
     {
-        Document result = null;
+        Document result;
 
-        // HtmlCleaner is not threadsafe. Thus we need to recreate an instance at each run since otherwise we would need
-        // to synchronize this clean() method which would slow down the whole system by queuing up cleaning requests.
-        // See http://sourceforge.net/tracker/index.php?func=detail&aid=2139927&group_id=183053&atid=903699
+        // Note: Instantiation of an HtmlCleaner object is cheap so there's no need to cache an instance of it,
+        // especially since this makes it extra safe with regards to multithreading (even though HTML Cleaner is
+        // already supposed to be thread safe).
         CleanerProperties cleanerProperties = getDefaultCleanerProperties(configuration);
         HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
 
@@ -130,9 +129,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             // Cleaner.
             throw new RuntimeException("Unhandled error when cleaning HTML", e);
         }
-
-        // Workaround HTML XML declaration bug.
-        fixCleanedNodeBug(cleanedNode);
 
         // Serialize the cleanedNode TagNode into a w3c dom. Ideally following code should be enough.
         // But SF's HTML Cleaner seems to omit the DocType declaration while serializing.
@@ -189,7 +185,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     {
         CleanerProperties defaultProperties = new CleanerProperties();
         defaultProperties.setOmitUnknownTags(true);
-        defaultProperties.setNamespacesAware(true);
 
         // HTML Cleaner uses the compact notation by default but we don't want that since:
         // - it's more work and not required since not compact notation is valid XHTML
@@ -199,9 +194,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         // Wrap script and style content in CDATA blocks
         defaultProperties.setUseCdataForScriptAndStyle(true);
 
-        // Handle the NAMESPACE_AWARE configuration property
+        // If the caller has defined NAMESPACE_AWARE configuration property then use it, otherwise use our default.
         String param = configuration.getParameters().get(HTMLCleanerConfiguration.NAMESPACES_AWARE);
-        boolean namespacesAware = (param != null) ? Boolean.parseBoolean(param) : defaultProperties.isNamespacesAware();
+        boolean namespacesAware = (param != null) ? Boolean.parseBoolean(param) : true;
         defaultProperties.setNamespacesAware(namespacesAware);
 
         return defaultProperties;
@@ -235,25 +230,5 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         defaultTransformations.addTransformation(tt);
 
         return defaultTransformations;
-    }
-
-    /**
-     * There's a known limitation (bug?) in HTML Cleaner where if there's a XML declaration specified it'll be copied as
-     * the first element of the body. Thus remove it if it's there. See
-     * https://sourceforge.net/forum/message.php?msg_id=4657800 and
-     * https://sourceforge.net/tracker/index.php?func=detail&aid=2688635&group_id=183053&atid=903696
-     * 
-     * @param cleanedNode the cleaned node (ie after the HTML cleaning)
-     */
-    private void fixCleanedNodeBug(TagNode cleanedNode)
-    {
-        TagNode body = cleanedNode.getElementsByName("body", false)[0];
-        if (body.getChildren().size() > 0) {
-            Object firstBodyChild = body.getChildren().get(0);
-            if (firstBodyChild instanceof ContentToken
-                && ((ContentToken) firstBodyChild).getContent().startsWith("<?xml")) {
-                body.removeChild(firstBodyChild);
-            }
-        }
     }
 }

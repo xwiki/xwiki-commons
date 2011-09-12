@@ -30,8 +30,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.CommentToken;
-import org.htmlcleaner.ContentToken;
+import org.htmlcleaner.CommentNode;
+import org.htmlcleaner.ContentNode;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.Utils;
 import org.w3c.dom.Comment;
@@ -108,7 +108,7 @@ public class XWikiDOMSerializer
      */
     private void flushContent(Document document, Element element, StringBuffer bufferedContent, Object item)
     {
-        if (bufferedContent.length() > 0 && !(item instanceof ContentToken)) {
+        if (bufferedContent.length() > 0 && !(item instanceof ContentNode)) {
             // Flush the buffered content
             String nodeName = element.getNodeName();
             boolean specialCase = this.props.isUseCdataForScriptAndStyle()
@@ -193,14 +193,13 @@ public class XWikiDOMSerializer
                 // Flush content tokens
                 flushContent(document, element, bufferedContent, item);
 
-                if (item instanceof CommentToken) {
-                    CommentToken commentToken = (CommentToken) item;
-                    Comment comment = document.createComment(commentToken.getContent());
+                if (item instanceof CommentNode) {
+                    CommentNode commentToken = (CommentNode) item;
+                    Comment comment = document.createComment(commentToken.getContent().toString());
                     element.appendChild(comment);
-                } else if (item instanceof ContentToken) {
-                    ContentToken contentToken = (ContentToken) item;
-                    String content = contentToken.getContent();
-                    bufferedContent.append(content);
+                } else if (item instanceof ContentNode) {
+                    ContentNode contentToken = (ContentNode) item;
+                    bufferedContent.append(contentToken.getContent());
                 } else if (item instanceof TagNode) {
                     TagNode subTagNode = (TagNode) item;
                     Element subelement = document.createElement(subTagNode.getName());

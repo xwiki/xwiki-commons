@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.util.Collections;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xwiki.test.AbstractComponentTestCase;
 import org.xwiki.xml.html.HTMLCleaner;
@@ -55,7 +56,7 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testElementExpansion()
+    public void elementExpansion()
     {
         assertHTML("<p><textarea></textarea></p>", "<textarea/>");
 
@@ -65,15 +66,17 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testSpecialCharacters()
+    public void specialCharacters()
     {
         // TODO: We still have a problem I think in that if there are characters such as "&" or quote in the source
         // text they are not escaped. This is because we have use "false" in DefaultHTMLCleaner here:
         // Document document = new JDomSerializer(this.cleanerProperties, false).createJDom(cleanedNode);
         // See the problem described here: http://sourceforge.net/forum/forum.php?thread_id=2243880&forum_id=637246
-        assertHTML("<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>", "<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>");
+        assertHTML("<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>",
+            "<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>");
         assertHTML("<p>\"&amp;</p>", "<p>\"&</p>");
-        assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\"></img></p>", "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />");
+        assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\"></img></p>",
+            "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />");
         assertHTML("<p>&#xA;</p>", "<p>&#xA;</p>");
         
         // Verify that double quotes are escaped in attribute values
@@ -81,13 +84,13 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testCloseUnbalancedTags()
+    public void closeUnbalancedTags()
     {
         assertHTML("<hr/><p>hello</p>", "<hr><p>hello");
     }
 
     @Test
-    public void testConversionsFromHTML()
+    public void conversionsFromHTML()
     {
         assertHTML("<p>this <strong>is</strong> bold</p>", "this <b>is</b> bold");
         assertHTML("<p><em>italic</em></p>", "<i>italic</i>");
@@ -102,7 +105,7 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testConvertImplicitParagraphs()
+    public void convertImplicitParagraphs()
     {
         assertHTML("<p>word1</p><p>word2</p><p>word3</p><hr/><p>word4</p>", "word1<p>word2</p>word3<hr />word4");
         
@@ -122,7 +125,7 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testCleanNonXHTMLLists()
+    public void cleanNonXHTMLLists()
     {
         assertHTML("<ul><li>item1<ul><li>item2</li></ul></li></ul>", "<ul><li>item1</li><ul><li>item2</li></ul></ul>");
         assertHTML("<ul><li>item1<ul><li>item2<ul><li>item3</li></ul></li></ul></li></ul>",
@@ -146,10 +149,10 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
     }
 
     /**
-     * Verify that scripts are not cleaned and that we can have a CDATA section inside. Also verify CADATA behaviors.
+     * Verify that scripts are not cleaned and that we can have a CDATA section inside. Also verify CDATA behaviors.
      */
     @Test
-    public void testScriptAndCData()
+    public void scriptAndCData()
     {
         assertHTML("<script type=\"text/javascript\">//<![CDATA[\n//\nalert(\"Hello World\")\n// \n//]]></script>", 
             "<script type=\"text/javascript\">//<![CDATA[\nalert(\"Hello World\")\n// ]]></script>");
@@ -173,16 +176,17 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
         assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script>&lt;&gt;</script>");
         assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script><></script>");
 
-        assertHTML("<p><![CDATA[&]]></p>", "<p><![CDATA[&]]></p>");
-
-        assertHTML("<p>&amp;<![CDATA[&]]>&amp;</p>", "<p>&<![CDATA[&]]>&</p>");
+        // Verify that CDATA not inside SCRIPT or STYLE elements are considered comments in HTML and thus stripped
+        // when cleaned.
+        assertHTML("<p/>", "<p><![CDATA[&]]></p>");
+        assertHTML("<p>&amp;&amp;</p>", "<p>&<![CDATA[&]]>&</p>");
     }
 
     /**
      * Verify that we can control what filters are used for cleaning.
      */
     @Test
-    public void testExplicitFilterList()
+    public void explicitFilterList()
     {
         HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
         configuration.setFilters(Collections.<HTMLFilter>emptyList());
@@ -192,8 +196,19 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
         Assert.assertEquals(HEADER_FULL + "something" + FOOTER, result);
     }
 
+    /**
+     * Verify that passing a fully-formed XHTML header works fine.
+     */
+    @Ignore("Ignoring till http://tinyurl.com/3d2w5c8 is fixed")
+    @Test
+    public void fullXHTMLHeader()
+    {
+        assertHTML("<p>test</p>", HEADER_FULL + "<p>test</p>" + FOOTER);
+    }
+
     private void assertHTML(String expected, String actual)
     {
-        Assert.assertEquals(HEADER_FULL + expected + FOOTER, HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
+        Assert.assertEquals(HEADER_FULL + expected + FOOTER,
+            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
     }
 }
