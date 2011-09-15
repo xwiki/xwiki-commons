@@ -66,21 +66,23 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
      */
     public ConverterManager getConverterManager()
     {
-        return converterManager;
+        return this.converterManager;
     }
 
     /**
      * Set the delimiter to be used for parsing a delimited String.
      * 
      * @param delimiter The delimiter [default ", "]
+     * since 3.2M3
      */
-    public void setDelimiter(String delimiter)
+    public void setDelimiters(String delimiter)
     {
         this.delimiters = delimiter;
     }
 
     /**
-     * @return the delimiter
+     * @return the delimiters
+     * @since 3.2M3
      */
     public String getDelimiters()
     {
@@ -235,5 +237,37 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
         }
 
         return sb.toString();
+    }
+
+    // deprecated
+
+    /**
+     * @return the delimiter
+     * @deprecated since 3.2M3 use {@link #getDelimiters()} instead
+     */
+    @Deprecated
+    public char getDelimiter()
+    {
+        return this.delimiters.charAt(0);
+    }
+
+    /**
+     * @param allowedChars allowed characters
+     * @deprecated since 3.2M3 use {@link #setDelimiters(String)} instead
+     */
+    @Deprecated
+    public void setAllowedChars(char[] allowedChars)
+    {
+        // do nothing anymore
+    }
+
+    /**
+     * @param delimiter the delimiter
+     * @deprecated since 3.2M3 use {@link #setDelimiters(String)} instead
+     */
+    @Deprecated
+    public void setDelimiter(char delimiter)
+    {
+        setDelimiters(String.valueOf(delimiter));
     }
 }
