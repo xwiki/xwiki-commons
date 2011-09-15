@@ -57,14 +57,9 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
     private ConverterManager converterManager;
 
     /**
-     * @see #setDelimiter(char)
+     * @see #setDelimiters(String)
      */
-    private char delimiter = ',';
-
-    /**
-     * @see #setAllowedChars(char[])
-     */
-    private char[] allowedChars = new char[] {'.', '-'};
+    private String delimiters = ", ";
 
     /**
      * @return the converter manager.
@@ -77,30 +72,19 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
     /**
      * Set the delimiter to be used for parsing a delimited String.
      * 
-     * @param delimiter The delimiter [default ',']
+     * @param delimiter The delimiter [default ", "]
      */
-    public void setDelimiter(char delimiter)
+    public void setDelimiter(String delimiter)
     {
-        this.delimiter = delimiter;
+        this.delimiters = delimiter;
     }
 
     /**
      * @return the delimiter
      */
-    public char getDelimiter()
+    public String getDelimiters()
     {
-        return delimiter;
-    }
-
-    /**
-     * Set the allowed characters to be used for parsing a delimited String.
-     * 
-     * @param allowedChars Characters which are to be considered as part of the tokens when parsing a delimited String
-     *            [default is '.' and '-']
-     */
-    public void setAllowedChars(char[] allowedChars)
-    {
-        this.allowedChars = allowedChars;
+        return this.delimiters;
     }
 
     @Override
@@ -142,7 +126,7 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
             StreamTokenizer st = createStreamTokenizer(cleanedValue);
 
             // Split comma-delimited tokens into a List
-            Collection list = newCollection();
+            Collection collection = newCollection();
             while (true) {
                 int ttype = st.nextToken();
                 if (ttype == StreamTokenizer.TT_WORD || ttype > 0) {
@@ -152,7 +136,7 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
                             objValue = this.converterManager.convert(genericType, objValue);
                         }
 
-                        list.add(objValue);
+                        collection.add(objValue);
                     }
                 } else if (ttype == StreamTokenizer.TT_EOF) {
                     break;
@@ -162,7 +146,7 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
             }
 
             // Return the completed list
-            return list;
+            return collection;
         } catch (IOException e) {
             throw new ConversionException("Error converting from String: " + e.getMessage(), e);
         }
@@ -201,15 +185,18 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
     {
         // Set up a StreamTokenizer on the characters in this String
         StreamTokenizer st = new StreamTokenizer(new StringReader(value));
-        // Set the delimiters
-        st.whitespaceChars(getDelimiter(), getDelimiter());
-        // Needed to turn off numeric flag
-        st.ordinaryChars('0', '9');
-        // Needed to make part of tokens
-        st.wordChars('0', '9');
-        for (int i = 0; i < allowedChars.length; i++) {
-            st.ordinaryChars(allowedChars[i], allowedChars[i]);
-            st.wordChars(allowedChars[i], allowedChars[i]);
+
+        // Everything is word
+        st.ordinaryChars(0, 255);
+        st.wordChars(0, 255);
+
+        // Except quote chars
+        st.quoteChar('"');
+        st.quoteChar('\'');
+
+        // And delimiters
+        for (char c : getDelimiters().toCharArray()) {
+            st.whitespaceChars(c, c);
         }
 
         return st;
@@ -224,19 +211,18 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
 
         for (Object element : collection) {
             if (sb.length() > 0) {
-                sb.append(getDelimiter());
+                sb.append(getDelimiters());
             }
 
             String elementString = getConverterManager().convert(String.class, element);
 
             if (elementString != null) {
-                boolean containsDelimiter = StringUtils.contains(elementString, getDelimiter());
+                boolean containsDelimiter = StringUtils.contains(elementString, getDelimiters());
 
                 if (containsDelimiter) {
                     sb.append(QUOTESTRING);
                 }
-                sb.append(elementString != null ? elementString.replace("\\", "\\\\").replace(QUOTESTRING, "\\\"")
-                    .replace("'", "\\'") : null);
+                sb.append(elementString.replace("\\", "\\\\").replace(QUOTESTRING, "\\\"").replace("'", "\\'"));
                 if (containsDelimiter) {
                     sb.append(QUOTESTRING);
                 }
