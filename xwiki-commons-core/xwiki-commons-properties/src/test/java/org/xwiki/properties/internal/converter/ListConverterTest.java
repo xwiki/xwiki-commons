@@ -38,15 +38,6 @@ public class ListConverterTest extends AbstractComponentTestCase
 {
     private Converter listConverter;
 
-    public List<Integer> field1;
-
-    public List<List<Integer>> field2;
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see junit.framework.TestCase#setUp()
-     */
     @Before
     @Override
     public void setUp() throws Exception
@@ -68,5 +59,7 @@ public class ListConverterTest extends AbstractComponentTestCase
         Assert.assertEquals(new ArrayList(Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6))),
             this.listConverter.convert(ListConverterTest.class.getField("field2").getGenericType(),
                 "'\\'1\\', 2, 3', \"4, 5, 6\""));
+
+        Assert.assertEquals(new ArrayList(Arrays.asList("1:2")), this.listConverter.convert(List.class, "1:2"));
     }
 }
