@@ -38,6 +38,10 @@ public class ListConverterTest extends AbstractComponentTestCase
 {
     private Converter listConverter;
 
+    public List<Integer> field1;
+
+    public List<List<Integer>> field2;
+
     @Before
     @Override
     public void setUp() throws Exception
