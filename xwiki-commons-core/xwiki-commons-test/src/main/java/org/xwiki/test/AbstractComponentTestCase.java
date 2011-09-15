@@ -19,23 +19,27 @@
  */
 package org.xwiki.test;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
+import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
+import org.xwiki.component.manager.ComponentRepositoryException;
 
 /**
  * Tests which needs to have XWiki Components set up should extend this class which makes the Component Manager
- * available. Use this class for JUnit 4.x tests.
- *
- * XWiki 2.2M1 also introduced {@link org.xwiki.test.AbstractMockingComponentTestCase} which provides automatic
- * mocking for injected component dependencies and which is thus better when writing pure unit tests, isolated from
- * the rest.
+ * available. Use this class for JUnit 4.x tests. XWiki 2.2M1 also introduced
+ * {@link org.xwiki.test.AbstractMockingComponentTestCase} which provides automatic mocking for injected component
+ * dependencies and which is thus better when writing pure unit tests, isolated from the rest.
  */
 public class AbstractComponentTestCase extends AbstractMockingTestCase
 {
     private XWikiComponentInitializer initializer = new XWikiComponentInitializer();
+
+    private ComponentAnnotationLoader componentLoader;
 
     /**
      * Tests that require fine-grained initializations can override this method and not call super.
@@ -68,7 +72,7 @@ public class AbstractComponentTestCase extends AbstractMockingTestCase
     {
         // Empty voluntarily. Extending classes can override to provide custom component registration.
     }
-    
+
     /**
      * @return a configured Component Manager (which uses the plexus.xml file in the test resources directory) which can
      *         then be put in the XWiki Context for testing.
@@ -143,5 +147,21 @@ public class AbstractComponentTestCase extends AbstractMockingTestCase
         DefaultComponentDescriptor<T> descriptor = new DefaultComponentDescriptor<T>();
         descriptor.setRole(role);
         return descriptor;
+    }
+
+    /**
+     * @since 3.2M3
+     */
+    public void registerComponent(Class< ? > componentClass) throws Exception
+    {
+        if (this.componentLoader == null) {
+            this.componentLoader = new ComponentAnnotationLoader();
+        }
+
+        List<ComponentDescriptor> descriptors = this.componentLoader.getComponentsDescriptors(componentClass);
+
+        for (ComponentDescriptor descriptor : descriptors) {
+            getComponentManager().registerComponent(descriptor);
+        }
     }
 }
