@@ -68,7 +68,8 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
                 clonedContext.setProperty("velocityContext", 
                     velocityContext.getClass().getMethod("clone").invoke(velocityContext));
             } catch (Exception e) {
-                throw new ExecutionContextException("Failed to clone Velocity Context for the new Execution Context", e);
+                throw new ExecutionContextException(
+                    "Failed to clone Velocity Context for the new Execution Context", e);
             }
         }
         

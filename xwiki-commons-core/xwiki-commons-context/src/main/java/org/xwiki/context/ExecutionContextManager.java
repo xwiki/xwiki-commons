@@ -22,15 +22,29 @@ package org.xwiki.context;
 
 import org.xwiki.component.annotation.ComponentRole;
 
+/**
+ * Provides various services for manipulating an {@link ExecutionContext}.
+ *
+ * @version $Id$
+ */
 @ComponentRole
 public interface ExecutionContextManager
 {
+    /**
+     * Initializes the passed Execution Context by executing all {@link ExecutionContextInitializer} registered
+     * components.
+     *
+     * @param context the execution context to initialize
+     * @throws ExecutionContextException in case one {@link ExecutionContextInitializer} fails to execute
+     */
     void initialize(ExecutionContext context) throws ExecutionContextException;
     
     /**
-     * Perform deep cloning of Execution Context properties by calling all implementations of {@link ExecutionContextCloner}.
+     * Perform deep cloning of Execution Context properties.
      * 
      * @return the cloned Execution Context
+     * @param context the execution context to clone
+     * @throws ExecutionContextException if the Execution Context failed to be cloned for any reason
      */
     ExecutionContext clone(ExecutionContext context) throws ExecutionContextException;
 }

@@ -51,7 +51,6 @@
             org/xwiki/context/Execution.java,
             org/xwiki/context/ExecutionContextException.java,
             org/xwiki/context/ExecutionContextInitializer.java,
-            org/xwiki/context/ExecutionContextManager.java,
             org/xwiki/context/internal/DefaultExecution.java,
             org/xwiki/context/internal/DefaultExecutionContextManager.java
           </excludes>
