@@ -53,10 +53,10 @@ public class DefaultJMXBeanRegistration implements JMXBeanRegistration
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             ObjectName oname = new ObjectName("org.xwiki:" + name);
             mbs.registerMBean(mbean, oname);
-            this.logger.debug("Registered resource with name [" + name + "] successfully");
+            this.logger.debug("Registered resource with name [{}]", name);
         } catch (Exception e) {
             // Failed to register the MBean, log a warning
-            this.logger.warn("Failed to register resource with name [" + name + "]. Reason = [" + e.getMessage() + "]");
+            this.logger.warn("Failed to register resource with name [{}]. Reason = [{}]", name, e.getMessage());
         }
     }
 }

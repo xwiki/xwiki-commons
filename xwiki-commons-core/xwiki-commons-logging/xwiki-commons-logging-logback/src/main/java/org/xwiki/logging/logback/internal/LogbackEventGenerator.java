@@ -119,9 +119,9 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
 
             getObservationManager().notify(logevent, event.getLoggerName(), null);
         } catch (IllegalArgumentException e) {
-            this.logger.debug("Unsupported log level {0}", event.getLevel());
+            this.logger.debug("Unsupported log level [{}]", event.getLevel());
         } catch (ComponentLookupException e) {
-            this.logger.error("Can't find any implementation of [" + ObservationManager.class.getName() + "]", e);
+            this.logger.error("Can't find any implementation of [{}]", ObservationManager.class.getName(), e);
         }
     }
 }

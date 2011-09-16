@@ -90,7 +90,7 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
                     throw new InitializationException("Failed to initialize tool [" + value + "]", e);
                 }
                 this.toolsContext.put(key, toolInstance);
-                this.logger.debug("Setting tool [" + key + "] = [" + value + "]");
+                this.logger.debug("Setting tool [{}] = [{}]", key, value);
             }
         }
     }

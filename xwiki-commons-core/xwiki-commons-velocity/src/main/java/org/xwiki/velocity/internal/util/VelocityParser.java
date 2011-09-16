@@ -455,7 +455,7 @@ public class VelocityParser
                 try {
                     i = getMethodOrProperty(array, i, null, context);
                 } catch (InvalidVelocityException e) {
-                    LOGGER.debug("Not a valid method at char [" + i + "]", e);
+                    LOGGER.debug("Not a valid method at char [{}]", i, e);
                     break;
                 }
             } else if (array[i] == '[') {
@@ -604,7 +604,7 @@ public class VelocityParser
                         i = getVar(array, i, null, context);
                         continue;
                     } catch (InvalidVelocityException e) {
-                        LOGGER.debug("Not a valid variable at char [" + i + "]", e);
+                        LOGGER.debug("Not a valid variable at char [{}]", i, e);
                     }
                 } else if (array[i] == escapeChar) {
                     ++i;
@@ -716,7 +716,7 @@ public class VelocityParser
                     i = getVar(array, i, null, context);
                     break;
                 } catch (InvalidVelocityException e) {
-                    LOGGER.debug("Not a valid velocity variable at char [" + i + "]", e);
+                    LOGGER.debug("Not a valid velocity variable at char [{}]", i, e);
                 }
             } else if (array[i] == '"' || array[i] == '\'') {
                 i = getEscape(array, i, null, context);

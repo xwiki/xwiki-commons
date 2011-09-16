@@ -126,7 +126,7 @@ public class DefaultConverterManager implements ConverterManager
             if (targetType instanceof Class && Enum.class.isAssignableFrom((Class< ? >) targetType)) {
                 converter = this.enumConverter;
             } else {
-                this.logger.debug("Using the default Converter for type [" + typeGenericName + "]");
+                this.logger.debug("Using the default Converter for type [{}]", typeGenericName);
 
                 converter = this.defaultConverter;
             }
