@@ -19,32 +19,50 @@
  */
 package org.xwiki.component.descriptor;
 
+/**
+ * @param <T> the type of the component role
+ * @version $Id$
+ */
 public class DefaultComponentRole<T> implements ComponentRole<T>
 {
-    private Class< T > role;
+    /**
+     * @see #getRole()
+     */
+    private Class<T> role;
 
+    /**
+     * @see #getRoleHint()
+     */
     private String roleHint = "default";
 
-    public void setRole(Class< T > role)
+    /**
+     * @param role the class of the component role
+     */
+    public void setRole(Class<T> role)
     {
         this.role = role;
     }
 
-    public Class< T > getRole()
+    @Override
+    public Class<T> getRole()
     {
         return this.role;
     }
 
+    /**
+     * @param roleHint the hint of the component role
+     */
     public void setRoleHint(String roleHint)
     {
         this.roleHint = roleHint;
     }
 
+    @Override
     public String getRoleHint()
     {
         return roleHint;
     }
-    
+
     @Override
     public String toString()
     {

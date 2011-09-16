@@ -20,9 +20,21 @@
  */
 package org.xwiki.component.descriptor;
 
+/**
+ * Identify a unique component.
+ * 
+ * @param <T> the type of the component role
+ * @version $Id$
+ */
 public interface ComponentRole<T>
 {
-    Class< T > getRole();
+    /**
+     * @return the class of the component role
+     */
+    Class<T> getRole();
 
+    /**
+     * @return the hint of the component role
+     */
     String getRoleHint();
 }

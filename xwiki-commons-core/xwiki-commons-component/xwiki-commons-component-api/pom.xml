@@ -56,19 +56,7 @@
         <configuration>
           <excludes>
             org/xwiki/component/logging/AbstractLogEnabled.java,
-            org/xwiki/component/phase/InitializationException.java,
             org/xwiki/component/phase/LogEnabled.java,
-            org/xwiki/component/manager/ComponentManager.java,
-            org/xwiki/component/manager/ComponentLifecycleException.java,
-            org/xwiki/component/manager/ComponentRepositoryException.java,
-            org/xwiki/component/manager/ComponentLookupException.java,
-            org/xwiki/component/util/ReflectionUtils.java,
-            org/xwiki/component/descriptor/ComponentRole.java,
-            org/xwiki/component/descriptor/DefaultComponentRole.java,
-            org/xwiki/component/descriptor/ComponentDependency.java,
-            org/xwiki/component/descriptor/ComponentDescriptor.java,
-            org/xwiki/component/descriptor/DefaultComponentDependency.java,
-            org/xwiki/component/descriptor/DefaultComponentDescriptor.java
           </excludes>
         </configuration>
       </plugin>

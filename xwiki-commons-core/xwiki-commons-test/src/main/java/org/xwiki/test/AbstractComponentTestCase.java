@@ -27,7 +27,6 @@ import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
-import org.xwiki.component.manager.ComponentRepositoryException;
 
 /**
  * Tests which needs to have XWiki Components set up should extend this class which makes the Component Manager

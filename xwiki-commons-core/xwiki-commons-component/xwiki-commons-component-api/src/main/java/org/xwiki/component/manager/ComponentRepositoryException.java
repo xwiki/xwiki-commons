@@ -28,15 +28,25 @@ public class ComponentRepositoryException extends Exception
 {
     /**
      * Needed to identify the version of this code when serializing/deserializing (since Exception is Serializable).
-     * Note that the value needs to be modified whenever a non transient field is added or removed in this class. 
+     * Note that the value needs to be modified whenever a non transient field is added or removed in this class.
      */
     private static final long serialVersionUID = -5632308369546468757L;
 
+    /**
+     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
+     *            method.
+     */
     public ComponentRepositoryException(String message)
     {
         super(message);
     }
 
+    /**
+     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
+     *            method.
+     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt>
+     *            value is permitted, and indicates that the cause is nonexistent or unknown.)
+     */
     public ComponentRepositoryException(String message, Throwable cause)
     {
         super(message, cause);

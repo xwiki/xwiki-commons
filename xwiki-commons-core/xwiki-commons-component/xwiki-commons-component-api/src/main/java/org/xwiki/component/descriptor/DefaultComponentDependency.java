@@ -24,43 +24,67 @@ package org.xwiki.component.descriptor;
  * Default implementation of {@link ComponentDependency}.
  * 
  * @version $Id$
+ * @param <T> the type of the component role
  * @since 1.7M1
  */
-public class DefaultComponentDependency< T > extends DefaultComponentRole< T > implements ComponentDependency< T >
+public class DefaultComponentDependency<T> extends DefaultComponentRole<T> implements ComponentDependency<T>
 {
+    /**
+     * @see #getMappingType()
+     */
     private Class< ? > mappingType;
-    
+
+    /**
+     * @see #getName()
+     */
     private String name;
 
+    /**
+     * @see #getHints()
+     */
     private String[] hints;
-    
+
+    @Override
     public Class< ? > getMappingType()
     {
         return this.mappingType;
     }
 
+    @Override
     public String getName()
     {
         return this.name;
     }
-    
+
+    @Override
+    public String[] getHints()
+    {
+        return this.hints;
+    }
+
+    /**
+     * @param mappingType the class of the type for the injection (java.lang.String, java.util.List, etc)
+     */
     public void setMappingType(Class< ? > mappingType)
     {
         this.mappingType = mappingType;
     }
-    
+
+    /**
+     * @param name the name of the injection point (can be the name of the field for field injection or the name of the
+     *            method for method injection
+     */
     public void setName(String name)
     {
         this.name = name;
     }
-    
+
+    /**
+     * @param hints a list of hints used when the mapping type is a collection or map so that only component
+     *            implementations matching passed hints are injected
+     */
     public void setHints(String[] hints)
     {
         this.hints = hints;
-    }
-    
-    public String[] getHints()
-    {
-        return this.hints;
     }
 }

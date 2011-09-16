@@ -83,8 +83,24 @@ public interface ComponentManager
      */
     <T> void release(T component) throws ComponentLifecycleException;
 
+    /**
+     * Find all the components implementing the provided role and organize then in a {@link Map} with role hint as key.
+     * 
+     * @param role the class of the components role
+     * @return the components
+     * @param <T> the type of the components role
+     * @throws ComponentLookupException if any error happen during component search
+     */
     <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException;
 
+    /**
+     * Find all the components implementing the provided role.
+     * 
+     * @param role the class of the components role
+     * @return the components
+     * @param <T> the type of the components role
+     * @throws ComponentLookupException if any error happen during component search
+     */
     <T> List<T> lookupList(Class<T> role) throws ComponentLookupException;
 
     /**
@@ -146,21 +162,20 @@ public interface ComponentManager
      * @since 2.1RC1
      */
     ComponentEventManager getComponentEventManager();
-    
+
     /**
      * @param eventManager the manager to use to send events when a component descriptor is registered
      */
     void setComponentEventManager(ComponentEventManager eventManager);
 
     /**
-     * @return the parent Component Manager of this Component Manager. When doing lookups if the
-     *        component cannot be found in the current Component Manager it'll also be looked for in the parent 
-     *        Component Manager
+     * @return the parent Component Manager of this Component Manager. When doing lookups if the component cannot be
+     *         found in the current Component Manager it'll also be looked for in the parent Component Manager
      */
     ComponentManager getParent();
-    
+
     /**
-     * @param parentComponentManager see {@link #getParent()} 
+     * @param parentComponentManager see {@link #getParent()}
      */
     void setParent(ComponentManager parentComponentManager);
 }

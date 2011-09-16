@@ -26,12 +26,20 @@ import java.util.Map;
 
 /**
  * Various Reflection utilities.
- *  
+ * 
  * @version $Id$
  * @since 2.1RC1
  */
-public class ReflectionUtils
+public final class ReflectionUtils
 {
+    /**
+     * Utility class.
+     */
+    private ReflectionUtils()
+    {
+        // Utility class
+    }
+
     /**
      * @param componentClass the class for which to return all fields
      * @return all fields declared by the passed class and its superclasses
@@ -45,7 +53,7 @@ public class ReflectionUtils
             for (Field field : targetClass.getDeclaredFields()) {
                 // Make sure that if the same field is declared in a class and its superclass
                 // only the field used in the class will be returned. Note that we need to do
-                // this check since the Field object doesn't implement the equals method using 
+                // this check since the Field object doesn't implement the equals method using
                 // the field name.
                 if (!fields.containsKey(field.getName())) {
                     fields.put(field.getName(), field);
@@ -55,9 +63,13 @@ public class ReflectionUtils
         }
         return fields.values();
     }
-    
+
     /**
      * Sets a value to a field using reflection even if the field is private.
+     * 
+     * @param instanceContainingField the object containing the field
+     * @param fieldName the name of the field in the object
+     * @param fieldValue the value to set for the provided field
      */
     public static void setFieldValue(Object instanceContainingField, String fieldName, Object fieldValue)
     {

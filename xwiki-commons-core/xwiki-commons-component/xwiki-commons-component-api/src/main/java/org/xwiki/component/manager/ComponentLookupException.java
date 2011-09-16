@@ -20,19 +20,35 @@
  */
 package org.xwiki.component.manager;
 
+/**
+ * Raised during component lookup when an error happens.
+ * 
+ * @see ComponentManager#lookup(Class)
+ * @version $Id$
+ */
 public class ComponentLookupException extends Exception
 {
     /**
      * Needed to identify the version of this code when serializing/deserializing (since Exception is Serializable).
-     * Note that the value needs to be modified whenever a non transient field is added or removed in this class. 
+     * Note that the value needs to be modified whenever a non transient field is added or removed in this class.
      */
     private static final long serialVersionUID = 8361313158481775054L;
 
+    /**
+     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
+     *            method.
+     */
     public ComponentLookupException(String message)
     {
         super(message);
     }
 
+    /**
+     * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
+     *            method.
+     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt>
+     *            value is permitted, and indicates that the cause is nonexistent or unknown.)
+     */
     public ComponentLookupException(String message, Throwable cause)
     {
         super(message, cause);

@@ -26,13 +26,24 @@ import java.util.Collection;
  * Represent a component.
  * 
  * @version $Id$
+ * @param <T> the type of the componeent role
  * @since 1.7M1
  */
 public interface ComponentDescriptor<T> extends ComponentRole<T>
 {
+    /**
+     * @return the class of the component implementation
+     */
     Class< ? extends T> getImplementation();
 
+    /**
+     * @return the way the component should be instantiated
+     * @see ComponentInstantiationStrategy
+     */
     ComponentInstantiationStrategy getInstantiationStrategy();
 
+    /**
+     * @return the components on which this component depends
+     */
     Collection<ComponentDependency<?>> getComponentDependencies();
 }

@@ -28,49 +28,77 @@ import java.util.List;
  * Default implementation of {@link ComponentDescriptor}.
  * 
  * @version $Id$
+ * @param <T> the type of the component role
  * @since 1.7M1
  */
 public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> implements ComponentDescriptor<T>
 {
+    /**
+     * @see #getImplementation()
+     */
     private Class< ? extends T> implementation;
 
+    /**
+     * @see #getInstantiationStrategy()
+     */
     private ComponentInstantiationStrategy instantiationStrategy = ComponentInstantiationStrategy.SINGLETON;
 
-    private List<ComponentDependency<?>> componentDependencies = new ArrayList<ComponentDependency<?>>();
+    /**
+     * @see #getComponentDependencies()
+     */
+    private List<ComponentDependency< ? >> componentDependencies = new ArrayList<ComponentDependency< ? >>();
 
+    /**
+     * @param implementation the class of the component implementation
+     */
     public void setImplementation(Class< ? extends T> implementation)
     {
         this.implementation = implementation;
     }
 
-    public Class<? extends T> getImplementation()
+    @Override
+    public Class< ? extends T> getImplementation()
     {
         return implementation;
     }
 
+    /**
+     * @param instantiationStrategy the way the component should be instantiated
+     * @see ComponentInstantiationStrategy
+     */
     public void setInstantiationStrategy(ComponentInstantiationStrategy instantiationStrategy)
     {
         this.instantiationStrategy = instantiationStrategy;
     }
 
+    @Override
     public ComponentInstantiationStrategy getInstantiationStrategy()
     {
         return this.instantiationStrategy;
     }
 
-    public Collection<ComponentDependency<?>> getComponentDependencies()
+    @Override
+    public Collection<ComponentDependency< ? >> getComponentDependencies()
     {
         return this.componentDependencies;
     }
 
-    public void addComponentDependency(ComponentDependency<?> componentDependency)
+    /**
+     * @param componentDependency the dependency to add
+     */
+    public void addComponentDependency(ComponentDependency< ? > componentDependency)
     {
         this.componentDependencies.add(componentDependency);
     }
 
-    public <TT> void addComponentDependency(Class< TT > role, String roleHint)
+    /**
+     * @param role the class of the component role
+     * @param roleHint the hint of the component role
+     * @param <TT> the type of the dependency role
+     */
+    public <TT> void addComponentDependency(Class<TT> role, String roleHint)
     {
-        DefaultComponentDependency< TT > componentDependency = new DefaultComponentDependency< TT >();
+        DefaultComponentDependency<TT> componentDependency = new DefaultComponentDependency<TT>();
         componentDependency.setRole(role);
         componentDependency.setRoleHint(roleHint);
 
@@ -80,9 +108,10 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     @Override
     public String toString()
     {
-        StringBuffer buffer = new StringBuffer(super.toString());
+        StringBuilder buffer = new StringBuilder(super.toString());
         buffer.append(" implementation = [").append(getImplementation().getName()).append("]");
         buffer.append(" instantiation = [").append(getInstantiationStrategy()).append("]");
+
         return buffer.toString();
     }
 }
