@@ -52,7 +52,7 @@ import org.w3c.dom.ls.LSSerializer;
 public final class XMLUtils
 {
     /** Logging helper object. */
-    private static final Logger LOG = LoggerFactory.getLogger(XMLUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMLUtils.class);
 
     /** XML encoding of the "ampersand" character. */
     private static final String AMP = "&#38;";
@@ -96,7 +96,7 @@ public final class XMLUtils
             implementation =
                 (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS 3.0");
         } catch (Exception ex) {
-            LOG.warn("Cannot initialize the XML Script Service: {}", ex.getMessage());
+            LOGGER.warn("Cannot initialize the XML Script Service: [{}]", ex.getMessage());
         }
         LS_IMPL = implementation;
     }
@@ -323,7 +323,7 @@ public final class XMLUtils
         try {
             return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         } catch (ParserConfigurationException ex) {
-            LOG.error("Cannot create DOM Documents", ex);
+            LOGGER.error("Cannot create DOM Documents", ex);
             return null;
         }
     }
@@ -345,7 +345,7 @@ public final class XMLUtils
             }
             return p.parse(source);
         } catch (Exception ex) {
-            LOG.warn("Cannot parse XML document: {}", ex.getMessage());
+            LOGGER.warn("Cannot parse XML document: [{}]", ex.getMessage());
             return null;
         }
     }
@@ -390,7 +390,7 @@ public final class XMLUtils
             serializer.write(node, output);
             return result.toString();
         } catch (Exception ex) {
-            LOG.warn("Failed to serialize node to XML String: {}", ex.getMessage());
+            LOGGER.warn("Failed to serialize node to XML String: [{}]", ex.getMessage());
             return "";
         }
     }
@@ -411,7 +411,7 @@ public final class XMLUtils
                 javax.xml.transform.TransformerFactory.newInstance().newTransformer(xslt).transform(xml, result);
                 return output.toString();
             } catch (Exception ex) {
-                LOG.warn("Failed to apply XSLT transformation: {}", ex.getMessage());
+                LOGGER.warn("Failed to apply XSLT transformation: [{}]", ex.getMessage());
             }
         }
         return null;
