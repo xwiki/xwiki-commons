@@ -355,7 +355,7 @@ public class EmbeddableComponentManager implements ComponentManager
 
         // Call Lifecycle
 
-        // LogEnabled - Now deprecated - We hande it for backward compatibility
+        // LogEnabled - Now deprecated - We handle it for backward compatibility
         if (LogEnabled.class.isAssignableFrom(descriptor.getImplementation())) {
             ((LogEnabled) instance).enableLogging(new DefaultLogger(instance.getClass()));
         }
