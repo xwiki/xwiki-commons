@@ -137,6 +137,7 @@
                 <exclude>**/internal/**</exclude>
                 <exclude>**/test/**</exclude>
                 <!-- To be removed when we release 3.2 -->
+                <exclude>org/xwiki/component/util/ReflectionUtils</exclude>
               </excludes>
             </configuration>
           </plugin>
