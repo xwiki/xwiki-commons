@@ -47,19 +47,7 @@
       <groupId>net.sourceforge.htmlcleaner</groupId>
       <artifactId>htmlcleaner</artifactId>
       <version>2.2</version>
-      <!-- HTML Cleaner uses JDOM 1.0 but we want to use JDOM 1.1 so we need to exclude it -->
-      <exclusions>
-        <exclusion>
-          <groupId>jdom</groupId>
-          <artifactId>jdom</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
-    <dependency>
-      <groupId>jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>1.1</version>
-    </dependency>    
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
