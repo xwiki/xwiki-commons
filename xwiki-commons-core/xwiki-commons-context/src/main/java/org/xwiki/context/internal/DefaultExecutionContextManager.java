@@ -37,7 +37,8 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
 {
     @Inject
     private List<ExecutionContextInitializer> initializers = new ArrayList<ExecutionContextInitializer>();
-    
+
+    @Override
     public ExecutionContext clone(ExecutionContext context) throws ExecutionContextException
     {
         ExecutionContext clonedContext = new ExecutionContext();
@@ -74,6 +75,7 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
         return clonedContext;
     }
 
+    @Override
     public void initialize(ExecutionContext context) throws ExecutionContextException
     {
         for (ExecutionContextInitializer initializer: this.initializers) {

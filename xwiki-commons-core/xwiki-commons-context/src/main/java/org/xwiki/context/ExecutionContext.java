@@ -16,7 +16,6 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
  */
 package org.xwiki.context;
 
@@ -33,6 +32,9 @@ import java.util.HashMap;
  */
 public class ExecutionContext
 {
+    /**
+     * @see #getProperty(String)
+     */
     private Map<String, Object> properties = new HashMap<String, Object>();
 
     /**

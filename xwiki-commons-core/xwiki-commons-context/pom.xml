@@ -49,7 +49,6 @@
         <configuration>
           <excludes>
             org/xwiki/context/Execution.java,
-            org/xwiki/context/ExecutionContext.java,
             org/xwiki/context/ExecutionContextException.java,
             org/xwiki/context/ExecutionContextInitializer.java,
             org/xwiki/context/ExecutionContextManager.java,
