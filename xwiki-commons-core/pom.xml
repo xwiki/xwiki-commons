@@ -138,6 +138,7 @@
                 <exclude>**/test/**</exclude>
                 <!-- To be removed when we release 3.2 -->
                 <exclude>org/xwiki/component/util/ReflectionUtils</exclude>
+                <exclude>org/xwiki/script/service/ScriptServiceManager</exclude>
               </excludes>
             </configuration>
           </plugin>

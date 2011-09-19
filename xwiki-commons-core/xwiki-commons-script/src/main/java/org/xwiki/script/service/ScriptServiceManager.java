@@ -22,9 +22,9 @@ package org.xwiki.script.service;
 import org.xwiki.component.annotation.ComponentRole;
 
 /**
- * Provides access to {@link ScriptService} implementation at runtime. Implementations of this interface are supposed
- * to be bound to the Script Context so that they can be access from scripts.
- *
+ * Provides access to {@link ScriptService} implementation at runtime. Implementations of this interface are supposed to
+ * be bound to the Script Context so that they can be access from scripts.
+ * 
  * @version $Id$
  * @since 2.3M1
  */
@@ -35,10 +35,9 @@ public interface ScriptServiceManager
      * Note that we're voluntarily using an API name of "get" to make it extra easy to access Script Services from
      * Velocity (since in Velocity writing <code>$services.name</code> is equivalent to writing
      * <code>$services.get("name")</code>). It also makes it a short and easy API name for other scripting languages.
-     *
+     * 
      * @param serviceName the name of the service to look for
-     * @return the service asked
-     * @throws ScriptServiceNotFoundException if there is no script service registered with the specified name
+     * @return the service asked or null if none could be found
      */
-    ScriptService get(String serviceName) throws ScriptServiceNotFoundException;
+    ScriptService get(String serviceName);
 }

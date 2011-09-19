@@ -22,16 +22,15 @@ package org.xwiki.script.internal.service;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.script.service.ScriptServiceManager;
-import org.xwiki.script.service.ScriptServiceNotFoundException;
 
 /**
  * Locate Script Services by name dynamically at runtime by looking them up agains the Component Manager.
- *
+ * 
  * @version $Id$
  * @since 2.3M1
  */
@@ -42,20 +41,30 @@ public class DefaultScriptServiceManager implements ScriptServiceManager
     /**
      * Used to locate Script Services dynamically. Note that since the lookup is done dynamically new Script Services
      * can be added on the fly in the classloader and they'll be found (after they've been registered against the
-     * component manager obviously). 
+     * component manager obviously).
      */
     @Inject
     private ComponentManager componentManager;
 
+    /**
+     * The logger to log.
+     */
+    @Inject
+    private Logger logger;
+
     @Override
-    public ScriptService get(String serviceName) throws ScriptServiceNotFoundException
+    public ScriptService get(String serviceName)
     {
-        ScriptService scriptService;
+        ScriptService scriptService = null;
+
         try {
             scriptService = this.componentManager.lookup(ScriptService.class, serviceName);
-        } catch (ComponentLookupException e) {
-            throw new ScriptServiceNotFoundException("Failed to locate Script Service [" + serviceName + "]", e);
+        } catch (Exception e) {
+            this.logger.debug("Failed to lookup script service for role hint [{}]", serviceName, e);
+
+            scriptService = null;
         }
+
         return scriptService;
     }
 }
