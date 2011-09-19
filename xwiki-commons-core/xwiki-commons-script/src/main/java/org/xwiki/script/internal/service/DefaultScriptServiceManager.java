@@ -55,7 +55,7 @@ public class DefaultScriptServiceManager implements ScriptServiceManager
     @Override
     public ScriptService get(String serviceName)
     {
-        ScriptService scriptService = null;
+        ScriptService scriptService;
 
         try {
             scriptService = this.componentManager.lookup(ScriptService.class, serviceName);
