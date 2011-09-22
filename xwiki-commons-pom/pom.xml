@@ -79,6 +79,7 @@
             </execution>
           </executions>
         </plugin>
+        <!-- Check license headers and fail the build if they're missing or not matching the defined format -->
         <plugin>
           <groupId>com.mycila.maven-license-plugin</groupId>
           <artifactId>maven-license-plugin</artifactId>
