@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
+ *
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,16 +19,18 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
 -->
 
-<!-- Logback Test configuration that only logs at error level -->
-<configuration>
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-    </encoder>
-  </appender>
-  <root level="error">
-    <appender-ref ref="STDOUT" />
-  </root>
-</configuration>
+<additionalHeaders>
+  <xwikixml_style>
+    <firstLine><![CDATA[<!--]]></firstLine>
+    <beforeEachLine> * </beforeEachLine>
+    <endLine><![CDATA[-->]]></endLine>
+    <skipLine><![CDATA[^<\?xml.*>$]]></skipLine>
+    <firstLineDetectionPattern><![CDATA[(\s|\t)*<!--.*$]]></firstLineDetectionPattern>
+    <lastLineDetectionPattern><![CDATA[.*-->(\s|\t)*$]]></lastLineDetectionPattern>
+    <allowBlankLines>false</allowBlankLines>
+    <isMultiline>true</isMultiline>
+  </xwikixml_style>
+</additionalHeaders>
