@@ -19,7 +19,6 @@
  */
 package org.xwiki.observation.event;
 
-
 /**
  * This event can be canceled by the receiver. Sender of this event must take care of undoing any changes in this case.
  * 

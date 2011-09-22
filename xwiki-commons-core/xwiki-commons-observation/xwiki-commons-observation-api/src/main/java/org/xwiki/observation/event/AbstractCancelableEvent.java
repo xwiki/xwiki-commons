@@ -21,7 +21,6 @@ package org.xwiki.observation.event;
 
 import org.xwiki.observation.event.filter.EventFilter;
 
-
 /**
  * Abstract base class for cancelable events.
  * 
