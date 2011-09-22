@@ -126,7 +126,6 @@
         </dependencies>
         <configuration>
           <configLocation>checkstyle.xml</configLocation>
-          <headerLocation>license.txt</headerLocation>
           <excludes>
               **/UnXarMojo.java,
               **/XarMojo.java

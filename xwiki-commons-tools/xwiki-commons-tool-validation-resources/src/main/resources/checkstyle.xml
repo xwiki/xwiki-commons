@@ -21,6 +21,14 @@
 
   <module name="FileTabCharacter"/>
 
+  <!-- We don't use Checkstyle's facility to check license headers since it's too limited for our needs.
+       Instead we use http://code.google.com/p/maven-license-plugin/
+  <module name="Header">
+    <property name="headerFile" value="${checkstyle.header.file}"/>
+    <property name="ignoreLines" value="4,5,6,7"/>
+  </module>
+  -->
+
   <!-- Subversion has a config file in which you specify how to treat end of lines/end of files.
        The recommendation is to use "svn:eol-style=native".
        (See http://svnbook.red-bean.com/en/1.1/ch07s02.html#svn-ch-7-sect-2.3.5).
@@ -137,13 +145,6 @@
       <property name="format" value="System\.(out|err)\."/>
       <property name="ignoreComments" value="true"/>
     </module>
-
-    <!-- Need to put this back when we find a way of making it work
-    <module name="Header">
-      <property name="headerFile" value="${checkstyle.header.file}"/>
-      <property name="ignoreLines" value="4,5,6,7"/>
-    </module>
-    -->
 
     <module name="HiddenField">
       <property name="tokens" value="VARIABLE_DEF"/>

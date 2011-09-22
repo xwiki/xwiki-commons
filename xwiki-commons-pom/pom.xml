@@ -70,8 +70,43 @@
           </dependencies>
           <configuration>
             <configLocation>checkstyle.xml</configLocation>
-            <headerLocation>license.txt</headerLocation>
           </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>com.mycila.maven-license-plugin</groupId>
+          <artifactId>maven-license-plugin</artifactId>
+          <configuration>
+            <header>license.txt</header>
+            <strictCheck>true</strictCheck>
+            <!-- Our Java style isn't the default so we need to change the mapping -->
+            <mapping>
+              <java>SLASHSTAR_STYLE</java>
+            </mapping>
+            <excludes>
+              <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
+                   from the check -->
+              <exclude>**/components.txt</exclude>
+              <exclude>**/component-overrides.txt</exclude>
+              <!-- Exclude *.ent and *.dtd files since they're not under XWiki's license headers -->
+              <exclude>**/*.ent</exclude>
+              <exclude>**/*.dtd</exclude>
+            </excludes>
+          </configuration>
+          <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->
+          <dependencies>
+            <dependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+              <version>${commons.version}</version>
+            </dependency>
+          </dependencies>
           <executions>
             <execution>
               <goals>

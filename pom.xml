@@ -299,6 +299,13 @@ Use the junit-dep artifact instead of the junit one which wrongly bundles hamcre
             <skip>${xwiki.checkstyle.skip}</skip>
           </configuration>
         </plugin>
+        <!-- Used to check/update license headers -->
+        <plugin>
+          <groupId>com.mycila.maven-license-plugin</groupId>
+          <artifactId>maven-license-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.9.0</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-remote-resources-plugin</artifactId>

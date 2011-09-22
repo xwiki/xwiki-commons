@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.xwiki.observation.event.AbstractCancelableEvent;
 import org.xwiki.observation.event.CancelableEvent;
 
-
 /**
  * Tests {@link AbstractCancelableEvent}.
  * 
