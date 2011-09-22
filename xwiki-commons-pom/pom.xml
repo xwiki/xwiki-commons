@@ -87,17 +87,21 @@
             <header>license.txt</header>
             <strictCheck>true</strictCheck>
             <headerDefinitions>
-               <!-- Our style for XML headers isn't standard so we need to define it in a custom manner.
-                    See xwiki-commons-tool-validation-resources module -->
-               <headerDefinition>license-xml-definition.xml</headerDefinition>
+              <!-- Our style for XML headers isn't standard so we need to define it in a custom manner.
+                   See xwiki-commons-tool-validation-resources module -->
+              <headerDefinition>license-xml-definition.xml</headerDefinition>
+              <headerDefinition>license-shell-definition.xml</headerDefinition>
             </headerDefinitions>
             <!-- Our Java and XML styles aren't the default so we need to change the mapping -->
             <mapping>
               <java>SLASHSTAR_STYLE</java>
               <xml>XWIKIXML_STYLE</xml>
               <html>XWIKIXML_STYLE</html>
+              <properties>XWIKISHELL_STYLE</properties>
             </mapping>
             <excludes>
+              <!-- Exclude Git files -->
+              <exclude>**/.git*</exclude>
               <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
                    from the check -->
               <exclude>**/components.txt</exclude>
@@ -107,6 +111,12 @@
               <exclude>**/*.dtd</exclude>
               <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
               <exclude>**/it/**/goals.txt</exclude>
+              <!-- Exclude Velocity generated files ending with "vm" since they end with vm but their contents are not
+                   Velocity templates and the license plugin would validate their licenses against the vm style.
+                   TODO: use native extensions instead of "*.vm" -->
+              <exclude>**/*.cfg.xml.vm</exclude>
+              <exclude>**/*.properties.vm</exclude>
+              <exclude>**/*.cfg.vm</exclude>
             </excludes>
           </configuration>
           <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->

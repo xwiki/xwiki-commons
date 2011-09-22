@@ -21,14 +21,14 @@
 -->
 
 <additionalHeaders>
-  <xwikixml_style>
-    <firstLine><![CDATA[<!--]]></firstLine>
-    <beforeEachLine> * </beforeEachLine>
-    <endLine><![CDATA[-->]]></endLine>
-    <skipLine><![CDATA[^<\?xml.*>$]]></skipLine>
-    <firstLineDetectionPattern><![CDATA[(\s|\t)*<!--.*$]]></firstLineDetectionPattern>
-    <lastLineDetectionPattern><![CDATA[.*-->(\s|\t)*$]]></lastLineDetectionPattern>
+  <xwikishell_style>
+    <firstLine># ---------------------------------------------------------------------------</firstLine>
+    <beforeEachLine># </beforeEachLine>
+    <endLine># ---------------------------------------------------------------------------</endLine>
+    <skipLine>^#!.*$</skipLine>
+    <firstLineDetectionPattern>#\s---------------------------------------------------------------------------$</firstLineDetectionPattern>
+    <lastLineDetectionPattern>#\s---------------------------------------------------------------------------$</lastLineDetectionPattern>
     <allowBlankLines>false</allowBlankLines>
     <isMultiline>true</isMultiline>
-  </xwikixml_style>
+  </xwikishell_style>
 </additionalHeaders>
