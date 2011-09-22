@@ -97,6 +97,8 @@
               <!-- Exclude *.ent and *.dtd files since they're not under XWiki's license headers -->
               <exclude>**/*.ent</exclude>
               <exclude>**/*.dtd</exclude>
+              <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
+              <exclude>**/it/**/goals.txt</exclude>
             </excludes>
           </configuration>
           <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->
