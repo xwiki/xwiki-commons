@@ -91,6 +91,7 @@
                    See xwiki-commons-tool-validation-resources module -->
               <headerDefinition>license-xml-definition.xml</headerDefinition>
               <headerDefinition>license-shell-definition.xml</headerDefinition>
+              <headerDefinition>license-bat-definition.xml</headerDefinition>
             </headerDefinitions>
             <!-- Our Java and XML styles aren't the default so we need to change the mapping -->
             <mapping>
@@ -98,6 +99,9 @@
               <xml>XWIKIXML_STYLE</xml>
               <html>XWIKIXML_STYLE</html>
               <properties>XWIKISHELL_STYLE</properties>
+              <bat>XWIKIBAT_STYLE</bat>
+              <sh>XWIKISHELL_STYLE</sh>
+              <xsd>XWIKIXML_STYLE</xsd>
             </mapping>
             <excludes>
               <!-- Exclude Git files -->
@@ -106,17 +110,8 @@
                    from the check -->
               <exclude>**/components.txt</exclude>
               <exclude>**/component-overrides.txt</exclude>
-              <!-- Exclude *.ent and *.dtd files since they're not under XWiki's license headers -->
-              <exclude>**/*.ent</exclude>
-              <exclude>**/*.dtd</exclude>
               <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
               <exclude>**/it/**/goals.txt</exclude>
-              <!-- Exclude Velocity generated files ending with "vm" since they end with vm but their contents are not
-                   Velocity templates and the license plugin would validate their licenses against the vm style.
-                   TODO: use native extensions instead of "*.vm" -->
-              <exclude>**/*.cfg.xml.vm</exclude>
-              <exclude>**/*.properties.vm</exclude>
-              <exclude>**/*.cfg.vm</exclude>
             </excludes>
           </configuration>
           <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->
