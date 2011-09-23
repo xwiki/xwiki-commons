@@ -49,7 +49,9 @@ import org.dom4j.io.XMLWriter;
  * @version $Id$
  * @goal xar
  * @phase package
- * @requiresDependencyResolution runtime
+ * @requiresProject
+ * @requiresDependencyResolution compile
+ * @threadSafe
  */
 public class XarMojo extends AbstractXarMojo
 {
@@ -87,7 +89,7 @@ public class XarMojo extends AbstractXarMojo
     private void performArchive() throws Exception
     {
         File xarFile = new File(this.project.getBuild().getDirectory(), this.project.getArtifactId() + ".xar");
-
+        
         String resourcesLocation =
             (this.project.getBasedir().getAbsolutePath() + "/src/main/resources").replace("/", File.separator);
         File resourcesDir = new File(resourcesLocation);
@@ -112,6 +114,7 @@ public class XarMojo extends AbstractXarMojo
         // otherwise, try to use the existing one
         FilenameFilter packageXmlFiler = new FilenameFilter()
         {
+            @Override
             public boolean accept(File dir, String name)
             {
                 return (name.equals(PACKAGE_XML));
