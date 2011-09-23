@@ -165,7 +165,7 @@ abstract class AbstractXarMojo extends AbstractMojo
             unArchiver.setOverwrite(overwrite);
 
             if (!overwrite) {
-                // Do not unpack any package.xml file in dependant XARs. We'll generate a complete
+                // Do not unpack any package.xml file in dependent XARs. We'll generate a complete
                 // one automatically.
                 IncludeExcludeFileSelector fs2 = new IncludeExcludeFileSelector();
                 fs2.setExcludes(new String[] {PACKAGE_XML});
@@ -208,13 +208,14 @@ abstract class AbstractXarMojo extends AbstractMojo
      */
     protected void unpackDependentXars() throws MojoExecutionException
     {
-        Set<Artifact> artifacts = this.project.getArtifacts();
-        for (Artifact artifact : artifacts) {
-            ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
-            if (!artifact.isOptional() && filter.include(artifact)) {
-                String type = artifact.getType();
-                if ("xar".equals(type)) {
-                    unpackXarToOutputDirectory(artifact);
+        Set<Artifact> artifacts = this.project.getDependencyArtifacts();
+        if (artifacts != null) {
+            for (Artifact artifact : artifacts) {
+                ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_COMPILE);
+                if (!artifact.isOptional() && filter.include(artifact)) {
+                    if ("xar".equals(artifact.getType())) {
+                        unpackXarToOutputDirectory(artifact);
+                    }
                 }
             }
         }

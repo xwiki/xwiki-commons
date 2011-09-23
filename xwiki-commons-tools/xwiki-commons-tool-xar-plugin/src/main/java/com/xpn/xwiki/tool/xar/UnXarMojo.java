@@ -34,6 +34,7 @@ import java.util.Set;
  * @version $Id$
  * @goal unxar
  * @requiresDependencyResolution runtime
+ * @threadSafe
  */
 public class UnXarMojo extends AbstractXarMojo
 {

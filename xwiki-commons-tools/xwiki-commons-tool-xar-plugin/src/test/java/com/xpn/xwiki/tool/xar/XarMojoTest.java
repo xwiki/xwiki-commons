@@ -40,7 +40,6 @@ import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
  * Unit tests for {@link XarMojo}.
  * 
  * @version $Id$
- * @since 1.12
  */
 public class XarMojoTest extends AbstractMojoTestCase
 {
@@ -54,14 +53,14 @@ public class XarMojoTest extends AbstractMojoTestCase
     /**
      * The path to the xar archive the plugin tries to create. This is used for the testValidXml() test case
      */
-    protected static final String XAR_PATH_VALIDXML =
-        getPath(TESTRESSOURCES_PATH + "/validXml/target/xwiki-enterprise-wiki.xar");
+    protected static final String XAR_PATH_VALIDXML = getPath(TESTRESSOURCES_PATH
+        + "/validXml/target/xwiki-enterprise-wiki.xar");
 
     /**
      * The path to the xar archive the plugin tries to create. This is used for the testNoXml() test case
      */
-    protected static final String XAR_PATH_NOXML =
-        getPath(TESTRESSOURCES_PATH + "/noXml/target/xwiki-enterprise-wiki-test.xar");
+    protected static final String XAR_PATH_NOXML = getPath(TESTRESSOURCES_PATH
+        + "/noXml/target/xwiki-enterprise-wiki-test.xar");
 
     protected static final String TMPDIR_PATH = "target/test-tmp/";
 
@@ -94,7 +93,7 @@ public class XarMojoTest extends AbstractMojoTestCase
     /**
      * Test method for {@link com.xpn.xwiki.tool.xar.XarMojo#execute()}. It provides an invalid package.xml and the
      * class must throw an exception in order to pass the test.
-     *
+     * 
      * @throws Exception if the XarMojo class fails to instantiate
      */
     public void testInvalidPackageXmlThrowsException() throws Exception
