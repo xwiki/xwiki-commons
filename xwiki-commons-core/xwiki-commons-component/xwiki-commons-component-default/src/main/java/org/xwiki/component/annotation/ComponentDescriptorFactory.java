@@ -195,7 +195,7 @@ public class ComponentDescriptorFactory
 
             dependency.setRole(role);
 
-            // Look for a Qualifier or Named annotation
+            // Look for a Named annotation
             Named named = field.getAnnotation(Named.class);
             if (named != null) {
                 dependency.setRoleHint(named.value());
