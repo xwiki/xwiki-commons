@@ -64,4 +64,31 @@ public class RequirementComponentDependencyFactory extends AbstractComponentDepe
 
         return dependency;
     }
+
+    /**
+     * Extract component role from the field to inject.
+     *
+     * @param field the field to inject
+     * @param requirement the Requirement attribute
+     * @return the role of the field to inject
+     */
+    private Class<?> getFieldRole(Field field, Requirement requirement)
+    {
+        Class<?> role;
+
+        // Handle case of list or map
+        if (isDependencyOfListType(field.getType())) {
+            // Only add the field to the descriptor if the user has specified a role class different than an
+            // Object since we use Object as the default value when no role is specified.
+            if (requirement != null && !requirement.role().getName().equals(Object.class.getName())) {
+                role = requirement.role();
+            } else {
+                role = getGenericRole(field);
+            }
+        } else {
+            role = field.getType();
+        }
+
+        return role;
+    }
 }

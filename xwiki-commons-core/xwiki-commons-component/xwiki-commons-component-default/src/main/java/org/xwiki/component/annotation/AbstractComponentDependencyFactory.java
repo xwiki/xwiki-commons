@@ -41,29 +41,11 @@ public abstract class AbstractComponentDependencyFactory implements ComponentDep
      */
     protected Class<?> getFieldRole(Field field)
     {
-        return getFieldRole(field, null);
-    }
-
-    /**
-     * Extract component role from the field to inject.
-     *
-     * @param field the field to inject
-     * @param requirement the Requirement attribute
-     * @return the role of the field to inject
-     */
-    protected Class<?> getFieldRole(Field field, Requirement requirement)
-    {
         Class<?> role;
 
         // Handle case of list or map
-        if (isRequirementListType(field.getType())) {
-            // Only add the field to the descriptor if the user has specified a role class different than an
-            // Object since we use Object as the default value when no role is specified.
-            if (requirement != null && !requirement.role().getName().equals(Object.class.getName())) {
-                role = requirement.role();
-            } else {
-                role = getGenericRole(field);
-            }
+        if (isDependencyOfListType(field.getType())) {
+            role = getGenericRole(field);
         } else {
             role = field.getType();
         }
@@ -75,7 +57,7 @@ public abstract class AbstractComponentDependencyFactory implements ComponentDep
      * @param type the type for which to verify if it's a list or not
      * @return true if the type is a list (Collection or Map), false otherwise
      */
-    protected boolean isRequirementListType(Class<?> type)
+    protected boolean isDependencyOfListType(Class<?> type)
     {
         return Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
     }
