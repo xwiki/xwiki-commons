@@ -78,6 +78,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit-dep</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-testing</groupId>
@@ -95,6 +96,7 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
       <version>1.5.6</version>
+      <scope>runtime</scope>
     </dependency>
     <!-- Used to get access to the Maven Logger to log on the console -->
     <dependency>
