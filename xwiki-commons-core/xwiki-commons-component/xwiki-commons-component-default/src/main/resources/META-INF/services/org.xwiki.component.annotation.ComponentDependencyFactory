@@ -1,0 +1,2 @@
+org.xwiki.component.annotation.DefaultComponentDependencyFactory
+org.xwiki.component.annotation.RequirementComponentDependencyFactory # Legacy
