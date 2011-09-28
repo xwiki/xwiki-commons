@@ -281,6 +281,26 @@ Use the junit-dep artifact instead of the junit one which wrongly bundles hamcre
               </rules>
             </configuration>
           </execution>
+          <execution>
+            <id>enforce-jcl-log4j-isolation</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
+                  </message>
+                  <excludes>
+                    <exclude>commons-logging:commons-logging</exclude>
+                    <exclude>log4j:log4j</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
