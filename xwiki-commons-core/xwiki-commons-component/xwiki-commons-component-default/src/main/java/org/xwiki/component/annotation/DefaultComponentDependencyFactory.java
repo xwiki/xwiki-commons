@@ -63,4 +63,24 @@ public class DefaultComponentDependencyFactory extends AbstractComponentDependen
 
         return dependency;
     }
+
+    /**
+     * Extract component role from the field to inject.
+     *
+     * @param field the field to inject
+     * @return the role of the field to inject
+     */
+    protected Class<?> getFieldRole(Field field)
+    {
+        Class<?> role;
+
+        // Handle case of list or map
+        if (isDependencyOfListType(field.getType())) {
+            role = getGenericRole(field);
+        } else {
+            role = field.getType();
+        }
+
+        return role;
+    }
 }

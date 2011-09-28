@@ -34,26 +34,6 @@ import java.util.Map;
 public abstract class AbstractComponentDependencyFactory implements ComponentDependencyFactory
 {
     /**
-     * Extract component role from the field to inject.
-     *
-     * @param field the field to inject
-     * @return the role of the field to inject
-     */
-    protected Class<?> getFieldRole(Field field)
-    {
-        Class<?> role;
-
-        // Handle case of list or map
-        if (isDependencyOfListType(field.getType())) {
-            role = getGenericRole(field);
-        } else {
-            role = field.getType();
-        }
-
-        return role;
-    }
-
-    /**
      * @param type the type for which to verify if it's a list or not
      * @return true if the type is a list (Collection or Map), false otherwise
      */
