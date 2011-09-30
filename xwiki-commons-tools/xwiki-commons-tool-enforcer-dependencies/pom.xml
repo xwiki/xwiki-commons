@@ -26,18 +26,24 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
+    <artifactId>xwiki-commons-tools</artifactId>
     <version>3.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-tools</artifactId>
-  <name>XWiki Commons - Tools - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Tools - Parent POM</description>
-  <modules>
-    <module>xwiki-commons-tool-license-resources</module>
-    <module>xwiki-commons-tool-validation-resources</module>
-    <module>xwiki-commons-tool-xar-handlers</module>
-    <module>xwiki-commons-tool-xar-plugin</module>
-    <module>xwiki-commons-tool-enforcer-dependencies</module>
-  </modules>
+  <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
+  <name>XWiki Commons - Tools - Banned Dependencies Enforcer</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Tools - Banned Dependencies Enforcer</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven.enforcer</groupId>
+      <artifactId>enforcer-rules</artifactId>
+      <version>1.0.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
 </project>
