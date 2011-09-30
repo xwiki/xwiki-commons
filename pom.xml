@@ -501,6 +501,7 @@ Use the junit-dep artifact instead of the junit one which wrongly bundles hamcre
             </execution>
           </executions>
           <configuration>
+            <comparisonVersion>${xwiki.clirr.previous.version}</comparisonVersion>
             <skip>${xwiki.clirr.skip}</skip>
             <excludes>
               <exclude>**/internal/**</exclude>

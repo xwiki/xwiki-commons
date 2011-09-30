@@ -34,10 +34,6 @@
   <name>XWiki Commons - Core - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Core - Parent POM</description>
-  <properties>
-    <!-- The previous stable version of this project, used to catch API breakages. -->
-    <clirr.previous.version>3.0</clirr.previous.version>
-  </properties>
   <modules>
     <module>xwiki-commons-component</module>
     <module>xwiki-commons-observation</module>
@@ -134,8 +130,6 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>clirr-maven-plugin</artifactId>
             <configuration>
-              <skip>${xwiki.clirr.skip}</skip>
-              <comparisonVersion>${clirr.previous.version}</comparisonVersion>
               <excludes>
                 <exclude>**/internal/**</exclude>
                 <exclude>**/test/**</exclude>
