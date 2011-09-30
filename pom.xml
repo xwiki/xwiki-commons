@@ -529,6 +529,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             </execution>
           </executions>
           <configuration>
+            <comparisonVersion>${xwiki.clirr.previous.version}</comparisonVersion>
             <skip>${xwiki.clirr.skip}</skip>
             <excludes>
               <exclude>**/internal/**</exclude>
