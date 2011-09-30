@@ -1,0 +1,2 @@
+org.xwiki.component.embed.ComposableLifecycleHandler
+org.xwiki.component.embed.InitializableLifecycleHandler

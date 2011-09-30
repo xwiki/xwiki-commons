@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -31,17 +32,13 @@ import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
-import org.xwiki.component.internal.Composable;
 import org.xwiki.component.internal.RoleHint;
-import org.xwiki.component.logging.DefaultLogger;
 import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.manager.ComponentManagerInitializer;
 import org.xwiki.component.manager.ComponentRepositoryException;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.LogEnabled;
 import org.xwiki.component.util.ReflectionUtils;
 
 /**
@@ -62,6 +59,11 @@ public class EmbeddableComponentManager implements ComponentManager
     private Map<RoleHint< ? >, Object> components = new ConcurrentHashMap<RoleHint< ? >, Object>();
 
     private Logger logger = LoggerFactory.getLogger(EmbeddableComponentManager.class);
+
+    /**
+     * Finds all lifecycle handlers to use when instantiating a Component.
+     */
+    private ServiceLoader<LifecycleHandler> lifecycleHandlers = ServiceLoader.load(LifecycleHandler.class);
 
     /**
      * Load all component annotations and register them as components.
@@ -353,24 +355,9 @@ public class EmbeddableComponentManager implements ComponentManager
             }
         }
 
-        // Call Lifecycle
-
-        // LogEnabled - Now deprecated - We handle it for backward compatibility
-        if (LogEnabled.class.isAssignableFrom(descriptor.getImplementation())) {
-            ((LogEnabled) instance).enableLogging(new DefaultLogger(instance.getClass()));
-        }
-
-        // Composable
-        // Only support Composable for classes implementing ComponentManager since for all other components
-        // they should have ComponentManager injected.
-        if (ComponentManager.class.isAssignableFrom(descriptor.getImplementation())
-            && Composable.class.isAssignableFrom(descriptor.getImplementation())) {
-            ((Composable) instance).compose(this);
-        }
-
-        // Initializable
-        if (Initializable.class.isAssignableFrom(descriptor.getImplementation())) {
-            ((Initializable) instance).initialize();
+        // Call Lifecycle Handlers
+        for (LifecycleHandler lifecycleHandler : this.lifecycleHandlers) {
+            lifecycleHandler.handle(instance, descriptor, this);
         }
 
         return instance;
