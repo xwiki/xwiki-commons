@@ -109,7 +109,7 @@ public class ComponentDescriptorFactory
         descriptor.setRoleHint(hint);
         descriptor.setInstantiationStrategy(createComponentInstantiationStrategy(componentClass));
 
-        // Set the requirements.
+        // Set the injected fields.
         // Note: that we need to find all fields since we can have some inherited fields which are annotated in a
         // superclass. Since Java doesn't offer a method to return all fields we have to traverse all parent classes
         // looking for declared fields.

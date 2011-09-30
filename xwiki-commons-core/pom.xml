@@ -46,6 +46,7 @@
     <module>xwiki-commons-script</module>
     <module>xwiki-commons-velocity</module>
     <module>xwiki-commons-logging</module>
+    <module>xwiki-commons-legacy</module>
   </modules>
   <dependencies>
     <dependency>
@@ -123,6 +124,7 @@
                 <!-- To be removed when we release 3.2 -->
                 <exclude>org/xwiki/component/util/ReflectionUtils</exclude>
                 <exclude>org/xwiki/script/service/ScriptServiceManager</exclude>
+                <exclude>org/xwiki/component/annotation/Requirement</exclude>
               </excludes>
             </configuration>
           </plugin>
