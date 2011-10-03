@@ -63,6 +63,24 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
     @Inject
     private List<ExecutionContextInitializer> initializers = new ArrayList<ExecutionContextInitializer>();
 
+    /**
+     * Default constructor.
+     */
+    public DefaultExecutionContextManager()
+    {
+    }
+
+    /**
+     * Generally used for unit tests.
+     * 
+     * @param execution an {@link Execution} to use when initializing {@link ExecutionContext}.
+     * @since 3.2RC1
+     */
+    public DefaultExecutionContextManager(Execution execution)
+    {
+        this.execution = execution;
+    }
+
     @Override
     public ExecutionContext clone(ExecutionContext context) throws ExecutionContextException
     {

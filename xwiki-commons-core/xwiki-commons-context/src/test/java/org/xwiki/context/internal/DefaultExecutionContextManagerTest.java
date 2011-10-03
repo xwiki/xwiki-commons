@@ -22,6 +22,7 @@ package org.xwiki.context.internal;
 import java.util.Arrays;
 import java.util.List;
 
+import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextInitializer;
@@ -41,9 +42,10 @@ public class DefaultExecutionContextManagerTest extends TestCase
      */
     public void testClone() throws Exception
     {
+        Execution execution = new DefaultExecution();
         ExecutionContext context = new ExecutionContext();
         
-        DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager();
+        DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager(execution);
         contextManager.addExecutionContextInitializer(new ExecutionContextInitializer() {
             public void initialize(ExecutionContext context) throws ExecutionContextException
             {
