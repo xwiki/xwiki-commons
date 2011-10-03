@@ -66,9 +66,13 @@ public class DefaultExecution implements Execution
     @Override
     public void setContext(ExecutionContext context)
     {
-        Stack<ExecutionContext> stack = new Stack<ExecutionContext>();
+        Stack<ExecutionContext> stack = this.context.get();
+        if (stack == null) {
+            stack = new Stack<ExecutionContext>();
+            this.context.set(stack);
+        }
+
         stack.push(context);
-        this.context.set(stack);
     }
 
     @Override

@@ -44,6 +44,7 @@ public class DefaultExecutionContextManagerTest extends TestCase
     {
         Execution execution = new DefaultExecution();
         ExecutionContext context = new ExecutionContext();
+        execution.setContext(context);
         
         DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager(execution);
         contextManager.addExecutionContextInitializer(new ExecutionContextInitializer() {
@@ -55,6 +56,7 @@ public class DefaultExecutionContextManagerTest extends TestCase
         
         ExecutionContext clonedContext = contextManager.clone(context);
         
+        assertSame(context, execution.getContext());
         assertEquals("value", ((List<String>) clonedContext.getProperty("key")).get(0));
         assertNotSame(context.getProperty("key"), clonedContext.getProperty("key"));
     }

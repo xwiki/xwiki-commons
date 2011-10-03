@@ -84,6 +84,8 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
     @Override
     public ExecutionContext clone(ExecutionContext context) throws ExecutionContextException
     {
+        ExecutionContext currentContext = this.execution.getContext();
+
         ExecutionContext clonedContext = new ExecutionContext();
 
         // Ideally we would like to do a deep cloning here. However it's just too hard since we don't control
@@ -92,6 +94,9 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
         // Thus instead we recreate the Execution Context from scratch and reinitialize it by calling all the
         // Execution Context Initializers on it.
         initialize(clonedContext);
+
+        // #incitialize set the context but we just want to clone it so we need ro restore it
+        this.execution.setContext(currentContext);
 
         // Manually add the XWiki Context so that old code continues to work.
         // Note that we need to add it manually here since there's no Context Initializer that adds it.
