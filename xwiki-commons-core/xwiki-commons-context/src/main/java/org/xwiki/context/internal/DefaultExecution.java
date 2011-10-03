@@ -30,8 +30,8 @@ import org.xwiki.context.ExecutionContext;
 /**
  * Holds the Execution Context object. Note that we require this Execution component since we want to be able to pass
  * the Execution Context to singleton components. Thus this holder is a singleton itself and the Execution Context is
- * saved as a ThreadLocal variable. 
- *
+ * saved as a ThreadLocal variable.
+ * 
  * @version $Id$
  * @since 1.5M2
  */
@@ -39,8 +39,10 @@ import org.xwiki.context.ExecutionContext;
 @Singleton
 public class DefaultExecution implements Execution
 {
-    private ThreadLocal<Stack<ExecutionContext>> context =
-        new ThreadLocal<Stack<ExecutionContext>>();
+    /**
+     * Isolate teh execution context by thread.
+     */
+    private ThreadLocal<Stack<ExecutionContext>> context = new ThreadLocal<Stack<ExecutionContext>>();
 
     @Override
     public void pushContext(ExecutionContext context)

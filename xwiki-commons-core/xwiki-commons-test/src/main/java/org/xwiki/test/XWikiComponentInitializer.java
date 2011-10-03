@@ -58,15 +58,8 @@ public class XWikiComponentInitializer
     {
         // Initialize the Execution Context
         ExecutionContextManager ecm = getComponentManager().lookup(ExecutionContextManager.class);
-        Execution execution = getComponentManager().lookup(Execution.class);
 
         ExecutionContext ec = new ExecutionContext();
-
-        // Make sure we set Execution Context in the Execution component before we call the initialization
-        // so that we don't get any NPE if some initializer code asks to get the Execution Context. This
-        // happens for example with the Velocity Execution Context initializer which in turns calls the Velocity
-        // Context initializers and some of them look inside the Execution Context.
-        execution.setContext(ec);
 
         ecm.initialize(ec);
     }

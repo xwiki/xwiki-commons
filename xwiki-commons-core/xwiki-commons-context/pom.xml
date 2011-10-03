@@ -50,9 +50,7 @@
           <excludes>
             org/xwiki/context/Execution.java,
             org/xwiki/context/ExecutionContextException.java,
-            org/xwiki/context/ExecutionContextInitializer.java,
-            org/xwiki/context/internal/DefaultExecution.java,
-            org/xwiki/context/internal/DefaultExecutionContextManager.java
+            org/xwiki/context/ExecutionContextInitializer.java
           </excludes>
         </configuration>
       </plugin>
