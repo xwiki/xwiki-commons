@@ -127,6 +127,9 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
     @Test
     public void cleanNonXHTMLLists()
     {
+        // Fixing invalid list item.
+        assertHTML("<ul><li>item</li></ul>", "<li>item</li>");
+
         assertHTML("<ul><li>item1<ul><li>item2</li></ul></li></ul>", "<ul><li>item1</li><ul><li>item2</li></ul></ul>");
         assertHTML("<ul><li>item1<ul><li>item2<ul><li>item3</li></ul></li></ul></li></ul>",
             "<ul><li>item1</li><ul><li>item2</li><ul><li>item3</li></ul></ul></ul>");

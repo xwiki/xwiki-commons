@@ -1,3 +1,4 @@
+org.xwiki.xml.internal.html.filter.ListItemFilter
 org.xwiki.xml.internal.html.filter.ListFilter
 org.xwiki.xml.internal.html.filter.FontFilter
 org.xwiki.xml.internal.html.filter.BodyFilter

@@ -69,6 +69,13 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     private HTMLFilter listFilter;
 
     /**
+     * {@link HTMLFilter} for filtering html lists.
+     */
+    @Inject
+    @Named("listitem")
+    private HTMLFilter listItemFilter;
+
+    /**
      * {@link HTMLFilter} for filtering HTML font elements.
      */
     @Inject
@@ -173,7 +180,11 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     public HTMLCleanerConfiguration getDefaultConfiguration()
     {
         HTMLCleanerConfiguration configuration = new DefaultHTMLCleanerConfiguration();
-        configuration.setFilters(Arrays.asList(this.bodyFilter, this.listFilter, this.fontFilter));
+        configuration.setFilters(Arrays.asList(
+            this.bodyFilter,
+            this.listItemFilter,
+            this.listFilter,
+            this.fontFilter));
         return configuration;
     }
 
