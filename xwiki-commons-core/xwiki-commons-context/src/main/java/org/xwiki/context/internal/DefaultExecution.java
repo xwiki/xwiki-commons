@@ -40,14 +40,20 @@ import org.xwiki.context.ExecutionContext;
 public class DefaultExecution implements Execution
 {
     /**
-     * Isolate teh execution context by thread.
+     * Isolate the execution context by thread.
      */
     private ThreadLocal<Stack<ExecutionContext>> context = new ThreadLocal<Stack<ExecutionContext>>();
 
     @Override
     public void pushContext(ExecutionContext context)
     {
-        this.context.get().push(context);
+        Stack<ExecutionContext> stack = this.context.get();
+        if (stack == null) {
+            stack = new Stack<ExecutionContext>();
+            this.context.set(stack);
+        }
+
+        stack.push(context);
     }
 
     @Override
@@ -60,7 +66,7 @@ public class DefaultExecution implements Execution
     public ExecutionContext getContext()
     {
         Stack<ExecutionContext> stack = this.context.get();
-        return stack == null ? null : stack.peek();
+        return stack == null || stack.isEmpty() ? null : stack.peek();
     }
 
     @Override
@@ -70,9 +76,10 @@ public class DefaultExecution implements Execution
         if (stack == null) {
             stack = new Stack<ExecutionContext>();
             this.context.set(stack);
+            stack.push(context);
+        } else {
+            stack.set(stack.size() - 1, context);
         }
-
-        stack.push(context);
     }
 
     @Override

@@ -23,16 +23,35 @@ import org.xwiki.component.annotation.ComponentRole;
 
 /**
  * Allows setting/retrieving the {@link ExecutionContext}.
- *
+ * 
  * @version $Id$
  * @since 1.5M2
  */
 @ComponentRole
 public interface Execution
 {
+    /**
+     * @return the current context of the current thread
+     */
     ExecutionContext getContext();
+
+    /**
+     * @param context the current context of the current thread
+     */
     void setContext(ExecutionContext context);
+
+    /**
+     * @param context create a new context level for the current thread and set the provided context
+     */
     void pushContext(ExecutionContext context);
+
+    /**
+     * Remove a context level in the current thread.
+     */
     void popContext();
+
+    /**
+     * Remove all context levels for the current thread.
+     */
     void removeContext();
 }

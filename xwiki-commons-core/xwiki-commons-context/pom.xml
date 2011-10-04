@@ -48,7 +48,6 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-            org/xwiki/context/Execution.java,
             org/xwiki/context/ExecutionContextException.java,
             org/xwiki/context/ExecutionContextInitializer.java
           </excludes>
