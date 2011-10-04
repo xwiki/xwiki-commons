@@ -31,7 +31,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 
 /**
- * If &lt;li&gt; elements have no &lt;ul&gt; pr &lt;ol&gt; parent then add a &lt;ul&gt; parent to make it valid.
+ * If &lt;li&gt; elements have no &lt;ul&gt; or &lt;ol&gt; parent then add a &lt;ul&gt; parent to make it valid.
  * 
  * @version $Id$
  * @since 3.2RC1
