@@ -20,7 +20,9 @@
 package org.xwiki.context.internal;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -45,7 +47,12 @@ public class DefaultExecutionContextManagerTest extends TestCase
         Execution execution = new DefaultExecution();
         ExecutionContext context = new ExecutionContext();
         execution.setContext(context);
-        
+
+        Map xwikicontext = new HashMap();
+        context.setProperty("xwikicontext", xwikicontext);
+        Map velocitycontext = new HashMap();
+        context.setProperty("velocitycontext", velocitycontext);
+
         DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager(execution);
         contextManager.addExecutionContextInitializer(new ExecutionContextInitializer() {
             public void initialize(ExecutionContext context) throws ExecutionContextException
@@ -59,5 +66,7 @@ public class DefaultExecutionContextManagerTest extends TestCase
         assertSame(context, execution.getContext());
         assertEquals("value", ((List<String>) clonedContext.getProperty("key")).get(0));
         assertNotSame(context.getProperty("key"), clonedContext.getProperty("key"));
+        assertSame(xwikicontext, clonedContext.getProperty("xwikicontext"));
+        assertNotSame(xwikicontext, clonedContext.getProperty("velocitycontext"));
     }
 }
