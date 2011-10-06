@@ -35,10 +35,11 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>3.2-SNAPSHOT</commons.version>
+    <commons.version>3.3-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>3.1</xwiki.clirr.previous.version>
+    <!-- TODO: Change to 3.2 final when released -->
+    <xwiki.clirr.previous.version>3.2-rc-1</xwiki.clirr.previous.version>
     <xwiki.clirr.skip>false</xwiki.clirr.skip>
 
     <!-- By default Checkstyle and Clirr are on -->

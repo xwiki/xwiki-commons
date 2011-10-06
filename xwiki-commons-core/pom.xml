@@ -121,16 +121,7 @@
               <excludes>
                 <exclude>**/internal/**</exclude>
                 <exclude>**/test/**</exclude>
-                <!-- To be removed when we release 3.2 -->
-                <exclude>org/xwiki/component/util/ReflectionUtils</exclude>
-                <exclude>org/xwiki/script/service/ScriptServiceManager</exclude>
-                <exclude>org/xwiki/component/annotation/Requirement</exclude> <!-- Moved to legacy module -->
-                <exclude>org/xwiki/component/logging/AbstractLogEnabled</exclude> <!-- Moved to legacy module -->
-                <exclude>org/xwiki/component/logging/Logger</exclude> <!-- Moved to legacy module -->
-                <exclude>org/xwiki/component/logging/VoidLogger</exclude> <!-- Moved to legacy module -->
-                <exclude>org/xwiki/component/logging/AbstractLogger</exclude> <!-- Moved to legacy module -->
-                <exclude>org/xwiki/component/logging/DefaultLogger</exclude> <!-- Moved to legacy module -->
-                <exclude>org/xwiki/component/phase/LogEnabled</exclude> <!-- Moved to legacy module -->
+                <!-- To be removed when we release 3.3 -->
               </excludes>
             </configuration>
           </plugin>
