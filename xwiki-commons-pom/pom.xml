@@ -133,11 +133,11 @@
               <sh>XWIKISHELL_STYLE</sh>
               <xsd>XWIKIXML_STYLE</xsd>
             </mapping>
-            <includes>
-              <!-- Only check sources -->
-              <include>src/**</include>
-            </includes>
             <excludes>
+              <!-- Exclude Git files -->
+              <exclude>**/.git*</exclude>
+              <!-- Exclude M2Eclipse target folder -->
+              <exclude>target-eclipse/**</exclude>
               <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
                    from the check -->
               <exclude>**/components.txt</exclude>
