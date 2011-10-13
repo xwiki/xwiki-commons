@@ -24,12 +24,15 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
+import org.apache.maven.artifact.resolver.filter.TypeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -299,8 +302,12 @@ abstract class AbstractXarMojo extends AbstractMojo
     protected Set<Artifact> resolveDependencyArtifacts(MavenProject pomProject) throws ArtifactResolutionException,
         ArtifactNotFoundException, InvalidDependencyVersionException
     {
-        Set<Artifact> artifacts =
-            pomProject.createArtifacts(this.factory, Artifact.SCOPE_TEST, new ScopeArtifactFilter(Artifact.SCOPE_TEST));
+        AndArtifactFilter filters = new AndArtifactFilter();
+
+        filters.add(new TypeArtifactFilter("xar"));
+        filters.add(new ScopeArtifactFilter(DefaultArtifact.SCOPE_RUNTIME));
+
+        Set<Artifact> artifacts = pomProject.createArtifacts(this.factory, Artifact.SCOPE_TEST, filters);
 
         for (Artifact artifact : artifacts) {
             // resolve the new artifact
