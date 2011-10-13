@@ -20,13 +20,22 @@
 package com.xpn.xwiki.tool.xar;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.artifact.InvalidDependencyVersionException;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.components.io.fileselectors.FileSelector;
 import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
@@ -113,6 +122,56 @@ abstract class AbstractXarMojo extends AbstractMojo
     protected String encoding = DEFAULT_ENCODING;
 
     /**
+     * List of Remote Repositories used by the resolver.
+     * 
+     * @parameter expression="${project.remoteArtifactRepositories}"
+     * @readonly
+     * @required
+     */
+    protected List<ArtifactRepository> remoteRepos;
+
+    /**
+     * Project builder -- builds a model from a pom.xml.
+     * 
+     * @component role="org.apache.maven.project.MavenProjectBuilder"
+     * @required
+     * @readonly
+     */
+    protected MavenProjectBuilder mavenProjectBuilder;
+
+    /**
+     * Used to look up Artifacts in the remote repository.
+     * 
+     * @component
+     */
+    protected ArtifactFactory factory;
+
+    /**
+     * Used to look up Artifacts in the remote repository.
+     * 
+     * @component
+     */
+    protected ArtifactResolver resolver;
+
+    /**
+     * The target directory where to extract xar pages.
+     * 
+     * @parameter default-value="${project.build.outputDirectory}"
+     * @required
+     * @readonly
+     */
+    private File outputBuildDirectory;
+
+    /**
+     * Location of the local repository.
+     * 
+     * @parameter expression="${localRepository}"
+     * @readonly
+     * @required
+     */
+    private ArtifactRepository local;
+
+    /**
      * @return the includes
      */
     protected String[] getIncludes()
@@ -191,33 +250,63 @@ abstract class AbstractXarMojo extends AbstractMojo
      */
     protected void unpackXarToOutputDirectory(Artifact artifact) throws MojoExecutionException
     {
-        File outputLocation = new File(this.project.getBuild().getOutputDirectory());
-
-        if (!outputLocation.exists()) {
-            outputLocation.mkdirs();
+        if (!this.outputBuildDirectory.exists()) {
+            this.outputBuildDirectory.mkdirs();
         }
 
         File file = artifact.getFile();
-        unpack(file, outputLocation, "XarMojo", false);
+        unpack(file, this.outputBuildDirectory, "XarMojo", false);
     }
 
     /**
-     * Unpack xar dependencies before pack then into it.
-     * 
-     * @throws MojoExecutionException error when unpack dependencies.
+     * @return Returns the project.
      */
-    protected void unpackDependentXars() throws MojoExecutionException
+    public MavenProject getProject()
     {
-        Set<Artifact> artifacts = this.project.getDependencyArtifacts();
-        if (artifacts != null) {
-            for (Artifact artifact : artifacts) {
-                ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_COMPILE);
-                if (!artifact.isOptional() && filter.include(artifact)) {
-                    if ("xar".equals(artifact.getType())) {
-                        unpackXarToOutputDirectory(artifact);
-                    }
-                }
-            }
+        return this.project;
+    }
+
+    /**
+     * This method resolves all transitive dependencies of an artifact.
+     * 
+     * @param artifact the artifact used to retrieve dependencies
+     * @return resolved set of dependencies
+     * @throws ArtifactResolutionException error
+     * @throws ArtifactNotFoundException error
+     * @throws ProjectBuildingException error
+     * @throws InvalidDependencyVersionException error
+     */
+    protected Set<Artifact> resolveArtifactDependencies(Artifact artifact) throws ArtifactResolutionException,
+        ArtifactNotFoundException, ProjectBuildingException, InvalidDependencyVersionException
+    {
+        Artifact pomArtifact =
+            this.factory.createArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), "",
+                "pom");
+
+        MavenProject pomProject =
+            this.mavenProjectBuilder.buildFromRepository(pomArtifact, this.remoteRepos, this.local);
+
+        return resolveDependencyArtifacts(pomProject);
+    }
+
+    /**
+     * @param pomProject the project
+     * @return set of dependencies
+     * @throws ArtifactResolutionException error
+     * @throws ArtifactNotFoundException error
+     * @throws InvalidDependencyVersionException error
+     */
+    protected Set<Artifact> resolveDependencyArtifacts(MavenProject pomProject) throws ArtifactResolutionException,
+        ArtifactNotFoundException, InvalidDependencyVersionException
+    {
+        Set<Artifact> artifacts =
+            pomProject.createArtifacts(this.factory, Artifact.SCOPE_TEST, new ScopeArtifactFilter(Artifact.SCOPE_TEST));
+
+        for (Artifact artifact : artifacts) {
+            // resolve the new artifact
+            this.resolver.resolve(artifact, this.remoteRepos, this.local);
         }
+
+        return artifacts;
     }
 }

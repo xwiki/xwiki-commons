@@ -26,7 +26,9 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.archiver.ArchiveEntry;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -42,9 +44,6 @@ import org.dom4j.io.XMLWriter;
 /**
  * Gather all resources in a XAR file (which is actually a ZIP file). Also generates a XAR descriptor if none is
  * provided.
- * <p>
- * Note that the generated descriptor currently doesn't handle translations.
- * </p>
  * 
  * @version $Id$
  * @goal xar
@@ -61,6 +60,13 @@ public class XarMojo extends AbstractXarMojo
      * @component
      */
     protected ArchiverManager archiverManager;
+
+    /**
+     * Indicate if xar dependencies should be included in the produced xar package.
+     * 
+     * @parameter expression="${includeDependencies}" default-value="false"
+     */
+    private boolean includeDependencies;
 
     @Override
     public void execute() throws MojoExecutionException
@@ -101,10 +107,12 @@ public class XarMojo extends AbstractXarMojo
         archiver.setIncludeEmptyDirs(false);
         archiver.setCompress(true);
 
-        // Unzip dependent XARs on top of this project's XML documents but without overwriting
-        // existing files since we want this projet's files to be used if they override a file
-        // present in a XAR dependency.
-        unpackDependentXars();
+        if (this.includeDependencies) {
+            // Unzip dependent XARs on top of this project's XML documents but without overwriting
+            // existing files since we want this projet's files to be used if they override a file
+            // present in a XAR dependency.
+            unpackDependentXars();
+        }
 
         // If no package.xml can be found at the top level of the current project, generate one
         // otherwise, try to use the existing one
@@ -128,6 +136,25 @@ public class XarMojo extends AbstractXarMojo
         this.project.getArtifact().setFile(xarFile);
     }
 
+    /**
+     * Unpack xar dependencies before pack then into it.
+     * 
+     * @throws MojoExecutionException error when unpack dependencies.
+     */
+    private void unpackDependentXars() throws MojoExecutionException
+    {
+        Set<Artifact> artifacts = this.project.getArtifacts();
+        if (artifacts != null) {
+            for (Artifact artifact : artifacts) {
+                if (!artifact.isOptional()) {
+                    if ("xar".equals(artifact.getType())) {
+                        unpackXarToOutputDirectory(artifact);
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * Create and add package configuration file to the package.
      * 

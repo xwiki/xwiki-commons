@@ -19,21 +19,27 @@
  */
 package com.xpn.xwiki.tool.xar;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.artifact.Artifact;
-import org.codehaus.plexus.archiver.ArchiverException;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
+
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.artifact.InvalidDependencyVersionException;
+import org.codehaus.plexus.archiver.ArchiverException;
 
 /**
  * Expand a XAR file.
  * 
  * @version $Id$
  * @goal unxar
- * @requiresDependencyResolution runtime
+ * @requiresProject
+ * @requiresDependencyResolution compile
  * @threadSafe
  */
 public class UnXarMojo extends AbstractXarMojo
@@ -117,7 +123,7 @@ public class UnXarMojo extends AbstractXarMojo
     }
 
     /**
-     * Unzip maven artifact.
+     * Unzip xar artifact and its dependencies.
      * 
      * @throws ArchiverException error when unzip package.
      * @throws IOException error when unzip package.
@@ -129,6 +135,25 @@ public class UnXarMojo extends AbstractXarMojo
 
         getLog().debug("Source XAR = " + HOOK_OPEN + artifact.getFile() + HOOK_CLOSE);
 
-        unpack(artifact.getFile(), this.outputDirectory, "XarMojo", true);
+        unpack(artifact.getFile(), this.outputDirectory, "UnXarMojo", true);
+
+        unpackDependentXars(artifact);
+    }
+
+    /**
+     * Unpack xar dependencies of the provided artifact.
+     * 
+     * @throws MojoExecutionException error when unpack dependencies.
+     */
+    protected void unpackDependentXars(Artifact artifact) throws MojoExecutionException
+    {
+        try {
+            Set<Artifact> dependencies = resolveArtifactDependencies(artifact);
+            for (Artifact dependency : dependencies) {
+                unpack(dependency.getFile(), this.outputDirectory, "UnXarMojo", false);
+            }
+        } catch (Exception e) {
+            throw new MojoExecutionException("Failed to unpack artifact [" + artifact + "] dependencies", e);
+        }
     }
 }
