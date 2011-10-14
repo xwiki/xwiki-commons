@@ -1,0 +1,66 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.xwiki.component.annotation;
+
+/**
+ * Represents a Component declaration (i.e. component implementation class name and component priority).
+ * 
+ * @version $Id$
+ * @since 3.3M1
+ */
+public class ComponentDeclaration
+{
+    /**
+     * @see #getPriority() 
+     */
+    private int priority;
+
+    /**
+     * @see #getImplementationClassName() 
+     */
+    private String implementationClassName;
+
+    /**
+     * @param implementationClassName see {@link #getImplementationClassName()}
+     * @param priority see {@link #getPriority()}
+     */
+    public ComponentDeclaration(String implementationClassName, int priority)
+    {
+        this.implementationClassName = implementationClassName;
+        this.priority = priority;
+    }
+
+    /**
+     * @return the priority this component declaration has (when several components are registered for the same 
+     *         Role and Hint the priority is used to decide which one gets registered - the lowest value wins)
+     */
+    public int getPriority()
+    {
+        return this.priority;
+    }
+
+    /**
+     * @return the component implementation class name for the declared component
+     */
+    public String getImplementationClassName()
+    {
+        return this.implementationClassName;
+    }
+}

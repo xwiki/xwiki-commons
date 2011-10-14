@@ -71,4 +71,45 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
         buffer.append(" hint = [").append(getRoleHint()).append("]");
         return buffer.toString();
     }
+
+    /**
+     * {@inheritDoc}
+     * @since 3.3M1
+     */
+    @Override
+    public boolean equals(Object object)
+    {
+        boolean result;
+
+        // See http://www.technofundo.com/tech/java/equalhash.html for the detail of this algorithm.
+        if (this == object) {
+            result = true;
+        } else {
+            if ((object == null) || (object.getClass() != this.getClass())) {
+                result = false;
+            } else {
+                // object must be Syntax at this point
+                DefaultComponentRole cr = (DefaultComponentRole) object;
+                result = (getRole() == cr.getRole() || (getRole() != null && getRole().equals(cr.getRole())))
+                    && (getRoleHint() == cr.getRoleHint() || (getRoleHint() != null && getRoleHint().equals(
+                            cr.getRoleHint())));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 3.3M1
+     */
+    @Override
+    public int hashCode()
+    {
+        // Random number. See http://www.technofundo.com/tech/java/equalhash.html for the detail of this
+        // algorithm.
+        int hash = 7;
+        hash = 31 * hash + (null == getRole() ? 0 : getRole().hashCode());
+        hash = 31 * hash + (null == getRoleHint() ? 0 : getRoleHint().hashCode());
+        return hash;
+    }
 }

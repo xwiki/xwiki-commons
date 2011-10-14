@@ -1,2 +1,3 @@
-org.xwiki.component.annotation.ComponentAnnotationLoaderTest$OverrideRole
+org.xwiki.component.annotation.ComponentAnnotationLoaderTest$DeprecatedSimpleRole
 org.xwiki.component.annotation.ComponentAnnotationLoaderTest$SimpleRole
+500:org.xwiki.component.annotation.ComponentAnnotationLoaderTest$OverrideRole

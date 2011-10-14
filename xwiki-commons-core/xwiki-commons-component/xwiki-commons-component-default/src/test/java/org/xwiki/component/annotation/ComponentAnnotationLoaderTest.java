@@ -21,17 +21,13 @@ package org.xwiki.component.annotation;
 
 import java.util.Set;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.Factory;
-import org.hamcrest.core.IsNot;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.component.descriptor.DefaultComponentDescriptor;
+import org.xwiki.component.internal.DefaultComponentManager;
 import org.xwiki.component.manager.ComponentManager;
 
 /**
@@ -66,6 +62,7 @@ public class ComponentAnnotationLoaderTest
     {
     }
 
+    // Test overrides with priorities (see components.txt file)
     @Component("test")
     public class SimpleRole implements Role
     {
@@ -76,59 +73,60 @@ public class ComponentAnnotationLoaderTest
     {
     }
 
+    // Verify backward compatibility for deprecated component-overrides.txt file
+    @Component("deprecated")
+    public class DeprecatedSimpleRole implements Role
+    {
+    }
+
+    @Component("deprecated")
+    public class DeprecatedOverrideRole implements Role
+    {
+    }
+
     private Mockery context = new Mockery();
-
-    public void testFindComponentRoleClasses()
-    {
-        assertComponentRoleClasses(RoleImpl.class);
-    }
-
-    public static class ComponentDescriptorMatcher extends TypeSafeMatcher<ComponentDescriptor>
-    {
-        private Class<?> implementation;
-        
-        public ComponentDescriptorMatcher(Class<?> implementation)
-        {
-            this.implementation = implementation;
-        }
-
-        @Override
-        public boolean matchesSafely(ComponentDescriptor item)
-        {
-            return item.getImplementation().equals(this.implementation); 
-        }
-
-        public void describeTo(Description description)
-        {
-            description.appendText("a ComponentDescriptor with implementation ").appendValue(this.implementation);
-        }
-    }
-    
-    @Factory
-    public static Matcher<ComponentDescriptor> aComponentDescriptorWithImplementation(Class<?> implementation)
-    {
-        return new ComponentDescriptorMatcher(implementation);
-    }
 
     @After
     public void tearDown() throws Exception
     {
         this.context.assertIsSatisfied();
     }
-    
+
+    @Test
+    public void testFindComponentRoleClasses()
+    {
+        assertComponentRoleClasses(RoleImpl.class);
+    }
+
     /**
-     * Verify that when there are several component implementations for the same role/hint then
-     * component implementations defined in META-INF/component-overrides.txt are used in priority.
+     * Verify that when there are several component implementations for the same role/hint then the one with the
+     * highest priority wins (ie the smallest integer value).
      */
     @Test
-    public void testOverrides() throws Exception
+    public void testPriorities() throws Exception
     {
     	ComponentAnnotationLoader loader = new ComponentAnnotationLoader();
+
     	final ComponentManager mockManager = this.context.mock(ComponentManager.class);
 
+        final DefaultComponentDescriptor descriptor1 = new DefaultComponentDescriptor<Role>();
+        descriptor1.setImplementation(DeprecatedOverrideRole.class);
+        descriptor1.setRole(Role.class);
+        descriptor1.setRoleHint("deprecated");
+
+        final DefaultComponentDescriptor descriptor2 = new DefaultComponentDescriptor<Role>();
+        descriptor2.setImplementation(DefaultComponentManager.class);
+        descriptor2.setRole(ComponentManager.class);
+
+        final DefaultComponentDescriptor descriptor3 = new DefaultComponentDescriptor<Role>();
+        descriptor3.setImplementation(OverrideRole.class);
+        descriptor3.setRole(Role.class);
+        descriptor3.setRoleHint("test");
+
     	this.context.checking(new Expectations() {{
-            allowing(mockManager).registerComponent(
-                with(new IsNot<ComponentDescriptor>(aComponentDescriptorWithImplementation(SimpleRole.class))));
+            oneOf(mockManager).registerComponent(descriptor1);
+            oneOf(mockManager).registerComponent(descriptor2);
+            oneOf(mockManager).registerComponent(descriptor3);
         }});
 
     	loader.initialize(mockManager, this.getClass().getClassLoader());

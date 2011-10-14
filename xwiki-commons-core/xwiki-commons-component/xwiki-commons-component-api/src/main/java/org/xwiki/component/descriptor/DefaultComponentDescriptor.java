@@ -113,4 +113,50 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
 
         return buffer.toString();
     }
+
+    /**
+     * {@inheritDoc}
+     * @since 3.3M1
+     */
+    @Override
+    public boolean equals(Object object)
+    {
+        boolean result;
+
+        // See http://www.technofundo.com/tech/java/equalhash.html for the detail of this algorithm.
+        if (this == object) {
+            result = true;
+        } else {
+            if ((object == null) || (object.getClass() != this.getClass())) {
+                result = false;
+            } else {
+                // object must be Syntax at this point
+                DefaultComponentDescriptor cd = (DefaultComponentDescriptor) object;
+                result = (super.equals(cd))
+                    && (getImplementation() == cd.getImplementation()
+                        || (getImplementation() != null && getImplementation().equals(cd.getImplementation())))
+                    && (getInstantiationStrategy() == cd.getInstantiationStrategy())
+                    && (getComponentDependencies().equals(cd.getComponentDependencies()));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 3.3M1
+     */
+    @Override
+    public int hashCode()
+    {
+        // Random number. See http://www.technofundo.com/tech/java/equalhash.html for the detail of this
+        // algorithm.
+        int hash = 7;
+        hash = 31 * hash + super.hashCode();
+        hash = 31 * hash + (null == getImplementation() ? 0 : getImplementation().hashCode());
+        hash = 31 * hash + getInstantiationStrategy().hashCode();
+        hash = 31 * hash + getComponentDependencies().hashCode();
+
+        return hash;
+    }
 }

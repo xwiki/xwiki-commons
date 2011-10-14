@@ -86,4 +86,59 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
     {
         this.hints = hints;
     }
+
+    /**
+     * {@inheritDoc}
+     * @since 3.3M1
+     */
+    @Override
+    public boolean equals(Object object)
+    {
+        boolean result;
+
+        // See http://www.technofundo.com/tech/java/equalhash.html for the detail of this algorithm.
+        if (this == object) {
+            result = true;
+        } else {
+            if ((object == null) || (object.getClass() != this.getClass())) {
+                result = false;
+            } else {
+                // object must be Syntax at this point
+                DefaultComponentDependency cd = (DefaultComponentDependency) object;
+                result = equals(cd);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param dependency the dependency to compare to
+     * @return true if the passed dependency is equals to the current instance or false otherwise
+     */
+    private boolean equals(DefaultComponentDependency dependency)
+    {
+        return (super.equals(dependency))
+            && (getMappingType() == dependency.getMappingType()
+                || (getMappingType() != null && getMappingType().equals(dependency.getMappingType())))
+            && (getName() == dependency.getName() || (getName() != null && getName().equals(dependency.getName())))
+            && (getHints() == dependency.getHints()
+                || (getHints() != null && getHints().equals(dependency.getHints())));
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 3.3M1
+     */
+    @Override
+    public int hashCode()
+    {
+        // Random number. See http://www.technofundo.com/tech/java/equalhash.html for the detail of this
+        // algorithm.
+        int hash = 7;
+        hash = 31 * hash + super.hashCode();
+        hash = 31 * hash + (null == getMappingType() ? 0 : getMappingType().hashCode());
+        hash = 31 * hash + (null == getName() ? 0 : getName().hashCode());
+        hash = 31 * hash + (null == getHints() ? 0 : getHints().hashCode());
+        return hash;
+    }
 }
