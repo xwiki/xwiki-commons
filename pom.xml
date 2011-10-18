@@ -177,13 +177,13 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.6.2</version>
+        <version>1.6.3</version>
       </dependency>
       <!-- External libraries using Log4J will delegate to SLF4J -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>log4j-over-slf4j</artifactId>
-        <version>1.6.2</version>
+        <version>1.6.3</version>
       </dependency>
 
       <!-- Everybody tests -->
