@@ -26,18 +26,35 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-component</artifactId>
     <version>3.3-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-component</artifactId>
-  <name>XWiki Commons - Component - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Component - Parent POM</description>
-  <modules>
-    <module>xwiki-commons-component-api</module>
-    <module>xwiki-commons-component-observation</module>
-    <module>xwiki-commons-component-default</module>
-    <module>xwiki-commons-component-archetype</module>
-  </modules>
+  <artifactId>xwiki-commons-component-archetype</artifactId>
+  <name>XWiki Commons - Component - Component Archetype</name>
+  <packaging>maven-archetype</packaging>
+  <description>
+    Make it easy to create a maven project for creating XWiki Components.
+  </description>
+  <build>
+    <!-- Make sure we replace properties in the archetype-resources's pom.xml -->
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-packaging</artifactId>
+        <version>2.1</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-archetype-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
-       

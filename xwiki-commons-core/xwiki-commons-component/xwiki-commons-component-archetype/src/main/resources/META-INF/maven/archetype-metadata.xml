@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
- *
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,25 +18,24 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
-    <version>3.3-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-component</artifactId>
-  <name>XWiki Commons - Component - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Component - Parent POM</description>
-  <modules>
-    <module>xwiki-commons-component-api</module>
-    <module>xwiki-commons-component-observation</module>
-    <module>xwiki-commons-component-default</module>
-    <module>xwiki-commons-component-archetype</module>
-  </modules>
-</project>
-       
+<archetype-descriptor xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
+    name="XWiki Macro Archetype" partial="false">
+  <fileSets>
+    <fileSet filtered="true" packaged="true">
+      <directory>src/main/java</directory>
+    </fileSet>
+    <fileSet filtered="true">
+      <directory>src/main/resources</directory>
+    </fileSet>
+    <fileSet filtered="true" packaged="true">
+      <directory>src/test/java</directory>
+    </fileSet>
+    <fileSet filtered="true">
+      <directory>src/test/resources</directory>
+    </fileSet>
+  </fileSets>
+</archetype-descriptor>
