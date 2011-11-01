@@ -658,6 +658,12 @@ mmmm]]></license>
             </reportPlugins>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>1.5</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
