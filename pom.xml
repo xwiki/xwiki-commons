@@ -165,25 +165,25 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.6.3</version>
+        <version>1.6.4</version>
       </dependency>
       <!-- SLF4J implementation we use -->
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>0.9.30</version>
+        <version>1.0.0</version>
       </dependency>
       <!-- External libraries using Commons Logging will delegate to SLF4J -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.6.3</version>
+        <version>1.6.4</version>
       </dependency>
       <!-- External libraries using Log4J will delegate to SLF4J -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>log4j-over-slf4j</artifactId>
-        <version>1.6.3</version>
+        <version>1.6.4</version>
       </dependency>
 
       <!-- Everybody tests -->
