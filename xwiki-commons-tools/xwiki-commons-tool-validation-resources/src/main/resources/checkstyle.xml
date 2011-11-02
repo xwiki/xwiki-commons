@@ -67,6 +67,8 @@
          but there are errors to fix first -->
 
     <module name="AbstractClassName">
+      <!-- We need to override the default format since by default classes ending with Factory are considered
+           abstract and thus need to be defined with the "abstract" keyword. -->
       <property name="format" value="^Abstract.*$"/>
     </module>
 
