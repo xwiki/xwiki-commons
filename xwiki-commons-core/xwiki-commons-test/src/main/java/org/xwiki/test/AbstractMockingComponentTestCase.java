@@ -67,7 +67,7 @@ import org.xwiki.test.annotation.MockingRequirement;
  * @version $Id$
  * @since 2.2M1
  */
-public class AbstractMockingComponentTestCase extends AbstractMockingTestCase
+public abstract class AbstractMockingComponentTestCase extends AbstractMockingTestCase
 {
     private EmbeddableComponentManager componentManager;
 

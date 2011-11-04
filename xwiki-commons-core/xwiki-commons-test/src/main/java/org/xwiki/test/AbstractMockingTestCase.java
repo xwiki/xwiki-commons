@@ -23,6 +23,9 @@ import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.runner.RunWith;
+import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.component.descriptor.DefaultComponentDescriptor;
+import org.xwiki.component.embed.EmbeddableComponentManager;
 
 /**
  * Offers a JMock 2.x Mockery object.
@@ -31,12 +34,77 @@ import org.junit.runner.RunWith;
  * @since 2.4RC1
  */
 @RunWith(JMock.class)
-public class AbstractMockingTestCase
+public abstract class AbstractMockingTestCase
 {
     private Mockery mockery = new JUnit4Mockery();
 
     public Mockery getMockery()
     {
         return this.mockery;
+    }
+
+    /**
+     * @return a configured Component Manager (which uses the plexus.xml file in the test resources directory) which can
+     *         then be put in the XWiki Context for testing.
+     */
+    public abstract EmbeddableComponentManager getComponentManager() throws Exception;
+
+    /**
+     * @since 3.0M3
+     */
+    public <T> T registerMockComponent(Class<T> role, String hint, String mockId) throws Exception
+    {
+        DefaultComponentDescriptor<T> descriptor = createComponentDescriptor(role);
+        descriptor.setRoleHint(hint);
+        return registerMockComponent(descriptor, mockId);
+    }
+
+    /**
+     * @since 2.4RC1
+     */
+    public <T> T registerMockComponent(Class<T> role, String hint) throws Exception
+    {
+        return registerMockComponent(role, hint, null);
+    }
+
+    /**
+     * @since 2.4RC1
+     */
+    public <T> T registerMockComponent(Class<T> role) throws Exception
+    {
+        return registerMockComponent(createComponentDescriptor(role));
+    }
+
+    /**
+     * @since 2.4RC1
+     */
+    private <T> T registerMockComponent(ComponentDescriptor<T> descriptor) throws Exception
+    {
+        return registerMockComponent(descriptor, null);
+    }
+
+    /**
+     * @since 3.0M3
+     */
+    private <T> T registerMockComponent(ComponentDescriptor<T> descriptor, String mockId) throws Exception
+    {
+        T instance;
+        if (mockId != null) {
+            instance = getMockery().mock(descriptor.getRole(), mockId);
+        } else {
+            instance = getMockery().mock(descriptor.getRole());
+        }
+        getComponentManager().registerComponent(descriptor, instance);
+        return instance;
+    }
+
+    /**
+     * @since 2.4RC1
+     */
+    private <T> DefaultComponentDescriptor<T> createComponentDescriptor(Class<T> role)
+    {
+        DefaultComponentDescriptor<T> descriptor = new DefaultComponentDescriptor<T>();
+        descriptor.setRole(role);
+        return descriptor;
     }
 }

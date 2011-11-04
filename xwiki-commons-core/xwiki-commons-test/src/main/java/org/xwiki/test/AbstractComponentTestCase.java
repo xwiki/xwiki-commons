@@ -25,7 +25,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 
 /**
@@ -34,7 +33,7 @@ import org.xwiki.component.embed.EmbeddableComponentManager;
  * {@link org.xwiki.test.AbstractMockingComponentTestCase} which provides automatic mocking for injected component
  * dependencies and which is thus better when writing pure unit tests, isolated from the rest.
  */
-public class AbstractComponentTestCase extends AbstractMockingTestCase
+public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
 {
     private XWikiComponentInitializer initializer = new XWikiComponentInitializer();
 
@@ -87,65 +86,6 @@ public class AbstractComponentTestCase extends AbstractMockingTestCase
     public MockConfigurationSource getConfigurationSource()
     {
         return this.initializer.getConfigurationSource();
-    }
-
-    /**
-     * @since 3.0M3
-     */
-    public <T> T registerMockComponent(Class<T> role, String hint, String mockId) throws Exception
-    {
-        DefaultComponentDescriptor<T> descriptor = createComponentDescriptor(role);
-        descriptor.setRoleHint(hint);
-        return registerMockComponent(descriptor, mockId);
-    }
-
-    /**
-     * @since 2.4RC1
-     */
-    public <T> T registerMockComponent(Class<T> role, String hint) throws Exception
-    {
-        return registerMockComponent(role, hint, null);
-    }
-
-    /**
-     * @since 2.4RC1
-     */
-    public <T> T registerMockComponent(Class<T> role) throws Exception
-    {
-        return registerMockComponent(createComponentDescriptor(role));
-    }
-
-    /**
-     * @since 2.4RC1
-     */
-    private <T> T registerMockComponent(ComponentDescriptor<T> descriptor) throws Exception
-    {
-        return registerMockComponent(descriptor, null);
-    }
-
-    /**
-     * @since 3.0M3
-     */
-    private <T> T registerMockComponent(ComponentDescriptor<T> descriptor, String mockId) throws Exception
-    {
-        T instance;
-        if (mockId != null) {
-            instance = getMockery().mock(descriptor.getRole(), mockId);
-        } else {
-            instance = getMockery().mock(descriptor.getRole());
-        }
-        getComponentManager().registerComponent(descriptor, instance);
-        return instance;
-    }
-
-    /**
-     * @since 2.4RC1
-     */
-    private <T> DefaultComponentDescriptor<T> createComponentDescriptor(Class<T> role)
-    {
-        DefaultComponentDescriptor<T> descriptor = new DefaultComponentDescriptor<T>();
-        descriptor.setRole(role);
-        return descriptor;
     }
 
     /**

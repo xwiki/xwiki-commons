@@ -19,6 +19,8 @@
  */
 package org.xwiki.observation.event;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.observation.event.filter.AlwaysMatchingEventFilter;
 import org.xwiki.observation.event.filter.EventFilter;
 import org.xwiki.observation.event.filter.FixedNameEventFilter;
@@ -99,5 +101,31 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
             isMatching = getEventFilter().matches(((AbstractFilterableEvent) otherEvent).getEventFilter());
         }
         return isMatching;
+    }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if (object == null) {
+            return false;
+        }
+        if (object == this) {
+            return true;
+        }
+        if (object.getClass() != getClass()) {
+            return false;
+        }
+        FilterableEvent rhs = (FilterableEvent) object;
+        return new EqualsBuilder()
+            .append(getEventFilter(), rhs.getEventFilter())
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(3, 125)
+            .append(getEventFilter())
+            .toHashCode();
     }
 }
