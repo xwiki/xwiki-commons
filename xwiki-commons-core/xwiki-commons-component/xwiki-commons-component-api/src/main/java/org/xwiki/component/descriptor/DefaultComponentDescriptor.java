@@ -108,7 +108,8 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     public String toString()
     {
         StringBuilder buffer = new StringBuilder(super.toString());
-        buffer.append(" implementation = [").append(getImplementation().getName()).append("]");
+        buffer.append(" implementation = [").append(
+            getImplementation() == null ? null : getImplementation().getName()).append("]");
         buffer.append(" instantiation = [").append(getInstantiationStrategy()).append("]");
 
         return buffer.toString();
