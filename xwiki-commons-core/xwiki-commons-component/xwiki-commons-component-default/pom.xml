@@ -61,6 +61,13 @@
       <version>3.0</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- JMock -->
+    <dependency>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-junit4</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -81,4 +88,3 @@
     </plugins>
   </build>
 </project>
-       

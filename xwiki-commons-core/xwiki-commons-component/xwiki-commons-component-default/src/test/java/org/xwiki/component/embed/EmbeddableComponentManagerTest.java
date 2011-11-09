@@ -22,14 +22,25 @@ package org.xwiki.component.embed;
 import java.util.List;
 import java.util.Map;
 
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.descriptor.DefaultComponentDependency;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
+import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.phase.Disposable;
+import org.xwiki.component.phase.FinalizationException;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 
 /**
  * Unit tests for {@link EmbeddableComponentManager}.
@@ -37,8 +48,16 @@ import org.xwiki.component.manager.ComponentManager;
  * @version $Id$
  * @since 2.0M1
  */
+@RunWith(JMock.class)
 public class EmbeddableComponentManagerTest
 {
+    private Mockery mockery = new JUnit4Mockery();
+
+    public Mockery getMockery()
+    {
+        return this.mockery;
+    }
+
     public static interface Role
     {
     }
@@ -49,6 +68,37 @@ public class EmbeddableComponentManagerTest
 
     public static class OtherRoleImpl implements Role
     {
+    }
+
+    public static class InitializableRoleImpl implements Role, Initializable
+    {
+        private boolean initialized = false;
+
+        @Override
+        public void initialize() throws InitializationException
+        {
+            initialized = true;
+        }
+
+        public boolean isInitialized()
+        {
+            return initialized;
+        }
+    }
+
+    public static class DisposableRoleImpl implements Role, Disposable
+    {
+        private boolean finalized = false;
+
+        @Override
+        public void dispose() throws FinalizationException {
+            finalized = true;
+        }
+
+        public boolean isFinalized()
+        {
+            return finalized;
+        }
     }
 
     public static class LoggingRoleImpl implements Role
@@ -224,5 +274,133 @@ public class EmbeddableComponentManagerTest
         cd.setImplementation(RoleImpl.class);
         parent.registerComponent(cd);
         return parent;
+    }
+
+    @Test
+    public void testRegisterInitializableComponent() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        cd.setRole(Role.class);
+        cd.setImplementation(InitializableRoleImpl.class);
+        ecm.registerComponent(cd);
+        InitializableRoleImpl instance = (InitializableRoleImpl) ecm.lookup(Role.class);
+
+        Assert.assertTrue(instance.isInitialized());
+    }
+
+    @Test
+    public void testUnregisterDisposableSingletonComponent() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        cd.setRole(Role.class);
+        cd.setImplementation(DisposableRoleImpl.class);
+        cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
+
+        ecm.registerComponent(cd);
+        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.lookup(Role.class);
+        ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
+
+        Assert.assertTrue(instance.isFinalized());
+    }
+
+    @Test
+    public void testRelease() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        cd.setRole(Role.class);
+        cd.setImplementation(RoleImpl.class);
+        Role roleImpl = new RoleImpl();
+
+        ecm.registerComponent(cd, roleImpl);
+        ecm.release(roleImpl);
+
+        Assert.assertNotSame(roleImpl, ecm.lookup(Role.class));
+    }
+
+    @Test
+    public void testReleaseDisposableComponent() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        cd.setRole(Role.class);
+        cd.setImplementation(DisposableRoleImpl.class);
+        cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
+
+        ecm.registerComponent(cd);
+        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.lookup(Role.class);
+        ecm.release(instance);
+
+        Assert.assertTrue(instance.isFinalized());
+    }
+
+    @Test
+    public void testRegisterComponentNotification() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        final DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        cd.setRole(Role.class);
+        cd.setImplementation(RoleImpl.class);
+
+        final ComponentEventManager cem = getMockery().mock(ComponentEventManager.class);
+        ecm.setComponentEventManager(cem);
+
+        getMockery().checking(new Expectations() {{
+            oneOf(cem).notifyComponentRegistered(cd);
+        }});
+
+        ecm.registerComponent(cd);
+    }
+
+    @Test
+    public void testUnregisterComponentNotification() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        final DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        cd.setRole(Role.class);
+        cd.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd);
+
+        final ComponentEventManager cem = getMockery().mock(ComponentEventManager.class);
+        ecm.setComponentEventManager(cem);
+
+        getMockery().checking(new Expectations() {{
+            oneOf(cem).notifyComponentUnregistered(cd);
+        }});
+
+        ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
+    }
+
+    @Test
+    public void testRegisterComponentNotificationOnSecondRegistration() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        final DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
+        cd1.setRole(Role.class);
+        cd1.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd1);
+
+        final DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<Role>();
+        cd2.setRole(Role.class);
+        cd2.setImplementation(OtherRoleImpl.class);
+
+        final ComponentEventManager cem = getMockery().mock(ComponentEventManager.class);
+        ecm.setComponentEventManager(cem);
+
+        getMockery().checking(new Expectations() {{
+            oneOf(cem).notifyComponentUnregistered(cd1);
+            oneOf(cem).notifyComponentRegistered(cd2);
+        }});
+
+        ecm.registerComponent(cd2);
     }
 }

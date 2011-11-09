@@ -74,11 +74,14 @@ public interface ComponentManager
     <T> T lookup(Class<T> role, String roleHint) throws ComponentLookupException;
 
     /**
-     * Remove a component from the list of available components.
-     * 
+     * Release (and destroy) the provided singleton instance.
+     *
+     * Since 3.3M2, if the instance is found in the singleton instances currently available, its corresponding
+     * component descriptor is re-registered, causing the instance to be released (and destroyed).
+     * Using this method before 3.3M2 is dangerous and a manual re-registration is the proper workaround.
+     *
      * @param <T> the component role type
-     * @param component the component to release passed as a component instance. The component definition matching the
-     *            passed instance is removed
+     * @param component the component to release passed as a component instance.
      * @throws ComponentLifecycleException if the component's ending lifecycle raises an error
      */
     <T> void release(T component) throws ComponentLifecycleException;

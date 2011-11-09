@@ -67,7 +67,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     public String toString()
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("role = [").append(getRole().getName()).append("]");
+        buffer.append("role = [").append(null == getRole() ? "<null>" : getRole().getName()).append("]");
         buffer.append(" hint = [").append(getRoleHint()).append("]");
         return buffer.toString();
     }

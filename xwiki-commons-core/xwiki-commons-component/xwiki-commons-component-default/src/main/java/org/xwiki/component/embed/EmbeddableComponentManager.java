@@ -39,6 +39,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.manager.ComponentManagerInitializer;
 import org.xwiki.component.manager.ComponentRepositoryException;
+import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.util.ReflectionUtils;
 
 /**
@@ -168,22 +169,28 @@ public class EmbeddableComponentManager implements ComponentManager
     @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
     {
+        ComponentDescriptor< ? > oldDescriptor;
+
         synchronized (this) {
             RoleHint<T> roleHint = new RoleHint<T>(componentDescriptor.getRole(), componentDescriptor.getRoleHint());
 
-            this.descriptors.put(roleHint, componentDescriptor);
-
+            // Remove any existing instance since we're replacing it
+            oldDescriptor = destroySingletonInstance(roleHint);
+            
             if (componentInstance != null) {
                 // Set initial instance of the component
                 this.components.put(roleHint, componentInstance);
-            } else {
-                // Remove any existing instance since we're replacing it
-                this.components.remove(roleHint);
             }
+
+            // Register the new descriptor
+            this.descriptors.put(roleHint, componentDescriptor);
         }
 
         // Send event about component registration
         if (this.eventManager != null) {
+            if (oldDescriptor != null) {
+                this.eventManager.notifyComponentUnregistered(oldDescriptor);
+            }
             this.eventManager.notifyComponentRegistered(componentDescriptor);
         }
     }
@@ -197,11 +204,10 @@ public class EmbeddableComponentManager implements ComponentManager
         synchronized (this) {
             RoleHint< ? > roleHintKey = new RoleHint(role, roleHint);
 
-            descriptor = this.descriptors.get(roleHintKey);
+            descriptor = destroySingletonInstance(roleHintKey);
 
             if (descriptor != null) {
                 this.descriptors.remove(roleHintKey);
-                this.components.remove(roleHintKey);
             }
         }
 
@@ -251,7 +257,7 @@ public class EmbeddableComponentManager implements ComponentManager
             // Note that we're not removing inside the for loop above since it would cause a Concurrent
             // exception since we'd modify the map accessed by the iterator.
             if (key != null) {
-                this.components.remove(key);
+                registerComponent(this.descriptors.get(key), null);
             }
         }
     }
@@ -361,5 +367,29 @@ public class EmbeddableComponentManager implements ComponentManager
         }
 
         return instance;
+    }
+
+    /**
+     * Remove the singleton instance for the provided RoleHint. If the instance implements the Disposable interface,
+     * its dispose method is called.
+     * @param roleHint the role and hint of the component.
+     * @return the component descriptor of the provided RoleHint if available.
+     */
+    private ComponentDescriptor< ? > destroySingletonInstance(RoleHint< ? > roleHint) {
+        ComponentDescriptor< ? > descriptor = this.descriptors.get(roleHint);
+        Object instance = this.components.remove(roleHint);
+
+        if (instance != null && descriptor != null
+            && descriptor.getInstantiationStrategy() == ComponentInstantiationStrategy.SINGLETON
+            && Disposable.class.isAssignableFrom(descriptor.getImplementation())) {
+
+            try {
+                ((Disposable) instance).dispose();
+            } catch (Exception e) {
+                logger.warn("Singleton component instance destruction failed",e);
+            }
+        }
+
+        return descriptor;
     }
 }
