@@ -383,7 +383,7 @@ public class EmbeddableComponentManager implements ComponentManager
             try {
                 ((Disposable) instance).dispose();
             } catch (Exception e) {
-                logger.warn("Instance released but disposal failed. Some resources may have not been released.",e);
+                logger.warn("Instance released but disposal failed. Some resources may not have been released.",e);
             }
         }
 
