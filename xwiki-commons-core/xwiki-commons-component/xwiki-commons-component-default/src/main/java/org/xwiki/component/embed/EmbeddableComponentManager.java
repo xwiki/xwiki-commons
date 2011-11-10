@@ -379,14 +379,11 @@ public class EmbeddableComponentManager implements ComponentManager
         ComponentDescriptor< ? > descriptor = this.descriptors.get(roleHint);
         Object instance = this.components.remove(roleHint);
 
-        if (instance != null && descriptor != null
-            && descriptor.getInstantiationStrategy() == ComponentInstantiationStrategy.SINGLETON
-            && Disposable.class.isAssignableFrom(instance.getClass())) {
-
+        if (instance instanceof Disposable) {
             try {
                 ((Disposable) instance).dispose();
             } catch (Exception e) {
-                logger.warn("Singleton component instance destruction failed",e);
+                logger.warn("Instance released but disposal failed. Some resources may have not been released.",e);
             }
         }
 
