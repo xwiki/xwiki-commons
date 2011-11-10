@@ -24,8 +24,9 @@ package org.xwiki.component.phase;
  * Raised when singleton component destruction failed.
  * 
  * @version $Id$
+ * @since 3.3M2
  */
-public class FinalizationException extends Exception
+public class DisposalException extends Exception
 {
     /**
      * Needed to identify the version of this code when serializing/deserializing (since Exception is Serializable).
@@ -37,7 +38,7 @@ public class FinalizationException extends Exception
      * @param message the detail message. The detail message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public FinalizationException(String message)
+    public DisposalException(String message)
     {
         super(message);
     }
@@ -48,7 +49,7 @@ public class FinalizationException extends Exception
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt>
      *            value is permitted, and indicates that the cause is nonexistent or unknown.)
      */
-    public FinalizationException(String message, Throwable cause)
+    public DisposalException(String message, Throwable cause)
     {
         super(message, cause);
     }

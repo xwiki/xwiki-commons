@@ -26,13 +26,14 @@ package org.xwiki.component.phase;
  * destroyed component.
  *
  * @version $Id$
+ * @since 3.3M2
  */
 public interface Disposable
 {
     /**
      * Method called by the Component Manager when a singleton component is unregistered and should be destroyed.
      *
-     * @throws FinalizationException if an error happens during a component's destruction
+     * @throws DisposalException if an error happens during a component's destruction
      */
-    void dispose() throws FinalizationException;
+    void dispose() throws DisposalException;
 }

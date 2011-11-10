@@ -381,7 +381,7 @@ public class EmbeddableComponentManager implements ComponentManager
 
         if (instance != null && descriptor != null
             && descriptor.getInstantiationStrategy() == ComponentInstantiationStrategy.SINGLETON
-            && Disposable.class.isAssignableFrom(descriptor.getImplementation())) {
+            && Disposable.class.isAssignableFrom(instance.getClass())) {
 
             try {
                 ((Disposable) instance).dispose();

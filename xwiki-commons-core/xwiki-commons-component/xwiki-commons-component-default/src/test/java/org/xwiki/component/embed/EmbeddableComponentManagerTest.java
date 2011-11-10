@@ -38,7 +38,7 @@ import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
-import org.xwiki.component.phase.FinalizationException;
+import org.xwiki.component.phase.DisposalException;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
@@ -91,7 +91,8 @@ public class EmbeddableComponentManagerTest
         private boolean finalized = false;
 
         @Override
-        public void dispose() throws FinalizationException {
+        public void dispose() throws DisposalException
+        {
             finalized = true;
         }
 
@@ -302,6 +303,22 @@ public class EmbeddableComponentManagerTest
 
         ecm.registerComponent(cd);
         DisposableRoleImpl instance = (DisposableRoleImpl) ecm.lookup(Role.class);
+        ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
+
+        Assert.assertTrue(instance.isFinalized());
+    }
+
+    @Test
+    public void testUnregisterDisposableSingletonComponentWithInstance() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        cd.setRole(Role.class);
+        cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
+
+        DisposableRoleImpl instance = new DisposableRoleImpl();
+        ecm.registerComponent(cd, instance);
         ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
 
         Assert.assertTrue(instance.isFinalized());
