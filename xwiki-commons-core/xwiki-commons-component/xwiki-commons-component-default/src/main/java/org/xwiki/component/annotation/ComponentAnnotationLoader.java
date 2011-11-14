@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Provider;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -194,7 +196,8 @@ public class ComponentAnnotationLoader
     /**
      * Finds the interfaces that implement component roles by looking recursively in all interfaces of the passed
      * component implementation class. If the roles annotation value is specified then use the specified list instead of
-     * doing auto-discovery.
+     * doing auto-discovery. Also note that we support component classes implementing JSR 330's
+     * {@link javax.inject.Provider} (and thus without a component role annotation).
      * 
      * @param componentClass the component implementation class for which to find the component roles it implements
      * @return the list of component role classes implemented
@@ -208,13 +211,19 @@ public class ComponentAnnotationLoader
         if (component != null && component.roles().length > 0) {
             classes.addAll(Arrays.asList(component.roles()));
         } else {
-            // Look in both superclass and interfaces for @ComponentRole.
+            // Look in both superclass and interfaces for @ComponentRole or javax.inject.Provider
             for (Class< ? > interfaceClass : componentClass.getInterfaces()) {
+                // Handle superclass of interfaces
                 classes.addAll(findComponentRoleClasses(interfaceClass));
+                // Handle interfaces directly declared in the passed component class
                 for (Annotation annotation : interfaceClass.getDeclaredAnnotations()) {
                     if (annotation.annotationType().getName().equals(ComponentRole.class.getName())) {
                         classes.add(interfaceClass);
                     }
+                }
+                // Handle javax.inject.Provider
+                if (Provider.class.isAssignableFrom(interfaceClass)) {
+                    classes.add(interfaceClass);
                 }
             }
 

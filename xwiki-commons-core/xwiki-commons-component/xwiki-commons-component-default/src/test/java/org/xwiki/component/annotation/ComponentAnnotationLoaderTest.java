@@ -21,6 +21,9 @@ package org.xwiki.component.annotation;
 
 import java.util.Set;
 
+import javax.inject.Named;
+import javax.inject.Provider;
+
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.After;
@@ -84,6 +87,17 @@ public class ComponentAnnotationLoaderTest
     {
     }
 
+    @Component
+    @Named("customprovider")
+    public class ProviderImpl implements Provider<Role>
+    {
+        @Override
+        public Role get()
+        {
+            return new RoleImpl();
+        }
+    }
+
     private Mockery context = new Mockery();
 
     @After
@@ -139,6 +153,15 @@ public class ComponentAnnotationLoaderTest
     public void testFindComponentRoleClasseWhenClassExtension()
     {
         assertComponentRoleClasses(SuperRoleImpl.class);
+    }
+
+    @Test
+    public void testFindComponentRoleClassesForProvider()
+    {
+        ComponentAnnotationLoader loader = new ComponentAnnotationLoader();
+        Set<Class< ? >> classes = loader.findComponentRoleClasses(ProviderImpl.class);
+
+        Assert.assertEquals(1, classes.size());
     }
 
     private void assertComponentRoleClasses(Class< ? > componentClass)
