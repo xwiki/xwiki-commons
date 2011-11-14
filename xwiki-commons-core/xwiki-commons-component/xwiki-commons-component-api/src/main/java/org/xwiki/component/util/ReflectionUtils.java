@@ -20,6 +20,8 @@
 package org.xwiki.component.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -100,5 +102,53 @@ public final class ReflectionUtils
             }
             targetClass = targetClass.getSuperclass();
         }
+    }
+
+    /**
+     * Extract the last generic type from the passed field. For example {@code private List&lt;A, B&gt; field}
+     * would return the {@code B} class.
+     *
+     * @param field the field from which to extract the generic type
+     * @return the class of the last generic type of null if the field doesn't have a generic type
+     */
+    public static Class<?> getLastGenericFieldType(Field field)
+    {
+        Type type = field.getGenericType();
+
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) type;
+            Type[] types = pType.getActualTypeArguments();
+            if (types.length > 0 && types[types.length - 1] instanceof Class) {
+                return (Class) types[types.length - 1];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract the last generic type from the passed class. For example
+     * {@code public Class MyClass implements FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;} will return {@code B}.
+     *
+     * @param clazz the class to extract from
+     * @param filterClass the class of the generic type we're looking for
+     * @return the last generic type from the interfaces of the passed class, filtered by the passed filter class
+     */
+    public static Class<?> getLastGenericClassType(Class clazz, Class filterClass)
+    {
+        // Get all interfaces implemented and find the one that's a Provider with a Generic type
+        for (Type type : clazz.getGenericInterfaces()) {
+            if (type instanceof ParameterizedType) {
+                ParameterizedType pType = (ParameterizedType) type;
+                if (filterClass.isAssignableFrom((Class) pType.getRawType())) {
+                    Type[] actualTypes = pType.getActualTypeArguments();
+                    if (actualTypes.length > 0 && actualTypes[actualTypes.length - 1] instanceof Class) {
+                        return (Class) actualTypes[actualTypes.length - 1];
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }

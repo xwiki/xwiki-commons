@@ -43,11 +43,11 @@ public interface ComponentManager
     /**
      * @param <T> the component role type
      * @param role the class (aka role) that the component implements
-     * @param roleHint the hint that differentiates a component implementation from another one (each component is
+     * @param hint the hint that differentiates a component implementation from another one (each component is
      *            registered with a hint; the "default" hint being the default)
      * @return true if the component is registered for the passed hint or false otherwise
      */
-    <T> boolean hasComponent(Class<T> role, String roleHint);
+    <T> boolean hasComponent(Class<T> role, String hint);
 
     /**
      * Find a component instance that implements that passed interface class. If the component has a singleton lifecycle
@@ -66,19 +66,16 @@ public interface ComponentManager
      * 
      * @param <T> the component role type
      * @param role the class (aka role) that the component implements
-     * @param roleHint the hint that differentiates a component implementation from another one (each component is
+     * @param hint the hint that differentiates a component implementation from another one (each component is
      *            registered with a hint; the "default" hint being the default)
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
      */
-    <T> T lookup(Class<T> role, String roleHint) throws ComponentLookupException;
+    <T> T lookup(Class<T> role, String hint) throws ComponentLookupException;
 
     /**
-     * Release (and destroy) the provided singleton instance.
-     *
-     * Since 3.3M2, if the instance is found in the singleton instances currently available, its corresponding
-     * component descriptor is re-registered, causing the instance to be released (and destroyed).
-     * Using this method before 3.3M2 is dangerous and a manual re-registration is the proper workaround.
+     * Release the provided singleton instance but don't unregister the component descriptor. This means that next
+     * time the component is looked up a new instance will be created.
      *
      * @param <T> the component role type
      * @param component the component to release passed as a component instance.
@@ -138,20 +135,21 @@ public interface ComponentManager
     /**
      * Remove a component from the component repository dynamically.
      * 
+     * @param <T> the component role type
      * @param role the role identifying the component
-     * @param roleHint the hint identifying the component
+     * @param hint the hint identifying the component
      * @since 2.0M2
      */
-    void unregisterComponent(Class< ? > role, String roleHint);
+    <T> void unregisterComponent(Class<T> role, String hint);
 
     /**
      * @param <T> the component role type
      * @param role the role identifying the component
-     * @param roleHint the hint identifying the component
+     * @param hint the hint identifying the component
      * @return the descriptor for the component matching the passed parameter or null if this component doesn't exist
      * @since 2.0M1
      */
-    <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String roleHint);
+    <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String hint);
 
     /**
      * @param <T> the role class for which to return all component implementations

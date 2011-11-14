@@ -26,6 +26,7 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import javax.inject.Provider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,10 +36,10 @@ import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.descriptor.DefaultComponentDependency;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.manager.ComponentEventManager;
+import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
-import org.xwiki.component.phase.DisposalException;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
@@ -91,7 +92,7 @@ public class EmbeddableComponentManagerTest
         private boolean finalized = false;
 
         @Override
-        public void dispose() throws DisposalException
+        public void dispose() throws ComponentLifecycleException
         {
             finalized = true;
         }
@@ -112,6 +113,33 @@ public class EmbeddableComponentManagerTest
         }
     }
 
+    public static class ProviderImpl implements Provider<Role>
+    {
+        private Role role;
+
+        @Override 
+        public Role get()
+        {
+            return this.role;
+        }
+    }
+
+    public static interface Role2
+    {
+        Provider<Role> getRoleProvider();
+    }
+
+    public static class Role2Impl implements Role2
+    {
+        private Provider<Role> roleProvider;
+
+        @Override
+        public Provider<Role> getRoleProvider()
+        {
+            return this.roleProvider;
+        }
+    }
+    
     @Test
     public void testGetComponentDescriptorList() throws Exception
     {
@@ -265,6 +293,61 @@ public class EmbeddableComponentManagerTest
 
         LoggingRoleImpl impl = (LoggingRoleImpl) ecm.lookup(Role.class);
         Assert.assertNotNull(impl.getLogger());
+    }
+
+    @Test
+    public void testRegisterProvider() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        // Register RoleImpl component first
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
+        cd1.setRole(Role.class);
+        cd1.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd1);        
+        
+        // Register our Provider as a component
+        DefaultComponentDescriptor<Provider> cd2 = new DefaultComponentDescriptor<Provider>();
+        cd2.setRole(Provider.class);
+        cd2.setRoleHint("myprovider");
+        cd2.setImplementation(ProviderImpl.class);
+        DefaultComponentDependency<Role> dd2 = new DefaultComponentDependency<Role>();
+        dd2.setRole(Role.class);
+        dd2.setMappingType(Role.class);
+        dd2.setName("role");
+        cd2.addComponentDependency(dd2);
+        ecm.registerComponent(cd2);
+
+        // Verify registration worked by looking up our Provider as a Component
+        Provider provider = ecm.lookup(Provider.class, "myprovider");
+        Assert.assertEquals(RoleImpl.class.getName(), provider.get().getClass().getName());
+        
+        // Now verify that a component can get injected our provider.
+        // First register it and the look it up
+        DefaultComponentDescriptor<Role2> cd3 = new DefaultComponentDescriptor<Role2>();
+        cd3.setRole(Role2.class);
+        cd3.setImplementation(Role2Impl.class);
+        DefaultComponentDependency<Provider> dd3 = new DefaultComponentDependency<Provider>();
+        dd3.setRole(Provider.class);
+        dd3.setRoleHint("myprovider");
+        dd3.setMappingType(Provider.class);
+        dd3.setName("roleProvider");
+        cd3.addComponentDependency(dd3);
+        ecm.registerComponent(cd3);        
+
+        Role2 role2 = ecm.lookup(Role2.class);
+        Assert.assertSame(provider, role2.getRoleProvider());
+        
+        // Verify that removing a Provider component works
+        ecm.unregisterComponent(Provider.class, "myprovider");
+        Assert.assertFalse(ecm.hasComponent(Provider.class, "myprovider"));
+        
+        // Verify we cannot get our Provider injected anymore (but a default one is injected now).
+        ecm.unregisterComponent(Role2.class, "default");
+        ecm.registerComponent(cd3);
+        role2 = ecm.lookup(Role2.class);
+        Assert.assertSame(GenericProvider.class.getName(), role2.getRoleProvider().getClass().getName());
+        Assert.assertEquals(RoleImpl.class.getName(), role2.getRoleProvider().get().getClass().getName());
     }
 
     private ComponentManager createParentComponentManager() throws Exception

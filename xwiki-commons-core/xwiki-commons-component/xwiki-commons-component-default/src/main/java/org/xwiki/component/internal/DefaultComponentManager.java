@@ -55,9 +55,9 @@ public class DefaultComponentManager implements ComponentManager, Composable
     }
 
     @Override
-    public <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String roleHint)
+    public <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String hint)
     {
-        return this.componentManager.getComponentDescriptor(role, roleHint);
+        return this.componentManager.getComponentDescriptor(role, hint);
     }
 
     @Override
@@ -67,9 +67,9 @@ public class DefaultComponentManager implements ComponentManager, Composable
     }
 
     @Override
-    public <T> T lookup(Class<T> role, String roleHint) throws ComponentLookupException
+    public <T> T lookup(Class<T> role, String hint) throws ComponentLookupException
     {
-        return this.componentManager.lookup(role, roleHint);
+        return this.componentManager.lookup(role, hint);
     }
 
     @Override
@@ -104,9 +104,9 @@ public class DefaultComponentManager implements ComponentManager, Composable
     }
 
     @Override
-    public void unregisterComponent(Class< ? > role, String roleHint)
+    public <T> void unregisterComponent(Class<T> role, String hint)
     {
-        this.componentManager.unregisterComponent(role, roleHint);
+        this.componentManager.unregisterComponent(role, hint);
     }
 
     @Override
@@ -116,9 +116,9 @@ public class DefaultComponentManager implements ComponentManager, Composable
     }
 
     @Override
-    public <T> boolean hasComponent(Class<T> role, String roleHint)
+    public <T> boolean hasComponent(Class<T> role, String hint)
     {
-        return this.componentManager.hasComponent(role, roleHint);
+        return this.componentManager.hasComponent(role, hint);
     }
 
     @Override

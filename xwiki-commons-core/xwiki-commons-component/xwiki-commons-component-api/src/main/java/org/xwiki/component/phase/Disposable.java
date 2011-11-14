@@ -19,6 +19,8 @@
  */
 package org.xwiki.component.phase;
 
+import org.xwiki.component.manager.ComponentLifecycleException;
+
 /**
  * If a singleton component could be destroyed and replaced in the component manager, it should implement
  * this interface to properly clean up its resources. Any component depending of a component exposing this
@@ -33,7 +35,7 @@ public interface Disposable
     /**
      * Method called by the Component Manager when a singleton component is unregistered and should be destroyed.
      *
-     * @throws DisposalException if an error happens during a component's destruction
+     * @throws ComponentLifecycleException if an error happens during a component's destruction
      */
-    void dispose() throws DisposalException;
+    void dispose() throws ComponentLifecycleException;
 }
