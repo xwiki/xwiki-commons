@@ -174,52 +174,23 @@ public class EmbeddableComponentManager implements ComponentManager
     @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
     {
-        ComponentDescriptor<T> registeredDescriptor;
-
         synchronized (this) {
             RoleHint<T> roleHint = new RoleHint<T>(componentDescriptor.getRole(), componentDescriptor.getRoleHint());
 
-            // Remove any existing instance since we're replacing it
-            registeredDescriptor = (ComponentDescriptor<T>) this.descriptors.get(roleHint);
-            removeComponentWithoutException(roleHint, registeredDescriptor);
+            // Remove any existing instance and descriptor since we're replacing it
+            removeComponentWithoutException(roleHint, true);
 
-            if (componentInstance != null) {
-                // Set initial instance of the component
-                addComponent(roleHint, componentInstance, componentDescriptor);
-            }
-
-            // Register the new descriptor
-            this.descriptors.put(roleHint, componentDescriptor);
-        }
-
-        // Send event about component registration
-        if (this.eventManager != null) {
-            if (registeredDescriptor != null) {
-                this.eventManager.notifyComponentUnregistered(registeredDescriptor);
-            }
-            this.eventManager.notifyComponentRegistered(componentDescriptor);
+            // Register new component instance and descriptor
+            addComponent(roleHint, componentInstance, componentDescriptor, true);
         }
     }
 
     @Override
     public <T> void unregisterComponent(Class<T> role, String hint)
     {
-        ComponentDescriptor<T> oldDescriptor;
-
         synchronized (this) {
             RoleHint<T> roleHint = new RoleHint<T>(role, hint);
-
-            oldDescriptor = (ComponentDescriptor<T>) this.descriptors.get(roleHint);
-            removeComponentWithoutException(roleHint, oldDescriptor);
-
-            if (oldDescriptor != null) {
-                this.descriptors.remove(roleHint);
-            }
-        }
-
-        // Send event about component unregistration
-        if (oldDescriptor != null && this.eventManager != null) {
-            this.eventManager.notifyComponentUnregistered(oldDescriptor);
+            removeComponentWithoutException(roleHint, true);
         }
     }
 
@@ -264,7 +235,7 @@ public class EmbeddableComponentManager implements ComponentManager
             // Note that we're not removing inside the for loop above since it would cause a Concurrent
             // exception since we'd modify the map accessed by the iterator.
             if (key != null) {
-                removeComponent(key);
+                removeComponent(key, false);
             }
         }
     }
@@ -314,7 +285,7 @@ public class EmbeddableComponentManager implements ComponentManager
                             } else if (this.descriptors.get(
                                 roleHint).getInstantiationStrategy() == ComponentInstantiationStrategy.SINGLETON)
                             {
-                                addComponent(roleHint, instance, descriptor);
+                                addComponent(roleHint, instance, descriptor, false);
                             }
                         } catch (Exception e) {
                             throw new ComponentLookupException("Failed to lookup component [" + roleHint + "]", e);
@@ -400,24 +371,35 @@ public class EmbeddableComponentManager implements ComponentManager
         return instance;
     }
 
-    private <T> void addComponent(RoleHint<T> roleHint, T instance, ComponentDescriptor<T> descriptor)
+    private <T> void addComponent(RoleHint<T> roleHint, T instance, ComponentDescriptor<T> descriptor,
+        boolean addDescriptor)
     {
-        this.components.put(roleHint, instance);
+        if (instance != null) {
+            this.components.put(roleHint, instance);
 
-        // If the instance is a Provider also add it in the Providers's cache.
-        if (Provider.class.isAssignableFrom(instance.getClass())) {
-            Provider<?> provider = (Provider) instance;
-            Class<?> roleClass = ReflectionUtils.getLastGenericClassType(instance.getClass(), Provider.class);
-            this.providers.put(new RoleHint(roleClass, descriptor.getRoleHint()), provider);
+            // If the instance is a Provider also add it in the Providers's cache.
+            if (Provider.class.isAssignableFrom(instance.getClass())) {
+                Provider<?> provider = (Provider) instance;
+                Class<?> roleClass = ReflectionUtils.getLastGenericClassType(instance.getClass(), Provider.class);
+                this.providers.put(new RoleHint(roleClass, descriptor.getRoleHint()), provider);
+            }
+        }
+
+        // Send event about component registration
+        if (addDescriptor) {
+            if (this.eventManager != null) {
+                this.eventManager.notifyComponentRegistered(descriptor);
+            }
+            this.descriptors.put(roleHint, descriptor);
         }
     }
 
-    private <T> T removeComponent(RoleHint<T> roleHint) throws ComponentLifecycleException
+    private <T> T removeComponent(RoleHint<T> roleHint, boolean removeDescriptor) throws ComponentLifecycleException
     {
-        return removeComponent(roleHint, (ComponentDescriptor<T>) this.descriptors.get(roleHint));
+        return removeComponent(roleHint, (ComponentDescriptor<T>) this.descriptors.get(roleHint), removeDescriptor);
     }
 
-    private <T> T removeComponent(RoleHint<T> roleHint, ComponentDescriptor<T> descriptor)
+    private <T> T removeComponent(RoleHint<T> roleHint, ComponentDescriptor<T> descriptor, boolean removeDescriptor)
         throws ComponentLifecycleException
     {
         T component = (T) this.components.remove(roleHint);
@@ -433,6 +415,15 @@ public class EmbeddableComponentManager implements ComponentManager
             this.providers.remove(new RoleHint(roleClass, descriptor.getRoleHint()));
         }
 
+        if (removeDescriptor) {
+            ComponentDescriptor<T> oldDescriptor = (ComponentDescriptor<T>) this.descriptors.remove(roleHint);
+
+            // Send event about component unregistration
+            if (this.eventManager != null && oldDescriptor != null) {
+                this.eventManager.notifyComponentUnregistered(oldDescriptor);
+            }
+        }
+
         return component;
     }
 
@@ -440,10 +431,10 @@ public class EmbeddableComponentManager implements ComponentManager
      * Note: This method shouldn't exist but register/unregister methods should throw a
      * {@link ComponentLifecycleException} but that would break backward compatibility to add it.
      */
-    private <T> void removeComponentWithoutException(RoleHint<T> roleHint, ComponentDescriptor<T> descriptor)
+    private <T> void removeComponentWithoutException(RoleHint<T> roleHint, boolean removeDescriptor)
     {
         try {
-            removeComponent(roleHint, descriptor);
+            removeComponent(roleHint, removeDescriptor);
         } catch (Exception e) {
             logger.warn("Instance released but disposal failed. Some resources may not have been released.", e);
         }
