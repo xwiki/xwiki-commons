@@ -412,14 +412,25 @@ public class EmbeddableComponentManagerTest
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
-        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        final DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
         cd.setRole(Role.class);
         cd.setImplementation(RoleImpl.class);
         Role roleImpl = new RoleImpl();
-
         ecm.registerComponent(cd, roleImpl);
+
+        final ComponentEventManager cem = getMockery().mock(ComponentEventManager.class);
+        ecm.setComponentEventManager(cem);
+
+        getMockery().checking(new Expectations() {{
+            // Verify that when we release a component an unregistration event is sent followed by a registration one
+            // see comments in {@link EmbeddableComponentManager#release} code.
+            oneOf(cem).notifyComponentUnregistered(cd);
+            oneOf(cem).notifyComponentRegistered(cd);
+        }});
+        
         ecm.release(roleImpl);
 
+        Assert.assertNotNull(ecm.lookup(Role.class));
         Assert.assertNotSame(roleImpl, ecm.lookup(Role.class));
     }
 

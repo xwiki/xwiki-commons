@@ -235,7 +235,17 @@ public class EmbeddableComponentManager implements ComponentManager
             // Note that we're not removing inside the for loop above since it would cause a Concurrent
             // exception since we'd modify the map accessed by the iterator.
             if (key != null) {
-                removeComponent(key, false);
+                // We do the following:
+                // - fire an unregistration event, to tell the world that this reference is now dead
+                // - fire a registration event, to tell the world that it could get a new reference for this component
+                //   now
+                // We need to do this since code holding a reference on the released component may need to know it's 
+                // been removed and thus discard its own reference to that component and look it up again.
+                // Another solution would be to introduce a new event for Component creation/destruction (right now
+                // we only send events for Component registration/unregistration).
+                ComponentDescriptor<T> oldDescriptor = (ComponentDescriptor<T>) this.descriptors.get(key);
+                removeComponent((RoleHint<T>) key, oldDescriptor, true);
+                addComponent((RoleHint<T>) key, null, oldDescriptor, true);
             }
         }
     }
