@@ -72,7 +72,7 @@
   <scm>
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
-    <url>https://github.com/xwiki/xwiki-commons</url>
+    <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
   </scm>
   <mailingLists>
     <mailingList>

@@ -33,6 +33,7 @@
   <name>XWiki Commons - Observation - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Observation - Parent POM</description>
+  <url>http://extensions.xwiki.org/xwiki/bin/view/Extension/Observation+Module</url>
   <modules>
     <module>xwiki-commons-observation-api</module>
     <module>xwiki-commons-observation-local</module>
