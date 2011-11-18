@@ -52,7 +52,17 @@ public final class ReflectionUtils
         Map<String, Field> fields = new LinkedHashMap<String, Field>();
         Class< ? > targetClass = componentClass;
         while (targetClass != null) {
-            for (Field field : targetClass.getDeclaredFields()) {
+            Field[] componentClassFields;
+            try {
+                componentClassFields = targetClass.getDeclaredFields();
+            } catch (NoClassDefFoundError e) {
+                // Provide a better exception message to more easily debug component loading issue.
+                // Specifically with this error message we'll known which component failed to be initialized.
+                throw new NoClassDefFoundError("Failed to get fields for class [" + targetClass.getName()
+                    + "] because the class [" + e.getMessage() + "] couldn't be found in the ClassLoader.");
+            }
+            
+            for (Field field : componentClassFields) {
                 // Make sure that if the same field is declared in a class and its superclass
                 // only the field used in the class will be returned. Note that we need to do
                 // this check since the Field object doesn't implement the equals method using
