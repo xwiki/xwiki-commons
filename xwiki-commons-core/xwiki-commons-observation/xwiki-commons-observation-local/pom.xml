@@ -33,7 +33,6 @@
   <name>XWiki Commons - Observation - Local</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Observation - Local</description>
-  <url>http://extensions.xwiki.org/xwiki/bin/view/Extension/Observation+Module</url>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

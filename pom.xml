@@ -30,7 +30,10 @@
   <packaging>pom</packaging>
   <version>3.3-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
-  <url>http://xwiki.org</url>
+  <!-- This special URL automatically finds the correct documentation page for the module based on the passed id .
+       It allows to have a single URL definition in this top level POM and still get valid website URLs for all
+       mddules. -->
+  <url>http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path=</url>
   <inceptionYear>2004</inceptionYear>
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
