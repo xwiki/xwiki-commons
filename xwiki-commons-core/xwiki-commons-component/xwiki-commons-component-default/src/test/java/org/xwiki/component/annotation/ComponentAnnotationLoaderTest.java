@@ -29,8 +29,13 @@ import org.jmock.Mockery;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.component.descriptor.DefaultComponentDependency;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.DefaultComponentManager;
+import org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory;
+import org.xwiki.component.internal.multi.ComponentManagerFactory;
+import org.xwiki.component.internal.multi.ComponentManagerManager;
+import org.xwiki.component.internal.multi.DefaultComponentManagerManager;
 import org.xwiki.component.manager.ComponentManager;
 
 /**
@@ -137,10 +142,35 @@ public class ComponentAnnotationLoaderTest
         descriptor3.setRole(Role.class);
         descriptor3.setRoleHint("test");
 
+        final DefaultComponentDescriptor descriptor4 = new DefaultComponentDescriptor<Role>();
+        descriptor4.setImplementation(EmbeddableComponentManagerFactory.class);
+        descriptor4.setRole(ComponentManagerFactory.class);
+        descriptor4.setRoleHint("default");
+        DefaultComponentDependency<ComponentManager> dependency4 = new DefaultComponentDependency<ComponentManager>();
+        dependency4.setName("rootComponentManager");
+        dependency4.setRole(ComponentManager.class);
+        dependency4.setRoleHint("default");
+        dependency4.setMappingType(ComponentManager.class);
+        descriptor4.addComponentDependency(dependency4);
+
+        final DefaultComponentDescriptor descriptor5 = new DefaultComponentDescriptor<Role>();
+        descriptor5.setImplementation(DefaultComponentManagerManager.class);
+        descriptor5.setRole(ComponentManagerManager.class);
+        descriptor5.setRoleHint("default");
+        DefaultComponentDependency<ComponentManagerFactory> dependency51 = new DefaultComponentDependency<ComponentManagerFactory>();
+        dependency51.setName("defaultComponentManagerFactory");
+        dependency51.setRole(ComponentManagerFactory.class);
+        dependency51.setRoleHint("default");
+        dependency51.setMappingType(ComponentManagerFactory.class);
+        descriptor5.addComponentDependency(dependency51);
+        descriptor5.addComponentDependency(dependency4);
+        
     	this.context.checking(new Expectations() {{
             oneOf(mockManager).registerComponent(descriptor1);
             oneOf(mockManager).registerComponent(descriptor2);
             oneOf(mockManager).registerComponent(descriptor3);
+            oneOf(mockManager).registerComponent(descriptor4);
+            oneOf(mockManager).registerComponent(descriptor5);
         }});
 
     	loader.initialize(mockManager, this.getClass().getClassLoader());
