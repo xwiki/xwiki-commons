@@ -27,7 +27,7 @@ import org.xwiki.observation.event.Event;
  * @version $Id$
  * @since 3.2M3
  */
-public abstract class AbstractThreadEventListener implements EventListener
+public abstract class AbstractThreadEventListener extends AbstractPrioritizedEventListener
 {
     /**
      * The thread to match to receive events.

@@ -40,7 +40,7 @@ public class ObservationManagerEventListenerTest extends AbstractComponentTestCa
 {
     private ObservationManager manager;
     
-    private EventListener eventListenerMock;
+    private PrioritizedEventListener eventListenerMock;
     
     private Event eventMock;
     
@@ -57,7 +57,7 @@ public class ObservationManagerEventListenerTest extends AbstractComponentTestCa
         componentEventManager.setObservationManager(this.manager);
         getComponentManager().setComponentEventManager(componentEventManager);
 
-        this.eventListenerMock = getMockery().mock(EventListener.class);
+        this.eventListenerMock = getMockery().mock(PrioritizedEventListener.class);
         this.eventMock = getMockery().mock(Event.class);
 
         this.componentDescriptor = new DefaultComponentDescriptor<EventListener>();
@@ -69,6 +69,7 @@ public class ObservationManagerEventListenerTest extends AbstractComponentTestCa
             allowing(eventMock).matches(with(same(eventMock))); will(returnValue(true));
             allowing(eventListenerMock).getName(); will(returnValue("mylistener"));
             allowing(eventListenerMock).getEvents(); will(returnValue(Arrays.asList(eventMock)));
+            allowing(eventListenerMock).getPriority(); will(returnValue(1000));
         }});
     }
 
