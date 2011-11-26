@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,7 +40,6 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
-import org.xwiki.observation.PrioritizedEventListener;
 import org.xwiki.observation.event.AllEvent;
 import org.xwiki.observation.event.Event;
 
@@ -61,18 +59,17 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     /**
      * Registered listeners indexed on Event classes so that it's fast to find all the listeners registered for a given
      * event, so that {@link #notify} calls execute fast and in a fixed amount a time.
-     *
+     * 
      * @todo Should we allow event inheritance?
      */
-    private Map<Class< ? extends Event>, Map<ListenerKey, RegisteredListener>> listenersByEvent =
-        new ConcurrentHashMap<Class< ? extends Event>, Map<ListenerKey, RegisteredListener>>();
+    private Map<Class< ? extends Event>, Map<String, RegisteredListener>> listenersByEvent =
+        new ConcurrentHashMap<Class< ? extends Event>, Map<String, RegisteredListener>>();
 
     /**
      * Registered listeners index by listener name. It makes it fast to perform operations on already registered
      * listeners.
      */
-    private Map<String, PrioritizedEventListener> listenersByName =
-        new ConcurrentHashMap<String, PrioritizedEventListener>();
+    private Map<String, EventListener> listenersByName = new ConcurrentHashMap<String, EventListener>();
 
     /**
      * Used to find all components implementing {@link EventListener} to register them automatically.
@@ -100,14 +97,14 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         /**
          * Listener associated with the events.
          */
-        private PrioritizedEventListener listener;
+        private EventListener listener;
 
         /**
          * @param listener the listener associated with the events.
          * @param event the first event to associate with the passed listener. More events are added by calling
          *            {@link #addEvent(Event)}
          */
-        RegisteredListener(PrioritizedEventListener listener, Event event)
+        RegisteredListener(EventListener listener, Event event)
         {
             addEvent(event);
 
@@ -132,38 +129,6 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     }
 
     /**
-     * Helper class we use to keep registered listeners in the priority order (highest first).
-     */
-    private static class ListenerKey implements Comparable<ListenerKey>
-    {
-        /**
-         * @see #ListenerKey(String, int)
-         */
-        private String listenerName;
-        
-        /**
-         * @see #ListenerKey(String, int)
-         */
-        private int priority;
-
-        /**
-         * @param listenerName the name of the listener
-         * @param priority the priority for the listener
-         */
-        public ListenerKey(String listenerName, int priority)
-        {
-            this.listenerName = listenerName;
-            this.priority = priority;
-        }
-
-        @Override
-        public int compareTo(ListenerKey listenerKey)
-        {
-            return this.priority - listenerKey.priority;
-        }
-    }
-    
-    /**
      * {@inheritDoc}
      * <p>
      * Register all components implementing the {@link EventListener} interface.
@@ -185,42 +150,33 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     @Override
     public void addListener(EventListener eventListener)
     {
-        // In order to support backward compatibility if the passed listener doesn't implement PrioritizedEventListener
-        // then we transform it into a PrioritizedEventListener listener.
-        PrioritizedEventListener prioritizedEventListener = convertListener(eventListener);
-
         // Register the listener by name. If already registered, override it.
-        EventListener previousListener =
-            this.listenersByName.put(prioritizedEventListener.getName(), prioritizedEventListener);
+        EventListener previousListener = this.listenersByName.put(eventListener.getName(), eventListener);
 
         // If the passed event listener name is already registered, log a warning
         if (previousListener != null) {
             this.logger.warn("The [{}] listener has overwritten a previously "
                 + "registered listener [{}] since they both are registered under the same id [{}]. "
                 + "In the future consider removing a Listener first if you really want to register it again.",
-                new Object[] {prioritizedEventListener.getClass().getName(), previousListener.getClass().getName(),
-                    prioritizedEventListener.getName()});
+                new Object[] {eventListener.getClass().getName(), previousListener.getClass().getName(),
+                    eventListener.getName()});
         }
 
         // For each event defined for this listener, add it to the Event Map.
-        for (Event event : prioritizedEventListener.getEvents()) {
+        for (Event event : eventListener.getEvents()) {
             // Check if this is a new Event type not already registered
-            Map<ListenerKey, RegisteredListener> eventListeners = this.listenersByEvent.get(event.getClass());
-            ListenerKey listenerKey =
-                new ListenerKey(prioritizedEventListener.getName(), prioritizedEventListener.getPriority());
+            Map<String, RegisteredListener> eventListeners = this.listenersByEvent.get(event.getClass());
             if (eventListeners == null) {
                 // No listener registered for this event yet. Create a map to store listeners for this event.
-                // Note that we use a ConcurrentSkipListMap which allows us to order keys, i.e. order listeners by
-                // priorities for a given event class.
-                eventListeners = new ConcurrentSkipListMap<ListenerKey, RegisteredListener>();
+                eventListeners = new ConcurrentHashMap<String, RegisteredListener>();
                 this.listenersByEvent.put(event.getClass(), eventListeners);
                 // There is no RegisteredListener yet, create one
-                eventListeners.put(listenerKey, new RegisteredListener(prioritizedEventListener, event));
+                eventListeners.put(eventListener.getName(), new RegisteredListener(eventListener, event));
             } else {
                 // Add an event to existing RegisteredListener object
-                RegisteredListener registeredListener = eventListeners.get(listenerKey);
+                RegisteredListener registeredListener = eventListeners.get(eventListener.getName());
                 if (registeredListener == null) {
-                    eventListeners.put(listenerKey, new RegisteredListener(prioritizedEventListener, event));
+                    eventListeners.put(eventListener.getName(), new RegisteredListener(eventListener, event));
                 } else {
                     registeredListener.addEvent(event);
                 }
@@ -231,15 +187,12 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     @Override
     public void removeListener(String listenerName)
     {
-        PrioritizedEventListener removedListener = this.listenersByName.remove(listenerName);
-        if (removedListener != null) {
-            for (Map.Entry<Class< ? extends Event>, Map<ListenerKey, RegisteredListener>> entry : this.listenersByEvent
-                .entrySet())
-            {
-                entry.getValue().remove(new ListenerKey(listenerName, removedListener.getPriority()));
-                if (entry.getValue().isEmpty()) {
-                    this.listenersByEvent.remove(entry.getKey());
-                }
+        this.listenersByName.remove(listenerName);
+        for (Map.Entry<Class< ? extends Event>, Map<String, RegisteredListener>> entry : this.listenersByEvent
+            .entrySet()) {
+            entry.getValue().remove(listenerName);
+            if (entry.getValue().isEmpty()) {
+                this.listenersByEvent.remove(entry.getKey());
             }
         }
     }
@@ -247,26 +200,20 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     @Override
     public void addEvent(String listenerName, Event event)
     {
-        PrioritizedEventListener namedListener = this.listenersByName.get(listenerName);
-        if (namedListener != null) {
-            Map<ListenerKey, RegisteredListener> listeners = this.listenersByEvent.get(event.getClass());
-            RegisteredListener listener = listeners.get(new ListenerKey(listenerName, namedListener.getPriority()));
-            if (listener != null) {
-                listener.addEvent(event);
-            }
+        Map<String, RegisteredListener> listeners = this.listenersByEvent.get(event.getClass());
+        RegisteredListener listener = listeners.get(listenerName);
+        if (listener != null) {
+            listener.addEvent(event);
         }
     }
 
     @Override
     public void removeEvent(String listenerName, Event event)
     {
-        PrioritizedEventListener namedListener = this.listenersByName.get(listenerName);
-        if (namedListener != null) {
-            Map<ListenerKey, RegisteredListener> listeners = this.listenersByEvent.get(event.getClass());
-            RegisteredListener listener = listeners.get(new ListenerKey(listenerName, namedListener.getPriority()));
-            if (listener != null) {
-                listener.removeEvent(event);
-            }
+        Map<String, RegisteredListener> listeners = this.listenersByEvent.get(event.getClass());
+        RegisteredListener listener = listeners.get(listenerName);
+        if (listener != null) {
+            listener.removeEvent(event);
         }
     }
 
@@ -279,16 +226,14 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     @Override
     public void notify(Event event, Object source, Object data)
     {
-        // Find all listeners for this event class and send notifications by priority order for this event.
-        Map<ListenerKey, RegisteredListener> regListeners = this.listenersByEvent.get(event.getClass());
+        // Find all listeners for this event
+        Map<String, RegisteredListener> regListeners = this.listenersByEvent.get(event.getClass());
         if (regListeners != null) {
             notify(regListeners.values(), event, source, data);
         }
 
-        // Find listener listening to All events and send notifications by priority for this event.
-        // Note that listeners registered for AllEvent get notified after listeners registered for specific
-        // events even if the AllEvent listener has a higher priority.
-        Map<ListenerKey, RegisteredListener> allEventRegListeners = this.listenersByEvent.get(AllEvent.class);
+        // Find listener listening all events
+        Map<String, RegisteredListener> allEventRegListeners = this.listenersByEvent.get(AllEvent.class);
         if (allEventRegListeners != null) {
             notify(allEventRegListeners.values(), event, source, data);
         }
@@ -387,24 +332,5 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         if (removedEventListener != null) {
             removeListener(removedEventListener.getName());
         }
-    }
-
-    /**
-     * Convertes a {@link EventListener} into a {@link PrioritizedEventListener}.
-     * 
-     * @param eventListener the listener to convert
-     * @return the {@link PrioritizedEventListener} wrapping the passed listener and using default priorities
-     */
-    private PrioritizedEventListener convertListener(EventListener eventListener)
-    {
-        // In order to support backward compatibility if the passed listener doesn't implement PrioritizedEventListener
-        // then we transform it into a PrioritizedEventListener listener.
-        PrioritizedEventListener prioritizedEventListener;
-        if (PrioritizedEventListener.class.isAssignableFrom(eventListener.getClass())) {
-            prioritizedEventListener = (PrioritizedEventListener) eventListener;
-        } else {
-            prioritizedEventListener = new PrioritizedEventListenerAdapter(eventListener);
-        }
-        return prioritizedEventListener;
     }
 }
