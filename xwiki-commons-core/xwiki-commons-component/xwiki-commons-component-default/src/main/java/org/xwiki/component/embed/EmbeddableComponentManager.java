@@ -147,11 +147,18 @@ public class EmbeddableComponentManager implements ComponentManager
     public <T> List<T> lookupList(Class<T> role) throws ComponentLookupException
     {
         List<T> objects = new ArrayList<T>();
-        for (RoleHint< ? > roleHint : this.componentEntries.keySet()) {
+
+        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
+            RoleHint< ? > roleHint = entry.getKey();
+
             // It's possible Class reference are not the same when it's coming form different ClassLoader so we
             // compare class names
             if (roleHint.getRole().getName().equals(role.getName())) {
-                objects.add(getComponentInstance((RoleHint<T>) roleHint));
+                try {
+                    objects.add(getComponentInstance((ComponentEntry<T>) entry.getValue()));
+                } catch (Exception e) {
+                    throw new ComponentLookupException("Failed to lookup component [" + roleHint + "]", e);
+                }
             }
         }
 
@@ -168,11 +175,18 @@ public class EmbeddableComponentManager implements ComponentManager
     public <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException
     {
         Map<String, T> objects = new HashMap<String, T>();
-        for (RoleHint< ? > roleHint : this.componentEntries.keySet()) {
-            // It's possible Class reference are not the same when it coming for different ClassLoader so we
+
+        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
+            RoleHint< ? > roleHint = entry.getKey();
+
+            // It's possible Class reference are not the same when it's coming form different ClassLoader so we
             // compare class names
             if (roleHint.getRole().getName().equals(role.getName())) {
-                objects.put(roleHint.getHint(), getComponentInstance((RoleHint<T>) roleHint));
+                try {
+                    objects.put(roleHint.getHint(), getComponentInstance((ComponentEntry<T>) entry.getValue()));
+                } catch (Exception e) {
+                    throw new ComponentLookupException("Failed to lookup component [" + roleHint + "]", e);
+                }
             }
         }
 
