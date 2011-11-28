@@ -30,7 +30,7 @@
   <name>XWiki Macro - Hello World Component</name>
   <description>XWiki Macro - Hello World Component</description>
   <properties>
-    <platform.core.version>${project.version}</platform.core.version>
+    <commons.version>${project.version}</commons.version>
   </properties>
   <build>
     <plugins>
@@ -49,19 +49,19 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-default</artifactId>
-      <version>${platform.core.version}</version>
+      <version>${commons.version}</version>
     </dependency>
     <!-- Only needed if some of the component's APIs must be made visible to scripting in wiki pages -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-script</artifactId>
-      <version>${platform.core.version}</version>
+      <version>${commons.version}</version>
     </dependency>
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-test</artifactId>
-      <version>${platform.core.version}</version>
+      <version>${commons.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
