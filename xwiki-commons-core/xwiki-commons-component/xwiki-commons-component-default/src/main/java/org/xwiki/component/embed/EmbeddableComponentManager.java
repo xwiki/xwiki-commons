@@ -21,6 +21,7 @@ package org.xwiki.component.embed;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,31 +144,13 @@ public class EmbeddableComponentManager implements ComponentManager
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> List<T> lookupList(Class<T> role) throws ComponentLookupException
     {
-        List<T> objects = new ArrayList<T>();
+        // Reuse lookupMap to make sure to not return components from parent Component Manager overridden by this
+        // Component Manager
+        Map<String, T> objects = lookupMap(role);
 
-        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
-            RoleHint< ? > roleHint = entry.getKey();
-
-            // It's possible Class reference are not the same when it's coming form different ClassLoader so we
-            // compare class names
-            if (roleHint.getRole().getName().equals(role.getName())) {
-                try {
-                    objects.add(getComponentInstance((ComponentEntry<T>) entry.getValue()));
-                } catch (Exception e) {
-                    throw new ComponentLookupException("Failed to lookup component [" + roleHint + "]", e);
-                }
-            }
-        }
-
-        // Add parent's list of components
-        if (getParent() != null) {
-            objects.addAll(getParent().lookupList(role));
-        }
-
-        return objects;
+        return objects.isEmpty() ? Collections.<T> emptyList() : new ArrayList<T>(objects.values());
     }
 
     @Override
