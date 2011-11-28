@@ -445,14 +445,18 @@ public class EmbeddableComponentManager implements ComponentManager
 
     private void releaseInstance(ComponentEntry< ? > componentEntry) throws ComponentLifecycleException
     {
-        Object instance = componentEntry.instance;
+        // Make sure the singleton component instance can't be "lost" (impossible to dispose because returned but not
+        // stored).
+        synchronized (componentEntry) {
+            Object instance = componentEntry.instance;
 
-        // Give a chance to the component to clean up
-        if (instance instanceof Disposable) {
-            ((Disposable) instance).dispose();
+            // Give a chance to the component to clean up
+            if (instance instanceof Disposable) {
+                ((Disposable) instance).dispose();
+            }
+
+            componentEntry.instance = null;
         }
-
-        componentEntry.instance = null;
     }
 
     private void releaseComponentDescriptor(ComponentEntry< ? > componentEntry) throws ComponentLifecycleException
