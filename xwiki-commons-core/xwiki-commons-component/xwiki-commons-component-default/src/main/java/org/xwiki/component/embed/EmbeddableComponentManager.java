@@ -495,6 +495,8 @@ public class EmbeddableComponentManager implements ComponentManager
 
     private void removeComponent(RoleHint< ? > roleHint) throws ComponentLifecycleException
     {
+        // Make sure to remove the entry from the map before destroying it to reduce at the minimum the risk of
+        // lookupping something invalid
         ComponentEntry< ? > componentEntry = this.componentEntries.remove(roleHint);
 
         ComponentDescriptor< ? > oldDescriptor = componentEntry.descriptor;
