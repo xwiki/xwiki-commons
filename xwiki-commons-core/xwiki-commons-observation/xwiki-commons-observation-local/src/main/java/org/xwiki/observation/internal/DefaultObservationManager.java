@@ -323,7 +323,8 @@ public class DefaultObservationManager implements ObservationManager, Initializa
             }
         } catch (ComponentLookupException e) {
             this.logger.error("Failed to lookup the Event Listener [{}] corresponding to the Component registration "
-                + "event for [{}]", new Object[] {event.getRoleHint(), descriptor.getImplementation().getName(), e});
+                + "event for [{}]. Ignoring the event",
+                    new Object[] {event.getRoleHint(), descriptor.getImplementation().getName(), e});
         }
     }
 
