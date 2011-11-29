@@ -44,8 +44,18 @@ import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.AppenderBase;
 
 /**
- * Bridge converting log to events.
- * 
+ * Bridge converting log to Observation Events.
+ *
+ * <p>
+ * Note that this class is implemented as an Event Listener only because we needed a way for this component to be
+ * initialized early when the system starts and the Observation Manager Component is the first Component loaded in the
+ * system and in its own initialization it initializes all Event Listeners... The reason we want this component
+ * initialized early is because it replaces Logback's default Appender implementation in its initialization and thus
+ * by having it done early any other component wishing to listen to logs will be able to do so and not "loose" events
+ * (there's still a possibility that some logs will not be seen if some Event Listeners do logging in their
+ * initialization and it happens that they're initialized before this component...).
+ * </p>
+ *
  * @version $Id$
  * @since 3.2M1
  */
@@ -75,13 +85,15 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
     @Override
     public List<Event> getEvents()
     {
+        // We don't want to listen to any event. We just want to benefit from the Observation Manager's initialization
+        // (see the class documentation above).
         return Collections.emptyList();
     }
 
     @Override
     public void initialize() throws InitializationException
     {
-        // Register appender
+        // Register appender (see the class documentation above).
         ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
         setContext(rootLogger.getLoggerContext());
         rootLogger.addAppender(this);
@@ -91,7 +103,8 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        // do nothing
+        // Do nothing, we don't listen to any event. We just want to benefit from the Observation Manager's
+        // initialization (see the class documentation above).
     }
 
     /**
