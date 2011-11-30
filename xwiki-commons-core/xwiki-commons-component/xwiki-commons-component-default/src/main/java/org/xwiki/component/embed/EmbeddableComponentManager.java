@@ -71,7 +71,7 @@ public class EmbeddableComponentManager implements ComponentManager
         /**
          * Cached instance of the component. Lazily initialized when needed.
          */
-        public R instance;
+        public volatile R instance;
 
         public ComponentEntry(ComponentDescriptor<R> descriptor, R instance)
         {
