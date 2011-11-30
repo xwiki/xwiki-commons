@@ -48,6 +48,29 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     private List<ComponentDependency< ? >> componentDependencies = new ArrayList<ComponentDependency< ? >>();
 
     /**
+     * Default constructor.
+     */
+    public DefaultComponentDescriptor()
+    {
+    }
+
+    /**
+     * Creating a new {@link DefaultComponentDescriptor} by cloning the provided {@link ComponentDescriptor}.
+     * 
+     * @param descriptor the component descriptor to clone
+     */
+    public DefaultComponentDescriptor(ComponentDescriptor<T> descriptor)
+    {
+        super(descriptor);
+
+        setImplementation(descriptor.getImplementation());
+        setInstantiationStrategy(descriptor.getInstantiationStrategy());
+        for (ComponentDependency< ? > dependency : descriptor.getComponentDependencies()) {
+            addComponentDependency(new DefaultComponentDependency((ComponentDependency) dependency));
+        }
+    }
+
+    /**
      * @param implementation the class of the component implementation
      */
     public void setImplementation(Class< ? extends T> implementation)
@@ -117,6 +140,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
 
     /**
      * {@inheritDoc}
+     * 
      * @since 3.3M1
      */
     @Override
@@ -145,6 +169,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
 
     /**
      * {@inheritDoc}
+     * 
      * @since 3.3M1
      */
     @Override

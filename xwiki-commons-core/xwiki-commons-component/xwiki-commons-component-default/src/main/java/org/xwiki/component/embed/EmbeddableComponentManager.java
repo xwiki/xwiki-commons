@@ -36,6 +36,7 @@ import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
+import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentLifecycleException;
@@ -382,7 +383,7 @@ public class EmbeddableComponentManager implements ComponentManager
         removeComponentWithoutException(roleHint);
 
         // Register new component
-        addComponent(roleHint, componentDescriptor, componentInstance);
+        addComponent(roleHint, new DefaultComponentDescriptor<T>(componentDescriptor), componentInstance);
     }
 
     private <T> void addComponent(RoleHint<T> roleHint, ComponentDescriptor<T> descriptor, T instance)

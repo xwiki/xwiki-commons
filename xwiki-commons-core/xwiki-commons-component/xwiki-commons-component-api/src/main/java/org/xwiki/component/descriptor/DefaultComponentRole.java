@@ -36,6 +36,24 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     private String roleHint = "default";
 
     /**
+     * Default constructor.
+     */
+    public DefaultComponentRole()
+    {
+    }
+
+    /**
+     * Create a new {@link DefaultComponentRole} by cloning the provided {@link ComponentRole}.
+     * 
+     * @param componentRole the component role to clone
+     */
+    public DefaultComponentRole(ComponentRole<T> componentRole)
+    {
+        setRole(componentRole.getRole());
+        setRoleHint(componentRole.getRoleHint());
+    }
+
+    /**
      * @param role the class of the component role
      */
     public void setRole(Class<T> role)
@@ -74,6 +92,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
 
     /**
      * {@inheritDoc}
+     * 
      * @since 3.3M1
      */
     @Override
@@ -90,8 +109,9 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
             } else {
                 // object must be Syntax at this point
                 DefaultComponentRole cr = (DefaultComponentRole) object;
-                result = (getRole() == cr.getRole() || (getRole() != null && getRole().equals(cr.getRole())))
-                    && (getRoleHint() == cr.getRoleHint() || (getRoleHint() != null && getRoleHint().equals(
+                result =
+                    (getRole() == cr.getRole() || (getRole() != null && getRole().equals(cr.getRole())))
+                        && (getRoleHint() == cr.getRoleHint() || (getRoleHint() != null && getRoleHint().equals(
                             cr.getRoleHint())));
             }
         }
@@ -100,6 +120,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
 
     /**
      * {@inheritDoc}
+     * 
      * @since 3.3M1
      */
     @Override
