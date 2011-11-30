@@ -70,6 +70,9 @@ public class EmbeddableComponentManager implements ComponentManager
 
         /**
          * Cached instance of the component. Lazily initialized when needed.
+         * <p>
+         * This variable can be accesses and modified by many different threads at the same time so we make it volatile
+         * to ensure it's really shared and sync between all of them and not in each thread memory.
          */
         public volatile R instance;
 
