@@ -46,6 +46,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
      * Create a new {@link DefaultComponentRole} by cloning the provided {@link ComponentRole}.
      * 
      * @param componentRole the component role to clone
+     * @since 3.3
      */
     public DefaultComponentRole(ComponentRole<T> componentRole)
     {

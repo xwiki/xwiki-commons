@@ -54,6 +54,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
      * Create a new DefaultComponentDependency by cloning the provided {@link ComponentDependency}.
      * 
      * @param dependency the component dependency to clone
+     * @since 3.3
      */
     public DefaultComponentDependency(ComponentDependency dependency)
     {

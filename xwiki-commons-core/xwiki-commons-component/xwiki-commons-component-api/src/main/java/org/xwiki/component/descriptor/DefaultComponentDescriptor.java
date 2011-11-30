@@ -58,6 +58,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
      * Creating a new {@link DefaultComponentDescriptor} by cloning the provided {@link ComponentDescriptor}.
      * 
      * @param descriptor the component descriptor to clone
+     * @since 3.3
      */
     public DefaultComponentDescriptor(ComponentDescriptor<T> descriptor)
     {
