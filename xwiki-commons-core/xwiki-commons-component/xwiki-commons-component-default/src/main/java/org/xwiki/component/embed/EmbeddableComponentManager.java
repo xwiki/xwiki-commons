@@ -490,14 +490,16 @@ public class EmbeddableComponentManager implements ComponentManager
         // lookupping something invalid
         ComponentEntry< ? > componentEntry = this.componentEntries.remove(roleHint);
 
-        ComponentDescriptor< ? > oldDescriptor = componentEntry.descriptor;
+        if (componentEntry != null) {
+            ComponentDescriptor< ? > oldDescriptor = componentEntry.descriptor;
 
-        // clean any resource associated to the component instance and descriptor
-        releaseComponentEntry(componentEntry);
+            // clean any resource associated to the component instance and descriptor
+            releaseComponentEntry(componentEntry);
 
-        // Send event about component unregistration
-        if (this.eventManager != null && oldDescriptor != null) {
-            this.eventManager.notifyComponentUnregistered(oldDescriptor);
+            // Send event about component unregistration
+            if (this.eventManager != null && oldDescriptor != null) {
+                this.eventManager.notifyComponentUnregistered(oldDescriptor);
+            }
         }
     }
 
