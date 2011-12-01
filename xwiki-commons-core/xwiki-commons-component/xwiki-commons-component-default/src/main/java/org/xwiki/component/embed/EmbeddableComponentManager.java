@@ -67,7 +67,7 @@ public class EmbeddableComponentManager implements ComponentManager
         /**
          * Descriptor of the component.
          */
-        public ComponentDescriptor<R> descriptor;
+        public final ComponentDescriptor<R> descriptor;
 
         /**
          * Cached instance of the component. Lazily initialized when needed.
