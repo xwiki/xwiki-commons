@@ -93,10 +93,12 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
         // but only do shallow clones.
         // Thus instead we recreate the Execution Context from scratch and reinitialize it by calling all the
         // Execution Context Initializers on it.
-        initialize(clonedContext);
-
-        // #incitialize set the context but we just want to clone it so we need ro restore it
-        this.execution.setContext(currentContext);
+        try {
+            initialize(clonedContext);
+        } finally {
+            // #initialize set the context but we just want to clone it so we need to restore it
+            this.execution.setContext(currentContext);
+        }
 
         // Manually add the XWiki Context so that old code continues to work.
         // Note that we need to add it manually here since there's no Context Initializer that adds it.
