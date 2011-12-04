@@ -22,7 +22,7 @@ package org.xwiki.observation;
 import org.xwiki.observation.event.Event;
 
 /**
- * Filter events produced only by a provided {@link Thread}.
+ * Filter events by keeping only events produced by the provided {@link Thread}.
  * 
  * @version $Id$
  * @since 3.2M3

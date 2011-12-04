@@ -24,7 +24,8 @@ import java.util.List;
 import org.xwiki.observation.event.Event;
 
 /**
- * Wrap a provide listener and filter received events coming from provided {@link Thread}.
+ * Wraps a provided {@link EventListener} and filters events by only keeping those coming from the provided
+ * {@link Thread}.
  * 
  * @version $Id$
  * @since 3.2M3
