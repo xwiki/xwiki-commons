@@ -166,9 +166,7 @@ public class EmbeddableComponentManager implements ComponentManager
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
             RoleHint< ? > roleHint = entry.getKey();
 
-            // It's possible Class reference are not the same when it's coming form different ClassLoader so we
-            // compare class names
-            if (roleHint.getRole().getName().equals(role.getName())) {
+            if (roleHint.getRole() == role) {
                 try {
                     objects.put(roleHint.getHint(), getComponentInstance((ComponentEntry<T>) entry.getValue()));
                 } catch (Exception e) {
@@ -206,7 +204,7 @@ public class EmbeddableComponentManager implements ComponentManager
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
             // It's possible Class reference are not the same when it coming for different ClassLoader so we
             // compare class names
-            if (entry.getKey().getRole().getName().equals(role.getName())) {
+            if (entry.getKey().getRole() == role) {
                 results.add((ComponentDescriptor<T>) entry.getValue().descriptor);
             }
         }

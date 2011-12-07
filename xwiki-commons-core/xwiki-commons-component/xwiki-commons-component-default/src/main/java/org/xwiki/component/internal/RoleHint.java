@@ -71,8 +71,7 @@ public class RoleHint<T>
 
         // It's possible Class reference are not the same when it coming for different ClassLoader so we compare class
         // names
-        return (getRole() == rolehint.getRole() || (getRole() != null && getRole().getName().equals(
-            rolehint.getRole().getName())))
+        return getRole() == rolehint.getRole()
             && (getHint() == rolehint.getHint() || (getHint() != null && getHint().equals(rolehint.getHint())));
     }
 
@@ -80,7 +79,7 @@ public class RoleHint<T>
     public int hashCode()
     {
         int hash = 8;
-        hash = 31 * hash + (null == getRole() ? 0 : getRole().getName().hashCode());
+        hash = 31 * hash + (null == getRole() ? 0 : getRole().hashCode());
         hash = 31 * hash + (null == getHint() ? 0 : getHint().hashCode());
         return hash;
     }
