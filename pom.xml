@@ -38,7 +38,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>3.3-SNAPSHOT</commons.version>
+    <commons.version>3.3-rc-1</commons.version>
 
     <!-- The previous stable version of this project, used to catch API breakages. -->
     <!-- TODO: Change to 3.2 final when released -->
