@@ -43,6 +43,30 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
      */
     private String[] hints;
 
+    /**
+     * Default constructor.
+     */
+    public DefaultComponentDependency()
+    {
+    }
+
+    /**
+     * Create a new DefaultComponentDependency by cloning the provided {@link ComponentDependency}.
+     * 
+     * @param dependency the component dependency to clone
+     * @since 3.3
+     */
+    public DefaultComponentDependency(ComponentDependency dependency)
+    {
+        super(dependency);
+
+        setMappingType(dependency.getMappingType());
+        setName(dependency.getName());
+        if (dependency.getHints() != null) {
+            setHints(dependency.getHints().clone());
+        }
+    }
+
     @Override
     public Class< ? > getMappingType()
     {
@@ -89,6 +113,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
     /**
      * {@inheritDoc}
+     * 
      * @since 3.3M1
      */
     @Override
@@ -127,6 +152,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
     /**
      * {@inheritDoc}
+     * 
      * @since 3.3M1
      */
     @Override

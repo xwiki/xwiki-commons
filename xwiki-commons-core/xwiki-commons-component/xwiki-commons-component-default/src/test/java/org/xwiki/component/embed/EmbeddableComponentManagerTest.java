@@ -253,9 +253,12 @@ public class EmbeddableComponentManagerTest
         ecm.registerComponent(cd2);
 
         // Verify that the components are found
-        Assert.assertEquals(3, ecm.lookupList(Role.class).size());
         // Note: We find only 2 components since 2 components are registered with the same Role and Hint.
-        // In this case we ensure that the component returned is the one from the client CM
+
+        List<Role> instanceList = ecm.lookupList(Role.class);
+        Assert.assertEquals(2, instanceList.size());
+        Assert.assertSame(roleImpl, instanceList.get(0));
+
         Map<String, Role> instances = ecm.lookupMap(Role.class);
         Assert.assertEquals(2, instances.size());
         Assert.assertSame(roleImpl, instances.get("default"));
@@ -320,7 +323,34 @@ public class EmbeddableComponentManagerTest
 
         // Verify registration worked by looking up our Provider as a Component
         Provider provider = ecm.lookup(Provider.class, "myprovider");
-        Assert.assertEquals(RoleImpl.class.getName(), provider.get().getClass().getName());
+        Assert.assertSame(RoleImpl.class, provider.get().getClass());
+    }
+
+    /**
+     * Note: make sure there is no need to lookup the Provider for it to be usable.
+     */
+    @Test
+    public void testInjectProvider() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        // Register RoleImpl component first
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
+        cd1.setRole(Role.class);
+        cd1.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd1);        
+        
+        // Register our Provider as a component
+        DefaultComponentDescriptor<Provider> cd2 = new DefaultComponentDescriptor<Provider>();
+        cd2.setRole(Provider.class);
+        cd2.setRoleHint("myprovider");
+        cd2.setImplementation(ProviderImpl.class);
+        DefaultComponentDependency<Role> dd2 = new DefaultComponentDependency<Role>();
+        dd2.setRole(Role.class);
+        dd2.setMappingType(Role.class);
+        dd2.setName("role");
+        cd2.addComponentDependency(dd2);
+        ecm.registerComponent(cd2);
         
         // Now verify that a component can get injected our provider.
         // First register it and the look it up
@@ -336,7 +366,7 @@ public class EmbeddableComponentManagerTest
         ecm.registerComponent(cd3);        
 
         Role2 role2 = ecm.lookup(Role2.class);
-        Assert.assertSame(provider, role2.getRoleProvider());
+        Assert.assertSame(ProviderImpl.class, role2.getRoleProvider().getClass());
         
         // Verify that removing a Provider component works
         ecm.unregisterComponent(Provider.class, "myprovider");
@@ -346,10 +376,10 @@ public class EmbeddableComponentManagerTest
         ecm.unregisterComponent(Role2.class, "default");
         ecm.registerComponent(cd3);
         role2 = ecm.lookup(Role2.class);
-        Assert.assertSame(GenericProvider.class.getName(), role2.getRoleProvider().getClass().getName());
-        Assert.assertEquals(RoleImpl.class.getName(), role2.getRoleProvider().get().getClass().getName());
+        Assert.assertSame(GenericProvider.class, role2.getRoleProvider().getClass());
+        Assert.assertSame(RoleImpl.class, role2.getRoleProvider().get().getClass());
     }
-
+    
     private ComponentManager createParentComponentManager() throws Exception
     {
         EmbeddableComponentManager parent = new EmbeddableComponentManager();
