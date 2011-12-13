@@ -155,11 +155,12 @@ public class DefaultObservationManager implements ObservationManager, Initializa
 
         // If the passed event listener name is already registered, log a warning
         if (previousListener != null) {
-            this.logger.warn("The [{}] listener has overwritten a previously "
-                + "registered listener [{}] since they both are registered under the same id [{}]. "
-                + "In the future consider removing a Listener first if you really want to register it again.",
+            this.logger.warn(
+                "The [{}] listener has overwritten a previously "
+                    + "registered listener [{}] since they both are registered under the same id [{}]. "
+                    + "In the future consider removing a Listener first if you really want to register it again.",
                 new Object[] {eventListener.getClass().getName(), previousListener.getClass().getName(),
-                    eventListener.getName()});
+                        eventListener.getName()});
         }
 
         // For each event defined for this listener, add it to the Event Map.
@@ -243,7 +244,8 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         // circular dependencies issues and in order to be more performant we simply handle ComponentDescriptorEvents
         // here to add/remove Event Listeners.
         if (event instanceof ComponentDescriptorEvent) {
-            onComponentEvent((ComponentDescriptorEvent) event, (ComponentDescriptor<EventListener>) data);
+            onComponentEvent((ComponentDescriptorEvent) event, (ComponentManager) source,
+                (ComponentDescriptor<EventListener>) data);
         }
     }
 
@@ -266,8 +268,8 @@ public class DefaultObservationManager implements ObservationManager, Initializa
                         listener.listener.onEvent(event, source, data);
                     } catch (Exception e) {
                         // protect from bad listeners
-                        this.logger.error("Failed to send event [{}] to listener [{}]",
-                            new Object[] {event, listener.listener, e});
+                        this.logger.error("Failed to send event [{}] to listener [{}]", new Object[] {event,
+                            listener.listener, e});
                     }
 
                     // Only send the first matching event since the listener should only be called once per event.
@@ -282,21 +284,25 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     {
         notify(event, source, null);
     }
-    
+
     /**
-     * A Component has been modified (added or removed) and we update our cache of Event Listeners if that Component
-     * is an Event Listener.
+     * A Component has been modified (added or removed) and we update our cache of Event Listeners if that Component is
+     * an Event Listener.
      * 
      * @param componentEvent the event about the Component being added or removed
-     * @param data the descriptor of the modified component
+     * @param componentManager the {@link ComponentManager} where the descriptor is registered
+     * @param descriptor the descriptor of the modified component
      */
-    private void onComponentEvent(ComponentDescriptorEvent componentEvent, ComponentDescriptor<EventListener> data)
+    private void onComponentEvent(ComponentDescriptorEvent componentEvent, ComponentManager componentManager,
+        ComponentDescriptor<EventListener> descriptor)
     {
         if (componentEvent.getRole() == EventListener.class) {
             if (componentEvent instanceof ComponentDescriptorAddedEvent) {
-                onEventListenerComponentAdded((ComponentDescriptorAddedEvent) componentEvent, data);
-            } else if (componentEvent instanceof  ComponentDescriptorRemovedEvent) {
-                onEventListenerComponentRemoved((ComponentDescriptorRemovedEvent) componentEvent, data);
+                onEventListenerComponentAdded((ComponentDescriptorAddedEvent) componentEvent, componentManager,
+                    descriptor);
+            } else if (componentEvent instanceof ComponentDescriptorRemovedEvent) {
+                onEventListenerComponentRemoved((ComponentDescriptorRemovedEvent) componentEvent, componentManager,
+                    descriptor);
             } else {
                 this.logger.warn("Ignoring unknown Component event [{}]", componentEvent.getClass().getName());
             }
@@ -305,15 +311,16 @@ public class DefaultObservationManager implements ObservationManager, Initializa
 
     /**
      * An Event Listener Component has been dynamically registered in the system, add it to our cache.
-     *
+     * 
      * @param event event object containing the new component descriptor
+     * @param componentManager the {@link ComponentManager} where the descriptor is registered
      * @param descriptor the component descriptor removed from component manager
      */
-    private void onEventListenerComponentAdded(ComponentDescriptorAddedEvent event,
+    private void onEventListenerComponentAdded(ComponentDescriptorAddedEvent event, ComponentManager componentManager,
         ComponentDescriptor<EventListener> descriptor)
     {
         try {
-            EventListener eventListener = this.componentManager.lookup(EventListener.class, event.getRoleHint());
+            EventListener eventListener = componentManager.lookup(EventListener.class, event.getRoleHint());
 
             if (getListener(eventListener.getName()) != eventListener) {
                 addListener(eventListener);
@@ -323,19 +330,20 @@ public class DefaultObservationManager implements ObservationManager, Initializa
             }
         } catch (ComponentLookupException e) {
             this.logger.error("Failed to lookup the Event Listener [{}] corresponding to the Component registration "
-                + "event for [{}]. Ignoring the event",
-                    new Object[] {event.getRoleHint(), descriptor.getImplementation().getName(), e});
+                + "event for [{}]. Ignoring the event", new Object[] {event.getRoleHint(),
+                    descriptor.getImplementation().getName(), e});
         }
     }
 
     /**
      * An Event Listener Component has been dynamically unregistered in the system, remove it from our cache.
-     *
+     * 
      * @param event the event object containing the removed component descriptor
+     * @param componentManager the {@link ComponentManager} where the descriptor is registered
      * @param descriptor the component descriptor removed from the component manager
      */
     private void onEventListenerComponentRemoved(ComponentDescriptorRemovedEvent event,
-        ComponentDescriptor< ? > descriptor)
+        ComponentManager componentManager, ComponentDescriptor< ? > descriptor)
     {
         EventListener removedEventListener = null;
         for (EventListener eventListener : this.listenersByName.values()) {

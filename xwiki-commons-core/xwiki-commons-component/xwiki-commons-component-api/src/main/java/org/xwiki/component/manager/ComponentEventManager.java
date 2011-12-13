@@ -37,14 +37,36 @@ public interface ComponentEventManager
      * 
      * @param descriptor the descriptor for the instantiated component
      * @since 2.0M2
+     * @deprecated since 3.3 use {@link #notifyComponentRegistered(ComponentDescriptor, ComponentManager)} instead
      */
+    @Deprecated
     void notifyComponentRegistered(ComponentDescriptor< ? > descriptor);
+
+    /**
+     * Notify all listeners that a component with the passed descriptor has been registered.
+     * 
+     * @param descriptor the descriptor for the instantiated component
+     * @param componentManager the ComponentManager where the component has been registered
+     * @since 2.0M2
+     */
+    void notifyComponentRegistered(ComponentDescriptor< ? > descriptor, ComponentManager componentManager);
 
     /**
      * Notify all listeners that a component with the passed descriptor has been unregistered.
      * 
      * @param descriptor the descriptor for the instantiated component
      * @since 2.0M2
+     * @deprecated since 3.3 use {@link #notifyComponentUnregistered(ComponentDescriptor, ComponentManager)} instead
      */
+    @Deprecated
     void notifyComponentUnregistered(ComponentDescriptor< ? > descriptor);
+
+    /**
+     * Notify all listeners that a component with the passed descriptor has been unregistered.
+     * 
+     * @param descriptor the descriptor for the instantiated component
+     * @param componentManager the ComponentManager from where the component has been unregistered
+     * @since 3.3
+     */
+    void notifyComponentUnregistered(ComponentDescriptor< ? > descriptor, ComponentManager componentManager);
 }
