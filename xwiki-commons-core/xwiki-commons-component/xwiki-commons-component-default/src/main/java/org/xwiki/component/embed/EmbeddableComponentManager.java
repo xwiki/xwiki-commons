@@ -397,10 +397,10 @@ public class EmbeddableComponentManager implements ComponentManager
 
         // Send event about component registration
         if (addDescriptor) {
+            this.descriptors.put(roleHint, descriptor);
             if (this.eventManager != null) {
                 this.eventManager.notifyComponentRegistered(descriptor);
             }
-            this.descriptors.put(roleHint, descriptor);
         }
     }
 
