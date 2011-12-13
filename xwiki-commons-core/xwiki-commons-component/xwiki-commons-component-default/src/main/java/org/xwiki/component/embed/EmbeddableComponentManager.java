@@ -401,7 +401,7 @@ public class EmbeddableComponentManager implements ComponentManager
 
         // Send event about component registration
         if (this.eventManager != null) {
-            this.eventManager.notifyComponentRegistered(descriptor);
+            this.eventManager.notifyComponentRegistered(descriptor, this);
         }
     }
 
@@ -496,7 +496,7 @@ public class EmbeddableComponentManager implements ComponentManager
 
             // Send event about component unregistration
             if (this.eventManager != null && oldDescriptor != null) {
-                this.eventManager.notifyComponentUnregistered(oldDescriptor);
+                this.eventManager.notifyComponentUnregistered(oldDescriptor, this);
             }
         }
     }

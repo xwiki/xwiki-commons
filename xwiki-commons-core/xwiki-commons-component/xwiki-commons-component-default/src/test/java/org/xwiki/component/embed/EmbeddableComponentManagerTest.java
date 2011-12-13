@@ -440,7 +440,7 @@ public class EmbeddableComponentManagerTest
     @Test
     public void testRelease() throws Exception
     {
-        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         final DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
         cd.setRole(Role.class);
@@ -454,8 +454,8 @@ public class EmbeddableComponentManagerTest
         getMockery().checking(new Expectations() {{
             // Verify that when we release a component an unregistration event is sent followed by a registration one
             // see comments in {@link EmbeddableComponentManager#release} code.
-            oneOf(cem).notifyComponentUnregistered(cd);
-            oneOf(cem).notifyComponentRegistered(cd);
+            oneOf(cem).notifyComponentUnregistered(cd, ecm);
+            oneOf(cem).notifyComponentRegistered(cd, ecm);
         }});
         
         ecm.release(roleImpl);
@@ -484,7 +484,7 @@ public class EmbeddableComponentManagerTest
     @Test
     public void testRegisterComponentNotification() throws Exception
     {
-        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         final DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
         cd.setRole(Role.class);
@@ -494,7 +494,7 @@ public class EmbeddableComponentManagerTest
         ecm.setComponentEventManager(cem);
 
         getMockery().checking(new Expectations() {{
-            oneOf(cem).notifyComponentRegistered(cd);
+            oneOf(cem).notifyComponentRegistered(cd, ecm);
         }});
 
         ecm.registerComponent(cd);
@@ -503,7 +503,7 @@ public class EmbeddableComponentManagerTest
     @Test
     public void testUnregisterComponentNotification() throws Exception
     {
-        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         final DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
         cd.setRole(Role.class);
@@ -514,7 +514,7 @@ public class EmbeddableComponentManagerTest
         ecm.setComponentEventManager(cem);
 
         getMockery().checking(new Expectations() {{
-            oneOf(cem).notifyComponentUnregistered(cd);
+            oneOf(cem).notifyComponentUnregistered(cd, ecm);
         }});
 
         ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
@@ -523,7 +523,7 @@ public class EmbeddableComponentManagerTest
     @Test
     public void testRegisterComponentNotificationOnSecondRegistration() throws Exception
     {
-        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         final DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
         cd1.setRole(Role.class);
@@ -538,8 +538,8 @@ public class EmbeddableComponentManagerTest
         ecm.setComponentEventManager(cem);
 
         getMockery().checking(new Expectations() {{
-            oneOf(cem).notifyComponentUnregistered(cd1);
-            oneOf(cem).notifyComponentRegistered(cd2);
+            oneOf(cem).notifyComponentUnregistered(cd1, ecm);
+            oneOf(cem).notifyComponentRegistered(cd2, ecm);
         }});
 
         ecm.registerComponent(cd2);

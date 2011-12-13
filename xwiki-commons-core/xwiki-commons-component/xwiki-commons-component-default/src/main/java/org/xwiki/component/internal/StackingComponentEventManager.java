@@ -25,6 +25,7 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.event.ComponentDescriptorAddedEvent;
 import org.xwiki.component.event.ComponentDescriptorRemovedEvent;
 import org.xwiki.component.manager.ComponentEventManager;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 
@@ -48,20 +49,34 @@ public class StackingComponentEventManager implements ComponentEventManager
     public void notifyComponentRegistered(ComponentDescriptor< ? > descriptor)
     {
         notifyComponentEvent(new ComponentDescriptorAddedEvent(descriptor.getRole(), descriptor.getRoleHint()),
-            descriptor);
+            descriptor, null);
+    }
+
+    @Override
+    public void notifyComponentRegistered(ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
+    {
+        notifyComponentEvent(new ComponentDescriptorAddedEvent(descriptor.getRole(), descriptor.getRoleHint()),
+            descriptor, componentManager);
     }
 
     @Override
     public void notifyComponentUnregistered(ComponentDescriptor< ? > descriptor)
     {
         notifyComponentEvent(new ComponentDescriptorRemovedEvent(descriptor.getRole(), descriptor.getRoleHint()),
-            descriptor);
+            descriptor, null);
+    }
+
+    @Override
+    public void notifyComponentUnregistered(ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
+    {
+        notifyComponentEvent(new ComponentDescriptorRemovedEvent(descriptor.getRole(), descriptor.getRoleHint()),
+            descriptor, componentManager);
     }
 
     public synchronized void flushEvents()
     {
         for (ComponentEventEntry entry : this.events) {
-            sendEvent(entry.event, entry.descriptor);
+            sendEvent(entry.event, entry.descriptor, entry.componentManager);
         }
     }
 
@@ -75,21 +90,22 @@ public class StackingComponentEventManager implements ComponentEventManager
         this.observationManager = observationManager;
     }
 
-    private void notifyComponentEvent(Event event, ComponentDescriptor< ? > descriptor)
+    private void notifyComponentEvent(Event event, ComponentDescriptor< ? > descriptor,
+        ComponentManager componentManager)
     {
         if (this.shouldStack) {
             synchronized (this) {
-                this.events.push(new ComponentEventEntry(event, descriptor));
+                this.events.push(new ComponentEventEntry(event, descriptor, componentManager));
             }
         } else {
-            sendEvent(event, descriptor);
+            sendEvent(event, descriptor, componentManager);
         }
     }
 
-    private void sendEvent(Event event, ComponentDescriptor< ? > descriptor)
+    private void sendEvent(Event event, ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
     {
         if (this.observationManager != null) {
-            this.observationManager.notify(event, this, descriptor);
+            this.observationManager.notify(event, componentManager, descriptor);
         }
     }
 
@@ -99,10 +115,13 @@ public class StackingComponentEventManager implements ComponentEventManager
 
         public ComponentDescriptor< ? > descriptor;
 
-        public ComponentEventEntry(Event event, ComponentDescriptor< ? > descriptor)
+        public ComponentManager componentManager;
+
+        public ComponentEventEntry(Event event, ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
         {
             this.event = event;
             this.descriptor = descriptor;
+            this.componentManager = componentManager;
         }
     }
 }
