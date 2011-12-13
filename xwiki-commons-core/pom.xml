@@ -123,6 +123,7 @@
                 <exclude>**/test/**</exclude>
                 <!-- To be removed when we release 3.3 -->
                 <exclude>org/xwiki/component/annotation/ComponentAnnotationLoader</exclude>
+                <exclude>org/xwiki/component/manager/ComponentEventManager</exclude>
               </excludes>
             </configuration>
           </plugin>
