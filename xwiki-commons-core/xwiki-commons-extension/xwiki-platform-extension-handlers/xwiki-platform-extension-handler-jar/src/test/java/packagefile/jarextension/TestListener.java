@@ -17,36 +17,38 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package packagefile.jarextension;
 
-package org.xwiki.extension.handler;
+import java.util.Collections;
+import java.util.List;
 
-import org.xwiki.component.annotation.ComponentRole;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-/**
- * Handle installed extensions initialization (during application startup, reinitialization...).
- * 
- * @version $Id$
- */
-@ComponentRole
-public interface ExtensionInitializer
+import org.xwiki.component.annotation.Component;
+import org.xwiki.observation.EventListener;
+import org.xwiki.observation.event.Event;
+
+@Component
+@Named("TestListener")
+@Singleton
+public class TestListener implements EventListener
 {
-    /**
-     * Initialize all installed extensions.
-     */
-    void initialize();
+    @Override
+    public List<Event> getEvents()
+    {
+        return Collections.EMPTY_LIST;
+    }
 
-    /**
-     * Initialize installed extensions of the provided namespace.
-     * 
-     * @param namespace namespace to initialize, <code>null</code> means all namespaces
-     */
-    void initialize(String namespace);
+    @Override
+    public String getName()
+    {
+        return "TestListener";
+    }
 
-    /**
-     * Initialize installed extensions of the provided type.
-     * 
-     * @param namespace namespace to initialize, <code>null</code> means all namespaces
-     * @param type type of extension to initialize, <code>null</code> means all types
-     */
-    void initialize(String namespace, String type);
+    @Override
+    public void onEvent(Event arg0, Object arg1, Object arg2)
+    {
+        
+    }
 }
