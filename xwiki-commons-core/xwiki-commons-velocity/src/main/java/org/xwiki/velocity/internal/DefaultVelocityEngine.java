@@ -33,6 +33,8 @@ import org.apache.velocity.context.Context;
 import org.apache.velocity.context.InternalContextAdapterImpl;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeServices;
+import org.apache.velocity.runtime.directive.Scope;
+import org.apache.velocity.runtime.directive.StopCommand;
 import org.apache.velocity.runtime.log.LogChute;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.slf4j.Logger;
@@ -56,8 +58,13 @@ import org.xwiki.velocity.XWikiVelocityException;
 public class DefaultVelocityEngine implements VelocityEngine, LogChute
 {
     /**
-     * Used to set it as a Velocity Application Attribute so that Velocity extensions done by XWiki can use it to
-     * lookup other components.
+     * The name of the context variable used for the template-level scope.
+     */
+    private static final String TEMPLATE_SCOPE_NAME = "template";
+
+    /**
+     * Used to set it as a Velocity Application Attribute so that Velocity extensions done by XWiki can use it to lookup
+     * other components.
      */
     @Inject
     private ComponentManager componentManager;
@@ -145,6 +152,23 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
         }
     }
 
+    /**
+     * Restore the previous {@code $template} variable, if any, in the velocity context.
+     * 
+     * @param ica the current velocity context
+     * @param currentTemplateScope the current Scope, from which to take the replaced variable
+     */
+    private void restoreTemplateScope(InternalContextAdapterImpl ica, Scope currentTemplateScope)
+    {
+        if (currentTemplateScope.getParent() != null) {
+            ica.put(TEMPLATE_SCOPE_NAME, currentTemplateScope.getParent());
+        } else if (currentTemplateScope.getReplaced() != null) {
+            ica.put(TEMPLATE_SCOPE_NAME, currentTemplateScope.getReplaced());
+        } else {
+            ica.remove(TEMPLATE_SCOPE_NAME);
+        }
+    }
+
     @Override
     public boolean evaluate(Context context, Writer out, String templateName, String source)
         throws XWikiVelocityException
@@ -181,11 +205,30 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
             if (nodeTree != null) {
                 InternalContextAdapterImpl ica = new InternalContextAdapterImpl(context);
                 ica.pushCurrentTemplateName(templateName);
+                boolean provideTemplateScope = this.rsvc.getBoolean("template.provide.scope.control", true);
+                Object templateScopeMarker = new Object();
+                Scope templateScope = null;
+                if (provideTemplateScope) {
+                    Object previous = ica.get(TEMPLATE_SCOPE_NAME);
+                    templateScope = new Scope(templateScopeMarker, previous);
+                    templateScope.put("templateName", templateName);
+                    ica.put(TEMPLATE_SCOPE_NAME, templateScope);
+                }
                 try {
                     nodeTree.init(ica, this.rsvc);
                     nodeTree.render(ica, out);
+                } catch (StopCommand stop) {
+                    // Check if we're supposed to stop here or not:
+                    // - stop if the template is breaking explicitly on the provided $template
+                    // - or stop if this is the topmost evaluation
+                    if (!stop.isFor(templateScopeMarker) && ica.getTemplateNameStack().length > 1) {
+                        throw stop;
+                    }
                 } finally {
                     ica.popCurrentTemplateName();
+                    if (provideTemplateScope) {
+                        restoreTemplateScope(ica, templateScope);
+                    }
                 }
                 return true;
             }
