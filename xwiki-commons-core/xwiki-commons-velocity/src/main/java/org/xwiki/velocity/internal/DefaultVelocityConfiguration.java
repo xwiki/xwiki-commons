@@ -66,7 +66,6 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
      */
     private Properties defaultTools = new Properties();
 
-
     /**
      * Default properties.
      */
@@ -94,6 +93,9 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultProperties.setProperty("runtime.introspector.uberspect", ChainingUberspector.class.getName());
         this.defaultProperties.setProperty("runtime.introspector.uberspect.chainClasses",
             SecureUberspector.class.getName() + "," + DeprecatedCheckUberspector.class.getName());
+        // Enable the extra scope variables $template and $macro, similar to $foreach
+        this.defaultProperties.setProperty("template.provide.scope.control", Boolean.TRUE.toString());
+        this.defaultProperties.setProperty("macro.provide.scope.control", Boolean.TRUE.toString());
     }
 
     @Override
