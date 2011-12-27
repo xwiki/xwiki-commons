@@ -24,6 +24,7 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.generic.ComparisonDateTool;
 import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.tools.generic.MathTool;
@@ -82,6 +83,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("sorttool", SortTool.class.getName());
         this.defaultTools.setProperty("escapetool", EscapeTool.class.getName());
         this.defaultTools.setProperty("regextool", RegexTool.class.getName());
+        this.defaultTools.setProperty("stringtool", StringUtils.class.getName());
 
         // Default Velocity properties
         this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());
