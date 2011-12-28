@@ -43,6 +43,7 @@ import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.velocity.VelocityConfiguration;
+import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.XWikiVelocityException;
 
@@ -74,6 +75,13 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
      */
     @Inject
     private VelocityConfiguration velocityConfiguration;
+
+    /**
+     * Used to create a new context whenever one isn't already provided to the
+     * {@link #evaluate(Context, Writer, String, Reader)} method.
+     */
+    @Inject
+    private VelocityContextFactory velocityContextFactory;
 
     /**
      * The logger to use for logging.
@@ -203,7 +211,8 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
             nodeTree = this.rsvc.parse(source, templateName, false);
 
             if (nodeTree != null) {
-                InternalContextAdapterImpl ica = new InternalContextAdapterImpl(context);
+                InternalContextAdapterImpl ica = new InternalContextAdapterImpl(
+                    context != null ? context : this.velocityContextFactory.createContext());
                 ica.pushCurrentTemplateName(templateName);
                 boolean provideTemplateScope = this.rsvc.getBoolean("template.provide.scope.control", true);
                 Object templateScopeMarker = new Object();
