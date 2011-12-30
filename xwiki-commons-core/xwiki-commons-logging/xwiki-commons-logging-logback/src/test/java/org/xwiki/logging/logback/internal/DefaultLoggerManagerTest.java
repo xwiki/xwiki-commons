@@ -39,7 +39,7 @@ import ch.qos.logback.core.spi.FilterReply;
 
 /**
  * Unit tests for {@link DefaultLoggerManager}.
- *
+ * 
  * @version $Id$
  * @since 3.2M3
  */
@@ -130,5 +130,39 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
 
         Assert.assertTrue(queue.isEmpty());
         Assert.assertEquals("[test] after pop", this.listAppender.list.get(2).getMessage());
+    }
+
+    @Test
+    public void testStackedLisneters() throws InterruptedException
+    {
+        this.logger.error("[test] before push");
+
+        // Make sure the log has been sent to the logback appender
+        Assert.assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
+
+        LogQueue queue1 = new LogQueue();
+
+        this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid1", queue1));
+
+        LogQueue queue2 = new LogQueue();
+
+        this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid2", queue2));
+
+        this.logger.error("[test] log queue2");
+
+        // Make sure the log has not been sent to the stacked listener
+        Assert.assertTrue(queue1.isEmpty());
+
+        // Make sure the log has been sent to the current listener
+        Assert.assertEquals("[test] log queue2", queue2.poll().getMessage());
+
+        this.loggerManager.popLogListener();
+
+        this.logger.error("[test] log queue1");
+
+        // Make sure the log has been sent to the current listener
+        Assert.assertEquals("[test] log queue1", queue1.poll().getMessage());
+
+        this.loggerManager.popLogListener();
     }
 }

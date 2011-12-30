@@ -109,6 +109,9 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
             this.observation.removeListener(listener.getName());
             if (listenerStack.isEmpty()) {
                 ungrabLog(Thread.currentThread());
+            } else {
+                this.observation.addListener(new WrappedThreadEventListener(listenerStack.peek(), Thread
+                    .currentThread()));
             }
         } else {
             listener = null;
