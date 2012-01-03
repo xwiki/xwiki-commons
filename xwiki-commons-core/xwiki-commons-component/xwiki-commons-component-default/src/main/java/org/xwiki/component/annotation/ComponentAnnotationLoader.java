@@ -154,7 +154,8 @@ public class ComponentAnnotationLoader
                                 LOGGER.warn("Component [{}] which implements [{}] tried to overwrite component [{}]."
                                     + "However, no action was taken since both components have the same priority "
                                     + "level of [{}].", new Object[] {componentDeclaration.getImplementationClassName(),
-                                    roleHint, descriptorMap.get(roleHint).getImplementation().getName()});
+                                    roleHint, descriptorMap.get(roleHint).getImplementation().getName(),
+                                    currentPriority});
                             } else {
                                 LOGGER.debug("Ignored component [{}] since its priority level of [{}] is lower than "
                                     + "the currently registered component [{}] which has a priority of [{}]",
