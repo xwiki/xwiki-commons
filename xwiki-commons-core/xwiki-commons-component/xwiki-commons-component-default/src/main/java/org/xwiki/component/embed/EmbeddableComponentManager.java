@@ -322,8 +322,11 @@ public class EmbeddableComponentManager implements ComponentManager
         if (componentEntry != null) {
             try {
                 instance = getComponentInstance(componentEntry);
-            } catch (Exception e) {
-                throw new ComponentLookupException("Failed to lookup component [" + roleHint + "]", e);
+            } catch (Throwable e) {
+                throw new ComponentLookupException(
+                    String.format("Failed to lookup component [%s] for role [%s] and hint [%s]",
+                        componentEntry.descriptor.getImplementation().getName(), roleHint.getRole().getName(),
+                        roleHint.getHint()), e);
             }
         } else {
             if (getParent() != null) {
