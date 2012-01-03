@@ -19,6 +19,9 @@
  */
 package org.xwiki.component.annotation;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Represents a Component declaration (i.e. component implementation class name and component priority).
  * 
@@ -62,5 +65,33 @@ public class ComponentDeclaration
     public String getImplementationClassName()
     {
         return this.implementationClassName;
+    }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if (object == null) {
+            return false;
+        }
+        if (object == this) {
+            return true;
+        }
+        if (object.getClass() != getClass()) {
+            return false;
+        }
+        ComponentDeclaration rhs = (ComponentDeclaration) object;
+        return new EqualsBuilder()
+            .append(getImplementationClassName(), rhs.getImplementationClassName())
+            .append(getPriority(), rhs.getPriority())
+            .isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(5, 45)
+            .append(getImplementationClassName())
+            .append(getPriority())
+            .toHashCode();
     }
 }

@@ -28,7 +28,9 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.xwiki.component.descriptor.DefaultComponentDependency;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.DefaultComponentManager;
@@ -105,6 +107,32 @@ public class ComponentAnnotationLoaderTest
 
     private Mockery context = new Mockery();
 
+    private ComponentAnnotationLoader loader;
+
+    private class TestableComponentAnnotationLoader extends ComponentAnnotationLoader
+    {
+        private Logger logger;
+        
+        public TestableComponentAnnotationLoader(Logger logger)
+        {
+            this.logger = logger;
+        }
+
+        @Override
+        protected Logger getLogger()
+        {
+            return this.logger;
+        }
+    }
+
+    @Before
+    public void setupLogger() throws Exception
+    {
+        // Note: we don't define any expectation on the Logger since we want to be sure that the tests below don't
+        // generate any logging at all.
+        this.loader = new TestableComponentAnnotationLoader(this.context.mock(Logger.class));
+    }
+    
     @After
     public void tearDown() throws Exception
     {
@@ -124,8 +152,6 @@ public class ComponentAnnotationLoaderTest
     @Test
     public void testPriorities() throws Exception
     {
-    	ComponentAnnotationLoader loader = new ComponentAnnotationLoader();
-
     	final ComponentManager mockManager = this.context.mock(ComponentManager.class);
 
         final DefaultComponentDescriptor descriptor1 = new DefaultComponentDescriptor<Role>();
@@ -164,7 +190,9 @@ public class ComponentAnnotationLoaderTest
         dependency51.setMappingType(ComponentManagerFactory.class);
         descriptor5.addComponentDependency(dependency51);
         descriptor5.addComponentDependency(dependency4);
-        
+
+        // This is the test, we verify that registerComponent() is called for each of the descriptor we're expecting
+        // to be discovered through annotations by the call to initialize() below.
     	this.context.checking(new Expectations() {{
             oneOf(mockManager).registerComponent(descriptor1);
             oneOf(mockManager).registerComponent(descriptor2);
@@ -173,7 +201,7 @@ public class ComponentAnnotationLoaderTest
             oneOf(mockManager).registerComponent(descriptor5);
         }});
 
-    	loader.initialize(mockManager, this.getClass().getClassLoader());
+    	this.loader.initialize(mockManager, this.getClass().getClassLoader());
     }
 
     /**
@@ -188,16 +216,14 @@ public class ComponentAnnotationLoaderTest
     @Test
     public void testFindComponentRoleClassesForProvider()
     {
-        ComponentAnnotationLoader loader = new ComponentAnnotationLoader();
-        Set<Class< ? >> classes = loader.findComponentRoleClasses(ProviderImpl.class);
+        Set<Class< ? >> classes = this.loader.findComponentRoleClasses(ProviderImpl.class);
 
         Assert.assertEquals(1, classes.size());
     }
 
     private void assertComponentRoleClasses(Class< ? > componentClass)
     {
-        ComponentAnnotationLoader loader = new ComponentAnnotationLoader();
-        Set<Class< ? >> classes = loader.findComponentRoleClasses(componentClass);
+        Set<Class< ? >> classes = this.loader.findComponentRoleClasses(componentClass);
         Assert.assertEquals(2, classes.size());
         Assert.assertTrue(classes.contains(Role.class));
         Assert.assertTrue(classes.contains(ExtendedRole.class));

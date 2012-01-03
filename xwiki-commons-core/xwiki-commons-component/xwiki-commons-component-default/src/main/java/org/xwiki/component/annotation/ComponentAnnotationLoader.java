@@ -103,6 +103,11 @@ public class ComponentAnnotationLoader
             List<ComponentDeclaration> componentOverrideDeclarations = getDeclaredComponents(classLoader,
                 COMPONENT_OVERRIDE_LIST);
             for (ComponentDeclaration componentOverrideDeclaration : componentOverrideDeclarations) {
+                // Since the old way to declare an override was to define it in both a component.txt and a
+                // component-overrides.txt file we first need to remove the override component declaration stored in
+                // componentDeclarations.
+                componentDeclarations.remove(componentOverrideDeclaration);
+                // Add it to the end of the list with the highest priority.
                 componentDeclarations.add(
                     new ComponentDeclaration(componentOverrideDeclaration.getImplementationClassName(), 0));
             }
@@ -143,7 +148,7 @@ public class ComponentAnnotationLoader
                         // to keep by looking at their priorities. Highest priority wins (i.e. lowest integer value).
                         RoleHint roleHint = new RoleHint(componentRoleClass, descriptor.getRoleHint());
                         if (descriptorMap.containsKey(roleHint)) {
-                            // Compare priorites
+                            // Compare priorities
                             int currentPriority = priorityMap.get(roleHint);
                             if (componentDeclaration.getPriority() < currentPriority) {
                                 // Override!
@@ -151,14 +156,14 @@ public class ComponentAnnotationLoader
                                 priorityMap.put(roleHint, componentDeclaration.getPriority());
                             } else if (componentDeclaration.getPriority() == currentPriority) {
                                 // Warning that we're not overwriting since they have the same priorities
-                                LOGGER.warn("Component [{}] which implements [{}] tried to overwrite component [{}]."
-                                    + "However, no action was taken since both components have the same priority "
+                                getLogger().warn("Component [{}] which implements [{}] tried to overwrite component "
+                                    + "[{}]. However, no action was taken since both components have the same priority "
                                     + "level of [{}].", new Object[] {componentDeclaration.getImplementationClassName(),
                                     roleHint, descriptorMap.get(roleHint).getImplementation().getName(),
                                     currentPriority});
                             } else {
-                                LOGGER.debug("Ignored component [{}] since its priority level of [{}] is lower than "
-                                    + "the currently registered component [{}] which has a priority of [{}]",
+                                getLogger().debug("Ignored component [{}] since its priority level of [{}] is lower "
+                                    + "than the currently registered component [{}] which has a priority of [{}]",
                                     new Object[] {componentDeclaration.getImplementationClassName(),
                                     componentDeclaration.getPriority(), currentPriority});
                             }
@@ -298,11 +303,22 @@ public class ComponentAnnotationLoader
                         annotatedClassNames.add(new ComponentDeclaration(chunks[0], COMPONENT_DEFAULT_PRIORITY));
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Failed to parse component declaration from [{}]", inputLine, e);
+                    getLogger().error("Failed to parse component declaration from [{}]", inputLine, e);
                 }
             }
         }
 
         return annotatedClassNames;
+    }
+
+    /**
+     * Useful for unit tests that need to capture logs; they can return a mock logger instead of the real logger and
+     * thus assert what's been logged.
+     *
+     * @return the Logger instance to use to log
+     */
+    protected Logger getLogger()
+    {
+        return LOGGER;
     }
 }
