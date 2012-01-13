@@ -21,8 +21,6 @@ package org.xwiki.logging.logback.internal;
 
 import java.util.Iterator;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +34,7 @@ import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.FilterReply;
+import junit.framework.Assert;
 
 /**
  * Unit tests for {@link DefaultLoggerManager}.
@@ -164,5 +163,28 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
         Assert.assertEquals("[test] log queue1", queue1.poll().getMessage());
 
         this.loggerManager.popLogListener();
+    }
+
+    @Test
+    public void testNullLisneters() throws InterruptedException
+    {
+        this.logger.error("[test] before push");
+
+        // Make sure the log has been sent to the logback appender
+        Assert.assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
+
+        this.loggerManager.pushLogListener(null);
+
+        this.logger.error("[test] log to null");
+
+        // Make sure the log has not been sent to the logback appender
+        Assert.assertEquals(1, this.listAppender.list.size());
+
+        this.loggerManager.popLogListener();
+
+        this.logger.error("[test] after pop");
+
+        // Make sure the log has been sent to the logback appender
+        Assert.assertEquals("[test] after pop", this.listAppender.list.get(1).getMessage());
     }
 }
