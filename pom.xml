@@ -41,8 +41,7 @@
     <commons.version>3.4-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project, used to catch API breakages. -->
-    <!-- TODO: Change to 3.2 final when released -->
-    <xwiki.clirr.previous.version>3.2</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>3.3</xwiki.clirr.previous.version>
     <xwiki.clirr.skip>false</xwiki.clirr.skip>
 
     <!-- By default Checkstyle and Clirr are on -->
