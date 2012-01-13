@@ -166,7 +166,7 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testNullLisneters() throws InterruptedException
+    public void testNullListeners() throws InterruptedException
     {
         this.logger.error("[test] before push");
 
