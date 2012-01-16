@@ -88,6 +88,12 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
 
         ExecutionContext clonedContext = new ExecutionContext();
 
+        // Manually add the XWiki Context so that old code continues to work.
+        // Make sure we set the XWiki context before calling initializer since some of them count on it.
+        // FIXME: This has nothing to do in commons which does not know anything about XWikiContext. Find a cleaner way
+        // like giving some properties to keeps as parameters of #clone.
+        clonedContext.setProperty(XWIKICONTEXT_KEY, context.getProperty(XWIKICONTEXT_KEY));
+
         // Ideally we would like to do a deep cloning here. However it's just too hard since we don't control
         // objects put in the Execution Context and they can be of any type, including Maps which are cloneable
         // but only do shallow clones.
@@ -99,10 +105,6 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
             // #initialize set the context but we just want to clone it so we need to restore it
             this.execution.setContext(currentContext);
         }
-
-        // Manually add the XWiki Context so that old code continues to work.
-        // Note that we need to add it manually here since there's no Context Initializer that adds it.
-        clonedContext.setProperty(XWIKICONTEXT_KEY, context.getProperty(XWIKICONTEXT_KEY));
 
         // Manually clone the Velocity Context too since currently the XWikiVelocityContextInitializer is not yet
         // implemented.
@@ -118,8 +120,8 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
                 clonedContext.setProperty(VELOCITY_KEY,
                     velocityContext.getClass().getMethod("clone").invoke(velocityContext));
             } catch (Exception e) {
-                throw new ExecutionContextException("Failed to clone Velocity Context for the new Execution Context",
-                    e);
+                throw new ExecutionContextException(
+                    "Failed to clone Velocity Context for the new Execution Context", e);
             }
         }
 
