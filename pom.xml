@@ -700,6 +700,13 @@ mmmm]]></license>
               <artifactId>selenium-remote-driver</artifactId>
               <version>${selenium.version}</version>
             </dependency>
+            <dependency>
+              <!-- We need this dependency starting with Selenium 2.17, otherwise Selenium server fails to start because
+                   org.openqa.selenium.logging.LoggingHandler is missing. -->
+              <groupId>org.seleniumhq.selenium</groupId>
+              <artifactId>selenium-api</artifactId>
+              <version>${selenium.version}</version>
+            </dependency>
           </dependencies>
           <executions>
             <execution>
