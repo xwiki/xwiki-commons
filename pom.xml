@@ -32,7 +32,7 @@
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page for the module based on the passed id .
        It allows to have a single URL definition in this top level POM and still get valid website URLs for all
-       mddules. -->
+       modules. -->
   <url>http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path=</url>
   <inceptionYear>2004</inceptionYear>
   <properties>
