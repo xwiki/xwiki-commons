@@ -75,7 +75,8 @@ public class StackingComponentEventManager implements ComponentEventManager
 
     public synchronized void flushEvents()
     {
-        for (ComponentEventEntry entry : this.events) {
+        while (!this.events.isEmpty()) {
+            ComponentEventEntry entry = this.events.pop();
             sendEvent(entry.event, entry.descriptor, entry.componentManager);
         }
     }
