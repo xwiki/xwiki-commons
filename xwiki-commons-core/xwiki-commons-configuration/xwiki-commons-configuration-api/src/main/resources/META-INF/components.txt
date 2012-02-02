@@ -1,0 +1,2 @@
+org.xwiki.configuration.internal.ConfigurationSourceProvider
+org.xwiki.configuration.internal.VoidConfigurationSource
