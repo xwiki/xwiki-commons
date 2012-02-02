@@ -29,9 +29,10 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 
 /**
- * Provide an empty configuration if none can be lookuped.
+ * Provide an empty Configuration Source if a default one cannot be looked-up.
  * 
  * @version $Id$
+ * @since 3.5M1
  */
 @Component
 @Singleton

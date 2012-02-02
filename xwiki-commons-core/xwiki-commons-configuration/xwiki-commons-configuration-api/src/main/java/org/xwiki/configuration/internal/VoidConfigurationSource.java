@@ -33,6 +33,7 @@ import org.xwiki.configuration.ConfigurationSource;
  * Implementation of {@link ConfigurationSource} mimicking an empty configuration.
  * 
  * @version $Id$
+ * @since 3.5M1
  */
 @Component
 @Singleton
