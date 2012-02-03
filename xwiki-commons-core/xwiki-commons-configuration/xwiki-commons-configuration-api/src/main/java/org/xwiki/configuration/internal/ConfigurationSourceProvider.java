@@ -20,6 +20,7 @@
 package org.xwiki.configuration.internal;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -35,6 +36,7 @@ import org.xwiki.configuration.ConfigurationSource;
  * @since 3.5M1
  */
 @Component
+@Named("configurationSource")
 @Singleton
 public class ConfigurationSourceProvider implements Provider<ConfigurationSource>
 {
