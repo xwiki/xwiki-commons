@@ -396,7 +396,6 @@ public class EmbeddableComponentManager implements ComponentManager
 
         // If the instance is a Provider also register it as Provider
         if (Provider.class.isAssignableFrom(descriptor.getRole())) {
-            Provider provider = (Provider) instance;
             Class roleClass = ReflectionUtils.getLastGenericClassType(descriptor.getImplementation(), Provider.class);
             this.providerEntries.put(new RoleHint(roleClass, descriptor.getRoleHint()),
                 (ComponentEntry<Provider>) componentEntry);
