@@ -19,8 +19,10 @@
  */
 package org.xwiki.configuration.internal;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -28,49 +30,81 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 
 /**
- * Implementation of {@link org.xwiki.configuration.ConfigurationSource} mimicking an empty configuration.
+ * Runtime configuration source stored in memory.
+ * <p>
+ * Can be modified by lookuping the component and using {@link #setPropery(String, Object)}.
  * 
  * @version $Id$
  * @since 3.5M1
  */
 @Component
 @Singleton
-@Named("void")
-public class VoidConfigurationSource extends AbstractConfigurationSource
+@Named("memory")
+public class MemoryConfigurationSource extends AbstractConfigurationSource
 {
+    /**
+     * The properties.
+     */
+    private Map<String, Object> properties = new ConcurrentHashMap<String, Object>();
+
+    /**
+     * @param key the key for the value to add to the configuration
+     * @param value the value to add in the configuration
+     */
+    public void setPropery(String key, Object value)
+    {
+        this.properties.put(key, value);
+    }
+
     @Override
     public <T> T getProperty(String key, T defaultValue)
     {
-        return defaultValue;
+        T value;
+
+        if (this.properties.containsKey(key)) {
+            value = (T) this.properties.get(key);
+        } else {
+            value = defaultValue;
+        }
+
+        return value;
     }
 
     @Override
     public <T> T getProperty(String key, Class<T> valueClass)
     {
-        return getDefault(valueClass);
+        T value;
+
+        if (this.properties.containsKey(key)) {
+            value = (T) this.properties.get(key);
+        } else {
+            value = getDefault(valueClass);
+        }
+
+        return value;
     }
 
     @Override
     public <T> T getProperty(String key)
     {
-        return null;
+        return (T) this.properties.get(key);
     }
 
     @Override
     public List<String> getKeys()
     {
-        return Collections.emptyList();
+        return new ArrayList<String>(this.properties.keySet());
     }
 
     @Override
     public boolean containsKey(String key)
     {
-        return false;
+        return this.properties.containsKey(key);
     }
 
     @Override
     public boolean isEmpty()
     {
-        return true;
+        return this.properties.isEmpty();
     }
 }

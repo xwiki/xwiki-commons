@@ -21,56 +21,35 @@ package org.xwiki.configuration.internal;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
+import org.xwiki.configuration.ConfigurationSource;
 
 /**
- * Implementation of {@link org.xwiki.configuration.ConfigurationSource} mimicking an empty configuration.
+ * Base class to use to implement {@link ConfigurationSource}.
  * 
  * @version $Id$
  * @since 3.5M1
  */
-@Component
-@Singleton
-@Named("void")
-public class VoidConfigurationSource extends AbstractConfigurationSource
+public abstract class AbstractConfigurationSource implements ConfigurationSource
 {
-    @Override
-    public <T> T getProperty(String key, T defaultValue)
+    /**
+     * @param valueClass the class of the property
+     * @param <T> the type of the property
+     * @return the default value of a property for the provided class
+     */
+    protected <T> T getDefault(Class<T> valueClass)
     {
-        return defaultValue;
-    }
+        T result;
 
-    @Override
-    public <T> T getProperty(String key, Class<T> valueClass)
-    {
-        return getDefault(valueClass);
-    }
+        if (List.class.getName().equals(valueClass.getName())) {
+            result = (T) Collections.emptyList();
+        } else if (Properties.class.getName().equals(valueClass.getName())) {
+            result = (T) new Properties();
+        } else {
+            result = null;
+        }
 
-    @Override
-    public <T> T getProperty(String key)
-    {
-        return null;
-    }
-
-    @Override
-    public List<String> getKeys()
-    {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public boolean containsKey(String key)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return true;
+        return result;
     }
 }

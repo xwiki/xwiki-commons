@@ -53,10 +53,26 @@ public class ConfigurationSourceProvider implements Provider<ConfigurationSource
             configurationSource = this.componentManager.lookup(ConfigurationSource.class);
         } catch (ComponentLookupException e) {
             try {
-                configurationSource = this.componentManager.lookup(ConfigurationSource.class, "void");
+                configurationSource = this.componentManager.lookup(ConfigurationSource.class, "memory");
             } catch (ComponentLookupException e1) {
-                configurationSource = new VoidConfigurationSource();
+                configurationSource = getVoidConfigurationSource();
             }
+        }
+
+        return configurationSource;
+    }
+
+    /**
+     * @return an empty configuration source
+     */
+    private ConfigurationSource getVoidConfigurationSource()
+    {
+        ConfigurationSource configurationSource;
+
+        try {
+            configurationSource = this.componentManager.lookup(ConfigurationSource.class, "void");
+        } catch (ComponentLookupException e) {
+            configurationSource = new VoidConfigurationSource();
         }
 
         return configurationSource;
