@@ -40,14 +40,14 @@ public abstract class AbstractConfigurationSource implements ConfigurationSource
      */
     protected <T> T getDefault(Class<T> valueClass)
     {
-        T result;
+        T result = null;
 
-        if (List.class.getName().equals(valueClass.getName())) {
-            result = (T) Collections.emptyList();
-        } else if (Properties.class.getName().equals(valueClass.getName())) {
-            result = (T) new Properties();
-        } else {
-            result = null;
+        if (valueClass != null) {
+            if (List.class.getName().equals(valueClass.getName())) {
+                result = (T) Collections.emptyList();
+            } else if (Properties.class.getName().equals(valueClass.getName())) {
+                result = (T) new Properties();
+            }
         }
 
         return result;
