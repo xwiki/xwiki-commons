@@ -51,9 +51,17 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
      * @param key the key for the value to add to the configuration
      * @param value the value to add in the configuration
      */
-    public void setPropery(String key, Object value)
+    public void setProperty(String key, Object value)
     {
         this.properties.put(key, value);
+    }
+
+    /**
+     * @param key the key associated to the property to remove
+     */
+    public void removeProperty(String key)
+    {
+        this.properties.remove(key);
     }
 
     @Override
