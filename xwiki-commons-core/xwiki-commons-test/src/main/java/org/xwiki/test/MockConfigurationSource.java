@@ -19,15 +19,9 @@
  */
 package org.xwiki.test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.configuration.internal.MemoryConfigurationSource;
 
 /**
  * Mock {@link ConfigurationSource} that returns an empty list of configuration sources.
@@ -35,10 +29,8 @@ import org.xwiki.configuration.ConfigurationSource;
  * @version $Id$
  * @since 1.6M2
  */
-public class MockConfigurationSource implements ConfigurationSource
+public class MockConfigurationSource extends MemoryConfigurationSource
 {
-    private Map<String, Object> properties = new HashMap<String, Object>();
-
     public static DefaultComponentDescriptor<ConfigurationSource> getDescriptor(String roleHint)
     {
         DefaultComponentDescriptor<ConfigurationSource> descriptor =
@@ -50,57 +42,5 @@ public class MockConfigurationSource implements ConfigurationSource
         descriptor.setImplementation(MockConfigurationSource.class);
 
         return descriptor;
-    }
-
-    public void setProperty(String key, Object value)
-    {
-        this.properties.put(key, value);
-    }
-
-    public void removeProperty(String key)
-    {
-        this.properties.remove(key);
-    }
-
-    public boolean containsKey(String key)
-    {
-        return this.properties.containsKey(key);
-    }
-
-    public List<String> getKeys()
-    {
-        return new ArrayList<String>(this.properties.keySet());
-    }
-
-    public <T> T getProperty(String key, Class<T> valueClass)
-    {
-        T result = null;
-
-        if (this.properties.containsKey(key)) {
-            result = (T) this.properties.get(key);
-        } else {
-            if (List.class.getName().equals(valueClass.getName())) {
-                result = (T) Collections.emptyList();
-            } else if (Properties.class.getName().equals(valueClass.getName())) {
-                result = (T) new Properties();
-            }
-        }
-
-        return result;
-    }
-
-    public <T> T getProperty(String key, T defaultValue)
-    {
-        return this.properties.containsKey(key) ? (T) this.properties.get(key) : defaultValue;
-    }
-
-    public <T> T getProperty(String key)
-    {
-        return (T) this.properties.get(key);
-    }
-
-    public boolean isEmpty()
-    {
-        return this.properties.isEmpty();
     }
 }
