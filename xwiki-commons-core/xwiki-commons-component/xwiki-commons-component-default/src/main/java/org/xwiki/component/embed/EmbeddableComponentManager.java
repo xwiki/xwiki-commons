@@ -259,7 +259,7 @@ public class EmbeddableComponentManager implements ComponentManager
             if (dependency.getMappingType() != null) {
                 if (Provider.class.isAssignableFrom(dependency.getMappingType())) {
                     // Then get the class the Provider is providing for
-                    Field field = instance.getClass().getDeclaredField(dependency.getName());
+                    Field field = ReflectionUtils.getField(instance.getClass(), dependency.getName());
                     Class< ? > fieldRole = ReflectionUtils.getLastGenericFieldType(field);
                     // Then lookup for a Provider registered with the default hint and for the Component Role it
                     // provides

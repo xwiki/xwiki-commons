@@ -43,18 +43,18 @@ public final class ReflectionUtils
     }
 
     /**
-     * @param componentClass the class for which to return all fields
+     * @param clazz the class for which to return all fields
      * @return all fields declared by the passed class and its superclasses
      */
-    public static Collection<Field> getAllFields(Class< ? > componentClass)
+    public static Collection<Field> getAllFields(Class< ? > clazz)
     {
         // Note: use a linked hash map to keep the same order as the one used to declare the fields.
         Map<String, Field> fields = new LinkedHashMap<String, Field>();
-        Class< ? > targetClass = componentClass;
+        Class< ? > targetClass = clazz;
         while (targetClass != null) {
-            Field[] componentClassFields;
+            Field[] targetClassFields;
             try {
-                componentClassFields = targetClass.getDeclaredFields();
+                targetClassFields = targetClass.getDeclaredFields();
             } catch (NoClassDefFoundError e) {
                 // Provide a better exception message to more easily debug component loading issue.
                 // Specifically with this error message we'll known which component failed to be initialized.
@@ -62,7 +62,7 @@ public final class ReflectionUtils
                     + "] because the class [" + e.getMessage() + "] couldn't be found in the ClassLoader.");
             }
             
-            for (Field field : componentClassFields) {
+            for (Field field : targetClassFields) {
                 // Make sure that if the same field is declared in a class and its superclass
                 // only the field used in the class will be returned. Note that we need to do
                 // this check since the Field object doesn't implement the equals method using
@@ -74,6 +74,34 @@ public final class ReflectionUtils
             targetClass = targetClass.getSuperclass();
         }
         return fields.values();
+    }
+
+    /**
+     * @param clazz the class for which to return all fields
+     * @param fieldName the name of the field to get
+     * @return the field specified from either the passed class or its superclasses
+     * @exception NoSuchFieldException if the field doesn't exist in the class or superclasses
+     */
+    public static Field getField(Class< ? > clazz, String fieldName) throws NoSuchFieldException
+    {
+        Field resultField = null;
+        Class< ? > targetClass = clazz;
+        while (targetClass != null) {
+            try {
+                resultField = targetClass.getDeclaredField(fieldName);
+                break;
+            } catch (NoSuchFieldException e) {
+                // Look in superclass
+                targetClass = targetClass.getSuperclass();
+            }
+        }
+
+        if (resultField == null) {
+            throw new NoSuchFieldException("No field named [" + fieldName + "] in class [" + clazz.getName()
+                + "] or superclasses");
+        }
+
+        return resultField;
     }
 
     /**
