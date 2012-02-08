@@ -33,10 +33,6 @@
   <name>XWiki Commons - Legacy</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Legacy</description>
-  <properties>
-    <!-- TODO: This project is new so it should be enabled when 3.2 final is released -->
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
-  </properties>
   <modules>
     <module>xwiki-commons-legacy-component</module>
   </modules>
