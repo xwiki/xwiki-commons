@@ -27,7 +27,7 @@ package org.xwiki.component.logging;
  *  
  * @version $Id$
  * @since 1.8RC3
- * @deprecated starting with 3.1M2 use SLF4J's NOPLogger instead
+ * @deprecated starting with 3.1M2 use SLF4J's NOPLogger instead: {@link org.slf4j.helpers.NOPLogger#NOP_LOGGER}
  */
 @Deprecated
 public class VoidLogger implements Logger
