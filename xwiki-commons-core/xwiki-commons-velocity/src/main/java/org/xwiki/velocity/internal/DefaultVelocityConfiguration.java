@@ -91,6 +91,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultProperties.setProperty("velocimacro.max.depth", "100");
         this.defaultProperties.setProperty("resource.manager.logwhenfound", Boolean.FALSE.toString());
         this.defaultProperties.setProperty("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
+        this.defaultProperties.setProperty("eventhandler.include.class", "org.xwiki.velocity.internal.util.XWikiIncludeEventHandler");
         // Prevents users from writing dangerous Velocity code like using Class.forName or Java threading APIs.
         this.defaultProperties.setProperty("runtime.introspector.uberspect", ChainingUberspector.class.getName());
         this.defaultProperties.setProperty("runtime.introspector.uberspect.chainClasses",
