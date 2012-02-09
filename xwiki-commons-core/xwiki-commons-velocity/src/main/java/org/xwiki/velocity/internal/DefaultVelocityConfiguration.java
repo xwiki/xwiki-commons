@@ -36,6 +36,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.velocity.VelocityConfiguration;
+import org.xwiki.velocity.internal.util.RestrictParseLocationEventHandler;
 import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.tools.EscapeTool;
@@ -91,7 +92,9 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultProperties.setProperty("velocimacro.max.depth", "100");
         this.defaultProperties.setProperty("resource.manager.logwhenfound", Boolean.FALSE.toString());
         this.defaultProperties.setProperty("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
-        this.defaultProperties.setProperty("eventhandler.include.class", "org.xwiki.velocity.internal.util.XWikiIncludeEventHandler");
+        // Prevents users from calling #parse on files outside the /templates/ directory
+        this.defaultProperties.setProperty("eventhandler.include.class",
+            RestrictParseLocationEventHandler.class.getName());
         // Prevents users from writing dangerous Velocity code like using Class.forName or Java threading APIs.
         this.defaultProperties.setProperty("runtime.introspector.uberspect", ChainingUberspector.class.getName());
         this.defaultProperties.setProperty("runtime.introspector.uberspect.chainClasses",
