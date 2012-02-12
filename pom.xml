@@ -32,8 +32,16 @@
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page for the module based on the passed id .
        It allows to have a single URL definition in this top level POM and still get valid website URLs for all
-       modules. -->
-  <url>http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path=</url>
+       modules.
+       Note that we're ending the URL with ":::" for the following reasons:
+       - Since we don't overwrite the <url> element in children POM, Maven automatically appends the relative path
+         to the children modules. For example:
+         "/xwiki-commons-pom/xwiki-commons-core/xwiki-commons-component/xwiki-commons-component-api"
+       - Ideally we would use instead a generic URL like:
+         "http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path="
+         However this makes the site plugin fails, see http://jira.codehaus.org/browse/MNG-5242
+  -->
+  <url>http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}:::</url>
   <inceptionYear>2004</inceptionYear>
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
@@ -632,14 +640,14 @@ mmmm]]></license>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.0-beta-3</version>
+          <version>3.0</version>
           <!-- Site Plugin doesn’t automatically pull the Apache Wagon SSH implementation which is needed for
                site:deploy goal when using SCP protocol. -->
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.wagon</groupId>
               <artifactId>wagon-ssh</artifactId>
-              <version>1.0-beta-7</version>
+              <version>2.2</version>
             </dependency>
           </dependencies>
           <configuration>
