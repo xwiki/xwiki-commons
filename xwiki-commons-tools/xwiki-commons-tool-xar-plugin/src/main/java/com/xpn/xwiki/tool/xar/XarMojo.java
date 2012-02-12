@@ -31,7 +31,6 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.archiver.ArchiveEntry;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -54,13 +53,6 @@ import org.dom4j.io.XMLWriter;
  */
 public class XarMojo extends AbstractXarMojo
 {
-    /**
-     * To look up Archiver/UnArchiver implementations.
-     * 
-     * @component
-     */
-    protected ArchiverManager archiverManager;
-
     /**
      * Indicate if xar dependencies should be included in the produced xar package.
      * 
