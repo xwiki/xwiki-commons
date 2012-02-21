@@ -49,7 +49,7 @@
     <commons.version>4.0-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>3.4</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>3.5</xwiki.clirr.previous.version>
     <xwiki.clirr.skip>false</xwiki.clirr.skip>
 
     <!-- By default Checkstyle and Clirr are on -->
