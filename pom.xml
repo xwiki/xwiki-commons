@@ -180,6 +180,13 @@
         <version>1.7</version>
       </dependency>
 
+      <!-- Used in both rendering and platform -->
+      <dependency>
+        <groupId>com.thoughtworks.xstream</groupId>
+        <artifactId>xstream</artifactId>
+        <version>1.4.2</version>
+      </dependency>
+
       <!-- Everybody logs -->
       <dependency>
         <groupId>org.slf4j</groupId>
