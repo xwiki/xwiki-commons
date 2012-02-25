@@ -45,7 +45,7 @@ public class RestrictParseLocationEventHandler implements IncludeEventHandler
         String baseDirectory = "/templates/";
         String template = URI.create(baseDirectory + includeResourcePath).normalize().toString();
         if (!template.startsWith(baseDirectory)) {
-            LOGGER.warn("Illegal access, tried to use file [{}] as a template. Possible break-in attempt!", template);
+            LOGGER.warn("Direct access to template file [{}] refused. Possible break-in attempt!", template);
             return null;
         }
         return template;
