@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Dynamically loads all components defined using Annotations and declared in META-INF/components.txt files.
@@ -59,7 +60,7 @@ public class ComponentAnnotationLoader
     /**
      * Location in the classloader of the file specifying which component implementation to use when several components
      * with the same role/hint are found.
-     *
+     * 
      * @deprecated starting with 3.3M1 use the notion of priorities instead (see {@link ComponentDeclaration}).
      */
     public static final String COMPONENT_OVERRIDE_LIST = "META-INF/component-overrides.txt";
@@ -100,16 +101,16 @@ public class ComponentAnnotationLoader
             // Find all the Component overrides and adds them to the bottom of the list as component declarations with
             // the highest priority of 0. This is purely for backward compatibility since the override files is now
             // deprecated.
-            List<ComponentDeclaration> componentOverrideDeclarations = getDeclaredComponents(classLoader,
-                COMPONENT_OVERRIDE_LIST);
+            List<ComponentDeclaration> componentOverrideDeclarations =
+                getDeclaredComponents(classLoader, COMPONENT_OVERRIDE_LIST);
             for (ComponentDeclaration componentOverrideDeclaration : componentOverrideDeclarations) {
                 // Since the old way to declare an override was to define it in both a component.txt and a
                 // component-overrides.txt file we first need to remove the override component declaration stored in
                 // componentDeclarations.
                 componentDeclarations.remove(componentOverrideDeclaration);
                 // Add it to the end of the list with the highest priority.
-                componentDeclarations.add(
-                    new ComponentDeclaration(componentOverrideDeclaration.getImplementationClassName(), 0));
+                componentDeclarations.add(new ComponentDeclaration(componentOverrideDeclaration
+                    .getImplementationClassName(), 0));
             }
 
             initialize(manager, classLoader, componentDeclarations);
@@ -142,11 +143,18 @@ public class ComponentAnnotationLoader
                 // Look for ComponentRole annotations and register one component per ComponentRole found
                 for (Class< ? > componentRoleClass : findComponentRoleClasses(componentClass)) {
                     for (ComponentDescriptor descriptor : this.factory.createComponentDescriptors(componentClass,
-                        componentRoleClass))
-                    {
+                        componentRoleClass)) {
                         // If there's already a existing role/hint in the list of descriptors then decide which one
                         // to keep by looking at their priorities. Highest priority wins (i.e. lowest integer value).
-                        RoleHint roleHint = new RoleHint(componentRoleClass, descriptor.getRoleHint());
+                        RoleHint roleHint;
+                        if (componentRoleClass == Provider.class) {
+                            roleHint =
+                                new RoleHint(ReflectionUtils.getGenericClassType(descriptor.getImplementation(),
+                                    Provider.class), descriptor.getRoleHint());
+                        } else {
+                            roleHint = new RoleHint(componentRoleClass, descriptor.getRoleHint());
+                        }
+
                         if (descriptorMap.containsKey(roleHint)) {
                             // Compare priorities
                             int currentPriority = priorityMap.get(roleHint);
@@ -156,14 +164,17 @@ public class ComponentAnnotationLoader
                                 priorityMap.put(roleHint, componentDeclaration.getPriority());
                             } else if (componentDeclaration.getPriority() == currentPriority) {
                                 // Warning that we're not overwriting since they have the same priorities
-                                getLogger().warn("Component [{}] which implements [{}] tried to overwrite component "
-                                    + "[{}]. However, no action was taken since both components have the same priority "
-                                    + "level of [{}].", new Object[] {componentDeclaration.getImplementationClassName(),
-                                    roleHint, descriptorMap.get(roleHint).getImplementation().getName(),
-                                    currentPriority});
+                                getLogger()
+                                    .warn(
+                                        "Component [{}] which implements [{}] tried to overwrite component "
+                                            + "[{}]. However, no action was taken since both components have the same priority "
+                                            + "level of [{}].",
+                                        new Object[] {componentDeclaration.getImplementationClassName(), roleHint,
+                                        descriptorMap.get(roleHint).getImplementation().getName(), currentPriority});
                             } else {
-                                getLogger().debug("Ignored component [{}] since its priority level of [{}] is lower "
-                                    + "than the currently registered component [{}] which has a priority of [{}]",
+                                getLogger().debug(
+                                    "Ignored component [{}] since its priority level of [{}] is lower "
+                                        + "than the currently registered component [{}] which has a priority of [{}]",
                                     new Object[] {componentDeclaration.getImplementationClassName(),
                                     componentDeclaration.getPriority(), currentPriority});
                             }
@@ -179,7 +190,6 @@ public class ComponentAnnotationLoader
             for (ComponentDescriptor descriptor : descriptorMap.values()) {
                 manager.registerComponent(descriptor);
             }
-
         } catch (Exception e) {
             // Make sure we make the calling code fail in order to fail fast and prevent the application to start
             // if something is amiss.
@@ -221,12 +231,14 @@ public class ComponentAnnotationLoader
             for (Class< ? > interfaceClass : componentClass.getInterfaces()) {
                 // Handle superclass of interfaces
                 classes.addAll(findComponentRoleClasses(interfaceClass));
+
                 // Handle interfaces directly declared in the passed component class
                 for (Annotation annotation : interfaceClass.getDeclaredAnnotations()) {
-                    if (annotation.annotationType().getName().equals(ComponentRole.class.getName())) {
+                    if (annotation.annotationType() == ComponentRole.class) {
                         classes.add(interfaceClass);
                     }
                 }
+
                 // Handle javax.inject.Provider
                 if (Provider.class.isAssignableFrom(interfaceClass)) {
                     classes.add(interfaceClass);
@@ -236,10 +248,9 @@ public class ComponentAnnotationLoader
             // Note that we need to look into the superclass since the super class can itself implements an interface
             // that has the @ComponentRole annotation.
             Class< ? > superClass = componentClass.getSuperclass();
-            if (superClass != null && !superClass.getName().equals(Object.class.getName())) {
+            if (superClass != null && superClass != Object.class) {
                 classes.addAll(findComponentRoleClasses(superClass));
             }
-
         }
 
         return classes;
@@ -277,7 +288,7 @@ public class ComponentAnnotationLoader
     /**
      * Get all components listed in the passed resource stream. The format is:
      * {@code (priority level):(fully qualified component implementation name)}.
-     *
+     * 
      * @param componentListStream the stream to parse
      * @return the list of component declaration (implementation class names and priorities)
      * @throws IOException in case of an error loading the component list resource
@@ -314,7 +325,7 @@ public class ComponentAnnotationLoader
     /**
      * Useful for unit tests that need to capture logs; they can return a mock logger instead of the real logger and
      * thus assert what's been logged.
-     *
+     * 
      * @return the Logger instance to use to log
      */
     protected Logger getLogger()

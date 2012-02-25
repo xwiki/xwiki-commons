@@ -19,8 +19,11 @@
  */
 package org.xwiki.component.internal.multi;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Provider;
 
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.manager.ComponentEventManager;
@@ -28,6 +31,7 @@ import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.manager.ComponentRepositoryException;
+import org.xwiki.component.manager.ProviderLookupException;
 
 /**
  * Delegate all calls to a defined Component Manager, acting as a Proxy for it.
@@ -104,6 +108,12 @@ public class DelegateComponentManager implements ComponentManager
     public <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException
     {
         return getComponentManager().lookupMap(role);
+    }
+
+    @Override
+    public <T> Provider<T> lookupProvider(Type type, String hint) throws ProviderLookupException
+    {
+        return getComponentManager().lookupProvider(type, hint);
     }
 
     @Override

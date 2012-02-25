@@ -19,8 +19,11 @@
  */
 package org.xwiki.component.manager;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Provider;
 
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -74,9 +77,20 @@ public interface ComponentManager
     <T> T lookup(Class<T> role, String hint) throws ComponentLookupException;
 
     /**
-     * Release the provided singleton instance but don't unregister the component descriptor. This means that next
-     * time the component is looked up a new instance will be created.
-     *
+     * Find a {@link Provider} instance for the provided {@link Type} and hint.
+     * 
+     * @param <T> the provided type
+     * @param type the provided type
+     * @param hint the Provider hint (used to differentiate between {@link Provider}s for the same type)
+     * @return the {@link Provider} for the passed type and hint
+     * @throws ProviderLookupException in case the provider cannot be found
+     */
+    <T> Provider<T> lookupProvider(Type type, String hint) throws ProviderLookupException;
+
+    /**
+     * Release the provided singleton instance but don't unregister the component descriptor. This means that next time
+     * the component is looked up a new instance will be created.
+     * 
      * @param <T> the component role type
      * @param component the component to release passed as a component instance.
      * @throws ComponentLifecycleException if the component's ending lifecycle raises an error

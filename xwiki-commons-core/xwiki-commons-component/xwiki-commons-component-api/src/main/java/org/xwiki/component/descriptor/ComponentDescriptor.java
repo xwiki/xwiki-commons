@@ -25,7 +25,7 @@ import java.util.Collection;
  * Represent a component.
  * 
  * @version $Id$
- * @param <T> the type of the componeent role
+ * @param <T> the type of the component role
  * @since 1.7M1
  */
 public interface ComponentDescriptor<T> extends ComponentRole<T>

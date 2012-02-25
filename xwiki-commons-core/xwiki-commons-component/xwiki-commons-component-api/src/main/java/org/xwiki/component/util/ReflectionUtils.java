@@ -32,6 +32,9 @@ import java.util.Map;
  * @version $Id$
  * @since 2.1RC1
  */
+/**
+ * @version $Id$
+ */
 public final class ReflectionUtils
 {
     /**
@@ -61,7 +64,7 @@ public final class ReflectionUtils
                 throw new NoClassDefFoundError("Failed to get fields for class [" + targetClass.getName()
                     + "] because the class [" + e.getMessage() + "] couldn't be found in the ClassLoader.");
             }
-            
+
             for (Field field : targetClassFields) {
                 // Make sure that if the same field is declared in a class and its superclass
                 // only the field used in the class will be returned. Note that we need to do
@@ -105,6 +108,26 @@ public final class ReflectionUtils
     }
 
     /**
+     * Extract the main class from the passed {@link Type}.
+     * 
+     * @param type the generic {@link Type}
+     * @return the main Class of the generic {@link Type}
+     */
+    public static Class getTypeClass(Type type)
+    {
+        Class typeClassClass;
+        if (type instanceof Class) {
+            typeClassClass = (Class) type;
+        } else if (type instanceof ParameterizedType) {
+            typeClassClass = (Class) ((ParameterizedType) type).getRawType();
+        } else {
+            typeClassClass = null;
+        }
+
+        return typeClassClass;
+    }
+
+    /**
      * Sets a value to a field using reflection even if the field is private.
      * 
      * @param instanceContainingField the object containing the field
@@ -143,21 +166,43 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed field. For example {@code private List&lt;A, B&gt; field}
-     * would return the {@code B} class.
-     *
+     * Extract the last generic type from the passed field. For example {@code private List&lt;A, B&gt; field} would
+     * return the {@code B} class.
+     * 
      * @param field the field from which to extract the generic type
-     * @return the class of the last generic type of null if the field doesn't have a generic type
+     * @return the class of the last generic type or null if the field doesn't have a generic type
      */
-    public static Class<?> getLastGenericFieldType(Field field)
+    public static Class< ? > getLastGenericFieldType(Field field)
     {
-        Type type = field.getGenericType();
+        return getTypeClass(getLastFieldGenericArgument(field));
+    }
 
+    /**
+     * Extract the last generic type from the passed field. For example {@code private List&lt;A, B&gt; field} would
+     * return the {@code B} class.
+     * 
+     * @param field the field from which to extract the generic type
+     * @return the type of the last generic type or null if the field doesn't have a generic type
+     */
+    public static Type getLastFieldGenericArgument(Field field)
+    {
+        return getLastTypeGenericArgument(field.getGenericType());
+    }
+
+    /**
+     * Extract the last generic type from the passed Type. For example {@code private List&lt;A, B&gt; field} would
+     * return the {@code B} class.
+     * 
+     * @param type the type from which to extract the generic type
+     * @return the type of the last generic type or null if the field doesn't have a generic type
+     */
+    public static Type getLastTypeGenericArgument(Type type)
+    {
         if (type instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) type;
             Type[] types = pType.getActualTypeArguments();
-            if (types.length > 0 && types[types.length - 1] instanceof Class) {
-                return (Class) types[types.length - 1];
+            if (types.length > 0) {
+                return types[types.length - 1];
             }
         }
 
@@ -167,22 +212,47 @@ public final class ReflectionUtils
     /**
      * Extract the last generic type from the passed class. For example
      * {@code public Class MyClass implements FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;} will return {@code B}.
-     *
+     * 
      * @param clazz the class to extract from
      * @param filterClass the class of the generic type we're looking for
      * @return the last generic type from the interfaces of the passed class, filtered by the passed filter class
      */
-    public static Class<?> getLastGenericClassType(Class clazz, Class filterClass)
+    public static Class< ? > getLastGenericClassType(Class clazz, Class filterClass)
+    {
+        Type type = getGenericClassType(clazz, filterClass);
+
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) type;
+            if (filterClass.isAssignableFrom((Class) pType.getRawType())) {
+                Type[] actualTypes = pType.getActualTypeArguments();
+                if (actualTypes.length > 0 && actualTypes[actualTypes.length - 1] instanceof Class) {
+                    return (Class) actualTypes[actualTypes.length - 1];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract the real Type from the passed class. For example
+     * {@code public Class MyClass implements FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;} will return
+     * {@code FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;}.
+     * 
+     * @param clazz the class to extract from
+     * @param filterClass the class of the generic type we're looking for
+     * @return the real Type from the interfaces of the passed class, filtered by the passed filter class
+     */
+    public static Type getGenericClassType(Class clazz, Class filterClass)
     {
         // Get all interfaces implemented and find the one that's a Provider with a Generic type
         for (Type type : clazz.getGenericInterfaces()) {
-            if (type instanceof ParameterizedType) {
+            if (type == filterClass) {
+                return type;
+            } else if (type instanceof ParameterizedType) {
                 ParameterizedType pType = (ParameterizedType) type;
                 if (filterClass.isAssignableFrom((Class) pType.getRawType())) {
-                    Type[] actualTypes = pType.getActualTypeArguments();
-                    if (actualTypes.length > 0 && actualTypes[actualTypes.length - 1] instanceof Class) {
-                        return (Class) actualTypes[actualTypes.length - 1];
-                    }
+                    return type;
                 }
             }
         }

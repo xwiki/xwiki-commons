@@ -78,10 +78,7 @@
         <configuration>
           <excludes>
             org/xwiki/component/annotation/ComponentAnnotationLoader.java,
-            org/xwiki/component/embed/EmbeddableComponentManager.java,
-            org/xwiki/component/internal/Composable.java,
-            org/xwiki/component/internal/RoleHint.java,
-            org/xwiki/component/internal/StackingComponentEventManager.java
+            org/xwiki/component/embed/EmbeddableComponentManager.java
           </excludes>
         </configuration>
       </plugin>

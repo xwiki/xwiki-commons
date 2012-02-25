@@ -2,3 +2,8 @@ org.xwiki.component.annotation.ComponentAnnotationLoaderTest$DeprecatedSimpleRol
 org.xwiki.component.annotation.ComponentAnnotationLoaderTest$DeprecatedOverrideRole
 org.xwiki.component.annotation.ComponentAnnotationLoaderTest$SimpleRole
 500:org.xwiki.component.annotation.ComponentAnnotationLoaderTest$OverrideRole
+
+org.xwiki.component.ProviderTest$TestComponentWithProviders
+org.xwiki.component.ProviderTest$TestProvider1
+org.xwiki.component.ProviderTest$TestProvider12
+org.xwiki.component.ProviderTest$TestProvider2

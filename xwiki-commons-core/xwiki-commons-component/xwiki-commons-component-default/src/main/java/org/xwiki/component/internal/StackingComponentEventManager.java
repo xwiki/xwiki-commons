@@ -39,10 +39,19 @@ import org.xwiki.observation.event.Event;
  */
 public class StackingComponentEventManager implements ComponentEventManager
 {
+    /**
+     * The wrapped observation manager.
+     */
     private ObservationManager observationManager;
 
+    /**
+     * The event stacked before been given the order to send them.
+     */
     private Stack<ComponentEventEntry> events = new Stack<ComponentEventEntry>();
 
+    /**
+     * Indicate if event should be retained to directly sent.
+     */
     private boolean shouldStack = true;
 
     @Override
@@ -73,6 +82,9 @@ public class StackingComponentEventManager implements ComponentEventManager
             descriptor, componentManager);
     }
 
+    /**
+     * Force to send all stored events.
+     */
     public synchronized void flushEvents()
     {
         while (!this.events.isEmpty()) {
@@ -81,16 +93,30 @@ public class StackingComponentEventManager implements ComponentEventManager
         }
     }
 
+    /**
+     * @param shouldStack indicate of the events received should be stacked
+     */
     public void shouldStack(boolean shouldStack)
     {
         this.shouldStack = shouldStack;
     }
 
+    /**
+     * @param observationManager the wrapped observation manager
+     */
     public void setObservationManager(ObservationManager observationManager)
     {
         this.observationManager = observationManager;
     }
 
+    /**
+     * Send or stack the provided event dependening on the configuration.
+     * 
+     * @param event the event send by the component manager
+     * @param descriptor the event related component descriptor.
+     * @param componentManager the event related component manager instance.
+     * @see #shouldStack(boolean)
+     */
     private void notifyComponentEvent(Event event, ComponentDescriptor< ? > descriptor,
         ComponentManager componentManager)
     {
@@ -103,6 +129,13 @@ public class StackingComponentEventManager implements ComponentEventManager
         }
     }
 
+    /**
+     * Send the event.
+     * 
+     * @param event the event to send
+     * @param descriptor the event related component descriptor.
+     * @param componentManager the event related component manager instance.
+     */
     private void sendEvent(Event event, ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
     {
         if (this.observationManager != null) {
@@ -110,14 +143,33 @@ public class StackingComponentEventManager implements ComponentEventManager
         }
     }
 
+    /**
+     * Contains a stacked event.
+     * 
+     * @version $Id$
+     */
     static class ComponentEventEntry
     {
+        /**
+         * The stacked event.
+         */
         public Event event;
 
+        /**
+         * The event related component descriptor.
+         */
         public ComponentDescriptor< ? > descriptor;
 
+        /**
+         * The event related component manager instance.
+         */
         public ComponentManager componentManager;
 
+        /**
+         * @param event the stacked event.
+         * @param descriptor the event related component descriptor.
+         * @param componentManager the event related component manager instance.
+         */
         public ComponentEventEntry(Event event, ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
         {
             this.event = event;

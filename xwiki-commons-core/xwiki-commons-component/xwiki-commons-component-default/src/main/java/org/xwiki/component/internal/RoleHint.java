@@ -19,24 +19,42 @@
  */
 package org.xwiki.component.internal;
 
+import java.lang.reflect.Type;
+
+import org.xwiki.component.util.ReflectionUtils;
+
 /**
  * Represent the unique identifier of a Component (pair Role/Hint).
  * 
+ * @param <T> the role class
  * @version $Id$
  * @since 2.0M1
  */
 public class RoleHint<T>
 {
-    private Class<T> role;
+    /**
+     * @see #getRole()
+     */
+    private Type role;
 
+    /**
+     * @see #getHint()
+     */
     private String hint;
 
-    public RoleHint(Class<T> role)
+    /**
+     * @param role the component role
+     */
+    public RoleHint(Type role)
     {
         this(role, null);
     }
 
-    public RoleHint(Class<T> role, String hint)
+    /**
+     * @param role the component role
+     * @param hint the component hint
+     */
+    public RoleHint(Type role, String hint)
     {
         this.role = role;
         this.hint = hint;
@@ -45,11 +63,25 @@ public class RoleHint<T>
         }
     }
 
-    public Class<T> getRole()
+    /**
+     * @return the component role
+     */
+    public Type getRoleType()
     {
         return this.role;
     }
 
+    /**
+     * @return the component role as class
+     */
+    public Class<T> getRoleClass()
+    {
+        return ReflectionUtils.getTypeClass(this.role);
+    }
+
+    /**
+     * @return the component hint
+     */
     public String getHint()
     {
         return this.hint;
@@ -71,7 +103,7 @@ public class RoleHint<T>
 
         // It's possible Class reference are not the same when it coming for different ClassLoader so we compare class
         // names
-        return getRole() == rolehint.getRole()
+        return getRoleType() == rolehint.getRoleType()
             && (getHint() == rolehint.getHint() || (getHint() != null && getHint().equals(rolehint.getHint())));
     }
 
@@ -79,14 +111,15 @@ public class RoleHint<T>
     public int hashCode()
     {
         int hash = 8;
-        hash = 31 * hash + (null == getRole() ? 0 : getRole().hashCode());
+        hash = 31 * hash + (null == getRoleType() ? 0 : getRoleType().hashCode());
         hash = 31 * hash + (null == getHint() ? 0 : getHint().hashCode());
+
         return hash;
     }
 
     @Override
     public String toString()
     {
-        return "role = [" + getRole().getName() + "] hint = [" + getHint() + "]";
+        return "role = [" + getRoleType() + "] hint = [" + getHint() + "]";
     }
 }
