@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,22 +16,39 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package org.xwiki.configuration.internal;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
-    <version>4.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-legacy</artifactId>
-  <name>XWiki Commons - Legacy</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Legacy</description>
-  <modules>
-    <module>xwiki-commons-legacy-component</module>
-    <module>xwiki-commons-legacy-configuration</module>
-  </modules>
-</project>
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.configuration.ConfigurationSource;
+
+/**
+ * Provide the default ConfigurationSource provider for the hint "configurationSource".
+ * 
+ * @version $Id$
+ * @since 3.5M1
+ * @deprecated since 4.0M1 use provider with default hint
+ */
+@Component
+@Named("configurationSource")
+@Singleton
+@Deprecated
+public class DeprecatedConfigurationSourceProvider implements Provider<ConfigurationSource>
+{
+    /**
+     * The real default provider.
+     */
+    @Inject
+    private Provider<ConfigurationSource> provider;
+
+    @Override
+    public ConfigurationSource get()
+    {
+        return this.provider.get();
+    }
+}

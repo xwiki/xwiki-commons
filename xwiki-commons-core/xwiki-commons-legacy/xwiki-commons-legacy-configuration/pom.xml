@@ -26,15 +26,19 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-configuration</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-legacy</artifactId>
-  <name>XWiki Commons - Legacy</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Legacy</description>
-  <modules>
-    <module>xwiki-commons-legacy-component</module>
-    <module>xwiki-commons-legacy-configuration</module>
-  </modules>
+  <artifactId>xwiki-commons-legacy-configuration</artifactId>
+  <name>XWiki Commons - Legacy- Configuration</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Legacy - Configuration</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-configuration-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
+       

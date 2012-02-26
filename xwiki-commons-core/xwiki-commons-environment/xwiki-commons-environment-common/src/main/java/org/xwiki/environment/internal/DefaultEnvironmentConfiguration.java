@@ -22,7 +22,6 @@ package org.xwiki.environment.internal;
 import java.io.File;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -56,7 +55,6 @@ public class DefaultEnvironmentConfiguration implements EnvironmentConfiguration
      * @see #getConfigurationSource() 
      */
     @Inject
-    @Named("configurationSource")
     private Provider<ConfigurationSource> configurationSourceProvider;
 
     /**
