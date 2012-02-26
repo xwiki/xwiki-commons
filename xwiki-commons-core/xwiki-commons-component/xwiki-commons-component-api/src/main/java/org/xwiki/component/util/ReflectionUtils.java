@@ -112,6 +112,7 @@ public final class ReflectionUtils
      * 
      * @param type the generic {@link Type}
      * @return the main Class of the generic {@link Type}
+     * @since 4.0M1
      */
     public static Class getTypeClass(Type type)
     {
@@ -183,6 +184,7 @@ public final class ReflectionUtils
      * 
      * @param field the field from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
+     * @since 4.0M1
      */
     public static Type getLastFieldGenericArgument(Field field)
     {
@@ -195,6 +197,7 @@ public final class ReflectionUtils
      * 
      * @param type the type from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
+     * @since 4.0M1
      */
     public static Type getLastTypeGenericArgument(Type type)
     {
@@ -242,6 +245,7 @@ public final class ReflectionUtils
      * @param clazz the class to extract from
      * @param filterClass the class of the generic type we're looking for
      * @return the real Type from the interfaces of the passed class, filtered by the passed filter class
+     * @since 4.0M1
      */
     public static Type getGenericClassType(Class clazz, Class filterClass)
     {
