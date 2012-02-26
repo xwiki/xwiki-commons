@@ -387,6 +387,21 @@ public class EmbeddableComponentManager implements ComponentManager
 
     // Add
 
+    private <T> RoleHint<T> getRoleHint(ComponentDescriptor<T> componentDescriptor, T componentInstance)
+    {
+        RoleHint<T> roleHint;
+        if (Provider.class.isAssignableFrom(componentDescriptor.getRole())) {
+            roleHint =
+                new RoleHint<T>(ReflectionUtils.getGenericClassType(
+                    componentInstance != null ? componentInstance.getClass() : componentDescriptor.getImplementation(),
+                    Provider.class), componentDescriptor.getRoleHint());
+        } else {
+            roleHint = new RoleHint<T>(componentDescriptor.getRole(), componentDescriptor.getRoleHint());
+        }
+
+        return roleHint;
+    }
+
     @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor) throws ComponentRepositoryException
     {
@@ -396,14 +411,7 @@ public class EmbeddableComponentManager implements ComponentManager
     @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
     {
-        RoleHint<T> roleHint;
-        if (componentDescriptor.getRole() == Provider.class) {
-            roleHint =
-                new RoleHint<T>(ReflectionUtils.getGenericClassType(componentDescriptor.getImplementation(),
-                    Provider.class), componentDescriptor.getRoleHint());
-        } else {
-            roleHint = new RoleHint<T>(componentDescriptor.getRole(), componentDescriptor.getRoleHint());
-        }
+        RoleHint<T> roleHint = getRoleHint(componentDescriptor, componentInstance);
 
         // Remove any existing component associated to the provided roleHint
         removeComponentWithoutException(roleHint);
@@ -437,8 +445,13 @@ public class EmbeddableComponentManager implements ComponentManager
     @Override
     public <T> void unregisterComponent(Class<T> role, String hint)
     {
-        RoleHint<T> roleHint = new RoleHint<T>(role, hint);
-        removeComponentWithoutException(roleHint);
+        removeComponentWithoutException(new RoleHint<T>(role, hint));
+    }
+
+    @Override
+    public <T> void unregisterComponent(ComponentDescriptor<T> componentDescriptor)
+    {
+        removeComponentWithoutException(getRoleHint(componentDescriptor, null));
     }
 
     @Override

@@ -154,6 +154,12 @@ public class DelegateComponentManager implements ComponentManager
     }
 
     @Override
+    public <T> void unregisterComponent(ComponentDescriptor<T> componentDescriptor)
+    {
+        getComponentManager().unregisterComponent(componentDescriptor);
+    }
+
+    @Override
     public ComponentManager getParent()
     {
         return getComponentManager().getParent();

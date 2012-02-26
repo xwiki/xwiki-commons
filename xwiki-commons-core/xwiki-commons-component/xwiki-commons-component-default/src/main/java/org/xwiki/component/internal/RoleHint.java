@@ -44,6 +44,7 @@ public class RoleHint<T>
 
     /**
      * @param role the component role
+     * @since 4.0M1
      */
     public RoleHint(Type role)
     {
@@ -53,6 +54,7 @@ public class RoleHint<T>
     /**
      * @param role the component role
      * @param hint the component hint
+     * @since 4.0M1
      */
     public RoleHint(Type role, String hint)
     {
@@ -65,6 +67,7 @@ public class RoleHint<T>
 
     /**
      * @return the component role
+     * @since 4.0M1
      */
     public Type getRoleType()
     {
@@ -73,6 +76,7 @@ public class RoleHint<T>
 
     /**
      * @return the component role as class
+     * @since 4.0M1
      */
     public Class<T> getRoleClass()
     {

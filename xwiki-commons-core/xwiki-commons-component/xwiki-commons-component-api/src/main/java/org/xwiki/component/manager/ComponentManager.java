@@ -84,6 +84,7 @@ public interface ComponentManager
      * @param hint the Provider hint (used to differentiate between {@link Provider}s for the same type)
      * @return the {@link Provider} for the passed type and hint
      * @throws ProviderLookupException in case the provider cannot be found
+     * @since 4.0M1
      */
     <T> Provider<T> lookupProvider(Type type, String hint) throws ProviderLookupException;
 
@@ -155,6 +156,15 @@ public interface ComponentManager
      * @since 2.0M2
      */
     <T> void unregisterComponent(Class<T> role, String hint);
+
+    /**
+     * Remove a component from the component repository dynamically.
+     * 
+     * @param <T> the component role type
+     * @param componentDescriptor the descriptor of the component to register.
+     * @since 4.0M1
+     */
+    <T> void unregisterComponent(ComponentDescriptor<T> componentDescriptor);
 
     /**
      * @param <T> the component role type
