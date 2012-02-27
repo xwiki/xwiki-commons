@@ -53,6 +53,7 @@ public class ComponentDescriptorAddedEventTest
         ComponentDescriptorAddedEvent event = new ComponentDescriptorAddedEvent();
         Assert.assertFalse(event.matches(new Event()
         {
+            @Override
             public boolean matches(Object otherEvent)
             {
                 return false;

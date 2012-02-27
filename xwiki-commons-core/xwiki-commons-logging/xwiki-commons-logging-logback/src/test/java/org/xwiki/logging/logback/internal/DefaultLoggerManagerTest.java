@@ -132,7 +132,7 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testStackedLisneters() throws InterruptedException
+    public void testStackedLisneters()
     {
         this.logger.error("[test] before push");
 
@@ -166,7 +166,7 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testNullListeners() throws InterruptedException
+    public void testNullListeners()
     {
         this.logger.error("[test] before push");
 

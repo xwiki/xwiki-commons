@@ -75,6 +75,7 @@ public class LocalEntityResolver implements EntityResolver
      *         Reader for the InputSource.
      * @see org.xml.sax.InputSource
      */
+    @Override
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
     {
         InputSource source = null;

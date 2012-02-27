@@ -67,7 +67,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
         setImplementation(descriptor.getImplementation());
         setInstantiationStrategy(descriptor.getInstantiationStrategy());
         for (ComponentDependency< ? > dependency : descriptor.getComponentDependencies()) {
-            addComponentDependency(new DefaultComponentDependency((ComponentDependency) dependency));
+            addComponentDependency(new DefaultComponentDependency(dependency));
         }
     }
 

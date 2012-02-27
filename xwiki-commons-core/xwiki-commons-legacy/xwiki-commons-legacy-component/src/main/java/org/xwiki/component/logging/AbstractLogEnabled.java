@@ -35,6 +35,7 @@ public class AbstractLogEnabled implements LogEnabled
     
     private Logger logger;
 
+    @Override
     public void enableLogging(Logger logger)
     {
         this.logger = logger;

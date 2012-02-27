@@ -55,6 +55,7 @@ public class DefaultExecutionContextManagerTest extends TestCase
 
         DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager(execution);
         contextManager.addExecutionContextInitializer(new ExecutionContextInitializer() {
+            @Override
             public void initialize(ExecutionContext context) throws ExecutionContextException
             {
                 context.setProperty("key", Arrays.asList("value"));

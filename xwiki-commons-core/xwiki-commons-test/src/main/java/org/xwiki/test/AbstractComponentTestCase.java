@@ -71,10 +71,7 @@ public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
         // Empty voluntarily. Extending classes can override to provide custom component registration.
     }
 
-    /**
-     * @return a configured Component Manager (which uses the plexus.xml file in the test resources directory) which can
-     *         then be put in the XWiki Context for testing.
-     */
+    @Override
     public EmbeddableComponentManager getComponentManager() throws Exception
     {
         return this.initializer.getComponentManager();

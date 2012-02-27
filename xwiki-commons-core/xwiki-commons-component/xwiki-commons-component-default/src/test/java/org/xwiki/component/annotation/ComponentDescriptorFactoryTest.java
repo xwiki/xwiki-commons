@@ -70,9 +70,11 @@ public class ComponentDescriptorFactoryTest
     @Component
     public class RoleImpl implements ExtendedRole
     {
+        @SuppressWarnings("unused")
         @Inject
         private FieldRole fieldRole;
 
+        @SuppressWarnings("unused")
         @Inject
         @Named("special")
         private FieldRole specialFieldRole;
@@ -80,12 +82,14 @@ public class ComponentDescriptorFactoryTest
         /**
          * Inject all implementation of the FieldRole role. 
          */
+        @SuppressWarnings("unused")
         @Inject
         private List<FieldRole> roles;
 
         /**
          * Inject all implementation of the FieldRole role. 
          */
+        @SuppressWarnings("unused")
         @Inject
         private Map<String, FieldRole> mapRoles;
     }
@@ -93,6 +97,7 @@ public class ComponentDescriptorFactoryTest
     @Component
     public class SuperRoleImpl extends RoleImpl
     {
+        @SuppressWarnings("unused")
         @Inject
         @Named("other")
         private FieldRole fieldRole;

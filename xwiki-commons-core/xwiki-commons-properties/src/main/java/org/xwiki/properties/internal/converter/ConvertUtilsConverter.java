@@ -49,6 +49,7 @@ public class ConvertUtilsConverter implements Converter, Initializable
      * Instead it will return some default value corresponding to the target type. We must override this behavior in
      * order to get the desired functionality.
      */
+    @Override
     public void initialize()
     {
         BeanUtilsBean.getInstance().getConvertUtils().register(true, false, 0);

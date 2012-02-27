@@ -46,6 +46,7 @@ public class ObservationManagerEventListenerTest extends AbstractComponentTestCa
     
     private DefaultComponentDescriptor<EventListener> componentDescriptor;
 
+    @Override
     @Before
     public void setUp() throws Exception
     {

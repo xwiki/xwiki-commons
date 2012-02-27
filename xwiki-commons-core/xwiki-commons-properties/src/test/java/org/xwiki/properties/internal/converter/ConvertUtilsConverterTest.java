@@ -46,7 +46,7 @@ public class ConvertUtilsConverterTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testConvert() throws SecurityException, NoSuchFieldException
+    public void testConvert() throws SecurityException
     {
         Assert.assertEquals(Integer.valueOf(42), this.convertUtilsConverter.convert(Integer.class, "42"));
     }

@@ -63,17 +63,13 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
         this.roleHint = roleHint;
     }
 
-    /**
-     * @return the component's role being watched or null if all components registrations are watched
-     */
+    @Override
     public Class< ? > getRole()
     {
         return this.role;
     }
 
-    /**
-     * @return the component's role hint being watched or null if all role's components registrations are watched
-     */
+    @Override
     public String getRoleHint()
     {
         return this.roleHint;

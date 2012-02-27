@@ -34,11 +34,13 @@ public class ReflectionUtilsTest
 {
     private class AbstractTestFieldClass
     {
+        @SuppressWarnings("unused")
         private Object superField;
     }
     
     private class TestFieldClass extends AbstractTestFieldClass
     {
+        @SuppressWarnings("unused")
         private Object field;
     }
 

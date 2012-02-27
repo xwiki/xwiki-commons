@@ -67,39 +67,46 @@ public class ComponentDescriptorFactoryTest
     @Component
     public class RoleImpl implements ExtendedRole
     {
+        @SuppressWarnings("unused")
         @Requirement
         private FieldRole fieldRole;
 
+        @SuppressWarnings("unused")
         @Requirement("special")
         private FieldRole specialFieldRole;
 
         /**
          * Inject all implementation of the FieldRole role. 
          */
+        @SuppressWarnings("unused")
         @Requirement(role = FieldRole.class)
         private List<FieldRole> deprecatedRoles;
         
         /**
          * Inject all implementation of the FieldRole role. 
          */
+        @SuppressWarnings("unused")
         @Requirement
         private List<FieldRole> roles;
 
         /**
          * Only inject FieldRole implementation with a "special" hint.
          */
+        @SuppressWarnings("unused")
         @Requirement(role = FieldRole.class, hints = {"special"})
         private List<FieldRole> deprecatedSpecialRoles;
 
         /**
          * Only inject FieldRole implementation with a "special" hint.
          */
+        @SuppressWarnings("unused")
         @Requirement(hints = {"special"})
         private List<FieldRole> specialRoles;
         
         /**
          * Inject all implementation of the FieldRole role. 
          */
+        @SuppressWarnings("unused")
         @Requirement
         private Map<String, FieldRole> mapRoles;
     }
@@ -107,6 +114,7 @@ public class ComponentDescriptorFactoryTest
     @Component
     public class SuperRoleImpl extends RoleImpl
     {
+        @SuppressWarnings("unused")
         @Requirement("other")
         private FieldRole fieldRole;
     }

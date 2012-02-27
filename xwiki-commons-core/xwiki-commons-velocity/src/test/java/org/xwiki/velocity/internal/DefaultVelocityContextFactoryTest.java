@@ -43,9 +43,7 @@ public class DefaultVelocityContextFactoryTest extends AbstractMockingComponentT
     @MockingRequirement
     private DefaultVelocityContextFactory factory;
 
-    /**
-     * @see org.xwiki.test.AbstractMockingComponentTestCase#configure()
-     */
+    @Override
     public void configure() throws Exception
     {
         final VelocityConfiguration configuration = getComponentManager().lookup(VelocityConfiguration.class);

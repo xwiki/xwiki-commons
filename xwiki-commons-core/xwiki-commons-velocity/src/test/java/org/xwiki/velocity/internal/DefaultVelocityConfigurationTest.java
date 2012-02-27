@@ -44,9 +44,7 @@ public class DefaultVelocityConfigurationTest extends AbstractMockingComponentTe
     @MockingRequirement
     private DefaultVelocityConfiguration configuration;
 
-    /**
-     * @see org.xwiki.test.AbstractMockingComponentTestCase#configure()
-     */
+    @Override
     public void configure() throws Exception
     {
         final ConfigurationSource source = getComponentManager().lookup(ConfigurationSource.class);

@@ -45,6 +45,7 @@ public @interface Component
      * from another one.
      * @deprecated since 3.1M1 use the {@code @Named} annotation instead
      */
+    @Deprecated
     String value() default "";
 
     /**

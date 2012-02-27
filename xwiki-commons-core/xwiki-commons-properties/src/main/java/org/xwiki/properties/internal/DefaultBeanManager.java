@@ -46,7 +46,7 @@ import org.xwiki.properties.RawProperties;
  * Default implementation of {@link BeanManager} component.
  * <ul>
  * <li>use hibernate-validator implementation of JSR 303</li>
- * <li>add support for any Enum conversion. See {@link import org.xwiki.properties.internal.converter.EnumConverter}.</li>
+ * <li>add support for any Enum conversion. See {@link org.xwiki.properties.internal.converter.EnumConverter}.</li>
  * <li>add support for {@link java.awt.Color} conversion using "r,g,b" or "#xxxxxx" format. See
  * {@link org.xwiki.properties.internal.converter.ColorConverter}.</li>
  * </ul>

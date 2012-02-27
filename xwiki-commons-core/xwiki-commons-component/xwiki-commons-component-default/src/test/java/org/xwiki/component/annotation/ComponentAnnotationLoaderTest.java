@@ -33,12 +33,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.ProviderTest;
 import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.component.descriptor.DefaultComponentDependency;
-import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.DefaultComponentManager;
 import org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory;
-import org.xwiki.component.internal.multi.ComponentManagerFactory;
-import org.xwiki.component.internal.multi.ComponentManagerManager;
 import org.xwiki.component.internal.multi.DefaultComponentManagerManager;
 import org.xwiki.component.manager.ComponentManager;
 

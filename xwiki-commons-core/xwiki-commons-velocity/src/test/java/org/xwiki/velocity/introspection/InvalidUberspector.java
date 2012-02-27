@@ -31,8 +31,8 @@ public class InvalidUberspector extends AbstractChainableUberspector
         // This is private to ensure that it cannot be instatiated. Nothing to do here.
     }
 
-    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i)
-        throws Exception
+    @Override
+    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i) throws Exception
     {
         ++methodCalls;
         return super.getMethod(obj, methodName, args, i);

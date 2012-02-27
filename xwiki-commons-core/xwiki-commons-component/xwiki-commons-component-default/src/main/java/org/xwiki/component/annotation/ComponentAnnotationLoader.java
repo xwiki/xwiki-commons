@@ -63,6 +63,7 @@ public class ComponentAnnotationLoader
      * 
      * @deprecated starting with 3.3M1 use the notion of priorities instead (see {@link ComponentDeclaration}).
      */
+    @Deprecated
     public static final String COMPONENT_OVERRIDE_LIST = "META-INF/component-overrides.txt";
 
     /**
