@@ -184,10 +184,6 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
         return evaluate(context, out, templateName, new StringReader(source));
     }
 
-    /**
-     * {@inheritDoc}
-     * @see #init(RuntimeServices)
-     */
     @Override
     public boolean evaluate(Context context, Writer out, String templateName, Reader source)
         throws XWikiVelocityException

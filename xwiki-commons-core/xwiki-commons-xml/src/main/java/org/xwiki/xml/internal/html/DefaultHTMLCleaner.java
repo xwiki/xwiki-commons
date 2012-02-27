@@ -112,10 +112,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         return clean(originalHtmlContent, getDefaultConfiguration());
     }
 
-    /**
-     * {@inheritDoc}
-     * @since 1.8.1
-     */
     @Override
     public Document clean(Reader originalHtmlContent, HTMLCleanerConfiguration configuration)
     {
@@ -172,10 +168,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     * @since 1.8.1
-     */
     @Override
     public HTMLCleanerConfiguration getDefaultConfiguration()
     {

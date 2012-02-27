@@ -41,10 +41,6 @@ public abstract class AbstractChainableUberspector extends UberspectImpl impleme
     /** The wrapped (decorated) uberspector. */
     protected Uberspect inner;
 
-    /**
-     * {@inheritDoc}
-     * @see #inner
-     */
     @Override
     public void wrap(Uberspect inner)
     {

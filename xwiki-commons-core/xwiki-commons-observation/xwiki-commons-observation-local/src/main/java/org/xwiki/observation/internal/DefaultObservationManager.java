@@ -128,13 +128,6 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Register all components implementing the {@link EventListener} interface.
-     * 
-     * @see Initializable#initialize()
-     */
     @Override
     public void initialize() throws InitializationException
     {
