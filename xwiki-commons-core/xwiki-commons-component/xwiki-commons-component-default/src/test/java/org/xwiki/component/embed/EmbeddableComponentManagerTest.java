@@ -279,6 +279,16 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
+    public void testHasComponentWhenComponentInParent() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ecm.setParent(createParentComponentManager());
+
+        Assert.assertTrue(ecm.hasComponent(Role.class));
+        Assert.assertTrue(ecm.hasComponent(Role.class, "default"));
+    }
+
+    @Test
     public void testLoggingInjection() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();

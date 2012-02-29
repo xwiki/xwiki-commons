@@ -126,13 +126,17 @@ public class EmbeddableComponentManager implements ComponentManager
     @Override
     public <T> boolean hasComponent(Class<T> role, String hint)
     {
-        return this.componentEntries.containsKey(new RoleHint<T>(role, hint));
+        if (this.componentEntries.containsKey(new RoleHint<T>(role, hint))) {
+            return true;
+        }
+
+        return getParent() != null ? getParent().hasComponent(role, hint) : false;
     }
 
     @Override
     public <T> boolean hasComponent(Class<T> role)
     {
-        return this.componentEntries.containsKey(new RoleHint<T>(role));
+        return hasComponent(role, "default");
     }
 
     @Override
@@ -463,7 +467,7 @@ public class EmbeddableComponentManager implements ComponentManager
         }
     }
 
-    private void releaseComponentDescriptor(ComponentEntry< ? > componentEntry) throws ComponentLifecycleException
+    private void releaseComponentDescriptor(ComponentEntry< ? > componentEntry)
     {
         ComponentDescriptor< ? > descriptor = componentEntry.descriptor;
 
