@@ -33,7 +33,7 @@ import org.xwiki.component.util.ReflectionUtils;
 public class RoleHint<T>
 {
     /**
-     * @see #getRole()
+     * @see #getRoleType()
      */
     private Type role;
 
