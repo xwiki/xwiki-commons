@@ -25,7 +25,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.annotation.ComponentDescriptorFactory;
 import org.xwiki.component.descriptor.ComponentDependency;
@@ -85,23 +88,49 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         this.loader.initialize(this.componentManager, getClass().getClassLoader());
 
         // Step 2: Inject all fields annotated with @MockingRequirement.
+
         for (Field field : ReflectionUtils.getAllFields(getClass())) {
             MockingRequirement mockingRequirement = field.getAnnotation(MockingRequirement.class);
             if (mockingRequirement != null) {
-                Class< ? > componentRoleClass = findComponentRoleClass(field, mockingRequirement);
+
+                // Handle component fields
+                Class< ? > componentRoleClass = findComponentRoleClass(field, mockingRequirement.value());
                 for (ComponentDescriptor descriptor :
-                    factory.createComponentDescriptors(field.getType(), componentRoleClass))
+                    this.factory.createComponentDescriptors(field.getType(), componentRoleClass))
                 {
                     // Only use the descriptor for the specified hint
                     if ((mockingRequirement.hint().length() > 0 && mockingRequirement.hint().equals(
                         descriptor.getRoleHint())) || mockingRequirement.hint().length() == 0)
                     {
-                        registerMockDependencies(descriptor, mockingRequirement);
+                        registerMockDependencies(descriptor, Arrays.asList(mockingRequirement.exceptions()));
                         getComponentManager().registerComponent(descriptor);
                         configure();
                         ReflectionUtils.setFieldValue(this, field.getName(),
                             getComponentManager().lookup(descriptor.getRole(), descriptor.getRoleHint()));
                         break;
+                    }
+                }
+
+                // Logging is a special case since the Component Manager will inject a Logger but a Logger is not
+                // a component. The call to registerMockDependencies() above will have registered a Mock Logger
+                // in the component manager. Thus get it and override the Logger field injected by the Component
+                // manager.
+                Collection<Field> mockedComponentfields = ReflectionUtils.getAllFields(field.getType());
+                for (Field mockedField : mockedComponentfields) {
+                    if (mockedField.getAnnotation(Inject.class) != null &&
+                        Logger.class.isAssignableFrom(mockedField.getType()) &&
+                        getComponentManager().hasComponent(Logger.class))
+                    {
+                        boolean isAccessible = field.isAccessible();
+                        Object object;
+                        try {
+                            field.setAccessible(true);
+                            object = field.get(this);
+                        } finally {
+                            field.setAccessible(isAccessible);
+                        }
+                        ReflectionUtils.setFieldValue(object, mockedField.getName(),
+                            getComponentManager().lookup(Logger.class));
                     }
                 }
             }
@@ -118,10 +147,9 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         // Do nothing by default, this method is supposed to be overridden if needed.
     }
 
-    private <T> void registerMockDependencies(ComponentDescriptor<T> descriptor, MockingRequirement mockingRequirement)
+    private <T> void registerMockDependencies(ComponentDescriptor<T> descriptor,  List<Class< ? >> exceptions)
         throws Exception
     {
-        List<Class< ? >> exceptions = Arrays.asList(mockingRequirement.exceptions());
         Collection<ComponentDependency< ? >> dependencyDescriptors = descriptor.getComponentDependencies();
         for (ComponentDependency< ? > dependencyDescriptor : dependencyDescriptors) {
             // Only register a mock if it isn't an exception
@@ -136,16 +164,16 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         }
     }
 
-    private Class< ? > findComponentRoleClass(Field field, MockingRequirement mockingRequirement)
+    private Class< ? > findComponentRoleClass(Field field, Class< ? > role)
     {
         Class< ? > componentRoleClass;
 
         Set<Class< ? >> componentRoleClasses = this.loader.findComponentRoleClasses(field.getType());
-        if (!Object.class.getName().equals(mockingRequirement.value().getName())) {
-            if (!componentRoleClasses.contains(mockingRequirement.value())) {
+        if (!Object.class.getName().equals(role.getName())) {
+            if (!componentRoleClasses.contains(role)) {
                 throw new RuntimeException("Specified Component Role not found in component");
             } else {
-                componentRoleClass = mockingRequirement.value();
+                componentRoleClass = role;
             }
         } else {
             if (componentRoleClasses.isEmpty()) {

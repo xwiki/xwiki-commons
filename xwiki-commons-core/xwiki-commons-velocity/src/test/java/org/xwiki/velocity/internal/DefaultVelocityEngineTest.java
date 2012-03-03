@@ -30,6 +30,7 @@ import org.apache.velocity.util.introspection.SecureUberspector;
 import org.jmock.Expectations;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 import org.xwiki.velocity.VelocityConfiguration;
@@ -55,9 +56,15 @@ public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
         properties.put("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
 
         final VelocityConfiguration configuration = getComponentManager().lookup(VelocityConfiguration.class);
+
         getMockery().checking(new Expectations() {{
             oneOf(configuration).getProperties();
             will(returnValue(properties));
+
+            // Ignore all calls to debug() and enable all logs so that we can assert info(), warn() and error()
+            // calls.
+            ignoring(any(Logger.class)).method("debug");
+            allowing(any(Logger.class)).method("is.*Enabled"); will(returnValue(true));
         }});
     }
 
@@ -89,6 +96,14 @@ public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
     {
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
+
+        // Verify that we log a warning and verify the message.
+        final Logger logger = getComponentManager().lookup(Logger.class);
+        getMockery().checking(new Expectations() {{
+            oneOf(logger).warn("Cannot retrieve method forName from object of class java.lang.Class due to security "
+                + "restrictions.");
+        }});
+
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             "#set($foo = 'test')#set($object = $foo.class.forName('java.util.ArrayList')"
                 + ".newInstance())$object.size()");
