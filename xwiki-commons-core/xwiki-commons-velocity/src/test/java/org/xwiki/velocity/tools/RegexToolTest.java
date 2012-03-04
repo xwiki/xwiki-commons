@@ -44,7 +44,21 @@ public class RegexToolTest
 
         Assert.assertEquals(2, result.size());
         Assert.assertEquals("<h1><span>header</span></h1>", result.get(0).getGroup());
+        Assert.assertEquals(0, result.get(0).getStart());
+        Assert.assertEquals(28, result.get(0).getEnd());
         Assert.assertEquals("header", result.get(1).getGroup());
+        Assert.assertEquals(10, result.get(1).getStart());
+        Assert.assertEquals(16, result.get(1).getEnd());
+    }
+
+    @Test
+    public void testFindWithoutMatches()
+    {
+        RegexTool tool = new RegexTool();
+        List<RegexResult> result =
+            tool.find("nothing here", "something");
+
+        Assert.assertEquals(0, result.size());
     }
 
     /**
@@ -97,7 +111,7 @@ public class RegexToolTest
         Pattern p = tool.compile("*");
         Assert.assertNull(p);
     }
-    
+
     /**
      * Escaping a string containing regex syntax characters.
      */
