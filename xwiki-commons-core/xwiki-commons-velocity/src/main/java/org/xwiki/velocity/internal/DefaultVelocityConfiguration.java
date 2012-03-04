@@ -39,6 +39,7 @@ import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.internal.util.RestrictParseLocationEventHandler;
 import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
+import org.xwiki.velocity.tools.CollectionsTool;
 import org.xwiki.velocity.tools.EscapeTool;
 import org.xwiki.velocity.tools.RegexTool;
 
@@ -84,6 +85,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("sorttool", SortTool.class.getName());
         this.defaultTools.setProperty("escapetool", EscapeTool.class.getName());
         this.defaultTools.setProperty("regextool", RegexTool.class.getName());
+        this.defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());
         this.defaultTools.setProperty("stringtool", StringUtils.class.getName());
 
         // Default Velocity properties
