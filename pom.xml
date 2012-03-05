@@ -55,7 +55,7 @@
     <!-- By default Checkstyle and Clirr are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <selenium.version>2.17.0</selenium.version>
+    <selenium.version>2.20.0</selenium.version>
   </properties>
   <prerequisites>
     <maven>3.0</maven>
