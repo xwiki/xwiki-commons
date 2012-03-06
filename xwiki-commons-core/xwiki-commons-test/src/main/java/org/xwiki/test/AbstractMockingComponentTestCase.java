@@ -26,8 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
@@ -36,6 +34,8 @@ import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
+import org.xwiki.component.internal.RoleHint;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.annotation.MockingRequirement;
 
@@ -79,10 +79,36 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
 
     private ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
 
+    private class MockingEmbeddableComponentManager extends EmbeddableComponentManager
+    {
+        private Logger mockLogger;
+
+        @Override
+        protected <T> T getComponentInstance(RoleHint<T> roleHint) throws ComponentLookupException
+        {
+            T component;
+
+            // Logging is a special case since the Component Manager will inject a Logger but a Logger is not
+            // a component. Thus we need to intercept it and return a mock instead.
+            if (Logger.class == roleHint.getRoleType()) {
+                if (this.mockLogger != null) {
+                    component = (T) this.mockLogger;
+                } else {
+                    this.mockLogger = getMockery().mock(Logger.class);
+                    component = (T) this.mockLogger ;
+                }
+            } else {
+                component = super.getComponentInstance(roleHint);
+            }
+
+            return component;
+        }
+    }
+
     @Before
     public void setUp() throws Exception
     {
-        this.componentManager = new EmbeddableComponentManager();
+        this.componentManager = new MockingEmbeddableComponentManager();
 
         // Step 1: Register all components available
         // TODO: Remove this so that tests are executed faster. Need to offer a way to register components manually.
@@ -110,41 +136,6 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
                         break;
                     }
                 }
-
-                // Logging is a special case since the Component Manager will inject a Logger but a Logger is not
-                // a component. The call to registerMockDependencies() above will have registered a Mock Logger
-                // in the component manager. Thus get it and override the Logger field injected by the Component
-                // manager.
-                injectMockLogger(field);
-            }
-        }
-    }
-
-    /**
-     * Inject the Logger mock which is already registered in the Component Manager inside the component instance
-     * annotated with {@link MockingRequirement}.
-     *
-     * @param mockingRequirementField the field to inject with the Mock Logger
-     * @throws Exception in case of access error
-     */
-    private void injectMockLogger(Field mockingRequirementField) throws Exception
-    {
-        Collection<Field> mockedComponentfields = ReflectionUtils.getAllFields(mockingRequirementField.getType());
-        for (Field mockedField : mockedComponentfields) {
-            if (mockedField.getAnnotation(Inject.class) != null &&
-                Logger.class.isAssignableFrom(mockedField.getType()) &&
-                getComponentManager().hasComponent((Type) Logger.class))
-            {
-                boolean isAccessible = mockingRequirementField.isAccessible();
-                Object object;
-                try {
-                    mockingRequirementField.setAccessible(true);
-                    object = mockingRequirementField.get(this);
-                } finally {
-                    mockingRequirementField.setAccessible(isAccessible);
-                }
-                ReflectionUtils.setFieldValue(object, mockedField.getName(),
-                    getComponentManager().lookupComponent(Logger.class));
             }
         }
     }
@@ -166,7 +157,9 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         for (ComponentDependency< ? > dependencyDescriptor : dependencyDescriptors) {
             // Only register a mock if it isn't an exception
             // TODO: Handle multiple roles/hints.
-            if (!exceptions.contains(dependencyDescriptor.getRoleType())) {
+            if (!exceptions.contains(dependencyDescriptor.getRoleType())
+                && Logger.class != dependencyDescriptor.getRoleType())
+            {
                 DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
                 cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
