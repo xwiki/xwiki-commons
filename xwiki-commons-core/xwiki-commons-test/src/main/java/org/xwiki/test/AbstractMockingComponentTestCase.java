@@ -20,6 +20,7 @@
 package org.xwiki.test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -93,9 +94,9 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
             if (mockingRequirement != null) {
 
                 // Handle component fields
-                Class< ? > componentRoleClass = findComponentRoleClass(field, mockingRequirement.value());
+                Type componentRoleType = findComponentRoleType(field, mockingRequirement.value());
                 for (ComponentDescriptor descriptor :
-                    this.factory.createComponentDescriptors(field.getType(), componentRoleClass))
+                    this.factory.createComponentDescriptors(field.getType(), componentRoleType))
                 {
                     // Only use the descriptor for the specified hint
                     if ((mockingRequirement.hint().length() > 0 && mockingRequirement.hint().equals(
@@ -105,7 +106,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
                         getComponentManager().registerComponent(descriptor);
                         configure();
                         ReflectionUtils.setFieldValue(this, field.getName(),
-                            getComponentManager().lookup(descriptor.getRole(), descriptor.getRoleHint()));
+                            getComponentManager().lookupComponent(descriptor.getRoleType(), descriptor.getRoleHint()));
                         break;
                     }
                 }
@@ -132,7 +133,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         for (Field mockedField : mockedComponentfields) {
             if (mockedField.getAnnotation(Inject.class) != null &&
                 Logger.class.isAssignableFrom(mockedField.getType()) &&
-                getComponentManager().hasComponent(Logger.class))
+                getComponentManager().hasComponent((Type) Logger.class))
             {
                 boolean isAccessible = mockingRequirementField.isAccessible();
                 Object object;
@@ -143,7 +144,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
                     mockingRequirementField.setAccessible(isAccessible);
                 }
                 ReflectionUtils.setFieldValue(object, mockedField.getName(),
-                    getComponentManager().lookup(Logger.class));
+                    getComponentManager().lookupComponent(Logger.class));
             }
         }
     }
@@ -165,38 +166,38 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         for (ComponentDependency< ? > dependencyDescriptor : dependencyDescriptors) {
             // Only register a mock if it isn't an exception
             // TODO: Handle multiple roles/hints.
-            if (!exceptions.contains(dependencyDescriptor.getRole())) {
+            if (!exceptions.contains(dependencyDescriptor.getRoleType())) {
                 DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
-                cd.setRole(dependencyDescriptor.getRole());
+                cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
-                this.componentManager.registerComponent(
-                    cd, getMockery().mock(dependencyDescriptor.getRole(), dependencyDescriptor.getName()));
+                this.componentManager.registerComponent(cd, getMockery().mock(
+                    ReflectionUtils.getTypeClass(dependencyDescriptor.getRoleType()), dependencyDescriptor.getName()));
             }
         }
     }
 
-    private Class< ? > findComponentRoleClass(Field field, Class< ? > role)
+    private Type findComponentRoleType(Field field, Class< ? > role)
     {
-        Class< ? > componentRoleClass;
+        Type componentRoleType;
 
-        Set<Class< ? >> componentRoleClasses = this.loader.findComponentRoleClasses(field.getType());
+        Set<Type> componentRoleTypes = this.loader.findComponentRoleTypes(field.getType());
         if (!Object.class.getName().equals(role.getName())) {
-            if (!componentRoleClasses.contains(role)) {
+            if (!componentRoleTypes.contains(role)) {
                 throw new RuntimeException("Specified Component Role not found in component");
             } else {
-                componentRoleClass = role;
+                componentRoleType = role;
             }
         } else {
-            if (componentRoleClasses.isEmpty()) {
+            if (componentRoleTypes.isEmpty()) {
                 throw new RuntimeException("Couldn't find roles for component [" + field.getType() + "]");
-            } else if (componentRoleClasses.size() > 1) {
+            } else if (componentRoleTypes.size() > 1) {
                 throw new RuntimeException(
-                    "Components with several roles must explicitely specify which role to use.");
+                    "Components with several roles must explicitly specify which role to use.");
             } else {
-                componentRoleClass = componentRoleClasses.iterator().next();
+                componentRoleType = componentRoleTypes.iterator().next();
             }
         }
-        return componentRoleClass;
+        return componentRoleType;
     }
 
     /**
