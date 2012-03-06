@@ -310,7 +310,7 @@ public class EmbeddableComponentManager implements ComponentManager
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getComponentInstance(RoleHint<T> roleHint) throws ComponentLookupException
+    protected <T> T getComponentInstance(RoleHint<T> roleHint) throws ComponentLookupException
     {
         T instance;
 
