@@ -119,9 +119,9 @@ public abstract class AbstractMockingTestCase
     {
         T instance;
         if (mockId != null) {
-            instance = getMockery().<T> mock(ReflectionUtils.getTypeClass(descriptor.getRoleType()), mockId);
+            instance = getMockery().mock((Class<T>) ReflectionUtils.getTypeClass(descriptor.getRoleType()), mockId);
         } else {
-            instance = getMockery().<T> mock(ReflectionUtils.getTypeClass(descriptor.getRoleType()));
+            instance = getMockery().mock((Class<T>) ReflectionUtils.getTypeClass(descriptor.getRoleType()));
         }
 
         getComponentManager().registerComponent(descriptor, instance);
