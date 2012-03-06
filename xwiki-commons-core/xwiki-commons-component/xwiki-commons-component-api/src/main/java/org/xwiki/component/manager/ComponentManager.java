@@ -23,8 +23,6 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Provider;
-
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 
@@ -37,86 +35,78 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
 public interface ComponentManager
 {
     /**
-     * @param <T> the component role type
      * @param role the class (aka role) that the component implements
      * @return true if the component is registered or false otherwise
+     * @since 4.0M1
      */
-    <T> boolean hasComponent(Class<T> role);
+    boolean hasComponent(Type role);
 
     /**
-     * @param <T> the component role type
      * @param role the class (aka role) that the component implements
      * @param hint the hint that differentiates a component implementation from another one (each component is
      *            registered with a hint; the "default" hint being the default)
      * @return true if the component is registered for the passed hint or false otherwise
+     * @since 4.0M1
      */
-    <T> boolean hasComponent(Class<T> role, String hint);
+    boolean hasComponent(Type role, String hint);
 
     /**
-     * Find a component instance that implements that passed interface class. If the component has a singleton lifecycle
-     * then this method always return the same instance.
+     * Find a component instance that implements that passed type. If the component has a singleton lifecycle then this
+     * method always return the same instance.
      * 
      * @param <T> the component role type
-     * @param role the class (aka role) that the component implements
+     * @param roleType the class (aka role) that the component implements
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
+     * @since 4.0M1
      */
-    <T> T lookup(Class<T> role) throws ComponentLookupException;
+    <T> T lookupComponent(Type roleType) throws ComponentLookupException;
 
     /**
      * Find a component instance that implements that passed interface class. If the component has a singleton lifecycle
      * then this method always return the same instance.
      * 
      * @param <T> the component role type
-     * @param role the class (aka role) that the component implements
-     * @param hint the hint that differentiates a component implementation from another one (each component is
+     * @param roleType the class (aka role) that the component implements
+     * @param roleHint the hint that differentiates a component implementation from another one (each component is
      *            registered with a hint; the "default" hint being the default)
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
-     */
-    <T> T lookup(Class<T> role, String hint) throws ComponentLookupException;
-
-    /**
-     * Find a {@link Provider} instance for the provided {@link Type} and hint.
-     * 
-     * @param <T> the provided type
-     * @param type the provided type
-     * @param hint the Provider hint (used to differentiate between {@link Provider}s for the same type)
-     * @return the {@link Provider} for the passed type and hint
-     * @throws ProviderLookupException in case the provider cannot be found
      * @since 4.0M1
      */
-    <T> Provider<T> lookupProvider(Type type, String hint) throws ProviderLookupException;
+    <T> T lookupComponent(Type roleType, String roleHint) throws ComponentLookupException;
 
     /**
      * Release the provided singleton instance but don't unregister the component descriptor. This means that next time
      * the component is looked up a new instance will be created.
      * 
-     * @param <T> the component role type
-     * @param component the component to release passed as a component instance.
+     * @param componentInstance the component to release passed as a component instance.
      * @throws ComponentLifecycleException if the component's ending lifecycle raises an error
+     * @since 4.0M1
      */
-    <T> void release(T component) throws ComponentLifecycleException;
-
-    /**
-     * Find all the components implementing the provided role and organize then in a {@link Map} with role hint as key.
-     * 
-     * @param role the class of the components role
-     * @return the components
-     * @param <T> the type of the components role
-     * @throws ComponentLookupException if any error happen during component search
-     */
-    <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException;
+    void release(Object componentInstance) throws ComponentLifecycleException;
 
     /**
      * Find all the components implementing the provided role.
      * 
-     * @param role the class of the components role
+     * @param role the type of the components role
      * @return the components
      * @param <T> the type of the components role
      * @throws ComponentLookupException if any error happen during component search
+     * @since 4.0M1
      */
-    <T> List<T> lookupList(Class<T> role) throws ComponentLookupException;
+    <T> List<T> lookupList(Type role) throws ComponentLookupException;
+
+    /**
+     * Find all the components implementing the provided role and organize then in a {@link Map} with role hint as key.
+     * 
+     * @param role the type of the components role
+     * @return the components
+     * @param <T> the type of the components role
+     * @throws ComponentLookupException if any error happen during component search
+     * @since 4.0M1
+     */
+    <T> Map<String, T> lookupMap(Type role) throws ComponentLookupException;
 
     /**
      * Add a component in the component repository dynamically.
@@ -150,37 +140,36 @@ public interface ComponentManager
     /**
      * Remove a component from the component repository dynamically.
      * 
-     * @param <T> the component role type
      * @param role the role identifying the component
      * @param hint the hint identifying the component
-     * @since 2.0M2
+     * @since 4.0M1
      */
-    <T> void unregisterComponent(Class<T> role, String hint);
+    void unregisterComponent(Type role, String hint);
 
     /**
      * Remove a component from the component repository dynamically.
      * 
-     * @param <T> the component role type
-     * @param componentDescriptor the descriptor of the component to register.
+     * @param componentDescriptor the component descriptor
      * @since 4.0M1
      */
-    <T> void unregisterComponent(ComponentDescriptor<T> componentDescriptor);
+    void unregisterComponent(ComponentDescriptor< ? > componentDescriptor);
 
     /**
      * @param <T> the component role type
      * @param role the role identifying the component
      * @param hint the hint identifying the component
      * @return the descriptor for the component matching the passed parameter or null if this component doesn't exist
-     * @since 2.0M1
+     * @since 4.0M1
      */
-    <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String hint);
+    <T> ComponentDescriptor<T> getComponentDescriptor(Type role, String hint);
 
     /**
      * @param <T> the role class for which to return all component implementations
      * @param role the role class for which to return all component implementations
      * @return all component implementations for the passed role
+     * @since 4.0M1
      */
-    <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role);
+    <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Type role);
 
     /**
      * @return the manager to use to send events when a component descriptor is registered
@@ -203,4 +192,109 @@ public interface ComponentManager
      * @param parentComponentManager see {@link #getParent()}
      */
     void setParent(ComponentManager parentComponentManager);
+
+    // deprecated
+
+    /**
+     * @param <T> the component role type
+     * @param role the class (aka role) that the component implements
+     * @return true if the component is registered or false otherwise
+     * @deprecated since 4.0M1 use {@link #hasComponent(Type)} instead
+     */
+    @Deprecated
+    <T> boolean hasComponent(Class<T> role);
+
+    /**
+     * @param <T> the component role type
+     * @param role the class (aka role) that the component implements
+     * @param hint the hint that differentiates a component implementation from another one (each component is
+     *            registered with a hint; the "default" hint being the default)
+     * @return true if the component is registered for the passed hint or false otherwise
+     * @deprecated since 4.0M1 use {@link #hasComponent(Type, String)} instead
+     */
+    @Deprecated
+    <T> boolean hasComponent(Class<T> role, String hint);
+
+    /**
+     * Find a component instance that implements that passed interface class. If the component has a singleton lifecycle
+     * then this method always return the same instance.
+     * 
+     * @param <T> the component role type
+     * @param role the class (aka role) that the component implements
+     * @return the component instance
+     * @throws ComponentLookupException in case the component cannot be found
+     * @deprecated since 4.0M1 use {@link #lookupComponent(Type)} iinstead
+     */
+    @Deprecated
+    <T> T lookup(Class<T> role) throws ComponentLookupException;
+
+    /**
+     * Find a component instance that implements that passed interface class. If the component has a singleton lifecycle
+     * then this method always return the same instance.
+     * 
+     * @param <T> the component role type
+     * @param role the class (aka role) that the component implements
+     * @param hint the hint that differentiates a component implementation from another one (each component is
+     *            registered with a hint; the "default" hint being the default)
+     * @return the component instance
+     * @throws ComponentLookupException in case the component cannot be found
+     */
+    @Deprecated
+    <T> T lookup(Class<T> role, String hint) throws ComponentLookupException;
+
+    /**
+     * Find all the components implementing the provided role.
+     * 
+     * @param role the class of the components role
+     * @return the components
+     * @param <T> the type of the components role
+     * @throws ComponentLookupException if any error happen during component search
+     * @deprecated since 4.0M1 use {@link #lookupList(Type)} instead
+     */
+    @Deprecated
+    <T> List<T> lookupList(Class<T> role) throws ComponentLookupException;
+
+    /**
+     * Find all the components implementing the provided role and organize then in a {@link Map} with role hint as key.
+     * 
+     * @param role the class of the components role
+     * @return the components
+     * @param <T> the type of the components role
+     * @throws ComponentLookupException if any error happen during component search
+     * @deprecated since 4.0M1 use {@link #lookupMap(Type)} instead
+     */
+    @Deprecated
+    <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException;
+
+    /**
+     * Remove a component from the component repository dynamically.
+     * 
+     * @param <T> the component role type
+     * @param role the role identifying the component
+     * @param hint the hint identifying the component
+     * @since 2.0M2
+     * @deprecated since 4.0M1 use {@link #unregisterComponent(Type, String)} instead
+     */
+    @Deprecated
+    <T> void unregisterComponent(Class<T> role, String hint);
+
+    /**
+     * @param <T> the component role type
+     * @param role the role identifying the component
+     * @param hint the hint identifying the component
+     * @return the descriptor for the component matching the passed parameter or null if this component doesn't exist
+     * @since 2.0M1
+     * @deprecated since 4.0M1 use {@link #getComponentDescriptor(Type, String)} instead
+     */
+    @Deprecated
+    <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String hint);
+
+    /**
+     * @param <T> the role class for which to return all component implementations
+     * @param role the role class for which to return all component implementations
+     * @return all component implementations for the passed role
+     * @deprecated since 4.0M1 use {@link #getComponentDescriptorList(Type)} instead
+     */
+    @Deprecated
+    <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role);
 }

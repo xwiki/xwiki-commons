@@ -19,6 +19,8 @@
  */
 package org.xwiki.component.internal.multi;
 
+import java.lang.reflect.Type;
+
 import javax.inject.Inject;
 
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -94,7 +96,7 @@ public abstract class AbstractGenericComponentManager extends DelegateComponentM
     }
 
     @Override
-    public <T> void unregisterComponent(Class<T> role, String roleHint)
+    public void unregisterComponent(Type role, String roleHint)
     {
         super.unregisterComponent(role, roleHint);
 

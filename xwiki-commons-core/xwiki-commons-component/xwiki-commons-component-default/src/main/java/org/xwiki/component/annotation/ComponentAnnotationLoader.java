@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,8 +41,10 @@ import javax.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
 
 /**
@@ -132,63 +136,46 @@ public class ComponentAnnotationLoader
     public void initialize(ComponentManager manager, ClassLoader classLoader,
         List<ComponentDeclaration> componentDeclarations)
     {
+        register(manager, classLoader, componentDeclarations);
+    }
+
+    /**
+     * @param manager the component manager to use to dynamically register components
+     * @param classLoader the classloader to use to look for the Component list declaration file (
+     *            {@code META-INF/components.txt})
+     * @param componentDeclarations the declarations of components to register
+     * @since 4.0M1
+     */
+    public void register(ComponentManager manager, ClassLoader classLoader,
+        List<ComponentDeclaration> componentDeclarations)
+    {
         try {
             // 2) For each component class name found, load its class and use introspection to find the necessary
             // annotations required to create a Component Descriptor.
-            Map<RoleHint, ComponentDescriptor> descriptorMap = new HashMap<RoleHint, ComponentDescriptor>();
-            Map<RoleHint, Integer> priorityMap = new HashMap<RoleHint, Integer>();
+            Map<RoleHint< ? >, ComponentDescriptor< ? >> descriptorMap =
+                new HashMap<RoleHint< ? >, ComponentDescriptor< ? >>();
+            Map<RoleHint< ? >, Integer> priorityMap = new HashMap<RoleHint< ? >, Integer>();
 
             for (ComponentDeclaration componentDeclaration : componentDeclarations) {
                 Class< ? > componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
 
                 // Look for ComponentRole annotations and register one component per ComponentRole found
-                for (Class< ? > componentRoleClass : findComponentRoleClasses(componentClass)) {
-                    for (ComponentDescriptor descriptor : this.factory.createComponentDescriptors(componentClass,
-                        componentRoleClass)) {
+                for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
+                    for (ComponentDescriptor< ? > componentDescriptor : this.factory.createComponentDescriptors(
+                        componentClass, componentRoleType)) {
                         // If there's already a existing role/hint in the list of descriptors then decide which one
                         // to keep by looking at their priorities. Highest priority wins (i.e. lowest integer value).
-                        RoleHint roleHint;
-                        if (componentRoleClass == Provider.class) {
-                            roleHint =
-                                new RoleHint(ReflectionUtils.getGenericClassType(descriptor.getImplementation(),
-                                    Provider.class), descriptor.getRoleHint());
-                        } else {
-                            roleHint = new RoleHint(componentRoleClass, descriptor.getRoleHint());
-                        }
+                        RoleHint< ? > roleHint =
+                            new RoleHint(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
 
-                        if (descriptorMap.containsKey(roleHint)) {
-                            // Compare priorities
-                            int currentPriority = priorityMap.get(roleHint);
-                            if (componentDeclaration.getPriority() < currentPriority) {
-                                // Override!
-                                descriptorMap.put(roleHint, descriptor);
-                                priorityMap.put(roleHint, componentDeclaration.getPriority());
-                            } else if (componentDeclaration.getPriority() == currentPriority) {
-                                // Warning that we're not overwriting since they have the same priorities
-                                getLogger()
-                                    .warn(
-                                        "Component [{}] which implements [{}] tried to overwrite component "
-                                            + "[{}]. However, no action was taken since both components have the same priority "
-                                            + "level of [{}].",
-                                        new Object[] {componentDeclaration.getImplementationClassName(), roleHint,
-                                        descriptorMap.get(roleHint).getImplementation().getName(), currentPriority});
-                            } else {
-                                getLogger().debug(
-                                    "Ignored component [{}] since its priority level of [{}] is lower "
-                                        + "than the currently registered component [{}] which has a priority of [{}]",
-                                    new Object[] {componentDeclaration.getImplementationClassName(),
-                                    componentDeclaration.getPriority(), currentPriority});
-                            }
-                        } else {
-                            descriptorMap.put(roleHint, descriptor);
-                            priorityMap.put(roleHint, componentDeclaration.getPriority());
-                        }
+                        addComponent(descriptorMap, priorityMap, roleHint, componentDescriptor, componentDeclaration,
+                            true);
                     }
                 }
             }
 
             // 3) Activate all component descriptors
-            for (ComponentDescriptor descriptor : descriptorMap.values()) {
+            for (ComponentDescriptor< ? > descriptor : descriptorMap.values()) {
                 manager.registerComponent(descriptor);
             }
         } catch (Exception e) {
@@ -198,16 +185,163 @@ public class ComponentAnnotationLoader
         }
     }
 
+    private void addComponent(Map<RoleHint< ? >, ComponentDescriptor< ? >> descriptorMap,
+        Map<RoleHint< ? >, Integer> priorityMap, RoleHint< ? > roleHint, ComponentDescriptor< ? > componentDescriptor,
+        ComponentDeclaration componentDeclaration, boolean warn)
+    {
+        if (descriptorMap.containsKey(roleHint)) {
+            // Compare priorities
+            int currentPriority = priorityMap.get(roleHint);
+            if (componentDeclaration.getPriority() < currentPriority) {
+                // Override!
+                descriptorMap.put(roleHint, componentDescriptor);
+                priorityMap.put(roleHint, componentDeclaration.getPriority());
+            } else if (componentDeclaration.getPriority() == currentPriority) {
+                if (warn) {
+                    // Warning that we're not overwriting since they have the same priorities
+                    getLogger().warn(
+                        "Component [{}] which implements [{}] tried to overwrite component "
+                            + "[{}]. However, no action was taken since both components have the same priority "
+                            + "level of [{}].",
+                        new Object[] {componentDeclaration.getImplementationClassName(), roleHint,
+                        descriptorMap.get(roleHint).getImplementation().getName(), currentPriority});
+                }
+            } else {
+                getLogger().debug(
+                    "Ignored component [{}] since its priority level of [{}] is lower "
+                        + "than the currently registered component [{}] which has a priority of [{}]",
+                    new Object[] {componentDeclaration.getImplementationClassName(),
+                    componentDeclaration.getPriority(), currentPriority});
+            }
+        } else {
+            descriptorMap.put(roleHint, componentDescriptor);
+            priorityMap.put(roleHint, componentDeclaration.getPriority());
+        }
+    }
+
+    /**
+     * @param manager the component manager to use to dynamically register components
+     * @param classLoader the classloader to use to look for the Component list declaration file (
+     *            {@code META-INF/components.txt})
+     * @param componentDeclarations the declarations of components to register
+     * @since 4.0M1
+     */
+    public void unregister(ComponentManager manager, ClassLoader classLoader,
+        List<ComponentDeclaration> componentDeclarations)
+    {
+        for (ComponentDeclaration componentDeclaration : componentDeclarations) {
+            try {
+                for (ComponentDescriptor< ? > componentDescriptor : getComponentsDescriptors(classLoader
+                    .loadClass(componentDeclaration.getImplementationClassName()))) {
+                    manager.unregisterComponent(componentDescriptor);
+
+                    if (componentDescriptor.getRoleType() instanceof ParameterizedType) {
+                        Class roleClass = ReflectionUtils.getTypeClass(componentDescriptor.getRoleType());
+
+                        DefaultComponentDescriptor< ? > classComponentDescriptor =
+                            new DefaultComponentDescriptor(componentDescriptor);
+                        classComponentDescriptor.setRoleType(roleClass);
+
+                        manager.unregisterComponent(classComponentDescriptor);
+                    }
+
+                }
+            } catch (ClassNotFoundException e) {
+                getLogger().warn("Can't find any existing component with class [{}]. Ignoring it.",
+                    componentDeclaration.getImplementationClassName());
+            }
+        }
+    }
+
     public List<ComponentDescriptor> getComponentsDescriptors(Class< ? > componentClass)
     {
         List<ComponentDescriptor> descriptors = new ArrayList<ComponentDescriptor>();
 
         // Look for ComponentRole annotations and register one component per ComponentRole found
-        for (Class< ? > componentRoleClass : findComponentRoleClasses(componentClass)) {
-            descriptors.addAll(this.factory.createComponentDescriptors(componentClass, componentRoleClass));
+        for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
+            descriptors.addAll(this.factory.createComponentDescriptors(componentClass, componentRoleType));
         }
 
         return descriptors;
+    }
+
+    public Set<Type> findComponentRoleTypes(Class< ? > componentClass)
+    {
+        return findComponentRoleTypes(componentClass, null);
+    }
+
+    public Set<Type> findComponentRoleTypes(Class< ? > componentClass, Type[] parameters)
+    {
+        // Note: We use a Set to ensure that we don't register duplicate roles.
+        Set<Type> types = new LinkedHashSet<Type>();
+
+        Component component = componentClass.getAnnotation(Component.class);
+        if (component != null && component.roles().length > 0) {
+            types.addAll(Arrays.asList(component.roles()));
+        } else {
+            // Look in both superclass and interfaces for @ComponentRole or javax.inject.Provider
+            for (Type interfaceType : componentClass.getGenericInterfaces()) {
+                Class< ? > interfaceClass;
+                Type[] interfaceParameters;
+
+                if (interfaceType instanceof ParameterizedType) {
+                    ParameterizedType interfaceParameterizedType = (ParameterizedType) interfaceType;
+
+                    interfaceClass = ReflectionUtils.getTypeClass(interfaceType);
+                    Type[] variableParameteres = interfaceParameterizedType.getActualTypeArguments();
+
+                    interfaceParameters =
+                        ReflectionUtils.resolveSuperParameters(variableParameteres, componentClass, parameters);
+
+                    if (interfaceParameters == null) {
+                        interfaceType = interfaceClass;
+                    } else if (interfaceParameters != variableParameteres) {
+                        interfaceType =
+                            new DefaultParameterizedType(interfaceParameterizedType.getOwnerType(), interfaceClass,
+                                interfaceParameters);
+                    }
+                } else if (interfaceType instanceof Class) {
+                    interfaceClass = (Class< ? >) interfaceType;
+                    interfaceParameters = null;
+                } else {
+                    continue;
+                }
+
+                // Handle superclass of interfaces
+                types.addAll(findComponentRoleTypes(interfaceClass, interfaceParameters));
+
+                // Handle interfaces directly declared in the passed component class
+                if (ReflectionUtils.getDirectAnnotation(Role.class, interfaceClass) != null) {
+                    types.add(interfaceType);
+                }
+
+                // Handle javax.inject.Provider
+                if (Provider.class.isAssignableFrom(interfaceClass)) {
+                    types.add(interfaceType);
+                }
+
+                // Handle ComponentRole (retro-compatibility since 4.0M1)
+                if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, interfaceClass) != null) {
+                    types.add(interfaceClass);
+                }
+            }
+
+            // Note that we need to look into the superclass since the super class can itself implements an interface
+            // that has the @ComponentRole annotation.
+            Type superType = componentClass.getGenericSuperclass();
+            if (superType != null && superType != Object.class) {
+                if (superType instanceof ParameterizedType) {
+                    ParameterizedType superParameterizedType = (ParameterizedType) superType;
+                    types.addAll(findComponentRoleTypes((Class) superParameterizedType.getRawType(), ReflectionUtils
+                        .resolveSuperParameters(superParameterizedType.getActualTypeArguments(), componentClass,
+                            parameters)));
+                } else if (superType instanceof Class) {
+                    types.addAll(findComponentRoleTypes((Class) superType, null));
+                }
+            }
+        }
+
+        return types;
     }
 
     /**
@@ -218,7 +352,9 @@ public class ComponentAnnotationLoader
      * 
      * @param componentClass the component implementation class for which to find the component roles it implements
      * @return the list of component role classes implemented
+     * @deprecated since 4.0M1 use {@link #findComponentRoleTypes(Class)} instead
      */
+    @Deprecated
     public Set<Class< ? >> findComponentRoleClasses(Class< ? > componentClass)
     {
         // Note: We use a Set to ensure that we don't register duplicate roles.

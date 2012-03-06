@@ -19,6 +19,19 @@
  */
 package org.xwiki.component.descriptor;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Provider;
+
+import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.component.util.ObjectUtils;
+import org.xwiki.component.util.ReflectionUtils;
+
 /**
  * Default implementation of {@link ComponentDependency}.
  * 
@@ -28,11 +41,6 @@ package org.xwiki.component.descriptor;
  */
 public class DefaultComponentDependency<T> extends DefaultComponentRole<T> implements ComponentDependency<T>
 {
-    /**
-     * @see #getMappingType()
-     */
-    private Class< ? > mappingType;
-
     /**
      * @see #getName()
      */
@@ -56,21 +64,14 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
      * @param dependency the component dependency to clone
      * @since 3.4M1
      */
-    public DefaultComponentDependency(ComponentDependency dependency)
+    public DefaultComponentDependency(ComponentDependency<T> dependency)
     {
         super(dependency);
 
-        setMappingType(dependency.getMappingType());
         setName(dependency.getName());
         if (dependency.getHints() != null) {
             setHints(dependency.getHints().clone());
         }
-    }
-
-    @Override
-    public Class< ? > getMappingType()
-    {
-        return this.mappingType;
     }
 
     @Override
@@ -83,14 +84,6 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
     public String[] getHints()
     {
         return this.hints;
-    }
-
-    /**
-     * @param mappingType the class of the type for the injection (java.lang.String, java.util.List, etc)
-     */
-    public void setMappingType(Class< ? > mappingType)
-    {
-        this.mappingType = mappingType;
     }
 
     /**
@@ -125,12 +118,11 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
         if (this == object) {
             result = true;
         } else {
-            if ((object == null) || (object.getClass() != this.getClass())) {
+            if (object == null || object.getClass() != getClass()) {
                 result = false;
             } else {
                 // object must be Syntax at this point
-                DefaultComponentDependency cd = (DefaultComponentDependency) object;
-                result = equals(cd);
+                result = equals((ComponentDependency) object);
             }
         }
         return result;
@@ -140,14 +132,10 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
      * @param dependency the dependency to compare to
      * @return true if the passed dependency is equals to the current instance or false otherwise
      */
-    private boolean equals(DefaultComponentDependency dependency)
+    private boolean equals(ComponentDependency dependency)
     {
-        return (super.equals(dependency))
-            && (getMappingType() == dependency.getMappingType()
-                || (getMappingType() != null && getMappingType().equals(dependency.getMappingType())))
-            && (getName() == dependency.getName() || (getName() != null && getName().equals(dependency.getName())))
-            && (getHints() == dependency.getHints()
-                || (getHints() != null && getHints().equals(dependency.getHints())));
+        return super.equals(dependency) && ObjectUtils.equals(getName(), dependency.getName())
+            && Arrays.equals(getHints(), dependency.getHints());
     }
 
     /**
@@ -161,10 +149,76 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
         // Random number. See http://www.technofundo.com/tech/java/equalhash.html for the detail of this
         // algorithm.
         int hash = 7;
+
         hash = 31 * hash + super.hashCode();
-        hash = 31 * hash + (null == getMappingType() ? 0 : getMappingType().hashCode());
-        hash = 31 * hash + (null == getName() ? 0 : getName().hashCode());
-        hash = 31 * hash + (null == getHints() ? 0 : getHints().hashCode());
+        hash = 31 * hash + ObjectUtils.hasCode(getRoleType());
+        hash = 31 * hash + ObjectUtils.hasCode(getName());
+        hash = 31 * hash + Arrays.hashCode(getHints());
+
         return hash;
+    }
+
+    // deprecated
+
+    @Override
+    @Deprecated
+    public Class< ? > getMappingType()
+    {
+        return ReflectionUtils.getTypeClass(getRoleType());
+    }
+
+    /**
+     * @param mappingType the class of the type for the injection (java.lang.String, java.util.List, etc)
+     * @deprecated since 4.0M1 use {@link #setRoleType(java.lang.reflect.Type)} instead
+     */
+    @Deprecated
+    public void setMappingType(Class< ? > mappingType)
+    {
+        Type ownerType;
+        Type[] parameters;
+        if (getRoleType() instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) getRoleType();
+            ownerType = parameterizedType.getOwnerType();
+            parameters = parameterizedType.getActualTypeArguments();
+
+            setRoleType(new DefaultParameterizedType(ownerType, mappingType, parameters));
+        } else {
+            setRoleType(mappingType);
+        }
+    }
+
+    @Override
+    public Class<T> getRole()
+    {
+        Class mapping = getMappingType();
+
+        if (mapping == List.class || mapping == Collection.class || mapping == Map.class || mapping == Provider.class) {
+            return ReflectionUtils.getTypeClass(ReflectionUtils.getLastTypeGenericArgument(getRoleType()));
+        } else {
+            return mapping;
+        }
+    }
+
+    @Override
+    public void setRole(Class<T> role)
+    {
+        Class mapping = getMappingType();
+
+        if (mapping == List.class || mapping == Collection.class || mapping == Map.class || mapping == Provider.class) {
+            Type ownerType;
+            Class< ? > rawType;
+            if (getRoleType() instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) getRoleType();
+                ownerType = parameterizedType.getOwnerType();
+                rawType = (Class< ? >) parameterizedType.getRawType();
+            } else {
+                ownerType = null;
+                rawType = mapping;
+            }
+
+            setRoleType(new DefaultParameterizedType(ownerType, rawType, role));
+        } else {
+            super.setRole(role);
+        }
     }
 }

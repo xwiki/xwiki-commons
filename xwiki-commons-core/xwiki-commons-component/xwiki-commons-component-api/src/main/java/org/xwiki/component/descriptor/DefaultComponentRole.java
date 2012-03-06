@@ -19,6 +19,11 @@
  */
 package org.xwiki.component.descriptor;
 
+import java.lang.reflect.Type;
+
+import org.xwiki.component.util.ObjectUtils;
+import org.xwiki.component.util.ReflectionUtils;
+
 /**
  * @param <T> the type of the component role
  * @version $Id$
@@ -28,7 +33,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     /**
      * @see #getRole()
      */
-    private Class<T> role;
+    private Type roleType;
 
     /**
      * @see #getRoleHint()
@@ -50,22 +55,22 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
      */
     public DefaultComponentRole(ComponentRole<T> componentRole)
     {
-        setRole(componentRole.getRole());
+        setRoleType(componentRole.getRoleType());
         setRoleHint(componentRole.getRoleHint());
     }
 
-    /**
-     * @param role the class of the component role
-     */
-    public void setRole(Class<T> role)
+    @Override
+    public Type getRoleType()
     {
-        this.role = role;
+        return this.roleType;
     }
 
-    @Override
-    public Class<T> getRole()
+    /**
+     * @param roleType the type of the role
+     */
+    public void setRoleType(Type roleType)
     {
-        return this.role;
+        this.roleType = roleType;
     }
 
     /**
@@ -85,9 +90,11 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     @Override
     public String toString()
     {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("role = [").append(null == getRole() ? "<null>" : getRole().getName()).append("]");
+        StringBuilder buffer = new StringBuilder();
+
+        buffer.append("role = [").append(null == getRoleType() ? "<null>" : getRoleType()).append("]");
         buffer.append(" hint = [").append(getRoleHint()).append("]");
+
         return buffer.toString();
     }
 
@@ -101,21 +108,20 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     {
         boolean result;
 
-        // See http://www.technofundo.com/tech/java/equalhash.html for the detail of this algorithm.
         if (this == object) {
             result = true;
         } else {
-            if ((object == null) || (object.getClass() != this.getClass())) {
+            if (object == null || object.getClass() != getClass()) {
                 result = false;
             } else {
                 // object must be Syntax at this point
-                DefaultComponentRole cr = (DefaultComponentRole) object;
+                ComponentRole cr = (ComponentRole) object;
                 result =
-                    (getRole() == cr.getRole() || (getRole() != null && getRole().equals(cr.getRole())))
-                        && (getRoleHint() == cr.getRoleHint() || (getRoleHint() != null && getRoleHint().equals(
-                            cr.getRoleHint())));
+                    ObjectUtils.equals(getRoleType(), cr.getRoleType())
+                        && ObjectUtils.equals(getRoleHint(), cr.getRoleHint());
             }
         }
+
         return result;
     }
 
@@ -127,11 +133,30 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     @Override
     public int hashCode()
     {
-        // Random number. See http://www.technofundo.com/tech/java/equalhash.html for the detail of this
-        // algorithm.
         int hash = 7;
-        hash = 31 * hash + (null == getRole() ? 0 : getRole().hashCode());
-        hash = 31 * hash + (null == getRoleHint() ? 0 : getRoleHint().hashCode());
+
+        hash = 31 * hash + ObjectUtils.hasCode(getRoleType());
+        hash = 31 * hash + ObjectUtils.hasCode(getRoleHint());
+
         return hash;
+    }
+
+    // deprecated
+
+    /**
+     * @param role the class of the component role
+     * @deprecated since 4.0M1 use {@link #setRoleType(Type)} instead
+     */
+    @Deprecated
+    public void setRole(Class<T> role)
+    {
+        this.roleType = role;
+    }
+
+    @Override
+    @Deprecated
+    public Class<T> getRole()
+    {
+        return ReflectionUtils.getTypeClass(getRoleType());
     }
 }

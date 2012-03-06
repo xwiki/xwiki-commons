@@ -19,10 +19,14 @@
  */
 package org.xwiki.component.util;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,9 +35,6 @@ import java.util.Map;
  * 
  * @version $Id$
  * @since 2.1RC1
- */
-/**
- * @version $Id$
  */
 public final class ReflectionUtils
 {
@@ -258,6 +259,71 @@ public final class ReflectionUtils
                 if (filterClass.isAssignableFrom((Class) pType.getRawType())) {
                     return type;
                 }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param parameters the parameters of a direct superclass or interface
+     * @param childClass a extending class
+     * @param childParameters the actual parameters of the extending class
+     * @return the actual parameters of the direct superclass or interface, return null if it's impossible to resolve
+     */
+    public static Type[] resolveSuperParameters(Type[] parameters, Class childClass, Type[] childParameters)
+    {
+        Type[] actualParameters = null;
+        Map<TypeVariable, Type> typeMapping = null;
+
+        for (int i = 0; i < parameters.length; ++i) {
+            Type parameter = parameters[i];
+
+            if (parameter instanceof TypeVariable) {
+                if (childParameters == null) {
+                    return null;
+                }
+
+                if (typeMapping == null) {
+                    TypeVariable<Class>[] declaredChildParameters = childClass.getTypeParameters();
+
+                    typeMapping = new HashMap<TypeVariable, Type>();
+                    for (int j = 0; j < declaredChildParameters.length; ++j) {
+                        typeMapping.put(declaredChildParameters[i], childParameters[i]);
+                    }
+                }
+
+                if (actualParameters == null) {
+                    actualParameters = new Type[parameters.length];
+                    for (int j = 0; j < i; ++j) {
+                        actualParameters[j] = childParameters[j];
+                    }
+                }
+
+                actualParameters[i] = typeMapping.get(parameter);
+            } else if (actualParameters != null) {
+                actualParameters[i] = parameter;
+            }
+        }
+
+        return actualParameters != null ? actualParameters : parameters;
+    }
+
+    /**
+     * Get the first found annotation with the provided class directly assigned to the provided {@link AnnotatedElement}
+     * .
+     * 
+     * @param <T> the type of the annotation
+     * @param annotationClass the annotation class
+     * @param element the class on which annotation are assigned
+     * @return the found annotation or null if there is none
+     */
+    public static <T extends Annotation> T getDirectAnnotation(Class<T> annotationClass, AnnotatedElement element)
+    {
+        // Handle interfaces directly declared in the passed component class
+        for (Annotation annotation : element.getDeclaredAnnotations()) {
+            if (annotation.annotationType() == annotationClass) {
+                return (T) annotation;
             }
         }
 

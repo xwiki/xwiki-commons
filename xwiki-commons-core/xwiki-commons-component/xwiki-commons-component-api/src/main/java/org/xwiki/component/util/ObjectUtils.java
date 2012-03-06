@@ -17,35 +17,50 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.component.descriptor;
+package org.xwiki.component.util;
 
 /**
- * Represents a component dependency.
+ * Various Object utilities.
  * 
  * @version $Id$
- * @param <T> the type of the component role
- * @since 1.7M1
+ * @since 2.1RC1
  */
-public interface ComponentDependency<T> extends ComponentRole<T>
+public final class ObjectUtils
 {
     /**
-     * @return the name of the injection point (can be the name of the field for field injection or the name of the
-     *         method for method injection
+     * Utility class.
      */
-    String getName();
+    private ObjectUtils()
+    {
+        // Utility class
+    }
 
     /**
-     * @return a list of hints used when the mapping type is a collection or map so that only component implementations
-     *         matching passed hints are injected
+     * Check if provided object are equals. This method also take care of null.
+     * 
+     * @param object1 the first object
+     * @param object2 the second object
+     * @return true of the provided objects are equal
      */
-    String[] getHints();
+    public static boolean equals(Object object1, Object object2)
+    {
+        if (object1 == object2) {
+            return true;
+        }
 
-    // deprecated
+        if (object1 == null || object2 == null) {
+            return false;
+        }
+
+        return object1.equals(object2);
+    }
 
     /**
-     * @return the class of the type for the injection (java.lang.String, java.util.List, etc)
-     * @deprecated since 4.0M1 use {@link #getRoleType()} instead
+     * @param object the object
+     * @return the provided object hash code or 0 of the object is null
      */
-    @Deprecated
-    Class< ? > getMappingType();
+    public static int hasCode(Object object)
+    {
+        return object == null ? 0 : object.hashCode();
+    }
 }

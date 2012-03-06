@@ -51,35 +51,35 @@ public class DefaultComponentDescriptorTest
     {
         DefaultComponentDescriptor cd1 = new DefaultComponentDescriptor();
         cd1.setImplementation(ImplRole.class);
-        cd1.setRole(Role.class);
+        cd1.setRoleType(Role.class);
         cd1.setRoleHint("hint");
 
         Assert.assertEquals(cd1, cd1);
 
         DefaultComponentDescriptor cd2 = new DefaultComponentDescriptor();
         cd2.setImplementation(ImplRole.class);
-        cd2.setRole(Role.class);
+        cd2.setRoleType(Role.class);
         cd2.setRoleHint("hint");
 
         Assert.assertEquals(cd1, cd2);
 
         DefaultComponentDescriptor cd3 = new DefaultComponentDescriptor();
         cd3.setImplementation(ImplRole.class);
-        cd3.setRole(OtherRole.class);
+        cd3.setRoleType(OtherRole.class);
         cd3.setRoleHint("hint");
 
         Assert.assertFalse(cd1.equals(cd3));
 
         DefaultComponentDescriptor cd4 = new DefaultComponentDescriptor();
         cd4.setImplementation(ImplOtherRole.class);
-        cd4.setRole(Role.class);
+        cd4.setRoleType(Role.class);
         cd4.setRoleHint("hint");
 
         Assert.assertFalse(cd1.equals(cd4));
 
         DefaultComponentDescriptor cd5 = new DefaultComponentDescriptor();
         cd5.setImplementation(ImplRole.class);
-        cd5.setRole(Role.class);
+        cd5.setRoleType(Role.class);
         cd5.setRoleHint("hint");
         cd5.setInstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP);
 
@@ -87,7 +87,7 @@ public class DefaultComponentDescriptorTest
 
         DefaultComponentDescriptor cd6 = new DefaultComponentDescriptor();
         cd6.setImplementation(ImplRole.class);
-        cd6.setRole(Role.class);
+        cd6.setRoleType(Role.class);
         cd6.setRoleHint("hint");
         DefaultComponentDependency dep = new DefaultComponentDependency();
         dep.setName("name");
@@ -98,7 +98,7 @@ public class DefaultComponentDescriptorTest
 
         DefaultComponentDescriptor cd7 = new DefaultComponentDescriptor();
         cd7.setImplementation(ImplRole.class);
-        cd7.setRole(Role.class);
+        cd7.setRoleType(Role.class);
         cd7.setRoleHint("hint");
         DefaultComponentDependency dep2 = new DefaultComponentDependency();
         dep2.setName("name");
@@ -109,7 +109,7 @@ public class DefaultComponentDescriptorTest
 
         DefaultComponentDescriptor cd8 = new DefaultComponentDescriptor();
         cd8.setImplementation(ImplRole.class);
-        cd8.setRole(Role.class);
+        cd8.setRoleType(Role.class);
         cd8.setRoleHint("hint");
         DefaultComponentDependency dep3 = new DefaultComponentDependency();
         dep3.setName("name");

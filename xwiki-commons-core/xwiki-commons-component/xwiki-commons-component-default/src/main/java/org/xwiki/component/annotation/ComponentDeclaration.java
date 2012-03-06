@@ -31,12 +31,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class ComponentDeclaration
 {
     /**
-     * @see #getPriority() 
+     * @see #getPriority()
      */
     private int priority;
 
     /**
-     * @see #getImplementationClassName() 
+     * @see #getImplementationClassName()
      */
     private String implementationClassName;
 
@@ -51,8 +51,8 @@ public class ComponentDeclaration
     }
 
     /**
-     * @return the priority this component declaration has (when several components are registered for the same 
-     *         Role and Hint the priority is used to decide which one gets registered - the lowest value wins)
+     * @return the priority this component declaration has (when several components are registered for the same Role and
+     *         Hint the priority is used to decide which one gets registered - the lowest value wins)
      */
     public int getPriority()
     {
@@ -67,31 +67,38 @@ public class ComponentDeclaration
         return this.implementationClassName;
     }
 
+    // Object
+
     @Override
     public boolean equals(Object object)
     {
         if (object == null) {
             return false;
         }
+
         if (object == this) {
             return true;
         }
+
         if (object.getClass() != getClass()) {
             return false;
         }
+
         ComponentDeclaration rhs = (ComponentDeclaration) object;
-        return new EqualsBuilder()
-            .append(getImplementationClassName(), rhs.getImplementationClassName())
-            .append(getPriority(), rhs.getPriority())
-            .isEquals();
+
+        return new EqualsBuilder().append(getImplementationClassName(), rhs.getImplementationClassName())
+            .append(getPriority(), rhs.getPriority()).isEquals();
     }
 
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder(5, 45)
-            .append(getImplementationClassName())
-            .append(getPriority())
-            .toHashCode();
+        return new HashCodeBuilder(5, 45).append(getImplementationClassName()).append(getPriority()).toHashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.valueOf(this.priority) + ':' + this.implementationClassName;
     }
 }

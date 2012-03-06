@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.xwiki.component.util.ObjectUtils;
+
 /**
  * Default implementation of {@link ComponentDescriptor}.
  * 
@@ -132,8 +134,8 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     public String toString()
     {
         StringBuilder buffer = new StringBuilder(super.toString());
-        buffer.append(" implementation = [").append(
-            getImplementation() == null ? null : getImplementation().getName()).append("]");
+        buffer.append(" implementation = [").append(getImplementation() == null ? null : getImplementation().getName())
+            .append("]");
         buffer.append(" instantiation = [").append(getInstantiationStrategy()).append("]");
 
         return buffer.toString();
@@ -157,14 +159,15 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
                 result = false;
             } else {
                 // object must be Syntax at this point
-                DefaultComponentDescriptor cd = (DefaultComponentDescriptor) object;
-                result = (super.equals(cd))
-                    && (getImplementation() == cd.getImplementation()
-                        || (getImplementation() != null && getImplementation().equals(cd.getImplementation())))
-                    && (getInstantiationStrategy() == cd.getInstantiationStrategy())
-                    && (getComponentDependencies().equals(cd.getComponentDependencies()));
+                ComponentDescriptor cd = (ComponentDescriptor) object;
+
+                result =
+                    super.equals(cd) && ObjectUtils.equals(getImplementation(), cd.getImplementation())
+                        && ObjectUtils.equals(getInstantiationStrategy(), cd.getInstantiationStrategy())
+                        && ObjectUtils.equals(getComponentDependencies(), cd.getComponentDependencies());
             }
         }
+
         return result;
     }
 
@@ -176,13 +179,12 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     @Override
     public int hashCode()
     {
-        // Random number. See http://www.technofundo.com/tech/java/equalhash.html for the detail of this
-        // algorithm.
         int hash = 7;
+
         hash = 31 * hash + super.hashCode();
-        hash = 31 * hash + (null == getImplementation() ? 0 : getImplementation().hashCode());
-        hash = 31 * hash + getInstantiationStrategy().hashCode();
-        hash = 31 * hash + getComponentDependencies().hashCode();
+        hash = 31 * hash + ObjectUtils.hasCode(getImplementation());
+        hash = 31 * hash + ObjectUtils.hasCode(getInstantiationStrategy());
+        hash = 31 * hash + ObjectUtils.hasCode(getComponentDependencies());
 
         return hash;
     }

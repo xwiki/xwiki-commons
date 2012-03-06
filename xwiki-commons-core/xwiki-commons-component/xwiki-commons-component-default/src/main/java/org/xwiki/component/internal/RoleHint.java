@@ -26,7 +26,7 @@ import org.xwiki.component.util.ReflectionUtils;
 /**
  * Represent the unique identifier of a Component (pair Role/Hint).
  * 
- * @param <T> the role class
+ * @param <T> the role type
  * @version $Id$
  * @since 2.0M1
  */
@@ -78,6 +78,7 @@ public class RoleHint<T>
      * @return the component role as class
      * @since 4.0M1
      */
+    @SuppressWarnings("unchecked")
     public Class<T> getRoleClass()
     {
         return ReflectionUtils.getTypeClass(this.role);
@@ -105,9 +106,7 @@ public class RoleHint<T>
 
         RoleHint<T> rolehint = (RoleHint<T>) obj;
 
-        // It's possible Class reference are not the same when it coming for different ClassLoader so we compare class
-        // names
-        return getRoleType() == rolehint.getRoleType()
+        return getRoleType().equals(rolehint.getRoleType())
             && (getHint() == rolehint.getHint() || (getHint() != null && getHint().equals(rolehint.getHint())));
     }
 
@@ -115,6 +114,7 @@ public class RoleHint<T>
     public int hashCode()
     {
         int hash = 8;
+
         hash = 31 * hash + (null == getRoleType() ? 0 : getRoleType().hashCode());
         hash = 31 * hash + (null == getHint() ? 0 : getHint().hashCode());
 

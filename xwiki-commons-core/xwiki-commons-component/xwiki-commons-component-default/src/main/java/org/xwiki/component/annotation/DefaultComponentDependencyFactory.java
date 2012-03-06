@@ -26,10 +26,11 @@ import javax.inject.Named;
 
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.DefaultComponentDependency;
+import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Uses {@link javax.inject.Inject} and {@link javax.inject.Named} annotations to recognize a Component Dependency.
- *
+ * 
  * @version $Id$
  * @since 3.2RC1
  */
@@ -38,49 +39,32 @@ public class DefaultComponentDependencyFactory extends AbstractComponentDependen
     @Override
     public ComponentDependency createComponentDependency(Field field)
     {
-        DefaultComponentDependency dependency = null;
+        DefaultComponentDependency dependency;
+
         Inject inject = field.getAnnotation(Inject.class);
         if (inject != null) {
             dependency = new DefaultComponentDependency();
-            dependency.setMappingType(field.getType());
-            dependency.setName(field.getName());
 
-            // Handle case of list or map
-            Class< ? > role = getFieldRole(field);
-
-            if (role == null) {
-                return null;
+            Class< ? > fieldClass = field.getType();
+            if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, fieldClass) != null
+                && ReflectionUtils.getDirectAnnotation(Role.class, fieldClass) == null) {
+                // since 4.0M1, retro-compatibility (generic type used to not be taken into account)
+                dependency.setRoleType(fieldClass);
+            } else {
+                dependency.setRoleType(field.getGenericType());
             }
 
-            dependency.setRole(role);
+            dependency.setName(field.getName());
 
             // Look for a Named annotation
             Named named = field.getAnnotation(Named.class);
             if (named != null) {
                 dependency.setRoleHint(named.value());
             }
+        } else {
+            dependency = null;
         }
 
         return dependency;
-    }
-
-    /**
-     * Extract component role from the field to inject.
-     *
-     * @param field the field to inject
-     * @return the role of the field to inject
-     */
-    protected Class<?> getFieldRole(Field field)
-    {
-        Class<?> role;
-
-        // Handle case of list or map
-        if (isDependencyOfListType(field.getType())) {
-            role = getGenericRole(field);
-        } else {
-            role = field.getType();
-        }
-
-        return role;
     }
 }

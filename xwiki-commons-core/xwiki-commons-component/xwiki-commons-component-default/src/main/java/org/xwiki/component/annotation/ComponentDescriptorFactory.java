@@ -20,6 +20,7 @@
 package org.xwiki.component.annotation;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -43,12 +44,12 @@ import org.xwiki.component.util.ReflectionUtils;
 public class ComponentDescriptorFactory
 {
     /**
-     * Load all Component Descriptor Factories implementations using the JDK's Service Loader facility.
-     * Note that we cannot use Components to do this since it would be a chicken and egg issue since this factory
-     * class is used to initialize Components...
+     * Load all Component Descriptor Factories implementations using the JDK's Service Loader facility. Note that we
+     * cannot use Components to do this since it would be a chicken and egg issue since this factory class is used to
+     * initialize Components...
      */
-    private ServiceLoader<ComponentDependencyFactory> componentDependencyFactories =
-        ServiceLoader.load(ComponentDependencyFactory.class);
+    private ServiceLoader<ComponentDependencyFactory> componentDependencyFactories = ServiceLoader
+        .load(ComponentDependencyFactory.class);
 
     /**
      * Create component descriptors for the passed component implementation class and component role class. There can be
@@ -57,9 +58,25 @@ public class ComponentDescriptorFactory
      * @param componentClass the component implementation class
      * @param componentRoleClass the component role class
      * @return the component descriptors with resolved component dependencies
+     * @deprecated since 4.0M1 use {@link #createComponentDescriptors(Class, Type)} instead
      */
+    @Deprecated
     public List<ComponentDescriptor> createComponentDescriptors(Class< ? > componentClass,
         Class< ? > componentRoleClass)
+    {
+        return createComponentDescriptors(componentClass, (Type) componentRoleClass);
+    }
+
+    /**
+     * Create component descriptors for the passed component implementation class and component role class. There can be
+     * more than one descriptor if the component class has specified several hints.
+     * 
+     * @param componentClass the component implementation class
+     * @param componentRoleType the component role type
+     * @return the component descriptors with resolved component dependencies
+     * @since 4.0M1
+     */
+    public List<ComponentDescriptor> createComponentDescriptors(Class< ? > componentClass, Type componentRoleType)
     {
         List<ComponentDescriptor> descriptors = new ArrayList<ComponentDescriptor>();
 
@@ -85,7 +102,7 @@ public class ComponentDescriptorFactory
 
         // Create the descriptors
         for (String hint : hints) {
-            descriptors.add(createComponentDescriptor(componentClass, hint, componentRoleClass));
+            descriptors.add(createComponentDescriptor(componentClass, hint, componentRoleType));
         }
 
         return descriptors;
@@ -96,14 +113,14 @@ public class ComponentDescriptorFactory
      * 
      * @param componentClass the component implementation class
      * @param hint the hint
-     * @param componentRoleClass the component role class
+     * @param componentRoleType the component role type
      * @return the component descriptor with resolved component dependencies
      */
     private ComponentDescriptor createComponentDescriptor(Class< ? > componentClass, String hint,
-        Class< ? > componentRoleClass)
+        Type componentRoleType)
     {
         DefaultComponentDescriptor descriptor = new DefaultComponentDescriptor();
-        descriptor.setRole(componentRoleClass);
+        descriptor.setRoleType(componentRoleType);
         descriptor.setImplementation(componentClass);
         descriptor.setRoleHint(hint);
         descriptor.setInstantiationStrategy(createComponentInstantiationStrategy(componentClass));

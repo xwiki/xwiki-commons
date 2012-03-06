@@ -17,30 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.component.annotation;
+package org.xwiki.component.descriptor;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.junit.Test;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-/**
- * Marks a class as defining a component role.
- * <p>
- * The difference with Role is that Role is taking in to account the generic parameters while ComponentRole does not.
- * 
- * @version $Id$
- * @since 1.8.1
- * @deprecated since 4.0M1 use {@link Role} instead
- */
-@Documented
-@Retention(RUNTIME)
-@Target(TYPE)
-@Inherited
-@Deprecated
-public @interface ComponentRole
+public class DefaultComponentDependencyTest
 {
+    @Test
+    public void equals()
+    {
+        
+    }
 }

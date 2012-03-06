@@ -19,6 +19,8 @@
  */
 package org.xwiki.component.descriptor;
 
+import java.lang.reflect.Type;
+
 /**
  * Identify a unique component.
  * 
@@ -30,10 +32,19 @@ public interface ComponentRole<T>
     /**
      * @return the class of the component role
      */
-    Class<T> getRole();
+    Type getRoleType();
 
     /**
      * @return the hint of the component role
      */
     String getRoleHint();
+
+    // deprecated
+
+    /**
+     * @return the class of the component role
+     * @deprecated since 4.0M1 use {@link #getRoleType()} instead
+     */
+    @Deprecated
+    Class<T> getRole();
 }

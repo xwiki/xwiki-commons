@@ -19,6 +19,7 @@
  */
 package org.xwiki.component.annotation;
 
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.inject.Named;
@@ -37,6 +38,7 @@ import org.xwiki.component.internal.DefaultComponentManager;
 import org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory;
 import org.xwiki.component.internal.multi.DefaultComponentManagerManager;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.DefaultParameterizedType;
 
 /**
  * Unit tests for {@link ComponentAnnotationLoader}.
@@ -46,13 +48,15 @@ import org.xwiki.component.manager.ComponentManager;
  */
 public class ComponentAnnotationLoaderTest
 {
+    @SuppressWarnings("deprecation")
     @ComponentRole
-    public interface Role
+    public interface NotGenericRole<T>
     {
     }
 
+    @SuppressWarnings("deprecation")
     @ComponentRole
-    public interface ExtendedRole extends Role
+    public interface ExtendedRole extends NotGenericRole<String>
     {
     }
 
@@ -66,41 +70,72 @@ public class ComponentAnnotationLoaderTest
      * be registered once.
      */
     @Component
-    public class SuperRoleImpl extends RoleImpl implements Role
+    public class SuperRoleImpl extends RoleImpl implements NotGenericRole<String>
     {
     }
 
     // Test overrides with priorities (see components.txt file)
     @Component("test")
-    public class SimpleRole implements Role
+    public class SimpleRole implements NotGenericRole<String>
     {
     }
 
     @Component("test")
-    public class OverrideRole implements Role
+    public class OverrideRole implements NotGenericRole<String>
     {
     }
 
     // Verify backward compatibility for deprecated component-overrides.txt file
     @Component("deprecated")
-    public class DeprecatedSimpleRole implements Role
+    public class DeprecatedSimpleRole implements NotGenericRole<String>
     {
     }
 
     @Component("deprecated")
-    public class DeprecatedOverrideRole implements Role
+    public class DeprecatedOverrideRole implements NotGenericRole<String>
     {
     }
 
     @Component
     @Named("customprovider")
-    public class ProviderImpl implements Provider<Role>
+    public class ProviderImpl implements Provider<NotGenericRole<String>>
     {
         @Override
-        public Role get()
+        public NotGenericRole<String> get()
         {
             return new RoleImpl();
         }
+    }
+
+    @Role
+    public interface GenericRole<T>
+    {
+    }
+
+    @Component
+    public class GenericComponent implements GenericRole<String>
+    {
+    }
+
+    @Component
+    @SuppressWarnings("rawtypes")
+    public class NonGenericComponent implements GenericRole
+    {
+    }
+
+    public abstract class AbstractGenericComponent<V> implements GenericRole<V>
+    {
+    }
+
+    @Component
+    public class ExtendingGenericComponent extends AbstractGenericComponent<String>
+    {
+    }
+
+    @Component
+    @SuppressWarnings("rawtypes")
+    public class ExtendingNonGenericComponent extends AbstractGenericComponent
+    {
     }
 
     private Mockery context = new Mockery();
@@ -137,17 +172,12 @@ public class ComponentAnnotationLoaderTest
         this.context.assertIsSatisfied();
     }
 
-    @Test
-    public void testFindComponentRoleClasses()
-    {
-        assertComponentRoleClasses(RoleImpl.class);
-    }
-
     /**
      * Verify that when there are several component implementations for the same role/hint then the one with the highest
      * priority wins (ie the smallest integer value).
      */
     @Test
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void testPriorities() throws Exception
     {
         final ComponentManager mockManager = this.context.mock(ComponentManager.class);
@@ -161,6 +191,7 @@ public class ComponentAnnotationLoaderTest
             this.loader.getComponentsDescriptors(EmbeddableComponentManagerFactory.class).get(0);
         final ComponentDescriptor descriptor5 =
             this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).get(0);
+
         final ComponentDescriptor descriptor6 =
             this.loader.getComponentsDescriptors(ProviderTest.TestProvider1.class).get(0);
         final ComponentDescriptor descriptor7 =
@@ -190,28 +221,74 @@ public class ComponentAnnotationLoaderTest
         this.loader.initialize(mockManager, this.getClass().getClassLoader());
     }
 
+    @Test
+    public void testFindComponentRoleTypes()
+    {
+        assertComponentRoleTypes(RoleImpl.class);
+    }
+
     /**
      * Verify that we get the same result when we use a class that extends another class (i.e. inheritance works).
      */
     @Test
-    public void testFindComponentRoleClasseWhenClassExtension()
+    public void testFindComponentRoleTypesWhenClassExtension()
     {
-        assertComponentRoleClasses(SuperRoleImpl.class);
+        assertComponentRoleTypes(SuperRoleImpl.class);
+    }
+
+    private void assertComponentRoleTypes(Class< ? > componentClass)
+    {
+        Set<Type> type = this.loader.findComponentRoleTypes(componentClass);
+        Assert.assertEquals(2, type.size());
+        Assert.assertTrue(type.contains(NotGenericRole.class));
+        Assert.assertTrue(type.contains(ExtendedRole.class));
     }
 
     @Test
-    public void testFindComponentRoleClassesForProvider()
+    public void testFindComponentRoleTypesForProvider()
     {
-        Set<Class< ? >> classes = this.loader.findComponentRoleClasses(ProviderImpl.class);
+        Set<Type> types = this.loader.findComponentRoleTypes(ProviderImpl.class);
 
-        Assert.assertEquals(1, classes.size());
+        Assert.assertEquals(1, types.size());
+        Assert.assertEquals(new DefaultParameterizedType(null, Provider.class, new DefaultParameterizedType(
+            ComponentAnnotationLoaderTest.class, NotGenericRole.class, String.class)), types.iterator().next());
     }
 
-    private void assertComponentRoleClasses(Class< ? > componentClass)
+    @Test
+    public void testFindComponentRoleTypesWithGenericRole()
     {
-        Set<Class< ? >> classes = this.loader.findComponentRoleClasses(componentClass);
-        Assert.assertEquals(2, classes.size());
-        Assert.assertTrue(classes.contains(Role.class));
-        Assert.assertTrue(classes.contains(ExtendedRole.class));
+        Set<Type> types = this.loader.findComponentRoleTypes(GenericComponent.class);
+
+        Assert.assertEquals(1, types.size());
+        Assert.assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
+            String.class), types.iterator().next());
+    }
+
+    @Test
+    public void testFindComponentRoleTypesWithGenericRoleAndNonGenericComponent()
+    {
+        Set<Type> types = this.loader.findComponentRoleTypes(NonGenericComponent.class);
+
+        Assert.assertEquals(1, types.size());
+        Assert.assertEquals(GenericRole.class, types.iterator().next());
+    }
+
+    @Test
+    public void testFindComponentRoleTypesWithExtendingGenericRole()
+    {
+        Set<Type> types = this.loader.findComponentRoleTypes(ExtendingGenericComponent.class);
+
+        Assert.assertEquals(1, types.size());
+        Assert.assertEquals(new DefaultParameterizedType(ComponentAnnotationLoaderTest.class, GenericRole.class,
+            String.class), types.iterator().next());
+    }
+
+    @Test
+    public void testFindComponentRoleTypesWithExtendingNonGenericRole()
+    {
+        Set<Type> types = this.loader.findComponentRoleTypes(ExtendingNonGenericComponent.class);
+
+        Assert.assertEquals(1, types.size());
+        Assert.assertEquals(GenericRole.class, types.iterator().next());
     }
 }

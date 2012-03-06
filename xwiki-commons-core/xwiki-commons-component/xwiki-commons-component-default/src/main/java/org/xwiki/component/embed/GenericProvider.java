@@ -19,13 +19,15 @@
  */
 package org.xwiki.component.embed;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Provider;
 
+import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.component.internal.RoleHint;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 
@@ -34,10 +36,11 @@ import org.xwiki.component.util.ReflectionUtils;
  * been registered. The default behavior is simply to look up the Component role class when
  * {@link javax.inject.Provider#get()} is called. This is useful for example when you wish to do "lazy injection".
  * 
+ * @param <T> the role type
  * @version $Id$
  * @since 3.3M2
  */
-public class GenericProvider implements Provider<Object>
+public class GenericProvider<T> implements Provider<T>
 {
     /**
      * @see GenericProvider#GenericProvider(ComponentManager, RoleHint)
@@ -47,52 +50,54 @@ public class GenericProvider implements Provider<Object>
     /**
      * @see GenericProvider#GenericProvider(ComponentManager, RoleHint)
      */
-    private RoleHint roleHint;
+    private RoleHint<T> roleHint;
 
     /**
      * @param componentManager the Component Manager instance that we'll use to look up the Component Role during
      *            {@link javax.inject.Provider#get()}
      * @param roleHint the Component Role and Hint that uniquely identify the Component we wish to provide for
      */
-    public GenericProvider(ComponentManager componentManager, RoleHint roleHint)
+    public GenericProvider(ComponentManager componentManager, RoleHint<T> roleHint)
     {
         this.componentManager = componentManager;
         this.roleHint = roleHint;
     }
 
     @Override
-    public Object get()
+    @SuppressWarnings("unchecked")
+    public T get()
     {
-        Object component;
+        T component;
 
         try {
-            Class roleClass = this.roleHint.getRoleClass();
+            Class<T> roleClass = this.roleHint.getRoleClass();
 
-            if (Provider.class.isAssignableFrom(roleClass)) {
-                // Then get the class the Provider is providing for
-                Type providedType = ReflectionUtils.getLastTypeGenericArgument(this.roleHint.getRoleType());
-                // Then lookup for a Provider registered with the default hint and for the Component Role it
-                // provides
-                Provider< ? > provider = this.componentManager.lookupProvider(providedType, this.roleHint.getHint());
-                if (provider != null) {
-                    component = provider;
-                } else {
+            if (roleClass.isAssignableFrom(Provider.class)) {
+                try {
+                    component =
+                        this.componentManager.lookupComponent(this.roleHint.getRoleType(), this.roleHint.getHint());
+                } catch (ComponentLookupException e) {
                     // Inject a default Provider
                     component =
-                        new GenericProvider(this.componentManager, new RoleHint(providedType, this.roleHint.getHint()));
+                        (T) new GenericProvider<Object>(this.componentManager, new RoleHint<Object>(
+                            ReflectionUtils.getLastTypeGenericArgument(this.roleHint.getRoleType()),
+                            this.roleHint.getHint()));
                 }
-            } else if (List.class.isAssignableFrom(roleClass)) {
+            } else if (roleClass.isAssignableFrom(List.class)) {
                 component =
-                    this.componentManager.lookupList(ReflectionUtils.getTypeClass(ReflectionUtils
-                        .getLastTypeGenericArgument(this.roleHint.getRoleType())));
-            } else if (Map.class.isAssignableFrom(roleClass)) {
+                    (T) this.componentManager.lookupList(ReflectionUtils.getLastTypeGenericArgument(this.roleHint
+                        .getRoleType()));
+            } else if (roleClass.isAssignableFrom(Map.class)) {
                 component =
-                    this.componentManager.lookupMap(ReflectionUtils.getTypeClass(ReflectionUtils
-                        .getLastTypeGenericArgument(this.roleHint.getRoleType())));
+                    (T) this.componentManager.lookupMap(ReflectionUtils.getLastTypeGenericArgument(this.roleHint
+                        .getRoleType()));
+            } else if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, roleClass) != null
+                && ReflectionUtils.getDirectAnnotation(Role.class, roleClass) == null) {
+                // since 4.0M1, retro-compatibility (generic type used to not be taken into account)
+                component = this.componentManager.lookupComponent(roleClass, this.roleHint.getHint());
             } else {
-                component = this.componentManager.lookup(roleClass, this.roleHint.getHint());
+                component = this.componentManager.lookupComponent(this.roleHint.getRoleType(), this.roleHint.getHint());
             }
-
         } catch (Exception e) {
             throw new RuntimeException("Failed to get [" + this.roleHint + "]", e);
         }
