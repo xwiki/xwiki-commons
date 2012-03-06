@@ -19,6 +19,8 @@
  */
 package org.xwiki.test;
 
+import java.lang.reflect.Type;
+
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -26,10 +28,11 @@ import org.junit.runner.RunWith;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
+import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Offers a JMock 2.x Mockery object.
- *
+ * 
  * @version $Id$
  * @since 2.4RC1
  */
@@ -60,9 +63,27 @@ public abstract class AbstractMockingTestCase
     }
 
     /**
+     * @since 4.0M1
+     */
+    public <T> T registerMockComponent(Type role, String hint, String mockId) throws Exception
+    {
+        DefaultComponentDescriptor<T> descriptor = createComponentDescriptor(role);
+        descriptor.setRoleHint(hint);
+        return registerMockComponent(descriptor, mockId);
+    }
+
+    /**
      * @since 2.4RC1
      */
     public <T> T registerMockComponent(Class<T> role, String hint) throws Exception
+    {
+        return registerMockComponent(role, hint, null);
+    }
+
+    /**
+     * @since 4.0M1
+     */
+    public <T> T registerMockComponent(Type role, String hint) throws Exception
     {
         return registerMockComponent(role, hint, null);
     }
@@ -72,7 +93,15 @@ public abstract class AbstractMockingTestCase
      */
     public <T> T registerMockComponent(Class<T> role) throws Exception
     {
-        return registerMockComponent(createComponentDescriptor(role));
+        return registerMockComponent(this.<T> createComponentDescriptor(role));
+    }
+
+    /**
+     * @since 4.0M1
+     */
+    public <T> T registerMockComponent(Type role) throws Exception
+    {
+        return registerMockComponent(this.<T> createComponentDescriptor(role));
     }
 
     /**
@@ -90,21 +119,24 @@ public abstract class AbstractMockingTestCase
     {
         T instance;
         if (mockId != null) {
-            instance = getMockery().mock(descriptor.getRole(), mockId);
+            instance = getMockery().<T> mock(ReflectionUtils.getTypeClass(descriptor.getRoleType()), mockId);
         } else {
-            instance = getMockery().mock(descriptor.getRole());
+            instance = getMockery().<T> mock(ReflectionUtils.getTypeClass(descriptor.getRoleType()));
         }
+
         getComponentManager().registerComponent(descriptor, instance);
+
         return instance;
     }
 
     /**
      * @since 2.4RC1
      */
-    private <T> DefaultComponentDescriptor<T> createComponentDescriptor(Class<T> role)
+    private <T> DefaultComponentDescriptor<T> createComponentDescriptor(Type role)
     {
         DefaultComponentDescriptor<T> descriptor = new DefaultComponentDescriptor<T>();
-        descriptor.setRole(role);
+        descriptor.setRoleType(role);
+
         return descriptor;
     }
 }
