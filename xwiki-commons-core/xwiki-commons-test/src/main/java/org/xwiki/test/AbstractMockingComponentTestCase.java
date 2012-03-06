@@ -88,7 +88,6 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         this.loader.initialize(this.componentManager, getClass().getClassLoader());
 
         // Step 2: Inject all fields annotated with @MockingRequirement.
-
         for (Field field : ReflectionUtils.getAllFields(getClass())) {
             MockingRequirement mockingRequirement = field.getAnnotation(MockingRequirement.class);
             if (mockingRequirement != null) {
@@ -115,24 +114,36 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
                 // a component. The call to registerMockDependencies() above will have registered a Mock Logger
                 // in the component manager. Thus get it and override the Logger field injected by the Component
                 // manager.
-                Collection<Field> mockedComponentfields = ReflectionUtils.getAllFields(field.getType());
-                for (Field mockedField : mockedComponentfields) {
-                    if (mockedField.getAnnotation(Inject.class) != null &&
-                        Logger.class.isAssignableFrom(mockedField.getType()) &&
-                        getComponentManager().hasComponent(Logger.class))
-                    {
-                        boolean isAccessible = field.isAccessible();
-                        Object object;
-                        try {
-                            field.setAccessible(true);
-                            object = field.get(this);
-                        } finally {
-                            field.setAccessible(isAccessible);
-                        }
-                        ReflectionUtils.setFieldValue(object, mockedField.getName(),
-                            getComponentManager().lookup(Logger.class));
-                    }
+                injectMockLogger(field);
+            }
+        }
+    }
+
+    /**
+     * Inject the Logger mock which is already registered in the Component Manager inside the component instance
+     * annotated with {@link MockingRequirement}.
+     *
+     * @param mockingRequirementField the field to inject with the Mock Logger
+     * @throws Exception in case of access error
+     */
+    private void injectMockLogger(Field mockingRequirementField) throws Exception
+    {
+        Collection<Field> mockedComponentfields = ReflectionUtils.getAllFields(mockingRequirementField.getType());
+        for (Field mockedField : mockedComponentfields) {
+            if (mockedField.getAnnotation(Inject.class) != null &&
+                Logger.class.isAssignableFrom(mockedField.getType()) &&
+                getComponentManager().hasComponent(Logger.class))
+            {
+                boolean isAccessible = mockingRequirementField.isAccessible();
+                Object object;
+                try {
+                    mockingRequirementField.setAccessible(true);
+                    object = mockingRequirementField.get(this);
+                } finally {
+                    mockingRequirementField.setAccessible(isAccessible);
                 }
+                ReflectionUtils.setFieldValue(object, mockedField.getName(),
+                    getComponentManager().lookup(Logger.class));
             }
         }
     }
