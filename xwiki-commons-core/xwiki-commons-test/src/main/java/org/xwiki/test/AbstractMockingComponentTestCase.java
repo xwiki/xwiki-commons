@@ -196,6 +196,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
     /**
      * @return a configured Component Manager
      */
+    @Override
     public EmbeddableComponentManager getComponentManager() throws Exception
     {
         return this.componentManager;
