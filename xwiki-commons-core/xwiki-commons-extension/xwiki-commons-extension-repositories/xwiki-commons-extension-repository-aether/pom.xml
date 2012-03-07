@@ -25,14 +25,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-platform-extension-repositories</artifactId>
+    <groupId>org.xwiki.commons</groupId>
+    <artifactId>xwiki-commons-extension-repositories</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-platform-extension-repository-aether</artifactId>
-  <name>XWiki Platform - Extension - Repository - Aether</name>
+  <artifactId>xwiki-commons-extension-repository-aether</artifactId>
+  <name>XWiki Commons - Extension - Repository - Aether</name>
   <packaging>jar</packaging>
-  <description>XWiki Platform - Extension - Repository - Aether</description>
+  <description>XWiki Commons - Extension - Repository - Aether</description>
   <properties>
     <aether.version>1.13.1</aether.version>
   </properties>
@@ -48,8 +48,8 @@
       <version>${commons.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-extension-api</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-extension-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -110,8 +110,8 @@
 
     <!-- Test dependencies -->
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-extension-api</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-extension-api</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>

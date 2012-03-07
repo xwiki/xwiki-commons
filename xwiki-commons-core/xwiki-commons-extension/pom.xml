@@ -25,14 +25,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-platform-core</artifactId>
+    <groupId>org.xwiki.commons</groupId>
+    <artifactId>xwiki-commons-core</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-platform-extension</artifactId>
-  <name>XWiki Platform - Extension - Parent POM</name>
+  <artifactId>xwiki-commons-extension</artifactId>
+  <name>XWiki Commons - Extension - Parent POM</name>
   <packaging>pom</packaging>
-  <description>XWiki Platform - Extension - Parent POM</description>
+  <description>XWiki Commons - Extension - Parent POM</description>
   <properties>
     <maven.version>3.0.4</maven.version>
 
@@ -40,12 +40,12 @@
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
   <modules>
-    <module>xwiki-platform-extension-api</module>
-    <module>xwiki-platform-extension-handlers</module>
-    <module>xwiki-platform-extension-repositories</module>
-    <module>xwiki-platform-extension-cluster</module>
-    <module>xwiki-platform-extension-script</module>
-    <module>xwiki-platform-extension-ui</module>
+    <module>xwiki-commons-extension-api</module>
+    <module>xwiki-commons-extension-handlers</module>
+    <module>xwiki-commons-extension-repositories</module>
+    <module>xwiki-commons-extension-cluster</module>
+    <module>xwiki-commons-extension-script</module>
+    <module>xwiki-commons-extension-ui</module>
   </modules>
 </project>
 
