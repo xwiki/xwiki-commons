@@ -102,7 +102,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
             if (this.currentMockingRequirement != null) {
                 List<Class< ? >> exclusions = Arrays.asList(this.currentMockingRequirement.exceptions());
                 if (!exclusions.contains(Logger.class)) {
-                    logger = getMockery().mock(Logger.class);
+                    logger = getMockery().mock(Logger.class, instanceClass.getName());
                     mockLoggers.put(instanceClass, (Logger) logger);
                 } else {
                     logger = super.createLogger(instanceClass);
