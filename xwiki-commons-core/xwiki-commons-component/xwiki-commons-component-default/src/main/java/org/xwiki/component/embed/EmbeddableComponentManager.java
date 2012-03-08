@@ -277,7 +277,7 @@ public class EmbeddableComponentManager implements ComponentManager
             Class< ? > dependencyRoleClass = ReflectionUtils.getTypeClass(dependency.getRoleType());
 
             if (dependencyRoleClass.isAssignableFrom(Logger.class)) {
-                fieldValue = LoggerFactory.getLogger(instance.getClass());
+                fieldValue = createLogger(instance.getClass());
             } else if (dependencyRoleClass.isAssignableFrom(List.class)) {
                 fieldValue = lookupList(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
             } else if (dependencyRoleClass.isAssignableFrom(Map.class)) {
@@ -307,6 +307,14 @@ public class EmbeddableComponentManager implements ComponentManager
         }
 
         return instance;
+    }
+
+    /**
+     * Create a Logger instance to inject.
+     */
+    protected Object createLogger(Class< ? > instanceClass)
+    {
+        return LoggerFactory.getLogger(instanceClass);
     }
 
     @SuppressWarnings("unchecked")

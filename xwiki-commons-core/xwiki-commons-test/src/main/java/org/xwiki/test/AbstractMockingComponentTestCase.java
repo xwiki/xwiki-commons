@@ -23,7 +23,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -34,8 +36,6 @@ import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
-import org.xwiki.component.internal.RoleHint;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.annotation.MockingRequirement;
 
@@ -79,29 +79,61 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
 
     private ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
 
+    private Map<Class, Logger> mockLoggers = new HashMap<Class, Logger>();
+
+    /**
+     * Extend EmbeddableComponentManager in order to mock Loggers since they're handled specially and are not
+     * components.
+     */
     private class MockingEmbeddableComponentManager extends EmbeddableComponentManager
     {
-        private Logger mockLogger;
+        private MockingRequirement currentMockingRequirement;
+
+        public void setCurrentMockingRequirement(MockingRequirement currentMockingRequirement)
+        {
+            this.currentMockingRequirement = currentMockingRequirement;
+        }
 
         @Override
-        protected <T> T getComponentInstance(RoleHint<T> roleHint) throws ComponentLookupException
+        protected Object createLogger(Class< ? > instanceClass)
         {
-            T component;
+            Object logger;
 
-            // Logging is a special case since the Component Manager will inject a Logger but a Logger is not
-            // a component. Thus we need to intercept it and return a mock instead.
-            if (Logger.class == roleHint.getRoleType()) {
-                if (this.mockLogger != null) {
-                    component = (T) this.mockLogger;
+            if (this.currentMockingRequirement != null) {
+                List<Class< ? >> exclusions = Arrays.asList(this.currentMockingRequirement.exceptions());
+                if (!exclusions.contains(Logger.class)) {
+                    logger = getMockery().mock(Logger.class, instanceClass.getName());
+                    mockLoggers.put(instanceClass, (Logger) logger);
                 } else {
-                    this.mockLogger = getMockery().mock(Logger.class);
-                    component = (T) this.mockLogger ;
+                    logger = super.createLogger(instanceClass);
                 }
             } else {
-                component = super.getComponentInstance(roleHint);
+                logger = super.createLogger(instanceClass);
             }
+            return logger;
+        }
+    }
 
-            return component;
+    /**
+     * @return the Mock Logger if the Component under Test has requested an Injection of a Logger or null otherwise
+     */
+    public Logger getMockLogger(Class< ? > mockRequirementInstanceClass)
+    {
+        return this.mockLoggers.get(mockRequirementInstanceClass);
+    }
+
+    /**
+     * @return the Mock Logger if the Component under Test has requested an Injection of a Logger or null otherwise
+     */
+    public Logger getMockLogger()
+    {
+        if (this.mockLoggers.size() == 1) {
+            return this.mockLoggers.values().iterator().next();
+        } else if (this.mockLoggers.size() == 0) {
+            throw new RuntimeException("You have excluded the Logger from being mocked in your @MockingRequirement!");
+        } else {
+            throw new RuntimeException("When there are several @MockingRequirement annotations you muse use the "
+                + "getMockLogger(mockRequirementInstanceClass) signature!");
         }
     }
 
@@ -118,6 +150,12 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         for (Field field : ReflectionUtils.getAllFields(getClass())) {
             MockingRequirement mockingRequirement = field.getAnnotation(MockingRequirement.class);
             if (mockingRequirement != null) {
+
+                // Allow the MockingEmbeddableComponentManager the possibility to know what MockingRequirement
+                // annotation is being handled so that it can decide to mock or not mock the Logger depending on the
+                // exclusion list.
+                ((MockingEmbeddableComponentManager) this.componentManager).setCurrentMockingRequirement(
+                    mockingRequirement);
 
                 // Handle component fields
                 Type componentRoleType = findComponentRoleType(field, mockingRequirement.value());

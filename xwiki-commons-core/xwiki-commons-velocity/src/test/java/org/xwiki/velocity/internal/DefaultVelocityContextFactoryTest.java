@@ -27,6 +27,7 @@ import org.apache.velocity.tools.generic.ListTool;
 import org.jmock.Expectations;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
@@ -52,6 +53,11 @@ public class DefaultVelocityContextFactoryTest extends AbstractMockingComponentT
         getMockery().checking(new Expectations() {{
             allowing(configuration).getTools();
             will(returnValue(properties));
+
+            // Ignore all calls to debug(). Note that we could have also excluded Logger.class in the MockingRequirement
+            // annotation but this allows us to assert if there are warn(), info() or error() calls, which are
+            // important to test.
+            ignoring(any(Logger.class)).method("debug");
         }});
     }
 

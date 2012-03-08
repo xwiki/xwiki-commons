@@ -98,7 +98,7 @@ public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
         StringWriter writer = new StringWriter();
 
         // Verify that we log a warning and verify the message.
-        final Logger logger = getComponentManager().lookup(Logger.class);
+        final Logger logger = getMockLogger();
         getMockery().checking(new Expectations() {{
             oneOf(logger).warn("Cannot retrieve method forName from object of class java.lang.Class due to security "
                 + "restrictions.");
