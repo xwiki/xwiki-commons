@@ -37,8 +37,6 @@
     <module>xwiki-commons-extension-repository-xwiki-model</module>
     <module>xwiki-commons-extension-repository-xwiki-api</module>
     <module>xwiki-commons-extension-repository-xwiki-handler</module>
-    <module>xwiki-commons-extension-repository-xwiki-server-api</module>
-    <module>xwiki-commons-extension-repository-xwiki-server-ui</module>
   </modules>
 </project>
        

@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.jar.internal.handler;
+package org.xwiki.extension.jar;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -27,29 +27,24 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextInitializer;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.EntityReferenceValueProvider;
+import org.xwiki.extension.jar.internal.handler.ExtensionURLClassLoader;
+import org.xwiki.extension.jar.internal.handler.JarExtensionClassLoader;
 
 @Component
 @Singleton
 @Named("jarextension")
-public class JarExtensionExecutionContextInitializer implements ExecutionContextInitializer
+public class TestExecutionContextInitializer implements ExecutionContextInitializer
 {
-    @Inject
-    private JarExtensionClassLoader jarExtensionClassLoader;
+    public static String currentNamespace;
 
     @Inject
-    @Named("current")
-    private EntityReferenceValueProvider provider;
+    private JarExtensionClassLoader jarExtensionClassLoader;
 
     @Override
     public void initialize(ExecutionContext context) throws ExecutionContextException
     {
-        String currentWikiId = this.provider.getDefaultValue(EntityType.WIKI);
-
         ExtensionURLClassLoader extensionClassLoader =
-            this.jarExtensionClassLoader.getURLClassLoader(currentWikiId != null ? "wiki:" + currentWikiId : null,
-                false);
+            this.jarExtensionClassLoader.getURLClassLoader(currentNamespace != null ? currentNamespace : null, false);
 
         if (extensionClassLoader != null) {
             Thread.currentThread().setContextClassLoader(extensionClassLoader);

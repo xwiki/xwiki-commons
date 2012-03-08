@@ -24,7 +24,6 @@ import java.util.HashMap;
 
 import junit.framework.Assert;
 
-import org.jmock.Expectations;
 import org.junit.Test;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
@@ -37,9 +36,6 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.jar.internal.handler.JarExtensionClassLoader;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.AttachmentReferenceResolver;
-import org.xwiki.model.reference.EntityReferenceValueProvider;
 import org.xwiki.observation.ObservationManager;
 
 import packagefile.jarextension.DefaultTestComponent;
@@ -49,8 +45,6 @@ import packagefile.jarextensionwithdeps.TestComponentWithDeps;
 
 public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 {
-    private LocalExtensionRepository localExtensionRepository;
-
     private ComponentManagerManager componentManagerManager;
 
     private ClassLoader testApplicationClassloader;
@@ -59,11 +53,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
     private Execution execution;
 
-    private EntityReferenceValueProvider currentReferenceProvider;
-
-    private static final String WIKI = "wikiid";
-
-    private static final String NAMESPACE = "wiki:" + WIKI;
+    private static final String NAMESPACE = "namespace";
 
     @Override
     protected void registerComponents() throws Exception
@@ -73,16 +63,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         // Override the system ClassLoader to isolate class loading of extensions from the current ClassLoader
         // (which already contains the extensions)
         registerComponent(TestJarExtensionClassLoader.class);
-        registerMockComponent(AttachmentReferenceResolver.class, "current");
 
-        this.currentReferenceProvider = registerMockComponent(EntityReferenceValueProvider.class, "current");
-        getMockery().checking(new Expectations()
-        {
-            {
-                allowing(currentReferenceProvider).getDefaultValue(EntityType.WIKI);
-                will(returnValue(WIKI));
-            }
-        });
+        TestExecutionContextInitializer.currentNamespace = NAMESPACE;
     }
 
     @Override

@@ -54,13 +54,12 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-test</artifactId>
-      <version>${commons.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
   <modules>
     <module>xwiki-commons-extension-handler-jar</module>
-    <module>xwiki-commons-extension-handler-xar</module>
   </modules>
 </project>
        

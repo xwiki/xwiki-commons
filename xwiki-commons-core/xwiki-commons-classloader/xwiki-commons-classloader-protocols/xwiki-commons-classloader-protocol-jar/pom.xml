@@ -25,18 +25,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.xwiki.platform</groupId>
-    <artifactId>xwiki-platform-classloader-protocols</artifactId>
+    <groupId>org.xwiki.commons</groupId>
+    <artifactId>xwiki-commons-classloader-protocols</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-platform-classloader-protocol-jar</artifactId>
-  <name>XWiki Platform - ClassLoader - Protocols - JAR</name>
+  <artifactId>xwiki-commons-classloader-protocol-jar</artifactId>
+  <name>XWiki Commons - ClassLoader - Protocols - JAR</name>
   <packaging>jar</packaging>
-  <description>XWiki Platform - ClassLoader - Protocols - JAR</description>
+  <description>XWiki Commons - ClassLoader - Protocols - JAR</description>
   <dependencies>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-classloader-api</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-classloader-api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

@@ -25,6 +25,19 @@
 
   <import namespace="http://www.xwiki.org" schemaLocation="http://xwiki.org/xwiki.rest.model.xsd"/>
 
+  <complexType name="Link">
+    <attribute name="href" type="string"></attribute>
+    <attribute name="rel" type="string"></attribute>
+    <attribute name="type" type="string"></attribute>
+    <attribute name="hrefLang" type="string"></attribute>
+  </complexType>
+
+  <complexType name="LinkCollection">
+    <sequence>
+      <element name="link" type="xwiki:Link" minOccurs="0" maxOccurs="unbounded"></element>
+    </sequence>
+  </complexType>
+
   <complexType name="Extension">
     <complexContent>
       <extension base="extension:AbstractExtension">

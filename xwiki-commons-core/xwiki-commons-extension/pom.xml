@@ -43,9 +43,6 @@
     <module>xwiki-commons-extension-api</module>
     <module>xwiki-commons-extension-handlers</module>
     <module>xwiki-commons-extension-repositories</module>
-    <module>xwiki-commons-extension-cluster</module>
-    <module>xwiki-commons-extension-script</module>
-    <module>xwiki-commons-extension-ui</module>
   </modules>
 </project>
 
