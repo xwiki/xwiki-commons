@@ -121,7 +121,7 @@
                    See xwiki-commons-tool-validation-resources module -->
               <headerDefinition>license-xml-definition.xml</headerDefinition>
               <headerDefinition>license-script-definition.xml</headerDefinition>
-              <headerDefinition>license-bat-definition.xml</headerDefinition>
+              <headerDefinition>license-batch-definition.xml</headerDefinition>
             </headerDefinitions>
             <!-- Our Java and XML styles aren't the default so we need to change the mapping -->
             <mapping>

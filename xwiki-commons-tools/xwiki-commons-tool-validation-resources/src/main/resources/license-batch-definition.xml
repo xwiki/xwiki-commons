@@ -21,7 +21,7 @@
 -->
 
 <additionalHeaders>
-  <bat_style>
+  <batch_style>
     <firstLine>REM -------------------------------------------------------------------------</firstLine>
     <beforeEachLine>REM </beforeEachLine>
     <endLine>REM -------------------------------------------------------------------------</endLine>
@@ -30,5 +30,5 @@
     <lastLineDetectionPattern>REM\s-------------------------------------------------------------------------$</lastLineDetectionPattern>
     <allowBlankLines>false</allowBlankLines>
     <isMultiline>true</isMultiline>
-  </bat_style>
+  </batch_style>
 </additionalHeaders>
