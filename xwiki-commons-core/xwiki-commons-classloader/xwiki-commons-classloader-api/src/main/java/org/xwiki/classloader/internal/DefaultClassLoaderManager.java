@@ -17,47 +17,64 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.jar.internal.handler;
+package org.xwiki.classloader.internal;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Singleton;
 
+import org.xwiki.classloader.ClassLoaderManager;
+import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.component.annotation.Component;
 
+/**
+ * Default implementation of {@link ClassLoaderManager}.
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 @Component
 @Singleton
-public class DefaultJarExtensionClassLoader implements JarExtensionClassLoader
+public class DefaultClassLoaderManager implements ClassLoaderManager
 {
-    private ExtensionURLClassLoader rootClassLoader;
+    /**
+     * The class loader corresponding to null namespace.
+     */
+    private NamespaceURLClassLoader rootClassLoader;
 
-    private Map<String, ExtensionURLClassLoader> wikiClassLoaderMap = new HashMap<String, ExtensionURLClassLoader>();
+    /**
+     * The classloaders stored by namespace.
+     */
+    private Map<String, NamespaceURLClassLoader> wikiClassLoaderMap =
+        new ConcurrentHashMap<String, NamespaceURLClassLoader>();
 
     /**
      * Allow overriding the system classloader during tests.
+     * 
      * @return a ClassLoader to be used as the system parent
      */
-    protected ClassLoader getSystemClassLoader() {
+    protected ClassLoader getSystemClassLoader()
+    {
         return getClass().getClassLoader();
     }
 
     @Override
-    public ExtensionURLClassLoader getURLClassLoader(String namespace, boolean create)
+    public NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create)
     {
         if (this.rootClassLoader == null && create) {
-            this.rootClassLoader = new ExtensionURLClassLoader(new URI[] {}, getSystemClassLoader(), null);
+            this.rootClassLoader = new NamespaceURLClassLoader(new URI[] {}, getSystemClassLoader(), null);
         }
 
-        ExtensionURLClassLoader wikiClassLoader = this.rootClassLoader;
+        NamespaceURLClassLoader wikiClassLoader = this.rootClassLoader;
 
         if (namespace != null) {
             wikiClassLoader = this.wikiClassLoaderMap.get(namespace);
 
             if (wikiClassLoader == null) {
                 if (create) {
-                    wikiClassLoader = new ExtensionURLClassLoader(new URI[] {}, this.rootClassLoader, namespace);
+                    wikiClassLoader = new NamespaceURLClassLoader(new URI[] {}, this.rootClassLoader, namespace);
                     this.wikiClassLoaderMap.put(namespace, wikiClassLoader);
                 } else {
                     wikiClassLoader = this.rootClassLoader;
@@ -75,6 +92,7 @@ public class DefaultJarExtensionClassLoader implements JarExtensionClassLoader
             for (String namespace : wikiClassLoaderMap.keySet()) {
                 dropURLClassLoader(namespace);
             }
+
             this.rootClassLoader = null;
         }
     }
@@ -82,10 +100,8 @@ public class DefaultJarExtensionClassLoader implements JarExtensionClassLoader
     @Override
     public void dropURLClassLoader(String namespace)
     {
-        if (this.rootClassLoader != null) { 
-           if (this.wikiClassLoaderMap.get(namespace) != null) {
-               this.wikiClassLoaderMap.put(namespace, null);
-           }
+        if (this.rootClassLoader != null && namespace != null) {
+            this.wikiClassLoaderMap.remove(namespace);
         }
     }
 }

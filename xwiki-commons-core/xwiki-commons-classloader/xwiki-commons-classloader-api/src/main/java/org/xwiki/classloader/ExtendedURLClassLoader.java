@@ -25,9 +25,9 @@ import java.net.URLStreamHandlerFactory;
 import java.util.List;
 
 /**
- * Implementation that allows adding URLs on demand (the default {@link URLClassLoader} only allows
- * adding URLs in the constructor).
- *  
+ * Implementation that allows adding URLs on demand (the default {@link URLClassLoader} only allows adding URLs in the
+ * constructor).
+ * 
  * @version $Id$
  * @since 2.0.1
  */
@@ -36,9 +36,9 @@ public class ExtendedURLClassLoader extends URLClassLoader
     /**
      * See {@link URLClassLoader#URLClassLoader(URL[], ClassLoader, URLStreamHandlerFactory)}.
      * 
-     * @param urls the URLs from which to load classes and resources 
+     * @param urls the URLs from which to load classes and resources
      * @param parent the parent class loader for delegation
-     * @param factory the URLStreamHandlerFactory to use when creating URLs 
+     * @param factory the URLStreamHandlerFactory to use when creating URLs
      */
     public ExtendedURLClassLoader(URL[] urls, ClassLoader parent, URLStreamHandlerFactory factory)
     {
@@ -48,7 +48,7 @@ public class ExtendedURLClassLoader extends URLClassLoader
     /**
      * See {@link URLClassLoader#URLClassLoader(URL[], ClassLoader)}.
      * 
-     * @param urls the URLs from which to load classes and resources 
+     * @param urls the URLs from which to load classes and resources
      * @param parent the parent class loader for delegation
      */
     public ExtendedURLClassLoader(URL[] urls, ClassLoader parent)
@@ -59,27 +59,28 @@ public class ExtendedURLClassLoader extends URLClassLoader
     /**
      * See {@link URLClassLoader#URLClassLoader(URL[])}.
      * 
-     * @param urls the URLs from which to load classes and resources 
+     * @param urls the URLs from which to load classes and resources
      */
     public ExtendedURLClassLoader(URL[] urls)
     {
         super(urls);
     }
-    
+
+    /**
+     * @param parent the parent class loader for delegation
+     * @param factory the URLStreamHandlerFactory to use when creating URLs
+     */
     public ExtendedURLClassLoader(ClassLoader parent, URLStreamHandlerFactory factory)
     {
         this(new URL[0], parent, factory);
     }
 
-    /**
-     * @param url the JAR URL to add
-     */
     @Override
     public void addURL(URL url)
     {
         super.addURL(url);
     }
-    
+
     /**
      * @param urls the JAR URLs to add
      */

@@ -19,7 +19,7 @@
  */
 package org.xwiki.classloader;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Adds the ability for a {@link java.net.URLStreamHandler} implementation to return the protocol
@@ -33,7 +33,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 2.0.1
  */
-@ComponentRole
+@Role
 public interface ExtendedURLStreamHandler
 {
     /**

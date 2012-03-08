@@ -53,8 +53,6 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-            org/xwiki/classloader/ExtendedURLClassLoader.java,
-            org/xwiki/classloader/internal/ExtendedURLStreamHandlerFactory.java,
             org/xwiki/classloader/internal/ResourceLoader.java,
             org/xwiki/classloader/URIClassLoader.java
           </excludes>

@@ -23,12 +23,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.xwiki.classloader.ClassLoaderManager;
+import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextInitializer;
-import org.xwiki.extension.jar.internal.handler.ExtensionURLClassLoader;
-import org.xwiki.extension.jar.internal.handler.JarExtensionClassLoader;
 
 @Component
 @Singleton
@@ -38,12 +38,12 @@ public class TestExecutionContextInitializer implements ExecutionContextInitiali
     public static String currentNamespace;
 
     @Inject
-    private JarExtensionClassLoader jarExtensionClassLoader;
+    private ClassLoaderManager jarExtensionClassLoader;
 
     @Override
     public void initialize(ExecutionContext context) throws ExecutionContextException
     {
-        ExtensionURLClassLoader extensionClassLoader =
+        NamespaceURLClassLoader extensionClassLoader =
             this.jarExtensionClassLoader.getURLClassLoader(currentNamespace != null ? currentNamespace : null, false);
 
         if (extensionClassLoader != null) {

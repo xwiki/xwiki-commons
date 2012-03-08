@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -83,7 +84,7 @@ public class JarExtensionJobFinishedListener implements EventListener
      * Jar extension ClassLoader that will be properly refreshed.
      */
     @Inject
-    private JarExtensionClassLoader jarExtensionClassLoader;
+    private ClassLoaderManager jarExtensionClassLoader;
 
     /**
      * Extension initializer used to reinstall extensions in a new ClassLoader

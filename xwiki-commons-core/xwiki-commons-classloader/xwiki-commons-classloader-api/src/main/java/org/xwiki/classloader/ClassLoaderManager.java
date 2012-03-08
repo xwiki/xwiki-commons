@@ -17,16 +17,39 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.jar.internal.handler;
+package org.xwiki.classloader;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
-@ComponentRole
-public interface JarExtensionClassLoader
+/**
+ * Store and create automatically class loaders by namespace.
+ * <p>
+ * All classloaders inherit from root classloader which is associated to null namespace.
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
+@Role
+public interface ClassLoaderManager
 {
-    ExtensionURLClassLoader getURLClassLoader(String namespace, boolean create);
+    /**
+     * Create and get classloader associated to the provided namespace.
+     * 
+     * @param namespace the namespace
+     * @param create true if the class loader should be created if it does not exists
+     * @return the class loader
+     */
+    NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create);
 
+    /**
+     * Remove all classloaders.
+     */
     void dropURLClassLoaders();
 
+    /**
+     * Remove the classloader associated to the provided namespace.
+     * 
+     * @param namespace the namespace
+     */
     void dropURLClassLoader(String namespace);
 }

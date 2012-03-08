@@ -17,24 +17,40 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.jar.internal.handler;
+package org.xwiki.classloader;
 
 import java.net.URI;
 
-import org.xwiki.classloader.URIClassLoader;
 
-public class ExtensionURLClassLoader extends URIClassLoader
+/**
+ * A {@link URIClassLoader} associated to a namespace.
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
+public class NamespaceURLClassLoader extends URIClassLoader
 {
+    /**
+     * @see #getn
+     */
     private String namespace;
 
-    public ExtensionURLClassLoader(URI[] uris, ClassLoader parent, String wiki)
+    /**
+     * @param uris the search path
+     * @param parent the parent class loader
+     * @param namepsace the namespace associated to the classloader
+     */
+    public NamespaceURLClassLoader(URI[] uris, ClassLoader parent, String namepsace)
     {
         super(uris, parent);
-        
-        this.namespace = wiki;
+
+        this.namespace = namepsace;
     }
 
-    public String getWiki()
+    /**
+     * @return the namepsace associated to the classloader
+     */
+    public String getNamespace()
     {
         return namespace;
     }

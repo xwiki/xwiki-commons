@@ -25,6 +25,7 @@ import java.util.HashMap;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -33,7 +34,6 @@ import org.xwiki.context.ExecutionContextInitializer;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
-import org.xwiki.extension.jar.internal.handler.JarExtensionClassLoader;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.observation.ObservationManager;
@@ -49,7 +49,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
     private ClassLoader testApplicationClassloader;
 
-    private JarExtensionClassLoader jarExtensionClassLoader;
+    private ClassLoaderManager jarExtensionClassLoader;
 
     private Execution execution;
 
@@ -77,7 +77,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         // lookup
         this.localExtensionRepository = getComponentManager().lookup(LocalExtensionRepository.class);
         this.componentManagerManager = getComponentManager().lookup(ComponentManagerManager.class);
-        this.jarExtensionClassLoader = getComponentManager().lookup(JarExtensionClassLoader.class);
+        this.jarExtensionClassLoader = getComponentManager().lookup(ClassLoaderManager.class);
         this.execution = getComponentManager().lookup(Execution.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration

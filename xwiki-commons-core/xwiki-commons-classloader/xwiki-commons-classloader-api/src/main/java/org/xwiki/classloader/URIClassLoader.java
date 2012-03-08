@@ -105,7 +105,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
      * Creates URIClassLoader with the specified search path and parent class loader.
      * 
      * @param uris the search path
-     * @param parent the parent class loader.
+     * @param parent the parent class loader
      */
     public URIClassLoader(URI[] uris, ClassLoader parent)
     {

@@ -20,8 +20,8 @@
 
 package org.xwiki.extension.jar;
 
+import org.xwiki.classloader.internal.DefaultClassLoaderManager;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.extension.jar.internal.handler.DefaultJarExtensionClassLoader;
 
 /**
  * Override the DefaultJarExtensionClassLoader to prevent access to extension classes available in the classpath of the
@@ -30,7 +30,7 @@ import org.xwiki.extension.jar.internal.handler.DefaultJarExtensionClassLoader;
  * @version $Id$
  */
 @Component
-public class TestJarExtensionClassLoader extends DefaultJarExtensionClassLoader
+public class TestJarExtensionClassLoader extends DefaultClassLoaderManager
 {
     @Override
     protected ClassLoader getSystemClassLoader()

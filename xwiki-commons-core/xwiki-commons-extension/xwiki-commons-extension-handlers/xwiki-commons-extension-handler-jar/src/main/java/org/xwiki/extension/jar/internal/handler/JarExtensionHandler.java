@@ -32,7 +32,8 @@ import java.util.zip.ZipInputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
+import org.xwiki.classloader.ClassLoaderManager;
+import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.annotation.ComponentDeclaration;
@@ -57,10 +58,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     private ComponentManagerManager componentManagerManager;
 
     @Inject
-    private JarExtensionClassLoader jarExtensionClassLoader;
-
-    @Inject
-    private Logger logger;
+    private ClassLoaderManager jarExtensionClassLoader;
 
     private ComponentAnnotationLoader jarLoader;
 
@@ -84,7 +82,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     @Override
     public void install(LocalExtension localExtension, String namespace, Map<String, ? > extra) throws InstallException
     {
-        ExtensionURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, true);
+        NamespaceURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, true);
 
         // 1) load jar into classloader
         try {
@@ -101,9 +99,9 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     public void uninstall(LocalExtension localExtension, String namespace, Map<String, ? > extra)
         throws UninstallException
     {
-        ExtensionURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, false);
+        NamespaceURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, false);
 
-        if (namespace == null || classLoader.getWiki().equals(namespace)) {
+        if (namespace == null || classLoader.getNamespace().equals(namespace)) {
             // unregister components
             unloadComponents(localExtension.getFile(), classLoader, namespace);
 
@@ -112,7 +110,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
         }
     }
 
-    private void loadComponents(LocalExtensionFile jarFile, ExtensionURLClassLoader classLoader, String namespace)
+    private void loadComponents(LocalExtensionFile jarFile, NamespaceURLClassLoader classLoader, String namespace)
         throws InstallException
     {
         try {
@@ -188,7 +186,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
         return componentDeclarations;
     }
 
-    private void unloadComponents(LocalExtensionFile jarFile, ExtensionURLClassLoader classLoader, String namespace)
+    private void unloadComponents(LocalExtensionFile jarFile, NamespaceURLClassLoader classLoader, String namespace)
         throws UninstallException
     {
         try {
