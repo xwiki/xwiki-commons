@@ -21,7 +21,7 @@
 -->
 
 <additionalHeaders>
-  <xwikishell_style>
+  <shell_style>
     <firstLine># ---------------------------------------------------------------------------</firstLine>
     <beforeEachLine># </beforeEachLine>
     <endLine># ---------------------------------------------------------------------------</endLine>
@@ -30,5 +30,5 @@
     <lastLineDetectionPattern>#\s---------------------------------------------------------------------------$</lastLineDetectionPattern>
     <allowBlankLines>false</allowBlankLines>
     <isMultiline>true</isMultiline>
-  </xwikishell_style>
+  </shell_style>
 </additionalHeaders>

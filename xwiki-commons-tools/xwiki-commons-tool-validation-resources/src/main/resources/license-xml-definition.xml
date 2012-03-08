@@ -21,7 +21,7 @@
 -->
 
 <additionalHeaders>
-  <xwikixml_style>
+  <xml_style>
     <firstLine><![CDATA[<!--]]></firstLine>
     <beforeEachLine> * </beforeEachLine>
     <endLine><![CDATA[-->]]></endLine>
@@ -30,5 +30,5 @@
     <lastLineDetectionPattern><![CDATA[.*-->(\s|\t)*$]]></lastLineDetectionPattern>
     <allowBlankLines>false</allowBlankLines>
     <isMultiline>true</isMultiline>
-  </xwikixml_style>
+  </xml_style>
 </additionalHeaders>

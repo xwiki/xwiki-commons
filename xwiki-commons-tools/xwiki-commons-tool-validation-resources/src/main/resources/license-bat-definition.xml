@@ -21,7 +21,7 @@
 -->
 
 <additionalHeaders>
-  <xwikibat_style>
+  <bat_style>
     <firstLine>REM -------------------------------------------------------------------------</firstLine>
     <beforeEachLine>REM </beforeEachLine>
     <endLine>REM -------------------------------------------------------------------------</endLine>
@@ -30,5 +30,5 @@
     <lastLineDetectionPattern>REM\s-------------------------------------------------------------------------$</lastLineDetectionPattern>
     <allowBlankLines>false</allowBlankLines>
     <isMultiline>true</isMultiline>
-  </xwikibat_style>
+  </bat_style>
 </additionalHeaders>

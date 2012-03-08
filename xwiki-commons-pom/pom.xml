@@ -123,15 +123,6 @@
               <headerDefinition>license-shell-definition.xml</headerDefinition>
               <headerDefinition>license-bat-definition.xml</headerDefinition>
             </headerDefinitions>
-            <!-- Our Java and XML styles aren't the default so we need to change the mapping -->
-            <mapping>
-              <java>SLASHSTAR_STYLE</java>
-              <xml>XWIKIXML_STYLE</xml>
-              <html>XWIKIXML_STYLE</html>
-              <properties>XWIKISHELL_STYLE</properties>
-              <bat>XWIKIBAT_STYLE</bat>
-              <sh>XWIKISHELL_STYLE</sh>
-              <xsd>XWIKIXML_STYLE</xsd>
             </mapping>
             <excludes>
               <!-- Exclude Git files -->

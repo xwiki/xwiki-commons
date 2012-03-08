@@ -76,11 +76,6 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
       <plugin>
-        <!-- Check license headers -->
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
@@ -101,6 +96,50 @@
                 </bannedDependencies>
               </rules>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Check license headers and fail the build if they're missing or not matching the defined format -->
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <header>license.txt</header>
+          <strictCheck>true</strictCheck>
+          <headerDefinitions>
+            <!-- Our style for XML headers isn't standard so we need to define it in a custom manner.
+                 See xwiki-commons-tool-validation-resources module -->
+            <headerDefinition>license-xml-definition.xml</headerDefinition>
+            <headerDefinition>license-shell-definition.xml</headerDefinition>
+            <headerDefinition>license-bat-definition.xml</headerDefinition>
+          </headerDefinitions>
+          <excludes>
+            <!-- Exclude Git files -->
+            <exclude>**/.git*</exclude>
+            <!-- Exclude M2Eclipse target folder -->
+            <exclude>target-eclipse/**</exclude>
+            <!-- At the moment we don't have a comment syntax for components.txt files so we need to exclude them
+                 from the check -->
+            <exclude>**/components.txt</exclude>
+            <exclude>**/component-overrides.txt</exclude>
+            <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
+            <exclude>**/it/**/goals.txt</exclude>
+            <exclude>**/goal.txt</exclude>
+          </excludes>
+        </configuration>
+        <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->
+        <dependencies>
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+            <version>${commons.version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
