@@ -21,7 +21,7 @@
 -->
 
 <additionalHeaders>
-  <shell_style>
+  <script_style>
     <firstLine># ---------------------------------------------------------------------------</firstLine>
     <beforeEachLine># </beforeEachLine>
     <endLine># ---------------------------------------------------------------------------</endLine>
@@ -30,5 +30,5 @@
     <lastLineDetectionPattern>#\s---------------------------------------------------------------------------$</lastLineDetectionPattern>
     <allowBlankLines>false</allowBlankLines>
     <isMultiline>true</isMultiline>
-  </shell_style>
+  </script_style>
 </additionalHeaders>

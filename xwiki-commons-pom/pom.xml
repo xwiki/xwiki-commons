@@ -120,9 +120,13 @@
               <!-- Our style for XML headers isn't standard so we need to define it in a custom manner.
                    See xwiki-commons-tool-validation-resources module -->
               <headerDefinition>license-xml-definition.xml</headerDefinition>
-              <headerDefinition>license-shell-definition.xml</headerDefinition>
+              <headerDefinition>license-script-definition.xml</headerDefinition>
               <headerDefinition>license-bat-definition.xml</headerDefinition>
             </headerDefinitions>
+            <!-- Our Java and XML styles aren't the default so we need to change the mapping -->
+            <mapping>
+              <java>SLASHSTAR_STYLE</java>
+            </mapping>
             <excludes>
               <!-- Exclude Git files -->
               <exclude>**/.git*</exclude>
