@@ -36,7 +36,7 @@
   <properties>
     <maven.version>3.0.4</maven.version>
 
-    <!-- Extension Manager is still in experimental sate and change very often -->
+    <!-- To remove when releasing 4.0 -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
   <modules>

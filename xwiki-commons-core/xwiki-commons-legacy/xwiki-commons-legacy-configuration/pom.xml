@@ -26,13 +26,17 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-configuration</artifactId>
+    <artifactId>xwiki-commons-legacy</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-legacy-configuration</artifactId>
   <name>XWiki Commons - Legacy- Configuration</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Legacy - Configuration</description>
+  <properties>
+    <!-- To remove when releasing 4.0 -->
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

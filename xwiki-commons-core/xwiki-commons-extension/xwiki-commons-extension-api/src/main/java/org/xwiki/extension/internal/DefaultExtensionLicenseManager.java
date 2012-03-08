@@ -85,14 +85,14 @@ public class DefaultExtensionLicenseManager implements ExtensionLicenseManager, 
             new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner()).setUrls(licenseURLs)
                 .filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(LICENSE_PACKAGE))));
 
-        for (String licenseFile : reflections.getResources(Pattern.compile(".*\\.txt"))) {
+        for (String licenseFile : reflections.getResources(Pattern.compile(".*\\.license"))) {
             URL licenseUrl = getClass().getClassLoader().getResource(licenseFile);
 
             try {
                 // Get name
                 String path = decode(licenseUrl.getPath());
                 String name = path.substring(path.lastIndexOf('/') + 1);
-                name = name.substring(0, name.length() - ".txt".length());
+                name = name.substring(0, name.length() - ".license".length());
 
                 // Get content
                 InputStream is = licenseUrl.openStream();
