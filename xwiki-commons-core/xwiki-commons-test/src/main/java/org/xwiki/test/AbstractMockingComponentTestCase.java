@@ -21,6 +21,7 @@ package org.xwiki.test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -87,11 +88,11 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
      */
     private class MockingEmbeddableComponentManager extends EmbeddableComponentManager
     {
-        private MockingRequirement currentMockingRequirement;
+        private List<Class< ? >> mockedComponentClasses = new ArrayList<Class< ? >>();
 
-        public void setCurrentMockingRequirement(MockingRequirement currentMockingRequirement)
+        public void addMockedComponentClass(Class< ?> mockedComponentClass)
         {
-            this.currentMockingRequirement = currentMockingRequirement;
+            this.mockedComponentClasses.add(mockedComponentClass);
         }
 
         @Override
@@ -99,14 +100,9 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         {
             Object logger;
 
-            if (this.currentMockingRequirement != null) {
-                List<Class< ? >> exclusions = Arrays.asList(this.currentMockingRequirement.exceptions());
-                if (!exclusions.contains(Logger.class)) {
-                    logger = getMockery().mock(Logger.class, instanceClass.getName());
-                    mockLoggers.put(instanceClass, (Logger) logger);
-                } else {
-                    logger = super.createLogger(instanceClass);
-                }
+            if (this.mockedComponentClasses.contains(instanceClass)) {
+                logger = getMockery().mock(Logger.class, instanceClass.getName());
+                mockLoggers.put(instanceClass, (Logger) logger);
             } else {
                 logger = super.createLogger(instanceClass);
             }
@@ -151,11 +147,14 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
             MockingRequirement mockingRequirement = field.getAnnotation(MockingRequirement.class);
             if (mockingRequirement != null) {
 
-                // Allow the MockingEmbeddableComponentManager the possibility to know what MockingRequirement
-                // annotation is being handled so that it can decide to mock or not mock the Logger depending on the
-                // exclusion list.
-                ((MockingEmbeddableComponentManager) this.componentManager).setCurrentMockingRequirement(
-                    mockingRequirement);
+                List<Class< ? >> exclusions = Arrays.asList(mockingRequirement.exceptions());
+
+                // Mark the component class having its deps mocked so that our MockingEmbeddableComponentManager will
+                // server a mock Logger (but only if the Logger class is not in the exclusion list)
+                if (!exclusions.contains(Logger.class)) {
+                    ((MockingEmbeddableComponentManager) this.componentManager).addMockedComponentClass(
+                        field.getType());
+                }
 
                 // Handle component fields
                 Type componentRoleType = findComponentRoleType(field, mockingRequirement.value());
@@ -166,15 +165,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
                     if ((mockingRequirement.hint().length() > 0 && mockingRequirement.hint().equals(
                         descriptor.getRoleHint())) || mockingRequirement.hint().length() == 0)
                     {
-                        registerMockDependencies(descriptor, Arrays.asList(mockingRequirement.exceptions()));
-
-                        // We're done mocking the dependencies, make MockingEmbeddableComponentManager behave as a
-                        // standard EmbeddableComponentManager again (i.e. not mocking Loggers).
-                        // We need to do this since the Component excluded in the MockingRequirement annotation need
-                        // to use real Log instances and not mock ones.
-                        ((MockingEmbeddableComponentManager) this.componentManager).setCurrentMockingRequirement(
-                            null);
-
+                        registerMockDependencies(descriptor, exclusions);
                         getComponentManager().registerComponent(descriptor);
                         configure();
                         ReflectionUtils.setFieldValue(this, field.getName(),
