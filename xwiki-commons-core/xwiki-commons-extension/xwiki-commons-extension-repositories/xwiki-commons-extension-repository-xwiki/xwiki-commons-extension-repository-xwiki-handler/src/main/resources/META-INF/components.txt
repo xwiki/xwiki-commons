@@ -1,0 +1,2 @@
+org.xwiki.extension.repository.xwiki.internal.XWikiExtensionRepositoryFactory
+org.xwiki.extension.repository.xwiki.internal.XWikiExtensionRepositorySource
