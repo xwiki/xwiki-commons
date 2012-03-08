@@ -167,6 +167,14 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
                         descriptor.getRoleHint())) || mockingRequirement.hint().length() == 0)
                     {
                         registerMockDependencies(descriptor, Arrays.asList(mockingRequirement.exceptions()));
+
+                        // We're done mocking the dependencies, make MockingEmbeddableComponentManager behave as a
+                        // standard EmbeddableComponentManager again (i.e. not mocking Loggers).
+                        // We need to do this since the Component excluded in the MockingRequirement annotation need
+                        // to use real Log instances and not mock ones.
+                        ((MockingEmbeddableComponentManager) this.componentManager).setCurrentMockingRequirement(
+                            null);
+
                         getComponentManager().registerComponent(descriptor);
                         configure();
                         ReflectionUtils.setFieldValue(this, field.getName(),
@@ -195,8 +203,8 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
         for (ComponentDependency< ? > dependencyDescriptor : dependencyDescriptors) {
             // Only register a mock if it isn't an exception
             // TODO: Handle multiple roles/hints.
-            if (!exceptions.contains(dependencyDescriptor.getRoleType())
-                && Logger.class != dependencyDescriptor.getRoleType())
+            if (!exceptions.contains(ReflectionUtils.getTypeClass(dependencyDescriptor.getRoleType()))
+                && Logger.class != ReflectionUtils.getTypeClass(dependencyDescriptor.getRoleType()))
             {
                 DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
                 cd.setRoleType(dependencyDescriptor.getRoleType());
