@@ -69,6 +69,7 @@ import com.google.common.base.Predicates;
  * Scan jars to find core extensions.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

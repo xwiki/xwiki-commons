@@ -26,6 +26,7 @@ import org.xwiki.extension.ResolveException;
  * Base class for {@link ExtensionRepository} implementations.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public abstract class AbstractExtensionRepository implements ExtensionRepository
 {

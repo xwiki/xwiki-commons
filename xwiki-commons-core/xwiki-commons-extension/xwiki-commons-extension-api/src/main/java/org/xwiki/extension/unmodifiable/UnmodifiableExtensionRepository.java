@@ -31,6 +31,7 @@ import org.xwiki.extension.wrap.WrappingExtensionRepository;
  * 
  * @param <T>
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableExtensionRepository<T extends ExtensionRepository> extends WrappingExtensionRepository<T>
 {

@@ -21,12 +21,13 @@ package org.xwiki.extension.job.plan;
 
 import java.util.Collection;
 
-import org.xwiki.extension.job.event.status.JobStatus;
+import org.xwiki.job.event.status.JobStatus;
 
 /**
  * A plan of extensions related actions to perform.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface ExtensionPlan extends JobStatus
 {

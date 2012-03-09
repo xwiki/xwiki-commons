@@ -21,15 +21,16 @@ package org.xwiki.extension.repository;
 
 import java.util.Collection;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.CoreExtension;
 
 /**
  * Virtual extension repository containing core extensions.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface CoreExtensionRepository extends ExtensionRepository
 {
     /**

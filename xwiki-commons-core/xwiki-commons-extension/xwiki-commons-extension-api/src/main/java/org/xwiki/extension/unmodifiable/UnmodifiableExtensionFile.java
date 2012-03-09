@@ -30,6 +30,7 @@ import org.xwiki.extension.wrap.AbstractWrappingObject;
  * 
  * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableExtensionFile<T extends ExtensionFile> extends AbstractWrappingObject<T> implements
     ExtensionFile

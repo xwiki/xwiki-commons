@@ -48,6 +48,7 @@
     <module>xwiki-commons-velocity</module>
     <module>xwiki-commons-logging</module>
     <module>xwiki-commons-classloader</module>
+    <module>xwiki-commons-job</module>
     <module>xwiki-commons-extension</module>
     <module>xwiki-commons-legacy</module>
   </modules>

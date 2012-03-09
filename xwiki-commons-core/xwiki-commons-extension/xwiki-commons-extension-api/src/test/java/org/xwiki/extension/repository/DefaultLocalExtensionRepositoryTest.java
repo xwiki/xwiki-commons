@@ -61,9 +61,9 @@ public class DefaultLocalExtensionRepositoryTest extends AbstractComponentTestCa
 
         // lookup
 
-        this.localExtensionRepository = getComponentManager().lookup(LocalExtensionRepository.class);
+        this.localExtensionRepository = getComponentManager().lookupComponent(LocalExtensionRepository.class);
 
-        this.repositoryManager = getComponentManager().lookup(ExtensionRepositoryManager.class);
+        this.repositoryManager = getComponentManager().lookupComponent(ExtensionRepositoryManager.class);
 
         // resources
 
@@ -212,17 +212,17 @@ public class DefaultLocalExtensionRepositoryTest extends AbstractComponentTestCa
     {
         Assert.assertEquals(
             Arrays.asList(this.resources.installed),
-            new ArrayList(this.localExtensionRepository.getBackwardDependencies(
+            new ArrayList<LocalExtension>(this.localExtensionRepository.getBackwardDependencies(
                 TestResources.INSTALLED_DEPENDENCY_ID.getId(), null)));
 
         Assert.assertEquals(
             Arrays.asList(),
-            new ArrayList(this.localExtensionRepository.getBackwardDependencies(
+            new ArrayList<LocalExtension>(this.localExtensionRepository.getBackwardDependencies(
                 TestResources.INSTALLED_DEPENDENCY_ID.getId(), "namespace")));
 
         Assert.assertEquals(
             Arrays.asList(),
-            new ArrayList(this.localExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID.getId(),
+            new ArrayList<LocalExtension>(this.localExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID.getId(),
                 null)));
 
         Map<String, Collection<LocalExtension>> map = new HashMap<String, Collection<LocalExtension>>();

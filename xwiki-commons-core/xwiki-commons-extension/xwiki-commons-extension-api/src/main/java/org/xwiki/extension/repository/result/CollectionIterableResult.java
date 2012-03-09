@@ -27,6 +27,7 @@ import java.util.Iterator;
  * 
  * @param <T> the type
  * @version $Id$
+ * @since 4.0M1
  */
 public class CollectionIterableResult<T> extends AbstractSearchResult<T>
 {

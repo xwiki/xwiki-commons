@@ -24,6 +24,7 @@ package org.xwiki.extension.repository.result;
  * 
  * @param <T> the type
  * @version $Id$
+ * @since 4.0M1
  */
 public interface IterableResult<T> extends Iterable<T>
 {

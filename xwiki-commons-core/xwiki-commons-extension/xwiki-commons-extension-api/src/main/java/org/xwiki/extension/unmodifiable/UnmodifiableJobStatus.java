@@ -21,10 +21,10 @@ package org.xwiki.extension.unmodifiable;
 
 import java.util.List;
 
-import org.xwiki.extension.job.Request;
-import org.xwiki.extension.job.event.status.JobProgress;
-import org.xwiki.extension.job.event.status.JobStatus;
 import org.xwiki.extension.wrap.AbstractWrappingObject;
+import org.xwiki.job.Request;
+import org.xwiki.job.event.status.JobProgress;
+import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.event.LogEvent;
@@ -34,6 +34,7 @@ import org.xwiki.logging.event.LogEvent;
  * 
  * @param <J> the type of the job status
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableJobStatus<J extends JobStatus> extends AbstractWrappingObject<J> implements JobStatus
 {

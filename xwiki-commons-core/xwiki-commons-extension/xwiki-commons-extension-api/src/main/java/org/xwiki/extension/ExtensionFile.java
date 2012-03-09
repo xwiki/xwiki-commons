@@ -26,6 +26,7 @@ import java.io.InputStream;
  * Contains the actual file of the extensions and some informations like the size.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface ExtensionFile
 {

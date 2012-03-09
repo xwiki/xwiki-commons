@@ -22,15 +22,16 @@ package org.xwiki.extension;
 import java.io.File;
 import java.util.List;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 
 /**
  * Provide some general extension manager configuration.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface ExtensionManagerConfiguration
 {
     /**

@@ -49,6 +49,7 @@ import org.xwiki.extension.version.VersionRangeCollection;
  * 
  * @see org.sonatype.aether.util.version.GenericVersionConstraint
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultVersionConstraint implements VersionConstraint
 {

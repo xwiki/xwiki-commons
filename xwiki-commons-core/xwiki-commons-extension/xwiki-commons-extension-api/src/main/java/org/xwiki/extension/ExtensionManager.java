@@ -19,14 +19,15 @@
  */
 package org.xwiki.extension;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Main entry point for some extensions management tasks.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface ExtensionManager
 {
     /**

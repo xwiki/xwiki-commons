@@ -31,6 +31,7 @@ import org.xwiki.extension.job.plan.ExtensionPlanNode;
  * Provide a readonly access to an extension plan.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableExtensionPlan extends UnmodifiableJobStatus<ExtensionPlan> implements ExtensionPlan
 {

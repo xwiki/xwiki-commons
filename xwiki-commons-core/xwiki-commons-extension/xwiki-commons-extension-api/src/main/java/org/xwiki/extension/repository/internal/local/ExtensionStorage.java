@@ -41,6 +41,7 @@ import org.xwiki.extension.InvalidExtensionException;
  * Manipulate the extension filesystem repository storage.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class ExtensionStorage
 {
@@ -92,7 +93,7 @@ public class ExtensionStorage
         this.rootFolder = rootFolder;
         this.componentManager = componentManager;
 
-        this.extensionSerializer = this.componentManager.lookup(ExtensionSerializer.class);
+        this.extensionSerializer = this.componentManager.lookupComponent(ExtensionSerializer.class);
     }
 
     /**

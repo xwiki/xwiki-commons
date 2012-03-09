@@ -25,13 +25,13 @@ import org.junit.Before;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.job.InstallRequest;
-import org.xwiki.extension.job.Job;
-import org.xwiki.extension.job.JobManager;
-import org.xwiki.extension.job.Request;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.job.Job;
+import org.xwiki.job.JobManager;
+import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.test.AbstractComponentTestCase;
@@ -57,8 +57,8 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
 
         // lookup
 
-        this.jobManager = getComponentManager().lookup(JobManager.class);
-        this.localExtensionRepository = getComponentManager().lookup(LocalExtensionRepository.class);
+        this.jobManager = getComponentManager().lookupComponent(JobManager.class);
+        this.localExtensionRepository = getComponentManager().lookupComponent(LocalExtensionRepository.class);
     }
 
     protected void beforeRepositoryUtil() throws Exception
@@ -80,7 +80,8 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
 
         List<LogEvent> errors = installJob.getStatus().getLog(LogLevel.ERROR);
         if (!errors.isEmpty()) {
-            throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable() : new Exception(errors.get(0).getFormattedMessage());
+            throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable() : new Exception(errors.get(0)
+                .getFormattedMessage());
         }
 
         return installJob;

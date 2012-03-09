@@ -23,12 +23,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.xwiki.extension.job.ExtensionRequest;
+import org.xwiki.job.internal.AbstractJob;
 
 /**
  * Base class for any Job dealing with extensions.
  * 
  * @param <R> the type of the request
  * @version $Id$
+ * @since 4.0M1
  */
 public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends AbstractJob<R>
 {

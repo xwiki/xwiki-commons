@@ -60,6 +60,7 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 
 /**
  * @version $Id$
+ * @since 4.0M1
  */
 public class XWikiExtensionRepository extends AbstractExtensionRepository implements Searchable
 {

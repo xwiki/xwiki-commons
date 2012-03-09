@@ -50,6 +50,7 @@ import org.xwiki.extension.ExtensionLicenseManager;
  * Default implementation of {@link ExtensionLicenseManager}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

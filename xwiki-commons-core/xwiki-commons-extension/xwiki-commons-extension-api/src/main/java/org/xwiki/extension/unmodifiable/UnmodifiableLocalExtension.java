@@ -28,6 +28,7 @@ import org.xwiki.extension.wrap.WrappingLocalExtension;
  * 
  * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableLocalExtension<T extends LocalExtension> extends WrappingLocalExtension<T> implements
     LocalExtension

@@ -25,6 +25,7 @@ import java.net.URI;
  * An extension repository identifier.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class ExtensionRepositoryId
 {

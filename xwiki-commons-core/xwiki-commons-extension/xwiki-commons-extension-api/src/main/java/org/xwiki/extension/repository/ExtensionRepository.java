@@ -30,6 +30,7 @@ import org.xwiki.extension.version.Version;
  * A repository containing extensions.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface ExtensionRepository
 {

@@ -23,7 +23,7 @@ package org.xwiki.extension.repository.xwiki;
  * Resources to use to access Extension Manager REST service.
  * 
  * @version $Id$
- * @since 3.2M3
+ * @since 4.0M1
  */
 public class Resources
 {

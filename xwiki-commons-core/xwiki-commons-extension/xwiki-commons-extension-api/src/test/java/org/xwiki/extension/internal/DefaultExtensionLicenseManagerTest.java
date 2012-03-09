@@ -39,7 +39,7 @@ public class DefaultExtensionLicenseManagerTest extends AbstractComponentTestCas
     {
         super.setUp();
 
-        this.licenseManager = getComponentManager().lookup(ExtensionLicenseManager.class);
+        this.licenseManager = getComponentManager().lookupComponent(ExtensionLicenseManager.class);
     }
 
     @Test

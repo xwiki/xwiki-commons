@@ -43,6 +43,7 @@ import org.xwiki.extension.version.VersionRange;
  * 
  * @see org.sonatype.aether.util.version.GenericVersionRange
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultVersionRange implements VersionRange
 {

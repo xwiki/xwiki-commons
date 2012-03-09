@@ -29,6 +29,7 @@ import org.xwiki.extension.CoreExtensionFile;
  * 
  * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class WrappingCoreExtension<T extends CoreExtension> extends WrappingExtension<T> implements CoreExtension
 {

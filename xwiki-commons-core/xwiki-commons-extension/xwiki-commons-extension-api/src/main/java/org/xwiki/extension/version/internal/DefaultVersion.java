@@ -45,6 +45,7 @@ import org.xwiki.extension.version.Version;
  * access its details to properly implements {@link #getType()} for example.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultVersion implements Version
 {

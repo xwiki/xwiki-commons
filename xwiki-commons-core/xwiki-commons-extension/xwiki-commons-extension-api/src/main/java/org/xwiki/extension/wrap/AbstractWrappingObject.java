@@ -24,6 +24,7 @@ package org.xwiki.extension.wrap;
  * 
  * @param <T> the type of the wrapped object
  * @version $Id$
+ * @since 4.0M1
  */
 public abstract class AbstractWrappingObject<T>
 {

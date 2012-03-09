@@ -21,7 +21,7 @@ package org.xwiki.extension.handler;
 
 import java.util.Map;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
@@ -31,8 +31,9 @@ import org.xwiki.extension.UninstallException;
  * Used as proxy behind all extension handlers.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface ExtensionHandlerManager
 {
     /**

@@ -36,6 +36,7 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
  * Default implementation of {@link ExtensionManager}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

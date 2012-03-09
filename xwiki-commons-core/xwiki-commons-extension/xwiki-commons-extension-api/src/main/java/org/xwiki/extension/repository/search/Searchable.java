@@ -26,6 +26,7 @@ import org.xwiki.extension.repository.result.IterableResult;
  * A repository can implements it to provide search capabilities.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 // TODO: add more complete query support
 public interface Searchable

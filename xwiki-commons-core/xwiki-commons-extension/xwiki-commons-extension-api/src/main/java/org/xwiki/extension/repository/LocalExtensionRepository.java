@@ -22,7 +22,7 @@ package org.xwiki.extension.repository;
 import java.util.Collection;
 import java.util.Map;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -37,8 +37,9 @@ import org.xwiki.extension.UninstallException;
  * their respective handlers.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface LocalExtensionRepository extends ExtensionRepository
 {
     /**

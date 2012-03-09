@@ -43,7 +43,8 @@ public class DefaultCoreExtensionRepositoryTest extends AbstractComponentTestCas
         registerMockComponent(Environment.class);
 
         this.coreExtensionRepository =
-            (ConfigurableDefaultCoreExtensionRepository) getComponentManager().lookup(CoreExtensionRepository.class);
+            (ConfigurableDefaultCoreExtensionRepository) getComponentManager().lookupComponent(
+                CoreExtensionRepository.class);
     }
 
     @Override

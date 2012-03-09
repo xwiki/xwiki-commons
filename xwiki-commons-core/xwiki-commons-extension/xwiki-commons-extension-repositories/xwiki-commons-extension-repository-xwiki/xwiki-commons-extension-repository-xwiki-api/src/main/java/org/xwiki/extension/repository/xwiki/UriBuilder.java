@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
  * Support javax.ws.rs.Path style URIs.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class UriBuilder implements Cloneable
 {

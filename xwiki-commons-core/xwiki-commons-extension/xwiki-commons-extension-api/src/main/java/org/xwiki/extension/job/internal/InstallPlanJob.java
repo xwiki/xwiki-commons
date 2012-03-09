@@ -40,7 +40,6 @@ import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.job.InstallRequest;
-import org.xwiki.extension.job.Request;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
@@ -52,11 +51,14 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.version.IncompatibleVersionConstraintException;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
+import org.xwiki.job.Request;
+import org.xwiki.job.internal.DefaultJobStatus;
 
 /**
  * Create an Extension installation plan.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Named(InstallPlanJob.JOBTYPE)

@@ -27,6 +27,7 @@ import java.net.URL;
  * In practice it's generally all the jars already in the classpath at startup.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface CoreExtension extends Extension
 {

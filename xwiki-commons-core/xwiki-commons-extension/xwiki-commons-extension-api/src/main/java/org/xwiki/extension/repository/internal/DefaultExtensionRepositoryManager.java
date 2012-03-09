@@ -56,6 +56,7 @@ import org.xwiki.extension.version.Version;
  * Default implementation of {@link ExtensionRepositoryManager}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton
@@ -106,7 +107,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
 
         try {
             ExtensionRepositoryFactory repositoryFactory =
-                this.componentManager.lookup(ExtensionRepositoryFactory.class, repositoryId.getType());
+                this.componentManager.lookupComponent(ExtensionRepositoryFactory.class, repositoryId.getType());
 
             repository = repositoryFactory.createRepository(repositoryId);
 

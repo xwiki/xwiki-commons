@@ -26,6 +26,7 @@ import org.xwiki.observation.event.Event;
  * An extension related event.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface ExtensionEvent extends Event
 {

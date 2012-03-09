@@ -19,9 +19,9 @@
  */
 package packagefile.jarextension;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
-@ComponentRole
+@Role
 public interface TestComponent
 {
     

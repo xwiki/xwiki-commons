@@ -32,6 +32,7 @@ import org.xwiki.extension.wrap.AbstractWrappingObject;
  * Provide a readonly access to an extension plan node.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableExtensionPlanNode extends AbstractWrappingObject<ExtensionPlanNode> implements
     ExtensionPlanNode

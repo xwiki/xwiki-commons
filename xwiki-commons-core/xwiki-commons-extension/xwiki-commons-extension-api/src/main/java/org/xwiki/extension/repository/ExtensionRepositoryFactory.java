@@ -19,14 +19,15 @@
  */
 package org.xwiki.extension.repository;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Create {@link ExtensionRepository}s.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface ExtensionRepositoryFactory
 {
     /**

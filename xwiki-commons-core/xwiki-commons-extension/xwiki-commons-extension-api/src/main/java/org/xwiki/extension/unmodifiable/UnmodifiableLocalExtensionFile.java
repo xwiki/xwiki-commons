@@ -26,6 +26,7 @@ import org.xwiki.extension.LocalExtensionFile;
  * 
  * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableLocalExtensionFile<T extends LocalExtensionFile> extends UnmodifiableExtensionFile<T>
     implements LocalExtensionFile

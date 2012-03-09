@@ -26,6 +26,7 @@ import org.xwiki.extension.ExtensionId;
  * Base class for all {@link ExtensionEvent}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public abstract class AbstractExtensionEvent implements ExtensionEvent
 {

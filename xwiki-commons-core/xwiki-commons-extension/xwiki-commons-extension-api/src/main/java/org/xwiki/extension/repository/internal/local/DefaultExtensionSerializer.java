@@ -62,6 +62,7 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
  * Local repository storage serialization tool.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

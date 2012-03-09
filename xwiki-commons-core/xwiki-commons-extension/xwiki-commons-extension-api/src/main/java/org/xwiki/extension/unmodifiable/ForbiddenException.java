@@ -23,9 +23,15 @@ package org.xwiki.extension.unmodifiable;
  * Error when calling forbidden API.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class ForbiddenException extends RuntimeException
 {
+    /**
+     * Serialization identifier.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructs a new exception with the specified detail message. The cause is not initialized, and may subsequently
      * be initialized by a call to {@link #initCause(Throwable)}.

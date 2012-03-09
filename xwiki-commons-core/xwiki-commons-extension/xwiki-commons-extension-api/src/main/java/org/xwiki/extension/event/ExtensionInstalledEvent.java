@@ -25,6 +25,7 @@ import org.xwiki.extension.ExtensionId;
  * An event triggered when a extension has been installed.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class ExtensionInstalledEvent extends AbstractExtensionEvent
 {

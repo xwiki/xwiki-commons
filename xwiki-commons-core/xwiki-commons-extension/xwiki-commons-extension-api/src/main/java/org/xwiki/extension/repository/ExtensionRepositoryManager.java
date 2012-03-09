@@ -21,7 +21,7 @@ package org.xwiki.extension.repository;
 
 import java.util.Collection;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
@@ -33,8 +33,9 @@ import org.xwiki.extension.version.Version;
  * Proxy behind remote repositories.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface ExtensionRepositoryManager
 {
     /**

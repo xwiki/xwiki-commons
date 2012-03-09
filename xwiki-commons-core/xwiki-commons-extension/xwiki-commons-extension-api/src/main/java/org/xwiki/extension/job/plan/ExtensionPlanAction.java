@@ -26,6 +26,7 @@ import org.xwiki.extension.LocalExtension;
  * An action to perform as part of an extension plan.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface ExtensionPlanAction
 {

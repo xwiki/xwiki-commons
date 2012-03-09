@@ -37,9 +37,9 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.event.ExtensionUninstalledEvent;
 import org.xwiki.extension.handler.ExtensionInitializer;
-import org.xwiki.extension.job.event.JobFinishedEvent;
-import org.xwiki.extension.job.event.JobStartedEvent;
 import org.xwiki.extension.job.internal.UninstallJob;
+import org.xwiki.job.event.JobFinishedEvent;
+import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
@@ -47,6 +47,7 @@ import org.xwiki.observation.event.Event;
  * Listen to job finished events to properly refresh extension ClassLoader when an uninstall job has been executed.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

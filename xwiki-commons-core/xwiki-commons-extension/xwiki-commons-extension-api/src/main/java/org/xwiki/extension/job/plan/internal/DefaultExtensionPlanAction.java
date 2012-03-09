@@ -29,6 +29,7 @@ import org.xwiki.extension.job.plan.ExtensionPlanAction;
  * An action to perform as part of an extension plan.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultExtensionPlanAction implements ExtensionPlanAction
 {

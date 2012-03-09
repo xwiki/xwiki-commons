@@ -25,9 +25,15 @@ import org.xwiki.extension.ExtensionException;
  * Error when trying to merge too incompatible version constraint. For example [1.1,) and (,1.0].
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class IncompatibleVersionConstraintException extends ExtensionException
 {
+    /**
+     * Serialization identifier.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructs a new exception with the specified detail message. The cause is not initialized, and may subsequently
      * be initialized by a call to {@link #initCause(Throwable)}.

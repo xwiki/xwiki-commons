@@ -31,6 +31,7 @@ import org.xwiki.extension.version.VersionConstraint;
  * A node in the extension plan tree.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultExtensionPlanNode implements ExtensionPlanNode
 {

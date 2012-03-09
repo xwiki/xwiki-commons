@@ -43,6 +43,11 @@ import org.xwiki.extension.repository.ExtensionRepositoryId;
 import org.xwiki.extension.repository.aether.internal.configuration.AetherConfiguration;
 import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 @Component
 @Singleton
 @Named("maven")

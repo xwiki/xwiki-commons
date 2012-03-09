@@ -28,6 +28,11 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 public final class AetherUtils
 {
     private static final Pattern PARSER_ID = Pattern.compile("([^: ]+):([^: ]+)(:([^: ]+))?");

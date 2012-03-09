@@ -40,6 +40,7 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
  * from public scripts.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public final class UnmodifiableUtils
 {

@@ -29,6 +29,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * Default implementation of ExtensionAuthor.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultExtensionAuthor implements ExtensionAuthor
 {

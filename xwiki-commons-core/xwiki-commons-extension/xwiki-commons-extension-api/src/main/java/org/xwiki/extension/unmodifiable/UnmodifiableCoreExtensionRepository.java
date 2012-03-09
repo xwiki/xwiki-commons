@@ -29,6 +29,7 @@ import org.xwiki.extension.repository.CoreExtensionRepository;
  * 
  * @param <T>
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableCoreExtensionRepository<T extends CoreExtensionRepository> extends
     UnmodifiableExtensionRepository<T> implements CoreExtensionRepository

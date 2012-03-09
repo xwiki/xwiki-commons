@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
  * License of an extension.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class ExtensionLicense
 {

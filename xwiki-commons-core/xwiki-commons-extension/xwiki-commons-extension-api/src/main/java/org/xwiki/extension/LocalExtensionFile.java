@@ -23,6 +23,7 @@ package org.xwiki.extension;
  * Extension {@link ExtensionFile} with some more informations related local extensions.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface LocalExtensionFile extends ExtensionFile
 {

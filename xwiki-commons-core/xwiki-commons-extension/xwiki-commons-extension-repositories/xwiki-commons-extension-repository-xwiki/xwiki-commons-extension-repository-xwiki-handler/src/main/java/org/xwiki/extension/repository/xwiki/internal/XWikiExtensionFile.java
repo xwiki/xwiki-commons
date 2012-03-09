@@ -28,6 +28,11 @@ import org.apache.http.util.EntityUtils;
 import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.ExtensionId;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 public class XWikiExtensionFile implements ExtensionFile
 {
     private XWikiExtensionRepository repository;

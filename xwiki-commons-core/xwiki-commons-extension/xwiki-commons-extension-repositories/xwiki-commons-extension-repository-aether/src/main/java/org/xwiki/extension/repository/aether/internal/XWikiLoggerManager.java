@@ -22,6 +22,11 @@ package org.xwiki.extension.repository.aether.internal;
 import org.codehaus.plexus.logging.AbstractLoggerManager;
 import org.slf4j.Logger;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 public class XWikiLoggerManager extends AbstractLoggerManager
 {
     private XWikiLogger logger;

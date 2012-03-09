@@ -44,6 +44,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryId;
  * Default implementation of {@link ExtensionManagerConfiguration}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

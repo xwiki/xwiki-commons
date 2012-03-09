@@ -25,6 +25,7 @@ import java.net.URL;
  * Extension {@link ExtensionFile} with some more informations related local extensions.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface CoreExtensionFile extends ExtensionFile
 {

@@ -23,11 +23,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.job.AbstractRequest;
+import org.xwiki.job.Request;
 
 /**
  * Base class for extension manipulation related {@link Request} implementations.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public abstract class AbstractExtensionRequest extends AbstractRequest implements ExtensionRequest
 {
@@ -40,6 +43,11 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
      * @see #getNamespaces()
      */
     public static final String PROPERTY_NAMESPACES = "namespaces";
+
+    /**
+     * Serialization identifier.
+     */
+    private static final long serialVersionUID = 1L;
 
     /**
      * Default constructor.

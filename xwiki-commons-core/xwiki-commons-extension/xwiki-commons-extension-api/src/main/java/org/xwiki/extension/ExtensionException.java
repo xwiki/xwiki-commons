@@ -23,9 +23,15 @@ package org.xwiki.extension;
  * Any exception raised in the XWiki Extension Manager must raise an exception of this type.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class ExtensionException extends Exception
 {
+    /**
+     * Serialization identifier.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructs a new exception with the specified detail message. The cause is not initialized, and may subsequently
      * be initialized by a call to {@link #initCause(Throwable)}.

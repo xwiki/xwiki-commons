@@ -36,6 +36,11 @@ import org.xwiki.extension.repository.ExtensionRepositoryException;
 import org.xwiki.extension.repository.ExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 @Component
 @Singleton
 @Named("xwiki")

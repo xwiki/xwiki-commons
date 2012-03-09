@@ -30,6 +30,7 @@ import org.xwiki.extension.CoreExtensionFile;
  * Default implementation of {@link CoreExtensionFile}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultCoreExtensionFile implements CoreExtensionFile
 {

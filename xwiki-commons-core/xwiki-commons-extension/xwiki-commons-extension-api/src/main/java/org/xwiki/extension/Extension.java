@@ -28,6 +28,7 @@ import org.xwiki.extension.repository.ExtensionRepository;
  * Represent an extension.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface Extension
 {

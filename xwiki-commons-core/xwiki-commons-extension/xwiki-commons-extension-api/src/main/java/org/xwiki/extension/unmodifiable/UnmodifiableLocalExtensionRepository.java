@@ -36,6 +36,7 @@ import org.xwiki.extension.repository.LocalExtensionRepositoryException;
  * 
  * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableLocalExtensionRepository<T extends LocalExtensionRepository> extends
     UnmodifiableExtensionRepository<T> implements LocalExtensionRepository

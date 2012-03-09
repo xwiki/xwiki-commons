@@ -29,6 +29,7 @@ import org.xwiki.extension.LocalExtensionFile;
  * 
  * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class WrappingLocalExtension<T extends LocalExtension> extends WrappingExtension<T> implements LocalExtension
 {

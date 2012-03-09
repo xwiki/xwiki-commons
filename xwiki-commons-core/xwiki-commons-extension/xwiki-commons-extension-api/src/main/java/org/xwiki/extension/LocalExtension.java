@@ -28,6 +28,7 @@ import java.util.Collection;
  * repository.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface LocalExtension extends Extension
 {

@@ -34,6 +34,7 @@ import org.xwiki.extension.handler.ExtensionHandler;
  * Base class for {@link ExtensionHandler} implementations.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public abstract class AbstractExtensionHandler implements ExtensionHandler
 {

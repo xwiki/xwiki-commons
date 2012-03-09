@@ -32,6 +32,7 @@ import org.xwiki.extension.version.VersionConstraint;
  * Base class for {@link ExtensionDependency} implementations.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public abstract class AbstractExtensionDependency implements ExtensionDependency
 {

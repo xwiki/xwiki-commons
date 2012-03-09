@@ -25,6 +25,7 @@ import java.net.URL;
  * Informations related to an author of the extension.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface ExtensionAuthor
 {

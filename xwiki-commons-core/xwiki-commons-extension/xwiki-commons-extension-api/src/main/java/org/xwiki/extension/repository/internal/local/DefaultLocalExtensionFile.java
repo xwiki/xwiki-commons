@@ -30,6 +30,7 @@ import org.xwiki.extension.LocalExtensionFile;
  * Default implementation of {@link LocalExtensionFile}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultLocalExtensionFile implements LocalExtensionFile
 {

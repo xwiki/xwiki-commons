@@ -29,6 +29,7 @@ import java.util.List;
  * 
  * @param <T> the type
  * @version $Id$
+ * @since 4.0M1
  */
 public class AggregatedIterableResult<T> implements IterableResult<T>
 {

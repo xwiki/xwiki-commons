@@ -38,6 +38,7 @@ import org.xwiki.extension.repository.ExtensionRepositorySource;
  * Extensions repositories identifier stored in the configuration.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

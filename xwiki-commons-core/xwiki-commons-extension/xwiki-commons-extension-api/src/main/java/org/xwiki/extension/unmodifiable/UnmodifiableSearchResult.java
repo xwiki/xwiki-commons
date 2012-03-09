@@ -30,6 +30,7 @@ import org.xwiki.extension.wrap.AbstractWrappingObject;
  * 
  * @param <E> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableSearchResult<E extends Extension> extends AbstractWrappingObject<IterableResult<E>> implements
     IterableResult<E>

@@ -42,8 +42,8 @@ public class DefaultExtensionManagerConfigurationTest extends AbstractComponentT
 
         // Register a Mocked Environment since we need to provide one.
         registerMockComponent(Environment.class);
-        
-        this.configuration = getComponentManager().lookup(ExtensionManagerConfiguration.class);
+
+        this.configuration = getComponentManager().lookupComponent(ExtensionManagerConfiguration.class);
     }
 
     @Test

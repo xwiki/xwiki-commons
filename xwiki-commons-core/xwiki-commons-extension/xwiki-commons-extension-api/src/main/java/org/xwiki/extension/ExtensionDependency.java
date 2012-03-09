@@ -27,6 +27,7 @@ import org.xwiki.extension.version.VersionConstraint;
  * An extension dependency.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface ExtensionDependency
 {

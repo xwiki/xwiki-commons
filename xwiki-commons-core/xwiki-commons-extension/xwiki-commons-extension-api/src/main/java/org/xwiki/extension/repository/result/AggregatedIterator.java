@@ -26,6 +26,7 @@ import java.util.Iterator;
  * 
  * @param <T> the type of the iterated values
  * @version $Id$
+ * @since 4.0M1
  */
 public class AggregatedIterator<T> implements Iterator<T>
 {

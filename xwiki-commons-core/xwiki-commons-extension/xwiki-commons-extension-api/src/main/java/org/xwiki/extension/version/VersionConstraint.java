@@ -29,6 +29,7 @@ import java.util.Collection;
  * recommendation).
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface VersionConstraint extends Serializable
 {

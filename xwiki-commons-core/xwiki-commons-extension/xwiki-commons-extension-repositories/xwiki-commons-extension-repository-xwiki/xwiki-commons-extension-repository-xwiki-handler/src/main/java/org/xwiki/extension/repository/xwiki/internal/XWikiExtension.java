@@ -43,6 +43,7 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
  * XWiki Repository implementation of {@link Extension}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class XWikiExtension extends AbstractExtension
 {

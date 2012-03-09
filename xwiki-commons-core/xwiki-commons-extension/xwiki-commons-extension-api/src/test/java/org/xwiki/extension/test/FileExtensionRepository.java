@@ -53,7 +53,7 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
     {
         super(new ExtensionRepositoryId("test-file", "file", null));
 
-        this.extensionSerializer = componentManager.lookup(ExtensionSerializer.class);
+        this.extensionSerializer = componentManager.lookupComponent(ExtensionSerializer.class);
 
         this.directory = directory;
     }

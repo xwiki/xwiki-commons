@@ -92,8 +92,8 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
 
         // lookup
 
-        this.repositoryManager = getComponentManager().lookup(ExtensionRepositoryManager.class);
-        this.extensionLicenseManager = getComponentManager().lookup(ExtensionLicenseManager.class);
+        this.repositoryManager = getComponentManager().lookupComponent(ExtensionRepositoryManager.class);
+        this.extensionLicenseManager = getComponentManager().lookupComponent(ExtensionLicenseManager.class);
     }
 
     @Test

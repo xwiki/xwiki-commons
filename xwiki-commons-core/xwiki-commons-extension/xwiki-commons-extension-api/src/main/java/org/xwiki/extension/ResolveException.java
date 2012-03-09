@@ -23,6 +23,7 @@ package org.xwiki.extension;
  * Error when trying to resolve an extension.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class ResolveException extends ExtensionException
 {

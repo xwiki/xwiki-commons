@@ -29,6 +29,7 @@ import org.xwiki.extension.wrap.WrappingExtension;
  * 
  * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableExtension<T extends Extension> extends WrappingExtension<T>
 {

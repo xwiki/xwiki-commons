@@ -41,6 +41,7 @@ import org.xwiki.extension.version.VersionRangeCollection;
  * 
  * @see org.sonatype.aether.util.version.GenericVersionScheme#parseVersionConstraint(String)
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultVersionRangeCollection implements VersionRangeCollection
 {

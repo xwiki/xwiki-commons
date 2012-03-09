@@ -37,7 +37,7 @@ public class TestListener implements EventListener
     @Override
     public List<Event> getEvents()
     {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override

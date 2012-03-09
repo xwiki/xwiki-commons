@@ -24,6 +24,12 @@ import org.sonatype.aether.artifact.Artifact;
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 
+/**
+ * Add support for repositories supported by AETHER (only Maven for now).
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 public class AetherExtension extends AbstractExtension
 {
     public static final String PKEY_AETHER_ATIFACT = "aether.Artifact";

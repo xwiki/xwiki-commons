@@ -21,14 +21,15 @@ package org.xwiki.extension.repository;
 
 import java.util.List;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * A repository identifiers source (for example xwiki.properties).
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface ExtensionRepositorySource
 {
     /**

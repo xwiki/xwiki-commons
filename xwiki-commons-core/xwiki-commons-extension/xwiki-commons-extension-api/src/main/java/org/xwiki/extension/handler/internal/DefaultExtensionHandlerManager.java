@@ -38,6 +38,7 @@ import org.xwiki.extension.handler.ExtensionHandlerManager;
  * Default implementation of {@link ExtensionHandlerManager}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton
@@ -63,7 +64,7 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
      */
     private ExtensionHandler getExtensionHandler(LocalExtension localExtension) throws ComponentLookupException
     {
-        return this.componentManager.lookup(ExtensionHandler.class, localExtension.getType().toLowerCase());
+        return this.componentManager.lookupComponent(ExtensionHandler.class, localExtension.getType().toLowerCase());
     }
 
     @Override

@@ -22,11 +22,13 @@ package org.xwiki.extension.job;
 import java.util.Collection;
 
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.job.Request;
 
 /**
  * Extension manipulation related {@link Request}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface ExtensionRequest extends Request
 {

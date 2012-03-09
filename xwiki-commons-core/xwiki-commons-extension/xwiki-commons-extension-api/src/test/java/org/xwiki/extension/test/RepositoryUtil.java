@@ -138,14 +138,15 @@ public class RepositoryUtil
             }
         });
         DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
-        dcd.setRole(Environment.class);
+        dcd.setRoleType(Environment.class);
         this.componentManager.registerComponent(dcd, environment);
 
         // add default test core extension
 
         registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
-        ((ConfigurableDefaultCoreExtensionRepository) this.componentManager.lookup(CoreExtensionRepository.class))
-            .addExtensions("coreextension", new DefaultVersion("version"));
+        ((ConfigurableDefaultCoreExtensionRepository) this.componentManager
+            .lookupComponent(CoreExtensionRepository.class)).addExtensions("coreextension", new DefaultVersion(
+            "version"));
 
         // copy
 
@@ -153,7 +154,8 @@ public class RepositoryUtil
 
         // remote repositories
 
-        ExtensionRepositoryManager repositoryManager = this.componentManager.lookup(ExtensionRepositoryManager.class);
+        ExtensionRepositoryManager repositoryManager =
+            this.componentManager.lookupComponent(ExtensionRepositoryManager.class);
 
         // light remote repository
 
@@ -175,7 +177,7 @@ public class RepositoryUtil
 
         // init
 
-        this.componentManager.lookup(ExtensionInitializer.class).initialize();
+        this.componentManager.<ExtensionInitializer> lookupComponent(ExtensionInitializer.class).initialize();
     }
 
     public ComponentAnnotationLoader getComponentLoader()
@@ -191,14 +193,9 @@ public class RepositoryUtil
     {
         List<ComponentDescriptor> descriptors = getComponentLoader().getComponentsDescriptors(componentClass);
 
-        for (ComponentDescriptor descriptor : descriptors) {
+        for (ComponentDescriptor< ? > descriptor : descriptors) {
             this.componentManager.registerComponent(descriptor);
         }
-    }
-
-    private void unregisterComponent(Class< ? > role, String hint)
-    {
-        this.componentManager.unregisterComponent(role, hint);
     }
 
     public int copyResourceFolder(File targetFolder, String resourcePackage) throws IOException

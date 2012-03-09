@@ -28,6 +28,7 @@ import org.xwiki.extension.ExtensionId;
  * Extends {@link DefaultCoreExtension} with Maven related informations.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class MavenCoreExtension extends DefaultCoreExtension
 {

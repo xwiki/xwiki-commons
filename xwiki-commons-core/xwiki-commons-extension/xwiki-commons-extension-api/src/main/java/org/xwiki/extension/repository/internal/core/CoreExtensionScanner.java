@@ -22,14 +22,15 @@ package org.xwiki.extension.repository.internal.core;
 import java.util.Collection;
 import java.util.Map;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Scan jars to find core extensions.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface CoreExtensionScanner
 {
     /**

@@ -25,6 +25,7 @@ import org.xwiki.extension.ExtensionException;
  * Error when trying to parse extension manager configuration.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class ExtensionManagerConfigurationException extends ExtensionException
 {

@@ -28,6 +28,7 @@ import org.xwiki.extension.wrap.AbstractWrappingObject;
  * Provide a readonly access to an extension plan action.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableExtensionPlanAction extends AbstractWrappingObject<ExtensionPlanAction> implements
     ExtensionPlanAction

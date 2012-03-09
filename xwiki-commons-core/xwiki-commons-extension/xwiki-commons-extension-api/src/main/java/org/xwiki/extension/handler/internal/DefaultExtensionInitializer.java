@@ -43,6 +43,7 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
  * Default implementation of {@link org.xwiki.extension.handler.ExtensionInitializer}.
  *
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

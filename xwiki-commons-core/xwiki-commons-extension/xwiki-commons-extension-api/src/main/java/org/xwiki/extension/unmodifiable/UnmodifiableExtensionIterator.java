@@ -28,6 +28,7 @@ import org.xwiki.extension.Extension;
  * 
  * @param <E> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableExtensionIterator<E extends Extension> implements Iterator<E>
 {

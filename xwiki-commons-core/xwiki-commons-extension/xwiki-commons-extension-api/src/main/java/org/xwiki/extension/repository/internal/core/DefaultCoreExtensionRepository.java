@@ -53,6 +53,7 @@ import org.xwiki.extension.version.Version;
  * Default implementation of {@link CoreExtensionRepository}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

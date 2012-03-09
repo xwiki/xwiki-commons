@@ -36,6 +36,11 @@ import org.sonatype.aether.resolution.ArtifactResult;
 import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 public class AetherExtensionFile implements ExtensionFile
 {
     private PlexusComponentManager plexusComponentManager;

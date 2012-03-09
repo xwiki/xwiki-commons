@@ -21,9 +21,14 @@ package org.xwiki.extension.repository.aether.internal.configuration;
 
 import java.io.File;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
-@ComponentRole
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
+@Role
 public interface AetherConfiguration
 {
     File getLocalRepository();

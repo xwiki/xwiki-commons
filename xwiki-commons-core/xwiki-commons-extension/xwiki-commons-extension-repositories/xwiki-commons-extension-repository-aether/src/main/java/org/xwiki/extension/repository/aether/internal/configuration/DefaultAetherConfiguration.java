@@ -29,6 +29,11 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 @Component
 @Singleton
 public class DefaultAetherConfiguration implements AetherConfiguration

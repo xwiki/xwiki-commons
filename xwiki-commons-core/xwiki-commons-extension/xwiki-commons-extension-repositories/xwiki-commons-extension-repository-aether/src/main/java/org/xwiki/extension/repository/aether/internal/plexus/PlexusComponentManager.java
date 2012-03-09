@@ -20,9 +20,14 @@
 package org.xwiki.extension.repository.aether.internal.plexus;
 
 import org.codehaus.plexus.PlexusContainer;
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
-@ComponentRole
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
+@Role
 public interface PlexusComponentManager
 {
     PlexusContainer getPlexus();

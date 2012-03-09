@@ -25,6 +25,7 @@ import java.io.Serializable;
  * A range of versions.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public interface VersionRange extends Serializable
 {

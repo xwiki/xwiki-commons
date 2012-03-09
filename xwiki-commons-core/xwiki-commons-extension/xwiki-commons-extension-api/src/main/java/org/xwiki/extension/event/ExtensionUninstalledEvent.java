@@ -25,6 +25,7 @@ import org.xwiki.extension.ExtensionId;
  * An event triggered when a extension has been uninstalled.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class ExtensionUninstalledEvent extends AbstractExtensionEvent
 {

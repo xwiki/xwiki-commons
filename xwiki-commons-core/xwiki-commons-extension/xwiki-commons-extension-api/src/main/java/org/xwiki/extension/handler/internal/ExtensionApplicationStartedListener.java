@@ -37,6 +37,7 @@ import org.xwiki.observation.event.Event;
  * An application started listener to initialize extensions.
  *
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton

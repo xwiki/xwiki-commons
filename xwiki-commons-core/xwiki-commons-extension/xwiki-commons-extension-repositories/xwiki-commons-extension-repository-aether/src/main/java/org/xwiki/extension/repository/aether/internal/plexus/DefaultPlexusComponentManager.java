@@ -35,6 +35,11 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.repository.aether.internal.XWikiLoggerManager;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 @Component
 @Singleton
 public class DefaultPlexusComponentManager implements PlexusComponentManager, Initializable

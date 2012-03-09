@@ -20,14 +20,15 @@
 
 package org.xwiki.extension.handler;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Handle installed extensions initialization (during application startup, reinitialization...).
  * 
  * @version $Id$
+ * @since 4.0M1
  */
-@ComponentRole
+@Role
 public interface ExtensionInitializer
 {
     /**

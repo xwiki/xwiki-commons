@@ -28,6 +28,7 @@ import org.xwiki.extension.wrap.WrappingCoreExtension;
  * 
  * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableCoreExtension<T extends CoreExtension> extends WrappingCoreExtension<T> implements
     CoreExtension

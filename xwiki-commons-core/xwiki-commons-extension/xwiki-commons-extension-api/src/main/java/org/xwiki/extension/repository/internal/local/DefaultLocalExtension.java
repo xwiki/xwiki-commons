@@ -33,6 +33,7 @@ import org.xwiki.extension.LocalExtension;
  * Default implementation of {@link LocalExtension}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultLocalExtension extends AbstractExtension implements LocalExtension
 {

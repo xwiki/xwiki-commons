@@ -23,6 +23,11 @@ import org.sonatype.aether.graph.Dependency;
 import org.xwiki.extension.AbstractExtensionDependency;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 public class AetherExtensionDependency extends AbstractExtensionDependency
 {
     public static final String PKEY_AETHER_DEPENDENCY = "aether.Dependency";

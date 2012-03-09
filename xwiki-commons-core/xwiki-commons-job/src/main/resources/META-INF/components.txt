@@ -1,0 +1,3 @@
+org.xwiki.job.internal.DefaultJobManager
+org.xwiki.job.internal.DefaultJobManagerConfiguration
+org.xwiki.job.internal.DefaultJobStatusStorage

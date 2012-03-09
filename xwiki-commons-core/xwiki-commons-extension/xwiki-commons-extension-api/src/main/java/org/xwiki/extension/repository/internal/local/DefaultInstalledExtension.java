@@ -27,6 +27,7 @@ import java.util.Set;
  * Contains informations about extension installed on a specific namespace.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 public class DefaultInstalledExtension
 {

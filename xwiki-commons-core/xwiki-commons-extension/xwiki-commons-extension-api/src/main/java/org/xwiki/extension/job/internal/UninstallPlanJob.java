@@ -33,7 +33,6 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
-import org.xwiki.extension.job.Request;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
@@ -41,11 +40,14 @@ import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
 import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.job.Request;
+import org.xwiki.job.internal.DefaultJobStatus;
 
 /**
  * Create an Extension uninstallation plan.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Named(UninstallPlanJob.JOBTYPE)

@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.xwiki.extension.job.ExtensionRequest;
-import org.xwiki.extension.job.internal.DefaultJobStatus;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
+import org.xwiki.job.internal.DefaultJobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 
@@ -39,9 +39,16 @@ import org.xwiki.observation.ObservationManager;
  * 
  * @param <R>
  * @version $Id$
+ * @since 4.0M1
  */
+// TODO: not really serializable
 public class DefaultExtensionPlan<R extends ExtensionRequest> extends DefaultJobStatus<R> implements ExtensionPlan
 {
+    /**
+     * Serialization identifier.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * @see #getTree()
      */

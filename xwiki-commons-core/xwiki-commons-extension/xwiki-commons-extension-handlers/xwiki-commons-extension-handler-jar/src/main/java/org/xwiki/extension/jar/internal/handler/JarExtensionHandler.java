@@ -50,6 +50,12 @@ import org.xwiki.extension.LocalExtensionFile;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.internal.AbstractExtensionHandler;
 
+/**
+ * Add support for JAR extensions.
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 @Component("jar")
 @Singleton
 public class JarExtensionHandler extends AbstractExtensionHandler implements Initializable

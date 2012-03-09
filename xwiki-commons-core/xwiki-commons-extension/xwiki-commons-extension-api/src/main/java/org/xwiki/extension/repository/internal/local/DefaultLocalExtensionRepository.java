@@ -66,6 +66,7 @@ import org.xwiki.extension.version.Version;
  * Default implementation of {@link LocalExtensionRepository}.
  * 
  * @version $Id$
+ * @since 4.0M1
  */
 @Component
 @Singleton
@@ -317,7 +318,10 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
                 DefaultInstalledExtension installedExtension =
                     getInstalledExtensionFromCache(dependency.getId(), namespace);
 
-                if (installedExtension == null || installedExtension.getBackwardDependencies().remove(localExtension)) {
+                if (installedExtension == null) {
+                    // That should never happen so lets log it
+                    this.logger.warn("Extension [" + localExtension + "] is not installed");
+                } else if (installedExtension.getBackwardDependencies().remove(localExtension)) {
                     // That should never happen so lets log it
                     this.logger.warn("Extension [" + localExtension
                         + "] was not regisistered as backward dependency of [" + installedExtension.getExtension()

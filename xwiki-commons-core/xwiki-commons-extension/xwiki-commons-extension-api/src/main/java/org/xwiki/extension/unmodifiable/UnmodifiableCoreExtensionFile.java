@@ -28,6 +28,7 @@ import org.xwiki.extension.CoreExtensionFile;
  * 
  * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M1
  */
 public class UnmodifiableCoreExtensionFile<T extends CoreExtensionFile> extends UnmodifiableExtensionFile<T> implements
     CoreExtensionFile

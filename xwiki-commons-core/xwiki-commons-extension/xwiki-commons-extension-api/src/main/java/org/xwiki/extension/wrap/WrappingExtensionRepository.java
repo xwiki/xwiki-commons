@@ -33,6 +33,7 @@ import org.xwiki.extension.version.Version;
  * 
  * @param <T>
  * @version $Id$
+ * @since 4.0M1
  */
 public class WrappingExtensionRepository<T extends ExtensionRepository> extends AbstractWrappingObject<T> implements
     ExtensionRepository

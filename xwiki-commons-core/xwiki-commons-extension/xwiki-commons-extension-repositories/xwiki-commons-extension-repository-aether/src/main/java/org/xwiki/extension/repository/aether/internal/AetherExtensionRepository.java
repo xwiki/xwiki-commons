@@ -70,6 +70,11 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.properties.ConverterManager;
 
+/**
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ */
 public class AetherExtensionRepository extends AbstractExtensionRepository
 {
     public static final String MPKEYPREFIX = "xwiki.extension.";
@@ -113,8 +118,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         this.remoteRepository = new RemoteRepository(repositoryId.getId(), "default", repositoryId.getURI().toString());
 
-        this.converter = this.componentManager.lookup(ConverterManager.class);
-        this.licenseManager = this.componentManager.lookup(ExtensionLicenseManager.class);
+        this.converter = this.componentManager.lookupComponent(ConverterManager.class);
+        this.licenseManager = this.componentManager.lookupComponent(ExtensionLicenseManager.class);
 
         this.versionRangeResolver = this.plexusComponentManager.getPlexus().lookup(VersionRangeResolver.class);
 
