@@ -54,12 +54,14 @@
     <!-- Selenium -->
     <selenium.version>2.20.0</selenium.version>
 
-    <!-- The previous stable version of this project, used to catch API breakages. -->
+    <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>3.5</xwiki.clirr.previous.version>
-    <xwiki.clirr.skip>false</xwiki.clirr.skip>
 
-    <!-- By default Checkstyle and Clirr are on -->
+    <!-- By default Checkstyle, Clirr and Enforcer plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
+    <xwiki.clirr.skip>false</xwiki.clirr.skip>
+    <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <prerequisites>
@@ -293,6 +295,9 @@
         <artifactId>maven-enforcer-plugin</artifactId>
         <!-- Lock down plugin version for build reproducibility -->
         <version>1.0.1</version>
+        <configuration>
+          <skip>${xwiki.enforcer.skip}</skip>
+        </configuration>
         <executions>
           <execution>
             <id>enforce-plugins</id>
@@ -606,12 +611,12 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>com.atlassian.maven.plugins</groupId>
           <artifactId>maven-clover2-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.0</version>
+          <version>3.1.4</version>
           <configuration>
-            <license><![CDATA[qMMmoWpgqUnIUUslQCCkHArdnnrCaAmCJwHJQSxBxKtXsI
-mi2K5DKKCB6NcT1JsMzl8KbR2KsRSMhv4kKAw73vcpeScU
-PrmNWuONRNMnMoPnQRMWWNQPqnnrqRmMrqTuWtUVwStROo
-PrnmqmUUnounqquummmmmUUnounqquummmmmUUONfhfUUn
+            <license><![CDATA[mMrRvxjjbfhaCfMulFPnUUpeNQTJOMWcRiBJSAJDFtqBOB
+mi2K4jUCxeZ5N1tfFUViFQV32K7TEehr8rqeYLcnr>xtEQ
+rPNqtwqrmMMMmMroRMpXXRQnPPqRmRonQMsxtVvTWTuoON
+qmnmqmUUnpnpmtnommmmmUUnpnpmtnommmmmUUONfhfUUn
 mmmm]]></license>
             <!-- For some reason there's currently a problem in the Rendering Include Macro test execution when
                  IncludeMacroTest is clovered. Needs to be investigated. -->
@@ -883,6 +888,8 @@ mmmm]]></license>
         <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
         <!-- Skip Clirr since we don't need it when computing test coverage and it speeds up the build not to run it -->
         <xwiki.clirr.skip>true</xwiki.clirr.skip>
+        <!-- Skip Enforcer since we don't need it for coverage and it speeds up the build not to run it -->
+        <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
       </properties>
     </profile>
     <!-- Profile for m2eclipse which is used for:
