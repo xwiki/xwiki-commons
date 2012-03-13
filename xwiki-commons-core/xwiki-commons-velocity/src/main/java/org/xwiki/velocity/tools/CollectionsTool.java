@@ -195,6 +195,9 @@ public class CollectionsTool
      */
     public <E> List<E> unmodifiable(List<E> input)
     {
+        if (input == null) {
+            return null;
+        }
         return Collections.unmodifiableList(input);
     }
 
@@ -208,6 +211,9 @@ public class CollectionsTool
      */
     public <K, V> Map<K, V> unmodifiable(Map<K, V> input)
     {
+        if (input == null) {
+            return null;
+        }
         return Collections.unmodifiableMap(input);
     }
 
@@ -220,6 +226,9 @@ public class CollectionsTool
      */
     public <E> Set<E> unmodifiable(Set<E> input)
     {
+        if (input == null) {
+            return null;
+        }
         return Collections.unmodifiableSet(input);
     }
 
@@ -232,6 +241,9 @@ public class CollectionsTool
      */
     public <E> Collection<E> unmodifiable(Collection<E> input)
     {
+        if (input == null) {
+            return null;
+        }
         return Collections.unmodifiableCollection(input);
     }
 
@@ -245,6 +257,11 @@ public class CollectionsTool
      */
     public <E> Collection<E> union(Collection<E> a, Collection<E> b)
     {
+        if (a == null) {
+            return b;
+        } else if (b == null) {
+            return a;
+        }
         @SuppressWarnings("unchecked")
         Collection<E> result = CollectionUtils.union(a, b);
         return result;
@@ -260,6 +277,11 @@ public class CollectionsTool
      */
     public <E> Collection<E> intersection(Collection<E> a, Collection<E> b)
     {
+        if (a == null) {
+            return b;
+        } else if (b == null) {
+            return a;
+        }
         @SuppressWarnings("unchecked")
         Collection<E> result = CollectionUtils.intersection(a, b);
         return result;
@@ -276,6 +298,11 @@ public class CollectionsTool
      */
     public <E> Collection<E> disjunction(Collection<E> a, Collection<E> b)
     {
+        if (a == null) {
+            return b;
+        } else if (b == null) {
+            return a;
+        }
         @SuppressWarnings("unchecked")
         Collection<E> result = CollectionUtils.disjunction(a, b);
         return result;

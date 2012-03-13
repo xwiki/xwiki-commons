@@ -320,6 +320,15 @@ public class CollectionsToolTest
     }
 
     @Test
+    public void testNullUnmodifiable()
+    {
+        Assert.assertNull(this.tool.unmodifiable((List<Object>) null));
+        Assert.assertNull(this.tool.unmodifiable((Set<Object>) null));
+        Assert.assertNull(this.tool.unmodifiable((Map<Object, Object>) null));
+        Assert.assertNull(this.tool.unmodifiable((Collection<Object>) null));
+    }
+
+    @Test
     public void testSetUnion()
     {
         Set<String> set1 = this.tool.getSet();
@@ -358,6 +367,18 @@ public class CollectionsToolTest
         Assert.assertEquals("Wrong size of the union collection", 8, result.size());
         Assert.assertTrue("Not all elements from the first list were included in the union", result.containsAll(list1));
         Assert.assertTrue("Not all elements from the second list were included", result.containsAll(list2));
+    }
+
+    @Test
+    public void testNullUnion()
+    {
+        List<String> list = this.tool.getLinkedList();
+        list.add("one");
+        list.add("two");
+        list.add("three");
+        Assert.assertEquals(list, this.tool.union(list, null));
+        Assert.assertEquals(list, this.tool.union(null, list));
+        Assert.assertNull(this.tool.union(null, null));
     }
 
     @Test
@@ -400,6 +421,18 @@ public class CollectionsToolTest
         Assert.assertEquals("Wrong element included in the intersection", "three", it.next());
         Assert.assertEquals("Wrong element included in the intersection", "three", it.next());
         Assert.assertFalse("Wrong size of the intersection collection", it.hasNext());
+    }
+
+    @Test
+    public void testNullIntersection()
+    {
+        List<String> list = this.tool.getLinkedList();
+        list.add("one");
+        list.add("two");
+        list.add("three");
+        Assert.assertEquals(list, this.tool.intersection(list, null));
+        Assert.assertEquals(list, this.tool.intersection(null, list));
+        Assert.assertNull(this.tool.intersection(null, null));
     }
 
     @Test
@@ -448,6 +481,18 @@ public class CollectionsToolTest
         Assert.assertTrue("Missing element from the disjunction", result.contains("three"));
         Assert.assertFalse("Wrong element included in the disjunction", result.contains("four"));
         Assert.assertTrue("Missing element from the disjunction", result.contains("five"));
+    }
+
+    @Test
+    public void testNullDisjunction()
+    {
+        List<String> list = this.tool.getLinkedList();
+        list.add("one");
+        list.add("two");
+        list.add("three");
+        Assert.assertEquals(list, this.tool.disjunction(list, null));
+        Assert.assertEquals(list, this.tool.disjunction(null, list));
+        Assert.assertNull(this.tool.disjunction(null, null));
     }
 
     @Test
