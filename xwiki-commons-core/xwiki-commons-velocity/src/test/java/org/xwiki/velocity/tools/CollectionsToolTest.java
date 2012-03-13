@@ -449,4 +449,21 @@ public class CollectionsToolTest
         Assert.assertFalse("Wrong element included in the disjunction", result.contains("four"));
         Assert.assertTrue("Missing element from the disjunction", result.contains("five"));
     }
+
+    @Test
+    public void testReverse()
+    {
+        List<String> list = this.tool.getLinkedList();
+        list.add("one");
+        list.add("two");
+        list.add("three");
+        Assert.assertTrue("Failed to reverse list", this.tool.reverse(list));
+        Assert.assertEquals("List wasn't properly reversed", "three", list.get(0));
+        Assert.assertEquals("List wasn't properly reversed", "two", list.get(1));
+        Assert.assertEquals("List wasn't properly reversed", "one", list.get(2));
+        List<String> readonly = this.tool.unmodifiable(list);
+        Assert.assertFalse("Unmodifiable list wrongly reversed", this.tool.reverse(readonly));
+        Assert.assertEquals("Unmodifiable list was changed", "three", list.get(0));
+        Assert.assertFalse("Reversed a null list?", this.tool.reverse(null));
+    }
 }

@@ -280,4 +280,26 @@ public class CollectionsTool
         Collection<E> result = CollectionUtils.disjunction(a, b);
         return result;
     }
+
+    /**
+     * Reverse the order of the elements within a list, so that the last element is moved to the beginning of the list,
+     * the next-to-last element to the second position, and so on. The input list is modified in place, so this
+     * operation will succeed only if the list is modifiable.
+     * 
+     * @param <E> the type of the elements in the list
+     * @param input the list to reverse
+     * @return {@code true} if the list was successfully reversed, {@code false} otherwise
+     */
+    public <E> boolean reverse(List<E> input)
+    {
+        if (input == null) {
+            return false;
+        }
+        try {
+            Collections.reverse(input);
+            return true;
+        } catch (UnsupportedOperationException ex) {
+            return false;
+        }
+    }
 }
