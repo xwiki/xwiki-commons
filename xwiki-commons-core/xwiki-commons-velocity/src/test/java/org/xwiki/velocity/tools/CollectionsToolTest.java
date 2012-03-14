@@ -511,4 +511,23 @@ public class CollectionsToolTest
         Assert.assertEquals("Unmodifiable list was changed", "three", list.get(0));
         Assert.assertFalse("Reversed a null list?", this.tool.reverse(null));
     }
+
+    @Test
+    public void testSort()
+    {
+        List<String> list = this.tool.getLinkedList();
+        list.add("one");
+        list.add("two");
+        list.add("three");
+        Assert.assertTrue("Failed to sort the list", this.tool.sort(list));
+        Assert.assertEquals("List wasn't properly sorted", "one", list.get(0));
+        Assert.assertEquals("List wasn't properly sorted", "three", list.get(1));
+        Assert.assertEquals("List wasn't properly sorted", "two", list.get(2));
+        this.tool.reverse(list);
+        List<String> readonly = this.tool.unmodifiable(list);
+        Assert.assertFalse("Unmodifiable list wrongly sorted", this.tool.sort(readonly));
+        Assert.assertEquals("Unmodifiable list was changed", "two", list.get(0));
+        list = null;
+        Assert.assertFalse("Sorted a null list?", this.tool.sort(list));
+    }
 }

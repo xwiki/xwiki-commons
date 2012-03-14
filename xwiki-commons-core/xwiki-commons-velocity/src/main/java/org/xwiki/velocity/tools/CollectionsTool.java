@@ -329,4 +329,25 @@ public class CollectionsTool
             return false;
         }
     }
+
+    /**
+     * Sort the elements within a list according to their natural order. The input list is modified in place, so this
+     * operation will succeed only if the list is modifiable.
+     * 
+     * @param <E> the type of the elements in the list
+     * @param input the list to sort
+     * @return {@code true} if the list was successfully sorted, {@code false} otherwise
+     */
+    public <E extends Comparable<E>> boolean sort(List<E> input)
+    {
+        if (input == null) {
+            return false;
+        }
+        try {
+            Collections.sort(input);
+            return true;
+        } catch (UnsupportedOperationException ex) {
+            return false;
+        }
+    }
 }
