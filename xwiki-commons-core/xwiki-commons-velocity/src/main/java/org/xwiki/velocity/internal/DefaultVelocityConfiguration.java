@@ -41,6 +41,7 @@ import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.tools.CollectionsTool;
 import org.xwiki.velocity.tools.EscapeTool;
+import org.xwiki.velocity.tools.JSONTool;
 import org.xwiki.velocity.tools.RegexTool;
 
 /**
@@ -87,6 +88,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("regextool", RegexTool.class.getName());
         this.defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());
         this.defaultTools.setProperty("stringtool", StringUtils.class.getName());
+        this.defaultTools.setProperty("jsontool", JSONTool.class.getName());
 
         // Default Velocity properties
         this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());
