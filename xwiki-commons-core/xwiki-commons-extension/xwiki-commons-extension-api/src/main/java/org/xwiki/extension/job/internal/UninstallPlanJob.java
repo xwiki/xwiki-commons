@@ -66,7 +66,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     /**
      * Error message used in exception throw when trying to uninstall an extension which is not installed.
      */
-    private static final String EXCEPTION_NOTINSTALLEDNAMESPACE = EXCEPTION_NOTINSTALLED + " on namespace [{1}]";
+    private static final String EXCEPTION_NOTINSTALLEDNAMESPACE = EXCEPTION_NOTINSTALLED + " from namespace [{1}]";
 
     /**
      * Used to manipulate local repository.

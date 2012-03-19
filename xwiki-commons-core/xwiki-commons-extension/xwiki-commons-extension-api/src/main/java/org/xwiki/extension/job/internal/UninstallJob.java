@@ -154,7 +154,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
         String namespace = action.getNamespace();
 
         if (namespace != null) {
-            this.logger.info("Uninstalling extension [{}] on namespace [{}]", localExtension.toString(), namespace);
+            this.logger.info("Uninstalling extension [{}] from namespace [{}]", localExtension.toString(), namespace);
         } else {
             this.logger.info("Uninstalling extension [{}]", localExtension.toString());
         }
@@ -174,7 +174,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
                 localExtension);
 
             if (namespace != null) {
-                this.logger.info("Successfully uninstalled extension [{}] on namespace [{}]",
+                this.logger.info("Successfully uninstalled extension [{}] from namespace [{}]",
                     localExtension.toString(), namespace);
             } else {
                 this.logger.info("Successfully uninstalled extension [{}]", localExtension.toString());
