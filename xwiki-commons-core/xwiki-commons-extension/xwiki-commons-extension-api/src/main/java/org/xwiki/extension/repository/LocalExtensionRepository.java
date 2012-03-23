@@ -29,6 +29,7 @@ import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.repository.search.Searchable;
 
 /**
  * A repository containing local extension.
@@ -40,7 +41,7 @@ import org.xwiki.extension.UninstallException;
  * @since 4.0M1
  */
 @Role
-public interface LocalExtensionRepository extends ExtensionRepository
+public interface LocalExtensionRepository extends ExtensionRepository, Searchable
 {
     /**
      * @return the number of local extensions

@@ -26,6 +26,7 @@ import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.Job;
+import org.xwiki.job.JobContext;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobStartedEvent;
@@ -77,6 +78,12 @@ public abstract class AbstractJob<R extends Request> implements Job
     protected Logger logger;
 
     /**
+     * Used to set the current context.
+     */
+    @Inject
+    protected JobContext jobContext;
+
+    /**
      * The job request.
      */
     protected R request;
@@ -104,6 +111,7 @@ public abstract class AbstractJob<R extends Request> implements Job
         this.request = castRequest(request);
         this.status = createNewStatus(this.request);
 
+        this.jobContext.pushCurrentJob(this);
         this.observationManager.notify(new JobStartedEvent(getId(), getType(), request), this);
 
         this.status.startListening();
@@ -120,6 +128,7 @@ public abstract class AbstractJob<R extends Request> implements Job
             this.status.setState(JobStatus.State.FINISHED);
 
             this.observationManager.notify(new JobFinishedEvent(getId(), getType(), request), this, exception);
+            this.jobContext.popCurrentJob();
 
             try {
                 if (request.getId() != null) {

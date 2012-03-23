@@ -21,13 +21,18 @@ package org.xwiki.component.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -117,13 +122,17 @@ public final class ReflectionUtils
      */
     public static Class getTypeClass(Type type)
     {
-        Class typeClassClass;
+        Class typeClassClass = null;
+
         if (type instanceof Class) {
             typeClassClass = (Class) type;
         } else if (type instanceof ParameterizedType) {
             typeClassClass = (Class) ((ParameterizedType) type).getRawType();
-        } else {
-            typeClassClass = null;
+        } else if (type instanceof GenericArrayType) {
+            Class< ? > arrrayParameter = getTypeClass(((GenericArrayType) type).getGenericComponentType());
+            if (arrrayParameter != null) {
+                typeClassClass = Array.newInstance(arrrayParameter, 0).getClass();
+            }
         }
 
         return typeClassClass;
@@ -267,46 +276,145 @@ public final class ReflectionUtils
 
     /**
      * @param parameters the parameters of a direct superclass or interface
-     * @param childClass a extending class
+     * @param childType a extending class as Type
+     * @return the actual parameters of the direct superclass or interface, return null if it's impossible to resolve
+     */
+    public static Type[] resolveSuperArguments(Type[] parameters, Type childType)
+    {
+        Type[] resolvedPrameters = null;
+
+        if (parameters != null && childType instanceof ParameterizedType) {
+            ParameterizedType parameterizedChildType = (ParameterizedType) childType;
+
+            return resolveSuperArguments(parameters, parameterizedChildType.getClass(),
+                parameterizedChildType.getActualTypeArguments());
+        }
+
+        return resolvedPrameters;
+    }
+
+    /**
+     * @param parameters the parameters of a direct superclass or interface
+     * @param childClass an extending class
      * @param childParameters the actual parameters of the extending class
      * @return the actual parameters of the direct superclass or interface, return null if it's impossible to resolve
      */
-    public static Type[] resolveSuperParameters(Type[] parameters, Class childClass, Type[] childParameters)
+    public static Type[] resolveSuperArguments(Type[] parameters, Class childClass, Type[] childParameters)
     {
-        Type[] actualParameters = null;
-        Map<TypeVariable, Type> typeMapping = null;
+        Map<TypeVariable, Type> typeMapping;
+        if (childParameters != null) {
+            TypeVariable<Class>[] declaredChildParameters = childClass.getTypeParameters();
 
-        for (int i = 0; i < parameters.length; ++i) {
-            Type parameter = parameters[i];
+            typeMapping = new HashMap<TypeVariable, Type>();
+            for (int i = 0; i < declaredChildParameters.length; ++i) {
+                typeMapping.put(declaredChildParameters[i], childParameters[i]);
+            }
+        } else {
+            typeMapping = Collections.emptyMap();
+        }
 
-            if (parameter instanceof TypeVariable) {
-                if (childParameters == null) {
-                    return null;
-                }
+        return resolveTypes(parameters, typeMapping);
+    }
 
-                if (typeMapping == null) {
-                    TypeVariable<Class>[] declaredChildParameters = childClass.getTypeParameters();
+    /**
+     * @param type the type to resolve
+     * @param typeMapping the mapping between TypeVariable and real type
+     * @return the resolved type, the passed type it does not need to be resolved or null if it can't be resolved
+     */
+    public static Type resolveType(Type type, Map<TypeVariable, Type> typeMapping)
+    {
+        Type resolvedType = type;
 
-                    typeMapping = new HashMap<TypeVariable, Type>();
-                    for (int j = 0; j < declaredChildParameters.length; ++j) {
-                        typeMapping.put(declaredChildParameters[i], childParameters[i]);
-                    }
-                }
+        if (type instanceof TypeVariable) {
+            if (typeMapping == null) {
+                return null;
+            }
 
-                if (actualParameters == null) {
-                    actualParameters = new Type[parameters.length];
-                    for (int j = 0; j < i; ++j) {
-                        actualParameters[j] = childParameters[j];
-                    }
-                }
+            resolvedType = typeMapping.get(type);
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
 
-                actualParameters[i] = typeMapping.get(parameter);
-            } else if (actualParameters != null) {
-                actualParameters[i] = parameter;
+            Type[] arguments = parameterizedType.getActualTypeArguments();
+            Type[] resolvedArguments = resolveTypes(arguments, typeMapping);
+
+            if (resolvedArguments != arguments) {
+                resolvedType =
+                    new DefaultParameterizedType(parameterizedType.getOwnerType(),
+                        (Class< ? >) parameterizedType.getRawType(), resolvedArguments);
+            } else {
+                resolvedType = type;
             }
         }
 
-        return actualParameters != null ? actualParameters : parameters;
+        return resolvedType;
+    }
+
+    /**
+     * @param types the types to resolve
+     * @param typeMapping the mapping between TypeVariable and real type
+     * @return the resolved types, the passed types if nothing need to be resolved or null if it can't be fully resolved
+     */
+    private static Type[] resolveTypes(Type[] types, Map<TypeVariable, Type> typeMapping)
+    {
+        Type[] resolvedTypes = types;
+
+        for (int i = 0; i < types.length; ++i) {
+            Type type = types[i];
+            Type resovedType = resolveType(type, typeMapping);
+
+            if (resovedType == null) {
+                return null;
+            }
+
+            if (resovedType != type) {
+                if (resolvedTypes == types) {
+                    resolvedTypes = new Type[types.length];
+                    for (int j = 0; j < i; ++j) {
+                        resolvedTypes[j] = types[j];
+                    }
+                }
+            }
+
+            if (resolvedTypes != types) {
+                resolvedTypes[i] = resovedType;
+            }
+        }
+
+        return resolvedTypes;
+    }
+
+    /**
+     * @param type the type for which to resolve the parameters
+     * @param childType an extending class as Type
+     * @return the Type with resolved parameters
+     */
+    public static Type resolveType(Type type, Type childType)
+    {
+        Type resolvedType = type;
+
+        if (type instanceof ParameterizedType) {
+            if (childType instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) type;
+
+                Class< ? > parameterizedTypeClass = (Class) parameterizedType.getRawType();
+                Type[] parameterizedTypeArguments = parameterizedType.getActualTypeArguments();
+
+                Type[] resolvedParameters =
+                    ReflectionUtils.resolveSuperArguments(parameterizedTypeArguments, childType);
+
+                if (resolvedParameters == null) {
+                    resolvedType = parameterizedTypeClass;
+                } else if (resolvedParameters != parameterizedTypeArguments) {
+                    resolvedType =
+                        new DefaultParameterizedType(parameterizedType.getOwnerType(), parameterizedTypeClass,
+                            resolvedParameters);
+                }
+            } else {
+                resolvedType = getTypeClass(type);
+            }
+        }
+
+        return resolvedType;
     }
 
     /**
@@ -328,5 +436,31 @@ public final class ReflectionUtils
         }
 
         return null;
+    }
+
+    /**
+     * @param type the type from which to extract super type and interfaces
+     * @return the direct super type and interfaces for the provided type
+     */
+    public static List<Type> getDirectTypes(Type type)
+    {
+        Class< ? > clazz = getTypeClass(type);
+
+        if (clazz == null) {
+            return Collections.emptyList();
+        }
+
+        List<Type> types = new LinkedList<Type>();
+
+        for (Type interfaceType : clazz.getGenericInterfaces()) {
+            types.add(resolveType(interfaceType, type));
+        }
+
+        Type superType = clazz.getGenericSuperclass();
+        if (superType != null) {
+            types.add(resolveType(superType, type));
+        }
+
+        return types;
     }
 }

@@ -4,6 +4,9 @@ org.xwiki.extension.handler.internal.ExtensionApplicationStartedListener
 org.xwiki.extension.internal.DefaultExtensionLicenseManager
 org.xwiki.extension.internal.DefaultExtensionManager
 org.xwiki.extension.internal.DefaultExtensionManagerConfiguration
+org.xwiki.extension.internal.safe.CollectionScriptSafeProvider
+org.xwiki.extension.internal.safe.DefaultScriptSafeProvider
+org.xwiki.extension.internal.safe.MapScriptSafeProvider
 org.xwiki.extension.job.internal.InstallJob
 org.xwiki.extension.job.internal.InstallPlanJob
 org.xwiki.extension.job.internal.UninstallJob

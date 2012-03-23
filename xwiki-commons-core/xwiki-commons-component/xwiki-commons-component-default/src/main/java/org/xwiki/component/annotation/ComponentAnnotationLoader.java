@@ -288,14 +288,14 @@ public class ComponentAnnotationLoader
                     ParameterizedType interfaceParameterizedType = (ParameterizedType) interfaceType;
 
                     interfaceClass = ReflectionUtils.getTypeClass(interfaceType);
-                    Type[] variableParameteres = interfaceParameterizedType.getActualTypeArguments();
+                    Type[] variableParameters = interfaceParameterizedType.getActualTypeArguments();
 
                     interfaceParameters =
-                        ReflectionUtils.resolveSuperParameters(variableParameteres, componentClass, parameters);
+                        ReflectionUtils.resolveSuperArguments(variableParameters, componentClass, parameters);
 
                     if (interfaceParameters == null) {
                         interfaceType = interfaceClass;
-                    } else if (interfaceParameters != variableParameteres) {
+                    } else if (interfaceParameters != variableParameters) {
                         interfaceType =
                             new DefaultParameterizedType(interfaceParameterizedType.getOwnerType(), interfaceClass,
                                 interfaceParameters);
@@ -333,7 +333,7 @@ public class ComponentAnnotationLoader
                 if (superType instanceof ParameterizedType) {
                     ParameterizedType superParameterizedType = (ParameterizedType) superType;
                     types.addAll(findComponentRoleTypes((Class) superParameterizedType.getRawType(), ReflectionUtils
-                        .resolveSuperParameters(superParameterizedType.getActualTypeArguments(), componentClass,
+                        .resolveSuperArguments(superParameterizedType.getActualTypeArguments(), componentClass,
                             parameters)));
                 } else if (superType instanceof Class) {
                     types.addAll(findComponentRoleTypes((Class) superType, null));

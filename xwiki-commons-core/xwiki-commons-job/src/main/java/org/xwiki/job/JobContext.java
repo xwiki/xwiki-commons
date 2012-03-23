@@ -17,39 +17,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.unmodifiable;
+package org.xwiki.job;
 
-import org.xwiki.extension.LocalExtensionFile;
+import org.xwiki.component.annotation.Role;
 
 /**
- * Provide a readonly access to a local extension file.
+ * Allow to access current Job.
  * 
- * @param <T> the extension type
  * @version $Id$
- * @since 4.0M1
+ * @since 4.0M2
  */
-public class UnmodifiableLocalExtensionFile<T extends LocalExtensionFile> extends UnmodifiableExtensionFile<T>
-    implements LocalExtensionFile
+@Role
+public interface JobContext
 {
     /**
-     * @param file he wrapped file
+     * @return the job currently being executed, null if there is none
      */
-    public UnmodifiableLocalExtensionFile(T file)
-    {
-        super(file);
-    }
+    Job getCurrentJob();
 
-    // LocalExtensionFile
+    /**
+     * @param job add a new job to the stack
+     */
+    void pushCurrentJob(Job job);
 
-    @Override
-    public String getName()
-    {
-        return getWrapped().getName();
-    }
-
-    @Override
-    public String getAbsolutePath()
-    {
-        return getWrapped().getAbsolutePath();
-    }
+    /**
+     * Remove the current job from the stack.
+     */
+    void popCurrentJob();
 }

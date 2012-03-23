@@ -32,6 +32,7 @@ import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.internal.AbstractExtensionHandler;
+import org.xwiki.job.Request;
 
 /**
  * Basic handler used for tests.
@@ -48,7 +49,7 @@ public class TestExtensionHandler extends AbstractExtensionHandler
     }
 
     @Override
-    public void install(LocalExtension localExtension, String namespace, Map<String, ? > extra) throws InstallException
+    public void install(LocalExtension localExtension, String namespace, Request request) throws InstallException
     {
         Set<LocalExtension> namespaceExtensions = this.extensions.get(namespace);
         if (namespaceExtensions == null) {
@@ -60,8 +61,7 @@ public class TestExtensionHandler extends AbstractExtensionHandler
     }
 
     @Override
-    public void uninstall(LocalExtension localExtension, String namespace, Map<String, ? > extra)
-        throws UninstallException
+    public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
     {
         this.extensions.get(namespace).remove(localExtension);
     }

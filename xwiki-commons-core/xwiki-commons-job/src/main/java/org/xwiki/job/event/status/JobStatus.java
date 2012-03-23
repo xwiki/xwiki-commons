@@ -47,17 +47,17 @@ public interface JobStatus
         NONE,
 
         /**
-         * The task has been paused.
-         */
-        PAUSED,
-
-        /**
-         * The task is running.
+         * The job is running.
          */
         RUNNING,
 
         /**
-         * The task is done.
+         * The job is waiting.
+         */
+        WAITING,
+
+        /**
+         * The job is done.
          */
         FINISHED
     }
@@ -87,4 +87,24 @@ public interface JobStatus
      * @return progress information about the job (percent, etc.)
      */
     JobProgress getProgress();
+
+    /**
+     * @param question the question to ask as a Java bean
+     * @throws InterruptedException if the current thread is interrupted
+     * @since 4.0M2
+     */
+    void ask(Object question) throws InterruptedException;
+
+    /**
+     * @return the question
+     * @since 4.0M2
+     */
+    Object getQuestion();
+
+    /**
+     * Indicate that the question has been answered.
+     * 
+     * @since 4.0M2
+     */
+    void answered();
 }

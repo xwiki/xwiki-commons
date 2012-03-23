@@ -17,50 +17,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.unmodifiable;
+package org.xwiki.extension.internal.safe;
 
-import java.util.Iterator;
-
-import org.xwiki.extension.Extension;
+import org.xwiki.component.annotation.Role;
 
 /**
- * Provide a readonly access to an iterator on an extension.
+ * Provide a wrapped (or not) version of the passed object so that it's safe to use in a public script.
  * 
- * @param <E> the extension type
+ * @param <T>
  * @version $Id$
- * @since 4.0M1
+ * @since 4.0M2
  */
-public class UnmodifiableExtensionIterator<E extends Extension> implements Iterator<E>
+@Role
+public interface ScriptSafeProvider<T>
 {
     /**
-     * The wrapped iterator.
+     * @param <S> the type of the safe object version
+     * @param unsafe the unsafe version of the object
+     * @return a safe version of the passed object
      */
-    private Iterator<E> iterator;
-
-    /**
-     * @param iterator the wrapped iterator
-     */
-    public UnmodifiableExtensionIterator(Iterator<E> iterator)
-    {
-        this.iterator = iterator;
-    }
-
-    @Override
-    public boolean hasNext()
-    {
-        return this.iterator.hasNext();
-    }
-
-    @Override
-    public E next()
-    {
-        return UnmodifiableUtils.unmodifiableExtension(this.iterator.next());
-    }
-
-    @Override
-    public void remove()
-    {
-        throw new ForbiddenException("Calling remove is forbidden in readonly proxy");
-    }
-
+    <S> S get(T unsafe);
 }

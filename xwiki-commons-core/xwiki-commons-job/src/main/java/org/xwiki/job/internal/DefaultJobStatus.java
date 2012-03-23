@@ -22,6 +22,8 @@ package org.xwiki.job.internal;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobProgress;
@@ -76,6 +78,21 @@ public class DefaultJobStatus<R extends Request> implements JobStatus, Serializa
      * Log sent during job execution.
      */
     private LogQueue logs = new LogQueue();
+
+    /**
+     * Used to lock #ask().
+     */
+    private final transient ReentrantLock askLock = new ReentrantLock();
+
+    /**
+     * Condition for waiting answer.
+     */
+    private final transient Condition answered = this.askLock.newCondition();
+
+    /**
+     * The question.
+     */
+    private transient volatile Object question;
 
     /**
      * Take care of progress related events to produce a progression information usually used in a progress bar.
@@ -166,5 +183,42 @@ public class DefaultJobStatus<R extends Request> implements JobStatus, Serializa
     public JobProgress getProgress()
     {
         return this.progress;
+    }
+
+    @Override
+    public void ask(Object question) throws InterruptedException
+    {
+        this.question = question;
+
+        this.askLock.lockInterruptibly();
+
+        try {
+            // Wait for the answer
+            this.state = State.WAITING;
+            this.answered.await();
+            this.state = State.RUNNING;
+        } finally {
+            this.askLock.unlock();
+        }
+    }
+
+    @Override
+    public Object getQuestion()
+    {
+        return this.question;
+    }
+
+    @Override
+    public void answered()
+    {
+        this.askLock.lock();
+
+        this.question = null;
+
+        try {
+            this.answered.signal();
+        } finally {
+            this.askLock.unlock();
+        }
     }
 }

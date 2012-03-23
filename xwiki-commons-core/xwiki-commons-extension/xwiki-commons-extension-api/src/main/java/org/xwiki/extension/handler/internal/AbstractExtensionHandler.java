@@ -19,8 +19,6 @@
  */
 package org.xwiki.extension.handler.internal;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -29,6 +27,7 @@ import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
+import org.xwiki.job.Request;
 
 /**
  * Base class for {@link ExtensionHandler} implementations.
@@ -46,10 +45,10 @@ public abstract class AbstractExtensionHandler implements ExtensionHandler
 
     @Override
     public void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
-        Map<String, ? > extra) throws InstallException
+        Request request) throws InstallException
     {
         try {
-            uninstall(previousLocalExtension, namespace, extra);
+            uninstall(previousLocalExtension, namespace, request);
         } catch (UninstallException e) {
             throw new InstallException("Failed to uninstall previous extension [" + previousLocalExtension + "]");
         }

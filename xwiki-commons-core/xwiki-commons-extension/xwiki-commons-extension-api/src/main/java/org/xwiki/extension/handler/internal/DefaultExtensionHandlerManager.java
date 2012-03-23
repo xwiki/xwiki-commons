@@ -19,8 +19,6 @@
  */
 package org.xwiki.extension.handler.internal;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -33,6 +31,7 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.handler.ExtensionHandlerManager;
+import org.xwiki.job.Request;
 
 /**
  * Default implementation of {@link ExtensionHandlerManager}.
@@ -68,7 +67,7 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
     }
 
     @Override
-    public void install(LocalExtension localExtension, String namespace, Map<String, ? > extra) throws InstallException
+    public void install(LocalExtension localExtension, String namespace, Request request) throws InstallException
     {
         ExtensionHandler extensionHandler;
         try {
@@ -78,15 +77,14 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
         }
 
         try {
-            extensionHandler.install(localExtension, namespace, extra);
+            extensionHandler.install(localExtension, namespace, request);
         } catch (Exception e) {
             throw new InstallException("Failed to install extension [" + localExtension.getId() + "]", e);
         }
     }
 
     @Override
-    public void uninstall(LocalExtension localExtension, String namespace, Map<String, ? > extra)
-        throws UninstallException
+    public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
     {
         ExtensionHandler extensionHandler;
         try {
@@ -96,7 +94,7 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
         }
 
         try {
-            extensionHandler.uninstall(localExtension, namespace, extra);
+            extensionHandler.uninstall(localExtension, namespace, request);
         } catch (Exception e) {
             if (e instanceof UninstallException) {
                 throw (UninstallException) e;
@@ -108,7 +106,7 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
 
     @Override
     public void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
-        Map<String, ? > extra) throws InstallException
+        Request request) throws InstallException
     {
         ExtensionHandler extensionHandler;
         try {
@@ -118,7 +116,7 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
         }
 
         try {
-            extensionHandler.upgrade(previousLocalExtension, newLocalExtension, namespace, extra);
+            extensionHandler.upgrade(previousLocalExtension, newLocalExtension, namespace, request);
         } catch (Exception e) {
             if (e instanceof InstallException) {
                 throw (InstallException) e;

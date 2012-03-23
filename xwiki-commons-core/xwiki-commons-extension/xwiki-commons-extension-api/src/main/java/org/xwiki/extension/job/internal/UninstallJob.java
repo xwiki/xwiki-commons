@@ -105,7 +105,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
 
             UninstallRequest planRequest = new UninstallRequest(getRequest());
             planRequest.setId(null);
-            
+
             this.uninstallPlanJob.start(planRequest);
 
             ExtensionPlan plan = (ExtensionPlan) this.uninstallPlanJob.getStatus();
@@ -163,7 +163,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
 
         try {
             // Unload extension
-            this.extensionHandlerManager.uninstall(localExtension, namespace, getExtraHandlerParameters());
+            this.extensionHandlerManager.uninstall(localExtension, namespace, getRequest());
 
             notifyStepPropress();
 

@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.repository.search.Searchable;
 
 /**
  * Virtual extension repository containing core extensions.
@@ -31,7 +32,7 @@ import org.xwiki.extension.CoreExtension;
  * @since 4.0M1
  */
 @Role
-public interface CoreExtensionRepository extends ExtensionRepository
+public interface CoreExtensionRepository extends ExtensionRepository, Searchable
 {
     /**
      * @return the number of core extensions

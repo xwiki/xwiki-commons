@@ -17,35 +17,50 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.unmodifiable;
+package org.xwiki.extension.internal.safe;
 
-import org.xwiki.extension.CoreExtension;
-import org.xwiki.extension.repository.ExtensionRepository;
-import org.xwiki.extension.wrap.WrappingCoreExtension;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
 
 /**
- * Provide a readonly access to a core extension.
+ * Provide safe Map.
  * 
- * @param <T> the extension type
  * @version $Id$
- * @since 4.0M1
+ * @since 4.0M2
  */
-public class UnmodifiableCoreExtension<T extends CoreExtension> extends WrappingCoreExtension<T> implements
-    CoreExtension
+@Component
+@Singleton
+@SuppressWarnings("rawtypes")
+public class MapScriptSafeProvider implements ScriptSafeProvider<Map>
 {
     /**
-     * @param extension the wrapped core extension
+     * Used to provide collection elements safe versions.
      */
-    public UnmodifiableCoreExtension(T extension)
-    {
-        super(extension);
-    }
-
-    // Extension
+    @Inject
+    private ScriptSafeProvider safeProvider;
 
     @Override
-    public ExtensionRepository getRepository()
+    public <S> S get(Map unsafe)
     {
-        return UnmodifiableUtils.unmodifiableExtensionRepository(super.getRepository());
+        Map safe;
+
+        if (unsafe instanceof LinkedHashMap) {
+            safe = new LinkedHashMap(unsafe.size());
+        } else {
+            safe = new HashMap(unsafe.size());
+        }
+
+        for (Map.Entry entry : (Set<Map.Entry>) unsafe.entrySet()) {
+            safe.put(this.safeProvider.get(entry.getKey()), this.safeProvider.get(entry.getValue()));
+        }
+
+        return (S) safe;
     }
 }

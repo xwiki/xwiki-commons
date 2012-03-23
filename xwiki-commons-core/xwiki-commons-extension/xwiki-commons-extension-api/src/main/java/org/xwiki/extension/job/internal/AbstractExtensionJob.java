@@ -19,9 +19,6 @@
  */
 package org.xwiki.extension.job.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.job.internal.AbstractJob;
 
@@ -34,25 +31,4 @@ import org.xwiki.job.internal.AbstractJob;
  */
 public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends AbstractJob<R>
 {
-    /**
-     * @see #getExtraHandlerParameters()
-     */
-    private Map<String, Object> extra;
-
-    /**
-     * @return extra parameters used in {@link org.xwiki.extension.handler.ExtensionHandler} methods
-     */
-    protected Map<String, ? > getExtraHandlerParameters()
-    {
-        if (this.extra == null) {
-            this.extra = new HashMap<String, Object>();
-
-            R request = getRequest();
-            for (String key : request.getPropertyNames()) {
-                this.extra.put(key, request.getProperty(key));
-            }
-        }
-
-        return this.extra;
-    }
 }

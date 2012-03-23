@@ -197,13 +197,13 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
         boolean dependency) throws InstallException
     {
         if (previousExtension == null) {
-            this.extensionHandlerManager.install(extension, namespace, getExtraHandlerParameters());
+            this.extensionHandlerManager.install(extension, namespace, getRequest());
 
             this.localExtensionRepository.installExtension(extension, namespace, dependency);
 
             this.observationManager.notify(new ExtensionInstalledEvent(extension.getId(), namespace), extension);
         } else {
-            this.extensionHandlerManager.upgrade(previousExtension, extension, namespace, getExtraHandlerParameters());
+            this.extensionHandlerManager.upgrade(previousExtension, extension, namespace, getRequest());
 
             try {
                 this.localExtensionRepository.uninstallExtension(previousExtension, namespace);

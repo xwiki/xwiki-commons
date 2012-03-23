@@ -92,6 +92,21 @@ public abstract class AbstractRequest implements Request
         setProperty(PROPERTY_REMOTE, remote);
     }
 
+    @Override
+    public boolean isInteractive()
+    {
+        return this.<Boolean> getProperty(PROPERTY_INTERACTIVE, false);
+    }
+
+    /**
+     * @param interactive indicate if the job is allowed to ask questions if it it should be fully automated (i.e. use
+     *            default answers)
+     */
+    public void setInteractive(boolean interactive)
+    {
+        setProperty(PROPERTY_INTERACTIVE, interactive);
+    }
+
     /**
      * @param key the name of the property
      * @param value the value of the property

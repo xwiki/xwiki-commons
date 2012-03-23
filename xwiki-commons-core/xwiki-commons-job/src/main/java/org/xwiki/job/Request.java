@@ -36,6 +36,11 @@ public interface Request extends Serializable
     String PROPERTY_REMOTE = "remote";
 
     /**
+     * @see #isInteractive()
+     */
+    String PROPERTY_INTERACTIVE = "interactive";
+
+    /**
      * @return identifier used to access the job. If none is provided the job will not be accessible by id and the
      *         status of the job will not be stored.
      */
@@ -45,6 +50,12 @@ public interface Request extends Serializable
      * @return indicate if the job has been triggered by a remote event
      */
     boolean isRemote();
+
+    /**
+     * @return indicate if the job is allowed to ask questions if it it should be fully automated (i.e. use default
+     *         answers)
+     */
+    boolean isInteractive();
 
     /**
      * @param key the name of the property

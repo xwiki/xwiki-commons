@@ -17,35 +17,42 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.unmodifiable;
+package org.xwiki.extension.internal.safe;
 
-import java.net.URL;
-
-import org.xwiki.extension.CoreExtensionFile;
+import org.xwiki.extension.wrap.AbstractWrappingObject;
 
 /**
- * Provide a readonly access to a core extension file.
+ * Encapsulate an object in a wafe way for public scripts.
  * 
- * @param <T> the extension type
+ * @param <T> the type of the wrapped object
  * @version $Id$
  * @since 4.0M1
  */
-public class UnmodifiableCoreExtensionFile<T extends CoreExtensionFile> extends UnmodifiableExtensionFile<T> implements
-    CoreExtensionFile
+public abstract class AbstractSafeObject<T> extends AbstractWrappingObject<T>
 {
     /**
-     * @param file he wrapped file
+     * The provider of instances safe for public scripts.
      */
-    public UnmodifiableCoreExtensionFile(T file)
+    protected ScriptSafeProvider<Object> safeProvider;
+
+    /**
+     * @param wrapped the wrapped object
+     * @param safeProvider the provider of instances safe for public scripts
+     */
+    public AbstractSafeObject(T wrapped, ScriptSafeProvider<Object> safeProvider)
     {
-        super(file);
+        super(wrapped);
+
+        this.safeProvider = safeProvider;
     }
 
-    // CoreExtensionFile
-
-    @Override
-    public URL getURL()
+    /**
+     * @param <S> the type of the object
+     * @param unsafe the unsafe object
+     * @return the safe version of the object
+     */
+    protected <S> S safe(Object unsafe)
     {
-        return getWrapped().getURL();
+        return this.safeProvider.get(unsafe);
     }
 }

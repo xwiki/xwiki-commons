@@ -25,7 +25,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -49,6 +48,8 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.LocalExtensionFile;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.internal.AbstractExtensionHandler;
+import org.xwiki.job.Request;
+import org.xwiki.observation.ObservationManager;
 
 /**
  * Add support for JAR extensions.
@@ -86,7 +87,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     }
 
     @Override
-    public void install(LocalExtension localExtension, String namespace, Map<String, ? > extra) throws InstallException
+    public void install(LocalExtension localExtension, String namespace, Request request) throws InstallException
     {
         NamespaceURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, true);
 
@@ -102,8 +103,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     }
 
     @Override
-    public void uninstall(LocalExtension localExtension, String namespace, Map<String, ? > extra)
-        throws UninstallException
+    public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
     {
         NamespaceURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, false);
 
@@ -148,6 +148,9 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
                     if (componentEventManager != stackingComponentEventManager) {
                         componentManager.setComponentEventManager(componentEventManager);
                     }
+
+                    stackingComponentEventManager.setObservationManager(componentManager
+                        .<ObservationManager> lookupComponent(ObservationManager.class));
                     stackingComponentEventManager.shouldStack(false);
                     stackingComponentEventManager.flushEvents();
                 }
