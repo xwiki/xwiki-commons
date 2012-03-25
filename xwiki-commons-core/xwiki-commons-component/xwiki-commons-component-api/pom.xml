@@ -34,6 +34,11 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Component - API</description>
   <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-text</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Make it easy for components that wish to log - They don't have to explicitly import SLF4J -->
     <dependency>
       <groupId>org.slf4j</groupId>

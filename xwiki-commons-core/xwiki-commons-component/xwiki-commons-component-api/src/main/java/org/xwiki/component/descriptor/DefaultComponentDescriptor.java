@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.component.util.ObjectUtils;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * Default implementation of {@link ComponentDescriptor}.
@@ -133,12 +135,10 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     @Override
     public String toString()
     {
-        StringBuilder buffer = new StringBuilder(super.toString());
-        buffer.append(" implementation = [").append(getImplementation() == null ? null : getImplementation().getName())
-            .append("]");
-        buffer.append(" instantiation = [").append(getInstantiationStrategy()).append("]");
-
-        return buffer.toString();
+        ToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("implementation", getImplementation() == null ? null : getImplementation().getName());
+        builder.append("instantiation", getInstantiationStrategy());
+        return builder.toString();
     }
 
     /**

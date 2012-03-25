@@ -21,8 +21,10 @@ package org.xwiki.component.descriptor;
 
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.component.util.ObjectUtils;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * @param <T> the type of the component role
@@ -90,12 +92,10 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     @Override
     public String toString()
     {
-        StringBuilder buffer = new StringBuilder();
-
-        buffer.append("role = [").append(null == getRoleType() ? "<null>" : getRoleType()).append("]");
-        buffer.append(" hint = [").append(getRoleHint()).append("]");
-
-        return buffer.toString();
+        ToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("role", null == getRoleType() ? "<null>" : getRoleType());
+        builder.append("hint", getRoleHint());
+        return builder.toString();
     }
 
     /**
