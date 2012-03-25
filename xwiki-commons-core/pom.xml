@@ -35,22 +35,24 @@
   <packaging>pom</packaging>
   <description>XWiki Commons - Core - Parent POM</description>
   <modules>
-    <module>xwiki-commons-component</module>
-    <module>xwiki-commons-observation</module>
-    <module>xwiki-commons-context</module>
-    <module>xwiki-commons-configuration</module>
-    <module>xwiki-commons-environment</module>
-    <module>xwiki-commons-test</module>
-    <module>xwiki-commons-xml</module>
-    <module>xwiki-commons-properties</module>
-    <module>xwiki-commons-management</module>
-    <module>xwiki-commons-script</module>
-    <module>xwiki-commons-velocity</module>
-    <module>xwiki-commons-logging</module>
+    <!-- Sorted Alphabetically -->
     <module>xwiki-commons-classloader</module>
-    <module>xwiki-commons-job</module>
+    <module>xwiki-commons-component</module>
+    <module>xwiki-commons-configuration</module>
+    <module>xwiki-commons-context</module>
+    <module>xwiki-commons-environment</module>
     <module>xwiki-commons-extension</module>
+    <module>xwiki-commons-job</module>
     <module>xwiki-commons-legacy</module>
+    <module>xwiki-commons-logging</module>
+    <module>xwiki-commons-management</module>
+    <module>xwiki-commons-observation</module>
+    <module>xwiki-commons-properties</module>
+    <module>xwiki-commons-script</module>
+    <module>xwiki-commons-test</module>
+    <module>xwiki-commons-text</module>
+    <module>xwiki-commons-velocity</module>
+    <module>xwiki-commons-xml</module>
   </modules>
   <dependencies>
     <dependency>
