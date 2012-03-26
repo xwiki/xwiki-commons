@@ -20,7 +20,7 @@
 package org.xwiki.extension;
 
 import java.io.File;
-import java.util.List;
+import java.util.Collection;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
@@ -43,7 +43,7 @@ public interface ExtensionManagerConfiguration
     /**
      * @return the configured repositories
      */
-    List<ExtensionRepositoryId> getRepositories();
+    Collection<ExtensionRepositoryId> getRepositories();
 
     /**
      * @return the user agent to declare when communication with external services (generally repositories)

@@ -19,7 +19,7 @@
  */
 package org.xwiki.extension.repository;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.xwiki.component.annotation.Role;
 
@@ -35,5 +35,5 @@ public interface ExtensionRepositorySource
     /**
      * @return the extension repositories identifiers
      */
-    List<ExtensionRepositoryId> getExtensionRepositories();
+    Collection<ExtensionRepositoryId> getExtensionRepositories();
 }

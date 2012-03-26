@@ -19,8 +19,8 @@
  */
 package org.xwiki.extension.repository.internal;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,9 +49,9 @@ public class ConfigurationExtensionRepositorySource implements ExtensionReposito
     private ExtensionManagerConfiguration configuration;
 
     @Override
-    public List<ExtensionRepositoryId> getExtensionRepositories()
+    public Collection<ExtensionRepositoryId> getExtensionRepositories()
     {
-        List<ExtensionRepositoryId> repositories = this.configuration.getRepositories();
+        Collection<ExtensionRepositoryId> repositories = this.configuration.getRepositories();
 
         return repositories != null ? repositories : Collections.<ExtensionRepositoryId> emptyList();
     }

@@ -22,9 +22,11 @@ package org.xwiki.extension.internal;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,9 +112,9 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     }
 
     @Override
-    public List<ExtensionRepositoryId> getRepositories()
+    public Collection<ExtensionRepositoryId> getRepositories()
     {
-        List<ExtensionRepositoryId> repositories;
+        Collection<ExtensionRepositoryId> repositories;
 
         List<String> repositoryStrings =
             this.configuration.get().getProperty("extension.repositories", Collections.<String> emptyList());
@@ -120,12 +122,17 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         if (repositoryStrings.isEmpty()) {
             repositories = null;
         } else {
-            repositories = new ArrayList<ExtensionRepositoryId>();
+            Map<String, ExtensionRepositoryId> repositoriesMap = new LinkedHashMap<String, ExtensionRepositoryId>();
             for (String repositoryString : repositoryStrings) {
                 if (StringUtils.isNotBlank(repositoryString)) {
                     try {
                         ExtensionRepositoryId extensionRepositoryId = parseRepository(repositoryString);
-                        repositories.add(extensionRepositoryId);
+                        if (repositoriesMap.containsKey(extensionRepositoryId.getId())) {
+                            this.logger.warn(
+                                "Duplicated repository id in [{}] first found in [{}]. The last one will be used.",
+                                extensionRepositoryId, repositoriesMap.get(extensionRepositoryId.getId()));
+                        }
+                        repositoriesMap.put(extensionRepositoryId.getId(), extensionRepositoryId);
                     } catch (Exception e) {
                         this.logger.warn("Faild to parse repository [" + repositoryString + "] from configuration", e);
                     }
@@ -133,6 +140,8 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
                     this.logger.debug("Empty repository id found in the configuration");
                 }
             }
+
+            repositories = repositoriesMap.values();
         }
 
         return repositories;
