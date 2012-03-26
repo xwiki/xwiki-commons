@@ -22,8 +22,8 @@ package org.xwiki.extension.repository.aether.internal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -52,9 +52,9 @@ public class AetherExtensionRepositorySource implements ExtensionRepositorySourc
     private ExtensionManagerConfiguration configuration;
 
     @Override
-    public List<ExtensionRepositoryId> getExtensionRepositories()
+    public Collection<ExtensionRepositoryId> getExtensionRepositories()
     {
-        List<ExtensionRepositoryId> repositories = this.configuration.getRepositories();
+        Collection<ExtensionRepositoryId> repositories = this.configuration.getRepositories();
 
         try {
             return repositories != null ? repositories : Arrays.asList(new ExtensionRepositoryId("maven-xwiki",
