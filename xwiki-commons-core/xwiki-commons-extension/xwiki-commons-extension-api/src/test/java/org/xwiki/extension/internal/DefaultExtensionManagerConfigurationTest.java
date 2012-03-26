@@ -21,6 +21,7 @@ package org.xwiki.extension.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import junit.framework.Assert;
@@ -52,7 +53,7 @@ public class DefaultExtensionManagerConfigurationTest extends AbstractComponentT
         getConfigurationSource().setProperty("extension.repositories", Arrays.asList("id:type:http://url", "invalid"));
 
         Assert.assertEquals(Arrays.asList(new ExtensionRepositoryId("id", "type", new URI("http://url"))),
-            this.configuration.getRepositories());
+            new ArrayList<ExtensionRepositoryId>(this.configuration.getRepositories()));
     }
 
     @Test
