@@ -30,6 +30,11 @@ import org.xwiki.extension.ExtensionException;
 public class ExtensionManagerConfigurationException extends ExtensionException
 {
     /**
+     * Serialization identifier.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * Constructs a new exception with the specified detail message. The cause is not initialized, and may subsequently
      * be initialized by a call to {@link #initCause(Throwable)}.
      * 
