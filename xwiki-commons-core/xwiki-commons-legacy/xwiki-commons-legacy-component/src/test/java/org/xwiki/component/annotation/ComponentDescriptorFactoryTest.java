@@ -79,22 +79,8 @@ public class ComponentDescriptorFactoryTest
          * Inject all implementation of the FieldRole role. 
          */
         @SuppressWarnings("unused")
-        @Requirement(role = FieldRole.class)
-        private List<FieldRole> deprecatedRoles;
-        
-        /**
-         * Inject all implementation of the FieldRole role. 
-         */
-        @SuppressWarnings("unused")
         @Requirement
         private List<FieldRole> roles;
-
-        /**
-         * Only inject FieldRole implementation with a "special" hint.
-         */
-        @SuppressWarnings("unused")
-        @Requirement(role = FieldRole.class, hints = {"special"})
-        private List<FieldRole> deprecatedSpecialRoles;
 
         /**
          * Only inject FieldRole implementation with a "special" hint.
@@ -166,7 +152,7 @@ public class ComponentDescriptorFactoryTest
         Assert.assertEquals(ComponentInstantiationStrategy.SINGLETON, descriptor.getInstantiationStrategy());
 
         Collection<ComponentDependency> deps = descriptor.getComponentDependencies(); 
-        Assert.assertEquals(7, deps.size());
+        Assert.assertEquals(5, deps.size());
         Iterator<ComponentDependency> it = deps.iterator();
 
         // Test the following injection:
@@ -188,15 +174,6 @@ public class ComponentDescriptorFactoryTest
         Assert.assertEquals("specialFieldRole", dep.getName());
 
         // Test the following injection:
-        //   @Requirement(role = FieldRole.class)
-        //   private List<FieldRole> deprecatedRoles;
-        dep = it.next();
-        Assert.assertEquals(FieldRole.class.getName(), dep.getRole().getName());
-        Assert.assertEquals("default", dep.getRoleHint());
-        Assert.assertEquals(List.class.getName(), dep.getMappingType().getName());
-        Assert.assertEquals("deprecatedRoles", dep.getName());
-        
-        // Test the following injection:
         //   @Requirement
         //   private List<FieldRole> roles;
         dep = it.next();
@@ -205,15 +182,6 @@ public class ComponentDescriptorFactoryTest
         Assert.assertEquals(List.class.getName(), dep.getMappingType().getName());
         Assert.assertEquals("roles", dep.getName());
 
-        // Test the following injection:
-        //   @Requirement(role = FieldRole.class, hints = {"special"})
-        //   private List<FieldRole> deprecatedSpecialRoles;
-        dep = it.next();
-        Assert.assertEquals(FieldRole.class.getName(), dep.getRole().getName());
-        Assert.assertEquals("default", dep.getRoleHint());
-        Assert.assertEquals(List.class.getName(), dep.getMappingType().getName());
-        Assert.assertEquals("deprecatedSpecialRoles", dep.getName());
-        
         // Test the following injection:
         //   @Requirement(hints = {"special"})
         //   private List<FieldRole> specialRoles;

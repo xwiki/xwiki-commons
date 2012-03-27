@@ -78,13 +78,7 @@ public class RequirementComponentDependencyFactory extends AbstractComponentDepe
 
         // Handle case of list or map
         if (isDependencyOfListType(field.getType())) {
-            // Only add the field to the descriptor if the user has specified a role class different than an
-            // Object since we use Object as the default value when no role is specified.
-            if (requirement != null && !requirement.role().getName().equals(Object.class.getName())) {
-                role = requirement.role();
-            } else {
-                role = getGenericRole(field);
-            }
+            role = getGenericRole(field);
         } else {
             role = field.getType();
         }

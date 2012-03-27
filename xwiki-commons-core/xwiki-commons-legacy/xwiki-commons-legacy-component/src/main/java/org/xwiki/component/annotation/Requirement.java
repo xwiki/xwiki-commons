@@ -48,15 +48,6 @@ public @interface Requirement
     String value() default "";
 
     /**
-     * The role for the component to inject. Note that the role can usually be guessed from the field
-     * type or method parameter type. However, for Lists or Maps we need to pass it since Java doesn't
-     * allow getting it using reflection.
-     * @deprecated since 2.7RC1 generic types are guessed too
-     */
-    @Deprecated
-    Class< ? > role() default Object.class;
-
-    /**
      * When injecting a Collection of requirements, allows specifying a discrete list of hints to use. If these are
      * not specified, then all implementations for the specified role will be injected.
      */
