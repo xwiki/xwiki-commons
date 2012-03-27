@@ -22,11 +22,11 @@ package org.xwiki.extension.internal.safe;
 import org.xwiki.extension.wrap.AbstractWrappingObject;
 
 /**
- * Encapsulate an object in a wafe way for public scripts.
+ * Encapsulate an object in a safe way for public scripts.
  * 
  * @param <T> the type of the wrapped object
  * @version $Id$
- * @since 4.0M1
+ * @since 4.0M2
  */
 public abstract class AbstractSafeObject<T> extends AbstractWrappingObject<T>
 {
