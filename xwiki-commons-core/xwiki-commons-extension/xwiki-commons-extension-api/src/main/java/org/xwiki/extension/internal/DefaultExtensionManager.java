@@ -63,38 +63,28 @@ public class DefaultExtensionManager implements ExtensionManager
     @Override
     public Extension resolveExtension(ExtensionId extensionId) throws ResolveException
     {
-        Extension extension = null;
-
-        extension = this.coreExtensionRepository.getCoreExtension(extensionId.getId());
-
-        if (extension == null) {
+        try {
+            return this.coreExtensionRepository.resolve(extensionId);
+        } catch (ResolveException notACoreExtension) {
             try {
-                extension = this.localExtensionRepository.resolve(extensionId);
-            } catch (ResolveException e) {
-                extension = this.repositoryManager.resolve(extensionId);
+                return this.localExtensionRepository.resolve(extensionId);
+            } catch (ResolveException notALocalExtension) {
+                return this.repositoryManager.resolve(extensionId);
             }
         }
-
-        return extension;
     }
 
     @Override
     public Extension resolveExtension(ExtensionDependency extensionDependency) throws ResolveException
     {
-        Extension extension = null;
-
-        String initialId = extensionDependency.getId();
-
-        extension = this.coreExtensionRepository.getCoreExtension(initialId);
-
-        if (extension == null) {
+        try {
+            return this.coreExtensionRepository.resolve(extensionDependency);
+        } catch (ResolveException notACoreExtension) {
             try {
-                extension = this.localExtensionRepository.resolve(extensionDependency);
-            } catch (ResolveException e) {
-                extension = this.repositoryManager.resolve(extensionDependency);
+                return this.localExtensionRepository.resolve(extensionDependency);
+            } catch (ResolveException notALocalExtension) {
+                return this.repositoryManager.resolve(extensionDependency);
             }
         }
-
-        return extension;
     }
 }
