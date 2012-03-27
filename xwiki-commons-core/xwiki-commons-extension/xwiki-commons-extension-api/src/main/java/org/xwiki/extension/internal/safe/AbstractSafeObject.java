@@ -39,11 +39,11 @@ public abstract class AbstractSafeObject<T> extends AbstractWrappingObject<T>
      * @param wrapped the wrapped object
      * @param safeProvider the provider of instances safe for public scripts
      */
-    public AbstractSafeObject(T wrapped, ScriptSafeProvider<Object> safeProvider)
+    public AbstractSafeObject(T wrapped, ScriptSafeProvider< ? > safeProvider)
     {
         super(wrapped);
 
-        this.safeProvider = safeProvider;
+        this.safeProvider = (ScriptSafeProvider<Object>) safeProvider;
     }
 
     /**
