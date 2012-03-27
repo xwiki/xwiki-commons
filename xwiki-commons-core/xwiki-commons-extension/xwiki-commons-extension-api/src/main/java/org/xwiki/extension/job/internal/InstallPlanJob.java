@@ -37,7 +37,7 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
-import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
@@ -47,6 +47,7 @@ import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.version.IncompatibleVersionConstraintException;
 import org.xwiki.extension.version.Version;
@@ -130,10 +131,16 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
     private CoreExtensionRepository coreExtensionRepository;
 
     /**
-     * Used to manipulate local extension repository.
+     * Used to manipulate installed extensions repository.
      */
     @Inject
     private LocalExtensionRepository localExtensionRepository;
+
+    /**
+     * Used to manipulate local extensions repository.
+     */
+    @Inject
+    private InstalledExtensionRepository installedExtensionRepository;
 
     /**
      * The install plan.
@@ -318,11 +325,11 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
                 extensionId.getId()));
         }
 
-        LocalExtension previousExtension = null;
+        InstalledExtension previousExtension = null;
 
-        LocalExtension localExtension =
-            this.localExtensionRepository.getInstalledExtension(extensionId.getId(), namespace);
-        if (localExtension != null) {
+        InstalledExtension installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(extensionId.getId(), namespace);
+        if (installedExtension != null) {
             this.logger.info("Found already installed extension with id [{}]. Checking compatibility.", extensionId);
 
             if (extensionId.getVersion() == null) {
@@ -330,7 +337,7 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
                     extensionId.getId()));
             }
 
-            int diff = extensionId.getVersion().compareTo(localExtension.getId().getVersion());
+            int diff = extensionId.getVersion().compareTo(installedExtension.getId().getVersion());
 
             if (diff == 0) {
                 throw new InstallException(
@@ -340,7 +347,7 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
                     extensionId.getId()));
             } else {
                 // upgrade
-                previousExtension = localExtension;
+                previousExtension = installedExtension;
             }
         }
 
@@ -421,7 +428,7 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
         return versionConstraint;
     }
 
-    private ExtensionDependency checkInstalledExtension(LocalExtension installedExtension,
+    private ExtensionDependency checkInstalledExtension(InstalledExtension installedExtension,
         ExtensionDependency extensionDependency, VersionConstraint versionConstraint, String namespace,
         List<ModifableExtensionPlanNode> parentBranch) throws InstallException
     {
@@ -447,8 +454,8 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
             VersionConstraint mergedVersionContraint;
             try {
                 if (installedExtension.isInstalled(null)) {
-                    Map<String, Collection<LocalExtension>> backwardDependencies =
-                        this.localExtensionRepository.getBackwardDependencies(installedExtension.getId());
+                    Map<String, Collection<InstalledExtension>> backwardDependencies =
+                        this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId());
 
                     mergedVersionContraint =
                         mergeVersionConstraints(backwardDependencies.get(null), extensionDependency.getId(),
@@ -459,8 +466,8 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
                                 mergedVersionContraint);
                     }
                 } else {
-                    Collection<LocalExtension> backwardDependencies =
-                        this.localExtensionRepository.getBackwardDependencies(installedExtension.getId().getId(),
+                    Collection<InstalledExtension> backwardDependencies =
+                        this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId().getId(),
                             namespace);
 
                     mergedVersionContraint =
@@ -512,9 +519,9 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
             return;
         }
 
-        // Check local extensions
-        LocalExtension previousExtension =
-            this.localExtensionRepository.getInstalledExtension(extensionDependency.getId(), namespace);
+        // Check installed extensions
+        InstalledExtension previousExtension =
+            this.installedExtensionRepository.getInstalledExtension(extensionDependency.getId(), namespace);
         ExtensionDependency targetDependency =
             checkInstalledExtension(previousExtension, extensionDependency, versionConstraint, namespace, parentBranch);
         if (targetDependency == null) {
@@ -541,7 +548,7 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
      * @return the install plan node for the provided extension
      * @throws InstallException error when trying to install provided extension
      */
-    private ModifableExtensionPlanNode installExtension(LocalExtension previousExtension,
+    private ModifableExtensionPlanNode installExtension(InstalledExtension previousExtension,
         ExtensionDependency targetDependency, boolean dependency, String namespace) throws InstallException
     {
         notifyPushLevelProgress(2);
@@ -621,7 +628,7 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
      * @return the install plan node for the provided extension
      * @throws InstallException error when trying to install provided extension
      */
-    private ModifableExtensionPlanNode installExtension(LocalExtension previousExtension, ExtensionId extensionId,
+    private ModifableExtensionPlanNode installExtension(InstalledExtension previousExtension, ExtensionId extensionId,
         boolean dependency, String namespace) throws InstallException
     {
         notifyPushLevelProgress(2);
@@ -702,7 +709,7 @@ public class InstallPlanJob extends AbstractExtensionJob<InstallRequest>
      * @param initialDependency the initial dependency used to resolve the extension
      * @throws InstallException error when trying to install provided extension
      */
-    private ModifableExtensionPlanNode installExtension(LocalExtension previousExtension, Extension extension,
+    private ModifableExtensionPlanNode installExtension(InstalledExtension previousExtension, Extension extension,
         boolean dependency, String namespace, ExtensionDependency initialDependency) throws InstallException
     {
         Collection< ? extends ExtensionDependency> dependencies = extension.getDependencies();

@@ -33,15 +33,15 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionException;
-import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.handler.ExtensionHandlerManager;
 import org.xwiki.extension.handler.ExtensionInitializer;
 import org.xwiki.extension.repository.CoreExtensionRepository;
-import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 
 /**
  * Default implementation of {@link org.xwiki.extension.handler.ExtensionInitializer}.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -53,7 +53,7 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
      * The local extension repository from which extension are initialized.
      */
     @Inject
-    private LocalExtensionRepository localExtensionRepository;
+    private InstalledExtensionRepository installedExtensionRepository;
 
     /**
      * The extension manager to launch extension initialization.
@@ -88,21 +88,21 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
     @Override
     public void initialize(String namespaceToLoad, String type)
     {
-        Map<String, Set<LocalExtension>> loadedExtensions = new HashMap<String, Set<LocalExtension>>();
+        Map<String, Set<InstalledExtension>> loadedExtensions = new HashMap<String, Set<InstalledExtension>>();
 
         // Load extensions from local repository
-        Collection<LocalExtension> localExtensions;
+        Collection<InstalledExtension> installedExtensions;
         if (namespaceToLoad != null) {
-            localExtensions = this.localExtensionRepository.getInstalledExtensions(namespaceToLoad);
+            installedExtensions = this.installedExtensionRepository.getInstalledExtensions(namespaceToLoad);
         } else {
-            localExtensions = this.localExtensionRepository.getInstalledExtensions();
+            installedExtensions = this.installedExtensionRepository.getInstalledExtensions();
         }
-        for (LocalExtension localExtension : localExtensions) {
-            if (type == null || type.equals(localExtension.getType())) {
+        for (InstalledExtension installedExtension : installedExtensions) {
+            if (type == null || type.equals(installedExtension.getType())) {
                 try {
-                    loadExtension(localExtension, namespaceToLoad, loadedExtensions);
+                    loadExtension(installedExtension, namespaceToLoad, loadedExtensions);
                 } catch (Exception e) {
-                    this.logger.error("Failed to initialize local extension [" + localExtension + "]", e);
+                    this.logger.error("Failed to initialize local extension [" + installedExtension + "]", e);
                 }
             }
         }
@@ -110,56 +110,58 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
 
     /**
      * Initialize extension.
-     * @param localExtension the extension to initialize
+     * 
+     * @param installedExtension the extension to initialize
      * @param namespaceToLoad the namespace to be initialized, null for all
      * @param loadedExtensions the currently initialized extensions set
      * @throws ExtensionException when an initialization error occurs
      */
-    private void loadExtension(LocalExtension localExtension, String namespaceToLoad,
-        Map<String, Set<LocalExtension>> loadedExtensions) throws ExtensionException
+    private void loadExtension(InstalledExtension installedExtension, String namespaceToLoad,
+        Map<String, Set<InstalledExtension>> loadedExtensions) throws ExtensionException
     {
-        if (localExtension.getNamespaces() != null) {
+        if (installedExtension.getNamespaces() != null) {
             if (namespaceToLoad == null) {
-                for (String namespace : localExtension.getNamespaces()) {
-                    loadExtensionInNamespace(localExtension, namespace, loadedExtensions);
+                for (String namespace : installedExtension.getNamespaces()) {
+                    loadExtensionInNamespace(installedExtension, namespace, loadedExtensions);
                 }
-            } else if (localExtension.getNamespaces().contains(namespaceToLoad)) {
-                loadExtensionInNamespace(localExtension, namespaceToLoad, loadedExtensions);
+            } else if (installedExtension.getNamespaces().contains(namespaceToLoad)) {
+                loadExtensionInNamespace(installedExtension, namespaceToLoad, loadedExtensions);
             }
         } else if (namespaceToLoad == null) {
-            loadExtensionInNamespace(localExtension, null, loadedExtensions);
+            loadExtensionInNamespace(installedExtension, null, loadedExtensions);
         }
     }
 
     /**
      * Initialize an extension in the given namespace.
-     * @param localExtension the extension to initialize
+     * 
+     * @param installedExtension the extension to initialize
      * @param namespace the namespace in which the extention is initialized, null for global
      * @param loadedExtensions the currently initialized extensions set (to avoid initializing twice a dependency)
      * @throws ExtensionException when an initialization error occurs
      */
-    private void loadExtensionInNamespace(LocalExtension localExtension, String namespace,
-        Map<String, Set<LocalExtension>> loadedExtensions) throws ExtensionException
+    private void loadExtensionInNamespace(InstalledExtension installedExtension, String namespace,
+        Map<String, Set<InstalledExtension>> loadedExtensions) throws ExtensionException
     {
-        Set<LocalExtension> loadedExtensionsInNamespace = loadedExtensions.get(namespace);
+        Set<InstalledExtension> loadedExtensionsInNamespace = loadedExtensions.get(namespace);
 
         if (loadedExtensionsInNamespace == null) {
-            loadedExtensionsInNamespace = new HashSet<LocalExtension>();
+            loadedExtensionsInNamespace = new HashSet<InstalledExtension>();
             loadedExtensions.put(namespace, loadedExtensionsInNamespace);
         }
 
-        if (!loadedExtensionsInNamespace.contains(localExtension)) {
-            for (ExtensionDependency dependency : localExtension.getDependencies()) {
+        if (!loadedExtensionsInNamespace.contains(installedExtension)) {
+            for (ExtensionDependency dependency : installedExtension.getDependencies()) {
                 if (!this.coreExtensionRepository.exists(dependency.getId())) {
-                    LocalExtension dependencyExtension =
-                        this.localExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
+                    InstalledExtension dependencyExtension =
+                        this.installedExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
                     loadExtensionInNamespace(dependencyExtension, namespace, loadedExtensions);
                 }
             }
 
-            this.extensionHandlerManager.initialize(localExtension, namespace);
+            this.extensionHandlerManager.initialize(installedExtension, namespace);
 
-            loadedExtensionsInNamespace.add(localExtension);
+            loadedExtensionsInNamespace.add(installedExtension);
         }
     }
 }

@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.event.ExtensionUninstalledEvent;
 import org.xwiki.extension.handler.ExtensionHandlerManager;
@@ -34,7 +34,7 @@ import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
-import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.job.Job;
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
@@ -58,10 +58,10 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
     public static final String JOBTYPE = "uninstall";
 
     /**
-     * Used to manipulate local repository.
+     * Used to manipulate installed extensions repository.
      */
     @Inject
-    private LocalExtensionRepository localExtensionRepository;
+    private InstalledExtensionRepository installedExtensionRepository;
 
     /**
      * Used to uninstall extensions.
@@ -150,34 +150,35 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
             throw new UninstallException("Unsupported action [" + action.getAction() + "]");
         }
 
-        LocalExtension localExtension = (LocalExtension) action.getExtension();
+        InstalledExtension installedExtension = (InstalledExtension) action.getExtension();
         String namespace = action.getNamespace();
 
         if (namespace != null) {
-            this.logger.info("Uninstalling extension [{}] from namespace [{}]", localExtension.toString(), namespace);
+            this.logger.info("Uninstalling extension [{}] from namespace [{}]", installedExtension.toString(),
+                namespace);
         } else {
-            this.logger.info("Uninstalling extension [{}]", localExtension.toString());
+            this.logger.info("Uninstalling extension [{}]", installedExtension.toString());
         }
 
         notifyPushLevelProgress(2);
 
         try {
             // Unload extension
-            this.extensionHandlerManager.uninstall(localExtension, namespace, getRequest());
+            this.extensionHandlerManager.uninstall(installedExtension, namespace, getRequest());
 
             notifyStepPropress();
 
             // Uninstall from local repository
-            this.localExtensionRepository.uninstallExtension(localExtension, namespace);
+            this.installedExtensionRepository.uninstallExtension(installedExtension, namespace);
 
-            this.observationManager.notify(new ExtensionUninstalledEvent(localExtension.getId(), namespace),
-                localExtension);
+            this.observationManager.notify(new ExtensionUninstalledEvent(installedExtension.getId(), namespace),
+                installedExtension);
 
             if (namespace != null) {
                 this.logger.info("Successfully uninstalled extension [{}] from namespace [{}]",
-                    localExtension.toString(), namespace);
+                    installedExtension.toString(), namespace);
             } else {
-                this.logger.info("Successfully uninstalled extension [{}]", localExtension.toString());
+                this.logger.info("Successfully uninstalled extension [{}]", installedExtension.toString());
             }
         } finally {
             notifyPopLevelProgress();

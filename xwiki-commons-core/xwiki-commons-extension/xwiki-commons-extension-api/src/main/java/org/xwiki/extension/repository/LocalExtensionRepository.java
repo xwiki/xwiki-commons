@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
@@ -54,35 +55,6 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
     Collection<LocalExtension> getLocalExtensions();
 
     /**
-     * @return all installed local extensions, an empty collection if none could be found
-     */
-    Collection<LocalExtension> getInstalledExtensions();
-
-    /**
-     * Return all the extensions available for the provided namespace. This also include root extension since namespaces
-     * inherit from root.
-     * <p>
-     * Note that {@link #getInstalledExtensions()} return all the extensions installed in all namespaces while
-     * {@link #getInstalledExtensions(String)} with <code>null</code> return only those that are globally available.
-     * 
-     * @param namespace the namespace where to search for installed extensions, null mean installed in all namespaces
-     *            (root namespace)
-     * @return all the local extensions installed in the provided namespace, an empty collection if none could be found
-     */
-    Collection<LocalExtension> getInstalledExtensions(String namespace);
-
-    /**
-     * Return the installed extension associated to the provided feature for the provided namespace (or root namespace
-     * since namespaces inherit from root).
-     * 
-     * @param feature the extension id or provided feature (virtual extension)
-     * @param namespace the namespace where the extension is installed, null mean installed in all namespaces (root
-     *            namespace)
-     * @return the extension, null if none could be found
-     */
-    LocalExtension getInstalledExtension(String feature, String namespace);
-
-    /**
      * Store provided extension (generally a remote extension) in the local repository.
      * 
      * @param extension the extension to store
@@ -99,6 +71,22 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
      */
     void removeExtension(LocalExtension extension) throws ResolveException;
 
+    // Installed extensions
+
+    /**
+     * Return the installed extension associated to the provided feature for the provided namespace (or root namespace
+     * since namespaces inherit from root).
+     * 
+     * @param feature the extension id or provided feature (virtual extension)
+     * @param namespace the namespace where the extension is installed, null mean installed in all namespaces (root
+     *            namespace)
+     * @return the extension, null if none could be found
+     * @deprecated will be removed as soon as it's fully implemented in
+     *             {@link org.xwiki.extension.repository.internal.local.DefaultInstalledExtensionRepository#getInstalledExtension(String, String)}
+     */
+    @Deprecated
+    LocalExtension getInstalledExtension(String feature, String namespace);
+
     /**
      * Indicate that the provided extension is installed in the provided namespace.
      * 
@@ -106,7 +94,10 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
      * @param namespace the namespace in which the extension is installed
      * @param dependency indicate if the extension is stored as a dependency of another one
      * @throws InstallException error when trying to install provided extension
+     * @deprecated will be removed as soon as it's fully implemented in
+     *             {@link org.xwiki.extension.repository.internal.local.DefaultInstalledExtensionRepository#installExtension(LocalExtension, String, boolean)}
      */
+    @Deprecated
     void installExtension(LocalExtension extension, String namespace, boolean dependency) throws InstallException;
 
     /**
@@ -117,7 +108,10 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
      * @param extension the extension to uninstall
      * @param namespace the namespace from which the extension is uninstalled
      * @throws UninstallException error when trying to uninstall provided extension
+     * @deprecated will be removed as soon as it's fully implemented in
+     *             {@link org.xwiki.extension.repository.internal.local.DefaultInstalledExtensionRepository#installExtension(LocalExtension, String, boolean)}
      */
+    @Deprecated
     void uninstallExtension(LocalExtension extension, String namespace) throws UninstallException;
 
     /**
@@ -130,7 +124,10 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
      * @param namespace the namespace where to search for backward dependencies
      * @return the backward dependencies, an empty collection of none could be found
      * @throws ResolveException error when searching for backward dependencies
+     * @deprecated will be removed as soon as it's fully implemented in
+     *             {@link org.xwiki.extension.repository.internal.local.DefaultInstalledExtensionRepository#getBackwardDependencies(String, String)}
      */
+    @Deprecated
     Collection<LocalExtension> getBackwardDependencies(String feature, String namespace) throws ResolveException;
 
     /**
@@ -139,6 +136,17 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
      * @param extensionId the extension identifier
      * @return the extension backward dependencies in all namespaces
      * @throws ResolveException error when searching for extension backward dependencies
+     * @deprecated will be removed as soon as it's fully implemented in
+     *             {@link org.xwiki.extension.repository.internal.local.DefaultInstalledExtensionRepository#getBackwardDependencies(ExtensionId)}
      */
+    @Deprecated
     Map<String, Collection<LocalExtension>> getBackwardDependencies(ExtensionId extensionId) throws ResolveException;
+
+    // ExtensionRepository
+
+    @Override
+    LocalExtension resolve(ExtensionDependency extensionDependency) throws ResolveException;
+
+    @Override
+    LocalExtension resolve(ExtensionId extensionId) throws ResolveException;
 }

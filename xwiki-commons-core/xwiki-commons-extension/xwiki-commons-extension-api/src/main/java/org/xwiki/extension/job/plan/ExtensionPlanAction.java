@@ -20,7 +20,7 @@
 package org.xwiki.extension.job.plan;
 
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.InstalledExtension;
 
 /**
  * An action to perform as part of an extension plan.
@@ -66,7 +66,7 @@ public interface ExtensionPlanAction
     /**
      * @return the currently installed extension. Used when upgrading
      */
-    LocalExtension getPreviousExtension();
+    InstalledExtension getPreviousExtension();
 
     /**
      * @return the action to perform

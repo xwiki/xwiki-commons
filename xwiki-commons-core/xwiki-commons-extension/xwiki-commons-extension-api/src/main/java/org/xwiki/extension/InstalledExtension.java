@@ -24,19 +24,14 @@ import java.util.Collection;
 /**
  * Represent a local extension.
  * <p>
- * A local extension is an extension generally downloaded from a remote repository and now stored in the local
- * repository.
+ * An installed extension.
  * 
  * @version $Id$
- * @since 4.0M1
+ * @since 4.0M2
  */
-public interface LocalExtension extends Extension
+// TODO: move all installation related code from local extension to here
+public interface InstalledExtension extends LocalExtension
 {
-    /**
-     * Custom property key containing {@link #getFile()}.
-     */
-    String PKEY_FILE = "local.file";
-
     /**
      * Custom property key containing {@link #isInstalled()}.
      */
@@ -74,9 +69,4 @@ public interface LocalExtension extends Extension
      * @return true if the the extension has been installed only because it was a dependency of another extension
      */
     boolean isDependency();
-
-    // Extension
-
-    @Override
-    LocalExtensionFile getFile();
 }

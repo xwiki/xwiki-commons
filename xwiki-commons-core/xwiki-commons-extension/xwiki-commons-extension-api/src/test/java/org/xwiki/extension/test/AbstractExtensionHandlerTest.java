@@ -23,11 +23,13 @@ import java.util.List;
 
 import org.junit.Before;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobManager;
@@ -39,6 +41,8 @@ import org.xwiki.test.AbstractComponentTestCase;
 public abstract class AbstractExtensionHandlerTest extends AbstractComponentTestCase
 {
     protected LocalExtensionRepository localExtensionRepository;
+
+    protected InstalledExtensionRepository installedExtensionRepository;
 
     protected RepositoryUtil repositoryUtil;
 
@@ -59,6 +63,7 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
 
         this.jobManager = getComponentManager().lookupComponent(JobManager.class);
         this.localExtensionRepository = getComponentManager().lookupComponent(LocalExtensionRepository.class);
+        this.installedExtensionRepository = getComponentManager().lookupComponent(InstalledExtensionRepository.class);
     }
 
     protected void beforeRepositoryUtil() throws Exception
@@ -87,11 +92,11 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
         return installJob;
     }
 
-    protected LocalExtension install(ExtensionId extensionId, String namespace) throws Throwable
+    protected InstalledExtension install(ExtensionId extensionId, String namespace) throws Throwable
     {
         install("install", extensionId, namespace);
 
-        return (LocalExtension) this.localExtensionRepository.resolve(extensionId);
+        return this.installedExtensionRepository.resolve(extensionId);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String namespace) throws Throwable
@@ -117,7 +122,7 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
     {
         uninstall("uninstall", extensionId, namespace);
 
-        return (LocalExtension) this.localExtensionRepository.resolve(extensionId);
+        return this.localExtensionRepository.resolve(extensionId);
     }
 
     protected DefaultExtensionPlan<UninstallRequest> uninstallPlan(ExtensionId extensionId, String namespace)

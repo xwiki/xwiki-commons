@@ -22,7 +22,7 @@ package org.xwiki.extension.job.plan.internal;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 
 /**
@@ -41,7 +41,7 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
     /**
      * @see #getPreviousExtension()
      */
-    private LocalExtension previousExtension;
+    private InstalledExtension previousExtension;
 
     /**
      * @see Action
@@ -65,7 +65,7 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
      * @param namespace the namespace in which the action should be executed
      * @param dependency indicate indicate if the extension is a dependency of another one only in the plan
      */
-    public DefaultExtensionPlanAction(Extension extension, LocalExtension previousExtension, Action action,
+    public DefaultExtensionPlanAction(Extension extension, InstalledExtension previousExtension, Action action,
         String namespace, boolean dependency)
     {
         this.extension = extension;
@@ -82,7 +82,7 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
     }
 
     @Override
-    public LocalExtension getPreviousExtension()
+    public InstalledExtension getPreviousExtension()
     {
         return this.previousExtension;
     }

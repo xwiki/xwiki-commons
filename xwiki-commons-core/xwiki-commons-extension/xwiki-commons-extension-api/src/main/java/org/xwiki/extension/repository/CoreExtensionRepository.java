@@ -23,6 +23,9 @@ import java.util.Collection;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.search.Searchable;
 
 /**
@@ -57,4 +60,12 @@ public interface CoreExtensionRepository extends ExtensionRepository, Searchable
      * @return true if the extension exists, false otherwise
      */
     boolean exists(String id);
+
+    // ExtensionRepository
+
+    @Override
+    CoreExtension resolve(ExtensionDependency extensionDependency) throws ResolveException;
+
+    @Override
+    CoreExtension resolve(ExtensionId extensionId) throws ResolveException;
 }

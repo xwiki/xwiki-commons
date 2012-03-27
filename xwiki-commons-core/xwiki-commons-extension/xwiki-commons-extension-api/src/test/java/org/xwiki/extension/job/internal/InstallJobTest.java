@@ -48,18 +48,18 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, null);
 
         LocalExtension installedExtension =
-            this.localExtensionRepository.getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(),
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(),
                 null);
         Assert.assertNotNull(installedExtension);
         Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
-        Assert.assertNotNull(this.localExtensionRepository.getInstalledExtension(
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
             TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(), "namespace"));
 
         installedExtension =
-            this.localExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), null);
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), null);
         Assert.assertNotNull(installedExtension);
         Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
-        Assert.assertNotNull(this.localExtensionRepository.getInstalledExtension(
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
             TestResources.REMOTE_SIMPLE_ID.getId(), "namespace"));
     }
 
@@ -69,13 +69,13 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, "namespace");
 
         LocalExtension installedExtension =
-            this.localExtensionRepository.getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(),
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(),
                 "namespace");
         Assert.assertNotNull(installedExtension);
         Assert.assertTrue(this.handler.getExtensions().get("namespace").contains(installedExtension));
 
         installedExtension =
-            this.localExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace");
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace");
         Assert.assertNotNull(installedExtension);
         Assert.assertTrue(this.handler.getExtensions().get("namespace").contains(installedExtension));
     }

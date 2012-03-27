@@ -28,6 +28,7 @@ import javax.inject.Named;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.InstallException;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
@@ -38,6 +39,7 @@ import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.job.Job;
@@ -67,6 +69,12 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
      */
     @Inject
     private LocalExtensionRepository localExtensionRepository;
+
+    /**
+     * Used to manipulate installed extension repository.
+     */
+    @Inject
+    private InstalledExtensionRepository installedExtensionRepository;
 
     /**
      * Used to install the extension itself depending of its type.
@@ -193,28 +201,31 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
      * @param dependency indicate if the extension has been installed as dependency
      * @throws InstallException failed to install extension
      */
-    private void installExtension(LocalExtension extension, LocalExtension previousExtension, String namespace,
+    private void installExtension(LocalExtension extension, InstalledExtension previousExtension, String namespace,
         boolean dependency) throws InstallException
     {
         if (previousExtension == null) {
             this.extensionHandlerManager.install(extension, namespace, getRequest());
 
-            this.localExtensionRepository.installExtension(extension, namespace, dependency);
+            InstalledExtension installedExtension =
+                this.installedExtensionRepository.installExtension(extension, namespace, dependency);
 
-            this.observationManager.notify(new ExtensionInstalledEvent(extension.getId(), namespace), extension);
+            this.observationManager.notify(new ExtensionInstalledEvent(extension.getId(), namespace),
+                installedExtension);
         } else {
             this.extensionHandlerManager.upgrade(previousExtension, extension, namespace, getRequest());
 
             try {
-                this.localExtensionRepository.uninstallExtension(previousExtension, namespace);
+                this.installedExtensionRepository.uninstallExtension(previousExtension, namespace);
             } catch (UninstallException e) {
                 this.logger.error("Failed to uninstall extension [" + previousExtension + "]", e);
             }
 
-            this.localExtensionRepository.installExtension(extension, namespace, dependency);
+            InstalledExtension installedExtension =
+                this.installedExtensionRepository.installExtension(extension, namespace, dependency);
 
-            this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace), extension,
-                previousExtension);
+            this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace),
+                installedExtension, previousExtension);
         }
     }
 
@@ -244,7 +255,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
 
         try {
             // Store extension in local repository
-            LocalExtension localExtension = (LocalExtension) this.localExtensionRepository.resolve(extension.getId());
+            LocalExtension localExtension = this.localExtensionRepository.resolve(extension.getId());
 
             notifyStepPropress();
 

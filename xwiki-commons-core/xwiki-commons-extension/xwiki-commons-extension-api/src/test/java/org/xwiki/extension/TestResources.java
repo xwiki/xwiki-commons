@@ -31,7 +31,8 @@ public class TestResources
 
     public static final ExtensionId INSTALLED_ID = new ExtensionId("installedextension", "version");
 
-    public static final ExtensionId INSTALLED_DEPENDENCY_ID = new ExtensionId("installedextensiondependency", "version");
+    public static final ExtensionId INSTALLED_DEPENDENCY_ID =
+        new ExtensionId("installedextensiondependency", "version");
 
     public LocalExtension installed;
 
@@ -47,13 +48,14 @@ public class TestResources
 
     public static final ExtensionId REMOTE_WITHLDEPENDENCY_ID = new ExtensionId("rwithldependency", "version");
 
-    public static final ExtensionId REMOTE_WITHRANDCDEPENDENCIES_ID = new ExtensionId("rwithrandcdependencies", "version");
+    public static final ExtensionId REMOTE_WITHRANDCDEPENDENCIES_ID = new ExtensionId("rwithrandcdependencies",
+        "version");
 
     // Methods
 
     public void init(LocalExtensionRepository localExtensionRepository) throws ResolveException
     {
-        this.installed = (LocalExtension) localExtensionRepository.resolve(INSTALLED_ID);
-        this.installedDependency = (LocalExtension) localExtensionRepository.resolve(INSTALLED_DEPENDENCY_ID);
+        this.installed = localExtensionRepository.resolve(INSTALLED_ID);
+        this.installedDependency = localExtensionRepository.resolve(INSTALLED_DEPENDENCY_ID);
     }
 }

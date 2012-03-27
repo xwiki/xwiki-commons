@@ -157,6 +157,7 @@
               **/DefaultCoreExtensionScanner.java,
               **/DefaultExtensionRepositoryManager.java,
               **/DefaultExtensionSerializer.java,
+              **/DefaultInstalledExtensionRepository.java,
               **/DefaultLocalExtensionRepository.java,
               **/DefaultVersion.java,
               **/InstallPlanJob.java,

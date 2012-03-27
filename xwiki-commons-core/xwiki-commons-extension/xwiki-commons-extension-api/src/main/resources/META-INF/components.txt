@@ -16,4 +16,5 @@ org.xwiki.extension.repository.internal.DefaultExtensionRepositoryManager
 org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository
 org.xwiki.extension.repository.internal.core.DefaultCoreExtensionScanner
 org.xwiki.extension.repository.internal.local.DefaultExtensionSerializer
+org.xwiki.extension.repository.internal.local.DefaultInstalledExtensionRepository
 org.xwiki.extension.repository.internal.local.DefaultLocalExtensionRepository

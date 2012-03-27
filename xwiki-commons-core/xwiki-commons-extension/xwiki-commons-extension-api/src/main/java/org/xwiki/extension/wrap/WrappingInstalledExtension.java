@@ -17,43 +17,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.wrap;
 
 import org.xwiki.extension.InstalledExtension;
-import org.xwiki.extension.LocalExtension;
-import org.xwiki.extension.repository.ExtensionRepository;
-import org.xwiki.extension.repository.InstalledExtensionRepository;
-import org.xwiki.extension.wrap.WrappingLocalExtension;
 
 /**
- * Default implementation of {@link LocalExtension}.
- * <p>
- * TODO: For now it's wrapping a {@link LocalExtension} but it should be independent in the future and
- * {@link LocalExtension} should loose all installation related informations and only keep storage informations.
+ * Wrap a local extension.
  * 
+ * @param <T> the extension type
  * @version $Id$
+ * @since 4.0M2
  */
-public class DefaultInstalledExtension extends WrappingLocalExtension<LocalExtension> implements InstalledExtension
+public class WrappingInstalledExtension<T extends InstalledExtension> extends WrappingLocalExtension<T> implements
+    InstalledExtension
 {
     /**
-     * The wrapped local extension.
-     */
-    private InstalledExtensionRepository repository;
-
-    /**
      * @param localExtension the wrapped local extension
-     * @param repository the repository
      */
-    public DefaultInstalledExtension(LocalExtension localExtension, InstalledExtensionRepository repository)
+    public WrappingInstalledExtension(T localExtension)
     {
         super(localExtension);
-
-        this.repository = repository;
-    }
-
-    @Override
-    public ExtensionRepository getRepository()
-    {
-        return this.repository;
     }
 }

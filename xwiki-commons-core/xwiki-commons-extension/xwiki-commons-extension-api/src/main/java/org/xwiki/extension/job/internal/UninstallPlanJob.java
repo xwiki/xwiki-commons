@@ -30,7 +30,7 @@ import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.job.UninstallRequest;
@@ -39,7 +39,7 @@ import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
-import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.job.Request;
 import org.xwiki.job.internal.DefaultJobStatus;
 
@@ -69,10 +69,10 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     private static final String EXCEPTION_NOTINSTALLEDNAMESPACE = EXCEPTION_NOTINSTALLED + " from namespace [{1}]";
 
     /**
-     * Used to manipulate local repository.
+     * Used to manipulate installed extensions repository.
      */
     @Inject
-    private LocalExtensionRepository localExtensionRepository;
+    private InstalledExtensionRepository installedExtensionRepository;
 
     /**
      * The install plan.
@@ -115,16 +115,16 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
         try {
             for (ExtensionId extensionId : extensions) {
                 if (extensionId.getVersion() != null) {
-                    LocalExtension localExtension = (LocalExtension) this.localExtensionRepository.resolve(extensionId);
+                    InstalledExtension installedExtension = this.installedExtensionRepository.resolve(extensionId);
 
                     if (getRequest().hasNamespaces()) {
-                        uninstallExtension(localExtension, getRequest().getNamespaces(), this.extensionTree);
-                    } else if (localExtension.getNamespaces() != null) {
+                        uninstallExtension(installedExtension, getRequest().getNamespaces(), this.extensionTree);
+                    } else if (installedExtension.getNamespaces() != null) {
                         // Duplicate the namespace list to avoid ConcurrentModificationException
-                        uninstallExtension(localExtension, new ArrayList<String>(localExtension.getNamespaces()),
-                            this.extensionTree);
+                        uninstallExtension(installedExtension,
+                            new ArrayList<String>(installedExtension.getNamespaces()), this.extensionTree);
                     } else {
-                        uninstallExtension(localExtension, (String) null, this.extensionTree);
+                        uninstallExtension(installedExtension, (String) null, this.extensionTree);
                     }
                 } else {
                     if (getRequest().hasNamespaces()) {
@@ -172,69 +172,69 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     private void uninstallExtension(String extensionId, String namespace, List<ExtensionPlanNode> parentBranch)
         throws UninstallException
     {
-        LocalExtension localExtension = this.localExtensionRepository.getInstalledExtension(extensionId, namespace);
+        InstalledExtension installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(extensionId, namespace);
 
-        if (localExtension == null) {
+        if (installedExtension == null) {
             throw new UninstallException(MessageFormat.format(EXCEPTION_NOTINSTALLED, extensionId));
         }
 
         try {
-            uninstallExtension(localExtension, namespace, parentBranch);
+            uninstallExtension(installedExtension, namespace, parentBranch);
         } catch (Exception e) {
             throw new UninstallException("Failed to uninstall extension", e);
         }
     }
 
     /**
-     * @param localExtension the extension to uninstall
+     * @param installedExtension the extension to uninstall
      * @param namespaces the namespaces from where to uninstall the extension
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
      * @throws UninstallException error when trying to uninstall provided extension
      */
-    private void uninstallExtension(LocalExtension localExtension, Collection<String> namespaces,
+    private void uninstallExtension(InstalledExtension installedExtension, Collection<String> namespaces,
         List<ExtensionPlanNode> parentBranch) throws UninstallException
     {
         for (String namespace : namespaces) {
-            uninstallExtension(localExtension, namespace, parentBranch);
+            uninstallExtension(installedExtension, namespace, parentBranch);
         }
     }
 
     /**
-     * @param extensions the local extensions to uninstall
+     * @param extensions the installed extensions to uninstall
      * @param namespace the namespaces from where to uninstall the extensions
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
      * @throws UninstallException error when trying to uninstall provided extensions
      */
-    private void uninstallExtensions(Collection<LocalExtension> extensions, String namespace,
+    private void uninstallExtensions(Collection<InstalledExtension> extensions, String namespace,
         List<ExtensionPlanNode> parentBranch) throws UninstallException
     {
-        for (LocalExtension backardDependency : extensions) {
+        for (InstalledExtension backardDependency : extensions) {
             uninstallExtension(backardDependency, namespace, parentBranch);
         }
     }
 
     /**
-     * @param localExtension the extension to uninstall
+     * @param installedExtension the extension to uninstall
      * @param namespace the namespace from where to uninstall the extension
      * @param parentBranch the children of the parent {@link ExtensionPlanNode}
      * @throws UninstallException error when trying to uninstall provided extension
      */
-    private void uninstallExtension(LocalExtension localExtension, String namespace,
+    private void uninstallExtension(InstalledExtension installedExtension, String namespace,
         List<ExtensionPlanNode> parentBranch) throws UninstallException
     {
-        if (!localExtension.isInstalled()) {
-            throw new UninstallException(MessageFormat.format(EXCEPTION_NOTINSTALLED, localExtension, namespace));
-        } else if (namespace != null
-            && (localExtension.getNamespaces() == null || !localExtension.getNamespaces().contains(namespace))) {
-            throw new UninstallException(MessageFormat.format(EXCEPTION_NOTINSTALLEDNAMESPACE, localExtension,
+        if (namespace != null
+            && (installedExtension.getNamespaces() == null
+            || !installedExtension.getNamespaces().contains(namespace))) {
+            throw new UninstallException(MessageFormat.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension,
                 namespace));
         }
 
         // Log progression
         if (namespace != null) {
-            this.logger.info("Resolving extension [{}] from namespace [{}]", localExtension, namespace);
+            this.logger.info("Resolving extension [{}] from namespace [{}]", installedExtension, namespace);
         } else {
-            this.logger.info("Resolving extension [{}]", localExtension);
+            this.logger.info("Resolving extension [{}]", installedExtension);
         }
 
         notifyPushLevelProgress(2);
@@ -244,23 +244,23 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
             List<ExtensionPlanNode> children = new ArrayList<ExtensionPlanNode>();
             try {
                 if (namespace != null) {
-                    uninstallExtensions(this.localExtensionRepository.getBackwardDependencies(localExtension.getId()
-                        .getId(), namespace), namespace, children);
+                    uninstallExtensions(this.installedExtensionRepository.getBackwardDependencies(installedExtension
+                        .getId().getId(), namespace), namespace, children);
                 } else {
-                    for (Map.Entry<String, Collection<LocalExtension>> entry : this.localExtensionRepository
-                        .getBackwardDependencies(localExtension.getId()).entrySet()) {
+                    for (Map.Entry<String, Collection<InstalledExtension>> entry : this.installedExtensionRepository
+                        .getBackwardDependencies(installedExtension.getId()).entrySet()) {
                         uninstallExtensions(entry.getValue(), entry.getKey(), children);
                     }
                 }
             } catch (ResolveException e) {
-                throw new UninstallException("Failed to resolve backward dependencies of extension [" + localExtension
-                    + "]", e);
+                throw new UninstallException("Failed to resolve backward dependencies of extension ["
+                    + installedExtension + "]", e);
             }
 
             notifyStepPropress();
 
             DefaultExtensionPlanAction action =
-                new DefaultExtensionPlanAction(localExtension, null, Action.UNINSTALL, namespace, false);
+                new DefaultExtensionPlanAction(installedExtension, null, Action.UNINSTALL, namespace, false);
             parentBranch.add(new DefaultExtensionPlanNode(action, children, null));
         } finally {
             notifyPopLevelProgress();

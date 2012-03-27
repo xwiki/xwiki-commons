@@ -94,8 +94,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     public void initialize() throws InitializationException
     {
         try {
-            this.extensions =
-                new ConcurrentHashMap<String, DefaultCoreExtension>(this.scanner.loadExtensions(this));
+            this.extensions = new ConcurrentHashMap<String, DefaultCoreExtension>(this.scanner.loadExtensions(this));
 
             // Start a background thread to get more details about the found extensions
             Thread thread = new Thread(new Runnable()
@@ -119,9 +118,9 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     // Repository
 
     @Override
-    public Extension resolve(ExtensionId extensionId) throws ResolveException
+    public CoreExtension resolve(ExtensionId extensionId) throws ResolveException
     {
-        Extension extension = getCoreExtension(extensionId.getId());
+        CoreExtension extension = getCoreExtension(extensionId.getId());
 
         if (extension == null
             || (extensionId.getVersion() != null && !extension.getId().getVersion().equals(extensionId.getVersion()))) {
@@ -132,9 +131,9 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     }
 
     @Override
-    public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
+    public CoreExtension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        Extension extension = getCoreExtension(extensionDependency.getId());
+        CoreExtension extension = getCoreExtension(extensionDependency.getId());
 
         if (extension == null
             || (!extensionDependency.getVersionConstraint().containsVersion(extension.getId().getVersion()))) {
