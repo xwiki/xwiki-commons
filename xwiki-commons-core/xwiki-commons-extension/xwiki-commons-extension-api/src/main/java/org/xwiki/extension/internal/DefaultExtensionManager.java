@@ -19,17 +19,24 @@
  */
 package org.xwiki.extension.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionManager;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.CoreExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 
 /**
@@ -40,7 +47,7 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
  */
 @Component
 @Singleton
-public class DefaultExtensionManager implements ExtensionManager
+public class DefaultExtensionManager implements ExtensionManager, Initializable
 {
     /**
      * Used to manipulate remote repositories.
@@ -60,12 +67,46 @@ public class DefaultExtensionManager implements ExtensionManager
     @Inject
     private LocalExtensionRepository localExtensionRepository;
 
+    /**
+     * Used to manipulate installed extensions.
+     */
+    @Inject
+    private InstalledExtensionRepository installedExtensionRepository;
+
+    /**
+     * The standard repositories.
+     */
+    private Map<String, ExtensionRepository> standardRepositories = new HashMap<String, ExtensionRepository>(3);
+
+    @Override
+    public void initialize() throws InitializationException
+    {
+        this.standardRepositories.put(this.coreExtensionRepository.getId().getId(), this.coreExtensionRepository);
+        this.standardRepositories.put(this.localExtensionRepository.getId().getId(), this.localExtensionRepository);
+        this.standardRepositories.put(this.installedExtensionRepository.getId().getId(),
+            this.installedExtensionRepository);
+    }
+
     @Override
     public Extension resolveExtension(ExtensionId extensionId) throws ResolveException
     {
         try {
             return this.coreExtensionRepository.resolve(extensionId);
         } catch (ResolveException notACoreExtension) {
+            return resolveExtensionFromInstalled(extensionId);
+        }
+    }
+
+    /**
+     * @param extensionId the extension identifier
+     * @return the resolved extension
+     * @throws ResolveException error when trying to resolve extension
+     */
+    private Extension resolveExtensionFromInstalled(ExtensionId extensionId) throws ResolveException
+    {
+        try {
+            return this.installedExtensionRepository.resolve(extensionId);
+        } catch (ResolveException notAnInstalledExtension) {
             try {
                 return this.localExtensionRepository.resolve(extensionId);
             } catch (ResolveException notALocalExtension) {
@@ -80,11 +121,37 @@ public class DefaultExtensionManager implements ExtensionManager
         try {
             return this.coreExtensionRepository.resolve(extensionDependency);
         } catch (ResolveException notACoreExtension) {
+            return resolveExtensionFromInstalled(extensionDependency);
+        }
+    }
+
+    /**
+     * @param extensionDependency the extension as dependency
+     * @return the resolved extension
+     * @throws ResolveException error when trying to resolve extension
+     */
+    private Extension resolveExtensionFromInstalled(ExtensionDependency extensionDependency) throws ResolveException
+    {
+        try {
+            return this.installedExtensionRepository.resolve(extensionDependency);
+        } catch (ResolveException notAnInstalledExtension) {
             try {
                 return this.localExtensionRepository.resolve(extensionDependency);
             } catch (ResolveException notALocalExtension) {
                 return this.repositoryManager.resolve(extensionDependency);
             }
         }
+    }
+
+    @Override
+    public ExtensionRepository getRepository(String repositoryId)
+    {
+        ExtensionRepository repository = this.standardRepositories.get(repositoryId);
+
+        if (repository == null) {
+            repository = this.repositoryManager.getRepository(repositoryId);
+        }
+
+        return repository;
     }
 }

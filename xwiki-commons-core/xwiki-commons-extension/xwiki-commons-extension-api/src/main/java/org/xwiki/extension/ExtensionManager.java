@@ -20,6 +20,7 @@
 package org.xwiki.extension;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.extension.repository.ExtensionRepository;
 
 /**
  * Main entry point for some extensions management tasks.
@@ -64,4 +65,15 @@ public interface ExtensionManager
      * @throws ResolveException error when trying to resolve extension
      */
     Extension resolveExtension(ExtensionDependency extensionDependency) throws ResolveException;
+
+    /**
+     * Return a repository based on its id.
+     * <p>
+     * This method also return <tt>local</tt>, <tt>installed</tt> and <tt>core</tt> repositories.
+     * 
+     * @param repositoryId the id of the repository
+     * @return the repository
+     * @since 4.0M2
+     */
+    ExtensionRepository getRepository(String repositoryId);
 }
