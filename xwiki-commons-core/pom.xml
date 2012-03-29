@@ -43,7 +43,6 @@
     <module>xwiki-commons-environment</module>
     <module>xwiki-commons-extension</module>
     <module>xwiki-commons-job</module>
-    <module>xwiki-commons-legacy</module>
     <module>xwiki-commons-logging</module>
     <module>xwiki-commons-management</module>
     <module>xwiki-commons-observation</module>
@@ -110,6 +109,21 @@
     </plugins>
   </build>
   <profiles>
+    <!-- We only build legacy modules in the "ci" or "release" profiles since they're not needed when developing
+         day to day and it speeds up the build -->
+    <profile>
+      <id>ci</id>
+      <activation>
+        <!-- This property is automatically defined by the Maven release plugin when executing
+             a release. Thus this profile will be automatically enabled when releasing -->
+        <property>
+          <name>performRelease</name>
+        </property>
+      </activation>
+      <modules>
+        <module>xwiki-commons-legacy</module>
+      </modules>
+    </profile>
     <profile>
       <!-- We run Clirr in a profile since Cobertura interferes with Clirr and thus we run
            Cobertura instrumentation in a special profile (when the Cobertura profile is
