@@ -56,6 +56,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.InvalidExtensionException;
+import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
@@ -73,8 +74,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private static final String ELEMENT_VERSION = "version";
 
     private static final String ELEMENT_TYPE = "type";
-
-    private static final String ELEMENT_DEPENDENCY = "dependency";
 
     private static final String ELEMENT_LICENSES = "licenses";
 
@@ -107,12 +106,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private static final String ELEMENT_FEATURES = "features";
 
     private static final String ELEMENT_NFEATURE = "feature";
-
-    private static final String ELEMENT_INSTALLED = "installed";
-
-    private static final String ELEMENT_NAMESPACES = "namespaces";
-
-    private static final String ELEMENT_NNAMESPACE = "namespace";
 
     @Inject
     private ExtensionLicenseManager licenseManager;
@@ -154,10 +147,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         // Optional fields
 
-        Node dependencyNode = getNode(extensionElement, ELEMENT_DEPENDENCY);
-        if (dependencyNode != null) {
-            localExtension.setDependency(Boolean.valueOf(dependencyNode.getTextContent()));
-        }
         Node nameNode = getNode(extensionElement, ELEMENT_NAME);
         if (nameNode != null) {
             localExtension.setName(nameNode.getTextContent());
@@ -259,24 +248,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             }
         }
 
-        // Install fields
-
-        Node enabledNode = getNode(extensionElement, ELEMENT_INSTALLED);
-        if (enabledNode != null) {
-            localExtension.setInstalled(Boolean.valueOf(enabledNode.getTextContent()));
-        }
-
-        // Namespaces
-        NodeList namespacesNodes = extensionElement.getElementsByTagName(ELEMENT_NAMESPACES);
-        if (namespacesNodes.getLength() > 0) {
-            NodeList namespaces = namespacesNodes.item(0).getChildNodes();
-            for (int i = 0; i < namespaces.getLength(); ++i) {
-                Node namespaceNode = namespaces.item(i);
-
-                localExtension.addNamespace(namespaceNode.getTextContent());
-            }
-        }
-
         return localExtension;
     }
 
@@ -302,7 +273,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     }
 
     @Override
-    public void saveDescriptor(DefaultLocalExtension extension, OutputStream fos) throws ParserConfigurationException,
+    public void saveDescriptor(LocalExtension extension, OutputStream fos) throws ParserConfigurationException,
         TransformerException
     {
         DocumentBuilder documentBuilder = this.documentBuilderFactory.newDocumentBuilder();
@@ -314,23 +285,16 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         addElement(document, extensionElement, ELEMENT_ID, extension.getId().getId());
         addElement(document, extensionElement, ELEMENT_VERSION, extension.getId().getVersion().getValue());
         addElement(document, extensionElement, ELEMENT_TYPE, extension.getType());
-        addElement(document, extensionElement, ELEMENT_DEPENDENCY, String.valueOf(extension.isDependency()));
         addElement(document, extensionElement, ELEMENT_NAME, extension.getName());
         addElement(document, extensionElement, ELEMENT_SUMMARY, extension.getSummary());
         addElement(document, extensionElement, ELEMENT_DESCRIPTION, extension.getDescription());
         addElement(document, extensionElement, ELEMENT_WEBSITE, extension.getWebSite());
-        addCollection(document, extensionElement, extension.getNamespaces(), ELEMENT_NFEATURE, ELEMENT_FEATURES);
 
         addAuthors(document, extensionElement, extension);
 
         addLicenses(document, extensionElement, extension);
 
         addDependencies(document, extensionElement, extension);
-
-        // install metadata
-
-        addElement(document, extensionElement, ELEMENT_INSTALLED, String.valueOf(extension.isInstalled()));
-        addCollection(document, extensionElement, extension.getNamespaces(), ELEMENT_NNAMESPACE, ELEMENT_NAMESPACES);
 
         // save
 

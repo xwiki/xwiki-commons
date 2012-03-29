@@ -43,6 +43,16 @@ public interface InstalledExtension extends LocalExtension
     String PKEY_DEPENDENCY = "local.dependency";
 
     /**
+     * Custom property key containing {@link #getNamespaces()}.
+     */
+    String PKEY_NAMESPACES = "local.namespaces";
+
+    /**
+     * @return the actual extension
+     */
+    LocalExtension getLocalExtension();
+
+    /**
      * @return indicate if the extension is installed
      */
     boolean isInstalled();

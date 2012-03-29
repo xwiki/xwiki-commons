@@ -19,26 +19,28 @@
  */
 package org.xwiki.extension.repository.internal.local;
 
+import java.util.Collection;
+import java.util.HashSet;
+
+import org.xwiki.extension.AbstractExtension;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.LocalExtensionFile;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
-import org.xwiki.extension.wrap.WrappingLocalExtension;
 
 /**
  * Default implementation of {@link LocalExtension}.
- * <p>
- * TODO: For now it's wrapping a {@link LocalExtension} but it should be independent in the future and
- * {@link LocalExtension} should loose all installation related informations and only keep storage informations.
  * 
  * @version $Id$
  */
-public class DefaultInstalledExtension extends WrappingLocalExtension<LocalExtension> implements InstalledExtension
+public class DefaultInstalledExtension extends AbstractExtension implements InstalledExtension
 {
     /**
-     * The wrapped local extension.
+     * @see #getLocalExtension()
      */
-    private InstalledExtensionRepository repository;
+    private LocalExtension localExtension;
 
     /**
      * @param localExtension the wrapped local extension
@@ -46,14 +48,145 @@ public class DefaultInstalledExtension extends WrappingLocalExtension<LocalExten
      */
     public DefaultInstalledExtension(LocalExtension localExtension, InstalledExtensionRepository repository)
     {
-        super(localExtension);
+        super(repository, localExtension);
 
-        this.repository = repository;
+        this.localExtension = localExtension;
     }
+
+    /**
+     * @param extension the extension
+     * @return true if the extension is installed
+     */
+    static boolean isInstalled(Extension extension)
+    {
+        return extension.getProperty(PKEY_INSTALLED, false);
+    }
+
+    // Extension
 
     @Override
     public ExtensionRepository getRepository()
     {
         return this.repository;
+    }
+
+    // InstalledExtension
+
+    @Override
+    public LocalExtension getLocalExtension()
+    {
+        return this.localExtension;
+    }
+
+    /**
+     * @param create if true it create and add a new collection of namespaces if there is none
+     * @return the namespaces
+     */
+    private Collection<String> getNamespaces(boolean create)
+    {
+        Collection<String> namespaces = getProperty(PKEY_NAMESPACES, (Collection<String>) null);
+
+        if (namespaces == null) {
+            namespaces = new HashSet<String>(namespaces);
+            putProperty(PKEY_NAMESPACES, namespaces);
+        }
+
+        return namespaces;
+    }
+
+    @Override
+    public Collection<String> getNamespaces()
+    {
+        return getNamespaces(false);
+    }
+
+    /**
+     * @param namespaces the namespaces in which this extension is enabled. Null means root namespace (i.e all
+     *            namespaces).
+     * @see #getNamespaces()
+     */
+    public void setNamespaces(Collection<String> namespaces)
+    {
+        putProperty(PKEY_NAMESPACES, namespaces != null ? new HashSet<String>(namespaces) : null);
+    }
+
+    /**
+     * @param namespace the namespace
+     * @see #getNamespaces()
+     */
+    public void addNamespace(String namespace)
+    {
+        getNamespaces(true).add(namespace);
+    }
+
+    @Override
+    public boolean isInstalled()
+    {
+        return isInstalled(this);
+    }
+
+    @Override
+    public boolean isInstalled(String namespace)
+    {
+        return isInstalled() && (getNamespaces() == null || getNamespaces().contains(namespace));
+    }
+
+    /**
+     * @param installed indicate if the extension is installed
+     * @see #isInstalled()
+     */
+    public void setInstalled(boolean installed)
+    {
+        putProperty(PKEY_INSTALLED, installed);
+    }
+
+    /**
+     * @param installed indicate if the extension is installed
+     * @param namespace the namespace to look at, if null it means the extension is installed for all the namespaces
+     * @see #isInstalled(String)
+     */
+    public void setInstalled(boolean installed, String namespace)
+    {
+        if (namespace == null) {
+            setInstalled(installed);
+            setNamespaces(null);
+        } else {
+            if (installed) {
+                setInstalled(true);
+                addNamespace(namespace);
+            } else {
+                if (getNamespaces() != null) {
+                    getNamespaces().remove(namespace);
+
+                    if (getNamespaces().isEmpty()) {
+                        setInstalled(false);
+                        setNamespaces(null);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isDependency()
+    {
+        return getProperty(PKEY_DEPENDENCY, false);
+    }
+
+    /**
+     * @param dependency indicate if the extension as been installed as a dependency of another one.
+     * @see #isDependency()
+     */
+    public void setDependency(boolean dependency)
+    {
+        putProperty(PKEY_DEPENDENCY, dependency);
+    }
+
+    // LocalExtension
+
+    @Override
+    public LocalExtensionFile getFile()
+    {
+        return getLocalExtension().getFile();
     }
 }

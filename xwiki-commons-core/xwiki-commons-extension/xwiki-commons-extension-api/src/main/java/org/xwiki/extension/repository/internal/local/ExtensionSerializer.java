@@ -27,6 +27,7 @@ import javax.xml.transform.TransformerException;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.InvalidExtensionException;
+import org.xwiki.extension.LocalExtension;
 
 /**
  * Local repository storage serialization tool.
@@ -56,6 +57,6 @@ public interface ExtensionSerializer
      * @throws ParserConfigurationException error when serializing
      * @throws TransformerException error when serializing
      */
-    void saveDescriptor(DefaultLocalExtension extension, OutputStream fos) throws ParserConfigurationException,
+    void saveDescriptor(LocalExtension extension, OutputStream fos) throws ParserConfigurationException,
         TransformerException;
 }

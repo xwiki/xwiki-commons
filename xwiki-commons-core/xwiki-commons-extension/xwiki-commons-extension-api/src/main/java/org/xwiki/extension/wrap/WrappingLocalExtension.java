@@ -19,8 +19,6 @@
  */
 package org.xwiki.extension.wrap;
 
-import java.util.Collection;
-
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.LocalExtensionFile;
 
@@ -47,31 +45,5 @@ public class WrappingLocalExtension<T extends LocalExtension> extends WrappingEx
     public LocalExtensionFile getFile()
     {
         return (LocalExtensionFile) super.getFile();
-    }
-
-    // LocalExtension
-
-    @Override
-    public boolean isInstalled()
-    {
-        return getWrapped().isInstalled();
-    }
-
-    @Override
-    public boolean isInstalled(String namespace)
-    {
-        return getWrapped().isInstalled(namespace);
-    }
-
-    @Override
-    public boolean isDependency()
-    {
-        return getWrapped().isDependency();
-    }
-
-    @Override
-    public Collection<String> getNamespaces()
-    {
-        return getWrapped().getNamespaces();
     }
 }
