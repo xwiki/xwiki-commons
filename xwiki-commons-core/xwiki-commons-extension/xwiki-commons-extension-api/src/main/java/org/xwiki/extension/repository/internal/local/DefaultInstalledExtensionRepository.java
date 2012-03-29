@@ -233,22 +233,29 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
         List<Extension> result = new ArrayList<Extension>();
 
-        int count = 0;
         for (LocalExtension extension : this.localRepository.getLocalExtensions()) {
             if (extension.isInstalled()) {
-                ++count;
+                // Split the test to avoid exceeding the boolean expression complexity limit.
+                boolean matches = patternMatcher.matcher(extension.getId().getId()).matches();
 
-                if (patternMatcher.matcher(extension.getId().getId()).matches()
+                String name = extension.getName();
+                matches = matches || (name != null && patternMatcher.matcher(name).matches());
 
-                || patternMatcher.matcher(extension.getDescription()).matches()
-                    || patternMatcher.matcher(extension.getSummary()).matches()
-                    || patternMatcher.matcher(extension.getName()).matches()
-                    || patternMatcher.matcher(extension.getFeatures().toString()).matches()) {
+                String summary = extension.getSummary();
+                matches = matches || (summary != null && patternMatcher.matcher(summary).matches());
+
+                String description = extension.getDescription();
+                matches = matches || (description != null && patternMatcher.matcher(description).matches());
+
+                matches = matches || patternMatcher.matcher(extension.getFeatures().toString()).matches();
+
+                if (matches) {
                     result.add(toInstalledExtension(extension));
                 }
             }
         }
 
-        return new CollectionIterableResult<Extension>(count, offset, result);
+        return new CollectionIterableResult<Extension>(result.size(), offset, result.subList(offset,
+            Math.min(result.size(), offset + nb)));
     }
 }

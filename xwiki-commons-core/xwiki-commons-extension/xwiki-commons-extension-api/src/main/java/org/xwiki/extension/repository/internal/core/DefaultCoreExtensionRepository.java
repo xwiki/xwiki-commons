@@ -211,14 +211,24 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
         List<Extension> result = new ArrayList<Extension>();
 
         for (CoreExtension extension : this.extensions.values()) {
-            if (patternMatcher.matcher(extension.getId().getId()).matches()
-                || patternMatcher.matcher(extension.getDescription()).matches()
-                || patternMatcher.matcher(extension.getSummary()).matches()
-                || patternMatcher.matcher(extension.getName()).matches()) {
+            // Split the test to avoid exceeding the boolean expression complexity limit.
+            boolean matches = patternMatcher.matcher(extension.getId().getId()).matches();
+
+            String name = extension.getName();
+            matches = matches || (name != null && patternMatcher.matcher(name).matches());
+
+            String summary = extension.getSummary();
+            matches = matches || (summary != null && patternMatcher.matcher(summary).matches());
+
+            String description = extension.getDescription();
+            matches = matches || (description != null && patternMatcher.matcher(description).matches());
+
+            if (matches) {
                 result.add(extension);
             }
         }
 
-        return new CollectionIterableResult<Extension>(this.extensions.size(), offset, result);
+        return new CollectionIterableResult<Extension>(result.size(), offset, result.subList(offset,
+            Math.min(result.size(), offset + nb)));
     }
 }
