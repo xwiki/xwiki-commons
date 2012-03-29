@@ -183,7 +183,7 @@ public class ExtensionStorage
      * @throws TransformerException error when trying to save the descriptor
      * @throws IOException error when trying to save the descriptor
      */
-    protected void saveDescriptor(DefaultLocalExtension extension) throws ParserConfigurationException,
+    public void saveDescriptor(DefaultLocalExtension extension) throws ParserConfigurationException,
         TransformerException, IOException
     {
         File file = extension.getDescriptorFile();
@@ -285,7 +285,7 @@ public class ExtensionStorage
      * @param extension extension to remove
      * @throws IOException error when deleting the extension
      */
-    protected void removeExtension(DefaultLocalExtension extension) throws IOException
+    public void removeExtension(DefaultLocalExtension extension) throws IOException
     {
         File descriptorFile = extension.getDescriptorFile();
 

@@ -148,7 +148,7 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
         }
     }
 
-    // Repository
+    // ExtensionRepository
 
     @Override
     public LocalExtension resolve(ExtensionId extensionId) throws ResolveException
@@ -271,6 +271,23 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
         }
 
         return localExtension;
+    }
+
+    @Override
+    public void setProperties(LocalExtension localExtension, Map<String, Object> properties)
+        throws LocalExtensionRepositoryException
+    {
+        DefaultLocalExtension extension = this.extensions.get(localExtension.getId());
+
+        if (extension != null) {
+            extension.setProperties(properties);
+            try {
+                this.storage.saveDescriptor(extension);
+            } catch (Exception e) {
+                throw new LocalExtensionRepositoryException("Failed to save descriptor for extension ["
+                    + localExtension + "]", e);
+            }
+        }
     }
 
     @Override

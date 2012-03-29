@@ -20,6 +20,7 @@
 package org.xwiki.extension.repository;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.Extension;
@@ -59,6 +60,14 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
      * @throws LocalExtensionRepositoryException error when trying store provided extension in the local repository
      */
     LocalExtension storeExtension(Extension extension) throws LocalExtensionRepositoryException;
+
+    /**
+     * @param localExtension the local extension to modify
+     * @param properties the properties to set
+     * @throws LocalExtensionRepositoryException error when trying to save the extension change
+     */
+    void setProperties(LocalExtension localExtension, Map<String, Object> properties)
+        throws LocalExtensionRepositoryException;
 
     /**
      * Remove extension from local repository.

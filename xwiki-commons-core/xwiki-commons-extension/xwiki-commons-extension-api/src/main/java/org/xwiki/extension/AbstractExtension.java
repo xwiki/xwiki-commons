@@ -396,6 +396,17 @@ public abstract class AbstractExtension implements Extension
         this.properties.put(key, value);
     }
 
+    /**
+     * Replace existing properties with provided properties.
+     * 
+     * @param properties the properties
+     */
+    public void setProperties(Map<String, Object> properties)
+    {
+        this.properties.clear();
+        this.properties.putAll(properties);
+    }
+
     // Object
 
     @Override

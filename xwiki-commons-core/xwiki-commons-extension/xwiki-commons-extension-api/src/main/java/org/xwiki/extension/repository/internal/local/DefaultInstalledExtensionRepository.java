@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -118,7 +119,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * <p>
      * <feature, <namespace, extension>>
      */
-    private Map<String, Map<String, InstalledFeature>> installedExtensions =
+    private Map<String, Map<String, InstalledFeature>> extensionNamespaceByFeature =
         new ConcurrentHashMap<String, Map<String, InstalledFeature>>();
 
     /**
@@ -126,7 +127,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * <p>
      * <extension id, extensions>
      */
-    private Map<String, List<DefaultInstalledExtension>> extensionsById2 =
+    private Map<String, List<DefaultInstalledExtension>> extensionsVersionsById =
         new ConcurrentHashMap<String, List<DefaultInstalledExtension>>();
 
     @Override
@@ -136,28 +137,27 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
         // Validate local extension
 
-        Map<String, Set<String>> validatedExtension = new HashMap<String, Set<String>>();
         for (LocalExtension localExtension : this.localRepository.getLocalExtensions()) {
             if (DefaultInstalledExtension.isInstalled(localExtension)) {
-                validateExtension(new DefaultInstalledExtension(localExtension, this), validatedExtension);
+                validateExtension(new DefaultInstalledExtension(localExtension, this));
             }
         }
     }
+
+    // Validation
 
     /**
      * Check extension validity and set it as not installed if not.
      * 
      * @param localExtension the extension to validate
-     * @param validatedExtensions the already validated extensions
      */
-    private void validateExtension(DefaultInstalledExtension localExtension,
-        Map<String, Set<String>> validatedExtensions)
+    private void validateExtension(DefaultInstalledExtension localExtension)
     {
         if (localExtension.getNamespaces() == null) {
-            validateExtension(localExtension, validatedExtensions, null);
+            validateExtension(localExtension, null);
         } else {
             for (String namespace : localExtension.getNamespaces()) {
-                validateExtension(localExtension, validatedExtensions, namespace);
+                validateExtension(localExtension, namespace);
             }
         }
     }
@@ -166,33 +166,18 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * Check extension validity against a specific namespace and set it as not installed if not.
      * 
      * @param localExtension the extension to validate
-     * @param validatedExtensions the already validated extensions
      * @param namespace the namespace
      */
-    private void validateExtension(DefaultInstalledExtension localExtension,
-        Map<String, Set<String>> validatedExtensions, String namespace)
+    private void validateExtension(DefaultInstalledExtension localExtension, String namespace)
     {
-        Set<String> validatedExtensionsNamespace = validatedExtensions.get(namespace);
-        if (validatedExtensionsNamespace == null) {
-            validatedExtensionsNamespace = new HashSet<String>();
-            validatedExtensions.put(namespace, validatedExtensionsNamespace);
+        InstalledFeature feature = getInstalledFeatureFromCache(localExtension.getId().getId(), namespace);
+        if (feature != null && StringUtils.equals(feature.namespace, "namespace")) {
+            // Already validated
+            return;
         }
 
-        if (!validatedExtensionsNamespace.contains(localExtension.getId().getId())) {
-            validateExtension(localExtension, validatedExtensionsNamespace, namespace);
-        }
-    }
+        // Actually validate
 
-    /**
-     * Check extension validity against a specific namespace and set it as not installed if not.
-     * 
-     * @param localExtension the extension to validate
-     * @param validatedExtensions already validated extensions
-     * @param namespace the namespace
-     */
-    private void validateExtension(DefaultInstalledExtension localExtension, Set<String> validatedExtensions,
-        String namespace)
-    {
         try {
             if (!localExtension.isInstalled(namespace)) {
                 return;
@@ -212,7 +197,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
             for (ExtensionDependency dependency : localExtension.getDependencies()) {
                 boolean enabled = false;
 
-                List<LocalExtension> dependencyVersions = this.extensionsById.get(dependency.getId());
+                List<DefaultInstalledExtension> dependencyVersions = extensionsById.get(dependency.getId());
                 if (dependencyVersions != null) {
                     for (ListIterator<DefaultLocalExtension> it =
                         dependencyVersions.listIterator(dependencyVersions.size()); it.hasPrevious();) {
@@ -249,21 +234,24 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         }
     }
 
+    // Install/Uninstall
+
     /**
      * Uninstall provided extension.
      * 
-     * @param localExtension the extension to uninstall
+     * @param installedExtension the extension to uninstall
      * @param namespace the namespace
      * @throws UninstallException error when trying to uninstall extension
      * @see #uninstallExtension(LocalExtension, String)
      */
-    private void uninstallLocalExtension(DefaultInstalledExtension localExtension, String namespace)
+    private void uninstallLocalExtension(DefaultInstalledExtension installedExtension, String namespace)
         throws UninstallException
     {
-        localExtension.setInstalled(false, namespace);
+        installedExtension.setInstalled(false, namespace);
 
         try {
-            this.storage.saveDescriptor(localExtension);
+            this.localRepository.setProperties(installedExtension.getLocalExtension(),
+                installedExtension.getProperties());
         } catch (Exception e) {
             throw new UninstallException("Failed to modify extension descriptor", e);
         }
@@ -271,15 +259,15 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         // Clean caches
 
         if (namespace == null) {
-            this.installedExtensions.remove(localExtension.getId().getId());
+            this.extensionNamespaceByFeature.remove(installedExtension.getId().getId());
         } else {
             Map<String, InstalledFeature> namespaceInstalledExtension =
-                this.installedExtensions.get(localExtension.getId().getId());
+                this.extensionNamespaceByFeature.get(installedExtension.getId().getId());
 
             namespaceInstalledExtension.remove(namespace);
         }
 
-        removeFromBackwardDependencies(localExtension, namespace);
+        removeFromBackwardDependencies(installedExtension, namespace);
     }
 
     /**
@@ -290,36 +278,37 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * @throws InstallException error when trying to uninstall extension
      * @see #installExtension(LocalExtension, String)
      */
-    private void installLocalExtension(DefaultInstalledExtension localExtension, String namespace)
+    private void installLocalExtension(DefaultInstalledExtension installedExtension, String namespace)
         throws InstallException
     {
-        localExtension.setInstalled(true, namespace);
+        installedExtension.setInstalled(true, namespace);
 
         try {
-            this.storage.saveDescriptor(localExtension);
+            this.localRepository.setProperties(installedExtension.getLocalExtension(),
+                installedExtension.getProperties());
         } catch (Exception e) {
             throw new InstallException("Failed to modify extension descriptor", e);
         }
 
         // Update caches
 
-        addInstalledExtension(localExtension, namespace);
+        addInstalledExtension(installedExtension, namespace);
     }
 
-    private void removeFromBackwardDependencies(DefaultLocalExtension localExtension, String namespace)
+    private void removeFromBackwardDependencies(DefaultInstalledExtension installedExtension, String namespace)
     {
         // Clean provided extension dependencies backward dependencies
-        for (ExtensionDependency dependency : localExtension.getDependencies()) {
+        for (ExtensionDependency dependency : installedExtension.getDependencies()) {
             if (this.coreExtensionRepository.getCoreExtension(dependency.getId()) == null) {
-                InstalledFeature installedExtension = getInstalledExtensionFromCache(dependency.getId(), namespace);
+                InstalledFeature installedFeature = getInstalledFeatureFromCache(dependency.getId(), namespace);
 
-                if (installedExtension == null) {
+                if (installedFeature == null) {
                     // That should never happen so lets log it
-                    this.logger.warn("Extension [" + localExtension + "] is not installed");
-                } else if (installedExtension.backwardDependencies.remove(localExtension)) {
+                    this.logger.warn("Extension [" + installedExtension + "] is not installed");
+                } else if (installedFeature.backwardDependencies.remove(installedExtension)) {
                     // That should never happen so lets log it
-                    this.logger.warn("Extension [" + localExtension
-                        + "] was not regisistered as backward dependency of [" + installedExtension.extension + "]");
+                    this.logger.warn("Extension [" + installedExtension
+                        + "] was not regisistered as backward dependency of [" + installedFeature.extension + "]");
                 }
             }
         }
@@ -336,23 +325,23 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     {
         // Register the extension in the installed extensions for the provided namespace
         InstalledFeature installedExtension =
-            getInstalledExtensionFromCache(localExtension.getId().getId(), namespace, localExtension);
+            getInstalledFeatureFromCache(localExtension.getId().getId(), namespace, localExtension);
 
         // Add virtual extensions
         for (String feature : localExtension.getFeatures()) {
-            getInstalledExtensionFromCache(feature, namespace, localExtension);
+            getInstalledFeatureFromCache(feature, namespace, localExtension);
         }
 
         // Add backward dependencies
         for (ExtensionDependency dependency : localExtension.getDependencies()) {
             if (!this.coreExtensionRepository.exists(dependency.getId())) {
                 // Get the extension for the dependency feature for the provided namespace
-                DefaultLocalExtension dependencyLocalExtension =
-                    (DefaultLocalExtension) getInstalledExtension(dependency.getId(), namespace);
+                DefaultInstalledExtension dependencyLocalExtension =
+                    (DefaultInstalledExtension) getInstalledExtension(dependency.getId(), namespace);
 
                 // Make sure to register backward dependency on the right namespace
                 InstalledFeature dependencyInstalledExtension =
-                    getInstalledExtensionFromCache(dependency.getId(), namespace, dependencyLocalExtension);
+                    getInstalledFeatureFromCache(dependency.getId(), namespace, dependencyLocalExtension);
 
                 dependencyInstalledExtension.backwardDependencies.add(localExtension);
             }
@@ -371,14 +360,14 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * @param localExtension the extension
      * @return the installed extension informations
      */
-    private InstalledFeature getInstalledExtensionFromCache(String feature, String namespace,
+    private InstalledFeature getInstalledFeatureFromCache(String feature, String namespace,
         DefaultInstalledExtension localExtension)
     {
-        Map<String, InstalledFeature> installedExtensionsForFeature = this.installedExtensions.get(feature);
+        Map<String, InstalledFeature> installedExtensionsForFeature = this.extensionNamespaceByFeature.get(feature);
 
         if (installedExtensionsForFeature == null) {
             installedExtensionsForFeature = new HashMap<String, InstalledFeature>();
-            this.installedExtensions.put(feature, installedExtensionsForFeature);
+            this.extensionNamespaceByFeature.put(feature, installedExtensionsForFeature);
         }
 
         InstalledFeature installedExtension = installedExtensionsForFeature.get(namespace);
@@ -397,9 +386,9 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * @param namespace the namespace where the extension is installed
      * @return the installed extension informations
      */
-    private InstalledFeature getInstalledExtensionFromCache(String feature, String namespace)
+    private InstalledFeature getInstalledFeatureFromCache(String feature, String namespace)
     {
-        Map<String, InstalledFeature> installedExtensionsForFeature = this.installedExtensions.get(feature);
+        Map<String, InstalledFeature> installedExtensionsForFeature = this.extensionNamespaceByFeature.get(feature);
 
         if (installedExtensionsForFeature == null) {
             return null;
@@ -408,7 +397,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         InstalledFeature installedExtension = installedExtensionsForFeature.get(namespace);
 
         if (installedExtension == null && namespace != null) {
-            installedExtension = getInstalledExtensionFromCache(feature, null);
+            installedExtension = getInstalledFeatureFromCache(feature, null);
         }
 
         return installedExtension;
@@ -431,7 +420,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     @Override
     public InstalledExtension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        List<DefaultInstalledExtension> versions = this.extensionsById2.get(extensionDependency.getId());
+        List<DefaultInstalledExtension> versions = this.extensionsVersionsById.get(extensionDependency.getId());
 
         if (versions != null) {
             for (DefaultInstalledExtension extension : versions) {
@@ -454,7 +443,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     @Override
     public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
     {
-        List<DefaultInstalledExtension> versions = this.extensionsById2.get(id);
+        List<DefaultInstalledExtension> versions = this.extensionsVersionsById.get(id);
 
         if (versions == null) {
             throw new ResolveException("Can't find extension with id [" + id + "]");
@@ -488,7 +477,14 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     @Override
     public Collection<InstalledExtension> getInstalledExtensions(String namespace)
     {
+        List<InstalledExtension> result = new ArrayList<InstalledExtension>(this.extensions.size());
+        for (InstalledExtension installedExtension : this.extensions.values()) {
+            if (installedExtension.isInstalled(namespace)) {
+                result.add(installedExtension);
+            }
+        }
 
+        return result;
     }
 
     @Override
@@ -498,9 +494,15 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     }
 
     @Override
-    public InstalledExtension getInstalledExtension(String id, String namespace)
+    public InstalledExtension getInstalledExtension(String feature, String namespace)
     {
+        InstalledFeature installedFeature = getInstalledFeatureFromCache(feature, namespace);
 
+        if (installedFeature != null) {
+            return installedFeature.extension;
+        }
+
+        return null;
     }
 
     @Override
@@ -518,12 +520,19 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
             installedExtension.setDependency(dependency);
 
             try {
-                this.storage.saveDescriptor(installedExtension.getLocalExtension());
+                this.localRepository.setProperties(installedExtension.getLocalExtension(),
+                    installedExtension.getProperties());
             } catch (Exception e) {
                 throw new InstallException("Failed to modify extension descriptor", e);
             }
         } else {
-            LocalExtension localExtension = this.localRepository.resolve(extension.getId());
+            LocalExtension localExtension;
+            try {
+                localExtension = this.localRepository.resolve(extension.getId());
+            } catch (ResolveException e) {
+                // Should be a very rare use case since we explicitly ask for a LocalExtension
+                throw new InstallException("The extension [" + extension + "] need to be stored first");
+            }
 
             installedExtension = new DefaultInstalledExtension(localExtension, this);
 
@@ -533,6 +542,8 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
             installLocalExtension(installedExtension, namespace);
         }
+
+        return installedExtension;
     }
 
     @Override
@@ -554,7 +565,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
             throw new ResolveException("Extension [" + feature + "] is not installed on namespace [" + namespace + "]");
         }
 
-        Map<String, InstalledFeature> installedExtensionsByFeature = this.installedExtensions.get(feature);
+        Map<String, InstalledFeature> installedExtensionsByFeature = this.extensionNamespaceByFeature.get(feature);
         if (installedExtensionsByFeature != null) {
             InstalledFeature installedExtension = installedExtensionsByFeature.get(namespace);
 
@@ -582,7 +593,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         Collection<String> namespaces = installedExtension.getNamespaces();
 
         Map<String, InstalledFeature> featureExtensions =
-            this.installedExtensions.get(installedExtension.getId().getId());
+            this.extensionNamespaceByFeature.get(installedExtension.getId().getId());
 
         if (featureExtensions != null) {
             result = new HashMap<String, Collection<InstalledExtension>>();
