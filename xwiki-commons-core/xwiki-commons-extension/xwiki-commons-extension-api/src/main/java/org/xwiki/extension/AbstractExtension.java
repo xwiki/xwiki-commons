@@ -378,6 +378,12 @@ public abstract class AbstractExtension implements Extension
         return this.properties.get(key);
     }
 
+    @Override
+    public <T> T getProperty(String key, T def)
+    {
+        return this.properties.containsKey(key) ? (T) this.properties.get(key) : def;
+    }
+
     /**
      * Set a property.
      * 
@@ -391,17 +397,14 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * Get a property.
+     * Replace existing properties with provided properties.
      * 
-     * @param <T> type of the property value
-     * @param key the property key
-     * @param def the value to return if no property is associated to the provided key
-     * @return the property value or <code>default</code> of the property is not found
-     * @see #getProperty(String)
+     * @param properties the properties
      */
-    public <T> T getProperty(String key, T def)
+    public void setProperties(Map<String, Object> properties)
     {
-        return this.properties.containsKey(key) ? (T) this.properties.get(key) : def;
+        this.properties.clear();
+        this.properties.putAll(properties);
     }
 
     // Object

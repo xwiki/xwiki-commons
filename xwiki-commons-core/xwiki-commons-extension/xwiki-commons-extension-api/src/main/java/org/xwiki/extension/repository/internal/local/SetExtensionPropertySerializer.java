@@ -17,33 +17,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.wrap;
+package org.xwiki.extension.repository.internal.local;
 
-import org.xwiki.extension.LocalExtension;
-import org.xwiki.extension.LocalExtensionFile;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Wrap a local extension.
+ * Serialize and unserialize {@link Set} properties.
  * 
- * @param <T> the extension type
  * @version $Id$
- * @since 4.0M1
  */
-public class WrappingLocalExtension<T extends LocalExtension> extends WrappingExtension<T> implements LocalExtension
+public class SetExtensionPropertySerializer extends CollectionExtensionPropertySerializer<Set>
 {
     /**
-     * @param localExtension the wrapped local extension
+     * @param serializerById the serializers by type id
+     * @param serializerByClass the serializers by class
      */
-    public WrappingLocalExtension(T localExtension)
+    public SetExtensionPropertySerializer(Map<String, ExtensionPropertySerializer> serializerById,
+        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
     {
-        super(localExtension);
+        super("set", serializerById, serializerByClass);
     }
 
-    // Extension
-
-    @Override
-    public LocalExtensionFile getFile()
+    /**
+     * @return a new collection
+     */
+    protected Set createCollection()
     {
-        return (LocalExtensionFile) super.getFile();
+        return new HashSet<String>();
     }
 }

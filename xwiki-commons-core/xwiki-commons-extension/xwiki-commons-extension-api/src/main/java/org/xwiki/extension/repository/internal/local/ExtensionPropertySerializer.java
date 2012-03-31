@@ -17,33 +17,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.wrap;
+package org.xwiki.extension.repository.internal.local;
 
-import org.xwiki.extension.LocalExtension;
-import org.xwiki.extension.LocalExtensionFile;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
- * Wrap a local extension.
+ * Serialize and unserialize a property.
  * 
- * @param <T> the extension type
+ * @param <T>
  * @version $Id$
- * @since 4.0M1
  */
-public class WrappingLocalExtension<T extends LocalExtension> extends WrappingExtension<T> implements LocalExtension
+public interface ExtensionPropertySerializer<T>
 {
     /**
-     * @param localExtension the wrapped local extension
+     * @param element the XML element
+     * @return the unserialized property value
      */
-    public WrappingLocalExtension(T localExtension)
-    {
-        super(localExtension);
-    }
+    T toValue(Element element);
 
-    // Extension
-
-    @Override
-    public LocalExtensionFile getFile()
-    {
-        return (LocalExtensionFile) super.getFile();
-    }
+    /**
+     * @param document the document used to create new elements
+     * @param elementName the name of the property
+     * @param elementValue the value of the property
+     * @return the serialized property {@link Element}
+     */
+    Element toElement(Document document, String elementName, T elementValue);
 }

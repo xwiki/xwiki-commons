@@ -23,10 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -43,6 +41,7 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.extension.repository.internal.RepositoryUtils;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
@@ -60,11 +59,6 @@ import org.xwiki.extension.version.Version;
 public class DefaultCoreExtensionRepository extends AbstractExtensionRepository implements CoreExtensionRepository,
     Initializable, Searchable
 {
-    /**
-     * The suffic and prefix to add to the regex when searching for a core extension.
-     */
-    private static final String SEARCH_PATTERN_SUFFIXNPREFIX = ".*";
-
     /**
      * The core extensions.
      */
@@ -206,29 +200,6 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     @Override
     public IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException
     {
-        Pattern patternMatcher = Pattern.compile(SEARCH_PATTERN_SUFFIXNPREFIX + pattern + SEARCH_PATTERN_SUFFIXNPREFIX);
-
-        List<Extension> result = new ArrayList<Extension>();
-
-        for (CoreExtension extension : this.extensions.values()) {
-            // Split the test to avoid exceeding the boolean expression complexity limit.
-            boolean matches = patternMatcher.matcher(extension.getId().getId()).matches();
-
-            String name = extension.getName();
-            matches = matches || (name != null && patternMatcher.matcher(name).matches());
-
-            String summary = extension.getSummary();
-            matches = matches || (summary != null && patternMatcher.matcher(summary).matches());
-
-            String description = extension.getDescription();
-            matches = matches || (description != null && patternMatcher.matcher(description).matches());
-
-            if (matches) {
-                result.add(extension);
-            }
-        }
-
-        return new CollectionIterableResult<Extension>(result.size(), offset, result.subList(offset,
-            Math.min(result.size(), offset + nb)));
+        return RepositoryUtils.searchInCollection(pattern, offset, nb, this.extensions.values());
     }
 }

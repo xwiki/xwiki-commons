@@ -19,23 +19,56 @@
  */
 package org.xwiki.extension.wrap;
 
+import java.util.Collection;
+
 import org.xwiki.extension.InstalledExtension;
+import org.xwiki.extension.LocalExtension;
 
 /**
  * Wrap a local extension.
  * 
- * @param <T> the extension type
+ * @param <E> the extension type
  * @version $Id$
  * @since 4.0M2
  */
-public class WrappingInstalledExtension<T extends InstalledExtension> extends WrappingLocalExtension<T> implements
+public class WrappingInstalledExtension<E extends InstalledExtension> extends WrappingLocalExtension<E> implements
     InstalledExtension
 {
     /**
      * @param localExtension the wrapped local extension
      */
-    public WrappingInstalledExtension(T localExtension)
+    public WrappingInstalledExtension(E localExtension)
     {
         super(localExtension);
+    }
+
+    @Override
+    public LocalExtension getLocalExtension()
+    {
+        return getWrapped().getLocalExtension();
+    }
+
+    @Override
+    public boolean isInstalled()
+    {
+        return getWrapped().isInstalled();
+    }
+
+    @Override
+    public boolean isInstalled(String namespace)
+    {
+        return getWrapped().isInstalled(namespace);
+    }
+
+    @Override
+    public Collection<String> getNamespaces()
+    {
+        return getWrapped().getNamespaces();
+    }
+
+    @Override
+    public boolean isDependency()
+    {
+        return getWrapped().isDependency();
     }
 }

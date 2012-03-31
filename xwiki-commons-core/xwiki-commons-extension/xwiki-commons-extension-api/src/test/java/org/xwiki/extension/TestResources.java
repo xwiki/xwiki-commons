@@ -19,7 +19,7 @@
  */
 package org.xwiki.extension;
 
-import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 
 public class TestResources
 {
@@ -34,9 +34,9 @@ public class TestResources
     public static final ExtensionId INSTALLED_DEPENDENCY_ID =
         new ExtensionId("installedextensiondependency", "version");
 
-    public LocalExtension installed;
+    public InstalledExtension installed;
 
-    public LocalExtension installedDependency;
+    public InstalledExtension installedDependency;
 
     // Remote
 
@@ -53,9 +53,9 @@ public class TestResources
 
     // Methods
 
-    public void init(LocalExtensionRepository localExtensionRepository) throws ResolveException
+    public void init(InstalledExtensionRepository installedExtensionRepository) throws ResolveException
     {
-        this.installed = localExtensionRepository.resolve(INSTALLED_ID);
-        this.installedDependency = localExtensionRepository.resolve(INSTALLED_DEPENDENCY_ID);
+        this.installed = installedExtensionRepository.resolve(INSTALLED_ID);
+        this.installedDependency = installedExtensionRepository.resolve(INSTALLED_DEPENDENCY_ID);
     }
 }
