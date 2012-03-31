@@ -33,16 +33,16 @@ import org.xwiki.extension.repository.ExtensionRepository;
 /**
  * Wrap an extension.
  * 
- * @param <T> the extension type
+ * @param <E> the extension type
  * @version $Id$
  * @since 4.0M1
  */
-public class WrappingExtension<T extends Extension> extends AbstractWrappingObject<T> implements Extension
+public class WrappingExtension<E extends Extension> extends AbstractWrappingObject<E> implements Extension
 {
     /**
      * @param extension the wrapped extension
      */
-    public WrappingExtension(T extension)
+    public WrappingExtension(E extension)
     {
         super(extension);
     }
@@ -131,5 +131,11 @@ public class WrappingExtension<T extends Extension> extends AbstractWrappingObje
     public Object getProperty(String key)
     {
         return getWrapped().getProperty(key);
+    }
+
+    @Override
+    public <T> T getProperty(String key, T def)
+    {
+        return getWrapped().getProperty(key, def);
     }
 }

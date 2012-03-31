@@ -53,6 +53,13 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
     Collection<LocalExtension> getLocalExtensions();
 
     /**
+     * @param id the id of the extension
+     * @return the version of the extension stored in the local repository order from the upper version to the lower
+     *         version
+     */
+    Collection<LocalExtension> getLocalExtensionVersions(String id);
+
+    /**
      * Store provided extension (generally a remote extension) in the local repository.
      * 
      * @param extension the extension to store

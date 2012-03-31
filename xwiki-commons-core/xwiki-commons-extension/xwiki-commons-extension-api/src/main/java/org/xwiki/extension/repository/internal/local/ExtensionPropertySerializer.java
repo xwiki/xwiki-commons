@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,21 +16,31 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package org.xwiki.extension.repository.internal.local;
 
-<extension>
-  <id>installedextensiondependency</id>
-  <version>version</version>
-  <type>type</type>
-  <features>
-    <feature>installedextensiondependency-feature</feature>
-  </features>
-  <dependency>true</dependency>
-  <description>description</description>
-  <author>author</author>
-  <website>http://website</website>
-  <properties>
-    <installed.installed type="boolean">true</installed.installed>
-  </properties>
-</extension>
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+/**
+ * Serialize and unserialize a property.
+ * 
+ * @param <T>
+ * @version $Id$
+ */
+public interface ExtensionPropertySerializer<T>
+{
+    /**
+     * @param element the XML element
+     * @return the unserialized property value
+     */
+    T toValue(Element element);
+
+    /**
+     * @param document the document used to create new elements
+     * @param elementName the name of the property
+     * @param elementValue the value of the property
+     * @return the serialized property {@link Element}
+     */
+    Element toElement(Document document, String elementName, T elementValue);
+}

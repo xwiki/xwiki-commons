@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,11 +37,13 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
+import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
@@ -139,7 +140,11 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
         for (LocalExtension localExtension : this.localRepository.getLocalExtensions()) {
             if (DefaultInstalledExtension.isInstalled(localExtension)) {
-                validateExtension(new DefaultInstalledExtension(localExtension, this));
+                try {
+                    validateExtension(localExtension);
+                } catch (InvalidExtensionException e) {
+                    this.logger.error("Invalid extension [" + localExtension + "] it will not be loaded", e);
+                }
             }
         }
     }
@@ -150,13 +155,16 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * Check extension validity and set it as not installed if not.
      * 
      * @param localExtension the extension to validate
+     * @throws InvalidExtensionException when the passed extension is fond invalid
      */
-    private void validateExtension(DefaultInstalledExtension localExtension)
+    private void validateExtension(LocalExtension localExtension) throws InvalidExtensionException
     {
-        if (localExtension.getNamespaces() == null) {
+        Collection<String> namespaces = DefaultInstalledExtension.getNamespaces(localExtension);
+
+        if (namespaces == null) {
             validateExtension(localExtension, null);
         } else {
-            for (String namespace : localExtension.getNamespaces()) {
+            for (String namespace : namespaces) {
                 validateExtension(localExtension, namespace);
             }
         }
@@ -167,8 +175,9 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * 
      * @param localExtension the extension to validate
      * @param namespace the namespace
+     * @throws InvalidExtensionException when the passed extension is fond invalid
      */
-    private void validateExtension(DefaultInstalledExtension localExtension, String namespace)
+    private void validateExtension(LocalExtension localExtension, String namespace) throws InvalidExtensionException
     {
         InstalledFeature feature = getInstalledFeatureFromCache(localExtension.getId().getId(), namespace);
         if (feature != null && StringUtils.equals(feature.namespace, "namespace")) {
@@ -178,60 +187,50 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
         // Actually validate
 
-        try {
-            if (!localExtension.isInstalled(namespace)) {
-                return;
-            }
+        if (!DefaultInstalledExtension.isInstalled(localExtension, namespace)) {
+            throw new InvalidExtensionException("Extension [" + localExtension + "] is not installed");
+        }
 
-            if (this.coreExtensionRepository.exists(localExtension.getId().getId())) {
-                // Impossible to overwrite core extensions
-                localExtension.setInstalled(false, namespace);
+        if (this.coreExtensionRepository.exists(localExtension.getId().getId())) {
+            throw new InvalidExtensionException("Extension [" + localExtension + "] already exists as a core extension");
+        }
 
-                this.logger.error("Found local extension [" + localExtension
-                    + "] is invalid. Impossible to overwrite core extensions.");
+        // Validate dependencies
+        for (ExtensionDependency dependency : localExtension.getDependencies()) {
+            CoreExtension coreExtension = this.coreExtensionRepository.getCoreExtension(dependency.getId());
 
-                return;
-            }
+            if (coreExtension != null) {
+                if (!dependency.getVersionConstraint().containsVersion(coreExtension.getId().getVersion())) {
+                    throw new InvalidExtensionException("Extension [" + localExtension
+                        + "] is incompatible with the core extension [" + coreExtension + "]");
+                }
+            } else {
+                boolean valid = false;
 
-            // Validate dependencies
-            for (ExtensionDependency dependency : localExtension.getDependencies()) {
-                boolean enabled = false;
-
-                List<DefaultInstalledExtension> dependencyVersions = extensionsById.get(dependency.getId());
-                if (dependencyVersions != null) {
-                    for (ListIterator<DefaultLocalExtension> it =
-                        dependencyVersions.listIterator(dependencyVersions.size()); it.hasPrevious();) {
-                        DefaultLocalExtension dependencyExtension = it.previous();
-
-                        if (!validatedExtensions.contains(dependency.getId())) {
-                            validateExtension(dependencyExtension, validatedExtensions, namespace);
-                        }
-
-                        if (dependencyExtension.isInstalled(namespace)) {
-                            enabled = true;
+                List<LocalExtension> dependencyVersions =
+                    new ArrayList<LocalExtension>(this.localRepository.getLocalExtensionVersions(dependency.getId()));
+                Collections.reverse(dependencyVersions);
+                for (LocalExtension dependencyExtension : dependencyVersions) {
+                    if (dependency.getVersionConstraint().containsVersion(dependencyExtension.getId().getVersion())) {
+                        try {
+                            validateExtension(dependencyExtension, namespace);
+                            valid = true;
                             break;
+                        } catch (InvalidExtensionException e) {
+                            // Lets try next one
                         }
                     }
-                } else {
-                    enabled = this.coreExtensionRepository.exists(dependency.getId());
                 }
 
-                if (!enabled) {
-                    localExtension.setInstalled(false, namespace);
-
-                    this.logger.error("Found local extension [" + localExtension
-                        + "] is invalid. One of it's dependency ([" + dependency
-                        + "]) is not valid and is not a core extension.");
-
-                    return;
+                if (!valid) {
+                    throw new InvalidExtensionException("The dependency [" + dependency + "] of extension ["
+                        + localExtension + "] is invalid");
                 }
             }
-
-            // Complete local extension installation
-            addInstalledExtension(localExtension, namespace);
-        } finally {
-            validatedExtensions.add(localExtension.getId().getId());
         }
+
+        // Complete local extension installation
+        addInstalledExtension(localExtension, namespace);
     }
 
     // Install/Uninstall
@@ -244,20 +243,9 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * @throws UninstallException error when trying to uninstall extension
      * @see #uninstallExtension(LocalExtension, String)
      */
-    private void uninstallLocalExtension(DefaultInstalledExtension installedExtension, String namespace)
+    private void removeInstalledExtension(DefaultInstalledExtension installedExtension, String namespace)
         throws UninstallException
     {
-        installedExtension.setInstalled(false, namespace);
-
-        try {
-            this.localRepository.setProperties(installedExtension.getLocalExtension(),
-                installedExtension.getProperties());
-        } catch (Exception e) {
-            throw new UninstallException("Failed to modify extension descriptor", e);
-        }
-
-        // Clean caches
-
         if (namespace == null) {
             this.extensionNamespaceByFeature.remove(installedExtension.getId().getId());
         } else {
@@ -268,6 +256,10 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         }
 
         removeFromBackwardDependencies(installedExtension, namespace);
+
+        if (!installedExtension.isInstalled()) {
+            this.extensions.remove(installedExtension.getId());
+        }
     }
 
     /**
@@ -278,7 +270,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * @throws InstallException error when trying to uninstall extension
      * @see #installExtension(LocalExtension, String)
      */
-    private void installLocalExtension(DefaultInstalledExtension installedExtension, String namespace)
+    private void applyInstallExtension(DefaultInstalledExtension installedExtension, String namespace)
         throws InstallException
     {
         installedExtension.setInstalled(true, namespace);
@@ -319,21 +311,39 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * 
      * @param localExtension the local extension to register
      * @param namespace the namespace
-     * @return the installed extension informations
      */
-    private InstalledFeature addInstalledExtension(DefaultInstalledExtension localExtension, String namespace)
+    private void addInstalledExtension(LocalExtension localExtension, String namespace)
     {
+        DefaultInstalledExtension installedExtension = this.extensions.get(localExtension.getId());
+        if (installedExtension == null) {
+            installedExtension = new DefaultInstalledExtension(localExtension, this);
+        }
+
+        installedExtension.setInstalled(true, namespace);
+
+        addInstalledExtension(installedExtension, namespace);
+    }
+
+    /**
+     * Register a newly installed extension in backward dependencies map.
+     * 
+     * @param installedExtension the installed extension to register
+     * @param namespace the namespace
+     */
+    private void addInstalledExtension(DefaultInstalledExtension installedExtension, String namespace)
+    {
+        this.extensions.put(installedExtension.getId(), installedExtension);
+
         // Register the extension in the installed extensions for the provided namespace
-        InstalledFeature installedExtension =
-            getInstalledFeatureFromCache(localExtension.getId().getId(), namespace, localExtension);
+        getInstalledFeatureFromCache(installedExtension.getId().getId(), namespace, installedExtension);
 
         // Add virtual extensions
-        for (String feature : localExtension.getFeatures()) {
-            getInstalledFeatureFromCache(feature, namespace, localExtension);
+        for (String feature : installedExtension.getFeatures()) {
+            getInstalledFeatureFromCache(feature, namespace, installedExtension);
         }
 
         // Add backward dependencies
-        for (ExtensionDependency dependency : localExtension.getDependencies()) {
+        for (ExtensionDependency dependency : installedExtension.getDependencies()) {
             if (!this.coreExtensionRepository.exists(dependency.getId())) {
                 // Get the extension for the dependency feature for the provided namespace
                 DefaultInstalledExtension dependencyLocalExtension =
@@ -343,11 +353,9 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
                 InstalledFeature dependencyInstalledExtension =
                     getInstalledFeatureFromCache(dependency.getId(), namespace, dependencyLocalExtension);
 
-                dependencyInstalledExtension.backwardDependencies.add(localExtension);
+                dependencyInstalledExtension.backwardDependencies.add(installedExtension);
             }
         }
-
-        return installedExtension;
     }
 
     /**
@@ -511,7 +519,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     {
         DefaultInstalledExtension installedExtension = this.extensions.get(extension.getId());
 
-        if (installedExtension.isInstalled(namespace)) {
+        if (installedExtension != null && installedExtension.isInstalled(namespace)) {
             if (installedExtension.isDependency() == dependency) {
                 throw new InstallException("The extension [" + installedExtension
                     + "] is already installed on namespace [" + namespace + "]");
@@ -534,13 +542,15 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
                 throw new InstallException("The extension [" + extension + "] need to be stored first");
             }
 
-            installedExtension = new DefaultInstalledExtension(localExtension, this);
+            if (installedExtension == null) {
+                installedExtension = new DefaultInstalledExtension(localExtension, this);
+            }
 
             if (dependency || installedExtension.getProperty(InstalledExtension.PKEY_DEPENDENCY) == null) {
                 installedExtension.setDependency(dependency);
             }
 
-            installLocalExtension(installedExtension, namespace);
+            applyInstallExtension(installedExtension, namespace);
         }
 
         return installedExtension;
@@ -549,12 +559,29 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     @Override
     public void uninstallExtension(InstalledExtension extension, String namespace) throws UninstallException
     {
-        DefaultInstalledExtension existingExtension =
+        DefaultInstalledExtension installedExtension =
             (DefaultInstalledExtension) getInstalledExtension(extension.getId().getId(), namespace);
 
-        if (existingExtension != null) {
-            uninstallLocalExtension(existingExtension, namespace);
+        if (installedExtension != null) {
+            applyUninstallExtension(installedExtension, namespace);
         }
+    }
+
+    private void applyUninstallExtension(DefaultInstalledExtension installedExtension, String namespace)
+        throws UninstallException
+    {
+        installedExtension.setInstalled(false, namespace);
+
+        try {
+            this.localRepository.setProperties(installedExtension.getLocalExtension(),
+                installedExtension.getProperties());
+        } catch (Exception e) {
+            throw new UninstallException("Failed to modify extension descriptor", e);
+        }
+
+        // Clean caches
+
+        removeInstalledExtension(installedExtension, namespace);
     }
 
     @Override

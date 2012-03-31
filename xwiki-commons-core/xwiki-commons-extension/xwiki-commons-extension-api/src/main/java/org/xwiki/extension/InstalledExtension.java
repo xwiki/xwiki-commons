@@ -35,17 +35,17 @@ public interface InstalledExtension extends LocalExtension
     /**
      * Custom property key containing {@link #isInstalled()}.
      */
-    String PKEY_INSTALLED = "local.installed";
+    String PKEY_INSTALLED = "installed.installed";
 
     /**
      * Custom property key containing {@link #isDependency()}.
      */
-    String PKEY_DEPENDENCY = "local.dependency";
+    String PKEY_DEPENDENCY = "installed.dependency";
 
     /**
      * Custom property key containing {@link #getNamespaces()}.
      */
-    String PKEY_NAMESPACES = "local.namespaces";
+    String PKEY_NAMESPACES = "installed.namespaces";
 
     /**
      * @return the actual extension

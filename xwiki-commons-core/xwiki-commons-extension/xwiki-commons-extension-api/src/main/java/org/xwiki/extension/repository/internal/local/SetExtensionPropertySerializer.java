@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,21 +16,35 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package org.xwiki.extension.repository.internal.local;
 
-<extension>
-  <id>installedextensiondependency</id>
-  <version>version</version>
-  <type>type</type>
-  <features>
-    <feature>installedextensiondependency-feature</feature>
-  </features>
-  <dependency>true</dependency>
-  <description>description</description>
-  <author>author</author>
-  <website>http://website</website>
-  <properties>
-    <installed.installed type="boolean">true</installed.installed>
-  </properties>
-</extension>
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Serialize and unserialize {@link Set} properties.
+ * 
+ * @version $Id$
+ */
+public class SetExtensionPropertySerializer extends CollectionExtensionPropertySerializer<Set>
+{
+    /**
+     * @param serializerById the serializers by type id
+     * @param serializerByClass the serializers by class
+     */
+    public SetExtensionPropertySerializer(Map<String, ExtensionPropertySerializer> serializerById,
+        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
+    {
+        super("set", serializerById, serializerByClass);
+    }
+
+    /**
+     * @return a new collection
+     */
+    protected Set createCollection()
+    {
+        return new HashSet<String>();
+    }
+}

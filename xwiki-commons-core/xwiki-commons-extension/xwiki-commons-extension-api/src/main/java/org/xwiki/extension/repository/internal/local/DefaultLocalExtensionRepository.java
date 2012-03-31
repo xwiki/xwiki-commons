@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -102,7 +103,7 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
      * <p>
      * <extension id, extensions>
      */
-    private Map<String, List<DefaultLocalExtension>> extensionsById =
+    private Map<String, List<DefaultLocalExtension>> extensionsVersions =
         new ConcurrentHashMap<String, List<DefaultLocalExtension>>();
 
     @Override
@@ -130,11 +131,11 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
         this.extensions.put(localExtension.getId(), localExtension);
 
         // versions
-        List<DefaultLocalExtension> versions = this.extensionsById.get(localExtension.getId().getId());
+        List<DefaultLocalExtension> versions = this.extensionsVersions.get(localExtension.getId().getId());
 
         if (versions == null) {
             versions = new ArrayList<DefaultLocalExtension>();
-            this.extensionsById.put(localExtension.getId().getId(), versions);
+            this.extensionsVersions.put(localExtension.getId().getId(), versions);
 
             versions.add(localExtension);
         } else {
@@ -165,7 +166,7 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
     @Override
     public LocalExtension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        List<DefaultLocalExtension> versions = this.extensionsById.get(extensionDependency.getId());
+        List<DefaultLocalExtension> versions = this.extensionsVersions.get(extensionDependency.getId());
 
         if (versions != null) {
             for (DefaultLocalExtension extension : versions) {
@@ -188,7 +189,7 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
     @Override
     public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
     {
-        List<DefaultLocalExtension> versions = this.extensionsById.get(id);
+        List<DefaultLocalExtension> versions = this.extensionsVersions.get(id);
 
         if (versions == null) {
             throw new ResolveException("Can't find extension with id [" + id + "]");
@@ -217,6 +218,15 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
     public Collection<LocalExtension> getLocalExtensions()
     {
         return Collections.<LocalExtension> unmodifiableCollection(this.extensions.values());
+    }
+
+    @Override
+    public Collection<LocalExtension> getLocalExtensionVersions(String id)
+    {
+        Collection<DefaultLocalExtension> versions = this.extensionsVersions.get(id);
+
+        return versions != null ? Collections.<LocalExtension> unmodifiableCollection(versions) : Collections
+            .<LocalExtension> emptyList();
     }
 
     /**
@@ -310,24 +320,19 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
     public IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException
     {
         Pattern patternMatcher =
-            Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX + pattern
-                + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
+            StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
+                + pattern + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
 
         List<Extension> result = new ArrayList<Extension>();
 
-        if (nb != 0 && offset < this.extensionsById.size()) {
-            int i = 0;
-            for (List<DefaultLocalExtension> versions : this.extensionsById.values()) {
-                if (i >= offset) {
-                    Extension extension = versions.get(0);
+        for (List<DefaultLocalExtension> versions : this.extensionsVersions.values()) {
+            Extension extension = versions.get(0);
 
-                    if (RepositoryUtils.matches(patternMatcher, extension)) {
-                        result.add(extension);
-                    }
-                }
+            if (patternMatcher == null || RepositoryUtils.matches(patternMatcher, extension)) {
+                result.add(extension);
             }
         }
 
-        return new CollectionIterableResult<Extension>(this.extensionsById.size(), offset, result);
+        return RepositoryUtils.searchInCollection(offset, nb, result);
     }
 }

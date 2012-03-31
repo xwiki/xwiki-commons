@@ -46,7 +46,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
         // resources
 
         this.resources = new TestResources();
-        this.resources.init(this.localExtensionRepository);
+        this.resources.init(this.installedExtensionRepository);
     }
 
     @Test

@@ -62,6 +62,26 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         return extension.getProperty(PKEY_INSTALLED, false);
     }
 
+    /**
+     * @param extension the extension
+     * @param namespace the namespace to look at, if null it means the extension is installed for all the namespaces
+     * @return true if the extension is installed in the provided namespace
+     */
+    public static boolean isInstalled(Extension extension, String namespace)
+    {
+        return isInstalled(extension)
+            && (getNamespaces(extension) == null || getNamespaces(extension).contains(namespace));
+    }
+
+    /**
+     * @param extension the extension
+     * @return the namespaces in which this extension is enabled. Null means root namespace (i.e all namespaces).
+     */
+    public static Collection<String> getNamespaces(Extension extension)
+    {
+        return extension.getProperty(PKEY_NAMESPACES, (Collection<String>) null);
+    }
+
     // Extension
 
     @Override
@@ -86,8 +106,8 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     {
         Collection<String> namespaces = getProperty(PKEY_NAMESPACES, (Collection<String>) null);
 
-        if (namespaces == null) {
-            namespaces = new HashSet<String>(namespaces);
+        if (namespaces == null && create) {
+            namespaces = new HashSet<String>();
             putProperty(PKEY_NAMESPACES, namespaces);
         }
 
@@ -128,7 +148,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     @Override
     public boolean isInstalled(String namespace)
     {
-        return isInstalled() && (getNamespaces() == null || getNamespaces().contains(namespace));
+        return isInstalled(this, namespace);
     }
 
     /**

@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,21 +16,29 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package org.xwiki.extension.repository.internal.local;
 
-<extension>
-  <id>installedextensiondependency</id>
-  <version>version</version>
-  <type>type</type>
-  <features>
-    <feature>installedextensiondependency-feature</feature>
-  </features>
-  <dependency>true</dependency>
-  <description>description</description>
-  <author>author</author>
-  <website>http://website</website>
-  <properties>
-    <installed.installed type="boolean">true</installed.installed>
-  </properties>
-</extension>
+import org.w3c.dom.Element;
+
+/**
+ * Serialize and unserialize {@link String} properties.
+ * 
+ * @version $Id$
+ */
+public class StringExtensionPropertySerializer extends AbstractExtensionPropertySerializer<String>
+{
+    /**
+     * Default constructor.
+     */
+    public StringExtensionPropertySerializer()
+    {
+        super(null);
+    }
+
+    @Override
+    public String toValue(Element element)
+    {
+        return element.getTextContent();
+    }
+}
