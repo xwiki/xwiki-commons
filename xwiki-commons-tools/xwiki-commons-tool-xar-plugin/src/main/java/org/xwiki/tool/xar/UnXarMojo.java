@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xpn.xwiki.tool.xar;
+package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,18 +37,8 @@ import org.codehaus.plexus.archiver.ArchiverException;
  * @requiresDependencyResolution compile
  * @threadSafe
  */
-public class UnXarMojo extends AbstractXarMojo
+public class UnXARMojo extends AbstractXARMojo
 {
-    /**
-     * ":".
-     */
-    private static final String TWO_POINTS = ":";
-
-    /**
-     * "...".
-     */
-    private static final String DOTDOTDOT = "...";
-
     /**
      * The groupId of the XAR dependency to expand.
      * 
@@ -81,8 +71,8 @@ public class UnXarMojo extends AbstractXarMojo
         try {
             performUnArchive();
         } catch (Exception e) {
-            throw new MojoExecutionException("Error while expanding the XAR file " + HOOK_OPEN + this.groupId
-                + TWO_POINTS + this.artifactId + HOOK_CLOSE, e);
+            throw new MojoExecutionException(
+                String.format("Error while expanding the XAR file [%s:%s]", this.groupId, this.artifactId), e);
         }
     }
 
@@ -95,13 +85,11 @@ public class UnXarMojo extends AbstractXarMojo
         Artifact resolvedArtifact = null;
 
         getLog().debug(
-            "Searching for an artifact that matches " + HOOK_OPEN + this.groupId + TWO_POINTS + this.artifactId
-                + HOOK_CLOSE + DOTDOTDOT);
+            String.format("Searching for an artifact that matches [%s:%s]...", this.groupId, this.artifactId));
 
         for (Artifact artifact : (Set<Artifact>) this.project.getArtifacts()) {
-            getLog().debug(
-                "Checking artifact " + HOOK_OPEN + artifact.getGroupId() + TWO_POINTS + artifact.getArtifactId()
-                    + TWO_POINTS + artifact.getType() + HOOK_CLOSE + DOTDOTDOT);
+            getLog().debug(String.format("Checking artifact [%s:%s:%s]...",
+                artifact.getGroupId(), artifact.getArtifactId(), artifact.getType()));
 
             if (artifact.getGroupId().equals(this.groupId) && artifact.getArtifactId().equals(this.artifactId)) {
                 resolvedArtifact = artifact;
@@ -110,8 +98,8 @@ public class UnXarMojo extends AbstractXarMojo
         }
 
         if (resolvedArtifact == null) {
-            throw new MojoExecutionException("Artifact " + HOOK_OPEN + this.groupId + TWO_POINTS + this.artifactId
-                + HOOK_CLOSE + " is not a dependency of the project.");
+            throw new MojoExecutionException(String.format("Artifact [%s:%s] is not a dependency of the project.",
+                this.groupId, this.artifactId));
         }
 
         return resolvedArtifact;
@@ -128,10 +116,8 @@ public class UnXarMojo extends AbstractXarMojo
     {
         Artifact artifact = findArtifact();
 
-        getLog().debug("Source XAR = " + HOOK_OPEN + artifact.getFile() + HOOK_CLOSE);
-
-        unpack(artifact.getFile(), this.outputDirectory, "UnXarMojo", true);
-
+        getLog().debug(String.format("Source XAR = [%s]", artifact.getFile()));
+        unpack(artifact.getFile(), this.outputDirectory, "XAR Plugin", true);
         unpackDependentXars(artifact);
     }
 
@@ -145,10 +131,10 @@ public class UnXarMojo extends AbstractXarMojo
         try {
             Set<Artifact> dependencies = resolveArtifactDependencies(artifact);
             for (Artifact dependency : dependencies) {
-                unpack(dependency.getFile(), this.outputDirectory, "UnXarMojo", false);
+                unpack(dependency.getFile(), this.outputDirectory, "XAR Plugin", false);
             }
         } catch (Exception e) {
-            throw new MojoExecutionException("Failed to unpack artifact [" + artifact + "] dependencies", e);
+            throw new MojoExecutionException(String.format("Failed to unpack artifact [%s] dependencies", artifact), e);
         }
     }
 }

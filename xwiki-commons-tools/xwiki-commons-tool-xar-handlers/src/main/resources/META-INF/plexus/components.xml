@@ -24,7 +24,6 @@
 
 <component-set>
   <components>
-
     <component>
       <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
       <role-hint>xar</role-hint>
@@ -38,7 +37,6 @@
         </phases>
       </configuration>
     </component>
-
     <component>
       <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
       <role-hint>xar</role-hint>
@@ -49,7 +47,5 @@
         <packaging>xar</packaging>
       </configuration>
     </component>
-
   </components>
 </component-set>
-

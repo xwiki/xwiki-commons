@@ -136,9 +136,9 @@
         <configuration>
           <configLocation>checkstyle.xml</configLocation>
           <excludes>
-              **/AbstractXarMojo.java,
-              **/UnXarMojo.java,
-              **/XarMojo.java
+              **/AbstractXARMojo.java,
+              **/UnXARMojo.java,
+              **/XARMojo.java
           </excludes>
         </configuration>
         <executions>

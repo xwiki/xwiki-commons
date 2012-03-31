@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xpn.xwiki.tool.xar;
+package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.util.Collection;
@@ -37,11 +37,11 @@ import org.codehaus.plexus.archiver.zip.ZipFile;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 
 /**
- * Unit tests for {@link XarMojo}.
+ * Unit tests for {@link XARMojo}.
  * 
  * @version $Id$
  */
-public class XarMojoTest extends AbstractMojoTestCase
+public class XARMojoTest extends AbstractMojoTestCase
 {
     protected static final String TESTRESSOURCES_PATH = "target/test-classes";
 
@@ -69,7 +69,7 @@ public class XarMojoTest extends AbstractMojoTestCase
      */
     private File tempDir;
 
-    private XarMojo mojo;
+    private XARMojo mojo;
 
     /**
      * Preparing the environment for a test.
@@ -86,12 +86,12 @@ public class XarMojoTest extends AbstractMojoTestCase
         assertTrue("Cannot create a temporary directory at " + this.tempDir.getAbsolutePath(), this.tempDir.mkdirs());
         super.setUp();
 
-        this.mojo = new XarMojo();
+        this.mojo = new XARMojo();
         this.mojo.setLog(new SilentLog());
     }
 
     /**
-     * Test method for {@link com.xpn.xwiki.tool.xar.XarMojo#execute()}. It provides an invalid package.xml and the
+     * Test method for {@link XARMojo#execute()}. It provides an invalid package.xml and the
      * class must throw an exception in order to pass the test.
      * 
      * @throws Exception if the XarMojo class fails to instantiate
@@ -110,7 +110,7 @@ public class XarMojoTest extends AbstractMojoTestCase
     }
 
     /**
-     * Test method for {@link com.xpn.xwiki.tool.xar.XarMojo#execute()}. It provides a valid package.xml and the class
+     * Test method for {@link XARMojo#execute()}. It provides a valid package.xml and the class
      * must complete successful in order to pass the test.
      * 
      * @throws Exception if the XarMojo class fails to instantiate
@@ -121,11 +121,7 @@ public class XarMojoTest extends AbstractMojoTestCase
         setVariableValueToObject(this.mojo, MAVENPROJECT_FIELD, project);
 
         // Testing the plugin's execution
-        try {
-            this.mojo.execute();
-        } catch (MojoExecutionException e) {
-            fail("The execution failed with the following error : " + e.getMessage());
-        }
+        this.mojo.execute();
 
         // Checking whether the generated xar archive contains the right data.
         ZipUnArchiver unarchiver = new ZipUnArchiver(new File(XAR_PATH_VALIDXML));
@@ -133,9 +129,9 @@ public class XarMojoTest extends AbstractMojoTestCase
         ZipFile zip = new ZipFile(XAR_PATH_VALIDXML);
         Enumeration entries = zip.getEntries();
         assertTrue(entries.hasMoreElements());
-        assertEquals(entries.nextElement().toString(), XarMojo.PACKAGE_XML);
+        assertEquals(entries.nextElement().toString(), XARMojo.PACKAGE_XML);
         Collection<String> documentNames =
-            XarMojo.getDocumentNamesFromXML(new File(getPath(TESTRESSOURCES_PATH
+            XARMojo.getDocumentNamesFromXML(new File(getPath(TESTRESSOURCES_PATH
                 + "/validXml/src/main/resources/package.xml")));
         int countEntries = 0;
 
@@ -156,7 +152,7 @@ public class XarMojoTest extends AbstractMojoTestCase
     }
 
     /**
-     * Test method for {@link com.xpn.xwiki.tool.xar.XarMojo#execute()}. It doesn't provide any package.xml and the
+     * Test method for {@link XARMojo#execute()}. It doesn't provide any package.xml and the
      * class must complete successful in order to pass the test.
      * 
      * @throws Exception if the XarMojo class fails to instantiate
@@ -173,18 +169,18 @@ public class XarMojoTest extends AbstractMojoTestCase
 
         // Verify that the zip file contains the generated package.xml file
         ZipFile zip = new ZipFile(XAR_PATH_NOXML);
-        assertNotNull("Package.xml file not found in zip!", zip.getEntry(XarMojo.PACKAGE_XML));
+        assertNotNull("Package.xml file not found in zip!", zip.getEntry(XARMojo.PACKAGE_XML));
 
         // Extract package.xml and extract all the entries one by one and read them as a XWiki Document to verify
         // they're valid.
         ZipUnArchiver unarchiver = new ZipUnArchiver(new File(XAR_PATH_NOXML));
-        unarchiver.extract(XarMojo.PACKAGE_XML, this.tempDir);
-        Collection<String> documentNames = XarMojo.getDocumentNamesFromXML(new File(this.tempDir, XarMojo.PACKAGE_XML));
+        unarchiver.extract(XARMojo.PACKAGE_XML, this.tempDir);
+        Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(this.tempDir, XARMojo.PACKAGE_XML));
         int countEntries = 0;
         Enumeration entries = zip.getEntries();
         while (entries.hasMoreElements()) {
             String entryName = entries.nextElement().toString();
-            if (!entryName.equals(XarMojo.PACKAGE_XML)) {
+            if (!entryName.equals(XARMojo.PACKAGE_XML)) {
                 ++countEntries;
                 unarchiver.extract(entryName, this.tempDir);
 
@@ -295,7 +291,7 @@ public class XarMojoTest extends AbstractMojoTestCase
         build.setDirectory(getPath(TESTRESSOURCES_PATH + "/noXml/target"));
         // Creating a dummy package.xml file under target/classes. The plugin should ignore that and look
         // under resources/ for it and create a new one if it doesn't exist.
-        File dummyPackageXml = new File(build.getOutputDirectory(), XarMojo.PACKAGE_XML);
+        File dummyPackageXml = new File(build.getOutputDirectory(), XARMojo.PACKAGE_XML);
         if (!dummyPackageXml.exists()) {
             dummyPackageXml.createNewFile();
         }

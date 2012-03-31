@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xpn.xwiki.tool.xar;
+package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.util.List;
@@ -46,22 +46,12 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 /**
- * Base class for xar and unxar mojos.
+ * Base class for {@code xar} and {@code unwar} mojos.
  * 
  * @version $Id$
  */
-abstract class AbstractXarMojo extends AbstractMojo
+abstract class AbstractXARMojo extends AbstractMojo
 {
-    /**
-     * Open hook.
-     */
-    protected static final String HOOK_OPEN = "[";
-
-    /**
-     * Close hook.
-     */
-    protected static final String HOOK_CLOSE = "]";
-
     /**
      * The name of the file in the package when to find general informations.
      */
@@ -157,7 +147,7 @@ abstract class AbstractXarMojo extends AbstractMojo
     protected ArtifactResolver resolver;
 
     /**
-     * The target directory where to extract xar pages.
+     * The target directory where to extract XAR pages.
      * 
      * @parameter default-value="${project.build.outputDirectory}"
      * @required
@@ -240,8 +230,7 @@ abstract class AbstractXarMojo extends AbstractMojo
 
             unArchiver.extract();
         } catch (Exception e) {
-            throw new MojoExecutionException("Error unpacking file " + HOOK_OPEN + file + HOOK_CLOSE + " to "
-                + HOOK_OPEN + location + HOOK_CLOSE, e);
+            throw new MojoExecutionException(String.format("Error unpacking file [%s] to [%s]", file, location), e);
         }
     }
 
@@ -251,14 +240,14 @@ abstract class AbstractXarMojo extends AbstractMojo
      * @param artifact the XAR artifact to unpack.
      * @throws MojoExecutionException in case of unpack error
      */
-    protected void unpackXarToOutputDirectory(Artifact artifact) throws MojoExecutionException
+    protected void unpackXARToOutputDirectory(Artifact artifact) throws MojoExecutionException
     {
         if (!this.outputBuildDirectory.exists()) {
             this.outputBuildDirectory.mkdirs();
         }
 
         File file = artifact.getFile();
-        unpack(file, this.outputBuildDirectory, "XarMojo", false);
+        unpack(file, this.outputBuildDirectory, "XAR Plugin", false);
     }
 
     /**

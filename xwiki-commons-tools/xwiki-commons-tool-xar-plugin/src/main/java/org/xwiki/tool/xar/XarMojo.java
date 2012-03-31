@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xpn.xwiki.tool.xar;
+package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,10 +51,10 @@ import org.dom4j.io.XMLWriter;
  * @requiresDependencyResolution compile
  * @threadSafe
  */
-public class XarMojo extends AbstractXarMojo
+public class XARMojo extends AbstractXARMojo
 {
     /**
-     * Indicate if xar dependencies should be included in the produced xar package.
+     * Indicate if XAR dependencies should be included in the produced XAR package.
      * 
      * @parameter expression="${includeDependencies}" default-value="false"
      */
@@ -103,7 +103,7 @@ public class XarMojo extends AbstractXarMojo
             // Unzip dependent XARs on top of this project's XML documents but without overwriting
             // existing files since we want this projet's files to be used if they override a file
             // present in a XAR dependency.
-            unpackDependentXars();
+            unpackDependentXARs();
         }
 
         // If no package.xml can be found at the top level of the current project, generate one
@@ -129,18 +129,18 @@ public class XarMojo extends AbstractXarMojo
     }
 
     /**
-     * Unpack xar dependencies before pack then into it.
+     * Unpack XAR dependencies before pack then into it.
      * 
      * @throws MojoExecutionException error when unpack dependencies.
      */
-    private void unpackDependentXars() throws MojoExecutionException
+    private void unpackDependentXARs() throws MojoExecutionException
     {
         Set<Artifact> artifacts = this.project.getArtifacts();
         if (artifacts != null) {
             for (Artifact artifact : artifacts) {
                 if (!artifact.isOptional()) {
                     if ("xar".equals(artifact.getType())) {
-                        unpackXarToOutputDirectory(artifact);
+                        unpackXARToOutputDirectory(artifact);
                     }
                 }
             }
@@ -267,9 +267,8 @@ public class XarMojo extends AbstractXarMojo
             doc = new XWikiDocument();
             doc.fromXML(file);
         } catch (Exception e) {
-            getLog().warn(
-                "Failed to parse [" + file.getAbsolutePath() + "], skipping it. " + "The error was [" + e.getMessage()
-                    + "]", e);
+            getLog().warn(String.format("Failed to parse [%s], skipping it. The error was [%s]",
+                file.getAbsolutePath(), e.getMessage()));
         }
 
         return doc;
@@ -339,11 +338,11 @@ public class XarMojo extends AbstractXarMojo
     private void addFilesToArchive(ZipArchiver archiver, File sourceDir, File packageXml) throws Exception
     {
         Collection<String> documentNames;
-        getLog().info("Using the existing package.xml descriptor at [" + packageXml.getPath() + "]");
+        getLog().info(String.format("Using the existing package.xml descriptor at [%s]", packageXml.getPath()));
         try {
             documentNames = getDocumentNamesFromXML(packageXml);
         } catch (Exception e) {
-            getLog().error("The existing [" + PACKAGE_XML + "] is invalid.");
+            getLog().error(String.format("The existing [%s] is invalid.", PACKAGE_XML));
             throw e;
         }
 
