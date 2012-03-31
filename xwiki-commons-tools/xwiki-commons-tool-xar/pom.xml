@@ -26,18 +26,17 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
+    <artifactId>xwiki-commons-tools</artifactId>
     <version>4.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-tools</artifactId>
-  <name>XWiki Commons - Tools - Parent POM</name>
+  <artifactId>xwiki-commons-tool-xar</artifactId>
+  <name>XWiki Commons - Tools - XAR Tools</name>
   <packaging>pom</packaging>
-  <description>XWiki Commons - Tools - Parent POM</description>
+  <description>XWiki Commons - Tools - XAR Tools</description>
   <modules>
     <!-- Sorted Alphabetically -->
-    <module>xwiki-commons-tool-enforcer-dependencies</module>
-    <module>xwiki-commons-tool-license-resources</module>
-    <module>xwiki-commons-tool-validation-resources</module>
-    <module>xwiki-commons-tool-xar</module>
+    <module>xwiki-commons-tool-xar-handlers</module>
+    <module>xwiki-commons-tool-xar-integration-tests</module>
+    <module>xwiki-commons-tool-xar-plugin</module>
   </modules>
 </project>

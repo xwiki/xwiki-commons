@@ -24,20 +24,25 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
-    <version>4.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-tools</artifactId>
-  <name>XWiki Commons - Tools - Parent POM</name>
+  <groupId>org.xwiki.commons</groupId>
+  <artifactId>xwiki-commons-tool-xar-plugin-test</artifactId>
+  <version>1.0</version>
+  <name>Test for XAR Plugin</name>
   <packaging>pom</packaging>
-  <description>XWiki Commons - Tools - Parent POM</description>
-  <modules>
-    <!-- Sorted Alphabetically -->
-    <module>xwiki-commons-tool-enforcer-dependencies</module>
-    <module>xwiki-commons-tool-license-resources</module>
-    <module>xwiki-commons-tool-validation-resources</module>
-    <module>xwiki-commons-tool-xar</module>
-  </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
+        <version>4.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
