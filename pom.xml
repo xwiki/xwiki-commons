@@ -57,7 +57,7 @@
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>3.5</xwiki.clirr.previous.version>
 
-    <!-- By default Checkstyle, Clirr and Enforcer plugins are on -->
+    <!-- By default Checkstyle, CLIRR and Enforcer plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.clirr.skip>false</xwiki.clirr.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
@@ -887,7 +887,6 @@ mmmm]]></license>
         </plugins>
       </build>
     </profile>
-    <!-- Warning: Clover 3.0.2 doesn't seem to work with Maven 3.0. It works with Maven 2.2.x though -->
     <!-- To generate Clover reports, see http://dev.xwiki.org/xwiki/bin/view/Community/Testing#HTestCoverage -->
     <profile>
       <id>clover</id>
@@ -900,9 +899,7 @@ mmmm]]></license>
         <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
       </properties>
     </profile>
-    <!-- Profile for m2eclipse which is used for:
-         1) Tell m2eclipse to use a different output directory
-    -->
+    <!-- Profile for m2eclipse which is used to tell m2eclipse to use a different output directory -->
     <profile>
       <id>m2e</id>
       <properties>

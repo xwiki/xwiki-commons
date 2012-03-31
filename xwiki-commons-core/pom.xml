@@ -106,53 +106,32 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>clirr-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/internal/**</exclude>
+            <exclude>**/test/**</exclude>
+            <!-- Remove the following excludes after we release the current version as final -->
+            <exclude>org/xwiki/component/manager/ComponentManager</exclude> <!-- New methods -->
+            <exclude>org/xwiki/component/descriptor/ComponentRole</exclude> <!-- New methods -->
+            <exclude>org/xwiki/component/annotation/DefaultComponentDependencyFactory</exclude> <!-- Removed method that should have been private -->
+            <!-- START: Removed Deprecations -->
+            <exclude>org/xwiki/component/annotation/Requirement</exclude>
+            <!-- STOP: Removed Deprecations -->
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>
-    <!-- We only build legacy modules in the "ci" or "release" profiles since they're not needed when developing
-         day to day and it speeds up the build -->
+    <!-- Profile to build Legacy modules -->
     <profile>
-      <id>ci</id>
-      <activation>
-        <!-- This property is automatically defined by the Maven release plugin when executing
-             a release. Thus this profile will be automatically enabled when releasing -->
-        <property>
-          <name>performRelease</name>
-        </property>
-      </activation>
+      <id>legacy</id>
       <modules>
         <module>xwiki-commons-legacy</module>
       </modules>
-    </profile>
-    <profile>
-      <!-- We run Clirr in a profile since Cobertura interferes with Clirr and thus we run
-           Cobertura instrumentation in a special profile (when the Cobertura profile is
-           executed, the Clirr one isn't). -->
-      <id>clirr</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>clirr-maven-plugin</artifactId>
-            <configuration>
-              <excludes>
-                <exclude>**/internal/**</exclude>
-                <exclude>**/test/**</exclude>
-                <!-- Remove the following excludes after we release 4.0 -->
-                <exclude>org/xwiki/component/manager/ComponentManager</exclude> <!-- New methods -->
-                <exclude>org/xwiki/component/descriptor/ComponentRole</exclude> <!-- New methods -->
-                <exclude>org/xwiki/component/annotation/DefaultComponentDependencyFactory</exclude> <!-- Removed method that should have been private -->
-                <!-- START: Removed Deprecations -->
-                <exclude>org/xwiki/component/annotation/Requirement</exclude>
-                <!-- STOP: Removed Deprecations -->
-              </excludes>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
   </profiles>
 </project>
