@@ -4,7 +4,7 @@
 <web>Space</web>
 <name>WebHome</name>
 <language></language>
-<defaultLanguage></defaultLanguage>
+<defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
 <parent>Main.WebHome</parent>
 <creator></creator>
@@ -19,8 +19,8 @@
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment></comment>
-<minorEdit>false</minorEdit>
+<comment>comment</comment>
+<minorEdit>true</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <content>line 1

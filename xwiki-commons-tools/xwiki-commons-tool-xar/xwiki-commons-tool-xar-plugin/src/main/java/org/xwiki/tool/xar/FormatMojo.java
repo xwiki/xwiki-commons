@@ -21,11 +21,11 @@ package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
@@ -68,6 +68,16 @@ public class FormatMojo extends AbstractVerifyMojo
         node.setText(AUTHOR);
         node = domdoc.selectSingleNode("xwikidoc/version");
         node.setText(VERSION);
+        node = domdoc.selectSingleNode("xwikidoc/minorEdit");
+        node.setText("false");
+
+        // Remove any content of the <defaultLanguage> element
+        Element element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
+        ((Node) element.content().get(0)).detach();
+
+        // Remove any content of the <comment> element
+        element = (Element) domdoc.selectSingleNode("xwikidoc/comment");
+        ((Node) element.content().get(0)).detach();
 
         OutputFormat format = new OutputFormat(" ", true, "UTF-8");
         format.setTrimText(false);
