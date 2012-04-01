@@ -20,11 +20,9 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -44,57 +42,58 @@ import org.apache.maven.plugin.MojoFailureException;
  * @requiresDependencyResolution compile
  * @threadSafe
  */
-public class VerifyMojo extends AbstractXARMojo
+public class VerifyMojo extends AbstractVerifyMojo
 {
-    private static final String AUTHOR = "xwiki:XWiki.Admin";
-
-    private static final String VERSION = "1.1";
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        // Find all files in the resources dir
-        File resourcesDir = getResourcesDirectory();
-
         getLog().info("Checking validity of XAR XML files...");
 
-        // Filter package.xml and files not ending with .xml
-        Collection<File> files = FileUtils.listFiles(resourcesDir,
-            FileFilterUtils.and(
-                FileFilterUtils.suffixFileFilter(".xml"),
-                FileFilterUtils.notFileFilter(FileFilterUtils.nameFileFilter(PACKAGE_XML))),
-            TrueFileFilter.INSTANCE);
-
-        for (File file : files) {
+        boolean hasErrors = false;
+        for (File file : getXARXMLFiles()) {
             String parentName = file.getParentFile().getName();
             XWikiDocument xdoc = getDocFromXML(file);
+            List<String> errors = new ArrayList<String>();
+
             // Verification 1: Verify authors
-            verifyAuthor(xdoc.getAuthor(), String.format("[%s/%s]: Author must be [%s] but was [%s]",
-                parentName, file.getName(), AUTHOR, xdoc.getAuthor()));
-            verifyAuthor(xdoc.getContentAuthor(), String.format("[%s/%s]: Content Author must be [%s] but was [%s]",
-                parentName, file.getName(), AUTHOR, xdoc.getContentAuthor()));
-            verifyAuthor(xdoc.getCreator(), String.format("[%s/%s]: Creator must be [%s] but was [%s]",
-                parentName, file.getName(), AUTHOR, xdoc.getCreator()));
+            verifyAuthor(errors, xdoc.getAuthor(), String.format("Author must be [%s] but was [%s]",
+                AUTHOR, xdoc.getAuthor()));
+            verifyAuthor(errors, xdoc.getContentAuthor(),
+                String.format("Content Author must be [%s] but was [%s]",
+                    AUTHOR, xdoc.getContentAuthor()));
+            verifyAuthor(errors, xdoc.getCreator(), String.format("Creator must be [%s] but was [%s]",
+                AUTHOR, xdoc.getCreator()));
             // Verification 2: Check for orphans, except for Main.WebHome since it's the topmost document
             if (StringUtils.isEmpty(xdoc.getParent())
                 && !(xdoc.getSpace().equals("Main") && xdoc.getName().equals("WebHome")))
             {
-                throw new MojoFailureException(String.format("[%s/%s]: Parent must not be empty",
-                    parentName, file.getName()));
+                errors.add("Parent must not be empty");
             }
             // Verification 3: Check for version
             if (!xdoc.getVersion().equals(VERSION)) {
-                throw new MojoFailureException(String.format("[%s/%s]: Version must be [%s] but was [%s]",
-                    parentName, file.getName(), VERSION, xdoc.getVersion()));
+                errors.add(String.format("Version must be [%s] but was [%s]", VERSION, xdoc.getVersion()));
             }
-            getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
+
+            if (errors.isEmpty()) {
+                getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
+            } else {
+                getLog().info(String.format("  Verifying [%s/%s]... errors", parentName, file.getName()));
+                for (String error : errors) {
+                    getLog().info(String.format("  - %s", error));
+                }
+                hasErrors = true;
+            }
+        }
+
+        if (hasErrors) {
+            throw new MojoFailureException("There are errors in the XAR XML files!");
         }
     }
 
-    private void verifyAuthor(String author, String message) throws MojoFailureException
+    private void verifyAuthor(List<String> errors, String author, String message)
     {
         if (!author.equals(AUTHOR)) {
-            throw new MojoFailureException(message);
+            errors.add(message);
         }
     }
 }

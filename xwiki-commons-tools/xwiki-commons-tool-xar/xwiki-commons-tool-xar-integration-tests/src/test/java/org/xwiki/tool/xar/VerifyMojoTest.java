@@ -40,35 +40,45 @@ public class VerifyMojoTest
     public void executeWithWrongAuthor() throws Exception
     {
         verifyExecution("/wrongAuthor",
-            "[Space/WebHome.xml]: Author must be [xwiki:XWiki.Admin] but was [wrongAuthor]");
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Author must be [xwiki:XWiki.Admin] but was [wrongAuthor]",
+            "There are errors in the XAR XML files!");
     }
 
     @Test
     public void executeWithWrongContentAuthor() throws Exception
     {
         verifyExecution("/wrongContentAuthor",
-            "[Space/WebHome.xml]: Content Author must be [xwiki:XWiki.Admin] but was [wrongContentAuthor]");
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Content Author must be [xwiki:XWiki.Admin] but was [wrongContentAuthor]",
+            "There are errors in the XAR XML files!");
     }
 
     @Test
     public void executeWithWrongCreator() throws Exception
     {
         verifyExecution("/wrongCreator",
-            "[Space/WebHome.xml]: Creator must be [xwiki:XWiki.Admin] but was [wrongCreator]");
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Creator must be [xwiki:XWiki.Admin] but was [wrongCreator]",
+            "There are errors in the XAR XML files!");
     }
 
     @Test
     public void executeWithEmptyParent() throws Exception
     {
         verifyExecution("/emptyParent",
-            "[Space/WebHome.xml]: Parent must not be empty");
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Parent must not be empty",
+            "There are errors in the XAR XML files!");
     }
 
     @Test
     public void executeWithWrongVersion() throws Exception
     {
         verifyExecution("/wrongVersion",
-            "[Space/WebHome.xml]: Version must be [1.1] but was [1.2]");
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Version must be [1.1] but was [1.2]",
+            "There are errors in the XAR XML files!");
     }
 
     @Test
@@ -82,7 +92,7 @@ public class VerifyMojoTest
         verifier.verifyErrorFreeLog();
     }
 
-    private void verifyExecution(String testDirectory, String message) throws Exception
+    private void verifyExecution(String testDirectory, String... messages) throws Exception
     {
         File testDir = ResourceExtractor.simpleExtractResources(getClass(), testDirectory);
 
@@ -94,7 +104,9 @@ public class VerifyMojoTest
             verifier.verifyErrorFreeLog();
             Assert.fail("An error should have been thrown in the build");
         } catch (VerificationException expected) {
-            Assert.assertTrue(expected.getMessage().contains(message));
+            for (String message : messages) {
+                Assert.assertTrue(expected.getMessage(), expected.getMessage().contains(message));
+            }
         }
     }
 }

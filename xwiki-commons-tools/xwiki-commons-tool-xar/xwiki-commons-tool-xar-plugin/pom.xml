@@ -43,6 +43,13 @@
       <artifactId>dom4j</artifactId>
       <version>1.6.1</version>
     </dependency>
+    <!-- Required by the Format mojo to write XML files -->
+    <dependency>
+      <artifactId>jaxen</artifactId>
+      <groupId>jaxen</groupId>
+      <version>1.1.1</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -77,6 +84,7 @@
       <artifactId>maven-model</artifactId>
       <version>${mavenVersion}</version>
     </dependency>
+
     <!-- plexus -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -133,6 +141,13 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <configuration>
+          <goalPrefix>xar</goalPrefix>
+        </configuration>
+      </plugin>
+      <plugin>
         <!-- Note: We duplicate the configuration located in xwiki-commons-pom since commons tools use xwiki-commons
              as their parent pom and not xwiki-commons-pom. This is to avoid a circular dependency since
              xwiki-commons-pom uses the xwiki-commons-tool-validation-resources artifact. -->
@@ -151,7 +166,8 @@
               **/AbstractXARMojo.java,
               **/UnXARMojo.java,
               **/XARMojo.java,
-              **/VerifyMojo.java
+              **/VerifyMojo.java,
+              **/FormatMojo.java
           </excludes>
         </configuration>
         <executions>
