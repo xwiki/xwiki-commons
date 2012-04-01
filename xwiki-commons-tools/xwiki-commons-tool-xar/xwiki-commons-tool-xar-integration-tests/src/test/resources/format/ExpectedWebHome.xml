@@ -23,5 +23,9 @@
  <minorEdit>false</minorEdit>
  <syntaxId>xwiki/2.0</syntaxId>
  <hidden>false</hidden>
- <content/>
+ <content>line 1
+  line 2
+  line with unicode chars: Вики функционирует
+  line 3
+</content>
 </xwikidoc>
