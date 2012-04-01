@@ -79,6 +79,11 @@ public class XWikiDocument
     private String parent;
 
     /**
+     * @see #getComment()
+     */
+    private String comment;
+
+    /**
      * Parse XML file to extract document information.
      * 
      * @param file the xml file
@@ -99,6 +104,7 @@ public class XWikiDocument
         this.contentAuthor = readElement(rootElement, "contentAuthor");
         this.version = readElement(rootElement, "version");
         this.parent = readElement(rootElement, "parent");
+        this.comment = readElement(rootElement, "comment");
     }
 
     /**
@@ -220,6 +226,14 @@ public class XWikiDocument
     public String getParent()
     {
         return this.parent;
+    }
+
+    /**
+     * @return the comment of the last save
+     */
+    public String getComment()
+    {
+        return this.comment;
     }
 
     /**

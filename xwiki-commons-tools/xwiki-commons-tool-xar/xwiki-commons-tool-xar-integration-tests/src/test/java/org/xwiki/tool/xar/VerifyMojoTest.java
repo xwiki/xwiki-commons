@@ -82,6 +82,15 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithNotEmptyComment() throws Exception
+    {
+        verifyExecution("/notEmptyComment",
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Comment must be empty but was [notempty]",
+            "There are errors in the XAR XML files!");
+    }
+
+    @Test
     public void executeOk() throws Exception
     {
         File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/allOk");

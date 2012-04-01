@@ -73,6 +73,10 @@ public class VerifyMojo extends AbstractVerifyMojo
             if (!xdoc.getVersion().equals(VERSION)) {
                 errors.add(String.format("Version must be [%s] but was [%s]", VERSION, xdoc.getVersion()));
             }
+            // Verification 4: Check for empty comment
+            if (xdoc.getComment().length() != 0) {
+                errors.add(String.format("Comment must be empty but was [%s]", xdoc.getComment()));
+            }
 
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
