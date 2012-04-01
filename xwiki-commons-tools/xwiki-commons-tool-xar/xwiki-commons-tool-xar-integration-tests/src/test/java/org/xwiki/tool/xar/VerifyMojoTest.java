@@ -100,6 +100,15 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithNotEmptyDefaultLanguage() throws Exception
+    {
+        verifyExecution("/notEmptyDefaultLanguage",
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Default Language must be empty but was [en]",
+            "There are errors in the XAR XML files!");
+    }
+
+    @Test
     public void executeOk() throws Exception
     {
         File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/allOk");

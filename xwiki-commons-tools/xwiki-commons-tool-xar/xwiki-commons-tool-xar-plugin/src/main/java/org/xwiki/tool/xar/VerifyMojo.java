@@ -81,6 +81,10 @@ public class VerifyMojo extends AbstractVerifyMojo
             if (!xdoc.getMinorEdit().equals("false")) {
                 errors.add(String.format("Minor edit must always be [false] but was [%s]", xdoc.getMinorEdit()));
             }
+            // Verification 6: Check that default language is empty
+            if (xdoc.getDefaultLanguage().length() != 0) {
+                errors.add(String.format("Default Language must be empty but was [%s]", xdoc.getDefaultLanguage()));
+            }
 
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
