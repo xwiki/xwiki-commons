@@ -50,7 +50,7 @@ public class FormatMojo extends AbstractVerifyMojo
             try {
                 format(file);
             } catch (Exception e) {
-                throw new MojoExecutionException(String.format("Failed to format file [%s]", file));
+                throw new MojoExecutionException(String.format("Failed to format file [%s]", file), e);
             }
         }
     }
@@ -73,11 +73,11 @@ public class FormatMojo extends AbstractVerifyMojo
 
         // Remove any content of the <defaultLanguage> element
         Element element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
-        ((Node) element.content().get(0)).detach();
+        removeContent(element);
 
         // Remove any content of the <comment> element
         element = (Element) domdoc.selectSingleNode("xwikidoc/comment");
-        ((Node) element.content().get(0)).detach();
+        removeContent(element);
 
         OutputFormat format = new OutputFormat(" ", true, "UTF-8");
         format.setTrimText(false);
@@ -88,5 +88,12 @@ public class FormatMojo extends AbstractVerifyMojo
 
         String parentName = file.getParentFile().getName();
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
+    }
+
+    private void removeContent(Element element)
+    {
+        if (element.hasContent()) {
+            ((Node) element.content().get(0)).detach();
+        }
     }
 }
