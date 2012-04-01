@@ -19,7 +19,7 @@
  */
 package org.xwiki.context;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Allows setting/retrieving the {@link ExecutionContext}.
@@ -27,7 +27,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 1.5M2
  */
-@ComponentRole
+@Role
 public interface Execution
 {
     /**

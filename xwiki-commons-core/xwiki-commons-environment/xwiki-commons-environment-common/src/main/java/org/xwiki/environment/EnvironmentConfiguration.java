@@ -21,7 +21,7 @@ package org.xwiki.environment;
 
 import java.io.File;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Configuration properties for the Environment module.
@@ -29,7 +29,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 3.5M1
  */
-@ComponentRole
+@Role
 public interface EnvironmentConfiguration
 {
     /**

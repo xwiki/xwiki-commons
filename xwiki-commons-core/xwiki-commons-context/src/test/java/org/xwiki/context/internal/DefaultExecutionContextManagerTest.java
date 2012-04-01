@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextInitializer;
-
-import junit.framework.TestCase;
 
 /**
  * Unit tests for {@link ExecutionContext}.
@@ -37,6 +37,7 @@ import junit.framework.TestCase;
  * @version $Id$
  * @since 1.8RC3
  */
+@SuppressWarnings("unchecked")
 public class DefaultExecutionContextManagerTest extends TestCase
 {
     /**

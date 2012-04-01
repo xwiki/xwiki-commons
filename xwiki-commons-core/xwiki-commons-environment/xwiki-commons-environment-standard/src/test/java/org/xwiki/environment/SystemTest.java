@@ -40,14 +40,14 @@ public class SystemTest
     {
         ComponentManager componentManager = System.initialize();
         Assert.assertNotNull(componentManager);
-        
-        Environment environment = componentManager.lookup(Environment.class);
+
+        Environment environment = componentManager.lookupComponent(Environment.class);
 
         // Capture logs so that they don't leak in the test console
         ReflectionUtils.setFieldValue(environment, "logger", NOPLogger.NOP_LOGGER);
 
         // Verify that the temporary directory is java.io.tmpdir
-        Assert.assertEquals(new File(java.lang.System.getProperty("java.io.tmpdir")), 
+        Assert.assertEquals(new File(java.lang.System.getProperty("java.io.tmpdir")),
             environment.getTemporaryDirectory());
 
         // Verify that the Permanent directory is java.io.tmpdir
@@ -65,10 +65,10 @@ public class SystemTest
         ComponentManager componentManager = System.initialize(permanentDirectory, resourceDirectory,
             temporaryDirectory);
         Assert.assertNotNull(componentManager);
-        
-        Environment environment = componentManager.lookup(Environment.class);
-        
-        // Verify the temporary directory 
+
+        Environment environment = componentManager.lookupComponent(Environment.class);
+
+        // Verify the temporary directory
         Assert.assertEquals(temporaryDirectory, environment.getTemporaryDirectory());
 
         // Verify the Permanent directory

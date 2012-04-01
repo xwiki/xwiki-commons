@@ -19,9 +19,9 @@
  */
 package org.xwiki.context;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
-@ComponentRole
+@Role
 public interface ExecutionContextInitializer
 {
     void initialize(ExecutionContext context) throws ExecutionContextException;

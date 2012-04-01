@@ -55,9 +55,9 @@ public class StandardEnvironmentTest
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.initialize(getClass().getClassLoader());
-        this.environment = (StandardEnvironment) ecm.lookup(Environment.class);
+        this.environment = (StandardEnvironment) ecm.lookupComponent(Environment.class);
     }
-    
+
     @Test
     public void testGetResourceWhenResourceDirNotSet()
     {
@@ -99,12 +99,12 @@ public class StandardEnvironmentTest
         this.environment.setPermanentDirectory(permanentDirectory);
         Assert.assertEquals(permanentDirectory, this.environment.getPermanentDirectory());
     }
-    
+
     @Test
     public void testGetPermanentDirectoryWhenNotSet()
     {
         final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-        
+
         // Also verify that we log a warning!
         final Logger logger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{
@@ -115,7 +115,7 @@ public class StandardEnvironmentTest
 
         Assert.assertEquals(tmpDir, this.environment.getPermanentDirectory());
     }
-    
+
     @Test
     public void testGetTemporaryDirectory()
     {

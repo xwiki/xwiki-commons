@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Abstraction that represents an Environment (Java SE, Servlet, Portlet, etc) and provides API to access
@@ -32,17 +32,17 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 3.5M1
  */
-@ComponentRole
+@Role
 public interface Environment
 {
     /**
-     * Gets the directory for storing temporary data. The content of this directory may be deleted across restarts
-     * and thus is not a safe place to store permanent/important data.
-     *
+     * Gets the directory for storing temporary data. The content of this directory may be deleted across restarts and
+     * thus is not a safe place to store permanent/important data.
+     * 
      * @return a {@link File} object pointing to a directory that the application can use for storing temporary files
      */
     File getTemporaryDirectory();
-    
+
     /**
      * Gets the root directory of a location for storing persisting data. Contrary to the Temporary Directory the
      * content of this directory is guaranteed to persist across time.

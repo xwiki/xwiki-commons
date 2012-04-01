@@ -19,14 +19,14 @@
  */
 package org.xwiki.context;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Provides various services for manipulating an {@link ExecutionContext}.
  * 
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface ExecutionContextManager
 {
     /**

@@ -21,13 +21,13 @@ package org.xwiki.configuration;
 
 import java.util.List;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * @version $Id$
  * @since 1.6M1
  */
-@ComponentRole
+@Role
 public interface ConfigurationSource
 {
     /**

@@ -126,7 +126,7 @@ public final class System
         // Step 2: Initialize Environment
         StandardEnvironment environment;
         try {
-            environment = (StandardEnvironment) ecm.lookup(Environment.class);
+            environment = (StandardEnvironment) ecm.lookupComponent(Environment.class);
         } catch (ComponentLookupException e) {
             throw new RuntimeException("Failed to find Standard Environment", e);
         }
