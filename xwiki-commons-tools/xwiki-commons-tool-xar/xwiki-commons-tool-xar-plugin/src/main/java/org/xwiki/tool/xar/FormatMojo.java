@@ -81,6 +81,7 @@ public class FormatMojo extends AbstractVerifyMojo
 
         OutputFormat format = new OutputFormat(" ", true, "UTF-8");
         format.setTrimText(false);
+        format.setNewlines(false);
 
         XMLWriter writer = new XMLWriter(new FileOutputStream(file), format);
         writer.write(domdoc);
