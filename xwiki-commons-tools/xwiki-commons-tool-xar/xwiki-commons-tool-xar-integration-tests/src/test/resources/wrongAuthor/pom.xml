@@ -34,7 +34,7 @@
       <plugin>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-        <version>4.0-SNAPSHOT</version>
+        <version>@project.version@</version>
         <executions>
           <execution>
             <goals>

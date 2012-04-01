@@ -59,6 +59,13 @@
     </dependency>
   </dependencies>
   <build>
+    <!-- Filter test pom.xml so that they use the same version as the current project -->
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
     <plugins>
       <!-- Force compilation of tests as the packaging being pom tests won't be compiled
            with the default pom lifecycle -->
