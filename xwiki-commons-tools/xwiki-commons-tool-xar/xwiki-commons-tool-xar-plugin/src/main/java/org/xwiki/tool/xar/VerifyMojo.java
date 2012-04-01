@@ -58,28 +58,36 @@ public class VerifyMojo extends AbstractXARMojo
 
         getLog().info("Checking validity of XAR XML files...");
 
-        Collection<File> files = FileUtils.listFiles(resourcesDir, FileFilterUtils.and(
-            FileFilterUtils.suffixFileFilter(".xml"),
-            FileFilterUtils.notFileFilter(FileFilterUtils.nameFileFilter(PACKAGE_XML))), TrueFileFilter.INSTANCE);
+        // Filter package.xml and files not ending with .xml
+        Collection<File> files = FileUtils.listFiles(resourcesDir,
+            FileFilterUtils.and(
+                FileFilterUtils.suffixFileFilter(".xml"),
+                FileFilterUtils.notFileFilter(FileFilterUtils.nameFileFilter(PACKAGE_XML))),
+            TrueFileFilter.INSTANCE);
+
         for (File file : files) {
+            String parentName = file.getParentFile().getName();
             XWikiDocument xdoc = getDocFromXML(file);
             // Verification 1: Verify authors
-            verifyAuthor(xdoc.getAuthor(), String.format("[%s]: Author must be [%s] but was [%s]",
-                file.getName(), AUTHOR, xdoc.getAuthor()));
-            verifyAuthor(xdoc.getContentAuthor(), String.format("[%s]: Content Author must be [%s] but was [%s]",
-                file.getName(), AUTHOR, xdoc.getContentAuthor()));
-            verifyAuthor(xdoc.getCreator(), String.format("[%s]: Creator must be [%s] but was [%s]",
-                file.getName(), AUTHOR, xdoc.getCreator()));
-            // Verification 2: Check for orphans
-            if (StringUtils.isEmpty(xdoc.getParent())) {
-                throw new MojoFailureException(String.format("[%s]: Parent must not be empty", file.getName()));
+            verifyAuthor(xdoc.getAuthor(), String.format("[%s/%s]: Author must be [%s] but was [%s]",
+                parentName, file.getName(), AUTHOR, xdoc.getAuthor()));
+            verifyAuthor(xdoc.getContentAuthor(), String.format("[%s/%s]: Content Author must be [%s] but was [%s]",
+                parentName, file.getName(), AUTHOR, xdoc.getContentAuthor()));
+            verifyAuthor(xdoc.getCreator(), String.format("[%s/%s]: Creator must be [%s] but was [%s]",
+                parentName, file.getName(), AUTHOR, xdoc.getCreator()));
+            // Verification 2: Check for orphans, except for Main.WebHome since it's the topmost document
+            if (StringUtils.isEmpty(xdoc.getParent())
+                && !(xdoc.getSpace().equals("Main") && xdoc.getName().equals("WebHome")))
+            {
+                throw new MojoFailureException(String.format("[%s/%s]: Parent must not be empty",
+                    parentName, file.getName()));
             }
             // Verification 3: Check for version
             if (!xdoc.getVersion().equals(VERSION)) {
-                throw new MojoFailureException(String.format("[%s]: Version must be [%s] but was [%s]",
-                    file.getName(), VERSION, xdoc.getVersion()));
+                throw new MojoFailureException(String.format("[%s/%s]: Version must be [%s] but was [%s]",
+                    parentName, file.getName(), VERSION, xdoc.getVersion()));
             }
-            getLog().info(String.format("  Verifying [%s]... ok", file.getName()));
+            getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
         }
     }
 

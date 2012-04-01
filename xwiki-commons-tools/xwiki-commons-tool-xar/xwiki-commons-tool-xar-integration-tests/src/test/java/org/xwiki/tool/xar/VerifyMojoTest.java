@@ -40,35 +40,35 @@ public class VerifyMojoTest
     public void executeWithWrongAuthor() throws Exception
     {
         verifyExecution("/wrongAuthor",
-            "[WebHome.xml]: Author must be [xwiki:XWiki.Admin] but was [wrongAuthor]");
+            "[Space/WebHome.xml]: Author must be [xwiki:XWiki.Admin] but was [wrongAuthor]");
     }
 
     @Test
     public void executeWithWrongContentAuthor() throws Exception
     {
         verifyExecution("/wrongContentAuthor",
-            "[WebHome.xml]: Content Author must be [xwiki:XWiki.Admin] but was [wrongContentAuthor]");
+            "[Space/WebHome.xml]: Content Author must be [xwiki:XWiki.Admin] but was [wrongContentAuthor]");
     }
 
     @Test
     public void executeWithWrongCreator() throws Exception
     {
         verifyExecution("/wrongCreator",
-            "[WebHome.xml]: Creator must be [xwiki:XWiki.Admin] but was [wrongCreator]");
+            "[Space/WebHome.xml]: Creator must be [xwiki:XWiki.Admin] but was [wrongCreator]");
     }
 
     @Test
     public void executeWithEmptyParent() throws Exception
     {
         verifyExecution("/emptyParent",
-            "[WebHome.xml]: Parent must not be empty");
+            "[Space/WebHome.xml]: Parent must not be empty");
     }
 
     @Test
     public void executeWithWrongVersion() throws Exception
     {
         verifyExecution("/wrongVersion",
-            "[WebHome.xml]: Version must be [1.1] but was [1.2]");
+            "[Space/WebHome.xml]: Version must be [1.1] but was [1.2]");
     }
 
     @Test
