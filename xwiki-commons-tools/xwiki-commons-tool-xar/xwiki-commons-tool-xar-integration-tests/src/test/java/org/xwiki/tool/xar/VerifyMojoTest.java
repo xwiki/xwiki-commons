@@ -91,6 +91,15 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithWrongMinorEdit() throws Exception
+    {
+        verifyExecution("/wrongMinorEdit",
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Minor edit must always be [false] but was [true]",
+            "There are errors in the XAR XML files!");
+    }
+
+    @Test
     public void executeOk() throws Exception
     {
         File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/allOk");

@@ -77,6 +77,10 @@ public class VerifyMojo extends AbstractVerifyMojo
             if (xdoc.getComment().length() != 0) {
                 errors.add(String.format("Comment must be empty but was [%s]", xdoc.getComment()));
             }
+            // Verification 5: Check for minor edit is always "false"
+            if (!xdoc.getMinorEdit().equals("false")) {
+                errors.add(String.format("Minor edit must always be [false] but was [%s]", xdoc.getMinorEdit()));
+            }
 
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));

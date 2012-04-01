@@ -84,6 +84,11 @@ public class XWikiDocument
     private String comment;
 
     /**
+     * @see #getMinorEdit()
+     */
+    private String minorEdit;
+
+    /**
      * Parse XML file to extract document information.
      * 
      * @param file the xml file
@@ -105,6 +110,7 @@ public class XWikiDocument
         this.version = readElement(rootElement, "version");
         this.parent = readElement(rootElement, "parent");
         this.comment = readElement(rootElement, "comment");
+        this.minorEdit = readElement(rootElement, "minorEdit");
     }
 
     /**
@@ -234,6 +240,14 @@ public class XWikiDocument
     public String getComment()
     {
         return this.comment;
+    }
+
+    /**
+     * @return the minor edit value ("true" or "false")
+     */
+    public String getMinorEdit()
+    {
+        return this.minorEdit;
     }
 
     /**
