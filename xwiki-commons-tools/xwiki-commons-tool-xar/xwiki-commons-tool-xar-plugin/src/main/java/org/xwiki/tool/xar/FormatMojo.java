@@ -20,6 +20,7 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -70,9 +71,8 @@ public class FormatMojo extends AbstractVerifyMojo
 
         OutputFormat format = new OutputFormat(" ", true, "UTF-8");
         format.setTrimText(false);
-        format.setExpandEmptyElements(true);
 
-        XMLWriter writer = new XMLWriter(new FileWriter(file), format);
+        XMLWriter writer = new XMLWriter(new FileOutputStream(file), format);
         writer.write(domdoc);
         writer.close();
 
