@@ -109,6 +109,15 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithWrongEncoding() throws Exception
+    {
+        verifyExecution("/wrongEncoding",
+            "Verifying [Space/WebHome.xml]... errors",
+            "- Encoding must be [UTF-8] but was [ISO-8859-1]",
+            "There are errors in the XAR XML files!");
+    }
+
+    @Test
     public void executeOk() throws Exception
     {
         File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/allOk");

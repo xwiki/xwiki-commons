@@ -55,7 +55,11 @@ public class VerifyMojo extends AbstractVerifyMojo
             XWikiDocument xdoc = getDocFromXML(file);
             List<String> errors = new ArrayList<String>();
 
-            // Verification 1: Verify authors
+            // Verification 1: Verify Encoding is UTF8
+            if (!xdoc.getEncoding().equals("UTF-8")) {
+                errors.add(String.format("Encoding must be [UTF-8] but was [%s]", xdoc.getEncoding()));
+            }
+            // Verification 2: Verify authors
             verifyAuthor(errors, xdoc.getAuthor(), String.format("Author must be [%s] but was [%s]",
                 AUTHOR, xdoc.getAuthor()));
             verifyAuthor(errors, xdoc.getContentAuthor(),
@@ -63,25 +67,25 @@ public class VerifyMojo extends AbstractVerifyMojo
                     AUTHOR, xdoc.getContentAuthor()));
             verifyAuthor(errors, xdoc.getCreator(), String.format("Creator must be [%s] but was [%s]",
                 AUTHOR, xdoc.getCreator()));
-            // Verification 2: Check for orphans, except for Main.WebHome since it's the topmost document
+            // Verification 3: Check for orphans, except for Main.WebHome since it's the topmost document
             if (StringUtils.isEmpty(xdoc.getParent())
                 && !(xdoc.getSpace().equals("Main") && xdoc.getName().equals("WebHome")))
             {
                 errors.add("Parent must not be empty");
             }
-            // Verification 3: Check for version
+            // Verification 4: Check for version
             if (!xdoc.getVersion().equals(VERSION)) {
                 errors.add(String.format("Version must be [%s] but was [%s]", VERSION, xdoc.getVersion()));
             }
-            // Verification 4: Check for empty comment
+            // Verification 5: Check for empty comment
             if (xdoc.getComment().length() != 0) {
                 errors.add(String.format("Comment must be empty but was [%s]", xdoc.getComment()));
             }
-            // Verification 5: Check for minor edit is always "false"
+            // Verification 6: Check for minor edit is always "false"
             if (!xdoc.getMinorEdit().equals("false")) {
                 errors.add(String.format("Minor edit must always be [false] but was [%s]", xdoc.getMinorEdit()));
             }
-            // Verification 6: Check that default language is empty
+            // Verification 7: Check that default language is empty
             if (xdoc.getDefaultLanguage().length() != 0) {
                 errors.add(String.format("Default Language must be empty but was [%s]", xdoc.getDefaultLanguage()));
             }

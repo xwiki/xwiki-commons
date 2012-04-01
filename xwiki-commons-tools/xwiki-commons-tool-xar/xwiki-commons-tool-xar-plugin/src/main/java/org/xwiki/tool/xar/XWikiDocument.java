@@ -89,6 +89,11 @@ public class XWikiDocument
     private String minorEdit;
 
     /**
+     * @see #getEncoding()
+     */
+    private String encoding;
+
+    /**
      * Parse XML file to extract document information.
      * 
      * @param file the xml file
@@ -98,6 +103,8 @@ public class XWikiDocument
     {
         SAXReader reader = new SAXReader();
         Document domdoc = reader.read(file);
+
+        this.encoding = domdoc.getXMLEncoding();
 
         Element rootElement = domdoc.getRootElement();
         this.name = readElement(rootElement, "name");
@@ -248,6 +255,14 @@ public class XWikiDocument
     public String getMinorEdit()
     {
         return this.minorEdit;
+    }
+
+    /**
+     * @return the XML file encoding
+     */
+    public String getEncoding()
+    {
+        return this.encoding;
     }
 
     /**
