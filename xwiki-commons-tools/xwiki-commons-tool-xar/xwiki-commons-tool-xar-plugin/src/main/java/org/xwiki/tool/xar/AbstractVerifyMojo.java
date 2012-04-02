@@ -21,6 +21,7 @@ package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -61,11 +62,15 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         File resourcesDir = getResourcesDirectory();
 
         // Filter package.xml and files not ending with .xml
-        Collection<File> files = FileUtils.listFiles(resourcesDir,
-            FileFilterUtils.and(
-                FileFilterUtils.suffixFileFilter(".xml"),
-                FileFilterUtils.notFileFilter(FileFilterUtils.nameFileFilter(PACKAGE_XML))),
-            TrueFileFilter.INSTANCE);
+        Collection<File> files = Collections.emptyList();
+        if (resourcesDir.exists()) {
+            files = FileUtils.listFiles(resourcesDir,
+                FileFilterUtils.and(
+                    FileFilterUtils.suffixFileFilter(".xml"),
+                    FileFilterUtils.notFileFilter(FileFilterUtils.nameFileFilter(PACKAGE_XML))),
+                TrueFileFilter.INSTANCE);
+        }
+
         return files;
     }
 }
