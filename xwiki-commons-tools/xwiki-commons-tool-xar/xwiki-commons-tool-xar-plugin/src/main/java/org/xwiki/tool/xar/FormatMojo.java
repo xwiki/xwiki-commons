@@ -45,13 +45,18 @@ public class FormatMojo extends AbstractVerifyMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        getLog().info("Formatting XAR XML files...");
-        for (File file : getXARXMLFiles()) {
-            try {
-                format(file);
-            } catch (Exception e) {
-                throw new MojoExecutionException(String.format("Failed to format file [%s]", file), e);
+        // Only format XAR modules
+        if (getProject().getPackaging().equals("xar")) {
+            getLog().info("Formatting XAR XML files...");
+            for (File file : getXARXMLFiles()) {
+                try {
+                    format(file);
+                } catch (Exception e) {
+                    throw new MojoExecutionException(String.format("Failed to format file [%s]", file), e);
+                }
             }
+        } else {
+            getLog().info("Not a XAR module, skipping reformatting...");
         }
     }
 
