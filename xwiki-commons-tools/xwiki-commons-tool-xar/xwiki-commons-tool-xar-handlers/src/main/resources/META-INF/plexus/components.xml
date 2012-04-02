@@ -34,9 +34,7 @@
           <package>org.xwiki.commons:xwiki-commons-tool-xar-plugin:xar</package>
           <install>org.apache.maven.plugins:maven-install-plugin:install</install>
           <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
-          <!-- TODO: Uncomment this once the 4.0M2 release is done to put automatic verification and fix all XAR
-               modules -->
-          <!--verify>org.xwiki.commons:xwiki-commons-tool-xar-plugin:verify</verify-->
+          <verify>org.xwiki.commons:xwiki-commons-tool-xar-plugin:verify</verify>
         </phases>
       </configuration>
     </component>
