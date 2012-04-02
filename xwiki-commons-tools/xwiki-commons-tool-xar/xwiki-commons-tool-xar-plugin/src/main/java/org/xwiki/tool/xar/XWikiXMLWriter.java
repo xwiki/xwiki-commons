@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
@@ -35,6 +36,20 @@ import org.dom4j.io.XMLWriter;
 public class XWikiXMLWriter extends XMLWriter
 {
     /**
+     * True if we use an output format.
+     */
+    private boolean useFormat;
+
+    /**
+     * @param output the stream where to write the XML
+     * @throws UnsupportedEncodingException in case encoding issue
+     */
+    public XWikiXMLWriter(OutputStream output) throws UnsupportedEncodingException
+    {
+        super(output);
+    }
+
+    /**
      * @param output the stream where to write the XML
      * @param format the style to use when outputting the XML
      * @throws UnsupportedEncodingException in case encoding issue
@@ -42,6 +57,7 @@ public class XWikiXMLWriter extends XMLWriter
     public XWikiXMLWriter(OutputStream output, OutputFormat format) throws UnsupportedEncodingException
     {
         super(output, format);
+        this.useFormat = true;
     }
 
     @Override
@@ -52,6 +68,44 @@ public class XWikiXMLWriter extends XMLWriter
         // Add a new line after the license declaration
         if (text.contains("See the NOTICE file distributed with this work for additional")) {
             println();
+        }
+    }
+
+    @Override
+    protected void writeNodeText(Node node) throws IOException
+    {
+        if (this.useFormat && node.getText().trim().length() == 0) {
+          // Check if parent node contains non text nodes
+            boolean containsNonTextNode = false;
+            for (Object object : node.getParent().content()) {
+                Node objectNode = (Node) object;
+                if (objectNode.getNodeType() != Node.TEXT_NODE) {
+                    containsNonTextNode = true;
+                    break;
+                }
+            }
+            if (containsNonTextNode) {
+                // Don't do anything, i.e. don't print the current text node
+            } else {
+                super.writeNodeText(node);
+            }
+        } else {
+            super.writeNodeText(node);
+        }
+    }
+
+    @Override
+    protected void writePrintln() throws IOException
+    {
+        // We need to reimplement this method because of a bug (bad logic) in the original writePrintln() which checks
+        // the last output char to decide whether to print a NL or not:
+        //  ...3</a></b> --> ...3</a>\n</b>
+        // but
+        //  ...3\n</a></b> --> ...3\n</a></b>
+        // and
+        //  ...3\n</a>\n</b> --> ...3\n</a></b>
+        if (this.useFormat) {
+            this.writer.write(getOutputFormat().getLineSeparator());
         }
     }
 }

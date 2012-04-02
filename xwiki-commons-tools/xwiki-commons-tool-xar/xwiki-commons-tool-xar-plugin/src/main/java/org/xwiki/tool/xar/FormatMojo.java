@@ -24,7 +24,6 @@ import java.io.FileOutputStream;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -44,12 +43,20 @@ import org.dom4j.io.XMLWriter;
 public class FormatMojo extends AbstractVerifyMojo
 {
     /**
-     * The maven project.
+     * If true then don't check if the packaging is XAR before running formatting.
      *
      * @parameter expression="${force}"
      * @readonly
      */
     private boolean force = false;
+
+    /**
+     * If false then don't pretty print the XML.
+     *
+     * @parameter expression="${pretty}"
+     * @readonly
+     */
+    private boolean pretty = true;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -93,10 +100,14 @@ public class FormatMojo extends AbstractVerifyMojo
         element = (Element) domdoc.selectSingleNode("xwikidoc/comment");
         removeContent(element);
 
-        OutputFormat format = new OutputFormat("  ", true, "UTF-8");
-        format.setExpandEmptyElements(false);
-
-        XMLWriter writer = new XWikiXMLWriter(new FileOutputStream(file), format);
+        XMLWriter writer;
+        if (this.pretty) {
+            OutputFormat format = new OutputFormat("  ", true, "UTF-8");
+            format.setExpandEmptyElements(false);
+            writer = new XWikiXMLWriter(new FileOutputStream(file), format);
+        } else {
+            writer = new XWikiXMLWriter(new FileOutputStream(file));
+        }
         writer.write(domdoc);
         writer.close();
 

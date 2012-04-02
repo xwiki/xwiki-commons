@@ -31,13 +31,35 @@ import junit.framework.Assert;
 /**
  * Integration tests for the Format Mojo.
  *
- * @version $$
+ * @version $Id$
  * @since 4.0M2
  */
 public class FormatMojoTest
 {
     @Test
-    public void format() throws Exception
+    public void formatWhenNoStyle() throws Exception
+    {
+        File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/format");
+
+        Verifier verifier = new Verifier(testDir.getAbsolutePath());
+        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        verifier.addCliOption("-Dforce=true");
+        verifier.addCliOption("-Dpretty=false");
+        verifier.executeGoal("xar:format");
+        verifier.verifyErrorFreeLog();
+
+        String content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Page1.xml"));
+        String expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage1.xml"));
+        Assert.assertEquals(expected, content);
+
+        // Test with a XML file having a license header
+        content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Page2.xml"));
+        expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage2.xml"));
+        Assert.assertEquals(expected, content);
+    }
+
+    @Test
+    public void formatWhenPrettyPrinting() throws Exception
     {
         File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/format");
 
@@ -47,12 +69,13 @@ public class FormatMojoTest
         verifier.executeGoal("xar:format");
         verifier.verifyErrorFreeLog();
 
-        String content = FileUtils.fileRead(new File(testDir, "src/main/resources/Space/Page1.xml"));
-        String expected = FileUtils.fileRead(new File(testDir, "ExpectedPage1.xml"));
+        String content = FileUtils.fileRead(new File(testDir, "src/main/resources/Pretty/Page1.xml"));
+        String expected = FileUtils.fileRead(new File(testDir, "ExpectedPrettyPage1.xml"));
         Assert.assertEquals(expected, content);
 
-        content = FileUtils.fileRead(new File(testDir, "src/main/resources/Space/Page2.xml"));
-        expected = FileUtils.fileRead(new File(testDir, "ExpectedPage2.xml"));
+        // Test with a XML file having a license header
+        content = FileUtils.fileRead(new File(testDir, "src/main/resources/Pretty/Page2.xml"));
+        expected = FileUtils.fileRead(new File(testDir, "ExpectedPrettyPage2.xml"));
         Assert.assertEquals(expected, content);
     }
 }

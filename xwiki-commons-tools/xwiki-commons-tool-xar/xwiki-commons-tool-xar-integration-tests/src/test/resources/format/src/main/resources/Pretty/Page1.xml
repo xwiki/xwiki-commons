@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xwikidoc>
-<web>Space</web>
+  <!-- Verify that it works when already indented -->
+  <web>Pretty</web>
+  <tag1>
+    <tag2>whatever</tag2>
+    <content>line 1
+line2
+    </content>
+  </tag1>
 <name>Page1</name>
 <language></language>
 <defaultLanguage>en</defaultLanguage>
@@ -25,7 +32,7 @@
 <hidden>false</hidden>
 <content>line 1
 line 2
-line with unicode chars: Вики функционирует
+  line with unicode chars: Вики функционирует
 line 3
 </content>
 </xwikidoc>
