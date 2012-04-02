@@ -43,14 +43,6 @@ import org.dom4j.io.XMLWriter;
 public class FormatMojo extends AbstractVerifyMojo
 {
     /**
-     * If true then don't check if the packaging is XAR before running formatting.
-     *
-     * @parameter expression="${force}"
-     * @readonly
-     */
-    private boolean force = false;
-
-    /**
      * If false then don't pretty print the XML.
      *
      * @parameter expression="${pretty}"

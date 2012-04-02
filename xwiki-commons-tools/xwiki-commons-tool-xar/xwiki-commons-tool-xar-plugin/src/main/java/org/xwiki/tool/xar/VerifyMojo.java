@@ -47,6 +47,12 @@ public class VerifyMojo extends AbstractVerifyMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+        // Only format XAR modules or when forced
+        if (!getProject().getPackaging().equals("xar") && !this.force) {
+            getLog().info("Not a XAR module, skipping validity check...");
+            return;
+        }
+
         getLog().info("Checking validity of XAR XML files...");
 
         boolean hasErrors = false;

@@ -45,6 +45,14 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected static final String VERSION = "1.1";
 
     /**
+     * If true then don't check if the packaging is XAR before running mojos.
+     *
+     * @parameter expression="${force}"
+     * @readonly
+     */
+    protected boolean force;
+
+    /**
      * @return the list of XAR XML files in this project
      */
     protected Collection<File> getXARXMLFiles()

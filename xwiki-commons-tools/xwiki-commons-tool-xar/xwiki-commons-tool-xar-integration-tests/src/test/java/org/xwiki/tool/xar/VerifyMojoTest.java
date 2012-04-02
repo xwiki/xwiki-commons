@@ -124,6 +124,7 @@ public class VerifyMojoTest
 
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        verifier.addCliOption("-Dforce=true");
         verifier.executeGoal("install");
         verifier.verifyErrorFreeLog();
     }
@@ -136,6 +137,7 @@ public class VerifyMojoTest
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
 
         try {
+            verifier.addCliOption("-Dforce=true");
             verifier.executeGoal("install");
             verifier.verifyErrorFreeLog();
             Assert.fail("An error should have been thrown in the build");
