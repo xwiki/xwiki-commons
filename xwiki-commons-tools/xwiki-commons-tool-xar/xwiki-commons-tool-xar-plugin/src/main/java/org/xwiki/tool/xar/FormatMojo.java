@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -42,11 +43,19 @@ import org.dom4j.io.XMLWriter;
  */
 public class FormatMojo extends AbstractVerifyMojo
 {
+    /**
+     * The maven project.
+     *
+     * @parameter expression="${force}"
+     * @readonly
+     */
+    private boolean force = false;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        // Only format XAR modules
-        if (getProject().getPackaging().equals("xar")) {
+        // Only format XAR modules or when forced
+        if (getProject().getPackaging().equals("xar") || this.force) {
             getLog().info("Formatting XAR XML files...");
             for (File file : getXARXMLFiles()) {
                 try {
@@ -84,13 +93,10 @@ public class FormatMojo extends AbstractVerifyMojo
         element = (Element) domdoc.selectSingleNode("xwikidoc/comment");
         removeContent(element);
 
-        OutputFormat format = new OutputFormat(" ", true, "UTF-8");
-        format.setIndent(true);
-        format.setIndentSize(2);
-        format.setTrimText(false);
-        format.setNewlines(true);
+        OutputFormat format = new OutputFormat("  ", true, "UTF-8");
+        format.setExpandEmptyElements(false);
 
-        XMLWriter writer = new XMLWriter(new FileOutputStream(file), format);
+        XMLWriter writer = new XWikiXMLWriter(new FileOutputStream(file), format);
         writer.write(domdoc);
         writer.close();
 

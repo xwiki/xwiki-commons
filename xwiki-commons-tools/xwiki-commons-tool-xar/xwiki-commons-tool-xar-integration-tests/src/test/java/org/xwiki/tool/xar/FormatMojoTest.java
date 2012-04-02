@@ -43,11 +43,16 @@ public class FormatMojoTest
 
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        verifier.addCliOption("-Dforce=true");
         verifier.executeGoal("xar:format");
         verifier.verifyErrorFreeLog();
 
-        String content = FileUtils.fileRead(new File(testDir, "src/main/resources/Space/WebHome.xml"));
-        String expected = FileUtils.fileRead(new File(testDir, "ExpectedWebHome.xml"));
+        String content = FileUtils.fileRead(new File(testDir, "src/main/resources/Space/Page1.xml"));
+        String expected = FileUtils.fileRead(new File(testDir, "ExpectedPage1.xml"));
+        Assert.assertEquals(expected, content);
+
+        content = FileUtils.fileRead(new File(testDir, "src/main/resources/Space/Page2.xml"));
+        expected = FileUtils.fileRead(new File(testDir, "ExpectedPage2.xml"));
         Assert.assertEquals(expected, content);
     }
 }

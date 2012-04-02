@@ -2,7 +2,7 @@
 
 <xwikidoc>
   <web>Space</web>
-  <name>WebHome</name>
+  <name>Page1</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -24,8 +24,8 @@
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>false</hidden>
   <content>line 1
-  line 2
-  line with unicode chars: Вики функционирует
-  line 3
+line 2
+line with unicode chars: Вики функционирует
+line 3
 </content>
 </xwikidoc>
