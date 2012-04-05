@@ -32,7 +32,7 @@
   <artifactId>xwiki-commons-text</artifactId>
   <name>XWiki Commons - Text</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Text</description>
+  <description>Offers text-related APIs</description>
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
