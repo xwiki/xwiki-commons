@@ -58,6 +58,7 @@ import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.VersionConstraint;
 
 /**
  * Default implementation of {@link InstalledExtensionRepository}.
@@ -200,7 +201,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
             CoreExtension coreExtension = this.coreExtensionRepository.getCoreExtension(dependency.getId());
 
             if (coreExtension != null) {
-                if (!dependency.getVersionConstraint().containsVersion(coreExtension.getId().getVersion())) {
+                if (!isCompatible(coreExtension.getId().getVersion(), dependency.getVersionConstraint())) {
                     throw new InvalidExtensionException("Extension [" + localExtension
                         + "] is incompatible with the core extension [" + coreExtension + "]");
                 }
@@ -210,10 +211,10 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
                 List<LocalExtension> dependencyVersions =
                     new ArrayList<LocalExtension>(this.localRepository.getLocalExtensionVersions(dependency.getId()));
                 Collections.reverse(dependencyVersions);
-                for (LocalExtension dependencyExtension : dependencyVersions) {
-                    if (dependency.getVersionConstraint().containsVersion(dependencyExtension.getId().getVersion())) {
+                for (LocalExtension dependencyVersion : dependencyVersions) {
+                    if (isCompatible(dependencyVersion.getId().getVersion(), dependency.getVersionConstraint())) {
                         try {
-                            validateExtension(dependencyExtension, namespace);
+                            validateExtension(dependencyVersion, namespace);
                             valid = true;
                             break;
                         } catch (InvalidExtensionException e) {
@@ -231,6 +232,19 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
         // Complete local extension installation
         addInstalledExtension(localExtension, namespace);
+    }
+
+    private boolean isCompatible(Version existingVersion, VersionConstraint versionConstraint)
+    {
+        boolean compatible = true;
+
+        if (versionConstraint.getVersion() == null) {
+            compatible = versionConstraint.containsVersion(existingVersion);
+        } else {
+            compatible = existingVersion.compareTo(versionConstraint.getVersion()) >= 0;
+        }
+
+        return compatible;
     }
 
     // Install/Uninstall
