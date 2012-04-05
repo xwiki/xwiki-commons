@@ -58,6 +58,7 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
         super(type);
 
         this.serializerById = serializerById;
+        this.serializerByClass = serializerByClass;
     }
 
     /**
