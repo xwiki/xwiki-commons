@@ -214,11 +214,11 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         }
 
         // Licenses
-        NodeList licensesNodes = extensionElement.getElementsByTagName(ELEMENT_LICENSES);
-        if (licensesNodes.getLength() > 0) {
-            NodeList licenses = licensesNodes.item(0).getChildNodes();
-            for (int i = 0; i < licenses.getLength(); ++i) {
-                Node licenseNode = licenses.item(i);
+        Node licensesNode = getNode(extensionElement, ELEMENT_LICENSES);
+        if (licensesNode != null) {
+            NodeList licenseNodeList = licensesNode.getChildNodes();
+            for (int i = 0; i < licenseNodeList.getLength(); ++i) {
+                Node licenseNode = licenseNodeList.item(i);
 
                 if (licenseNode.getNodeName().equals(ELEMENT_LLICENSE)) {
                     Node licenseNameNode = getNode(licenseNode, ELEMENT_LLNAME);
@@ -243,9 +243,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         }
 
         // Authors
-        NodeList authorsNodes = extensionElement.getElementsByTagName(ELEMENT_AUTHORS);
-        if (authorsNodes.getLength() > 0) {
-            NodeList authors = authorsNodes.item(0).getChildNodes();
+        Node authorsNode = getNode(extensionElement, ELEMENT_AUTHORS);
+        if (authorsNode != null) {
+            NodeList authors = authorsNode.getChildNodes();
             for (int i = 0; i < authors.getLength(); ++i) {
                 Node authorNode = authors.item(i);
 
@@ -268,9 +268,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         }
 
         // Features
-        NodeList featuresNodes = extensionElement.getElementsByTagName(ELEMENT_FEATURES);
-        if (featuresNodes.getLength() > 0) {
-            NodeList features = featuresNodes.item(0).getChildNodes();
+        Node featuresNode = getNode(extensionElement, ELEMENT_FEATURES);
+        if (featuresNode != null) {
+            NodeList features = featuresNode.getChildNodes();
             for (int i = 0; i < features.getLength(); ++i) {
                 Node featureNode = features.item(i);
 
@@ -281,9 +281,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         }
 
         // Dependencies
-        NodeList dependenciesNodes = extensionElement.getElementsByTagName(ELEMENT_DEPENDENCIES);
-        if (dependenciesNodes.getLength() > 0) {
-            NodeList dependenciesNodeList = dependenciesNodes.item(0).getChildNodes();
+        Node dependenciesNode = getNode(extensionElement, ELEMENT_DEPENDENCIES);
+        if (dependenciesNode != null) {
+            NodeList dependenciesNodeList = dependenciesNode.getChildNodes();
             for (int i = 0; i < dependenciesNodeList.getLength(); ++i) {
                 Node dependency = dependenciesNodeList.item(i);
 
@@ -292,9 +292,16 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     Node dependencyVersionNode = getNode(dependency, ELEMENT_VERSION);
 
                     localExtension.addDependency(new DefaultExtensionDependency(dependencyIdNode.getTextContent(),
-                        new DefaultVersionConstraint(dependencyVersionNode.getTextContent())));
+                        new DefaultVersionConstraint(dependencyVersionNode.getTextContent()),
+                        parseProperties((Element) dependency)));
                 }
             }
+        }
+
+        // Properties
+        Map<String, Object> properties = parseProperties(extensionElement);
+        if (properties != null) {
+            localExtension.setProperties(properties);
         }
 
         // Deprecated Install fields
@@ -306,9 +313,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         }
 
         // Deprecated Namespaces
-        NodeList namespacesNodes = extensionElement.getElementsByTagName(ELEMENT_NAMESPACES);
-        if (namespacesNodes.getLength() > 0) {
-            NodeList namespaceNodeList = namespacesNodes.item(0).getChildNodes();
+        Node namespacesNode = getNode(extensionElement, ELEMENT_NAMESPACES);
+        if (namespacesNode != null) {
+            NodeList namespaceNodeList = namespacesNode.getChildNodes();
             Collection<String> namespaces = new HashSet<String>();
             for (int i = 0; i < namespaceNodeList.getLength(); ++i) {
                 Node namespaceNode = namespaceNodeList.item(i);
@@ -319,25 +326,32 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             localExtension.putProperty(DefaultInstalledExtension.PKEY_NAMESPACES, namespaces);
         }
 
-        // Properties
-        NodeList propertiesNodes = extensionElement.getElementsByTagName(ELEMENT_PROPERTIES);
-        if (propertiesNodes.getLength() > 0) {
-            NodeList propertiesNodeList = propertiesNodes.item(0).getChildNodes();
-            for (int i = 0; i < propertiesNodeList.getLength(); ++i) {
-                Node propertyNode = propertiesNodeList.item(i);
+        return localExtension;
+    }
+
+    private Map<String, Object> parseProperties(Element parentElement)
+    {
+        Map<String, Object> properties = null;
+
+        Node propertiesNode = getNode(parentElement, ELEMENT_PROPERTIES);
+        if (propertiesNode != null) {
+            properties = new HashMap<String, Object>();
+            NodeList propertyNodeList = propertiesNode.getChildNodes();
+            for (int i = 0; i < propertyNodeList.getLength(); ++i) {
+                Node propertyNode = propertyNodeList.item(i);
 
                 if (propertyNode.getNodeType() == Node.ELEMENT_NODE) {
                     Object value =
                         CollectionExtensionPropertySerializer.toValue((Element) propertyNode, serializerById);
 
                     if (value != null) {
-                        localExtension.putProperty(propertyNode.getNodeName(), value);
+                        properties.put(propertyNode.getNodeName(), value);
                     }
                 }
             }
         }
 
-        return localExtension;
+        return properties;
     }
 
     private Node getNode(Node parentNode, String elementName)
@@ -352,13 +366,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         }
 
         return null;
-    }
-
-    private Node getNode(Element parentElement, String elementName)
-    {
-        NodeList children = parentElement.getElementsByTagName(elementName);
-
-        return children.getLength() > 0 ? children.item(0) : null;
     }
 
     @Override
@@ -387,7 +394,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         addDependencies(document, extensionElement, extension);
 
-        addProperties(document, extensionElement, extension);
+        addProperties(document, extensionElement, extension.getProperties());
 
         // save
 
@@ -471,17 +478,18 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
                 addElement(document, dependencyElement, ELEMENT_ID, dependency.getId());
                 addElement(document, dependencyElement, ELEMENT_VERSION, dependency.getVersionConstraint().getValue());
+                addProperties(document, dependencyElement, dependency.getProperties());
             }
         }
     }
 
-    private void addProperties(Document document, Element parentElement, Extension extension)
+    private void addProperties(Document document, Element parentElement, Map<String, Object> properties)
     {
-        if (!extension.getProperties().isEmpty()) {
+        if (!properties.isEmpty()) {
             Element propertiesElement = document.createElement(ELEMENT_PROPERTIES);
             parentElement.appendChild(propertiesElement);
 
-            for (Map.Entry<String, Object> entry : extension.getProperties().entrySet()) {
+            for (Map.Entry<String, Object> entry : properties.entrySet()) {
                 addElement(document, propertiesElement, entry.getKey(), entry.getValue());
             }
         }
@@ -492,7 +500,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private void addElement(Document document, Element parentElement, String elementName, Object elementValue)
     {
         Element element =
-            CollectionExtensionPropertySerializer.toElement(elementValue, document, this.serializerByClass);
+            CollectionExtensionPropertySerializer
+                .toElement(elementValue, document, elementName, this.serializerByClass);
 
         if (element != null) {
             parentElement.appendChild(element);

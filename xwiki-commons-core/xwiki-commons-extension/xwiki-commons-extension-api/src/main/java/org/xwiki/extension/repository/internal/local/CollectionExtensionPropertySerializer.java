@@ -79,31 +79,45 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
     }
 
     /**
+     * @param <T> the type of the expected value
      * @param element the element to unserialize
      * @param serializerById the serializers by type id
      * @return the unserialized property value
      */
-    public static Object toValue(Element element, Map<String, ExtensionPropertySerializer> serializerById)
+    public static <T> T toValue(Element element, Map<String, ExtensionPropertySerializer> serializerById)
     {
-        String type = element.getAttribute("type");
+        if (element != null) {
+            String type = element.getAttribute("type");
 
-        ExtensionPropertySerializer< ? > serializer = serializerById.get(type);
+            ExtensionPropertySerializer< ? > serializer = serializerById.get(type);
 
-        return serializer != null ? serializer.toValue(element) : null;
+            if (serializer != null) {
+                return (T) serializer.toValue(element);
+            }
+        }
+
+        return null;
     }
 
     /**
      * @param value the value to serialize
      * @param document the document used to create new {@link Element}
+     * @param elementName the name of the element to create
      * @param serializerByClass the serializers by class
      * @return the serialized property {@link Element}
      */
-    public static Element toElement(Object value, Document document,
+    public static Element toElement(Object value, Document document, String elementName,
         Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
     {
-        ExtensionPropertySerializer serializer = serializerByClass.get(serializerByClass.getClass());
+        if (value != null) {
+            ExtensionPropertySerializer serializer = serializerByClass.get(value.getClass());
 
-        return serializer != null ? serializer.toElement(document, null, value) : null;
+            if (serializer != null) {
+                return serializer.toElement(document, elementName, value);
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -134,7 +148,7 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
         Element element = createRootElement(document, elementName);
 
         for (Object subValue : elementValue) {
-            Element subElement = toElement(subValue, document, this.serializerByClass);
+            Element subElement = toElement(subValue, document, elementName, this.serializerByClass);
 
             if (subElement == null) {
                 return null;

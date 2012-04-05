@@ -53,10 +53,10 @@ public interface ExtensionSerializer
      * Save local extension descriptor.
      * 
      * @param extension the extension to save
-     * @param fos the stream where to write the serialized version of the extension descriptor
+     * @param os the stream where to write the serialized version of the extension descriptor
      * @throws ParserConfigurationException error when serializing
      * @throws TransformerException error when serializing
      */
-    void saveDescriptor(LocalExtension extension, OutputStream fos) throws ParserConfigurationException,
+    void saveDescriptor(LocalExtension extension, OutputStream os) throws ParserConfigurationException,
         TransformerException;
 }
