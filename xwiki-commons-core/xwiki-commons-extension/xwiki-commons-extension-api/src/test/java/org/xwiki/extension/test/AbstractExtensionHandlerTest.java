@@ -61,9 +61,9 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
 
         // lookup
 
-        this.jobManager = getComponentManager().lookupComponent(JobManager.class);
-        this.localExtensionRepository = getComponentManager().lookupComponent(LocalExtensionRepository.class);
-        this.installedExtensionRepository = getComponentManager().lookupComponent(InstalledExtensionRepository.class);
+        this.jobManager = getComponentManager().getInstance(JobManager.class);
+        this.localExtensionRepository = getComponentManager().getInstance(LocalExtensionRepository.class);
+        this.installedExtensionRepository = getComponentManager().getInstance(InstalledExtensionRepository.class);
     }
 
     protected void beforeRepositoryUtil() throws Exception

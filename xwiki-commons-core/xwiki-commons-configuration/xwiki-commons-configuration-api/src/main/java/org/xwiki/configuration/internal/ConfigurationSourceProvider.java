@@ -50,10 +50,10 @@ public class ConfigurationSourceProvider implements Provider<ConfigurationSource
         ConfigurationSource configurationSource;
 
         try {
-            configurationSource = this.componentManager.lookupComponent(ConfigurationSource.class);
+            configurationSource = this.componentManager.getInstance(ConfigurationSource.class);
         } catch (ComponentLookupException e) {
             try {
-                configurationSource = this.componentManager.lookupComponent(ConfigurationSource.class, "memory");
+                configurationSource = this.componentManager.getInstance(ConfigurationSource.class, "memory");
             } catch (ComponentLookupException e1) {
                 configurationSource = getVoidConfigurationSource();
             }
@@ -70,7 +70,7 @@ public class ConfigurationSourceProvider implements Provider<ConfigurationSource
         ConfigurationSource configurationSource;
 
         try {
-            configurationSource = this.componentManager.lookupComponent(ConfigurationSource.class, "void");
+            configurationSource = this.componentManager.getInstance(ConfigurationSource.class, "void");
         } catch (ComponentLookupException e) {
             configurationSource = new VoidConfigurationSource();
         }

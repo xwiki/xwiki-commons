@@ -75,7 +75,7 @@ public class GenericProvider<T> implements Provider<T>
             if (roleClass.isAssignableFrom(Provider.class)) {
                 try {
                     component =
-                        this.componentManager.lookupComponent(this.roleHint.getRoleType(), this.roleHint.getHint());
+                        this.componentManager.getInstance(this.roleHint.getRoleType(), this.roleHint.getHint());
                 } catch (ComponentLookupException e) {
                     // Inject a default Provider
                     component =
@@ -94,9 +94,9 @@ public class GenericProvider<T> implements Provider<T>
             } else if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, roleClass) != null
                 && ReflectionUtils.getDirectAnnotation(Role.class, roleClass) == null) {
                 // since 4.0M1, retro-compatibility (generic type used to not be taken into account)
-                component = this.componentManager.lookupComponent(roleClass, this.roleHint.getHint());
+                component = this.componentManager.getInstance(roleClass, this.roleHint.getHint());
             } else {
-                component = this.componentManager.lookupComponent(this.roleHint.getRoleType(), this.roleHint.getHint());
+                component = this.componentManager.getInstance(this.roleHint.getRoleType(), this.roleHint.getHint());
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to get [" + this.roleHint + "]", e);

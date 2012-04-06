@@ -72,15 +72,15 @@ public class DelegateComponentManager implements ComponentManager
     }
 
     @Override
-    public <T> T lookupComponent(Type roleType) throws ComponentLookupException
+    public <T> T getInstance(Type roleType) throws ComponentLookupException
     {
-        return getComponentManager().lookupComponent(roleType);
+        return getComponentManager().getInstance(roleType);
     }
 
     @Override
-    public <T> T lookupComponent(Type roleType, String roleHint) throws ComponentLookupException
+    public <T> T getInstance(Type roleType, String roleHint) throws ComponentLookupException
     {
-        return getComponentManager().lookupComponent(roleType, roleHint);
+        return getComponentManager().getInstance(roleType, roleHint);
     }
 
     @Override

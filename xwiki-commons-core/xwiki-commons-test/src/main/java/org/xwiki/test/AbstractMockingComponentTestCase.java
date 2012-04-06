@@ -169,7 +169,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
                         getComponentManager().registerComponent(descriptor);
                         configure();
                         ReflectionUtils.setFieldValue(this, field.getName(),
-                            getComponentManager().lookupComponent(descriptor.getRoleType(), descriptor.getRoleHint()));
+                            getComponentManager().getInstance(descriptor.getRoleType(), descriptor.getRoleHint()));
                         break;
                     }
                 }

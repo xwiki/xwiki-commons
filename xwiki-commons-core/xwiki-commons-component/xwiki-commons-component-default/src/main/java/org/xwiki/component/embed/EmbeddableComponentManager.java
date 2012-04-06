@@ -138,13 +138,13 @@ public class EmbeddableComponentManager implements ComponentManager
     }
 
     @Override
-    public <T> T lookupComponent(Type roleType) throws ComponentLookupException
+    public <T> T getInstance(Type roleType) throws ComponentLookupException
     {
         return getComponentInstance(new RoleHint<T>(roleType));
     }
 
     @Override
-    public <T> T lookupComponent(Type roleType, String roleHint) throws ComponentLookupException
+    public <T> T getInstance(Type roleType, String roleHint) throws ComponentLookupException
     {
         return getComponentInstance(new RoleHint<T>(roleType, roleHint));
     }
@@ -284,7 +284,7 @@ public class EmbeddableComponentManager implements ComponentManager
                 fieldValue = lookupMap(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
             } else if (dependencyRoleClass.isAssignableFrom(Provider.class)) {
                 try {
-                    fieldValue = lookupComponent(dependency.getRoleType(), dependency.getRoleHint());
+                    fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
                 } catch (ComponentLookupException e) {
                     fieldValue =
                         new GenericProvider<Object>(this, new RoleHint<Object>(
@@ -292,7 +292,7 @@ public class EmbeddableComponentManager implements ComponentManager
                             dependency.getRoleHint()));
                 }
             } else {
-                fieldValue = lookupComponent(dependency.getRoleType(), dependency.getRoleHint());
+                fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
             }
 
             // Set the field by introspection
@@ -333,7 +333,7 @@ public class EmbeddableComponentManager implements ComponentManager
             }
         } else {
             if (getParent() != null) {
-                instance = getParent().lookupComponent(roleHint.getRoleClass(), roleHint.getHint());
+                instance = getParent().getInstance(roleHint.getRoleClass(), roleHint.getHint());
             } else {
                 throw new ComponentLookupException("Can't find descriptor for the component [" + roleHint + "]");
             }
@@ -531,14 +531,14 @@ public class EmbeddableComponentManager implements ComponentManager
     @Deprecated
     public <T> T lookup(Class<T> role) throws ComponentLookupException
     {
-        return lookupComponent(role);
+        return getInstance(role);
     }
 
     @Override
     @Deprecated
     public <T> T lookup(Class<T> role, String hint) throws ComponentLookupException
     {
-        return lookupComponent(role, hint);
+        return getInstance(role, hint);
     }
 
     @Override

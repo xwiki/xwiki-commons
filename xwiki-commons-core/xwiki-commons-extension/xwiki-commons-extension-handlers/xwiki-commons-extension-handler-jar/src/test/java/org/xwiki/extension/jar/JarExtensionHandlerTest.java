@@ -76,12 +76,12 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         this.testApplicationClassloader = Thread.currentThread().getContextClassLoader();
 
         // lookup
-        this.componentManagerManager = getComponentManager().lookupComponent(ComponentManagerManager.class);
-        this.jarExtensionClassLoader = getComponentManager().lookupComponent(ClassLoaderManager.class);
-        this.execution = getComponentManager().lookupComponent(Execution.class);
+        this.componentManagerManager = getComponentManager().getInstance(ComponentManagerManager.class);
+        this.jarExtensionClassLoader = getComponentManager().getInstance(ClassLoaderManager.class);
+        this.execution = getComponentManager().getInstance(Execution.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration
-        ObservationManager manager = getComponentManager().lookupComponent(ObservationManager.class);
+        ObservationManager manager = getComponentManager().getInstance(ObservationManager.class);
         StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
         componentEventManager.shouldStack(false);
         componentEventManager.setObservationManager(manager);
@@ -196,17 +196,17 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Class< ? > loadedClass = null;
         if (namespace != null) {
             loadedClass =
-                this.componentManagerManager.getComponentManager(namespace, false).lookupComponent(loadedRole)
+                this.componentManagerManager.getComponentManager(namespace, false).getInstance(loadedRole)
                     .getClass();
 
             try {
-                getComponentManager().lookupComponent(loadedRole);
+                getComponentManager().getInstance(loadedRole);
                 Assert.fail("the component should not be in the root component manager");
             } catch (ComponentLookupException expected) {
                 // expected
             }
         } else {
-            loadedClass = getComponentManager().lookupComponent(loadedRole).getClass();
+            loadedClass = getComponentManager().getInstance(loadedRole).getClass();
         }
         Assert.assertEquals(implementation.getName(), loadedClass.getName());
         Assert.assertNotSame(implementation, loadedClass);
@@ -270,7 +270,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         try {
             Class< ? > loadedRole = Class.forName(role.getName(), true, extensionLoader);
             // check components managers
-            getComponentManager().lookupComponent(loadedRole);
+            getComponentManager().getInstance(loadedRole);
             Assert.fail("the extension has not been uninstalled, component found!");
         } catch (ComponentLookupException unexpected) {
             Assert.fail("the extension has not been uninstalled, role found!");
@@ -306,12 +306,12 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         if (namespace != null) {
             // Simulate the context for the initializer
             this.execution.getContext().setProperty("xwikicontext", new HashMap<String, Object>());
-            getComponentManager().<ExecutionContextInitializer> lookupComponent(ExecutionContextInitializer.class,
+            getComponentManager().<ExecutionContextInitializer>getInstance(ExecutionContextInitializer.class,
                 "jarextension").initialize(null);
             // Drop simulated context
             this.execution.getContext().removeProperty("xwikicontext");
         } else {
-            getComponentManager().<ExecutionContextInitializer> lookupComponent(ExecutionContextInitializer.class,
+            getComponentManager().<ExecutionContextInitializer>getInstance(ExecutionContextInitializer.class,
                 "jarextension").initialize(null);
         }
 

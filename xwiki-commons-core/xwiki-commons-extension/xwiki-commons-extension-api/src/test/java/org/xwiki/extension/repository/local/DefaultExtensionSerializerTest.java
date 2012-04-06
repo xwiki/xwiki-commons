@@ -51,7 +51,7 @@ public class DefaultExtensionSerializerTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.serializer = getComponentManager().lookupComponent(ExtensionSerializer.class);
+        this.serializer = getComponentManager().getInstance(ExtensionSerializer.class);
     }
 
     private DefaultLocalExtension serializeAndUnserialize(DefaultLocalExtension extension)

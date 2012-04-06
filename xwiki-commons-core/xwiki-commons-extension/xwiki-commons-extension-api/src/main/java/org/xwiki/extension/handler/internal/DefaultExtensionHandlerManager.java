@@ -63,7 +63,7 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
      */
     private ExtensionHandler getExtensionHandler(LocalExtension localExtension) throws ComponentLookupException
     {
-        return this.componentManager.lookupComponent(ExtensionHandler.class, localExtension.getType().toLowerCase());
+        return this.componentManager.getInstance(ExtensionHandler.class, localExtension.getType().toLowerCase());
     }
 
     @Override

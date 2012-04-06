@@ -51,7 +51,7 @@ public class ExtendedURLStreamHandlerFactory implements URLStreamHandlerFactory
     {
         ExtendedURLStreamHandler result;
         try {
-            result = this.componentManager.lookupComponent(ExtendedURLStreamHandler.class, protocol);
+            result = this.componentManager.getInstance(ExtendedURLStreamHandler.class, protocol);
         } catch (ComponentLookupException cle) {
             // No special protocol handler found, return null since code using this factory
             // should know how to deal when no protocol handler is found.

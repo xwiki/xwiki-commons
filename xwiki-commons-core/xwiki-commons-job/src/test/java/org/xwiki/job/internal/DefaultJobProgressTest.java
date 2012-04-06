@@ -39,7 +39,7 @@ public class DefaultJobProgressTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.observation = getComponentManager().lookupComponent(ObservationManager.class);
+        this.observation = getComponentManager().getInstance(ObservationManager.class);
         this.progress = new DefaultJobProgress("id");
         this.observation.addListener(this.progress);
     }

@@ -58,9 +58,9 @@ public interface ComponentManager
      * @param roleType the class (aka role) that the component implements
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
-     * @since 4.0M1
+     * @since 4.0RC1
      */
-    <T> T lookupComponent(Type roleType) throws ComponentLookupException;
+    <T> T getInstance(Type roleType) throws ComponentLookupException;
 
     /**
      * Find a component instance that implements that passed interface class. If the component has a singleton lifecycle
@@ -72,9 +72,9 @@ public interface ComponentManager
      *            registered with a hint; the "default" hint being the default)
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
-     * @since 4.0M1
+     * @since 4.0RC1
      */
-    <T> T lookupComponent(Type roleType, String roleHint) throws ComponentLookupException;
+    <T> T getInstance(Type roleType, String roleHint) throws ComponentLookupException;
 
     /**
      * Release the provided singleton instance but don't unregister the component descriptor. This means that next time
@@ -223,7 +223,7 @@ public interface ComponentManager
      * @param role the class (aka role) that the component implements
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
-     * @deprecated since 4.0M1 use {@link #lookupComponent(Type)} iinstead
+     * @deprecated since 4.0M1 use {@link #getInstance} iinstead
      */
     @Deprecated
     <T> T lookup(Class<T> role) throws ComponentLookupException;

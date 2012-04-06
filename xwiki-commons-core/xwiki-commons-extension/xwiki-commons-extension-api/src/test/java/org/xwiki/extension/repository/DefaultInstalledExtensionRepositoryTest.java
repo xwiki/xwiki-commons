@@ -66,9 +66,9 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
 
         // lookup
 
-        this.installedExtensionRepository = getComponentManager().lookupComponent(InstalledExtensionRepository.class);
-        this.localExtensionRepository = getComponentManager().lookupComponent(LocalExtensionRepository.class);
-        this.repositoryManager = getComponentManager().lookupComponent(ExtensionRepositoryManager.class);
+        this.installedExtensionRepository = getComponentManager().getInstance(InstalledExtensionRepository.class);
+        this.localExtensionRepository = getComponentManager().getInstance(LocalExtensionRepository.class);
+        this.repositoryManager = getComponentManager().getInstance(ExtensionRepositoryManager.class);
 
         // resources
 

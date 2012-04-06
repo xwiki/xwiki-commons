@@ -101,7 +101,7 @@ public class DefaultScriptSafeProvider implements ScriptSafeProvider
     {
         try {
             ScriptSafeProvider<Object> provider =
-                this.component.lookupComponent(new DefaultParameterizedType(null, ScriptSafeProvider.class, type));
+                this.component.getInstance(new DefaultParameterizedType(null, ScriptSafeProvider.class, type));
 
             return provider.get(unsafe);
         } catch (ComponentLookupException e) {
@@ -109,7 +109,7 @@ public class DefaultScriptSafeProvider implements ScriptSafeProvider
             if (type instanceof ParameterizedType) {
                 try {
                     ScriptSafeProvider<Object> provider =
-                        this.component.lookupComponent(((ParameterizedType) type).getRawType());
+                        this.component.getInstance(((ParameterizedType) type).getRawType());
 
                     return provider.get(unsafe);
                 } catch (ComponentLookupException e1) {

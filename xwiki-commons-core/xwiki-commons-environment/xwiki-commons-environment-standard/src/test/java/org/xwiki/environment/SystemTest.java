@@ -41,7 +41,7 @@ public class SystemTest
         ComponentManager componentManager = System.initialize();
         Assert.assertNotNull(componentManager);
 
-        Environment environment = componentManager.lookupComponent(Environment.class);
+        Environment environment = componentManager.getInstance(Environment.class);
 
         // Capture logs so that they don't leak in the test console
         ReflectionUtils.setFieldValue(environment, "logger", NOPLogger.NOP_LOGGER);
@@ -66,7 +66,7 @@ public class SystemTest
             temporaryDirectory);
         Assert.assertNotNull(componentManager);
 
-        Environment environment = componentManager.lookupComponent(Environment.class);
+        Environment environment = componentManager.getInstance(Environment.class);
 
         // Verify the temporary directory
         Assert.assertEquals(temporaryDirectory, environment.getTemporaryDirectory());

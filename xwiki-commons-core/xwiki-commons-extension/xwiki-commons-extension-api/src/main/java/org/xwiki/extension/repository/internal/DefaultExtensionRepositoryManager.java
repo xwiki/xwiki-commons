@@ -107,7 +107,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
 
         try {
             ExtensionRepositoryFactory repositoryFactory =
-                this.componentManager.lookupComponent(ExtensionRepositoryFactory.class, repositoryId.getType());
+                this.componentManager.getInstance(ExtensionRepositoryFactory.class, repositoryId.getType());
 
             repository = repositoryFactory.createRepository(repositoryId);
 

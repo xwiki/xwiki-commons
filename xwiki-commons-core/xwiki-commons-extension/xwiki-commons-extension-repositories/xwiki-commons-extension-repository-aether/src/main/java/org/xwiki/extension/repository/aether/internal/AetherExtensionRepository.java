@@ -118,8 +118,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         this.remoteRepository = new RemoteRepository(repositoryId.getId(), "default", repositoryId.getURI().toString());
 
-        this.converter = this.componentManager.lookupComponent(ConverterManager.class);
-        this.licenseManager = this.componentManager.lookupComponent(ExtensionLicenseManager.class);
+        this.converter = this.componentManager.getInstance(ConverterManager.class);
+        this.licenseManager = this.componentManager.getInstance(ExtensionLicenseManager.class);
 
         this.versionRangeResolver = this.plexusComponentManager.getPlexus().lookup(VersionRangeResolver.class);
 

@@ -48,7 +48,7 @@ public class DefaultLocalExtensionRepositoryTest extends AbstractComponentTestCa
 
         // lookup
 
-        this.localExtensionRepository = getComponentManager().lookupComponent(LocalExtensionRepository.class);
+        this.localExtensionRepository = getComponentManager().getInstance(LocalExtensionRepository.class);
     }
 
     @Override

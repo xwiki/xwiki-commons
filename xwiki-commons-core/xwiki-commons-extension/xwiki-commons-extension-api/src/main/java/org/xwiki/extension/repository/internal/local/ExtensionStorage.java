@@ -93,7 +93,7 @@ public class ExtensionStorage
         this.rootFolder = rootFolder;
         this.componentManager = componentManager;
 
-        this.extensionSerializer = this.componentManager.lookupComponent(ExtensionSerializer.class);
+        this.extensionSerializer = this.componentManager.getInstance(ExtensionSerializer.class);
     }
 
     /**

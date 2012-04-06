@@ -148,7 +148,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     {
         Job job;
         try {
-            job = this.componentManager.lookupComponent(Job.class, jobType);
+            job = this.componentManager.getInstance(Job.class, jobType);
         } catch (ComponentLookupException e) {
             throw new JobException("Failed to lookup any Job for role hint [" + jobType + "]", e);
         }

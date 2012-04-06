@@ -54,7 +54,7 @@ public class ResourceExtensionRepository extends AbstractExtensionRepository imp
     {
         super(new ExtensionRepositoryId("test-resources", "resources", null));
 
-        this.extensionSerializer = componentManager.lookupComponent(ExtensionSerializer.class);
+        this.extensionSerializer = componentManager.getInstance(ExtensionSerializer.class);
 
         this.classLoader = classLoader;
         this.baseResource = baseResource;

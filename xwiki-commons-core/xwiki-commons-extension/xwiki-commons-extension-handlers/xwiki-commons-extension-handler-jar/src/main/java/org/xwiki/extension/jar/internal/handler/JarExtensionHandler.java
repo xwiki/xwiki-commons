@@ -150,7 +150,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
                     }
 
                     stackingComponentEventManager.setObservationManager(componentManager
-                        .<ObservationManager> lookupComponent(ObservationManager.class));
+                        .<ObservationManager>getInstance(ObservationManager.class));
                     stackingComponentEventManager.shouldStack(false);
                     stackingComponentEventManager.flushEvents();
                 }

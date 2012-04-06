@@ -55,7 +55,7 @@ public class StandardEnvironmentTest
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.initialize(getClass().getClassLoader());
-        this.environment = (StandardEnvironment) ecm.lookupComponent(Environment.class);
+        this.environment = (StandardEnvironment) ecm.getInstance(Environment.class);
     }
 
     @Test

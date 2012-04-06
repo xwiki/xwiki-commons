@@ -56,7 +56,7 @@ public class ServletEnvironmentTest
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.initialize(getClass().getClassLoader());
-        this.environment = (ServletEnvironment) ecm.lookupComponent(Environment.class);
+        this.environment = (ServletEnvironment) ecm.getInstance(Environment.class);
     }
 
     @Test

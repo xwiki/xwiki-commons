@@ -145,7 +145,7 @@ public class RepositoryUtil
 
         registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
         ((ConfigurableDefaultCoreExtensionRepository) this.componentManager
-            .lookupComponent(CoreExtensionRepository.class)).addExtensions("coreextension", new DefaultVersion(
+            .getInstance(CoreExtensionRepository.class)).addExtensions("coreextension", new DefaultVersion(
             "version"));
 
         // copy
@@ -155,7 +155,7 @@ public class RepositoryUtil
         // remote repositories
 
         ExtensionRepositoryManager repositoryManager =
-            this.componentManager.lookupComponent(ExtensionRepositoryManager.class);
+            this.componentManager.getInstance(ExtensionRepositoryManager.class);
 
         // light remote repository
 
@@ -177,7 +177,7 @@ public class RepositoryUtil
 
         // init
 
-        this.componentManager.<ExtensionInitializer> lookupComponent(ExtensionInitializer.class).initialize();
+        this.componentManager.<ExtensionInitializer>getInstance(ExtensionInitializer.class).initialize();
     }
 
     public ComponentAnnotationLoader getComponentLoader()
