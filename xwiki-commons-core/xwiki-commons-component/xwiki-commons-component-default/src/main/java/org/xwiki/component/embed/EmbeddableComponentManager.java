@@ -150,18 +150,18 @@ public class EmbeddableComponentManager implements ComponentManager
     }
 
     @Override
-    public <T> List<T> lookupList(Type role) throws ComponentLookupException
+    public <T> List<T> getInstanceList(Type role) throws ComponentLookupException
     {
-        // Reuse lookupMap to make sure to not return components from parent Component Manager overridden by this
+        // Reuse getInstanceMap to make sure to not return components from parent Component Manager overridden by this
         // Component Manager
-        Map<String, T> objects = lookupMap(role);
+        Map<String, T> objects = getInstanceMap(role);
 
         return objects.isEmpty() ? Collections.<T> emptyList() : new ArrayList<T>(objects.values());
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Map<String, T> lookupMap(Type role) throws ComponentLookupException
+    public <T> Map<String, T> getInstanceMap(Type role) throws ComponentLookupException
     {
         Map<String, T> objects = new HashMap<String, T>();
 
@@ -180,7 +180,7 @@ public class EmbeddableComponentManager implements ComponentManager
         // Add parent's list of components
         if (getParent() != null) {
             // If the hint already exists in the children Component Manager then don't add the one from the parent.
-            for (Map.Entry<String, T> entry : getParent().<T> lookupMap(role).entrySet()) {
+            for (Map.Entry<String, T> entry : getParent().<T>getInstanceMap(role).entrySet()) {
                 if (!objects.containsKey(entry.getKey())) {
                     objects.put(entry.getKey(), entry.getValue());
                 }
@@ -279,9 +279,9 @@ public class EmbeddableComponentManager implements ComponentManager
             if (dependencyRoleClass.isAssignableFrom(Logger.class)) {
                 fieldValue = createLogger(instance.getClass());
             } else if (dependencyRoleClass.isAssignableFrom(List.class)) {
-                fieldValue = lookupList(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
+                fieldValue = getInstanceList(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
             } else if (dependencyRoleClass.isAssignableFrom(Map.class)) {
-                fieldValue = lookupMap(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
+                fieldValue = getInstanceMap(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
             } else if (dependencyRoleClass.isAssignableFrom(Provider.class)) {
                 try {
                     fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
@@ -545,14 +545,14 @@ public class EmbeddableComponentManager implements ComponentManager
     @Deprecated
     public <T> List<T> lookupList(Class<T> role) throws ComponentLookupException
     {
-        return lookupList((Type) role);
+        return getInstanceList((Type) role);
     }
 
     @Override
     @Deprecated
     public <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException
     {
-        return lookupMap((Type) role);
+        return getInstanceMap((Type) role);
     }
 
     @Override

@@ -93,9 +93,9 @@ public interface ComponentManager
      * @return the components
      * @param <T> the type of the components role
      * @throws ComponentLookupException if any error happen during component search
-     * @since 4.0M1
+     * @since 4.0RC1
      */
-    <T> List<T> lookupList(Type role) throws ComponentLookupException;
+    <T> List<T> getInstanceList(Type role) throws ComponentLookupException;
 
     /**
      * Find all the components implementing the provided role and organize then in a {@link Map} with role hint as key.
@@ -106,7 +106,7 @@ public interface ComponentManager
      * @throws ComponentLookupException if any error happen during component search
      * @since 4.0M1
      */
-    <T> Map<String, T> lookupMap(Type role) throws ComponentLookupException;
+    <T> Map<String, T> getInstanceMap(Type role) throws ComponentLookupException;
 
     /**
      * Add a component in the component repository dynamically.
@@ -249,7 +249,7 @@ public interface ComponentManager
      * @return the components
      * @param <T> the type of the components role
      * @throws ComponentLookupException if any error happen during component search
-     * @deprecated since 4.0M1 use {@link #lookupList(Type)} instead
+     * @deprecated since 4.0M1 use {@link #getInstanceList} instead
      */
     @Deprecated
     <T> List<T> lookupList(Class<T> role) throws ComponentLookupException;
@@ -261,7 +261,7 @@ public interface ComponentManager
      * @return the components
      * @param <T> the type of the components role
      * @throws ComponentLookupException if any error happen during component search
-     * @deprecated since 4.0M1 use {@link #lookupMap(Type)} instead
+     * @deprecated since 4.0M1 use {@link #getInstanceMap} instead
      */
     @Deprecated
     <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException;

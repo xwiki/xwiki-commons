@@ -85,11 +85,11 @@ public class GenericProvider<T> implements Provider<T>
                 }
             } else if (roleClass.isAssignableFrom(List.class)) {
                 component =
-                    (T) this.componentManager.lookupList(ReflectionUtils.getLastTypeGenericArgument(this.roleHint
+                    (T) this.componentManager.getInstanceList(ReflectionUtils.getLastTypeGenericArgument(this.roleHint
                         .getRoleType()));
             } else if (roleClass.isAssignableFrom(Map.class)) {
                 component =
-                    (T) this.componentManager.lookupMap(ReflectionUtils.getLastTypeGenericArgument(this.roleHint
+                    (T) this.componentManager.getInstanceMap(ReflectionUtils.getLastTypeGenericArgument(this.roleHint
                         .getRoleType()));
             } else if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, roleClass) != null
                 && ReflectionUtils.getDirectAnnotation(Role.class, roleClass) == null) {
