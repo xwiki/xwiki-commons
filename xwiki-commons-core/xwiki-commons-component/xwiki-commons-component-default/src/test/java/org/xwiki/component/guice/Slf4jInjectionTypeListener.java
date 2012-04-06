@@ -33,8 +33,8 @@ import com.google.inject.spi.TypeListener;
 /**
  * Add support for injecting SLF4J Loggers.
  *<p>
- * Note that the original source for this implementation came from the Sitebricks project and was under an Apache
- * License v2.0.
+ * Note that the original source for this implementation (we've modified it) came from the
+ * <a href="http://code.google.com/p/google-sitebricks/">Sitebricks</a> project and was under an Apache License v2.0.
  * </p>
  *
  * @version $Id$
