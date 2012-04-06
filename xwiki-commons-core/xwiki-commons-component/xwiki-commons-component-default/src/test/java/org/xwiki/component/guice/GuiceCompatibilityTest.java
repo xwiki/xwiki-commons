@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.component;
+package org.xwiki.component.guice;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -26,6 +26,8 @@ import javax.inject.Singleton;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Role;
 
@@ -34,6 +36,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
+
+import static com.google.inject.matcher.Matchers.any;
 
 /**
  * Verifies that XWiki components using JSR330 annotation can be used with Guice, thus demonstrating that we're kind of
@@ -90,15 +94,22 @@ public class GuiceCompatibilityTest
     @Named("whatever")
     public static class RoleImpl implements RoleClass
     {
+        // Test a named component injection
         @Inject
         @Named("name")
         private FieldRole fieldRole1;
 
+        // Test a Provider injection
         @Inject
         private Provider<FieldRole> fieldRoleProvider;
 
+        // Test a generics component injection
         @Inject
         private GenericFieldRole<String> genericFieldRole;
+
+        // Test a Logger injection
+        @Inject
+        private Logger logger;
 
         public FieldRole getFieldRole1()
         {
@@ -114,6 +125,11 @@ public class GuiceCompatibilityTest
         {
             return this.genericFieldRole;
         }
+
+        public Logger getLogger()
+        {
+            return this.logger;
+        }
     }
 
     public class TestModule extends AbstractModule
@@ -121,6 +137,13 @@ public class GuiceCompatibilityTest
         @Override
         protected void configure()
         {
+            // Special binding for SLJ4 Logger injection
+            bindListener(any(), new Slf4jInjectionTypeListener());
+
+            // Since XWiki uses the @Inject annotation to inject Loggers too we need to resolve that interface to
+            // an implementation for Guice, even though it's going to be overwritten by the Slf4jInjectionTypeListener!
+            bind(Logger.class).toInstance(LoggerFactory.getLogger("Not used!"));
+
             bind(FieldRole.class).annotatedWith(Names.named("name")).to(FieldRoleImpl1.class);
             bind(FieldRole.class).toProvider(ProviderImpl.class);
             bind(new TypeLiteral<GenericFieldRole<String>>(){}).to(new TypeLiteral<GenericFieldRoleImpl<String>>(){});
@@ -136,6 +159,7 @@ public class GuiceCompatibilityTest
         Assert.assertEquals(FieldRoleImpl1.class.getName(), impl1.getFieldRole1().getClass().getName());
         Assert.assertEquals(FieldRoleImpl2.class.getName(), impl1.getFieldRole2().getClass().getName());
         Assert.assertEquals(GenericFieldRoleImpl.class.getName(), impl1.getGenericFieldRole().getClass().getName());
+        Assert.assertEquals(RoleImpl.class.getName(), impl1.getLogger().getName());
 
         // Test that FieldRole impl is a singleton
         RoleImpl impl2 = injector.getInstance(RoleImpl.class);
