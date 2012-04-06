@@ -32,6 +32,7 @@ import org.xwiki.component.annotation.Role;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 
 /**
@@ -74,6 +75,17 @@ public class GuiceCompatibilityTest
         }
     }
 
+    @Role
+    public interface GenericFieldRole<T>
+    {
+    }
+
+    @Component
+    @Singleton
+    public static class GenericFieldRoleImpl<String> implements GenericFieldRole<String>
+    {
+    }
+
     @Component
     @Named("whatever")
     public static class RoleImpl implements RoleClass
@@ -85,6 +97,9 @@ public class GuiceCompatibilityTest
         @Inject
         private Provider<FieldRole> fieldRoleProvider;
 
+        @Inject
+        private GenericFieldRole<String> genericFieldRole;
+
         public FieldRole getFieldRole1()
         {
             return this.fieldRole1;
@@ -93,6 +108,11 @@ public class GuiceCompatibilityTest
         public FieldRole getFieldRole2()
         {
             return this.fieldRoleProvider.get();
+        }
+
+        public GenericFieldRole<String> getGenericFieldRole()
+        {
+            return this.genericFieldRole;
         }
     }
 
@@ -103,6 +123,7 @@ public class GuiceCompatibilityTest
         {
             bind(FieldRole.class).annotatedWith(Names.named("name")).to(FieldRoleImpl1.class);
             bind(FieldRole.class).toProvider(ProviderImpl.class);
+            bind(new TypeLiteral<GenericFieldRole<String>>(){}).to(new TypeLiteral<GenericFieldRoleImpl<String>>(){});
         }
     }
 
@@ -114,6 +135,7 @@ public class GuiceCompatibilityTest
         RoleImpl impl1 = injector.getInstance(RoleImpl.class);
         Assert.assertEquals(FieldRoleImpl1.class.getName(), impl1.getFieldRole1().getClass().getName());
         Assert.assertEquals(FieldRoleImpl2.class.getName(), impl1.getFieldRole2().getClass().getName());
+        Assert.assertEquals(GenericFieldRoleImpl.class.getName(), impl1.getGenericFieldRole().getClass().getName());
 
         // Test that FieldRole impl is a singleton
         RoleImpl impl2 = injector.getInstance(RoleImpl.class);
