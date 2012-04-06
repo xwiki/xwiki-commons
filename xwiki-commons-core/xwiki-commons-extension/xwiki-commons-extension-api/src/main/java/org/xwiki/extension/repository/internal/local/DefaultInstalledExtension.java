@@ -175,8 +175,9 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                 setInstalled(true);
                 addNamespace(namespace);
             } else {
-                if (getNamespaces() != null) {
-                    getNamespaces().remove(namespace);
+                Collection<String> namespaces = getNamespaces(false);
+                if (namespaces != null) {
+                    namespaces.remove(namespace);
 
                     if (getNamespaces().isEmpty()) {
                         setInstalled(false);
