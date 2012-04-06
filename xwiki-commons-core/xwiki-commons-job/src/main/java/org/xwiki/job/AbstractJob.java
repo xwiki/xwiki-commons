@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.job.internal;
+package org.xwiki.job;
 
 import javax.inject.Inject;
 
@@ -25,15 +25,14 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.job.Job;
-import org.xwiki.job.JobContext;
-import org.xwiki.job.Request;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
+import org.xwiki.job.internal.DefaultJobStatus;
+import org.xwiki.job.internal.JobStatusStorage;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 

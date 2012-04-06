@@ -28,6 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.event.status.JobStatus.State;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
@@ -118,7 +119,7 @@ public class DefaultJobStatus<R extends Request> implements JobStatus, Serializa
     /**
      * Start listening to events.
      */
-    void startListening()
+    public void startListening()
     {
         // Register progress listener
         this.observationManager.addListener(this.progress);
@@ -131,7 +132,7 @@ public class DefaultJobStatus<R extends Request> implements JobStatus, Serializa
     /**
      * Stop listening to events.
      */
-    void stopListening()
+    public void stopListening()
     {
         this.loggerManager.popLogListener();
         this.observationManager.removeListener(this.progress.getName());

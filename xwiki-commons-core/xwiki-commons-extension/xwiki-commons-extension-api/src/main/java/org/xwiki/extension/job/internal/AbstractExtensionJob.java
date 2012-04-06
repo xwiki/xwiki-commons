@@ -20,7 +20,7 @@
 package org.xwiki.extension.job.internal;
 
 import org.xwiki.extension.job.ExtensionRequest;
-import org.xwiki.job.internal.AbstractJob;
+import org.xwiki.job.AbstractJob;
 
 /**
  * Base class for any Job dealing with extensions.
