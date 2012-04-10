@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 
 /**
@@ -31,7 +31,7 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
  * 
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface ComponentManager
 {
     /**
@@ -223,7 +223,7 @@ public interface ComponentManager
      * @param role the class (aka role) that the component implements
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
-     * @deprecated since 4.0M1 use {@link #getInstance} iinstead
+     * @deprecated since 4.0M1 use {@link #getInstance(Type)} instead
      */
     @Deprecated
     <T> T lookup(Class<T> role) throws ComponentLookupException;
@@ -238,6 +238,7 @@ public interface ComponentManager
      *            registered with a hint; the "default" hint being the default)
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
+     * @deprecated since 4.0M1 use {@link #getInstance(Type, String)} instead
      */
     @Deprecated
     <T> T lookup(Class<T> role, String hint) throws ComponentLookupException;
@@ -249,7 +250,7 @@ public interface ComponentManager
      * @return the components
      * @param <T> the type of the components role
      * @throws ComponentLookupException if any error happen during component search
-     * @deprecated since 4.0M1 use {@link #getInstanceList} instead
+     * @deprecated since 4.0M1 use {@link #getInstanceList(Type)} instead
      */
     @Deprecated
     <T> List<T> lookupList(Class<T> role) throws ComponentLookupException;
@@ -261,7 +262,7 @@ public interface ComponentManager
      * @return the components
      * @param <T> the type of the components role
      * @throws ComponentLookupException if any error happen during component search
-     * @deprecated since 4.0M1 use {@link #getInstanceMap} instead
+     * @deprecated since 4.0M1 use {@link #getInstanceMap(Type)} instead
      */
     @Deprecated
     <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException;
