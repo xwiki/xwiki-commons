@@ -114,12 +114,6 @@
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>
             <!-- Remove the following excludes after we release the current version as final -->
-            <exclude>org/xwiki/component/manager/ComponentManager</exclude> <!-- New methods -->
-            <exclude>org/xwiki/component/descriptor/ComponentRole</exclude> <!-- New methods -->
-            <exclude>org/xwiki/component/annotation/DefaultComponentDependencyFactory</exclude> <!-- Removed method that should have been private -->
-            <!-- START: Removed Deprecations -->
-            <exclude>org/xwiki/component/annotation/Requirement</exclude>
-            <!-- STOP: Removed Deprecations -->
           </excludes>
         </configuration>
       </plugin>
