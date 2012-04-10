@@ -173,7 +173,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
 
         try {
             OutputStreamWriter writer = new OutputStreamWriter(stream, DEFAULT_ENCODING);
-            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            writer.write("<?xml version=\"1.0\" encoding=\"" + DEFAULT_ENCODING + "\"?>\n");
             this.xstream.toXML(status, writer);
             writer.flush();
         } finally {
