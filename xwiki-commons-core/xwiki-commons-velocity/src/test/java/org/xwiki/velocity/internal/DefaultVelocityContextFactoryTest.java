@@ -47,7 +47,7 @@ public class DefaultVelocityContextFactoryTest extends AbstractMockingComponentT
     @Override
     public void configure() throws Exception
     {
-        final VelocityConfiguration configuration = getComponentManager().lookup(VelocityConfiguration.class);
+        final VelocityConfiguration configuration = getComponentManager().getInstance(VelocityConfiguration.class);
         final Properties properties = new Properties();
         properties.put("listtool", ListTool.class.getName());
         getMockery().checking(new Expectations() {{
@@ -72,7 +72,7 @@ public class DefaultVelocityContextFactoryTest extends AbstractMockingComponentT
     {
         // We also verify that the VelocityContextInitializers are called.
         final VelocityContextInitializer mockInitializer = getMockery().mock(VelocityContextInitializer.class);
-        final ComponentManager mockComponentManager = getComponentManager().lookup(ComponentManager.class);
+        final ComponentManager mockComponentManager = getComponentManager().getInstance(ComponentManager.class);
         getMockery().checking(new Expectations() {{
             exactly(2).of(mockInitializer).initialize(with(any(VelocityContext.class)));
             exactly(2). of(mockComponentManager).lookupList(VelocityContextInitializer.class);

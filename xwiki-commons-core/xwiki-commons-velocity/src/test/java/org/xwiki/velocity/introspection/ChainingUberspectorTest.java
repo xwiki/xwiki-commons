@@ -51,7 +51,7 @@ public class ChainingUberspectorTest extends AbstractComponentTestCase
     @Override
     protected void registerComponents() throws Exception
     {
-        this.engine = getComponentManager().lookup(VelocityEngine.class);
+        this.engine = getComponentManager().getInstance(VelocityEngine.class);
         
         this.mockLogger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{

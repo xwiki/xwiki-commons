@@ -44,7 +44,7 @@ public class JMXVelocityEngineTest extends AbstractComponentTestCase
     @Test
     public void testGetTemplates() throws Exception
     {
-        VelocityEngine engine = getComponentManager().lookup(VelocityEngine.class);
+        VelocityEngine engine = getComponentManager().getInstance(VelocityEngine.class);
         engine.initialize(new Properties());
         JMXVelocityEngine jmxBean = new JMXVelocityEngine(engine);
 

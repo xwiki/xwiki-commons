@@ -49,7 +49,7 @@ public class LogbackEventGeneratorTest extends AbstractComponentTestCase
     {
         super.setUp();
         
-        this.observationManager = getComponentManager().lookup(ObservationManager.class);
+        this.observationManager = getComponentManager().getInstance(ObservationManager.class);
         
         this.logger = LoggerFactory.getLogger(getClass());   
     }

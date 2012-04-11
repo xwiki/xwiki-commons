@@ -83,7 +83,7 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
         this.listAppender.start();
         rootLogger.addAppender(this.listAppender);
 
-        this.loggerManager = getComponentManager().lookup(LoggerManager.class);
+        this.loggerManager = getComponentManager().getInstance(LoggerManager.class);
 
         this.logger = LoggerFactory.getLogger(getClass());
         this.logger2 = LoggerFactory.getLogger(getClass());

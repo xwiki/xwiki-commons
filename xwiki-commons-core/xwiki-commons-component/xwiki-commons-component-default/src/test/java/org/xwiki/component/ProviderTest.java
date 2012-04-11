@@ -120,7 +120,7 @@ public class ProviderTest
         // Initialize
         cm.initialize(getClass().getClassLoader());
 
-        TestComponentWithProviders component = (TestComponentWithProviders) cm.lookup(TestComponentRole.class);
+        TestComponentWithProviders component = (TestComponentWithProviders) cm.getInstance(TestComponentRole.class);
 
         Assert.assertEquals("value", component.provider1.get());
         Assert.assertEquals("another value", component.provider12.get());

@@ -52,7 +52,7 @@ public class ObservationManagerEventListenerTest extends AbstractComponentTestCa
     {
         super.setUp();
 
-        this.manager = getComponentManager().lookup(ObservationManager.class);
+        this.manager = getComponentManager().getInstance(ObservationManager.class);
         StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
         componentEventManager.shouldStack(false);
         componentEventManager.setObservationManager(this.manager);

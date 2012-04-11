@@ -82,7 +82,7 @@ public class DefaultVelocityFactory implements VelocityFactory
     {
         VelocityEngine engine;
         try {
-            engine = this.componentManager.lookup(VelocityEngine.class);
+            engine = this.componentManager.getInstance(VelocityEngine.class);
         } catch (ComponentLookupException e) {
             throw new XWikiVelocityException("Failed to create Velocity Engine", e);
         }

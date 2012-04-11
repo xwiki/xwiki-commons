@@ -43,7 +43,7 @@ public class DefaultConverterManagerTest extends AbstractComponentTestCase
     @Override
     protected void registerComponents() throws Exception
     {
-        this.defaultConverterManager = getComponentManager().lookup(ConverterManager.class);
+        this.defaultConverterManager = getComponentManager().getInstance(ConverterManager.class);
     }
 
     @Test

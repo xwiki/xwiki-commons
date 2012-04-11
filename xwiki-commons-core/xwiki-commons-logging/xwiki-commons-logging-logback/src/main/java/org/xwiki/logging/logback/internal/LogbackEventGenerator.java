@@ -113,7 +113,7 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
      */
     private ObservationManager getObservationManager() throws ComponentLookupException
     {
-        return this.componentManager.lookup(ObservationManager.class);
+        return this.componentManager.getInstance(ObservationManager.class);
     }
 
     @Override

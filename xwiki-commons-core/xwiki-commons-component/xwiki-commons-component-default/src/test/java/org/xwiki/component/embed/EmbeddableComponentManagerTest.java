@@ -143,7 +143,7 @@ public class EmbeddableComponentManagerTest
         d1.setImplementation(RoleImpl.class);
         ecm.registerComponent(d1);
 
-        Object instance = ecm.lookup(Role.class);
+        Object instance = ecm.getInstance(Role.class);
         Assert.assertSame(RoleImpl.class, instance.getClass());
 
         DefaultComponentDescriptor<Role> d2 = new DefaultComponentDescriptor<Role>();
@@ -151,7 +151,7 @@ public class EmbeddableComponentManagerTest
         d2.setImplementation(OtherRoleImpl.class);
         ecm.registerComponent(d2);
 
-        instance = ecm.lookup(Role.class);
+        instance = ecm.getInstance(Role.class);
         Assert.assertSame(OtherRoleImpl.class, instance.getClass());
     }
 
@@ -166,7 +166,7 @@ public class EmbeddableComponentManagerTest
         Role instance = new RoleImpl();
         ecm.registerComponent(d1, instance);
 
-        Assert.assertSame(instance, ecm.lookup(Role.class));
+        Assert.assertSame(instance, ecm.getInstance(Role.class));
     }
 
     @Test
@@ -180,13 +180,13 @@ public class EmbeddableComponentManagerTest
         ecm.registerComponent(d1);
 
         // Verify that the component is properly registered
-        Assert.assertSame(RoleImpl.class, ecm.lookup(Role.class).getClass());
+        Assert.assertSame(RoleImpl.class, ecm.getInstance(Role.class).getClass());
 
         ecm.unregisterComponent(d1.getRole(), d1.getRoleHint());
 
         // Verify that the component is not registered anymore
         try {
-            ecm.lookup(d1.getRole());
+            ecm.getInstance(d1.getRole());
             Assert.fail("Should have thrown a ComponentLookupException");
         } catch (ComponentLookupException expected) {
             // The exception message doesn't matter. All we need to know is that the component descriptor
@@ -200,7 +200,7 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager());
 
-        Role instance = ecm.lookup(Role.class);
+        Role instance = ecm.getInstance(Role.class);
         Assert.assertNotNull(instance);
     }
 
@@ -276,7 +276,7 @@ public class EmbeddableComponentManagerTest
         d.addComponentDependency(dependencyDescriptor);
         ecm.registerComponent(d);
 
-        LoggingRoleImpl impl = (LoggingRoleImpl) ecm.lookup(Role.class);
+        LoggingRoleImpl impl = (LoggingRoleImpl) ecm.getInstance(Role.class);
         Assert.assertNotNull(impl.getLogger());
     }
 
@@ -299,7 +299,7 @@ public class EmbeddableComponentManagerTest
         cd.setRole(Role.class);
         cd.setImplementation(InitializableRoleImpl.class);
         ecm.registerComponent(cd);
-        InitializableRoleImpl instance = (InitializableRoleImpl) ecm.lookup(Role.class);
+        InitializableRoleImpl instance = (InitializableRoleImpl) ecm.getInstance(Role.class);
 
         Assert.assertTrue(instance.isInitialized());
     }
@@ -315,7 +315,7 @@ public class EmbeddableComponentManagerTest
         cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
 
         ecm.registerComponent(cd);
-        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.lookup(Role.class);
+        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.getInstance(Role.class);
         ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
 
         Assert.assertTrue(instance.isFinalized());
@@ -364,8 +364,8 @@ public class EmbeddableComponentManagerTest
 
         ecm.release(roleImpl);
 
-        Assert.assertNotNull(ecm.lookup(Role.class));
-        Assert.assertNotSame(roleImpl, ecm.lookup(Role.class));
+        Assert.assertNotNull(ecm.getInstance(Role.class));
+        Assert.assertNotSame(roleImpl, ecm.getInstance(Role.class));
     }
 
     @Test
@@ -379,7 +379,7 @@ public class EmbeddableComponentManagerTest
         cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
 
         ecm.registerComponent(cd);
-        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.lookup(Role.class);
+        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.getInstance(Role.class);
         ecm.release(instance);
 
         Assert.assertTrue(instance.isFinalized());

@@ -47,7 +47,7 @@ public class DefaultVelocityConfigurationTest extends AbstractMockingComponentTe
     @Override
     public void configure() throws Exception
     {
-        final ConfigurationSource source = getComponentManager().lookup(ConfigurationSource.class);
+        final ConfigurationSource source = getComponentManager().getInstance(ConfigurationSource.class);
         getMockery().checking(new Expectations() {{
             allowing(source).getProperty("velocity.tools", Properties.class);
             will(returnValue(Collections.emptyMap()));

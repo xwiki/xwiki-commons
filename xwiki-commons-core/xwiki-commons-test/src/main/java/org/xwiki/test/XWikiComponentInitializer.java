@@ -57,7 +57,7 @@ public class XWikiComponentInitializer
     public void initializeExecution() throws Exception
     {
         // Initialize the Execution Context
-        ExecutionContextManager ecm = getComponentManager().lookup(ExecutionContextManager.class);
+        ExecutionContextManager ecm = getComponentManager().getInstance(ExecutionContextManager.class);
 
         ExecutionContext ec = new ExecutionContext();
 
@@ -66,7 +66,7 @@ public class XWikiComponentInitializer
 
     public void shutdown() throws Exception
     {
-        Execution execution = getComponentManager().lookup(Execution.class);
+        Execution execution = getComponentManager().getInstance(Execution.class);
         execution.removeContext();
 
         // Make sure we mark the component manager for garbage collection as otherwise each JUnit test will

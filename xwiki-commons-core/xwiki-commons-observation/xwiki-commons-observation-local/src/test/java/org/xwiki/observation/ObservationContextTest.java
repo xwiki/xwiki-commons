@@ -45,8 +45,8 @@ public class ObservationContextTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.manager = getComponentManager().lookup(ObservationManager.class);
-        this.observationContext = getComponentManager().lookup(ObservationContext.class);
+        this.manager = getComponentManager().getInstance(ObservationManager.class);
+        this.observationContext = getComponentManager().getInstance(ObservationContext.class);
     }
 
     @Test

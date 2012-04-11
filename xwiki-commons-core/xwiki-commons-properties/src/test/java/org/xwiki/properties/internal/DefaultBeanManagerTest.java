@@ -42,7 +42,7 @@ public class DefaultBeanManagerTest extends AbstractComponentTestCase
     @Override
     protected void registerComponents() throws Exception
     {
-        this.defaultBeanManager = getComponentManager().lookup(BeanManager.class);
+        this.defaultBeanManager = getComponentManager().getInstance(BeanManager.class);
     }
 
     @Test

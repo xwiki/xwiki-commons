@@ -55,7 +55,7 @@ public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
         properties.put("directive.set.null.allowed", Boolean.TRUE.toString());
         properties.put("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
 
-        final VelocityConfiguration configuration = getComponentManager().lookup(VelocityConfiguration.class);
+        final VelocityConfiguration configuration = getComponentManager().getInstance(VelocityConfiguration.class);
 
         getMockery().checking(new Expectations() {{
             oneOf(configuration).getProperties();

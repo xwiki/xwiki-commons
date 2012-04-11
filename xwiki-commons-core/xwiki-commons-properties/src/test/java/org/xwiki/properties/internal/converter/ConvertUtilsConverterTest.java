@@ -42,7 +42,7 @@ public class ConvertUtilsConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.convertUtilsConverter = getComponentManager().lookup(Converter.class);
+        this.convertUtilsConverter = getComponentManager().getInstance(Converter.class);
     }
 
     @Test
