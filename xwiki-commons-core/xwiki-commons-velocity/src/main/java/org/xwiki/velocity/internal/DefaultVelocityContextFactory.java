@@ -103,7 +103,7 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
 
         // Call all components implementing the VelocityContextInitializer's role.
         try {
-            for (Object interceptor : this.componentManager.lookupList(VelocityContextInitializer.class)) {
+            for (Object interceptor : this.componentManager.getInstanceList(VelocityContextInitializer.class)) {
                 ((VelocityContextInitializer) interceptor).initialize(context);
             }
         } catch (ComponentLookupException e) {

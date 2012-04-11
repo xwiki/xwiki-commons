@@ -75,7 +75,7 @@ public class DefaultVelocityContextFactoryTest extends AbstractMockingComponentT
         final ComponentManager mockComponentManager = getComponentManager().getInstance(ComponentManager.class);
         getMockery().checking(new Expectations() {{
             exactly(2).of(mockInitializer).initialize(with(any(VelocityContext.class)));
-            exactly(2). of(mockComponentManager).lookupList(VelocityContextInitializer.class);
+            exactly(2). of(mockComponentManager).getInstanceList(VelocityContextInitializer.class);
             will(returnValue(Arrays.asList(mockInitializer)));
         }});
 

@@ -227,11 +227,11 @@ public class EmbeddableComponentManagerTest
         // Verify that the components are found
         // Note: We find only 2 components since 2 components are registered with the same Role and Hint.
 
-        List<Role> instanceList = ecm.lookupList(Role.class);
+        List<Role> instanceList = ecm.getInstanceList(Role.class);
         Assert.assertEquals(2, instanceList.size());
         Assert.assertSame(roleImpl, instanceList.get(0));
 
-        Map<String, Role> instances = ecm.lookupMap(Role.class);
+        Map<String, Role> instances = ecm.getInstanceMap(Role.class);
         Assert.assertEquals(2, instances.size());
         Assert.assertSame(roleImpl, instances.get("default"));
     }

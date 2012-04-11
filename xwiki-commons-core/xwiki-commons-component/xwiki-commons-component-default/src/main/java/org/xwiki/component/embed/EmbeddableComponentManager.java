@@ -108,7 +108,7 @@ public class EmbeddableComponentManager implements ComponentManager
 
         // Extension point to allow component to manipulate ComponentManager initialized state.
         try {
-            List<ComponentManagerInitializer> initializers = this.lookupList(ComponentManagerInitializer.class);
+            List<ComponentManagerInitializer> initializers = this.getInstanceList(ComponentManagerInitializer.class);
 
             Set keySet = this.componentEntries.keySet();
             

@@ -132,7 +132,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     public void initialize() throws InitializationException
     {
         try {
-            for (EventListener listener : this.componentManager.lookupList(EventListener.class)) {
+            for (EventListener listener : this.componentManager.<EventListener>getInstanceList(EventListener.class)) {
                 addListener(listener);
             }
         } catch (ComponentLookupException e) {
