@@ -58,7 +58,7 @@ public class DefaultScriptServiceManager implements ScriptServiceManager
         ScriptService scriptService;
 
         try {
-            scriptService = this.componentManager.lookup(ScriptService.class, serviceName);
+            scriptService = this.componentManager.getInstance(ScriptService.class, serviceName);
         } catch (Exception e) {
             this.logger.debug("Failed to lookup script service for role hint [{}]", serviceName, e);
 

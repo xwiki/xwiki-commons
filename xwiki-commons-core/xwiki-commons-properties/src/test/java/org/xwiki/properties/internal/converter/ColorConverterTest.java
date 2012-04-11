@@ -43,7 +43,7 @@ public class ColorConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.colorConverter = getComponentManager().lookup(Converter.class, Color.class.getName());
+        this.colorConverter = getComponentManager().getInstance(Converter.class, Color.class.getName());
     }
 
     @Test

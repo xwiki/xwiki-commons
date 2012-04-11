@@ -52,7 +52,7 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
     @Override
     protected void registerComponents() throws Exception
     {
-        this.cleaner = getComponentManager().lookup(HTMLCleaner.class, "default");
+        this.cleaner = getComponentManager().getInstance(HTMLCleaner.class, "default");
     }
 
     @Test

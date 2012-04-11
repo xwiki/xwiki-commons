@@ -105,7 +105,7 @@ public class DefaultConverterManager implements ConverterManager
 
         if (this.componentManager.hasComponent(Converter.class, typeGenericName)) {
             try {
-                converter = this.componentManager.lookup(Converter.class, typeGenericName);
+                converter = this.componentManager.getInstance(Converter.class, typeGenericName);
             } catch (ComponentLookupException e) {
                 this.logger.error("Failed to find a specific Converter for type [" + typeGenericName + "]", e);
             }
@@ -115,7 +115,7 @@ public class DefaultConverterManager implements ConverterManager
             String typeName = getTypeName(targetType);
             if (this.componentManager.hasComponent(Converter.class, typeName)) {
                 try {
-                    converter = this.componentManager.lookup(Converter.class, typeName);
+                    converter = this.componentManager.getInstance(Converter.class, typeName);
                 } catch (ComponentLookupException e) {
                     this.logger.error("Failed to find a specific Converter for class [" + typeName + "]", e);
                 }

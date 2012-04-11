@@ -86,7 +86,7 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
 
         ComponentManagerFactory componentManagerFactory;
         try {
-            componentManagerFactory = this.rootComponentManager.lookup(ComponentManagerFactory.class, prefix);
+            componentManagerFactory = this.rootComponentManager.getInstance(ComponentManagerFactory.class, prefix);
         } catch (ComponentLookupException e) {
             componentManagerFactory = this.defaultComponentManagerFactory;
         }

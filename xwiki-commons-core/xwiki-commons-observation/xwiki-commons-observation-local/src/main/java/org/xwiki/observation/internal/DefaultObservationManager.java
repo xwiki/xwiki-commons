@@ -313,7 +313,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         ComponentDescriptor<EventListener> descriptor)
     {
         try {
-            EventListener eventListener = componentManager.lookup(EventListener.class, event.getRoleHint());
+            EventListener eventListener = componentManager.getInstance(EventListener.class, event.getRoleHint());
 
             if (getListener(eventListener.getName()) != eventListener) {
                 addListener(eventListener);

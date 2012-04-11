@@ -47,7 +47,7 @@ public class EnumConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.enumConverter = getComponentManager().lookup(Converter.class, "enum");
+        this.enumConverter = getComponentManager().getInstance(Converter.class, "enum");
     }
 
     @Test

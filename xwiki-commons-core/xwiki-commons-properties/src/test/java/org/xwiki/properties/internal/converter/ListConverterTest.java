@@ -48,7 +48,7 @@ public class ListConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.listConverter = getComponentManager().lookup(Converter.class, List.class.getName());
+        this.listConverter = getComponentManager().getInstance(Converter.class, List.class.getName());
     }
 
     @Test
