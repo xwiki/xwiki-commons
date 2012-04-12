@@ -187,7 +187,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     @Override
     public JobStatus getJobStatus(String id)
     {
-        if (StringUtils.equals(id, this.currentJob.getRequest().getId())) {
+        if (this.currentJob != null && StringUtils.equals(id, this.currentJob.getRequest().getId())) {
             return this.currentJob.getStatus();
         }
 
