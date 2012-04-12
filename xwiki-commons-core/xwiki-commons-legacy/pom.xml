@@ -37,4 +37,22 @@
     <module>xwiki-commons-legacy-component</module>
     <module>xwiki-commons-legacy-configuration</module>
   </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-no-legacy-dependencies</id>
+            <configuration>
+              <!-- Skip Enforcer check on legacy dependencies since we allow legacy modules to depend on other legacy
+                   modules -->
+              <skip>true</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
