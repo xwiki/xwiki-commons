@@ -17,26 +17,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.component.embed;
+package org.xwiki.component.logging;
 
-import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.component.logging.DefaultLogger;
-import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.phase.LogEnabled;
+import junit.framework.TestCase;
 
 /**
- * Handles lifecycle for {@link LogEnabled}.
+ * Unit tests for {@link org.xwiki.component.logging.AbstractLogEnabled}.
  * 
  * @version $Id$
- * @since 3.2RC1
+ * @since 1.8RC3
+ * @deprecated starting with 3.1M2 use {@link javax.inject.Inject} annotation to get injected a SLF4J Logger instead
  */
-public class LogEnabledLifecycleHandler implements LifecycleHandler
+@Deprecated
+public class LoggerTest extends TestCase
 {
-    @Override
-    public <T> void handle(T instance, ComponentDescriptor<T> descriptor, ComponentManager componentManager)
+    public void testDefaultVoidLogger()
     {
-        if (LogEnabled.class.isAssignableFrom(descriptor.getImplementation())) {
-            ((LogEnabled) instance).enableLogging(new DefaultLogger(instance.getClass()));
-        }
+        AbstractLogEnabled component = new AbstractLogEnabled() {};
+        assertEquals(VoidLogger.class.getName(), component.getLogger().getClass().getName());
     }
 }

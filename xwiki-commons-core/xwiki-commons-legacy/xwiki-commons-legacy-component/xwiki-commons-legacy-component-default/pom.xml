@@ -26,33 +26,23 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-legacy</artifactId>
+    <artifactId>xwiki-commons-legacy-component</artifactId>
     <version>4.1-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-legacy-component</artifactId>
-  <name>XWiki Commons - Legacy - Component - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>Legacy modules for xwiki-commons-component-*</description>
-  <modules>
-    <module>xwiki-commons-legacy-component-api</module>
-    <module>xwiki-commons-legacy-component-default</module>
-  </modules>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-no-legacy-dependencies</id>
-            <configuration>
-              <!-- Skip Enforcer check on legacy dependencies since we allow legacy modules to depend on other legacy
-                   modules -->
-              <skip>true</skip>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+  <artifactId>xwiki-commons-legacy-component-default</artifactId>
+  <name>XWiki Commons - Legacy - Component - Default Implementation</name>
+  <packaging>jar</packaging>
+  <description>Legacy module for xwiki-commons-component-default</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-legacy-component-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-default</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>

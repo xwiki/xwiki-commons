@@ -31,8 +31,8 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 
 /**
- * Unit tests for {@link org.xwiki.component.annotation.ComponentDescriptorFactory} but using depecated 
- * {@link Requirement} annotations.
+ * Unit tests for {@link ComponentDescriptorFactory} but using depecated
+ * {@link org.xwiki.component.annotation.Requirement} annotations.
  * 
  * @version $Id$
  * @since 3.2RC1

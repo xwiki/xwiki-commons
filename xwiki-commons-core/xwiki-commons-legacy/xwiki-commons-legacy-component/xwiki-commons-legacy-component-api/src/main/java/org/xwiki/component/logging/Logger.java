@@ -22,7 +22,7 @@ package org.xwiki.component.logging;
 /**
  * Logger component, used for logging messages. Classes that want to log should <em>not</em> declare a dependency on
  * this component, but implement the {@link org.xwiki.component.phase.LogEnabled} interface. A quick way to enable
- * logging is to extend {@link AbstractLogEnabled}.
+ * logging is to extend {@link org.xwiki.component.logging.AbstractLogEnabled}.
  * 
  * @version $Id$
  * @deprecated starting with 3.1M2 use SLF4J instead
