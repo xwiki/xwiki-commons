@@ -192,6 +192,7 @@ public class DelegateComponentManager implements ComponentManager
         return getComponentManager().hasComponent(role);
     }
 
+/*
     @Override
     @Deprecated
     public <T> T lookup(Class<T> role, String roleHint) throws ComponentLookupException
@@ -219,7 +220,7 @@ public class DelegateComponentManager implements ComponentManager
     {
         return getComponentManager().lookupMap(role);
     }
-
+*/
     @Override
     @Deprecated
     public <T> void unregisterComponent(Class<T> role, String roleHint)

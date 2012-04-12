@@ -37,6 +37,14 @@
     <module>xwiki-commons-legacy-component</module>
     <module>xwiki-commons-legacy-configuration</module>
   </modules>
+  <dependencies>
+    <!-- Needed for backward compatibility Aspects -->
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+      <version>1.6.7</version>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>

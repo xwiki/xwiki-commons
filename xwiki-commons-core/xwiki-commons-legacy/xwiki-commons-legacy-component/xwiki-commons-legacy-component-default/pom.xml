@@ -33,6 +33,12 @@
   <name>XWiki Commons - Legacy - Component - Default Implementation</name>
   <packaging>jar</packaging>
   <description>Legacy module for xwiki-commons-component-default</description>
+  <properties>
+    <!-- TODO: Remove this when version 4.1 final is released. CLIRR is generating an error ATM:
+         Unable to locate enclosing class org.xwiki.component.embed.EmbeddableComponentManager for nested class
+         org.xwiki.component.embed.EmbeddableComponentManager$ComponentEntry -->
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -43,6 +49,72 @@
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-default</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.xwiki.commons</groupId>
+          <artifactId>xwiki-commons-component-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <!-- Apply Compatibility Aspects -->
+     <plugin>
+       <groupId>org.codehaus.mojo</groupId>
+       <artifactId>aspectj-maven-plugin</artifactId>
+       <executions>
+         <execution>
+           <id>backward-compatibility-aspects</id>
+           <goals>
+             <goal>compile</goal>
+           </goals>
+         </execution>
+       </executions>
+       <configuration>
+         <weaveDependencies>
+           <weaveDependency>
+             <groupId>org.xwiki.commons</groupId>
+             <artifactId>xwiki-commons-component-default</artifactId>
+           </weaveDependency>
+         </weaveDependencies>
+       </configuration>
+     </plugin>
+      <!-- We need to merge the content of the files that have the same names in the JAR we're aspectifying and
+           in this module -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <configuration>
+              <target>
+                <concat destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.annotation.ComponentDependencyFactory" append="true">
+                  <filelist dir="${basedir}/src/main/resources/META-INF/services" files="org.xwiki.component.annotation.ComponentDependencyFactory" />
+                </concat>
+                <concat destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.embed.LifecycleHandler" append="true">
+                  <filelist dir="${basedir}/src/main/resources/META-INF/services" files="org.xwiki.component.embed.LifecycleHandler" />
+                </concat>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Make sure we run the tests only with the aspectified JARs -->
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <classpathDependencyExcludes>
+            <classpathDependencyExcludes>org.xwiki.commons:xwiki-commons-component-api</classpathDependencyExcludes>
+            <classpathDependencyExcludes>org.xwiki.commons:xwiki-commons-component-default</classpathDependencyExcludes>
+          </classpathDependencyExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

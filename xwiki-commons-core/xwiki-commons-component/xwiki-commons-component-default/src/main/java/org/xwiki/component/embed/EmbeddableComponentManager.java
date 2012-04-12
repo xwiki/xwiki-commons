@@ -529,34 +529,6 @@ public class EmbeddableComponentManager implements ComponentManager
 
     @Override
     @Deprecated
-    public <T> T lookup(Class<T> role) throws ComponentLookupException
-    {
-        return getInstance(role);
-    }
-
-    @Override
-    @Deprecated
-    public <T> T lookup(Class<T> role, String hint) throws ComponentLookupException
-    {
-        return getInstance(role, hint);
-    }
-
-    @Override
-    @Deprecated
-    public <T> List<T> lookupList(Class<T> role) throws ComponentLookupException
-    {
-        return getInstanceList((Type) role);
-    }
-
-    @Override
-    @Deprecated
-    public <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException
-    {
-        return getInstanceMap((Type) role);
-    }
-
-    @Override
-    @Deprecated
     public <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String hint)
     {
         return getComponentDescriptor((Type) role, hint);

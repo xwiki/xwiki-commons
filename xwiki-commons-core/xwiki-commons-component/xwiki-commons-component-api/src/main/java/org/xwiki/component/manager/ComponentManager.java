@@ -216,58 +216,6 @@ public interface ComponentManager
     <T> boolean hasComponent(Class<T> role, String hint);
 
     /**
-     * Find a component instance that implements that passed interface class. If the component has a singleton lifecycle
-     * then this method always return the same instance.
-     * 
-     * @param <T> the component role type
-     * @param role the class (aka role) that the component implements
-     * @return the component instance
-     * @throws ComponentLookupException in case the component cannot be found
-     * @deprecated since 4.0M1 use {@link #getInstance(Type)} instead
-     */
-    @Deprecated
-    <T> T lookup(Class<T> role) throws ComponentLookupException;
-
-    /**
-     * Find a component instance that implements that passed interface class. If the component has a singleton lifecycle
-     * then this method always return the same instance.
-     * 
-     * @param <T> the component role type
-     * @param role the class (aka role) that the component implements
-     * @param hint the hint that differentiates a component implementation from another one (each component is
-     *            registered with a hint; the "default" hint being the default)
-     * @return the component instance
-     * @throws ComponentLookupException in case the component cannot be found
-     * @deprecated since 4.0M1 use {@link #getInstance(Type, String)} instead
-     */
-    @Deprecated
-    <T> T lookup(Class<T> role, String hint) throws ComponentLookupException;
-
-    /**
-     * Find all the components implementing the provided role.
-     * 
-     * @param role the class of the components role
-     * @return the components
-     * @param <T> the type of the components role
-     * @throws ComponentLookupException if any error happen during component search
-     * @deprecated since 4.0M1 use {@link #getInstanceList(Type)} instead
-     */
-    @Deprecated
-    <T> List<T> lookupList(Class<T> role) throws ComponentLookupException;
-
-    /**
-     * Find all the components implementing the provided role and organize then in a {@link Map} with role hint as key.
-     * 
-     * @param role the class of the components role
-     * @return the components
-     * @param <T> the type of the components role
-     * @throws ComponentLookupException if any error happen during component search
-     * @deprecated since 4.0M1 use {@link #getInstanceMap(Type)} instead
-     */
-    @Deprecated
-    <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException;
-
-    /**
      * Remove a component from the component repository dynamically.
      * 
      * @param <T> the component role type
