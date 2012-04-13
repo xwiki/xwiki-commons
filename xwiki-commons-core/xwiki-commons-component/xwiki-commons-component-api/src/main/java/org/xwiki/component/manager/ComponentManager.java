@@ -193,50 +193,7 @@ public interface ComponentManager
      */
     void setParent(ComponentManager parentComponentManager);
 
-    // deprecated
-
-    /**
-     * @param <T> the component role type
-     * @param role the class (aka role) that the component implements
-     * @return true if the component is registered or false otherwise
-     * @deprecated since 4.0M1 use {@link #hasComponent(Type)} instead
-     */
-    @Deprecated
-    <T> boolean hasComponent(Class<T> role);
-
-    /**
-     * @param <T> the component role type
-     * @param role the class (aka role) that the component implements
-     * @param hint the hint that differentiates a component implementation from another one (each component is
-     *            registered with a hint; the "default" hint being the default)
-     * @return true if the component is registered for the passed hint or false otherwise
-     * @deprecated since 4.0M1 use {@link #hasComponent(Type, String)} instead
-     */
-    @Deprecated
-    <T> boolean hasComponent(Class<T> role, String hint);
-
-    /**
-     * Remove a component from the component repository dynamically.
-     * 
-     * @param <T> the component role type
-     * @param role the role identifying the component
-     * @param hint the hint identifying the component
-     * @since 2.0M2
-     * @deprecated since 4.0M1 use {@link #unregisterComponent(Type, String)} instead
-     */
-    @Deprecated
-    <T> void unregisterComponent(Class<T> role, String hint);
-
-    /**
-     * @param <T> the component role type
-     * @param role the role identifying the component
-     * @param hint the hint identifying the component
-     * @return the descriptor for the component matching the passed parameter or null if this component doesn't exist
-     * @since 2.0M1
-     * @deprecated since 4.0M1 use {@link #getComponentDescriptor(Type, String)} instead
-     */
-    @Deprecated
-    <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String hint);
+    // Deprecated
 
     /**
      * @param <T> the role class for which to return all component implementations

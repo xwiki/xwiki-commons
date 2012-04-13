@@ -215,21 +215,6 @@ public class EmbeddableComponentManager implements ComponentManager
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
-    {
-        List<ComponentDescriptor<T>> results = new ArrayList<ComponentDescriptor<T>>();
-        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
-            // It's possible Class reference are not the same when it coming for different ClassLoader so we
-            // compare class names
-            if (entry.getKey().getRoleClass() == role) {
-                results.add((ComponentDescriptor<T>) entry.getValue().descriptor);
-            }
-        }
-        return results;
-    }
-
-    @Override
     public ComponentEventManager getComponentEventManager()
     {
         return this.eventManager;
@@ -511,33 +496,21 @@ public class EmbeddableComponentManager implements ComponentManager
         }
     }
 
-    // deprecated
+    // Deprecated
 
     @Override
+    @SuppressWarnings("unchecked")
     @Deprecated
-    public <T> boolean hasComponent(Class<T> role, String hint)
+    public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
     {
-        return hasComponent((Type) role, hint);
-    }
-
-    @Override
-    @Deprecated
-    public <T> boolean hasComponent(Class<T> role)
-    {
-        return hasComponent((Type) role);
-    }
-
-    @Override
-    @Deprecated
-    public <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String hint)
-    {
-        return getComponentDescriptor((Type) role, hint);
-    }
-
-    @Override
-    @Deprecated
-    public <T> void unregisterComponent(Class<T> role, String hint)
-    {
-        unregisterComponent((Type) role, hint);
+        List<ComponentDescriptor<T>> results = new ArrayList<ComponentDescriptor<T>>();
+        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
+            // It's possible Class reference are not the same when it coming for different ClassLoader so we
+            // compare class names
+            if (entry.getKey().getRoleClass() == role) {
+                results.add((ComponentDescriptor<T>) entry.getValue().descriptor);
+            }
+        }
+        return results;
     }
 }

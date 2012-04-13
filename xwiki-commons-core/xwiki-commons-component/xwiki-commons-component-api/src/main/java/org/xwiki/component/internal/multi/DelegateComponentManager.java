@@ -162,69 +162,12 @@ public class DelegateComponentManager implements ComponentManager
         getComponentManager().setParent(parentComponentManager);
     }
 
-    // deprecated
-
-    @Override
-    @Deprecated
-    public <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String roleHint)
-    {
-        return getComponentManager().getComponentDescriptor(role, roleHint);
-    }
+    // Deprecated
 
     @Override
     @Deprecated
     public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
     {
         return getComponentManager().getComponentDescriptorList(role);
-    }
-
-    @Override
-    @Deprecated
-    public <T> boolean hasComponent(Class<T> role, String roleHint)
-    {
-        return getComponentManager().hasComponent(role, roleHint);
-    }
-
-    @Override
-    @Deprecated
-    public <T> boolean hasComponent(Class<T> role)
-    {
-        return getComponentManager().hasComponent(role);
-    }
-
-/*
-    @Override
-    @Deprecated
-    public <T> T lookup(Class<T> role, String roleHint) throws ComponentLookupException
-    {
-        return getComponentManager().lookup(role, roleHint);
-    }
-
-    @Override
-    @Deprecated
-    public <T> T lookup(Class<T> role) throws ComponentLookupException
-    {
-        return getComponentManager().lookup(role);
-    }
-
-    @Override
-    @Deprecated
-    public <T> List<T> lookupList(Class<T> role) throws ComponentLookupException
-    {
-        return getComponentManager().lookupList(role);
-    }
-
-    @Override
-    @Deprecated
-    public <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException
-    {
-        return getComponentManager().lookupMap(role);
-    }
-*/
-    @Override
-    @Deprecated
-    public <T> void unregisterComponent(Class<T> role, String roleHint)
-    {
-        getComponentManager().unregisterComponent(role, roleHint);
     }
 }

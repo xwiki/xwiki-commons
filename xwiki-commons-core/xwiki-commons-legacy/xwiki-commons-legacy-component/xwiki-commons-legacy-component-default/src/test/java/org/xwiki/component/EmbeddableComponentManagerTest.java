@@ -46,14 +46,30 @@ public class EmbeddableComponentManagerTest
     public void lookupComponent() throws Exception
     {
         ComponentManager cm = new EmbeddableComponentManager();
-        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
-        cd.setImplementation(RoleImpl.class);
-        cm.registerComponent(cd);
 
-        // Here's the test
+        // Register without hint
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
+        cd1.setRole(Role.class);
+        cd1.setImplementation(RoleImpl.class);
+        cm.registerComponent(cd1);
+
+        // Register with a hint
+        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<Role>();
+        cd2.setRole(Role.class);
+        cd2.setRoleHint("hint");
+        cd2.setImplementation(RoleImpl.class);
+        cm.registerComponent(cd2);
+
+        // Here are the tests, calling deprecated APIs
         Assert.assertNotNull(cm.lookup(Role.class));
+        Assert.assertNotNull(cm.lookup(Role.class, "hint"));
+        Assert.assertEquals(2, cm.lookupList(Role.class).size());
+        Assert.assertEquals(2, cm.lookupMap(Role.class).size());
+        Assert.assertTrue(cm.hasComponent(Role.class));
+        Assert.assertTrue(cm.hasComponent(Role.class, "hint"));
+        Assert.assertEquals(cd2, cm.getComponentDescriptor(Role.class, "hint"));
+
+        cm.unregisterComponent(Role.class, "hint");
         Assert.assertEquals(1, cm.lookupList(Role.class).size());
-        Assert.assertEquals(1, cm.lookupMap(Role.class).size());
     }
 }

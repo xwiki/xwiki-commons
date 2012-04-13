@@ -19,10 +19,13 @@
  */
 package org.xwiki.component.embed;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Type;
 
+import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentLookupException;
 
 /**
@@ -55,5 +58,29 @@ public privileged aspect EmbeddableComponentManagerCompatibilityAspect
     public <T> Map<String, T> EmbeddableComponentManager.lookupMap(Class<T> role) throws ComponentLookupException
     {
         return getInstanceMap((Type) role);
+    }
+
+    @Deprecated
+    public <T> boolean EmbeddableComponentManager.hasComponent(Class<T> role, String hint)
+    {
+        return hasComponent((Type) role, hint);
+    }
+
+    @Deprecated
+    public <T> boolean EmbeddableComponentManager.hasComponent(Class<T> role)
+    {
+        return hasComponent((Type) role);
+    }
+
+    @Deprecated
+    public <T> ComponentDescriptor<T> EmbeddableComponentManager.getComponentDescriptor(Class<T> role, String hint)
+    {
+        return getComponentDescriptor((Type) role, hint);
+    }
+
+    @Deprecated
+    public <T> void EmbeddableComponentManager.unregisterComponent(Class<T> role, String hint)
+    {
+        unregisterComponent((Type) role, hint);
     }
 }
