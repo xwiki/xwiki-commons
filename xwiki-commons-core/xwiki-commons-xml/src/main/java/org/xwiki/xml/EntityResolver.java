@@ -19,7 +19,7 @@
  */
 package org.xwiki.xml;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * XWiki's wrapping of the {@link org.xml.sax.EntityResolver} interface so that we can create components that
@@ -28,7 +28,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 1.9M2
  */
-@ComponentRole
+@Role
 public interface EntityResolver extends org.xml.sax.EntityResolver
 {
 }

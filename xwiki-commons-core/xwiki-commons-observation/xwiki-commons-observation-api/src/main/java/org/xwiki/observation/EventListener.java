@@ -21,7 +21,7 @@ package org.xwiki.observation;
 
 import java.util.List;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.observation.event.Event;
 
 /**
@@ -29,7 +29,7 @@ import org.xwiki.observation.event.Event;
  * 
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface EventListener
 {
     /**

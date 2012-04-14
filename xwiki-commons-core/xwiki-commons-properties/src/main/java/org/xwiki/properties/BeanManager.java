@@ -21,7 +21,7 @@ package org.xwiki.properties;
 
 import java.util.Map;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Component used to populate or parse a java bean.
@@ -35,7 +35,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 2.0M2
  */
-@ComponentRole
+@Role
 public interface BeanManager
 {
     /**

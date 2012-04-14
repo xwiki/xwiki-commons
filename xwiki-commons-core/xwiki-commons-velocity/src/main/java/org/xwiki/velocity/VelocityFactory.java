@@ -21,7 +21,7 @@ package org.xwiki.velocity;
 
 import java.util.Properties;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Allows creating different Velocity engine instances. This is useful when you need to have different Velocity engines
@@ -31,7 +31,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * 
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface VelocityFactory
 {
     /**

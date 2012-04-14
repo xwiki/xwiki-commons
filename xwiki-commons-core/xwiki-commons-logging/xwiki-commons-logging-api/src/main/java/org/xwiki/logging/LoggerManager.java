@@ -19,7 +19,7 @@
  */
 package org.xwiki.logging;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.observation.EventListener;
 
 /**
@@ -28,7 +28,7 @@ import org.xwiki.observation.EventListener;
  * @version $Id$
  * @since 3.2M3
  */
-@ComponentRole
+@Role
 public interface LoggerManager
 {
     /**

@@ -19,7 +19,7 @@
  */
 package org.xwiki.observation;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.observation.event.BeginEvent;
 
 /**
@@ -28,7 +28,7 @@ import org.xwiki.observation.event.BeginEvent;
  * @version $Id$
  * @since 3.2M1
  */
-@ComponentRole
+@Role
 public interface ObservationContext
 {
     /**

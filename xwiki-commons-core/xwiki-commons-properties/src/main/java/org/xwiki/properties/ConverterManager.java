@@ -21,7 +21,7 @@ package org.xwiki.properties;
 
 import java.lang.reflect.Type;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Simple API to do universal conversion between two types.
@@ -31,7 +31,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 2.0M2
  */
-@ComponentRole
+@Role
 public interface ConverterManager
 {
     /**

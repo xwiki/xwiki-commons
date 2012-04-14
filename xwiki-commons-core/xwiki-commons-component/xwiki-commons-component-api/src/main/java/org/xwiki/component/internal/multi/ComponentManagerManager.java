@@ -19,7 +19,7 @@
  */
 package org.xwiki.component.internal.multi;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.component.manager.ComponentManager;
 
 /**
@@ -31,7 +31,7 @@ import org.xwiki.component.manager.ComponentManager;
  * @version $Id$
  * @since 3.3M2
  */
-@ComponentRole
+@Role
 public interface ComponentManagerManager
 {
     /**

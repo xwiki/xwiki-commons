@@ -19,7 +19,7 @@
  */
 package org.xwiki.management;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Registers MBeans against the default platform MBean Server.
@@ -27,7 +27,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 2.4M2
  */
-@ComponentRole
+@Role
 public interface JMXBeanRegistration
 {
     /**

@@ -21,7 +21,7 @@ package org.xwiki.properties.converter;
 
 import java.lang.reflect.Type;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Converter provided value in the provided target type.
@@ -42,7 +42,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 2.0M2
  */
-@ComponentRole
+@Role
 public interface Converter
 {
     /**

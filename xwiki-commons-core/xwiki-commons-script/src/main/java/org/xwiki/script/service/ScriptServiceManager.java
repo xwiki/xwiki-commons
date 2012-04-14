@@ -19,7 +19,7 @@
  */
 package org.xwiki.script.service;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Provides access to {@link ScriptService} implementation at runtime. Implementations of this interface are supposed to
@@ -28,7 +28,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 2.3M1
  */
-@ComponentRole
+@Role
 public interface ScriptServiceManager
 {
     /**

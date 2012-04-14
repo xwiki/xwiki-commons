@@ -23,7 +23,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Factory to create optimised {@link XMLReader}. This gives us a level of indirection versus
@@ -34,7 +34,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 1.7.1
  */
-@ComponentRole
+@Role
 public interface XMLReaderFactory
 {
     /**

@@ -20,7 +20,7 @@
 package org.xwiki.velocity;
 
 import org.apache.velocity.VelocityContext;
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Provides access to the main XWiki Velocity objects.
@@ -28,7 +28,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @since 1.5M2
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface VelocityManager
 {
     /**

@@ -19,7 +19,7 @@
  */
 package org.xwiki.script.service;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Any module wishing to expose Script APIs (for example APIs accessible through Groovy, Python, Velocity, etc)
@@ -29,7 +29,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 2.3M1
  */
-@ComponentRole
+@Role
 public interface ScriptService
 {
     // Voluntarily empty

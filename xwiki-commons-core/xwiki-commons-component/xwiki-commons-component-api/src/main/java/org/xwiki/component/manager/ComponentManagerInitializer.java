@@ -19,7 +19,7 @@
  */
 package org.xwiki.component.manager;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Called at {@link ComponentManager} initialization to be able to apply modification to the ComponentManager and its
@@ -27,7 +27,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * 
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface ComponentManagerInitializer
 {
     /**

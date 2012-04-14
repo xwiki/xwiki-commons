@@ -22,7 +22,7 @@ package org.xwiki.xml.html;
 import java.io.Reader;
 
 import org.w3c.dom.Document;
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Transforms any HTML content into valid XHTML that can be fed to the XHTML Parser for example.
@@ -30,7 +30,7 @@ import org.xwiki.component.annotation.ComponentRole;
  * @version $Id$
  * @since 1.6M1
  */
-@ComponentRole
+@Role
 public interface HTMLCleaner
 {
     /**
