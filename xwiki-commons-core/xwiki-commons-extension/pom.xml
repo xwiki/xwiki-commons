@@ -35,9 +35,6 @@
   <description>XWiki Commons - Extension - Parent POM</description>
   <properties>
     <maven.version>3.0.4</maven.version>
-
-    <!-- To remove when releasing 4.0 -->
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
   <modules>
     <module>xwiki-commons-extension-api</module>

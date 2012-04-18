@@ -33,10 +33,6 @@
   <name>XWiki Commons - Job</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Job</description>
-  <properties>
-    <!-- To remove when releasing 4.0 -->
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
