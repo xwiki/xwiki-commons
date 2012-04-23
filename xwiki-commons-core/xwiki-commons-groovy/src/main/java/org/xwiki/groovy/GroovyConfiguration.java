@@ -37,4 +37,10 @@ public interface GroovyConfiguration
      * @return the list of Customizer implementation classes to use when executing a Groovy script
      */
     List<CompilationCustomizer> getCompilationCustomizers();
+
+    /**
+     * @return the time after which a script should time out. Note that this have effect only if the Timed Interrupt
+     *         Groovy Customizer is active
+     */
+    long getScriptTimeout();
 }

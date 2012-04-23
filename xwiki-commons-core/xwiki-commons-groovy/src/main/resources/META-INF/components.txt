@@ -1,2 +1,3 @@
 org.xwiki.groovy.internal.DefaultGroovyConfiguration
 org.xwiki.groovy.internal.GroovyScriptEngineFactory
+org.xwiki.groovy.internal.TimedInterruptGroovyCompilationCustomizer
