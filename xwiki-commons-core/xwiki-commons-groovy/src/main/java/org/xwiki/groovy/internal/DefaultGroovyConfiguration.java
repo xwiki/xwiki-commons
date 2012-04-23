@@ -50,6 +50,11 @@ public class DefaultGroovyConfiguration implements GroovyConfiguration
     private static final String PREFIX = "groovy.";
 
     /**
+     * Prefix for configuration keys for Groovy Compiler Customizers.
+     */
+    private static final String CUSTOMIZER_PREFIX = PREFIX + "customizer.";
+
+    /**
      * By default we timeout after 1 minute.
      */
     private static final Long SCRIPT_TIMEOUT = 60L;
@@ -97,6 +102,6 @@ public class DefaultGroovyConfiguration implements GroovyConfiguration
     @Override
     public long getScriptTimeout()
     {
-        return this.configuration.getProperty(PREFIX + "scriptTimeout", SCRIPT_TIMEOUT);
+        return this.configuration.getProperty(CUSTOMIZER_PREFIX + "timedinterrupt.scriptTimeout", SCRIPT_TIMEOUT);
     }
 }

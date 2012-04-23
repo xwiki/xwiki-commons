@@ -52,7 +52,7 @@ public class TimedInterruptGroovyCompilationCustomizerTest extends AbstractCompo
         {{
             oneOf(source).getProperty("groovy.compilationCustomizers", Collections.emptyList());
                 will(returnValue(Arrays.asList("timedinterrupt")));
-            oneOf(source).getProperty("groovy.scriptTimeout", 60L);
+            oneOf(source).getProperty("groovy.customizer.timedinterrupt.scriptTimeout", 60L);
                 will(returnValue(1L));
         }});
 
