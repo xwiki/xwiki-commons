@@ -19,44 +19,42 @@
  */
 package org.xwiki.groovy.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
-import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.groovy.GroovyCompilationCustomizer;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.groovy.TimedInterruptCustomizerConfiguration;
 
-import groovy.transform.TimedInterrupt;
-
 /**
- * Allow interrupting Groovy scripts after a given timeout. The timeout is configurable using
- * {@link TimedInterruptCustomizerConfiguration}.
+ * Default configuration implementation for the Timed Interrupt Compilation Customizer.
  *
  * @version $Id$
  * @since 4.1M1
  */
 @Component
-@Named("timedInterrupt")
 @Singleton
-public class TimedInterruptGroovyCompilationCustomizer implements GroovyCompilationCustomizer
+public class DefaultTimedInterruptCustomizerConfiguration implements TimedInterruptCustomizerConfiguration
 {
     /**
-     * Used to get the script timeout configuration parameter value.
+     * Prefix for configuration keys for Groovy Compiler Customizers.
+     */
+    private static final String PREFIX = "groovy.customizer.timedInterrupt.";
+
+    /**
+     * By default we timeout after 1 minute.
+     */
+    private static final Long SCRIPT_TIMEOUT = 60L;
+
+    /**
+     * Defines from where to read the configuration data.
      */
     @Inject
-    private TimedInterruptCustomizerConfiguration configuration;
+    private ConfigurationSource configuration;
 
     @Override
-    public CompilationCustomizer createCustomizer()
+    public long getTimeout()
     {
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("value", this.configuration.getTimeout());
-        return new ASTTransformationCustomizer(parameters, TimedInterrupt.class);
+        return this.configuration.getProperty(PREFIX + "timeout", SCRIPT_TIMEOUT);
     }
 }

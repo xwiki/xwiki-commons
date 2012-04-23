@@ -51,8 +51,8 @@ public class TimedInterruptGroovyCompilationCustomizerTest extends AbstractCompo
         getMockery().checking(new Expectations()
         {{
             oneOf(source).getProperty("groovy.compilationCustomizers", Collections.emptyList());
-                will(returnValue(Arrays.asList("timedinterrupt")));
-            oneOf(source).getProperty("groovy.customizer.timedinterrupt.scriptTimeout", 60L);
+                will(returnValue(Arrays.asList("timedInterrupt")));
+            oneOf(source).getProperty("groovy.customizer.timedInterrupt.timeout", 60L);
                 will(returnValue(1L));
         }});
 

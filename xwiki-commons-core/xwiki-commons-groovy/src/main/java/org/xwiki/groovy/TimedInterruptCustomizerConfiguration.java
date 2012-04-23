@@ -19,22 +19,19 @@
  */
 package org.xwiki.groovy;
 
-import java.util.List;
-
-import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.xwiki.component.annotation.Role;
 
 /**
- * Configuration properties for the Groovy engine.
+ * Configuration properties for the Timed Interrupt Compilation Customizer.
  *
  * @version $Id$
  * @since 4.1M1
  */
 @Role
-public interface GroovyConfiguration
+public interface TimedInterruptCustomizerConfiguration
 {
     /**
-     * @return the list of Customizer implementation classes to use when executing a Groovy script
+     * @return the time after which a script should time out.
      */
-    List<CompilationCustomizer> getCompilationCustomizers();
+    long getTimeout();
 }
