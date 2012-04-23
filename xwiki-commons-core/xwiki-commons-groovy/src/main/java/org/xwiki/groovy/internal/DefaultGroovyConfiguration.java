@@ -82,7 +82,10 @@ public class DefaultGroovyConfiguration implements GroovyConfiguration
             try {
                 GroovyCompilationCustomizer customizer =
                     this.componentManager.getInstance(GroovyCompilationCustomizer.class, customizerName);
-                customizers.add(customizer.createCustomizer());
+                CompilationCustomizer compilationCustomizer = customizer.createCustomizer();
+                if (compilationCustomizer != null) {
+                    customizers.add(compilationCustomizer);
+                }
             } catch (Exception e) {
                 // Just don't use the customizer but log the error
                 this.logger.warn("Failed to create the Groovy Compilation Customizer named [{}]", customizerName, e);

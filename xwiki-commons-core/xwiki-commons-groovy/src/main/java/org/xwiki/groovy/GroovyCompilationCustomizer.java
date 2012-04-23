@@ -39,7 +39,7 @@ import org.xwiki.component.annotation.Role;
 public interface GroovyCompilationCustomizer
 {
     /**
-     * @return the Groovy Customizer implementation class to use.
+     * @return the Groovy Customizer implementation class to use. If null is returned then no customizer will be added
      */
     CompilationCustomizer createCustomizer();
 }
