@@ -195,7 +195,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void testLookupWhenComponentInParent() throws Exception
+    public void testGetInstanceWhenComponentInParent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager());
@@ -205,7 +205,7 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void testLookupListAndMapWhenSomeComponentsInParent() throws Exception
+    public void testGetInstanceListAndMapWhenSomeComponentsInParent() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.setParent(createParentComponentManager());
