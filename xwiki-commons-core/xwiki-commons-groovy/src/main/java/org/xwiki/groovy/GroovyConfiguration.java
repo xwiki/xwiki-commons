@@ -34,6 +34,11 @@ import org.xwiki.component.annotation.Role;
 public interface GroovyConfiguration
 {
     /**
+     * @return the list of Customizer names classes to use when executing a Groovy script
+     */
+    List<String> getCompilationCustomizerNames();
+
+    /**
      * @return the list of Customizer implementation classes to use when executing a Groovy script
      */
     List<CompilationCustomizer> getCompilationCustomizers();

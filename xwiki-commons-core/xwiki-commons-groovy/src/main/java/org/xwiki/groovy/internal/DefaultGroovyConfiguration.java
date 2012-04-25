@@ -68,12 +68,16 @@ public class DefaultGroovyConfiguration implements GroovyConfiguration
     private ComponentManager componentManager;
 
     @Override
+    public List<String> getCompilationCustomizerNames()
+    {
+        return this.configuration.getProperty(PREFIX + "compilationCustomizers", Collections.<String>emptyList());
+    }
+
+    @Override
     public List<CompilationCustomizer> getCompilationCustomizers()
     {
         List<CompilationCustomizer> customizers = new ArrayList<CompilationCustomizer>();
-        List<String> customizerNames = this.configuration.getProperty(PREFIX + "compilationCustomizers",
-            Collections.<String>emptyList());
-        for (String customizerName : customizerNames) {
+        for (String customizerName : getCompilationCustomizerNames()) {
             try {
                 GroovyCompilationCustomizer customizer =
                     this.componentManager.getInstance(GroovyCompilationCustomizer.class, customizerName);
