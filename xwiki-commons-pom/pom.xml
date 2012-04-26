@@ -35,6 +35,16 @@
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
+      <!-- Show compiler warnings -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArgument>-Xlint:all</compilerArgument>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+        </configuration>
+      </plugin>
+
       <!-- We want to force packaging the license resources in the produced XWiki artifacts -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
