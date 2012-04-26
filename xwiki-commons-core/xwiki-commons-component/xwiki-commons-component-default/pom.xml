@@ -33,6 +33,10 @@
   <name>XWiki Commons - Component - Default Implementation</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Component - Default Implementation</description>
+  <properties>
+    <!-- Skipping CLIRR since xwiki-commons-legacy-component-default wraps this module and runs CLIRR on it -->
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

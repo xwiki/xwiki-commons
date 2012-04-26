@@ -33,12 +33,6 @@
   <name>XWiki Commons - Legacy - Component - Default Implementation</name>
   <packaging>jar</packaging>
   <description>Legacy module for xwiki-commons-component-default</description>
-  <properties>
-    <!-- TODO: Remove this when version 4.1 final is released. CLIRR is generating an error ATM:
-         Unable to locate enclosing class org.xwiki.component.embed.EmbeddableComponentManager for nested class
-         org.xwiki.component.embed.EmbeddableComponentManager$ComponentEntry -->
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -115,6 +109,23 @@
           </classpathDependencyExcludes>
         </configuration>
       </plugin>
+      <!-- We need to compare against the xwiki-commons-component-api since this module is new in 4.1M1 and thus
+           there's no previous version of it.
+           TODO: Remove this after 4.1M1 is released!
+      -->
+      <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>clirr-maven-plugin</artifactId>
+         <configuration>
+           <comparisonArtifacts>
+             <comparisonArtifact>
+               <groupId>org.xwiki.commons</groupId>
+               <artifactId>xwiki-commons-component-default</artifactId>
+               <version>${xwiki.clirr.previous.version}</version>
+             </comparisonArtifact>
+           </comparisonArtifacts>
+         </configuration>
+       </plugin>
     </plugins>
   </build>
 </project>
