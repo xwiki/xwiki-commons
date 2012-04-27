@@ -33,7 +33,12 @@
   <name>XWiki Commons - Legacy - Component - API</name>
   <packaging>jar</packaging>
   <description>Legacy module for xwiki-commons-component-api</description>
+  <properties>
+    <!-- The features provided by this module so that it's found when resolving extension -->
+    <xwiki.extension.features>org.xwiki.commons:xwiki-commons-component-api</xwiki.extension.features>
+  </properties>
   <dependencies>
+    <!-- FIXME: this package should be scope provided otherwise it will be triggered as transitive dependency -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
