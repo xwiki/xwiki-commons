@@ -456,6 +456,15 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             <source>1.6</source>
             <target>1.6</target>
           </configuration>
+          <!-- Speed up compilation.
+               TODO: Remove once http://jira.codehaus.org/browse/PLXCOMP-202 is part of the Compiler plugin -->
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-compiler-javac</artifactId>
+              <version>1.8.6</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
