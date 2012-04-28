@@ -19,6 +19,11 @@
  */
 package org.xwiki.text;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -33,19 +38,33 @@ public class XWikiToStringBuilderTest
 {
     public class TestClass
     {
-        public String field1 = "value1";
-        public Integer field2 = 100;
+        private String field1 = "value1";
+        private Integer field2 = 100;
+        private Map<String, String> field3 = new LinkedHashMap<String, String>();
+        private List<String> field4 = Arrays.asList("value");
+
+        public TestClass()
+        {
+            this.field3.put("key1", "value1");
+            this.field3.put("key2", "value2");
+        }
 
         @Override
         public String toString()
         {
-            return new XWikiToStringBuilder(this).append("field1", field1).append("field2", field2).toString();
+            return new XWikiToStringBuilder(this)
+                .append("field1", field1)
+                .append("field2", field2)
+                .append("field3", field3)
+                .append("field4", field4)
+                .toString();
         }
     }
 
     @Test
     public void toStringBuilder()
     {
-        Assert.assertEquals("field1 = [value1], field2 = [100]", new TestClass().toString());
+        Assert.assertEquals("field1 = [value1], field2 = [100], field3 = [[key1] = [value1], [key2] = [value2]], "
+            + "field4 = [[value]]", new TestClass().toString());
     }
 }

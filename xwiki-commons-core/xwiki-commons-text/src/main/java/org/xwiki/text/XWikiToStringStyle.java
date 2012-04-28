@@ -79,9 +79,9 @@ public class XWikiToStringStyle extends StandardToStringStyle
     @Override
     protected void appendDetail(StringBuffer buffer, String fieldName, Map map)
     {
-        Iterator<Map.Entry> it = map.entrySet().iterator();
+        Iterator it = map.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, Object> entry = it.next();
+            Map.Entry entry = (Map.Entry) it.next();
             buffer.append('[');
             buffer.append(entry.getKey());
             buffer.append(']');
