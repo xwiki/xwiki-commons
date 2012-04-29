@@ -235,12 +235,19 @@
         <groupId>junit</groupId>
         <artifactId>junit-dep</artifactId>
         <version>4.10</version>
+        <!-- Unfortunately junit-dep has a dependency on Hamcrest so we need to exclude it in order to use another
+             version -->
+        <exclusions>
+          <exclusion>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-core</artifactId>
-        <version>1.1</version>
-        <scope>test</scope>
+        <artifactId>hamcrest-library</artifactId>
+        <version>1.2.1</version>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
