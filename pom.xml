@@ -187,11 +187,16 @@
         <version>1.8</version>
       </dependency>
 
-      <!-- Used in both rendering and platform -->
+      <!-- XML processing -->
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
         <version>1.4.2</version>
+      </dependency>
+      <dependency>
+        <groupId>dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>1.6.1</version>
       </dependency>
 
       <!-- Used in both commons and platform -->
