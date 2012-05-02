@@ -31,6 +31,10 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
+import org.xwiki.context.ExecutionContextException;
+import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobException;
 import org.xwiki.job.JobManager;
@@ -88,6 +92,18 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     private JobStatusStorage storage;
 
     /**
+     * Used to get the Execution Context.
+     */
+    @Inject
+    private Execution execution;
+
+    /**
+     * Used to create a new Execution Context from scratch.
+     */
+    @Inject
+    private ExecutionContextManager executionContextManager;
+
+    /**
      * @see #getCurrentJob()
      */
     private volatile Job currentJob;
@@ -115,19 +131,34 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     @Override
     public void run()
     {
-        while (!this.thread.isInterrupted()) {
-            try {
-                JobElement element = this.jobQueue.take();
+        // Create a clean Execution Context
+        ExecutionContext context = new ExecutionContext();
 
-                this.currentJob = element.job;
+        try {
+            this.executionContextManager.initialize(context);
+        } catch (ExecutionContextException e) {
+            throw new RuntimeException("Failed to initialize IRC Bot's execution context", e);
+        }
 
-                // Wait in case synchronous job is running
-                synchronized (this) {
-                    this.currentJob.start(element.request);
+        this.execution.pushContext(context);
+
+        try {
+            while (!this.thread.isInterrupted()) {
+                try {
+                    JobElement element = this.jobQueue.take();
+
+                    this.currentJob = element.job;
+
+                    // Wait in case synchronous job is running
+                    synchronized (this) {
+                        this.currentJob.start(element.request);
+                    }
+                } catch (InterruptedException e) {
+                    // Thread has been stopped
                 }
-            } catch (InterruptedException e) {
-                // Thread has been stopped
             }
+        } finally {
+            this.execution.removeContext();
         }
     }
 
@@ -157,7 +188,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     }
 
     @Override
-    public synchronized Job executeJob(String jobType, Request request) throws JobException
+    public Job executeJob(String jobType, Request request) throws JobException
     {
         Job job = addJob(jobType, request);
 

@@ -256,7 +256,7 @@ public abstract class AbstractJob<R extends Request> implements Job
         this.lock.lockInterruptibly();
 
         try {
-            if (getStatus().getState() != State.FINISHED) {
+            if (getStatus() == null || getStatus().getState() != State.FINISHED) {
                 this.finishedCondition.await();
             }
         } finally {
