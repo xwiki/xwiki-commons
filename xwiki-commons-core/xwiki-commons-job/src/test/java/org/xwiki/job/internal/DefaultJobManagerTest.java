@@ -23,6 +23,8 @@ import junit.framework.Assert;
 
 import org.jmock.Expectations;
 import org.junit.Test;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 
@@ -36,7 +38,7 @@ public class DefaultJobManagerTest extends AbstractMockingComponentTestCase
     /**
      * The object being tested.
      */
-    @MockingRequirement
+    @MockingRequirement(exceptions = {ExecutionContextManager.class, Execution.class})
     private DefaultJobManager jobManager;
 
     @Test
