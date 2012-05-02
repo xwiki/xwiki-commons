@@ -20,95 +20,24 @@
 package org.xwiki.job.internal;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.xwiki.job.Request;
-import org.xwiki.job.event.status.JobProgress;
-import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
-import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.event.LogQueueListener;
 import org.xwiki.observation.ObservationManager;
 
 /**
- * Default implementation of {@link JobStatus}.
+ * Default implementation of {@link org.xwiki.job.event.status.JobStatus}.
  * 
  * @param <R>
  * @version $Id$
  * @since 4.0M1
  */
-public class DefaultJobStatus<R extends Request> implements JobStatus, Serializable
+public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R> implements Serializable
 {
     /**
      * Serialization identifier.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Used register itself to receive logging and progress related events.
-     */
-    private transient ObservationManager observationManager;
-
-    /**
-     * Used to isolate job related log.
-     */
-    private transient LoggerManager loggerManager;
-
-    /**
-     * The unique id of the job.
-     */
-    private String id;
-
-    /**
-     * General state of the job.
-     */
-    private State state = State.NONE;
-
-    /**
-     * Request provided when starting the job.
-     */
-    private R request;
-
-    /**
-     * Log sent during job execution.
-     */
-    private LogQueue logs = new LogQueue();
-
-    /**
-     * @see #getStartDate()
-     */
-    private Date startDate;
-
-    /**
-     * @see #getEndDate()
-     */
-    private Date endDate;
-
-    /**
-     * Used to lock #ask().
-     */
-    private final transient ReentrantLock askLock = new ReentrantLock();
-
-    /**
-     * Condition for waiting answer.
-     */
-    private final transient Condition answered = this.askLock.newCondition();
-
-    /**
-     * The question.
-     */
-    private transient volatile Object question;
-
-    /**
-     * Take care of progress related events to produce a progression information usually used in a progress bar.
-     */
-    private transient DefaultJobProgress progress;
 
     /**
      * @param request the request provided when started the job
@@ -118,146 +47,6 @@ public class DefaultJobStatus<R extends Request> implements JobStatus, Serializa
      */
     public DefaultJobStatus(R request, String id, ObservationManager observationManager, LoggerManager loggerManager)
     {
-        this.request = request;
-        this.observationManager = observationManager;
-        this.loggerManager = loggerManager;
-        this.id = id;
-
-        this.progress = new DefaultJobProgress(this.id);
-    }
-
-    /**
-     * Start listening to events.
-     */
-    public void startListening()
-    {
-        // Register progress listener
-        this.observationManager.addListener(this.progress);
-
-        // Isolate log for the job status
-        this.loggerManager.pushLogListener(new LogQueueListener(LogQueueListener.class.getName() + '_' + this.id,
-            this.logs));
-    }
-
-    /**
-     * Stop listening to events.
-     */
-    public void stopListening()
-    {
-        this.loggerManager.popLogListener();
-        this.observationManager.removeListener(this.progress.getName());
-    }
-
-    // JobStatus
-
-    @Override
-    public State getState()
-    {
-        return this.state;
-    }
-
-    /**
-     * @param state the general state of the job
-     */
-    public void setState(State state)
-    {
-        this.state = state;
-    }
-
-    @Override
-    public R getRequest()
-    {
-        return this.request;
-    }
-
-    @Override
-    public LogQueue getLog()
-    {
-        return this.logs;
-    }
-
-    @Override
-    public List<LogEvent> getLog(LogLevel level)
-    {
-        List<LogEvent> levelLogs = new ArrayList<LogEvent>();
-
-        for (LogEvent log : this.logs) {
-            if (log.getLevel() == level) {
-                levelLogs.add(log);
-            }
-        }
-
-        return levelLogs;
-    }
-
-    @Override
-    public JobProgress getProgress()
-    {
-        return this.progress;
-    }
-
-    @Override
-    public void ask(Object question) throws InterruptedException
-    {
-        this.question = question;
-
-        this.askLock.lockInterruptibly();
-
-        try {
-            // Wait for the answer
-            this.state = State.WAITING;
-            this.answered.await();
-            this.state = State.RUNNING;
-        } finally {
-            this.askLock.unlock();
-        }
-    }
-
-    @Override
-    public Object getQuestion()
-    {
-        return this.question;
-    }
-
-    @Override
-    public void answered()
-    {
-        this.askLock.lock();
-
-        this.question = null;
-
-        try {
-            this.answered.signal();
-        } finally {
-            this.askLock.unlock();
-        }
-    }
-
-    @Override
-    public Date getStartDate()
-    {
-        return this.startDate;
-    }
-
-    /**
-     * @param startDate the date and time when the job has been started
-     */
-    public void setStartDate(Date startDate)
-    {
-        this.startDate = startDate;
-    }
-
-    @Override
-    public Date getEndDate()
-    {
-        return this.endDate;
-    }
-
-    /**
-     * @param endDate the date and time when the job finished
-     */
-    public void setEndDate(Date endDate)
-    {
-        this.endDate = endDate;
+        super(request, id, observationManager, loggerManager);
     }
 }

@@ -30,7 +30,7 @@ import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
-import org.xwiki.job.internal.DefaultJobStatus;
+import org.xwiki.job.internal.AbstractJobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 
@@ -41,25 +41,19 @@ import org.xwiki.observation.ObservationManager;
  * @version $Id$
  * @since 4.0M1
  */
-// TODO: not really serializable
-public class DefaultExtensionPlan<R extends ExtensionRequest> extends DefaultJobStatus<R> implements ExtensionPlan
+public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJobStatus<R> implements ExtensionPlan
 {
-    /**
-     * Serialization identifier.
-     */
-    private static final long serialVersionUID = 1L;
-
     /**
      * @see #getTree()
      */
-    // TODO: find a way to serialize
+    // TODO: find a way to serialize before making DefaultExtensionPlan Serializable (the main issue is the Extension
+    // objects in the nodes)
     private transient List<ExtensionPlanNode> tree = new ArrayList<ExtensionPlanNode>();
 
     /**
      * @see #getActions()
      */
-    // TODO: find a way to serialize
-    private transient Set<ExtensionPlanAction> actions;
+    private transient Set<ExtensionPlanAction> actionsCache;
 
     /**
      * @param request the request provided when started the job
@@ -105,12 +99,12 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends DefaultJob
 
             return extensions;
         } else {
-            if (this.actions == null) {
-                this.actions = new LinkedHashSet<ExtensionPlanAction>();
-                fillExtensionActions(this.actions, this.tree);
+            if (this.actionsCache == null) {
+                this.actionsCache = new LinkedHashSet<ExtensionPlanAction>();
+                fillExtensionActions(this.actionsCache, this.tree);
             }
 
-            return Collections.unmodifiableCollection(this.actions);
+            return Collections.unmodifiableCollection(this.actionsCache);
         }
     }
 }

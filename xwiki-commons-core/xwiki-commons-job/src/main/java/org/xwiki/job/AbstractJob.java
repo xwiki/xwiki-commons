@@ -19,6 +19,7 @@
  */
 package org.xwiki.job;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -37,6 +38,7 @@ import org.xwiki.job.event.status.JobStatus.State;
 import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
+import org.xwiki.job.internal.AbstractJobStatus;
 import org.xwiki.job.internal.DefaultJobStatus;
 import org.xwiki.job.internal.JobStatusStorage;
 import org.xwiki.logging.LoggerManager;
@@ -96,7 +98,7 @@ public abstract class AbstractJob<R extends Request> implements Job
     /**
      * @see #getStatus()
      */
-    protected DefaultJobStatus<R> status;
+    protected AbstractJobStatus<R> status;
 
     /**
      * Main lock guarding all access.
