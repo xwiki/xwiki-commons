@@ -26,37 +26,16 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-environment</artifactId>
+    <artifactId>xwiki-commons-core</artifactId>
     <version>4.1-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-environment-common</artifactId>
-  <name>XWiki Commons - Environment - Common</name>
-  <packaging>jar</packaging>
-  <description>Common implementation classes for all Environment implementations</description>
-  <dependencies>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-environment-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-configuration-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <!-- org.apache.commons.io.FileUtils needed for AbstractEnvironment -->
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-
-    <!-- UnexpectedException -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-store-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
+  <artifactId>xwiki-commons-store</artifactId>
+  <name>XWiki Commons - Store - Parent POM</name>
+  <packaging>pom</packaging>
+  <description>
+    XWiki commons data storage module. This contains the basic primitives for storing data which are promoted out of xwiki-platform-store.
+  </description>
+  <modules>
+    <module>xwiki-commons-store-api</module>
+  </modules>
 </project>
-       

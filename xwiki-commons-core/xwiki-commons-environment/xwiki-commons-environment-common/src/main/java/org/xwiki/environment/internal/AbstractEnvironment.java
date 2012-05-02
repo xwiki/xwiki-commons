@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.xwiki.environment.Environment;
 import org.xwiki.environment.EnvironmentConfiguration;
+import org.xwiki.store.UnexpectedException;
 
 /**
  * Makes it easy to implement {@link org.xwiki.environment.Environment}.
@@ -85,8 +86,9 @@ public abstract class AbstractEnvironment implements Environment
         this.temporaryDirectory = temporaryDirectory;
     }
 
+    /* Rather than overriding this, it is safer to override getPermanentDirectoryName() */
     @Override
-    public final File getPermanentDirectory()
+    public File getPermanentDirectory()
     {
         if (this.permanentDirectory == null) {
             final String classSpecified = this.getTemporaryDirectoryName();
@@ -116,8 +118,9 @@ public abstract class AbstractEnvironment implements Environment
         return null;
     }
 
+    /* Rather than overriding this, it is safer to override getTemporaryDirectoryName() */
     @Override
-    public final File getTemporaryDirectory()
+    public File getTemporaryDirectory()
     {
         if (this.temporaryDirectory == null) {
             final String[] locations = new String[] {
@@ -163,11 +166,9 @@ public abstract class AbstractEnvironment implements Environment
             }
         }
 
-        this.logger.error("Could not find a writable {} directory, bailing out!", tempOrPerminent);
-        System.exit(-1);
-
-        // heh
-        return null;
+        throw new UnexpectedException("Could not find a writable "
+                                      + tempOrPerminent + " directory. "
+                                      + "Check the server log for more information.");
     }
 
     /**
@@ -199,9 +200,9 @@ public abstract class AbstractEnvironment implements Environment
             final String[] params = new String[] {
                 tempOrPerminent,
                 dir.getAbsolutePath(),
-                (dir.isDirectory()) ? "not writable" : "not a directory."
+                (dir.isDirectory()) ? "not writable" : "not a directory"
             };
-            this.logger.error("Configured {} directory [{}] is {}", params);
+            this.logger.error("Configured {} directory [{}] is {}.", params);
             return null;
         } else if (dir.mkdirs()) {
             return dir;

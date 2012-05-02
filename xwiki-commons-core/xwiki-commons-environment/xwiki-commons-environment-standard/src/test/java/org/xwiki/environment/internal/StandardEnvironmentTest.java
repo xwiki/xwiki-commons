@@ -27,15 +27,18 @@ import org.apache.commons.io.FileUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.jmock.integration.junit4.JMock;
 import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
 import org.xwiki.environment.EnvironmentConfiguration;
+import org.xwiki.store.UnexpectedException;
 
 /**
  * Unit tests for {@link StandardEnvironment}.
@@ -43,6 +46,7 @@ import org.xwiki.environment.EnvironmentConfiguration;
  * @version $Id$
  * @since 3.5M1
  */
+@RunWith(JMock.class)
 public class StandardEnvironmentTest
 {
     private static final File TMPDIR = new File(System.getProperty("java.io.tmpdir"), "xwiki-temp");
@@ -126,7 +130,6 @@ public class StandardEnvironmentTest
         getMockery().checking(new Expectations() {{
             oneOf(logger).warn("No permanent directory configured. Using a temporary directory [{}]",
                                System.getProperty("java.io.tmpdir"));
-            oneOf(logger).warn("Falling back on [{}] for {} directory.", "/tmp", "permanent");
         }});
 
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
@@ -149,25 +152,23 @@ public class StandardEnvironmentTest
         Assert.assertEquals(TMPDIR, this.environment.getTemporaryDirectory());
     }
 
-    @Test
+    @Test(expected = UnexpectedException.class)
     public void testGetTemporaryDirectoryWhenNotADirectory() throws Exception
     {
         FileUtils.write(TMPDIR, "test");
 
-        // Check that we log that we're bailing out, assume that a System.exit() follows...
+        final String[] params = new String[] {
+            "temporary",
+            TMPDIR.getAbsolutePath(),
+            "not a directory"
+        };
         final Logger logger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{
-            allowing(logger).error(with(any(String.class)), with(any(String[].class)));
-            allowing(logger).error(with(any(String.class)), with(anything()), with(anything()));
-            oneOf(logger).error("Could not find a writable {} directory, bailing out!", "temporary");
-            will(throwException(new StopBeforeHittingSystemExitException()));
+            oneOf(logger).error("Configured {} directory [{}] is {}.", params);
         }});
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 
-        try {
-            this.environment.getTemporaryDirectory();
-            Assert.fail("didn't hit the `bailing out' line.");
-        } catch (StopBeforeHittingSystemExitException e) { }
+        this.environment.getTemporaryDirectory();
     }
 
     @Test
@@ -205,6 +206,4 @@ public class StandardEnvironmentTest
         // Check that the directory was cleared.
         Assert.assertEquals(0, TMPDIR.listFiles().length);
     }
-
-    private static class StopBeforeHittingSystemExitException extends RuntimeException { }
 }

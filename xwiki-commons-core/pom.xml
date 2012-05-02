@@ -49,6 +49,7 @@
     <module>xwiki-commons-observation</module>
     <module>xwiki-commons-properties</module>
     <module>xwiki-commons-script</module>
+    <module>xwiki-commons-store</module>
     <module>xwiki-commons-test</module>
     <module>xwiki-commons-text</module>
     <module>xwiki-commons-velocity</module>
