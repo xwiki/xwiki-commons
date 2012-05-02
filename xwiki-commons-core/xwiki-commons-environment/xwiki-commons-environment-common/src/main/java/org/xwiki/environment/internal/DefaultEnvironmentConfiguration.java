@@ -19,8 +19,6 @@
  */
 package org.xwiki.environment.internal;
 
-import java.io.File;
-
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -66,35 +64,8 @@ public class DefaultEnvironmentConfiguration implements EnvironmentConfiguration
     }
 
     @Override
-    public File getPermanentDirectory()
+    public String getPermanentDirectoryPath()
     {
-        return initializeDirectory(getConfigurationSource().getProperty(PROPERTY_PERMANENTDIRECTORY, String.class));
-    }
-
-    /**
-     * @param directoryName the name of the directory to initialize (ensure it exists, create the directory) or null
-     * @return the initialized directory as a {@link File} or null if the directort doesn't exist, cannot be created
-     *         or the passed name was null
-     */
-    protected File initializeDirectory(String directoryName)
-    {
-        File directory = null;
-        if (directoryName != null) {
-            directory = new File(directoryName);
-            if (directory.exists()) {
-                if (!directory.isDirectory()) {
-                    this.logger.error("Configured permanent directory [{}] is not a directory",
-                        directory.getAbsolutePath());
-                    directory = null;
-                } else if (!directory.canWrite()) {
-                    this.logger.error("Configured permanent directory [{}] is not writable",
-                        directory.getAbsolutePath());
-                    directory = null;
-                }
-            } else {
-                directory.mkdirs();
-            }
-        }
-        return directory;
+        return this.getConfigurationSource().getProperty(PROPERTY_PERMANENTDIRECTORY, String.class);
     }
 }

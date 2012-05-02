@@ -35,6 +35,9 @@ import org.xwiki.component.util.ReflectionUtils;
  */
 public class SystemTest
 {
+    private static final File TMPDIR =
+        new File(java.lang.System.getProperty("java.io.tmpdir"), "xwiki-temp");
+
     @Test
     public void testInitializeWithNoParameter() throws Exception
     {
@@ -46,13 +49,12 @@ public class SystemTest
         // Capture logs so that they don't leak in the test console
         ReflectionUtils.setFieldValue(environment, "logger", NOPLogger.NOP_LOGGER);
 
-        // Verify that the temporary directory is java.io.tmpdir
-        Assert.assertEquals(new File(java.lang.System.getProperty("java.io.tmpdir")),
-            environment.getTemporaryDirectory());
+        // Verify that the temporary directory is `java.io.tmpdir`/xwiki-temp/
+        Assert.assertEquals(TMPDIR, environment.getTemporaryDirectory());
 
         // Verify that the Permanent directory is java.io.tmpdir
         Assert.assertEquals(new File(java.lang.System.getProperty("java.io.tmpdir")),
-            environment.getPermanentDirectory());
+                            environment.getPermanentDirectory());
     }
 
     @Test

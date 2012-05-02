@@ -44,6 +44,12 @@
       <artifactId>xwiki-commons-configuration-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <!-- org.apache.commons.io.FileUtils needed for AbstractEnvironment -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
   </dependencies>
 </project>
        

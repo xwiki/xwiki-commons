@@ -19,8 +19,6 @@
  */
 package org.xwiki.environment;
 
-import java.io.File;
-
 import org.xwiki.component.annotation.Role;
 
 /**
@@ -33,9 +31,10 @@ import org.xwiki.component.annotation.Role;
 public interface EnvironmentConfiguration
 {
     /**
-     * @return the directory used to store persistent data (data that should persist across server restarts). This is
-     *         an important directory containing important data and thus it should never be deleted (it should be
-     *         backed-up along with the database), or null if the user hasn't specified any permanent directory
+     * @return the path to the directory used to store persistent data
+     *         (data that should persist across server restarts). This is an important directory
+     *         containing important data and thus it should never be deleted (it should be backed-up
+     *         along with the database), or null if the user hasn't specified any permanent directory
      */
-    File getPermanentDirectory();
+    String getPermanentDirectoryPath();
 }

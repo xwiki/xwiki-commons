@@ -22,16 +22,20 @@ package org.xwiki.environment.internal;
 import java.io.File;
 import java.net.URL;
 
+import javax.inject.Provider;
+import org.apache.commons.io.FileUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
+import org.xwiki.environment.EnvironmentConfiguration;
 
 /**
  * Unit tests for {@link StandardEnvironment}.
@@ -41,6 +45,8 @@ import org.xwiki.environment.Environment;
  */
 public class StandardEnvironmentTest
 {
+    private static final File TMPDIR = new File(System.getProperty("java.io.tmpdir"), "xwiki-temp");
+
     private StandardEnvironment environment;
 
     private Mockery mockery = new JUnit4Mockery();
@@ -56,6 +62,18 @@ public class StandardEnvironmentTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.initialize(getClass().getClassLoader());
         this.environment = (StandardEnvironment) ecm.getInstance(Environment.class);
+        ReflectionUtils.setFieldValue(this.environment, "isTesting", true);
+        if (TMPDIR.exists()) {
+            FileUtils.forceDelete(TMPDIR);
+        }
+    }
+
+    @After
+    public void tearDown() throws Exception
+    {
+        if (TMPDIR.exists()) {
+            FileUtils.forceDelete(TMPDIR);
+        }
     }
 
     @Test
@@ -103,17 +121,18 @@ public class StandardEnvironmentTest
     @Test
     public void testGetPermanentDirectoryWhenNotSet()
     {
-        final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-
         // Also verify that we log a warning!
         final Logger logger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{
-            oneOf(logger).warn("No permanent directory configured. Using a temporary directory [{}]", tmpDir);
+            oneOf(logger).warn("No permanent directory configured. Using a temporary directory [{}]",
+                               System.getProperty("java.io.tmpdir"));
+            oneOf(logger).warn("Falling back on [{}] for {} directory.", "/tmp", "permanent");
         }});
 
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 
-        Assert.assertEquals(tmpDir, this.environment.getPermanentDirectory());
+        Assert.assertEquals(new File(System.getProperty("java.io.tmpdir")),
+                            this.environment.getPermanentDirectory());
     }
 
     @Test
@@ -127,6 +146,65 @@ public class StandardEnvironmentTest
     @Test
     public void testGetTemporaryDirectoryWhenNotSet()
     {
-        Assert.assertEquals(new File(System.getProperty("java.io.tmpdir")), this.environment.getTemporaryDirectory());
+        Assert.assertEquals(TMPDIR, this.environment.getTemporaryDirectory());
     }
+
+    @Test
+    public void testGetTemporaryDirectoryWhenNotADirectory() throws Exception
+    {
+        FileUtils.write(TMPDIR, "test");
+
+        // Check that we log that we're bailing out, assume that a System.exit() follows...
+        final Logger logger = getMockery().mock(Logger.class);
+        getMockery().checking(new Expectations() {{
+            allowing(logger).error(with(any(String.class)), with(any(String[].class)));
+            allowing(logger).error(with(any(String.class)), with(anything()), with(anything()));
+            oneOf(logger).error("Could not find a writable {} directory, bailing out!", "temporary");
+            will(throwException(new StopBeforeHittingSystemExitException()));
+        }});
+        ReflectionUtils.setFieldValue(this.environment, "logger", logger);
+
+        try {
+            this.environment.getTemporaryDirectory();
+            Assert.fail("didn't hit the `bailing out' line.");
+        } catch (StopBeforeHittingSystemExitException e) { }
+    }
+
+    @Test
+    public void testGetTemporaryDirectoryFailOver() throws Exception
+    {
+        FileUtils.forceMkdir(TMPDIR);
+        final File txtFile = new File(TMPDIR, "test.txt");
+        FileUtils.write(txtFile, "test");
+
+        final Provider<EnvironmentConfiguration> prov = new Provider<EnvironmentConfiguration>() {
+            public EnvironmentConfiguration get()
+            {
+                return new EnvironmentConfiguration() {
+                    public String getPermanentDirectoryPath()
+                    {
+                        return txtFile.getAbsolutePath();
+                    }
+                };
+            }
+        };
+        ReflectionUtils.setFieldValue(this.environment, "configurationProvider", prov);
+
+
+        final Logger logger = getMockery().mock(Logger.class);
+        getMockery().checking(new Expectations() {{
+            allowing(logger).error(with(any(String.class)), with(any(String[].class)));
+            allowing(logger).error("Falling back on [{}] for {} directory.",
+                                   TMPDIR.getAbsolutePath(),
+                                   "temporary");
+        }});
+        ReflectionUtils.setFieldValue(this.environment, "logger", logger);
+
+        Assert.assertEquals(TMPDIR, this.environment.getTemporaryDirectory());
+
+        // Check that the directory was cleared.
+        Assert.assertEquals(0, TMPDIR.listFiles().length);
+    }
+
+    private static class StopBeforeHittingSystemExitException extends RuntimeException { }
 }
