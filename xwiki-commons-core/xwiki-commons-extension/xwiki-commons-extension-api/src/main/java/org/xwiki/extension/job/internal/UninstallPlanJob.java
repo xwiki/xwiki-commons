@@ -41,7 +41,6 @@ import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.job.Request;
-import org.xwiki.job.internal.DefaultJobStatus;
 
 /**
  * Create an Extension uninstallation plan.
@@ -86,7 +85,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     }
 
     @Override
-    protected DefaultJobStatus<UninstallRequest> createNewStatus(UninstallRequest request)
+    protected DefaultExtensionPlan<UninstallRequest> createNewStatus(UninstallRequest request)
     {
         return new DefaultExtensionPlan<UninstallRequest>(request, getId(), this.observationManager,
             this.loggerManager, this.extensionTree);
