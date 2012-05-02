@@ -21,6 +21,7 @@ package org.xwiki.job.internal;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -28,7 +29,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.job.event.status.JobStatus.State;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
@@ -68,7 +68,7 @@ public class DefaultJobStatus<R extends Request> implements JobStatus, Serializa
     /**
      * General state of the job.
      */
-    private State state;
+    private State state = State.NONE;
 
     /**
      * Request provided when starting the job.
@@ -79,6 +79,16 @@ public class DefaultJobStatus<R extends Request> implements JobStatus, Serializa
      * Log sent during job execution.
      */
     private LogQueue logs = new LogQueue();
+
+    /**
+     * @see #getStartDate()
+     */
+    private Date startDate;
+
+    /**
+     * @see #getEndDate()
+     */
+    private Date endDate;
 
     /**
      * Used to lock #ask().
@@ -221,5 +231,33 @@ public class DefaultJobStatus<R extends Request> implements JobStatus, Serializa
         } finally {
             this.askLock.unlock();
         }
+    }
+
+    @Override
+    public Date getStartDate()
+    {
+        return this.startDate;
+    }
+
+    /**
+     * @param startDate the date and time when the job has been started
+     */
+    public void setStartDate(Date startDate)
+    {
+        this.startDate = startDate;
+    }
+
+    @Override
+    public Date getEndDate()
+    {
+        return this.endDate;
+    }
+
+    /**
+     * @param endDate the date and time when the job finished
+     */
+    public void setEndDate(Date endDate)
+    {
+        this.endDate = endDate;
     }
 }

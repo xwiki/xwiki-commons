@@ -159,19 +159,15 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     @Override
     public synchronized Job executeJob(String jobType, Request request) throws JobException
     {
-        if (this.jobQueue.isEmpty()
-            && (this.currentJob != null && this.currentJob.getStatus().getState() != JobStatus.State.FINISHED)) {
-            throw new JobException("A task is already running");
+        Job job = addJob(jobType, request);
+
+        try {
+            job.join();
+        } catch (InterruptedException e) {
+            // Ignore
         }
 
-        // The lock is used to block the explicit job queue thread
-        synchronized (this) {
-            this.currentJob = createJob(jobType);
-
-            this.currentJob.start(request);
-        }
-
-        return this.currentJob;
+        return job;
     }
 
     @Override
