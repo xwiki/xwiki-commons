@@ -144,4 +144,11 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
 
         return executeJob(jobId, uninstallRequest);
     }
+
+    protected ExtensionPlan upgradePlan() throws Throwable
+    {
+        InstallRequest installRequest = new InstallRequest();
+
+        return (ExtensionPlan) executeJob("upgradeplan", installRequest).getStatus();
+    }
 }

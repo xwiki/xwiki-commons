@@ -17,27 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.job.plan;
+package org.xwiki.extension.job.plan.internal;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
-import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.extension.job.plan.ExtensionPlanNode;
+import org.xwiki.extension.job.plan.ExtensionPlanTree;
 
 /**
- * A plan of extensions related actions to perform.
+ * Default implementation of {@link ExtensionPlanTree}.
  * 
  * @version $Id$
- * @since 4.0M1
+ * @since 4.1M1
  */
-public interface ExtensionPlan extends JobStatus
+public class DefaultExtensionPlanTree extends ArrayList<ExtensionPlanNode> implements ExtensionPlanTree
 {
-    /**
-     * @return the tree representation of the plan
-     */
-    ExtensionPlanTree getTree();
 
-    /**
-     * @return an ordered representation of all the actions to perform
-     */
-    Collection<ExtensionPlanAction> getActions();
 }

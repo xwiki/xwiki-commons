@@ -19,17 +19,16 @@
  */
 package org.xwiki.extension.job.plan.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
+import org.xwiki.extension.job.plan.ExtensionPlanTree;
 import org.xwiki.job.internal.AbstractJobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
@@ -48,7 +47,7 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
      */
     // TODO: find a way to serialize before making DefaultExtensionPlan Serializable (the main issue is the Extension
     // objects in the nodes)
-    private transient List<ExtensionPlanNode> tree = new ArrayList<ExtensionPlanNode>();
+    private transient ExtensionPlanTree tree;
 
     /**
      * @see #getActions()
@@ -64,7 +63,7 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
      *            outside
      */
     public DefaultExtensionPlan(R request, String id, ObservationManager observationManager,
-        LoggerManager loggerManager, List<ExtensionPlanNode> tree)
+        LoggerManager loggerManager, ExtensionPlanTree tree)
     {
         super(request, id, observationManager, loggerManager);
 
@@ -85,9 +84,9 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
     }
 
     @Override
-    public Collection<ExtensionPlanNode> getTree()
+    public ExtensionPlanTree getTree()
     {
-        return Collections.unmodifiableCollection(this.tree);
+        return this.tree;
     }
 
     @Override

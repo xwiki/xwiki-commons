@@ -21,23 +21,13 @@ package org.xwiki.extension.job.plan;
 
 import java.util.Collection;
 
-import org.xwiki.job.event.status.JobStatus;
-
 /**
- * A plan of extensions related actions to perform.
+ * The extension plan tree. Contains all action to execute organized as a dependency tree.
  * 
  * @version $Id$
- * @since 4.0M1
+ * @since 4.1M1
  */
-public interface ExtensionPlan extends JobStatus
+public interface ExtensionPlanTree extends Collection<ExtensionPlanNode>
 {
-    /**
-     * @return the tree representation of the plan
-     */
-    ExtensionPlanTree getTree();
 
-    /**
-     * @return an ordered representation of all the actions to perform
-     */
-    Collection<ExtensionPlanAction> getActions();
 }

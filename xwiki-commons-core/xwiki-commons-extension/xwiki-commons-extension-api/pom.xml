@@ -160,7 +160,7 @@
               **/DefaultInstalledExtensionRepository.java,
               **/DefaultLocalExtensionRepository.java,
               **/DefaultVersion.java,
-              **/InstallPlanJob.java,
+              **/AbstractInstallPlanJob.java,
               **/UnmodifiableUtils.java
           </excludes>
         </configuration>

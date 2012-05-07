@@ -22,10 +22,13 @@ package org.xwiki.extension.test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -127,8 +130,43 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
     }
 
     @Override
-    public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
+    public IterableResult<Version> resolveVersions(final String id, int offset, int nb) throws ResolveException
     {
-        return new CollectionIterableResult<Version>(0, offset, Collections.<Version> emptyList());
+        try {
+            List<Version> versions = new LinkedList<Version>();
+
+            for (File file : this.directory.listFiles(new FilenameFilter()
+            {
+                @Override
+                public boolean accept(File dir, String name)
+                {
+                    return name.startsWith(id + '-') && name.endsWith(".xed");
+                }
+            })) {
+                FileInputStream fis = null;
+                try {
+                    fis = new FileInputStream(file);
+
+                    DefaultLocalExtension localExtension = this.extensionSerializer.loadDescriptor(null, fis);
+
+                    versions.add(localExtension.getId().getVersion());
+                } finally {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                }
+
+            }
+
+            if (versions.isEmpty()) {
+                throw new ResolveException("Extension [" + id + "] not found");
+            }
+
+            Collections.sort(versions);
+
+            return new CollectionIterableResult<Version>(0, offset, versions);
+        } catch (Exception e) {
+            throw new ResolveException("Failed to resolve versions for extenions [" + id + "]", e);
+        }
     }
 }

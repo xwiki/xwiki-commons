@@ -117,7 +117,8 @@
             <!-- Remove the following excludes after we release the current version as final -->
             <exclude>org/xwiki/job/Job</exclude> <!-- New methods -->
             <exclude>org/xwiki/job/event/status/JobStatus</exclude> <!-- New methods -->
-            <exclude>org/xwiki/job/AbstractJob</exclude>
+            <exclude>org/xwiki/job/AbstractJob</exclude> <!-- Still compatible with extends -->
+            <exclude>org/xwiki/extension/job/plan/ExtensionPlan</exclude> <!-- Return an extended type -->
           </excludes>
         </configuration>
       </plugin>

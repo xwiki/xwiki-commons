@@ -31,6 +31,11 @@ import org.xwiki.extension.wrap.AbstractWrappingObject;
 public abstract class AbstractSafeObject<T> extends AbstractWrappingObject<T>
 {
     /**
+     * The message used in forbidden access exceptions.
+     */
+    public static final String FORBIDDEN = "Operation forbidden in script proxy";
+
+    /**
      * The provider of instances safe for public scripts.
      */
     protected ScriptSafeProvider<Object> safeProvider;
