@@ -35,6 +35,9 @@
   <description>XWiki Commons - Extension - Repository - Aether</description>
   <properties>
     <aether.version>1.13.1</aether.version>
+
+    <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
+    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-aether</xwiki.extension.features>
   </properties>
   <dependencies>
     <dependency>
