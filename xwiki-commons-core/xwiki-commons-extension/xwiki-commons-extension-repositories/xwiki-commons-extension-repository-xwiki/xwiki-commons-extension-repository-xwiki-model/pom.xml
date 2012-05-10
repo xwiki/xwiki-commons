@@ -33,6 +33,10 @@
   <name>XWiki Commons - Extension - Repository - XWiki model</name>
   <packaging>jar</packaging>
   <description>The (JAXB) model for XML resource representations served by the Extension REST module.</description>
+  <properties>
+    <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
+    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-xwiki-model</xwiki.extension.features>
+  </properties>
   <build>
     <plugins>
       <plugin>

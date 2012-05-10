@@ -33,6 +33,10 @@
   <name>XWiki Commons - ClassLoader - API</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - ClassLoader - API</description>
+  <properties>
+    <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
+    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-classloader-api</xwiki.extension.features>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
