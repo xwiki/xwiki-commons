@@ -940,7 +940,7 @@ mmmm]]></license>
       <url>scp://maven.xwiki.org/home/maven/public_html/site</url>
     </site>
     <repository>
-      <id>xwiki-releases</id>
+      <id>nexus.xwiki.org</id>
       <name>XWiki Nexus Releases Repository Proxy</name>
       <url>http://nexus.xwiki.org/nexus/content/groups/public</url>
     </repository>
