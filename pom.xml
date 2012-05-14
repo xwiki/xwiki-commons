@@ -942,7 +942,7 @@ mmmm]]></license>
     <repository>
       <id>nexus.xwiki.org</id>
       <name>XWiki Nexus Releases Repository Proxy</name>
-      <url>http://nexus.xwiki.org/nexus/content/groups/public</url>
+      <url>http://nexus.xwiki.org/nexus/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
       <id>maven.xwiki.org</id>
