@@ -1,3 +1,22 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.xwiki.diff.internal;
 
 import java.io.IOException;
@@ -16,11 +35,13 @@ import org.xwiki.diff.DiffConfiguration;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.InsertDelta;
 import org.xwiki.diff.MergeConfiguration;
-import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.Patch;
+import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.event.LogEvent;
 
 import difflib.DiffUtils;
+import difflib.PatchFailedException;
 
 public class DefaultDiff implements Diff
 {
@@ -30,11 +51,21 @@ public class DefaultDiff implements Diff
         return toPatch(DiffUtils.diff(previous, next));
     }
 
+    private <E> void error(MergeResult<E> mergeResult, String message, Throwable throwable, Object... arguments)
+    {
+        mergeResult.getLog().add(new LogEvent(LogLevel.ERROR, message, arguments, throwable));
+    }
+
+    private <E> void warn(MergeResult<E> mergeResult, String message, Throwable throwable, Object... arguments)
+    {
+        mergeResult.getLog().add(new LogEvent(LogLevel.WARN, message, arguments, throwable));
+    }
+
     @Override
     public <E> MergeResult<E> merge(List<E> commonAncestor, List<E> next, List<E> current,
-        MergeConfiguration<E> configuration) throws MergeException
+        MergeConfiguration<E> configuration)
     {
-        MergeResult<E> mergeResult = new MergeResult<E>(commonAncestor, next, current);
+        DefaultMergeResult<E> mergeResult = new DefaultMergeResult<E>(commonAncestor, next, current);
 
         if (ObjectUtils.equals(commonAncestor, next)) {
             // No change so nothing to do
@@ -42,44 +73,57 @@ public class DefaultDiff implements Diff
         }
 
         if (current.isEmpty()) {
-            if (ObjectUtils.equals(commonAncestor, next)) {
-                // No change so nothing to do
-                return mergeResult;
+            if (commonAncestor.isEmpty()) {
+                mergeResult.setMerged(next);
+            } else if (next.isEmpty()) {
+                // The new modification was already applied
+                warn(mergeResult, "The modification was already applied", null);
             } else {
                 // The current version has been replaced by an empty string
-                mergeResult.getErrors().add(new MergeException("The current value has been replaced by empty string"));
-                resultStr = current;
+                error(mergeResult, "The current value is empty", null);
             }
         } else {
+            // TODO: have a common implementation whatever the type (the generic one is not very good yet)
             if (current.get(0) instanceof String) {
-                merge(toString((List<String>) commonAncestor), toString((List<String>) next),
-                    toString((List<String>) current), configuration, mergeResult);
+                merge((List<String>) commonAncestor, (List<String>) next, (List<String>) current,
+                    (MergeConfiguration<String>) configuration, (DefaultMergeResult<String>) mergeResult);
             } else {
-                
+                merge(commonAncestor, next, current, configuration, mergeResult);
             }
+        }
+
+        return mergeResult;
+    }
+
+    public void mergeString(List<String> commonAncestor, List<String> next, List<String> current,
+        MergeConfiguration<String> configuration, DefaultMergeResult<String> mergeResult)
+    {
+        com.qarks.util.files.diff.MergeResult result =
+            com.qarks.util.files.diff.Diff.quickMerge(toString(commonAncestor), toString(next), toString(current),
+                false);
+
+        if (result.isConflict()) {
+            error(mergeResult, "Failed to merge with previous string [{}], new string [{}] and current string [{}]",
+                null, commonAncestor, next, current);
+        } else {
+            mergeResult.setMerged(toLines(result.getDefaultMergedResult()));
         }
     }
 
-    public <E> void merge(String commonAncestor, String next, String current, MergeConfiguration<E> configuration,
-        MergeResult<E> mergeResult) throws MergeException
+    // TODO: improve the algo, just applying a patch on the current version does not always give good result
+    public <E> void merge(List<E> commonAncestor, List<E> next, List<E> current, MergeConfiguration<E> configuration,
+        DefaultMergeResult<E> mergeResult)
     {
-        String resultStr;
+        difflib.Patch patch = DiffUtils.diff(commonAncestor, next);
 
-        com.qarks.util.files.diff.MergeResult result =
-            com.qarks.util.files.diff.Diff.quickMerge(commonAncestor, next, current, false);
+        try {
+            List<E> result = (List<E>) patch.applyTo(current);
 
-        if (result.isConflict()) {
-            mergeResult.getErrors().add(
-                new MergeException(String.format(
-                    "Failed to merge with previous string [%s], new string [%s] and current string [%s]",
-                    commonAncestor, next, current)));
-            resultStr = current;
-        } else {
-            resultStr = result.getDefaultMergedResult();
-            mergeResult.setModified(true);
+            mergeResult.setMerged(result);
+        } catch (PatchFailedException e) {
+            error(mergeResult, "Failed to apply differences between [{}] and [{}] on current list [{}]", e,
+                commonAncestor, next, current);
         }
-
-        return resultStr;
     }
 
     private String toString(List<String> list)

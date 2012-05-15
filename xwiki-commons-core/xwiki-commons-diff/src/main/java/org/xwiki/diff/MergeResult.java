@@ -1,46 +1,37 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.xwiki.diff;
 
 import java.util.List;
 
-public class MergeResult<E>
+import org.xwiki.logging.LogQueue;
+
+public interface MergeResult<E>
 {
-    private boolean modified;
+    List<E> getCommonAncestor();
 
-    private List<E> commonAncestor;
+    List<E> getNext();
 
-    private List<E> previous;
+    List<E> getPrevious();
 
-    private List<E> next;
+    LogQueue getLog();
 
-    public MergeResult(List<E> commonAncestor, List<E> previous, List<E> next)
-    {
-        this.commonAncestor = commonAncestor;
-        this.previous = previous;
-        this.next = next;
-    }
-
-    public List<E> getCommonAncestor()
-    {
-        return this.commonAncestor;
-    }
-
-    public List<E> getNext()
-    {
-        return this.next;
-    }
-
-    public List<E> getPrevious()
-    {
-        return this.previous;
-    }
-
-    public boolean isModified()
-    {
-        return this.modified;
-    }
-
-    public void setModified(boolean b)
-    {
-        this.modified = true;
-    }
+    List<E> getMerged();
 }

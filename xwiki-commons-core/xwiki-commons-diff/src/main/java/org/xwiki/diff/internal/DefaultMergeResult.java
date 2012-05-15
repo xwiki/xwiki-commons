@@ -17,70 +17,64 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff;
+package org.xwiki.diff.internal;
 
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.util.List;
 
-public abstract class AbstractDelta<E> implements Delta<E>
+import org.xwiki.diff.MergeResult;
+import org.xwiki.logging.LogQueue;
+
+public class DefaultMergeResult<E> implements MergeResult<E>
 {
-    private Chunk<E> previous;
+    private List<E> commonAncestor;
 
-    private Chunk<E> next;
+    private List<E> previous;
 
-    public AbstractDelta(Chunk<E> previous, Chunk<E> next)
+    private List<E> next;
+
+    private List<E> merged;
+
+    private LogQueue log = new LogQueue();
+
+    public DefaultMergeResult(List<E> commonAncestor, List<E> previous, List<E> next)
     {
+        this.commonAncestor = commonAncestor;
         this.previous = previous;
         this.next = next;
     }
 
     @Override
-    public Chunk<E> getPrevious()
+    public List<E> getCommonAncestor()
     {
-        return this.previous;
-    }
-
-    public void setPrevious(Chunk<E> previous)
-    {
-        this.previous = previous;
+        return this.commonAncestor;
     }
 
     @Override
-    public Chunk<E> getNext()
+    public List<E> getNext()
     {
         return this.next;
     }
 
-    public void setNext(Chunk<E> next)
+    @Override
+    public List<E> getPrevious()
     {
-        this.next = next;
+        return this.previous;
     }
 
     @Override
-    public int hashCode()
+    public LogQueue getLog()
     {
-        HashCodeBuilder builder = new HashCodeBuilder();
-
-        builder.append(getPrevious());
-        builder.append(getNext());
-
-        return builder.toHashCode();
+        return this.log;
     }
 
     @Override
-    public boolean equals(Object obj)
+    public List<E> getMerged()
     {
-        if (this == obj) {
-            return true;
-        }
+        return this.merged;
+    }
 
-        if (obj instanceof Delta) {
-            Delta<E> otherDelta = (Delta<E>) obj;
-
-            return ObjectUtils.equals(getPrevious(), otherDelta.getPrevious())
-                && ObjectUtils.equals(getNext(), otherDelta.getNext());
-        }
-
-        return false;
+    public void setMerged(List<E> merged)
+    {
+        this.merged = merged;
     }
 }
