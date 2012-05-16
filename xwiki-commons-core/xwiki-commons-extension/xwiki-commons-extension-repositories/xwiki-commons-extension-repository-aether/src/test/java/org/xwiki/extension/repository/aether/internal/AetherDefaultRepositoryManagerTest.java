@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -27,6 +28,7 @@ import java.util.Arrays;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -169,6 +171,16 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         } finally {
             is.close();
         }
+
+        // Make sure it has been removed from AETHER cache
+        String filePrefix =
+            "aether-repository/" + GROUPID + '/' + ARTIfACTID + '/' + extension.getId().getVersion() + '/' + ARTIfACTID
+                + '-' + extension.getId().getVersion();
+        File pomFile = new File(this.repositoryUtil.getTemporaryDirectory(), filePrefix + ".pom");
+        Assert.assertTrue("Can't find file " + pomFile, pomFile.exists());
+        Assert
+            .assertFalse(new File(this.repositoryUtil.getTemporaryDirectory(), filePrefix + '.' + extension.getType())
+                .exists());
     }
 
     @Test
