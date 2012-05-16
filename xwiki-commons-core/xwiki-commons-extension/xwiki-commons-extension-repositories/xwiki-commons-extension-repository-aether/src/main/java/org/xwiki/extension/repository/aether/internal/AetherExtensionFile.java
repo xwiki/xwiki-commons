@@ -37,7 +37,6 @@ import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -56,6 +55,8 @@ public class AetherExtensionFile implements ExtensionFile
         public AetherExtensionFileInputStream(File file) throws FileNotFoundException
         {
             super(file);
+
+            this.file = file;
         }
 
         @Override
@@ -64,7 +65,7 @@ public class AetherExtensionFile implements ExtensionFile
             super.close();
 
             // Delete the file until a real stream download is done
-            FileUtils.deleteQuietly(file);
+            FileUtils.deleteQuietly(this.file);
         }
     }
 
