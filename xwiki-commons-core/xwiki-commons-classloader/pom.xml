@@ -33,10 +33,6 @@
   <name>XWiki Commons - ClassLoader - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - ClassLoader - Parent POM</description>
-  <properties>
-    <!-- To remove when releasing 4.0 -->
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
-  </properties>
   <modules>
     <module>xwiki-commons-classloader-api</module>
     <module>xwiki-commons-classloader-protocols</module>
