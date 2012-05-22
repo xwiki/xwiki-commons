@@ -17,36 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.job.internal;
+package org.xwiki.extension.job.plan.internal;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 
-import org.xwiki.job.Request;
-import org.xwiki.logging.LoggerManager;
-import org.xwiki.observation.ObservationManager;
+import org.xwiki.extension.job.plan.ExtensionPlanNode;
+import org.xwiki.extension.job.plan.ExtensionPlanTree;
 
 /**
- * Default implementation of {@link org.xwiki.job.event.status.JobStatus}.
+ * Default implementation of {@link ExtensionPlanTree}.
  * 
- * @param <R>
  * @version $Id$
- * @since 4.0M1
+ * @since 4.1M1
  */
-public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R> implements Serializable
+public class DefaultExtensionPlanTree extends ArrayList<ExtensionPlanNode> implements ExtensionPlanTree
 {
-    /**
-     * Serialization identifier.
-     */
-    private static final long serialVersionUID = 1L;
 
-    /**
-     * @param request the request provided when started the job
-     * @param id the unique id of the job
-     * @param observationManager the observation manager component
-     * @param loggerManager the logger manager component
-     */
-    public DefaultJobStatus(R request, String id, ObservationManager observationManager, LoggerManager loggerManager)
-    {
-        super(request, id, observationManager, loggerManager);
-    }
 }

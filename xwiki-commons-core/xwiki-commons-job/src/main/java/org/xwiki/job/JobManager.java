@@ -45,12 +45,12 @@ public interface JobManager
     JobStatus getJobStatus(String id);
 
     /**
-     * Start a new job with the provided identifier.
+     * Start a new job with the provided identifier and wait until its finished.
      * 
      * @param jobType the role hint of the job component
      * @param request the request
      * @return the created job
-     * @throws JobException error when trying to run the job
+     * @throws JobException error when creating the job
      */
     Job executeJob(String jobType, Request request) throws JobException;
 
@@ -60,7 +60,7 @@ public interface JobManager
      * @param jobType the role hint of the job component
      * @param request the request
      * @return the created job
-     * @throws JobException error when trying to run the job
+     * @throws JobException error when creating the job
      */
     Job addJob(String jobType, Request request) throws JobException;
 }

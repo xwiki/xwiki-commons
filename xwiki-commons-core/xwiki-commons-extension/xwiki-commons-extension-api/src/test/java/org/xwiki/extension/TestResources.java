@@ -51,6 +51,10 @@ public class TestResources
     public static final ExtensionId REMOTE_WITHRANDCDEPENDENCIES_ID = new ExtensionId("rwithrandcdependencies",
         "version");
 
+    public static final ExtensionId REMOTE_UPGRADE10_ID = new ExtensionId("upgrade", "1.0");
+
+    public static final ExtensionId REMOTE_UPGRADE20_ID = new ExtensionId("upgrade", "2.0");
+
     // Methods
 
     public void init(InstalledExtensionRepository installedExtensionRepository) throws ResolveException

@@ -19,6 +19,8 @@
  */
 package org.xwiki.job;
 
+import java.util.concurrent.TimeUnit;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.job.event.status.JobStatus;
 
@@ -50,4 +52,23 @@ public interface Job
      * @param request start the job with provided request
      */
     void start(Request request);
+
+    /**
+     * Causes the current thread to wait until this job has FINSHED state.
+     * 
+     * @throws InterruptedException if any thread has interrupted the current thread. The <i>interrupted status</i> of
+     *             the current thread is cleared when this exception is thrown.
+     */
+    void join() throws InterruptedException;
+
+    /**
+     * Causes the current thread to wait until this job has FINSHED state.
+     * 
+     * @param time the maximum time to wait
+     * @param unit the time unit of the {@code time} argument
+     * @return {@code false} if the waiting time detectably elapsed before return from the method, else {@code true}
+     * @throws InterruptedException if the current thread is interrupted (and interruption of thread suspension is
+     *             supported)
+     */
+    boolean join(long time, TimeUnit unit) throws InterruptedException;
 }

@@ -68,6 +68,9 @@ import org.xwiki.test.annotation.MockingRequirement;
  *     ...
  * }
  * </code></pre>
+ *
+ * Note that if your component under test is using other components in its {@code initialize()} method you'll need to
+ * override the {@link #configure} method to add Mock expectations there.
  * 
  * @version $Id$
  * @since 2.2M1

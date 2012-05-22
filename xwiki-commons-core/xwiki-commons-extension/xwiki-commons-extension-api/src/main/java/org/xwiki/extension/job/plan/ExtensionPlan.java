@@ -34,7 +34,7 @@ public interface ExtensionPlan extends JobStatus
     /**
      * @return the tree representation of the plan
      */
-    Collection<ExtensionPlanNode> getTree();
+    ExtensionPlanTree getTree();
 
     /**
      * @return an ordered representation of all the actions to perform

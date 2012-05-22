@@ -19,18 +19,17 @@
  */
 package org.xwiki.extension.job.plan.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
-import org.xwiki.job.internal.DefaultJobStatus;
+import org.xwiki.extension.job.plan.ExtensionPlanTree;
+import org.xwiki.job.internal.AbstractJobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 
@@ -41,25 +40,19 @@ import org.xwiki.observation.ObservationManager;
  * @version $Id$
  * @since 4.0M1
  */
-// TODO: not really serializable
-public class DefaultExtensionPlan<R extends ExtensionRequest> extends DefaultJobStatus<R> implements ExtensionPlan
+public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJobStatus<R> implements ExtensionPlan
 {
-    /**
-     * Serialization identifier.
-     */
-    private static final long serialVersionUID = 1L;
-
     /**
      * @see #getTree()
      */
-    // TODO: find a way to serialize
-    private transient List<ExtensionPlanNode> tree = new ArrayList<ExtensionPlanNode>();
+    // TODO: find a way to serialize before making DefaultExtensionPlan Serializable (the main issue is the Extension
+    // objects in the nodes)
+    private transient ExtensionPlanTree tree;
 
     /**
      * @see #getActions()
      */
-    // TODO: find a way to serialize
-    private transient Set<ExtensionPlanAction> actions;
+    private transient Set<ExtensionPlanAction> actionsCache;
 
     /**
      * @param request the request provided when started the job
@@ -70,7 +63,7 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends DefaultJob
      *            outside
      */
     public DefaultExtensionPlan(R request, String id, ObservationManager observationManager,
-        LoggerManager loggerManager, List<ExtensionPlanNode> tree)
+        LoggerManager loggerManager, ExtensionPlanTree tree)
     {
         super(request, id, observationManager, loggerManager);
 
@@ -91,9 +84,9 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends DefaultJob
     }
 
     @Override
-    public Collection<ExtensionPlanNode> getTree()
+    public ExtensionPlanTree getTree()
     {
-        return Collections.unmodifiableCollection(this.tree);
+        return this.tree;
     }
 
     @Override
@@ -105,12 +98,12 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends DefaultJob
 
             return extensions;
         } else {
-            if (this.actions == null) {
-                this.actions = new LinkedHashSet<ExtensionPlanAction>();
-                fillExtensionActions(this.actions, this.tree);
+            if (this.actionsCache == null) {
+                this.actionsCache = new LinkedHashSet<ExtensionPlanAction>();
+                fillExtensionActions(this.actionsCache, this.tree);
             }
 
-            return Collections.unmodifiableCollection(this.actions);
+            return Collections.unmodifiableCollection(this.actionsCache);
         }
     }
 }

@@ -19,6 +19,11 @@
  */
 package org.xwiki.job;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -28,9 +33,11 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.event.status.JobStatus.State;
 import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
+import org.xwiki.job.internal.AbstractJobStatus;
 import org.xwiki.job.internal.DefaultJobStatus;
 import org.xwiki.job.internal.JobStatusStorage;
 import org.xwiki.logging.LoggerManager;
@@ -90,7 +97,17 @@ public abstract class AbstractJob<R extends Request> implements Job
     /**
      * @see #getStatus()
      */
-    protected DefaultJobStatus<R> status;
+    protected AbstractJobStatus<R> status;
+
+    /**
+     * Main lock guarding all access.
+     */
+    private final ReentrantLock lock = new ReentrantLock();
+
+    /**
+     * Condition for waiting takes.
+     */
+    private final Condition finishedCondition = lock.newCondition();
 
     @Override
     public R getRequest()
@@ -110,10 +127,7 @@ public abstract class AbstractJob<R extends Request> implements Job
         this.request = castRequest(request);
         this.status = createNewStatus(this.request);
 
-        this.jobContext.pushCurrentJob(this);
-        this.observationManager.notify(new JobStartedEvent(getId(), getType(), request), this);
-
-        this.status.startListening();
+        jobStarting();
 
         Exception exception = null;
         try {
@@ -122,20 +136,54 @@ public abstract class AbstractJob<R extends Request> implements Job
             this.logger.error("Exception thrown during job execution", e);
             exception = e;
         } finally {
+            jobFinished(exception);
+        }
+    }
+
+    /**
+     * Called when the job is starting.
+     */
+    protected void jobStarting()
+    {
+        this.jobContext.pushCurrentJob(this);
+
+        this.observationManager.notify(new JobStartedEvent(getId(), getType(), request), this);
+
+        this.status.setStartDate(new Date());
+        this.status.setState(JobStatus.State.RUNNING);
+
+        this.status.startListening();
+    }
+
+    /**
+     * Called when the job is done.
+     * 
+     * @param exception the exception throw during execution of the job
+     */
+    protected void jobFinished(Exception exception)
+    {
+        this.lock.lock();
+
+        try {
             this.status.stopListening();
 
             this.status.setState(JobStatus.State.FINISHED);
+            this.status.setStartDate(new Date());
 
-            this.observationManager.notify(new JobFinishedEvent(getId(), getType(), request), this, exception);
+            this.finishedCondition.signalAll();
+
+            this.observationManager.notify(new JobFinishedEvent(getId(), getType(), this.request), this, exception);
             this.jobContext.popCurrentJob();
 
             try {
-                if (request.getId() != null) {
+                if (this.request.getId() != null) {
                     this.storage.store(this.status);
                 }
             } catch (Exception e) {
                 this.logger.warn("Failed to store job status [{}]", this.status, e);
             }
+        } finally {
+            this.lock.unlock();
         }
     }
 
@@ -145,6 +193,7 @@ public abstract class AbstractJob<R extends Request> implements Job
      * @param request the request
      * @return the request in the proper extended type
      */
+    @SuppressWarnings("unchecked")
     protected R castRequest(Request request)
     {
         return (R) request;
@@ -154,9 +203,9 @@ public abstract class AbstractJob<R extends Request> implements Job
      * @param request contains information related to the job to execute
      * @return the status of the job
      */
-    protected DefaultJobStatus<R> createNewStatus(R request)
+    protected AbstractJobStatus<R> createNewStatus(R request)
     {
-        return new DefaultJobStatus<R>((R) request, getId(), this.observationManager, this.loggerManager);
+        return new DefaultJobStatus<R>(request, getId(), this.observationManager, this.loggerManager);
     }
 
     /**
@@ -200,4 +249,34 @@ public abstract class AbstractJob<R extends Request> implements Job
      * @throws Exception errors during job execution
      */
     protected abstract void start() throws Exception;
+
+    @Override
+    public void join() throws InterruptedException
+    {
+        this.lock.lockInterruptibly();
+
+        try {
+            if (getStatus() == null || getStatus().getState() != State.FINISHED) {
+                this.finishedCondition.await();
+            }
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    @Override
+    public boolean join(long time, TimeUnit unit) throws InterruptedException
+    {
+        this.lock.lockInterruptibly();
+
+        try {
+            if (getStatus().getState() != State.FINISHED) {
+                return this.finishedCondition.await(time, unit);
+            }
+        } finally {
+            this.lock.unlock();
+        }
+
+        return true;
+    }
 }

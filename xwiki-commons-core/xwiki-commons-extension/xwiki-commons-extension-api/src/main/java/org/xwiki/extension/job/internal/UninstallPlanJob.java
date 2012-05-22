@@ -36,12 +36,13 @@ import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
+import org.xwiki.extension.job.plan.ExtensionPlanTree;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
+import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.job.Request;
-import org.xwiki.job.internal.DefaultJobStatus;
 
 /**
  * Create an Extension uninstallation plan.
@@ -77,7 +78,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     /**
      * The install plan.
      */
-    private List<ExtensionPlanNode> extensionTree = new ArrayList<ExtensionPlanNode>();
+    private ExtensionPlanTree extensionTree = new DefaultExtensionPlanTree();
 
     @Override
     public String getType()
@@ -86,7 +87,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     }
 
     @Override
-    protected DefaultJobStatus<UninstallRequest> createNewStatus(UninstallRequest request)
+    protected DefaultExtensionPlan<UninstallRequest> createNewStatus(UninstallRequest request)
     {
         return new DefaultExtensionPlan<UninstallRequest>(request, getId(), this.observationManager,
             this.loggerManager, this.extensionTree);
@@ -148,7 +149,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
      * @throws UninstallException error when trying to uninstall provided extensions
      */
     private void uninstallExtension(String extensionId, Collection<String> namespaces,
-        List<ExtensionPlanNode> parentBranch) throws UninstallException
+        Collection<ExtensionPlanNode> parentBranch) throws UninstallException
     {
         notifyPushLevelProgress(namespaces.size());
 
@@ -169,7 +170,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
      * @throws UninstallException error when trying to uninstall provided extension
      */
-    private void uninstallExtension(String extensionId, String namespace, List<ExtensionPlanNode> parentBranch)
+    private void uninstallExtension(String extensionId, String namespace, Collection<ExtensionPlanNode> parentBranch)
         throws UninstallException
     {
         InstalledExtension installedExtension =
@@ -193,7 +194,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
      * @throws UninstallException error when trying to uninstall provided extension
      */
     private void uninstallExtension(InstalledExtension installedExtension, Collection<String> namespaces,
-        List<ExtensionPlanNode> parentBranch) throws UninstallException
+        Collection<ExtensionPlanNode> parentBranch) throws UninstallException
     {
         for (String namespace : namespaces) {
             uninstallExtension(installedExtension, namespace, parentBranch);
@@ -207,7 +208,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
      * @throws UninstallException error when trying to uninstall provided extensions
      */
     private void uninstallExtensions(Collection<InstalledExtension> extensions, String namespace,
-        List<ExtensionPlanNode> parentBranch) throws UninstallException
+        Collection<ExtensionPlanNode> parentBranch) throws UninstallException
     {
         for (InstalledExtension backardDependency : extensions) {
             uninstallExtension(backardDependency, namespace, parentBranch);
@@ -221,7 +222,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
      * @throws UninstallException error when trying to uninstall provided extension
      */
     private void uninstallExtension(InstalledExtension installedExtension, String namespace,
-        List<ExtensionPlanNode> parentBranch) throws UninstallException
+        Collection<ExtensionPlanNode> parentBranch) throws UninstallException
     {
         if (namespace != null
             && (installedExtension.getNamespaces() == null

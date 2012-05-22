@@ -19,6 +19,7 @@
  */
 package org.xwiki.job.event.status;
 
+import java.util.Date;
 import java.util.List;
 
 import org.xwiki.job.Request;
@@ -107,4 +108,14 @@ public interface JobStatus
      * @since 4.0M2
      */
     void answered();
+
+    /**
+     * @return the date and time when the job has been started
+     */
+    Date getStartDate();
+
+    /**
+     * @return the date and time when the job finished
+     */
+    Date getEndDate();
 }

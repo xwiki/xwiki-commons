@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -192,10 +193,13 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     {
         this.jobs.put(status.getRequest().getId(), status);
 
-        try {
-            saveJobStatus(status);
-        } catch (Exception e) {
-            this.logger.warn("Failed to save job status [{}]", status, e);
+        // On store Serializable job status on file system
+        if (status instanceof Serializable) {
+            try {
+                saveJobStatus(status);
+            } catch (Exception e) {
+                this.logger.warn("Failed to save job status [{}]", status, e);
+            }
         }
     }
 
