@@ -26,7 +26,6 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.environment.EnvironmentConfiguration;
 
 /**
  * Default implementation which uses the default Configuration Source to look for Environment configuration data.

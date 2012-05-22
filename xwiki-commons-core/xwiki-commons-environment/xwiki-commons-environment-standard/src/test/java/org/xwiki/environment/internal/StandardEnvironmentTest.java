@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
-import org.xwiki.environment.EnvironmentConfiguration;
 import org.xwiki.store.UnexpectedException;
 
 /**

@@ -27,7 +27,6 @@ import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.xwiki.environment.Environment;
-import org.xwiki.environment.EnvironmentConfiguration;
 import org.xwiki.store.UnexpectedException;
 
 /**
