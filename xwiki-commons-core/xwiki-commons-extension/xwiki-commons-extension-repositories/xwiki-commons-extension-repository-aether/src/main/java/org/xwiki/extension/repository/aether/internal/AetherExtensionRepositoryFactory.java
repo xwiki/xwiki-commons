@@ -44,7 +44,6 @@ import org.xwiki.extension.repository.aether.internal.configuration.AetherConfig
 import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -90,6 +89,10 @@ public class AetherExtensionRepositoryFactory implements ExtensionRepositoryFact
         session.setIgnoreInvalidArtifactDescriptor(false);
         session.setUpdatePolicy(RepositoryPolicy.UPDATE_POLICY_ALWAYS);
         session.setConfigProperty(ConfigurationProperties.USER_AGENT, this.configuration.getUserAgent());
+
+        // Remove all system properties that could disrupt effective pom resolution
+        session.setSystemProperty("version", null);
+        session.setSystemProperty("groupId", null);
 
         return session;
     }
