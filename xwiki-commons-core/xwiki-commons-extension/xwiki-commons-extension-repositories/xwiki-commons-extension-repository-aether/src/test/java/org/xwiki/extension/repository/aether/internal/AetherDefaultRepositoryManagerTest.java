@@ -28,7 +28,6 @@ import java.util.Arrays;
 
 import junit.framework.Assert;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,6 +67,10 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
 
     private ExtensionId bundleExtensionId;
 
+    private ExtensionId sextensionId;
+
+    private ExtensionId sextensionDependencyId;
+
     private RepositoryUtil repositoryUtil;
 
     @Override
@@ -91,6 +94,9 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
                 "[dversion,)"));
 
         this.bundleExtensionId = new ExtensionId("groupid:bundleartifactid", "version");
+
+        this.sextensionId = new ExtensionId("sgroupid:sartifactid", "version");
+        this.sextensionDependencyId = new ExtensionId("sgroupid:sdartifactid", "version");
 
         // lookup
 
@@ -137,6 +143,28 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         // "<description>modified summary</description>"), "UTF-8");
         // extension = this.repositoryManager.resolve(this.extensionId);
         // Assert.assertEquals("modified description", extension.getSummary());
+    }
+
+    /**
+     * Make sure any <code>version</code> property coming from system properties will not be resolved instead of the
+     * actual pom version.
+     */
+    @Test
+    public void testResolveWithVersionAsSystemProperty() throws ResolveException
+    {
+        System.setProperty("version", "systemversion");
+        System.setProperty("groupId", "systemgroupId");
+
+        Extension extension = this.repositoryManager.resolve(this.sextensionId);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(this.sextensionId.getId(), extension.getId().getId());
+        Assert.assertEquals(this.sextensionId.getVersion(), extension.getId().getVersion());
+
+        ExtensionDependency dependency = extension.getDependencies().iterator().next();
+        Assert.assertEquals(this.sextensionDependencyId.getId(), dependency.getId());
+        Assert.assertEquals(this.sextensionDependencyId.getVersion().getValue(), dependency.getVersionConstraint()
+            .getValue());
     }
 
     @Test
