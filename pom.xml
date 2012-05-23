@@ -207,6 +207,20 @@
         <classifier>jdk15</classifier>
       </dependency>
 
+      <!-- Various project are using it to scan the classpath -->
+      <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+        <version>0.9.7</version>
+        <exclusions>
+          <!-- Prevent future conflicts -->
+          <exclusion>
+            <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
       <!-- Everybody logs -->
       <dependency>
         <groupId>org.slf4j</groupId>
