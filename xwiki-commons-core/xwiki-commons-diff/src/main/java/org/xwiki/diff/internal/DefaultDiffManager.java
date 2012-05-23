@@ -21,18 +21,23 @@ package org.xwiki.diff.internal;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.List;
+
+import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.diff.ChangeDelta;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.DeleteDelta;
 import org.xwiki.diff.Delta;
-import org.xwiki.diff.Diff;
 import org.xwiki.diff.DiffConfiguration;
 import org.xwiki.diff.DiffException;
+import org.xwiki.diff.DiffManager;
+import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.InsertDelta;
 import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeResult;
@@ -43,12 +48,26 @@ import org.xwiki.logging.event.LogEvent;
 import difflib.DiffUtils;
 import difflib.PatchFailedException;
 
-public class DefaultDiff implements Diff
+/**
+ * Default implementation of {@link DiffManager}.
+ * 
+ * @version $Id$
+ */
+@Component
+@Singleton
+public class DefaultDiffManager implements DiffManager
 {
     @Override
-    public <E> Patch<E> diff(List<E> previous, List<E> next, DiffConfiguration<E> diff) throws DiffException
+    public <E> DiffResult<E> diff(List<E> previous, List<E> next, DiffConfiguration<E> diff) throws DiffException
     {
-        return toPatch(DiffUtils.diff(previous, next));
+        DefaultDiffResult<E> result = new DefaultDiffResult<E>(previous, next);
+        
+        // TODO: work around http://code.google.com/p/java-diff-utils/issues/detail?id=23
+        
+        result.setPatch(this.<E> toPatch(DiffUtils.diff(previous != null ? previous : Collections.EMPTY_LIST,
+            next != null ? next : Collections.EMPTY_LIST)));
+
+        return result;
     }
 
     private <E> void error(MergeResult<E> mergeResult, String message, Throwable throwable, Object... arguments)
