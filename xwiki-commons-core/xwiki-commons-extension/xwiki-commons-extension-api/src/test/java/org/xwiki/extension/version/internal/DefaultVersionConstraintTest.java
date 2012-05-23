@@ -72,4 +72,18 @@ public class DefaultVersionConstraintTest
 
         Assert.assertEquals("[1.0", new DefaultVersionConstraint("[1.0").getVersion().getValue());
     }
+
+    @Test
+    public void testContainsVersion()
+    {
+        Assert.assertTrue(new DefaultVersionConstraint("1.0").containsVersion(new DefaultVersion("1.0")));
+        Assert.assertFalse(new DefaultVersionConstraint("1.0").containsVersion(new DefaultVersion("2.0")));
+    }
+
+    @Test
+    public void testIsCompatible()
+    {
+        Assert.assertTrue(new DefaultVersionConstraint("1.0").isCompatible(new DefaultVersion("1.0")));
+        Assert.assertTrue(new DefaultVersionConstraint("1.0").isCompatible(new DefaultVersion("2.0")));
+    }
 }
