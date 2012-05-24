@@ -20,6 +20,7 @@
 package org.xwiki.environment.internal;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -189,10 +190,10 @@ public abstract class AbstractEnvironment implements Environment
             if (dir.isDirectory() && dir.canWrite()) {
                 try {
                     if (isTemp) {
-                        FileUtils.cleanDirectory(dir);
+                        this.initTempDir(dir);
                     }
                     return dir;
-                } catch (Exception e) {
+                } catch (IOException e) {
                     // Will be logged below.
                 }
             }
@@ -209,5 +210,30 @@ public abstract class AbstractEnvironment implements Environment
         this.logger.error("Configured {} directory [{}] could not be created, check permissions.",
                           tempOrPerminent, dir.getAbsolutePath());
         return null;
+    }
+
+    /**
+     * Initialize the internal xwiki-temp directory.
+     * This function clears the directory out.
+     *
+     * @param tempDir the xwiki-temp subdirectory which is internal/deleted per load.
+     * @throws IOException if something goes wrong trying to clear the directory.
+     * @throws UnexpectedException if the configuration is "silly" and puts the persistent dir
+     *                             inside of the delete-on-start directory.
+     */
+    private void initTempDir(final File tempDir) throws IOException
+    {
+        // We can't prevent all bad configurations eg: persistent dir == /dev/null
+        // But setting the persistent dir to the xwiki-temp subdir is easy enough to catch.
+        final File permDir = this.getPermanentDirectory();
+        if (tempDir.equals(permDir) || FileUtils.directoryContains(tempDir, permDir)) {
+            throw new UnexpectedException(
+                "The configured persistent store directory falls within the "
+                + TEMP_NAME + " sub-directory of the temporary directory, this "
+                + "sub-directory is reserved (deleted on start-up) and must never "
+                + "be used. Please review your configuration.");
+        }
+
+        FileUtils.cleanDirectory(tempDir);
     }
 }

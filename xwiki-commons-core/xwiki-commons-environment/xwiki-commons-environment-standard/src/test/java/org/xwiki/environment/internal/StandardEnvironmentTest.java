@@ -194,9 +194,10 @@ public class StandardEnvironmentTest
         final Logger logger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{
             allowing(logger).error(with(any(String.class)), with(any(String[].class)));
-            allowing(logger).error("Falling back on [{}] for {} directory.",
-                                   TMPDIR.getAbsolutePath(),
-                                   "temporary");
+            // Getting the tmp dir causes the permenant dir to be checked.
+            oneOf(logger).warn("Falling back on [{}] for {} directory.",
+                               TMPDIR.getParentFile().getAbsolutePath(),
+                               "permanent");
         }});
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 
