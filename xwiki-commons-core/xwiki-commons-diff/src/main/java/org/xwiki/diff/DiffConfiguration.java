@@ -19,7 +19,12 @@
  */
 package org.xwiki.diff;
 
-public interface DiffConfiguration<T>
+/**
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
+public interface DiffConfiguration<E>
 {
 
 }

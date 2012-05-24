@@ -21,6 +21,12 @@ package org.xwiki.diff;
 
 import java.util.List;
 
+/**
+ * A delta between two version of a list.
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public interface Delta<E>
 {
     public enum TYPE

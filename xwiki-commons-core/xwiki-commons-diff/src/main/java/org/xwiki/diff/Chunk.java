@@ -21,6 +21,11 @@ package org.xwiki.diff;
 
 import java.util.List;
 
+/**
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public interface Chunk<E>
 {
     public void verify(List<E> target) throws PatchException;

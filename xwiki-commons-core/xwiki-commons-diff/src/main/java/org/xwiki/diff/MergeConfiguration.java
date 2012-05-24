@@ -19,6 +19,11 @@
  */
 package org.xwiki.diff;
 
+/**
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public interface MergeConfiguration<E>
 {
     MergeResult<E> getCurrentMergeResult();

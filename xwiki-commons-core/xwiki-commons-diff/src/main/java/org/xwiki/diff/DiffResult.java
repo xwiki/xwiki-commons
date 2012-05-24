@@ -4,6 +4,11 @@ import java.util.List;
 
 import org.xwiki.logging.LogQueue;
 
+/**
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public interface DiffResult<E>
 {
     List<E> getNext();

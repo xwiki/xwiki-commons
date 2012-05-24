@@ -21,9 +21,28 @@ package org.xwiki.diff;
 
 import java.util.List;
 
+/**
+ * A list of deltas between two versions.
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public interface Patch<E> extends List<Delta<E>>
 {
-    public List<E> apply(List<E> target) throws PatchException;
+    /**
+     * Apply the patch.
+     * 
+     * @param target the list on which to apply the patch
+     * @return the modified list
+     * @throws PatchException failed to apply the patch
+     */
+    List<E> apply(List<E> target) throws PatchException;
 
-    public List<E> restore(List<E> target);
+    /**
+     * Invert the patch.
+     * 
+     * @param target the list on which to apply an inverted version of the patch
+     * @return the modified list
+     */
+    List<E> restore(List<E> target);
 }
