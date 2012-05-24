@@ -79,7 +79,7 @@ public abstract class AbstractRequest implements Request
      */
     public void setId(List<String> id)
     {
-        this.id = new ArrayList<String>(id);
+        this.id = id != null ? new ArrayList<String>(id) : null;
     }
 
     /**
