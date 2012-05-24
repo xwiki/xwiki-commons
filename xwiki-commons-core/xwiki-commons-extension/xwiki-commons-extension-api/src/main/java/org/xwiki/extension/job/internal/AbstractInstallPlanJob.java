@@ -186,7 +186,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     @Override
     protected DefaultExtensionPlan<R> createNewStatus(R request)
     {
-        return new DefaultExtensionPlan<R>(request, getId(), this.observationManager, this.loggerManager,
+        return new DefaultExtensionPlan<R>(request, this.observationManager, this.loggerManager,
             this.finalExtensionTree);
     }
 

@@ -56,16 +56,15 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
 
     /**
      * @param request the request provided when started the job
-     * @param id the unique id of the job
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
      * @param tree the tree representation of the plan, it's not copied but taken as it it to allow filling it from
      *            outside
      */
-    public DefaultExtensionPlan(R request, String id, ObservationManager observationManager,
+    public DefaultExtensionPlan(R request, ObservationManager observationManager,
         LoggerManager loggerManager, ExtensionPlanTree tree)
     {
-        super(request, id, observationManager, loggerManager);
+        super(request, observationManager, loggerManager);
 
         this.tree = tree;
     }

@@ -89,8 +89,8 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     @Override
     protected DefaultExtensionPlan<UninstallRequest> createNewStatus(UninstallRequest request)
     {
-        return new DefaultExtensionPlan<UninstallRequest>(request, getId(), this.observationManager,
-            this.loggerManager, this.extensionTree);
+        return new DefaultExtensionPlan<UninstallRequest>(request, this.observationManager, this.loggerManager,
+            this.extensionTree);
     }
 
     @Override
@@ -225,8 +225,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
         Collection<ExtensionPlanNode> parentBranch) throws UninstallException
     {
         if (namespace != null
-            && (installedExtension.getNamespaces() == null
-            || !installedExtension.getNamespaces().contains(namespace))) {
+            && (installedExtension.getNamespaces() == null || !installedExtension.getNamespaces().contains(namespace))) {
             throw new UninstallException(MessageFormat.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension,
                 namespace));
         }

@@ -104,7 +104,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
             // Create the plan
 
             UninstallRequest planRequest = new UninstallRequest(getRequest());
-            planRequest.setId(null);
+            planRequest.setId((List<String>) null);
 
             this.uninstallPlanJob.start(planRequest);
 
