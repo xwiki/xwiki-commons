@@ -1,6 +1,7 @@
 package org.xwiki.diff.internal;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import junit.framework.Assert;
 
@@ -9,6 +10,7 @@ import org.xwiki.diff.Delta.TYPE;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
+import org.xwiki.diff.MergeResult;
 import org.xwiki.test.AbstractComponentTestCase;
 
 public class DefaultDiffManagerTest extends AbstractComponentTestCase
@@ -46,40 +48,116 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
 
         // Previous empty
 
-        result = this.diffManager.diff(Arrays.asList(""), Arrays.asList("next"), null);
+        result = this.diffManager.diff(Collections.<String> emptyList(), Arrays.asList("next"), null);
 
         Assert.assertEquals(1, result.getPatch().size());
         Assert.assertEquals(TYPE.INSERT, result.getPatch().get(0).getType());
+        Assert.assertEquals(Arrays.asList("next"), result.getPatch().get(0).getNext().getElements());
+        Assert.assertEquals(0, result.getPatch().get(0).getNext().getIndex());
 
         // Next empty
 
-        result = this.diffManager.diff(Arrays.asList("previous"), Arrays.asList(""), null);
+        result = this.diffManager.diff(Arrays.asList("previous"), Collections.<String> emptyList(), null);
 
         Assert.assertEquals(1, result.getPatch().size());
         Assert.assertEquals(TYPE.DELETE, result.getPatch().get(0).getType());
+        Assert.assertEquals(Arrays.asList("previous"), result.getPatch().get(0).getPrevious().getElements());
+        Assert.assertEquals(0, result.getPatch().get(0).getPrevious().getIndex());
     }
 
     @Test
     public void testDiffCharList() throws DiffException
     {
-        DiffResult<String> result = this.diffManager.diff(Arrays.asList(""), Arrays.asList(""), null);
+        // Equals
+
+        DiffResult<Character> result = this.diffManager.diff(Arrays.asList('a'), Arrays.asList('a'), null);
 
         Assert.assertTrue(result.getPatch().isEmpty());
+
+        // Changed
+
+        result = this.diffManager.diff(Arrays.asList('a'), Arrays.asList('b'), null);
+
+        Assert.assertEquals(1, result.getPatch().size());
+        Assert.assertEquals(TYPE.CHANGE, result.getPatch().get(0).getType());
     }
 
     @Test
     public void testMergeStringList() throws DiffException
     {
-        DiffResult<String> result = this.diffManager.diff(Arrays.asList(""), Arrays.asList(""), null);
+        // Only new
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        MergeResult<String> result =
+            this.diffManager.merge(Arrays.asList("some content"), Arrays.asList("some new content"),
+                Arrays.asList("some content"), null);
+
+        Assert.assertEquals(Arrays.asList("some new content"), result.getMerged());
+
+        // New after
+
+        result =
+            this.diffManager.merge(Arrays.asList("some content"), Arrays.asList("some content", "after"),
+                Arrays.asList("some content"), null);
+
+        Assert.assertEquals(Arrays.asList("some content", "after"), result.getMerged());
+
+        // Before and after
+
+        result =
+            this.diffManager.merge(Arrays.asList("some content"), Arrays.asList("before", "some content"),
+                Arrays.asList("some content", "after"), null);
+
+        Assert.assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
+
+        // After and before
+
+        result =
+            this.diffManager.merge(Arrays.asList("some content"), Arrays.asList("some content", "after"),
+                Arrays.asList("before", "some content"), null);
+
+        Assert.assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
     }
 
     @Test
     public void testMergeCharList() throws DiffException
     {
-        DiffResult<String> result = this.diffManager.diff(Arrays.asList(""), Arrays.asList(""), null);
+        // New before
 
-        Assert.assertTrue(result.getPatch().isEmpty());
+        MergeResult<Character> result =
+            this.diffManager
+                .merge(Arrays.asList('b', 'c'), Arrays.asList('a', 'b', 'c'), Arrays.asList('b', 'c'), null);
+
+        Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
+
+        // New after
+
+        result =
+            this.diffManager
+                .merge(Arrays.asList('a', 'b'), Arrays.asList('a', 'b', 'c'), Arrays.asList('a', 'b'), null);
+
+        Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
+
+        // New middle
+
+        result =
+            this.diffManager
+                .merge(Arrays.asList('a', 'c'), Arrays.asList('a', 'b', 'c'), Arrays.asList('a', 'c'), null);
+
+        Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
+
+        // Before and after
+
+        result = this.diffManager.merge(Arrays.asList('b'), Arrays.asList('a', 'b'), Arrays.asList('b', 'c'), null);
+
+        Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
+
+        // ////////////////////////////
+        // TODO: not very good results
+
+        // After and before
+
+        result = this.diffManager.merge(Arrays.asList('b'), Arrays.asList('b', 'c'), Arrays.asList('a', 'b'), null);
+
+        Assert.assertEquals(Arrays.asList('a', 'C', 'b'), result.getMerged());
     }
 }

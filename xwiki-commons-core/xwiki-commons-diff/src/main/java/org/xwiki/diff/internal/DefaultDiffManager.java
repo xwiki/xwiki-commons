@@ -61,11 +61,20 @@ public class DefaultDiffManager implements DiffManager
     public <E> DiffResult<E> diff(List<E> previous, List<E> next, DiffConfiguration<E> diff) throws DiffException
     {
         DefaultDiffResult<E> result = new DefaultDiffResult<E>(previous, next);
-        
-        // TODO: work around http://code.google.com/p/java-diff-utils/issues/detail?id=23
-        
-        result.setPatch(this.<E> toPatch(DiffUtils.diff(previous != null ? previous : Collections.EMPTY_LIST,
-            next != null ? next : Collections.EMPTY_LIST)));
+
+        // DiffUtils#diff does not support null
+        Patch<E> patch = new Patch<E>();
+        if (previous == null || previous.isEmpty()) {
+            if (next != null && !next.isEmpty()) {
+                patch.add(new InsertDelta<E>(new Chunk<E>(0, Collections.<E> emptyList()), new Chunk<E>(0, next)));
+            }
+        } else if (next == null || next.isEmpty()) {
+            patch.add(new DeleteDelta<E>(new Chunk<E>(0, previous), new Chunk<E>(0, Collections.<E> emptyList())));
+        } else {
+            toPatch(patch, DiffUtils.diff(previous, next));
+        }
+
+        result.setPatch(patch);
 
         return result;
     }
@@ -104,7 +113,7 @@ public class DefaultDiffManager implements DiffManager
         } else {
             // TODO: have a common implementation whatever the type (the generic one is not very good yet)
             if (current.get(0) instanceof String) {
-                merge((List<String>) commonAncestor, (List<String>) next, (List<String>) current,
+                mergeString((List<String>) commonAncestor, (List<String>) next, (List<String>) current,
                     (MergeConfiguration<String>) configuration, (DefaultMergeResult<String>) mergeResult);
             } else {
                 merge(commonAncestor, next, current, configuration, mergeResult);
@@ -160,15 +169,11 @@ public class DefaultDiffManager implements DiffManager
         }
     }
 
-    private <E> Patch<E> toPatch(difflib.Patch patch) throws DiffException
+    private <E> void toPatch(Patch<E> outPatch, difflib.Patch patch) throws DiffException
     {
-        Patch<E> newPatch = new Patch<E>();
-
         for (difflib.Delta delta : patch.getDeltas()) {
-            newPatch.add(this.<E> toDelta(delta));
+            outPatch.add(this.<E> toDelta(delta));
         }
-
-        return newPatch;
     }
 
     private <E> Delta<E> toDelta(difflib.Delta delta) throws DiffException

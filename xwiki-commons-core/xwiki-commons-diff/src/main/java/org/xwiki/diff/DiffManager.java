@@ -33,6 +33,6 @@ public interface DiffManager
 {
     <E> DiffResult<E> diff(List<E> previous, List<E> next, DiffConfiguration<E> diff) throws DiffException;
 
-    <E> MergeResult<E> merge(List<E> commonAncestor, List<E> previous, List<E> next, MergeConfiguration<E> configuration)
+    <E> MergeResult<E> merge(List<E> commonAncestor, List<E> next, List<E> current, MergeConfiguration<E> configuration)
         throws MergeException;
 }
