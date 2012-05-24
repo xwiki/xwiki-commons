@@ -30,15 +30,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.diff.ChangeDelta;
 import org.xwiki.diff.Chunk;
-import org.xwiki.diff.DeleteDelta;
 import org.xwiki.diff.Delta;
 import org.xwiki.diff.DiffConfiguration;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.diff.InsertDelta;
 import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.Patch;
@@ -63,13 +60,13 @@ public class DefaultDiffManager implements DiffManager
         DefaultDiffResult<E> result = new DefaultDiffResult<E>(previous, next);
 
         // DiffUtils#diff does not support null
-        Patch<E> patch = new Patch<E>();
+        Patch<E> patch = new DefaultPatch<E>();
         if (previous == null || previous.isEmpty()) {
             if (next != null && !next.isEmpty()) {
-                patch.add(new InsertDelta<E>(new Chunk<E>(0, Collections.<E> emptyList()), new Chunk<E>(0, next)));
+                patch.add(new InsertDelta<E>(new DefaultChunk<E>(0, Collections.<E> emptyList()), new DefaultChunk<E>(0, next)));
             }
         } else if (next == null || next.isEmpty()) {
-            patch.add(new DeleteDelta<E>(new Chunk<E>(0, previous), new Chunk<E>(0, Collections.<E> emptyList())));
+            patch.add(new DeleteDelta<E>(new DefaultChunk<E>(0, previous), new DefaultChunk<E>(0, Collections.<E> emptyList())));
         } else {
             toPatch(patch, DiffUtils.diff(previous, next));
         }
@@ -203,6 +200,6 @@ public class DefaultDiffManager implements DiffManager
 
     private <E> Chunk<E> toChunk(difflib.Chunk chunk)
     {
-        return new Chunk<E>(chunk.getPosition(), (List<E>) chunk.getLines());
+        return new DefaultChunk<E>(chunk.getPosition(), (List<E>) chunk.getLines());
     }
 }

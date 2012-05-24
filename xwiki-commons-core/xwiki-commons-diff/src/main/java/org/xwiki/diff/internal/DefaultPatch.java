@@ -19,54 +19,41 @@
  */
 package org.xwiki.diff.internal;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
-import org.xwiki.diff.DiffResult;
+import org.xwiki.diff.Delta;
 import org.xwiki.diff.Patch;
-import org.xwiki.logging.LogQueue;
+import org.xwiki.diff.PatchException;
 
-public class DefaultDiffResult<E> implements DiffResult<E>
+public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
 {
-    private List<E> previous;
+    private static final long serialVersionUID = 1L;
 
-    private List<E> next;
-
-    private LogQueue log = new LogQueue();
-
-    private Patch<E> patch;
-
-    public DefaultDiffResult(List<E> previous, List<E> next)
+    @Override
+    public List<E> apply(List<E> target) throws PatchException
     {
-        this.previous = previous;
-        this.next = next;
+        List<E> result = new LinkedList<E>(target);
+        ListIterator<Delta<E>> it = listIterator(size());
+        while (it.hasPrevious()) {
+            Delta<E> delta = it.previous();
+            delta.apply(result);
+        }
+
+        return result;
     }
 
     @Override
-    public List<E> getNext()
+    public List<E> restore(List<E> target)
     {
-        return this.next;
-    }
+        List<E> result = new LinkedList<E>(target);
+        ListIterator<Delta<E>> it = listIterator(size());
+        while (it.hasPrevious()) {
+            Delta<E> delta = it.previous();
+            delta.restore(result);
+        }
 
-    @Override
-    public List<E> getPrevious()
-    {
-        return this.previous;
-    }
-
-    @Override
-    public LogQueue getLog()
-    {
-        return this.log;
-    }
-
-    @Override
-    public Patch<E> getPatch()
-    {
-        return this.patch;
-    }
-
-    public void setPatch(Patch<E> patch)
-    {
-        this.patch = patch;
+        return result;
     }
 }

@@ -17,21 +17,32 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff;
+package org.xwiki.diff.internal;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.xwiki.diff.Chunk;
+import org.xwiki.diff.Delta;
 
 public abstract class AbstractDelta<E> implements Delta<E>
 {
+    private TYPE type;
+
     private Chunk<E> previous;
 
     private Chunk<E> next;
 
-    public AbstractDelta(Chunk<E> previous, Chunk<E> next)
+    public AbstractDelta(Chunk<E> previous, Chunk<E> next, TYPE type)
     {
+        this.type = type;
         this.previous = previous;
         this.next = next;
+    }
+
+    @Override
+    public TYPE getType()
+    {
+        return this.type;
     }
 
     @Override
@@ -61,6 +72,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
     {
         HashCodeBuilder builder = new HashCodeBuilder();
 
+        builder.append(getType());
         builder.append(getPrevious());
         builder.append(getNext());
 
@@ -77,7 +89,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
         if (obj instanceof Delta) {
             Delta<E> otherDelta = (Delta<E>) obj;
 
-            return ObjectUtils.equals(getPrevious(), otherDelta.getPrevious())
+            return getType() == otherDelta.getType() && ObjectUtils.equals(getPrevious(), otherDelta.getPrevious())
                 && ObjectUtils.equals(getNext(), otherDelta.getNext());
         }
 

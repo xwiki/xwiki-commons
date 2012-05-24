@@ -17,15 +17,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff;
+package org.xwiki.diff.internal;
 
 import java.util.List;
 
-public class InsertDelta<E> extends AbstractDelta<E>
+import org.xwiki.diff.Chunk;
+import org.xwiki.diff.PatchException;
+
+public class DeleteDelta<E> extends AbstractDelta<E>
 {
-    public InsertDelta(Chunk<E> original, Chunk<E> revised)
+    public DeleteDelta(Chunk<E> original, Chunk<E> revised)
     {
-        super(original, revised);
+        super(original, revised, TYPE.DELETE);
     }
 
     @Override
@@ -34,9 +37,9 @@ public class InsertDelta<E> extends AbstractDelta<E>
         verify(target);
 
         int index = getPrevious().getIndex();
-        List<E> elements = getNext().getElements();
-        for (int i = 0; i < elements.size(); i++) {
-            target.add(index + i, elements.get(i));
+        int size = getPrevious().size();
+        for (int i = 0; i < size; i++) {
+            target.remove(index);
         }
     }
 
@@ -44,24 +47,15 @@ public class InsertDelta<E> extends AbstractDelta<E>
     public void restore(List<E> target)
     {
         int index = getNext().getIndex();
-        int size = getNext().size();
-        for (int i = 0; i < size; i++) {
-            target.remove(index);
+        List<E> elements = getPrevious().getElements();
+        for (int i = 0; i < elements.size(); i++) {
+            target.add(index + i, elements.get(i));
         }
     }
 
     @Override
     public void verify(List<E> target) throws PatchException
     {
-        if (getPrevious().getIndex() > target.size()) {
-            throw new PatchException("Incorrect patch for delta: delta original position > target size");
-        }
-
-    }
-
-    @Override
-    public TYPE getType()
-    {
-        return Delta.TYPE.INSERT;
+        getPrevious().verify(target);
     }
 }
