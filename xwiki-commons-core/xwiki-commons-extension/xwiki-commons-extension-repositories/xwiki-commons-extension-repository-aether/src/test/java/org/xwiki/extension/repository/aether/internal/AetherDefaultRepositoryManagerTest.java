@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -66,6 +67,10 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
 
     private ExtensionId bundleExtensionId;
 
+    private ExtensionId sextensionId;
+
+    private ExtensionId sextensionDependencyId;
+
     private RepositoryUtil repositoryUtil;
 
     @Override
@@ -89,6 +94,9 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
                 "[dversion,)"));
 
         this.bundleExtensionId = new ExtensionId("groupid:bundleartifactid", "version");
+
+        this.sextensionId = new ExtensionId("sgroupid:sartifactid", "version");
+        this.sextensionDependencyId = new ExtensionId("sgroupid:sdartifactid", "version");
 
         // lookup
 
@@ -137,6 +145,28 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         // Assert.assertEquals("modified description", extension.getSummary());
     }
 
+    /**
+     * Make sure any <code>version</code> property coming from system properties will not be resolved instead of the
+     * actual pom version.
+     */
+    @Test
+    public void testResolveWithVersionAsSystemProperty() throws ResolveException
+    {
+        System.setProperty("version", "systemversion");
+        System.setProperty("groupId", "systemgroupId");
+
+        Extension extension = this.repositoryManager.resolve(this.sextensionId);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(this.sextensionId.getId(), extension.getId().getId());
+        Assert.assertEquals(this.sextensionId.getVersion(), extension.getId().getVersion());
+
+        ExtensionDependency dependency = extension.getDependencies().iterator().next();
+        Assert.assertEquals(this.sextensionDependencyId.getId(), dependency.getId());
+        Assert.assertEquals(this.sextensionDependencyId.getVersion().getValue(), dependency.getVersionConstraint()
+            .getValue());
+    }
+
     @Test
     public void testResolveVersionClassifier() throws ResolveException
     {
@@ -169,6 +199,16 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         } finally {
             is.close();
         }
+
+        // Make sure it has been removed from AETHER cache
+        String filePrefix =
+            "aether-repository/" + GROUPID + '/' + ARTIfACTID + '/' + extension.getId().getVersion() + '/' + ARTIfACTID
+                + '-' + extension.getId().getVersion();
+        File pomFile = new File(this.repositoryUtil.getTemporaryDirectory(), filePrefix + ".pom");
+        Assert.assertTrue("Can't find file " + pomFile, pomFile.exists());
+        Assert
+            .assertFalse(new File(this.repositoryUtil.getTemporaryDirectory(), filePrefix + '.' + extension.getType())
+                .exists());
     }
 
     @Test

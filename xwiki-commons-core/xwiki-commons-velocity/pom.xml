@@ -60,6 +60,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <!-- Used by MethodArgumentsUberspector to convert method arguments to formal parameter types. -->
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-properties</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.velocity</groupId>
       <artifactId>velocity</artifactId>
       <version>1.7</version>

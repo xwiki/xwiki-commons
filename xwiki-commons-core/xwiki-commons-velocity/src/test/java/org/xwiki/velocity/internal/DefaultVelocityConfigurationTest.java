@@ -22,6 +22,7 @@ package org.xwiki.velocity.internal;
 import java.util.Collections;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.util.introspection.SecureUberspector;
 import org.jmock.Expectations;
@@ -32,6 +33,7 @@ import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
+import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
 
 /**
  * Unit tests for {@link DefaultVelocityConfiguration}.
@@ -69,7 +71,8 @@ public class DefaultVelocityConfigurationTest extends AbstractMockingComponentTe
         // Verify that the secure uberspector is set by default
         Assert.assertEquals(ChainingUberspector.class.getName(),
             this.configuration.getProperties().getProperty("runtime.introspector.uberspect"));
-        Assert.assertEquals(SecureUberspector.class.getName() + ","  + DeprecatedCheckUberspector.class.getName(),
+        Assert.assertEquals(StringUtils.join(new String[] {SecureUberspector.class.getName(),
+            DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName()}, ','),
             this.configuration.getProperties().getProperty("runtime.introspector.uberspect.chainClasses"));
 
         // Verify that null values are allowed by default

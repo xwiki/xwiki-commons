@@ -75,4 +75,54 @@ public class DefaultJobProgressTest extends AbstractComponentTestCase
         Assert.assertEquals(0.5D, this.progress.getOffset());
         Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset());
     }
+
+    /**
+     * Tests that the offset is 1 when the progress is done.
+     */
+    @Test
+    public void testProgressDone()
+    {
+        Assert.assertEquals(0D, this.progress.getOffset());
+        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset());
+
+        this.observation.notify(new PushLevelProgressEvent(1), null, null);
+        this.observation.notify(new PopLevelProgressEvent(), null, null);
+
+        Assert.assertEquals(1D, this.progress.getOffset());
+        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset());
+    }
+
+    /**
+     * Tests that a {@link StepProgressEvent} is ignored if it is fired right after a {@link PopLevelProgressEvent}.
+     */
+    @Test
+    public void testIgnoreNextStepAfterPopLevel()
+    {
+        Assert.assertEquals(0D, this.progress.getOffset());
+        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset());
+
+        this.observation.notify(new PushLevelProgressEvent(2), null, null);
+
+        this.observation.notify(new PushLevelProgressEvent(1), null, null);
+        this.observation.notify(new StepProgressEvent(), null, null);
+        this.observation.notify(new PopLevelProgressEvent(), null, null);
+
+        Assert.assertEquals(.5D, this.progress.getOffset());
+        Assert.assertEquals(.5D, this.progress.getCurrentLevelOffset());
+
+        this.observation.notify(new StepProgressEvent(), null, null);
+
+        Assert.assertEquals(.5D, this.progress.getOffset());
+        Assert.assertEquals(.5D, this.progress.getCurrentLevelOffset());
+
+        this.observation.notify(new StepProgressEvent(), null, null);
+
+        Assert.assertEquals(1D, this.progress.getOffset());
+        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset());
+
+        this.observation.notify(new PopLevelProgressEvent(), null, null);
+
+        Assert.assertEquals(1D, this.progress.getOffset());
+        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset());
+    }
 }

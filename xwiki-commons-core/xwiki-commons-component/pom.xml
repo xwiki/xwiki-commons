@@ -34,10 +34,11 @@
   <packaging>pom</packaging>
   <description>XWiki Commons - Component - Parent POM</description>
   <modules>
+    <!-- Sorted Alphabetically -->
     <module>xwiki-commons-component-api</module>
-    <module>xwiki-commons-component-observation</module>
-    <module>xwiki-commons-component-default</module>
     <module>xwiki-commons-component-archetype</module>
+    <module>xwiki-commons-component-default</module>
+    <module>xwiki-commons-component-observation</module>
   </modules>
 </project>
        
