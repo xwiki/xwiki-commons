@@ -21,6 +21,7 @@ package org.xwiki.environment.internal;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -81,13 +82,17 @@ public class ServletEnvironment extends AbstractEnvironment
     }
 
     @Override
-    public File getTemporaryDirectory()
+    protected String getTemporaryDirectoryName()
     {
-        File tmpDirectory;
-        if (getTemporaryDirectoryInternal() == null) {
-            tmpDirectory = (File) getServletContext().getAttribute("javax.servlet.context.tempdir");
-        } else {
-            tmpDirectory = getTemporaryDirectoryInternal();
+        final String tmpDirectory = super.getTemporaryDirectoryName();
+        try {
+            if (tmpDirectory == null) {
+                return ((File) this.getServletContext().getAttribute("javax.servlet.context.tempdir"))
+                    .getCanonicalPath();
+            }
+        } catch (IOException e) {
+            this.logger.warn("Unable to get servlet temporary directory due to error [{}], "
+                             + "falling back on default temp directory.", e.getMessage());
         }
         return tmpDirectory;
     }
