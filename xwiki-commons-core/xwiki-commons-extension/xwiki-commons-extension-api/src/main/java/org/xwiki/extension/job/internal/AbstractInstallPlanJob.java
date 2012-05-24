@@ -51,7 +51,6 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.version.IncompatibleVersionConstraintException;
-import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 
 /**
@@ -389,26 +388,13 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         parentBranch.add(node);
     }
 
-    private boolean isCompatible(Version existingVersion, VersionConstraint versionConstraint)
-    {
-        boolean compatible = true;
-
-        if (versionConstraint.getVersion() == null) {
-            compatible = versionConstraint.containsVersion(existingVersion);
-        } else {
-            compatible = existingVersion.compareTo(versionConstraint.getVersion()) >= 0;
-        }
-
-        return compatible;
-    }
-
     private boolean checkCoreExtension(ExtensionDependency extensionDependency,
         List<ModifableExtensionPlanNode> parentBranch) throws InstallException
     {
         CoreExtension coreExtension = this.coreExtensionRepository.getCoreExtension(extensionDependency.getId());
 
         if (coreExtension != null) {
-            if (!isCompatible(coreExtension.getId().getVersion(), extensionDependency.getVersionConstraint())) {
+            if (!extensionDependency.getVersionConstraint().isCompatible(coreExtension.getId().getVersion())) {
                 throw new InstallException("Dependency [" + extensionDependency
                     + "] is not compatible with core extension [" + coreExtension + "]");
             } else {
@@ -436,7 +422,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         ModifableExtensionPlanNode existingNode = getExtensionNode(extensionDependency.getId(), namespace);
         if (existingNode != null) {
-            if (isCompatible(existingNode.action.getExtension().getId().getVersion(), versionConstraint)) {
+            if (versionConstraint.isCompatible(existingNode.action.getExtension().getId().getVersion())) {
                 ModifableExtensionPlanNode node = new ModifableExtensionPlanNode(extensionDependency, existingNode);
                 addExtensionNode(node);
                 parentBranch.add(node);
@@ -467,7 +453,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         ExtensionDependency targetDependency = extensionDependency;
 
         if (installedExtension != null) {
-            if (isCompatible(installedExtension.getId().getVersion(), versionConstraint)) {
+            if (versionConstraint.isCompatible(installedExtension.getId().getVersion())) {
                 this.logger.info("There is already an installed extension [{}] covering extension dependency [{}]",
                     installedExtension, extensionDependency);
 

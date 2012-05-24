@@ -55,10 +55,25 @@ public interface VersionConstraint extends Serializable
     /**
      * Indicate if the provided {@link Version} satisfies the constraint.
      * 
-     * @param version the version to test, null is invalid.
-     * @return true if the provided version satisfies this constraint, false otherwise.
+     * @param version the version to test, null is invalid
+     * @return true if the provided version satisfies this constraint, false otherwise
      */
     boolean containsVersion(Version version);
+
+    /**
+     * Indicate of the provided {@link Version} is compatible with this version.
+     * <p>
+     * The difference with {@link #containsVersion(Version)} is that this method is trying to determine if this version
+     * should work with this constraint while {@link #containsVersion(Version)} indicate if that's the ideal version for
+     * this constraint. This apply with constraint not defining an exact version range but only a recommended version
+     * constraint, in that case the constraint indicate what is the version that would ideally be required but it should
+     * work with more recent version.
+     * 
+     * @param version the version to test, null is invalid
+     * @return true if the provided version is compatible with this constraint
+     * @since 4.1M2
+     */
+    boolean isCompatible(Version version);
 
     /**
      * Merge too version constraints in one.

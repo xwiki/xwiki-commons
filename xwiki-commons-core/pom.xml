@@ -121,6 +121,7 @@
             <exclude>org/xwiki/job/event/status/JobStatus</exclude> <!-- New methods -->
             <exclude>org/xwiki/job/AbstractJob</exclude> <!-- Still compatible with extends -->
             <exclude>org/xwiki/extension/job/plan/ExtensionPlan</exclude> <!-- Return an extended type -->
+            <exclude>org/xwiki/extension/version/VersionConstraint</exclude> <!-- New method -->
           </excludes>
         </configuration>
       </plugin>

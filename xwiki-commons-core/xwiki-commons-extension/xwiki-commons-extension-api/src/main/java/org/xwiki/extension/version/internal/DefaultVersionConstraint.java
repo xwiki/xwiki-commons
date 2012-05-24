@@ -41,8 +41,8 @@ import org.xwiki.extension.version.VersionRangeCollection;
 /**
  * Default implementation of {@link VersionConstraint}.
  * <p>
- * Mostly based on AETHER implementation which is itself based on Maven specifications. The difference is that it can
- * contains a list of ranges OR collection instead of just a OR collection to allow combining several constraints in
+ * Mostly based on AETHER implementation which is itself based on Maven specifications. The main difference is that it
+ * can contains a list of ranges OR collection instead of just a OR collection to allow combining several constraints in
  * one.
  * <p>
  * {(,1.0],[2.0,)},{[3.0)}
@@ -190,7 +190,7 @@ public class DefaultVersionConstraint implements VersionConstraint
     @Override
     public Collection<VersionRangeCollection> getRanges()
     {
-        return (Collection) this.ranges;
+        return this.ranges;
     }
 
     @Override
@@ -213,6 +213,20 @@ public class DefaultVersionConstraint implements VersionConstraint
         }
 
         return true;
+    }
+
+    @Override
+    public boolean isCompatible(Version version)
+    {
+        boolean compatible = true;
+
+        if (getVersion() == null) {
+            compatible = containsVersion(version);
+        } else {
+            compatible = version.compareTo(getVersion()) >= 0;
+        }
+
+        return compatible;
     }
 
     @Override
