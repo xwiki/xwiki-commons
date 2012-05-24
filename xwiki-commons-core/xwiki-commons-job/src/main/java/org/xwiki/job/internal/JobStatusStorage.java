@@ -19,6 +19,8 @@
  */
 package org.xwiki.job.internal;
 
+import java.util.List;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.job.event.status.JobStatus;
 
@@ -38,6 +40,13 @@ public interface JobStatusStorage
     JobStatus getJobStatus(String id);
 
     /**
+     * @param id the id of the job
+     * @return the job status
+     * @since 4.1M2
+     */
+    JobStatus getJobStatus(List<String> id);
+
+    /**
      * @param status the job status
      */
     void store(JobStatus status);
@@ -47,4 +56,11 @@ public interface JobStatusStorage
      * @return the job status
      */
     JobStatus remove(String id);
+
+    /**
+     * @param id the id of the job
+     * @return the job status
+     * @since 4.1M2
+     */
+    JobStatus remove(List<String> id);
 }

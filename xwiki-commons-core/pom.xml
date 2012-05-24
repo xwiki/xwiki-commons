@@ -122,6 +122,16 @@
             <exclude>org/xwiki/job/AbstractJob</exclude> <!-- Still compatible with extends -->
             <exclude>org/xwiki/extension/job/plan/ExtensionPlan</exclude> <!-- Return an extended type -->
             <exclude>org/xwiki/extension/version/VersionConstraint</exclude> <!-- New method -->
+            
+            <!-- Change id from String to List<String>. Mostly new methods. -->
+            <exclude>org/xwiki/job/AbstractRequest</exclude>
+            <exclude>org/xwiki/job/JobManager</exclude>
+            <exclude>org/xwiki/job/Request</exclude>
+            <exclude>org/xwiki/job/event/JobEvent</exclude>
+            <exclude>org/xwiki/job/event/JobFinishedEvent</exclude>
+            <exclude>org/xwiki/job/event/JobStartedEvent</exclude>
+            <exclude>org/xwiki/job/JobManager</exclude>
+            <exclude>org/xwiki/job/Request</exclude>
           </excludes>
         </configuration>
       </plugin>

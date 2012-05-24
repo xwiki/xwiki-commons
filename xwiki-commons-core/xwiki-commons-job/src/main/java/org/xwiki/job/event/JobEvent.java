@@ -21,6 +21,7 @@
 package org.xwiki.job.event;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.xwiki.job.Request;
 import org.xwiki.observation.event.Event;
@@ -35,8 +36,9 @@ public interface JobEvent extends Event, Serializable
 {
     /**
      * @return the job id of the source job of this event
+     * @since 4.1M2
      */
-    String getJobId();
+    List<String> getJobId();
 
     /**
      * @return the job type of the source job of this event

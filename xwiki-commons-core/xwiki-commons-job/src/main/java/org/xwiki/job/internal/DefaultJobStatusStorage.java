@@ -26,6 +26,8 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -83,7 +85,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     /**
      * A cache of stored job statuses.
      */
-    private Map<String, JobStatus> jobs = new ConcurrentHashMap<String, JobStatus>();
+    private Map<List<String>, JobStatus> jobs = new ConcurrentHashMap<List<String>, JobStatus>();
 
     @Override
     public void initialize() throws InitializationException
@@ -156,9 +158,15 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
      * @param id the id of the job
      * @return the folder where to store the job related informations
      */
-    private File getJobFolder(String id)
+    private File getJobFolder(List<String> id)
     {
-        return new File(this.configuration.getStorage(), encode(id));
+        File folder = this.configuration.getStorage();
+
+        for (String idElement : id) {
+            folder = new File(folder, encode(idElement));
+        }
+
+        return folder;
     }
 
     /**
@@ -185,6 +193,12 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     @Override
     public JobStatus getJobStatus(String id)
     {
+        return getJobStatus(Arrays.asList(id));
+    }
+
+    @Override
+    public JobStatus getJobStatus(List<String> id)
+    {
         return this.jobs.get(id);
     }
 
@@ -205,6 +219,12 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
 
     @Override
     public JobStatus remove(String id)
+    {
+        return remove(Arrays.asList(id));
+    }
+
+    @Override
+    public JobStatus remove(List<String> id)
     {
         JobStatus status = this.jobs.remove(id);
 

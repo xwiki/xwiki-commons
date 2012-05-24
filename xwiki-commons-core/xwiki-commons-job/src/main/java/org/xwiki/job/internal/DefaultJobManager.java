@@ -19,13 +19,15 @@
  */
 package org.xwiki.job.internal;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -214,7 +216,13 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     @Override
     public JobStatus getJobStatus(String id)
     {
-        if (this.currentJob != null && StringUtils.equals(id, this.currentJob.getRequest().getId())) {
+        return getJobStatus(Arrays.asList(id));
+    }
+
+    @Override
+    public JobStatus getJobStatus(List<String> id)
+    {
+        if (this.currentJob != null && ObjectUtils.equals(id, this.currentJob.getRequest().getId())) {
             return this.currentJob.getStatus();
         }
 

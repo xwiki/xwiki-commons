@@ -41,12 +41,11 @@ public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R> im
 
     /**
      * @param request the request provided when started the job
-     * @param id the unique id of the job
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
      */
-    public DefaultJobStatus(R request, String id, ObservationManager observationManager, LoggerManager loggerManager)
+    public DefaultJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager)
     {
-        super(request, id, observationManager, loggerManager);
+        super(request, observationManager, loggerManager);
     }
 }

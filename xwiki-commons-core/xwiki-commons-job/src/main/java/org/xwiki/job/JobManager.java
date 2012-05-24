@@ -19,6 +19,8 @@
  */
 package org.xwiki.job;
 
+import java.util.List;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.job.event.status.JobStatus;
 
@@ -43,6 +45,15 @@ public interface JobManager
      * @return the job status corresponding to the provided job id, null if none can be found
      */
     JobStatus getJobStatus(String id);
+
+    /**
+     * Return job status corresponding to the provided id from the current executed job or stored history.
+     * 
+     * @param id the id of the job
+     * @return the job status corresponding to the provided job id, null if none can be found
+     * @since 4.1M2
+     */
+    JobStatus getJobStatus(List<String> id);
 
     /**
      * Start a new job with the provided identifier and wait until its finished.

@@ -119,11 +119,11 @@ public class DefaultJobProgress implements EventListener, JobProgress
     }
 
     /**
-     * @param id the unique id of the parent job status
+     * Default constructor.
      */
-    public DefaultJobProgress(String id)
+    public DefaultJobProgress()
     {
-        this.name = getClass().getName() + '_' + id;
+        this.name = getClass().getName() + '_' + hashCode();
 
         // Push the root level to be able to distinguish between the case when the progress hasn't started yet and the
         // case when the progress is over. Otherwise we would have an empty progress stack for both cases.

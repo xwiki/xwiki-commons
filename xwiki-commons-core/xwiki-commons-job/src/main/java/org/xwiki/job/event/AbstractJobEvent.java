@@ -19,7 +19,8 @@
  */
 package org.xwiki.job.event;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.List;
+
 import org.xwiki.job.Request;
 
 /**
@@ -43,7 +44,7 @@ abstract class AbstractJobEvent implements JobEvent
     /**
      * Related job id.
      */
-    private String jobId;
+    private List<String> jobId;
 
     /**
      * Related job type.
@@ -69,8 +70,9 @@ abstract class AbstractJobEvent implements JobEvent
      * @param jobId the event related job id
      * @param jobType the event related job type
      * @param request the event related job request
+     * @since 4.1M2
      */
-    protected AbstractJobEvent(String jobId, String jobType, Request request)
+    protected AbstractJobEvent(List<String> jobId, String jobType, Request request)
     {
         this.jobId = jobId;
         this.jobType = jobType;
@@ -78,7 +80,7 @@ abstract class AbstractJobEvent implements JobEvent
     }
 
     @Override
-    public String getJobId()
+    public List<String> getJobId()
     {
         return this.jobId;
     }
@@ -108,7 +110,7 @@ abstract class AbstractJobEvent implements JobEvent
      */
     private boolean matchesJobId(JobEvent event)
     {
-        return this.jobId == null || StringUtils.equals(this.jobId, event.getJobId());
+        return this.jobId == null || this.jobId.equals(event.getJobId());
     }
 
     /**
@@ -117,6 +119,6 @@ abstract class AbstractJobEvent implements JobEvent
      */
     private boolean matchesJobType(JobEvent event)
     {
-        return this.jobId == null || StringUtils.equals(this.jobId, event.getJobId());
+        return this.jobType == null || this.jobType.equals(event.getJobType());
     }
 }

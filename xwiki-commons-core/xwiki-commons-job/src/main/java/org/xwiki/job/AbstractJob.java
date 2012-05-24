@@ -147,7 +147,7 @@ public abstract class AbstractJob<R extends Request> implements Job
     {
         this.jobContext.pushCurrentJob(this);
 
-        this.observationManager.notify(new JobStartedEvent(getId(), getType(), request), this);
+        this.observationManager.notify(new JobStartedEvent(getRequest().getId(), getType(), request), this);
 
         this.status.setStartDate(new Date());
         this.status.setState(JobStatus.State.RUNNING);
@@ -172,7 +172,8 @@ public abstract class AbstractJob<R extends Request> implements Job
 
             this.finishedCondition.signalAll();
 
-            this.observationManager.notify(new JobFinishedEvent(getId(), getType(), this.request), this, exception);
+            this.observationManager.notify(new JobFinishedEvent(getRequest().getId(), getType(), this.request), this,
+                exception);
             this.jobContext.popCurrentJob();
 
             try {
@@ -205,16 +206,7 @@ public abstract class AbstractJob<R extends Request> implements Job
      */
     protected AbstractJobStatus<R> createNewStatus(R request)
     {
-        return new DefaultJobStatus<R>(request, getId(), this.observationManager, this.loggerManager);
-    }
-
-    /**
-     * @return unique id for the job
-     */
-    protected String getId()
-    {
-        return getRequest().getId() != null ? getRequest().getId() : getClass().getName() + "_"
-            + Integer.toHexString(hashCode());
+        return new DefaultJobStatus<R>(request, this.observationManager, this.loggerManager);
     }
 
     /**
