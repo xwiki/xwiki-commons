@@ -225,7 +225,8 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
         Collection<ExtensionPlanNode> parentBranch) throws UninstallException
     {
         if (namespace != null
-            && (installedExtension.getNamespaces() == null || !installedExtension.getNamespaces().contains(namespace))) {
+            && (installedExtension.getNamespaces() == null
+            || !installedExtension.getNamespaces().contains(namespace))) {
             throw new UninstallException(MessageFormat.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension,
                 namespace));
         }
