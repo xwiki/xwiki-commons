@@ -42,7 +42,7 @@ import groovy.lang.GroovyClassLoader;
  * @version $Id$
  * @since 4.1M1
  */
-@Component(roles = {ScriptEngineFactory.class})
+@Component(roles = {ScriptEngineFactory.class })
 @Named("groovy")
 @Singleton
 public class GroovyScriptEngineFactory extends org.codehaus.groovy.jsr223.GroovyScriptEngineFactory
