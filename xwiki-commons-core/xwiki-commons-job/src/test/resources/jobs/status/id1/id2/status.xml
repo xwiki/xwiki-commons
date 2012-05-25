@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><org.xwiki.job.internal.DefaultJobStatus>
+  <state>FINISHED</state>
+  <request class="org.xwiki.job.DefaultRequest">
+    <id>
+      <string>id1</string>
+      <string>id2</string>
+    </id>
+    <properties>
+      <entry>
+        <string>property</string>
+        <string>value</string>
+      </entry>
+    </properties>
+  </request>
+  <logs serialization="custom">
+    <unserializable-parents/>
+    <java.util.concurrent.ConcurrentLinkedQueue>
+      <default/>
+      <org.xwiki.logging.event.LogEvent>
+        <level>INFO</level>
+        <message>Some info with parameter [{}]</message>
+        <argumentArray>
+          <string>parameter value</string>
+        </argumentArray>
+      </org.xwiki.logging.event.LogEvent>
+      <org.xwiki.logging.event.LogEvent>
+        <level>WARN</level>
+        <message>Some warning with parameter [{}]</message>
+        <argumentArray>
+          <string>parameter value</string>
+        </argumentArray>
+      </org.xwiki.logging.event.LogEvent>
+      <org.xwiki.logging.event.LogEvent>
+        <level>ERROR</level>
+        <message>Some error with parameter [{}]</message>
+        <argumentArray>
+          <string>parameter value</string>
+        </argumentArray>
+      </org.xwiki.logging.event.LogEvent>
+      <null/>
+    </java.util.concurrent.ConcurrentLinkedQueue>
+  </logs>
+</org.xwiki.job.internal.DefaultJobStatus>
