@@ -49,6 +49,9 @@ import org.xwiki.script.service.ScriptService;
 @Named("diff")
 public class DiffScriptService implements ScriptService
 {
+    /**
+     * The component used to create the diff.
+     */
     @Inject
     private DiffManager diffManager;
 
