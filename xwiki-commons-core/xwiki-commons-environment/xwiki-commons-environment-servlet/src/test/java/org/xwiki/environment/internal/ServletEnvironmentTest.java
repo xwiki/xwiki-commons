@@ -44,13 +44,18 @@ import org.xwiki.environment.Environment;
  */
 public class ServletEnvironmentTest
 {
-    private final File servletTmpDir =
-        new File(System.getProperty("java.io.tmpdir"), "ServletEnvironmentTest-tmpDir")
-            .getAbsoluteFile();
+    private final File servletTmpDir;
 
     private ServletEnvironment environment;
 
     private Mockery mockery = new JUnit4Mockery();
+
+    public ServletEnvironmentTest() throws Exception
+    {
+        this.servletTmpDir =
+            new File(System.getProperty("java.io.tmpdir"), "ServletEnvironmentTest-tmpDir")
+                .getCanonicalFile();
+    }
 
     public Mockery getMockery()
     {
