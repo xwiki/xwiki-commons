@@ -50,13 +50,6 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-
-    <!-- UnexpectedException -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-store-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 </project>
        

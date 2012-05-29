@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
-import org.xwiki.store.UnexpectedException;
 
 /**
  * Unit tests for {@link StandardEnvironment}.
@@ -151,7 +150,7 @@ public class StandardEnvironmentTest
         Assert.assertEquals(TMPDIR, this.environment.getTemporaryDirectory());
     }
 
-    @Test(expected = UnexpectedException.class)
+    @Test(expected = RuntimeException.class)
     public void testGetTemporaryDirectoryWhenNotADirectory() throws Exception
     {
         FileUtils.write(TMPDIR, "test");

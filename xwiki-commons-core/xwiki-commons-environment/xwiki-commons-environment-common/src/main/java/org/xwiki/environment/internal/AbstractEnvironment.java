@@ -28,7 +28,6 @@ import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.xwiki.environment.Environment;
-import org.xwiki.store.UnexpectedException;
 
 /**
  * Makes it easy to implement {@link org.xwiki.environment.Environment}.
@@ -166,9 +165,9 @@ public abstract class AbstractEnvironment implements Environment
             }
         }
 
-        throw new UnexpectedException("Could not find a writable "
-                                      + tempOrPerminent + " directory. "
-                                      + "Check the server log for more information.");
+        throw new RuntimeException("Could not find a writable "
+                                   + tempOrPerminent + " directory. "
+                                   + "Check the server log for more information.");
     }
 
     /**
@@ -218,8 +217,8 @@ public abstract class AbstractEnvironment implements Environment
      *
      * @param tempDir the xwiki-temp subdirectory which is internal/deleted per load.
      * @throws IOException if something goes wrong trying to clear the directory.
-     * @throws UnexpectedException if the configuration is "silly" and puts the persistent dir
-     *                             inside of the delete-on-start directory.
+     * @throws RuntimeException if the configuration is "silly" and puts the persistent dir
+     *                          inside of the delete-on-start directory.
      */
     private void initTempDir(final File tempDir) throws IOException
     {
@@ -227,7 +226,7 @@ public abstract class AbstractEnvironment implements Environment
         // But setting the persistent dir to the xwiki-temp subdir is easy enough to catch.
         final File permDir = this.getPermanentDirectory();
         if (tempDir.equals(permDir) || FileUtils.directoryContains(tempDir, permDir)) {
-            throw new UnexpectedException(
+            throw new RuntimeException(
                 "The configured persistent store directory falls within the "
                 + TEMP_NAME + " sub-directory of the temporary directory, this "
                 + "sub-directory is reserved (deleted on start-up) and must never "
