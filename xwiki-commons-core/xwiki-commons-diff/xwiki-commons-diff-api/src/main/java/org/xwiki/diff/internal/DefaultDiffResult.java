@@ -106,6 +106,8 @@ public class DefaultDiffResult<E> implements DiffResult<E>
     public Patch<E> getUnifiedDiff()
     {
         if (this.unifiedPatch == null) {
+            this.unifiedPatch = new DefaultPatch<E>();
+
             if (this.patch.isEmpty()) {
                 if (this.previous != null && !this.previous.isEmpty()) {
                     this.unifiedPatch.add(new SameDelta<E>(new DefaultChunk<E>(0, this.previous)));
