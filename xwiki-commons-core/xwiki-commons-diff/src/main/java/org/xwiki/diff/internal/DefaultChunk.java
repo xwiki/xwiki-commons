@@ -26,16 +26,40 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.PatchException;
 
+/**
+ * Default implementation of {@link Chunk}.
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public class DefaultChunk<E> implements Chunk<E>
 {
+    /**
+     * @see #getIndex()
+     */
     private final int index;
 
+    /**
+     * @see #getElements()
+     */
     private List<E> elements;
 
+    /**
+     * @param index the index where to find the provided snippet of elements in the source list
+     * @param elements the snippet of elements
+     */
     public DefaultChunk(int index, List<E> elements)
     {
         this.index = index;
         this.elements = elements;
+    }
+
+    /**
+     * @param chunk the chunk to convert
+     */
+    public DefaultChunk(difflib.Chunk chunk)
+    {
+        this(chunk.getPosition(), (List<E>) chunk.getLines());
     }
 
     @Override

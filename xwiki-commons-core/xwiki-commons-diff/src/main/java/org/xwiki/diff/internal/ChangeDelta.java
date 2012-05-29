@@ -24,9 +24,29 @@ import java.util.List;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.PatchException;
 
+/**
+ * Implementation of {@link org.xwiki.diff.Delta} representing a chunk which has been modified between previous and next
+ * version.
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public class ChangeDelta<E> extends AbstractDelta<E>
 {
-    public ChangeDelta(Chunk<E> original, Chunk<E> revised)
+    /**
+     * @param previous the chunk before the modification
+     * @param next the chunk after the modification
+     */
+    public ChangeDelta(Chunk<E> previous, Chunk<E> next)
+    {
+        super(previous, next, TYPE.CHANGE);
+    }
+
+    /**
+     * @param original the chunk before the modification
+     * @param revised the chunk after the modification
+     */
+    public ChangeDelta(difflib.Chunk original, difflib.Chunk revised)
     {
         super(original, revised, TYPE.CHANGE);
     }

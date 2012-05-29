@@ -31,8 +31,29 @@ import org.xwiki.component.annotation.Role;
 @Role
 public interface DiffManager
 {
-    <E> DiffResult<E> diff(List<E> previous, List<E> next, DiffConfiguration<E> diff) throws DiffException;
+    /**
+     * Produce a diff between the two provided versions.
+     * 
+     * @param <E> the type of compared elements
+     * @param previous the previous version of the content to compare
+     * @param next the next version of the content to compare
+     * @param configuration the configuration of the diff behavior
+     * @return the result of the diff
+     * @throws DiffException error when executing the diff
+     */
+    <E> DiffResult<E> diff(List<E> previous, List<E> next, DiffConfiguration<E> configuration) throws DiffException;
 
+    /**
+     * Execute a way merge on provided versions.
+     * 
+     * @param <E> the type of compared elements
+     * @param commonAncestor the common ancestor of the two versions of the content to compare
+     * @param next the next version of the content to compare
+     * @param current the current version of the content to compare
+     * @param configuration the configuration of the merge behavior
+     * @return the result of the merge
+     * @throws MergeException error when executing the merge
+     */
     <E> MergeResult<E> merge(List<E> commonAncestor, List<E> next, List<E> current, MergeConfiguration<E> configuration)
         throws MergeException;
 }

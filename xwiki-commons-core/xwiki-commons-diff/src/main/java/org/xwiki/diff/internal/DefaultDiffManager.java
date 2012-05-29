@@ -30,8 +30,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.diff.Chunk;
-import org.xwiki.diff.Delta;
 import org.xwiki.diff.DiffConfiguration;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
@@ -60,15 +58,19 @@ public class DefaultDiffManager implements DiffManager
         DefaultDiffResult<E> result = new DefaultDiffResult<E>(previous, next);
 
         // DiffUtils#diff does not support null
-        Patch<E> patch = new DefaultPatch<E>();
+        Patch<E> patch;
         if (previous == null || previous.isEmpty()) {
+            patch = new DefaultPatch<E>();
             if (next != null && !next.isEmpty()) {
-                patch.add(new InsertDelta<E>(new DefaultChunk<E>(0, Collections.<E> emptyList()), new DefaultChunk<E>(0, next)));
+                patch.add(new InsertDelta<E>(new DefaultChunk<E>(0, Collections.<E> emptyList()), new DefaultChunk<E>(
+                    0, next)));
             }
         } else if (next == null || next.isEmpty()) {
-            patch.add(new DeleteDelta<E>(new DefaultChunk<E>(0, previous), new DefaultChunk<E>(0, Collections.<E> emptyList())));
+            patch = new DefaultPatch<E>();
+            patch.add(new DeleteDelta<E>(new DefaultChunk<E>(0, previous), new DefaultChunk<E>(0, Collections
+                .<E> emptyList())));
         } else {
-            toPatch(patch, DiffUtils.diff(previous, next));
+            patch = new DefaultPatch<E>(DiffUtils.diff(previous, next));
         }
 
         result.setPatch(patch);
@@ -76,11 +78,25 @@ public class DefaultDiffManager implements DiffManager
         return result;
     }
 
+    /**
+     * @param <E> the type of compared elements
+     * @param mergeResult the result of the merge
+     * @param message the error message
+     * @param throwable the error exception
+     * @param arguments the error message arguments
+     */
     private <E> void error(MergeResult<E> mergeResult, String message, Throwable throwable, Object... arguments)
     {
         mergeResult.getLog().add(new LogEvent(LogLevel.ERROR, message, arguments, throwable));
     }
 
+    /**
+     * @param <E> the type of compared elements
+     * @param mergeResult the result of the merge
+     * @param message the warning message
+     * @param throwable the warning exception
+     * @param arguments the warning message arguments
+     */
     private <E> void warn(MergeResult<E> mergeResult, String message, Throwable throwable, Object... arguments)
     {
         mergeResult.getLog().add(new LogEvent(LogLevel.WARN, message, arguments, throwable));
@@ -120,7 +136,16 @@ public class DefaultDiffManager implements DiffManager
         return mergeResult;
     }
 
-    public void mergeString(List<String> commonAncestor, List<String> next, List<String> current,
+    /**
+     * Apply 3 ways merge on String lines.
+     * 
+     * @param commonAncestor the common ancestor of the two versions of the content to compare
+     * @param next the next version of the content to compare
+     * @param current the current version of the content to compare
+     * @param configuration the configuration of the merge behavior
+     * @param mergeResult the result of the merge
+     */
+    private void mergeString(List<String> commonAncestor, List<String> next, List<String> current,
         MergeConfiguration<String> configuration, DefaultMergeResult<String> mergeResult)
     {
         com.qarks.util.files.diff.MergeResult result =
@@ -135,7 +160,16 @@ public class DefaultDiffManager implements DiffManager
         }
     }
 
-    // TODO: improve the algo, just applying a patch on the current version does not always give good result
+    /**
+     * @param <E> the type of compared elements
+     * @param commonAncestor the common ancestor of the two versions of the content to compare
+     * @param next the next version of the content to compare
+     * @param current the current version of the content to compare
+     * @param configuration the configuration of the merge behavior
+     * @param mergeResult the result of the merge
+     */
+    // TODO: improve the algo and get rid of String special case, just applying a patch on the current version does not
+    // always give good result
     public <E> void merge(List<E> commonAncestor, List<E> next, List<E> current, MergeConfiguration<E> configuration,
         DefaultMergeResult<E> mergeResult)
     {
@@ -151,11 +185,19 @@ public class DefaultDiffManager implements DiffManager
         }
     }
 
+    /**
+     * @param list the lines
+     * @return the multilines text
+     */
     private String toString(List<String> list)
     {
         return StringUtils.join(list, '\n');
     }
 
+    /**
+     * @param str the multilines text
+     * @return the lines
+     */
     private List<String> toLines(String str)
     {
         try {
@@ -164,42 +206,5 @@ public class DefaultDiffManager implements DiffManager
             // Should never happen
             return null;
         }
-    }
-
-    private <E> void toPatch(Patch<E> outPatch, difflib.Patch patch) throws DiffException
-    {
-        for (difflib.Delta delta : patch.getDeltas()) {
-            outPatch.add(this.<E> toDelta(delta));
-        }
-    }
-
-    private <E> Delta<E> toDelta(difflib.Delta delta) throws DiffException
-    {
-        Delta<E> newDelta;
-
-        switch (delta.getType()) {
-            case CHANGE:
-                newDelta =
-                    new ChangeDelta<E>(this.<E> toChunk(delta.getOriginal()), this.<E> toChunk(delta.getRevised()));
-                break;
-            case DELETE:
-                newDelta =
-                    new DeleteDelta<E>(this.<E> toChunk(delta.getOriginal()), this.<E> toChunk(delta.getRevised()));
-                break;
-            case INSERT:
-                newDelta =
-                    new InsertDelta<E>(this.<E> toChunk(delta.getOriginal()), this.<E> toChunk(delta.getRevised()));
-                break;
-            default:
-                throw new DiffException(String.format("Failed to convert [%s] info [%s]. Unknown type [%s]", delta
-                    .getClass().getName(), Delta.class.getName(), delta.getType().toString()));
-        }
-
-        return newDelta;
-    }
-
-    private <E> Chunk<E> toChunk(difflib.Chunk chunk)
-    {
-        return new DefaultChunk<E>(chunk.getPosition(), (List<E>) chunk.getLines());
     }
 }

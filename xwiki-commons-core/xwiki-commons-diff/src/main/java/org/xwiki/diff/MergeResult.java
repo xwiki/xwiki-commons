@@ -24,19 +24,33 @@ import java.util.List;
 import org.xwiki.logging.LogQueue;
 
 /**
- * 
  * @param <E> the type of compared elements
  * @version $Id$
  */
 public interface MergeResult<E>
 {
+    /**
+     * @return the common ancestor
+     */
     List<E> getCommonAncestor();
 
+    /**
+     * @return the new version
+     */
     List<E> getNext();
 
-    List<E> getPrevious();
+    /**
+     * @return the current version
+     */
+    List<E> getCurrent();
 
+    /**
+     * @return the log of what append during the merge execution
+     */
     LogQueue getLog();
 
+    /**
+     * @return the result of the 3 ways merge
+     */
     List<E> getMerged();
 }

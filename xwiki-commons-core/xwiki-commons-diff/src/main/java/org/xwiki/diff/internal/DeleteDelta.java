@@ -24,9 +24,28 @@ import java.util.List;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.PatchException;
 
+/**
+ * Implementation of {@link org.xwiki.diff.Delta} representing a chunk which does not exist in next version.
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public class DeleteDelta<E> extends AbstractDelta<E>
 {
-    public DeleteDelta(Chunk<E> original, Chunk<E> revised)
+    /**
+     * @param previous the chunk before the modification
+     * @param next the chunk after the modification
+     */
+    public DeleteDelta(Chunk<E> previous, Chunk<E> next)
+    {
+        super(previous, next, TYPE.DELETE);
+    }
+
+    /**
+     * @param original the chunk before the modification
+     * @param revised the chunk after the modification
+     */
+    public DeleteDelta(difflib.Chunk original, difflib.Chunk revised)
     {
         super(original, revised, TYPE.DELETE);
     }

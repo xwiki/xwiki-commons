@@ -29,22 +29,65 @@ import java.util.List;
  */
 public interface Delta<E>
 {
-    public enum TYPE
+    /**
+     * The kind of modification to apply on the list.
+     * 
+     * @version $Id$
+     */
+    enum TYPE
     {
+        /**
+         * Change one or several following elements.
+         */
         CHANGE,
+
+        /**
+         * Deleted one or several following elements.
+         */
         DELETE,
+
+        /**
+         * Insert one or several following elements.
+         */
         INSERT
     }
 
-    public abstract void verify(List<E> target) throws PatchException;
+    /**
+     * Try to apply the delta on the provided list.
+     * 
+     * @param target the list to modify
+     * @throws PatchException if the delta cannot be applied
+     */
+    void verify(List<E> target) throws PatchException;
 
-    public abstract void apply(List<E> target) throws PatchException;
+    /**
+     * Apply the delta on the provided list.
+     * 
+     * @param target the list to modify
+     * @throws PatchException if the delta cannot be applied
+     */
+    void apply(List<E> target) throws PatchException;
 
-    public abstract void restore(List<E> target);
+    /**
+     * Apply the an inverted version of the delta on the provided list.
+     * 
+     * @param target the list to modify
+     * @throws PatchException if the delta cannot be applied
+     */
+    void restore(List<E> target) throws PatchException;
 
-    public abstract TYPE getType();
+    /**
+     * @return the type of modification applied to the list
+     */
+    TYPE getType();
 
-    public Chunk<E> getPrevious();
+    /**
+     * @return the chunk before the modification
+     */
+    Chunk<E> getPrevious();
 
-    public Chunk<E> getNext();
+    /**
+     * @return the chunk after the modification
+     */
+    Chunk<E> getNext();
 }

@@ -24,19 +24,51 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.Delta;
 
+/**
+ * Base class used for various types of {@link Delta}s.
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public abstract class AbstractDelta<E> implements Delta<E>
 {
+    /**
+     * @see #getType()
+     */
     private TYPE type;
 
+    /**
+     * @see #getPrevious()
+     */
     private Chunk<E> previous;
 
+    /**
+     * @see #getNext()
+     */
     private Chunk<E> next;
 
+    /**
+     * @param previous the chunk before the modification
+     * @param next the chunk after the modification
+     * @param type the type of modification applied to the list
+     */
     public AbstractDelta(Chunk<E> previous, Chunk<E> next, TYPE type)
     {
         this.type = type;
         this.previous = previous;
         this.next = next;
+    }
+
+    /**
+     * @param original the chunk before the modification
+     * @param revised the chunk after the modification
+     * @param type the type of modification applied to the list
+     */
+    public AbstractDelta(difflib.Chunk original, difflib.Chunk revised, TYPE type)
+    {
+        this.type = type;
+        this.previous = new DefaultChunk<E>(original);
+        this.next = new DefaultChunk<E>(revised);
     }
 
     @Override
@@ -51,6 +83,9 @@ public abstract class AbstractDelta<E> implements Delta<E>
         return this.previous;
     }
 
+    /**
+     * @param previous the chunk before the modification
+     */
     public void setPrevious(Chunk<E> previous)
     {
         this.previous = previous;
@@ -62,6 +97,9 @@ public abstract class AbstractDelta<E> implements Delta<E>
         return this.next;
     }
 
+    /**
+     * @param next the chunk after the modification
+     */
     public void setNext(Chunk<E> next)
     {
         this.next = next;

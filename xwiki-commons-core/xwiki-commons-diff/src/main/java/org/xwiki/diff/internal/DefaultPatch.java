@@ -24,12 +24,71 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.xwiki.diff.Delta;
+import org.xwiki.diff.DiffException;
 import org.xwiki.diff.Patch;
 import org.xwiki.diff.PatchException;
 
+/**
+ * Default implementation of {@link Patch}.
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
 {
+    /**
+     * Provides an id for serialization.
+     */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Default constructor.
+     */
+    public DefaultPatch()
+    {
+    }
+
+    /**
+     * Convert {@link difflib.Patch} into {@link Patch}.
+     * 
+     * @param patch the {@link difflib.Patch} to convert
+     * @throws DiffException error when converting the patch
+     */
+    public DefaultPatch(difflib.Patch patch) throws DiffException
+    {
+        for (difflib.Delta delta : patch.getDeltas()) {
+            add(toDelta(delta));
+        }
+    }
+
+    /**
+     * Convert {@link difflib.Delta} into {@link Delta}.
+     * 
+     * @param delta the {@link difflib.Delta} to convert
+     * @return the {@link Delta}
+     * @throws DiffException error when converting the delta
+     */
+    private Delta<E> toDelta(difflib.Delta delta) throws DiffException
+    {
+        Delta<E> newDelta;
+
+        switch (delta.getType()) {
+            case CHANGE:
+                newDelta = new ChangeDelta<E>(delta.getOriginal(), delta.getRevised());
+                break;
+            case DELETE:
+                newDelta = new DeleteDelta<E>(delta.getOriginal(), delta.getRevised());
+                break;
+            case INSERT:
+                newDelta = new InsertDelta<E>(delta.getOriginal(), delta.getRevised());
+                break;
+            default:
+                throw new DiffException(String.format("Failed to convert [%s] info [%s]. Unknown type [%s]", delta
+                    .getClass().getName(), Delta.class.getName(), delta.getType().toString()));
+        }
+
+        return newDelta;
+    }
 
     @Override
     public List<E> apply(List<E> target) throws PatchException
@@ -45,7 +104,7 @@ public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
     }
 
     @Override
-    public List<E> restore(List<E> target)
+    public List<E> restore(List<E> target) throws PatchException
     {
         List<E> result = new LinkedList<E>(target);
         ListIterator<Delta<E>> it = listIterator(size());

@@ -17,48 +17,44 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff;
+package org.xwiki.diff.internal;
 
 import java.util.List;
 
+import org.xwiki.diff.Chunk;
+import org.xwiki.diff.PatchException;
+
 /**
- * A snippet of the source list.
+ * Implementation of {@link org.xwiki.diff.Delta} representing a chunk which is the same in both version.
  * 
  * @param <E> the type of compared elements
  * @version $Id$
  */
-public interface Chunk<E>
+public class SameDelta<E> extends AbstractDelta<E>
 {
     /**
-     * Verify that the chunk can be found in the provided list.
-     * 
-     * @param target the list where to match the chunk
-     * @throws PatchException fail to match the chunk
+     * @param chunk the chunk
      */
-    void verify(List<E> target) throws PatchException;
+    public SameDelta(Chunk<E> chunk)
+    {
+        super(chunk, chunk, null);
+    }
 
-    /**
-     * @return the elements in the snippet
-     */
-    List<E> getElements();
+    @Override
+    public void apply(List<E> target) throws PatchException
+    {
+        // Do nothing
+    }
 
-    /**
-     * @param elements the elements in the snippet
-     */
-    void setElements(List<E> elements);
+    @Override
+    public void restore(List<E> target)
+    {
+        // Do nothing
+    }
 
-    /**
-     * @return the size of the snippet
-     */
-    int size();
-
-    /**
-     * @return the start index of the chunk in the list
-     */
-    int getIndex();
-
-    /**
-     * @return the index of the last element of the chunk in the list
-     */
-    int getLastIndex();
+    @Override
+    public void verify(List<E> target) throws PatchException
+    {
+        // Do nothing
+    }
 }

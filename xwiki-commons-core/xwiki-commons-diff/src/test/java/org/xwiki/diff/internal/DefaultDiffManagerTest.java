@@ -33,18 +33,21 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
         DiffResult<String> result = this.diffManager.diff(null, null, null);
 
         Assert.assertTrue(result.getPatch().isEmpty());
+        Assert.assertTrue(result.getUnifiedDiff().isEmpty());
 
         // Empty
 
-        result = this.diffManager.diff(Arrays.asList(""), Arrays.asList(""), null);
+        result = this.diffManager.diff(Collections.<String> emptyList(), Collections.<String> emptyList(), null);
 
         Assert.assertTrue(result.getPatch().isEmpty());
+        Assert.assertTrue(result.getUnifiedDiff().isEmpty());
 
         // Equals
 
         result = this.diffManager.diff(Arrays.asList("equals"), Arrays.asList("equals"), null);
 
         Assert.assertTrue(result.getPatch().isEmpty());
+        Assert.assertEquals(1, result.getUnifiedDiff().size());
 
         // Previous empty
 
@@ -54,6 +57,7 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
         Assert.assertEquals(TYPE.INSERT, result.getPatch().get(0).getType());
         Assert.assertEquals(Arrays.asList("next"), result.getPatch().get(0).getNext().getElements());
         Assert.assertEquals(0, result.getPatch().get(0).getNext().getIndex());
+        Assert.assertEquals(1, result.getUnifiedDiff().size());
 
         // Next empty
 
@@ -63,6 +67,7 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
         Assert.assertEquals(TYPE.DELETE, result.getPatch().get(0).getType());
         Assert.assertEquals(Arrays.asList("previous"), result.getPatch().get(0).getPrevious().getElements());
         Assert.assertEquals(0, result.getPatch().get(0).getPrevious().getIndex());
+        Assert.assertEquals(1, result.getUnifiedDiff().size());
     }
 
     @Test

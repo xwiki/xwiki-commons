@@ -20,11 +20,15 @@
 package org.xwiki.diff;
 
 /**
+ * The configuration of the merge behavior.
  * 
  * @param <E> the type of compared elements
  * @version $Id$
  */
 public interface MergeConfiguration<E>
 {
+    /**
+     * @return the current merge result. Mostly used to update the log.
+     */
     MergeResult<E> getCurrentMergeResult();
 }

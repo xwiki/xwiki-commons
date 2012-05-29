@@ -24,23 +24,49 @@ import java.util.List;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.logging.LogQueue;
 
+/**
+ * Default implementation of {@link MergeResult}.
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public class DefaultMergeResult<E> implements MergeResult<E>
 {
+    /**
+     * @see #getCommonAncestor()
+     */
     private List<E> commonAncestor;
 
-    private List<E> previous;
-
+    /**
+     * @see #getNext()
+     */
     private List<E> next;
 
+    /**
+     * @see #getCurrent()
+     */
+    private List<E> current;
+
+    /**
+     * @see #getMerged()
+     */
     private List<E> merged;
 
+    /**
+     * @see #getLog()
+     */
     private LogQueue log = new LogQueue();
 
-    public DefaultMergeResult(List<E> commonAncestor, List<E> previous, List<E> next)
+    /**
+     * @param commonAncestor the common ancestor
+     * @param next the new version
+     * @param current the current version
+     */
+    public DefaultMergeResult(List<E> commonAncestor, List<E> next, List<E> current)
     {
         this.commonAncestor = commonAncestor;
-        this.previous = previous;
         this.next = next;
+        this.current = current;
     }
 
     @Override
@@ -56,9 +82,9 @@ public class DefaultMergeResult<E> implements MergeResult<E>
     }
 
     @Override
-    public List<E> getPrevious()
+    public List<E> getCurrent()
     {
-        return this.previous;
+        return this.current;
     }
 
     @Override
@@ -73,6 +99,9 @@ public class DefaultMergeResult<E> implements MergeResult<E>
         return this.merged;
     }
 
+    /**
+     * @param merged the merged version
+     */
     public void setMerged(List<E> merged)
     {
         this.merged = merged;

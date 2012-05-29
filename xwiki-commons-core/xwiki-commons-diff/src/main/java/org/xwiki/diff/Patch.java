@@ -43,6 +43,7 @@ public interface Patch<E> extends List<Delta<E>>
      * 
      * @param target the list on which to apply an inverted version of the patch
      * @return the modified list
+     * @throws PatchException failed to apply the patch
      */
-    List<E> restore(List<E> target);
+    List<E> restore(List<E> target) throws PatchException;
 }

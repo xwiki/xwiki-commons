@@ -24,9 +24,28 @@ import java.util.List;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.PatchException;
 
+/**
+ * Implementation of {@link org.xwiki.diff.Delta} representing a chunk which does not exist in previous version.
+ * 
+ * @param <E> the type of compared elements
+ * @version $Id$
+ */
 public class InsertDelta<E> extends AbstractDelta<E>
 {
-    public InsertDelta(Chunk<E> original, Chunk<E> revised)
+    /**
+     * @param previous the chunk before the modification
+     * @param next the chunk after the modification
+     */
+    public InsertDelta(Chunk<E> previous, Chunk<E> next)
+    {
+        super(previous, next, TYPE.INSERT);
+    }
+
+    /**
+     * @param original the chunk before the modification
+     * @param revised the chunk after the modification
+     */
+    public InsertDelta(difflib.Chunk original, difflib.Chunk revised)
     {
         super(original, revised, TYPE.INSERT);
     }
@@ -59,6 +78,5 @@ public class InsertDelta<E> extends AbstractDelta<E>
         if (getPrevious().getIndex() > target.size()) {
             throw new PatchException("Incorrect patch for delta: delta original position > target size");
         }
-
     }
 }

@@ -54,6 +54,7 @@
       <artifactId>commons-io</artifactId>
     </dependency>
 
+    <!-- TODO: Remove as soon as the generic merge implementation is improved -->
     <dependency>
       <groupId>com.qarks</groupId>
       <artifactId>jdiff</artifactId>
