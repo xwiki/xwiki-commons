@@ -21,6 +21,7 @@ package org.xwiki.job;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A {@link Job} request.
@@ -41,10 +42,11 @@ public interface Request extends Serializable
     String PROPERTY_INTERACTIVE = "interactive";
 
     /**
-     * @return identifier used to access the job. If none is provided the job will not be accessible by id and the
-     *         status of the job will not be stored.
+     * @return list based identifier used to access the job. If none is provided the job will not be accessible by id
+     *         and the status of the job will not be stored.
+     * @since 4.1M2
      */
-    String getId();
+    List<String> getId();
 
     /**
      * @return indicate if the job has been triggered by a remote event

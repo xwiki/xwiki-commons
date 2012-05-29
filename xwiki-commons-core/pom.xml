@@ -49,6 +49,7 @@
     <module>xwiki-commons-observation</module>
     <module>xwiki-commons-properties</module>
     <module>xwiki-commons-script</module>
+    <module>xwiki-commons-store</module>
     <module>xwiki-commons-test</module>
     <module>xwiki-commons-text</module>
     <module>xwiki-commons-velocity</module>
@@ -116,11 +117,22 @@
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>
             <!-- Remove the following excludes after we release the current version as final -->
+            <exclude>org/xwiki/environment/EnvironmentConfiguration</exclude> <!-- Should have been internal. -->
             <exclude>org/xwiki/job/Job</exclude> <!-- New methods -->
             <exclude>org/xwiki/job/event/status/JobStatus</exclude> <!-- New methods -->
             <exclude>org/xwiki/job/AbstractJob</exclude> <!-- Still compatible with extends -->
             <exclude>org/xwiki/extension/job/plan/ExtensionPlan</exclude> <!-- Return an extended type -->
             <exclude>org/xwiki/extension/version/VersionConstraint</exclude> <!-- New method -->
+            
+            <!-- Change id from String to List<String>. Mostly new methods. -->
+            <exclude>org/xwiki/job/AbstractRequest</exclude>
+            <exclude>org/xwiki/job/JobManager</exclude>
+            <exclude>org/xwiki/job/Request</exclude>
+            <exclude>org/xwiki/job/event/JobEvent</exclude>
+            <exclude>org/xwiki/job/event/JobFinishedEvent</exclude>
+            <exclude>org/xwiki/job/event/JobStartedEvent</exclude>
+            <exclude>org/xwiki/job/JobManager</exclude>
+            <exclude>org/xwiki/job/Request</exclude>
           </excludes>
         </configuration>
       </plugin>

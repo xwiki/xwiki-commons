@@ -26,6 +26,9 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -64,6 +67,16 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     private static final String DEFAULT_ENCODING = "UTF-8";
 
     /**
+     * The encoded version of a <code>null</code> value in the id list.
+     */
+    private static final String FOLDER_NULL = "&null";
+
+    /**
+     * The name of the folder containing a job status.
+     */
+    private static final String FOLDER_STATUS = "&status";
+
+    /**
      * Used to get the storage directory.
      */
     @Inject
@@ -83,7 +96,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     /**
      * A cache of stored job statuses.
      */
-    private Map<String, JobStatus> jobs = new ConcurrentHashMap<String, JobStatus>();
+    private Map<List<String>, JobStatus> jobs = new ConcurrentHashMap<List<String>, JobStatus>();
 
     @Override
     public void initialize() throws InitializationException
@@ -104,12 +117,17 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     private String encode(String name)
     {
         String encoded;
-        try {
-            encoded = URLEncoder.encode(name, DEFAULT_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            // Should never happen
 
-            encoded = name;
+        if (name != null) {
+            try {
+                encoded = URLEncoder.encode(name, DEFAULT_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                // Should never happen
+
+                encoded = name;
+            }
+        } else {
+            encoded = FOLDER_NULL;
         }
 
         return encoded;
@@ -123,19 +141,42 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
         File folder = this.configuration.getStorage();
 
         if (folder.exists()) {
-            for (File file : folder.listFiles()) {
-                if (file.isDirectory()) {
-                    File statusFile = new File(file, FILENAME_STATUS);
-                    if (statusFile.exists()) {
-                        try {
-                            JobStatus status = loadJobStatus(statusFile);
+            loadFolder(folder);
+        }
+    }
 
-                            this.jobs.put(status.getRequest().getId(), status);
-                        } catch (Exception e) {
-                            this.logger.error("Failed to load job status from file [{}]", statusFile, e);
-                        }
-                    }
+    /**
+     * @param folder the folder from where to load the jobs
+     */
+    private void loadFolder(File folder)
+    {
+        for (File file : folder.listFiles()) {
+            if (file.isDirectory()) {
+                if (file.getName().equals(FOLDER_STATUS)) {
+                    loadStatus(file);
+                } else {
+                    loadFolder(file);
                 }
+            } else if (file.getName().equals(FILENAME_STATUS)) {
+                loadStatus(folder);
+            }
+        }
+    }
+
+    /**
+     * @param folder the folder from where to load the job status
+     */
+    private void loadStatus(File folder)
+    {
+        File statusFile = new File(folder, FILENAME_STATUS);
+        if (statusFile.exists()) {
+            try {
+                JobStatus status = loadJobStatus(statusFile);
+
+                List<String> id = status.getRequest().getId();
+                this.jobs.put(id != null ? id : Collections.<String> emptyList(), status);
+            } catch (Exception e) {
+                this.logger.error("Failed to load job status from file [{}]", statusFile, e);
             }
         }
     }
@@ -156,9 +197,15 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
      * @param id the id of the job
      * @return the folder where to store the job related informations
      */
-    private File getJobFolder(String id)
+    private File getJobFolder(List<String> id)
     {
-        return new File(this.configuration.getStorage(), encode(id));
+        File folder = this.configuration.getStorage();
+
+        for (String idElement : id) {
+            folder = new File(folder, encode(idElement));
+        }
+
+        return folder;
     }
 
     /**
@@ -185,7 +232,13 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     @Override
     public JobStatus getJobStatus(String id)
     {
-        return this.jobs.get(id);
+        return getJobStatus(id != null ? Arrays.asList(id) : (List<String>) null);
+    }
+
+    @Override
+    public JobStatus getJobStatus(List<String> id)
+    {
+        return this.jobs.get(id != null ? id : Collections.EMPTY_LIST);
     }
 
     @Override
@@ -205,6 +258,12 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
 
     @Override
     public JobStatus remove(String id)
+    {
+        return remove(Arrays.asList(id));
+    }
+
+    @Override
+    public JobStatus remove(List<String> id)
     {
         JobStatus status = this.jobs.remove(id);
 

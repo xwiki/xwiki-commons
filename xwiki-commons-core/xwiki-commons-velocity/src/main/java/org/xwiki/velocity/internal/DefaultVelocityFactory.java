@@ -19,9 +19,9 @@
  */
 package org.xwiki.velocity.internal;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -62,22 +62,22 @@ public class DefaultVelocityFactory implements VelocityFactory
      * A cache of Velocity Engines. See {@link org.xwiki.velocity.VelocityFactory} for more details as to why we need
      * this cache.
      */
-    private Map<String, VelocityEngine> velocityEngines = new HashMap<String, VelocityEngine>();
+    private Map<String, VelocityEngine> velocityEngines = new ConcurrentHashMap<String, VelocityEngine>();
 
     @Override
-    public synchronized boolean hasVelocityEngine(String key)
+    public boolean hasVelocityEngine(String key)
     {
         return this.velocityEngines.containsKey(key);
     }
 
     @Override
-    public synchronized VelocityEngine getVelocityEngine(String key)
+    public VelocityEngine getVelocityEngine(String key)
     {
         return this.velocityEngines.get(key);
     }
 
     @Override
-    public synchronized VelocityEngine createVelocityEngine(String key, Properties properties)
+    public VelocityEngine createVelocityEngine(String key, Properties properties)
         throws XWikiVelocityException
     {
         VelocityEngine engine;

@@ -55,11 +55,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private transient LoggerManager loggerManager;
 
     /**
-     * The unique id of the job.
-     */
-    private String id;
-
-    /**
      * General state of the job.
      */
     private State state = State.NONE;
@@ -106,18 +101,16 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
 
     /**
      * @param request the request provided when started the job
-     * @param id the unique id of the job
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
      */
-    public AbstractJobStatus(R request, String id, ObservationManager observationManager, LoggerManager loggerManager)
+    public AbstractJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager)
     {
         this.request = request;
         this.observationManager = observationManager;
         this.loggerManager = loggerManager;
-        this.id = id;
 
-        this.progress = new DefaultJobProgress(this.id);
+        this.progress = new DefaultJobProgress();
     }
 
     /**
@@ -129,7 +122,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.observationManager.addListener(this.progress);
 
         // Isolate log for the job status
-        this.loggerManager.pushLogListener(new LogQueueListener(LogQueueListener.class.getName() + '_' + this.id,
+        this.loggerManager.pushLogListener(new LogQueueListener(LogQueueListener.class.getName() + '_' + hashCode(),
             this.logs));
     }
 

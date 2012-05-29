@@ -19,6 +19,9 @@
  */
 package org.xwiki.job.internal;
 
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.Assert;
 
 import org.jmock.Expectations;
@@ -44,7 +47,7 @@ public class DefaultJobManagerTest extends AbstractMockingComponentTestCase
     @Test
     public void testGetJobStatusForUnexistingJob() throws Exception
     {
-        final String jobId = "unexisting-job";
+        final List<String> jobId = Arrays.asList("unexisting-job");
         final JobStatusStorage jobStatusStorage = getComponentManager().getInstance(JobStatusStorage.class);
 
         getMockery().checking(new Expectations()

@@ -19,6 +19,7 @@
  */
 package org.xwiki.management.internal;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.management.JMXBeanRegistration;
@@ -56,7 +57,8 @@ public class DefaultJMXBeanRegistration implements JMXBeanRegistration
             this.logger.debug("Registered resource with name [{}]", name);
         } catch (Exception e) {
             // Failed to register the MBean, log a warning
-            this.logger.warn("Failed to register resource with name [{}]. Reason = [{}]", name, e.getMessage());
+            this.logger.warn("Failed to register resource with name [{}]. Reason = [{}]", name,
+                ExceptionUtils.getMessage(e));
         }
     }
 }

@@ -19,6 +19,9 @@
  */
 package org.xwiki.job.event;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.xwiki.job.Request;
 import org.xwiki.observation.event.BeginEvent;
 
@@ -57,6 +60,15 @@ public class JobStartedEvent extends AbstractJobEvent implements BeginEvent
      * @param request the event related job request
      */
     public JobStartedEvent(String jobId, String jobType, Request request)
+    {
+        this(Arrays.asList(jobId), jobType, request);
+    }
+    /**
+     * @param jobId the event related job unique id
+     * @param jobType the event related job type
+     * @param request the event related job request
+     */
+    public JobStartedEvent(List<String> jobId, String jobType, Request request)
     {
         super(jobId, jobType, request);
     }

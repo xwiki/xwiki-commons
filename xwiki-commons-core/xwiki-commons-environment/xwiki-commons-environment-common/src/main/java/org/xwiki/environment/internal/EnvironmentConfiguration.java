@@ -17,50 +17,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.job.internal;
-
-import java.util.List;
+package org.xwiki.environment.internal;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.job.event.status.JobStatus;
 
 /**
- * Store and retrieve {@link JobStatus} instances.
- * 
+ * Configuration properties for the Environment module.
+ *
  * @version $Id$
- * @since 4.0M1
+ * @since 3.5M1
  */
 @Role
-public interface JobStatusStorage
+public interface EnvironmentConfiguration
 {
     /**
-     * @param id the id of the job
-     * @return the job status
+     * @return the path to the directory used to store persistent data
+     *         (data that should persist across server restarts). This is an important directory
+     *         containing important data and thus it should never be deleted (it should be backed-up
+     *         along with the database), or null if the user hasn't specified any permanent directory
      */
-    JobStatus getJobStatus(String id);
-
-    /**
-     * @param id the id of the job
-     * @return the job status
-     * @since 4.1M2
-     */
-    JobStatus getJobStatus(List<String> id);
-
-    /**
-     * @param status the job status
-     */
-    void store(JobStatus status);
-
-    /**
-     * @param id the id of the job
-     * @return the job status
-     */
-    JobStatus remove(String id);
-
-    /**
-     * @param id the id of the job
-     * @return the job status
-     * @since 4.1M2
-     */
-    JobStatus remove(List<String> id);
+    String getPermanentDirectoryPath();
 }

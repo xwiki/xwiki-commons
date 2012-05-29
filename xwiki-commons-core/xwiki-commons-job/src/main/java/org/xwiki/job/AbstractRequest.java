@@ -19,8 +19,11 @@
  */
 package org.xwiki.job;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +42,7 @@ public abstract class AbstractRequest implements Request
     /**
      * @see #getId()
      */
-    private String id;
+    private List<String> id;
 
     /**
      * The properties.
@@ -65,17 +68,26 @@ public abstract class AbstractRequest implements Request
     }
 
     @Override
-    public String getId()
+    public List<String> getId()
     {
         return this.id;
     }
 
     /**
-     * @param id the identifier used to acccess the job
+     * @param id the identifier used to access the job
+     * @since 4.1M2
+     */
+    public void setId(List<String> id)
+    {
+        this.id = id != null ? new ArrayList<String>(id) : null;
+    }
+
+    /**
+     * @param id the identifier used to access the job
      */
     public void setId(String id)
     {
-        this.id = id;
+        setId(Arrays.asList(id));
     }
 
     @Override
