@@ -20,6 +20,7 @@
 package org.xwiki.environment.internal;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -49,9 +50,13 @@ public class DefaultEnvironmentConfiguration implements EnvironmentConfiguration
     private Logger logger;
 
     /**
-     * @see #getConfigurationSource() 
+     * @see #getConfigurationSource()
+     *
+     * Note that we only get the Environment Configuration from the XWiki Properties file and not from Wiki documents
+     * since having Wiki documents require an environment configuration... (chicken and egg issue ;)).
      */
     @Inject
+    @Named("xwikiproperties")
     private Provider<ConfigurationSource> configurationSourceProvider;
 
     /**
