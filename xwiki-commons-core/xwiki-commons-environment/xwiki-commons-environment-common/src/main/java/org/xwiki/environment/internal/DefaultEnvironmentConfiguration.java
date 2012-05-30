@@ -20,7 +20,6 @@
 package org.xwiki.environment.internal;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -52,11 +51,11 @@ public class DefaultEnvironmentConfiguration implements EnvironmentConfiguration
     /**
      * @see #getConfigurationSource()
      *
-     * Note that we only get the Environment Configuration from the XWiki Properties file and not from Wiki documents
-     * since having Wiki documents require an environment configuration... (chicken and egg issue ;)).
+     * Note that we use a Provider instead of directly injecting a ConfigurationSource so that we always get a valid
+     * Configuration Source even if no "default" Configuration Source implementation is provided (in this case it'll
+     * default to using a Memory Configuration Source).
      */
     @Inject
-    @Named("xwikiproperties")
     private Provider<ConfigurationSource> configurationSourceProvider;
 
     /**
@@ -70,6 +69,6 @@ public class DefaultEnvironmentConfiguration implements EnvironmentConfiguration
     @Override
     public String getPermanentDirectoryPath()
     {
-        return this.getConfigurationSource().getProperty(PROPERTY_PERMANENTDIRECTORY, String.class);
+        return getConfigurationSource().getProperty(PROPERTY_PERMANENTDIRECTORY, String.class);
     }
 }
