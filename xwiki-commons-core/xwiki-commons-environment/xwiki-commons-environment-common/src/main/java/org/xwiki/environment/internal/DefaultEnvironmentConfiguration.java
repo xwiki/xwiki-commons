@@ -49,7 +49,11 @@ public class DefaultEnvironmentConfiguration implements EnvironmentConfiguration
     private Logger logger;
 
     /**
-     * @see #getConfigurationSource() 
+     * @see #getConfigurationSource()
+     *
+     * Note that we use a Provider instead of directly injecting a ConfigurationSource so that we always get a valid
+     * Configuration Source even if no "default" Configuration Source implementation is provided (in this case it'll
+     * default to using a Memory Configuration Source).
      */
     @Inject
     private Provider<ConfigurationSource> configurationSourceProvider;
@@ -65,6 +69,6 @@ public class DefaultEnvironmentConfiguration implements EnvironmentConfiguration
     @Override
     public String getPermanentDirectoryPath()
     {
-        return this.getConfigurationSource().getProperty(PROPERTY_PERMANENTDIRECTORY, String.class);
+        return getConfigurationSource().getProperty(PROPERTY_PERMANENTDIRECTORY, String.class);
     }
 }

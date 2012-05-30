@@ -44,6 +44,7 @@
       <artifactId>xwiki-commons-component-default</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- Test Dependencies -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit-dep</artifactId>
