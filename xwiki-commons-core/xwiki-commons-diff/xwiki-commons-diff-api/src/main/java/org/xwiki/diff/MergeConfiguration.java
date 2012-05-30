@@ -19,16 +19,14 @@
  */
 package org.xwiki.diff;
 
+import java.util.HashMap;
+
 /**
- * The configuration of the merge behavior.
+ * Setup merge behavior.
  * 
  * @param <E> the type of compared elements
  * @version $Id$
  */
-public interface MergeConfiguration<E>
+public class MergeConfiguration<E> extends HashMap<String, Object>
 {
-    /**
-     * @return the current merge result. Mostly used to update the log.
-     */
-    MergeResult<E> getCurrentMergeResult();
 }
