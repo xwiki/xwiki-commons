@@ -21,20 +21,23 @@ package org.xwiki.diff.internal;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.diff.Delta;
+import org.xwiki.diff.Delta.TYPE;
 import org.xwiki.diff.DiffConfiguration;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeConfiguration;
+import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.Patch;
 import org.xwiki.logging.LogLevel;
@@ -104,16 +107,33 @@ public class DefaultDiffManager implements DiffManager
 
     @Override
     public <E> MergeResult<E> merge(List<E> commonAncestor, List<E> next, List<E> current,
-        MergeConfiguration<E> configuration)
+        MergeConfiguration<E> configuration) throws MergeException
     {
         DefaultMergeResult<E> mergeResult = new DefaultMergeResult<E>(commonAncestor, next, current);
 
-        if (ObjectUtils.equals(commonAncestor, next)) {
+        // Get diff between common ancestor and next version
+
+        DiffResult<E> diffNextResult;
+        try {
+            diffNextResult = diff(commonAncestor, next, null);
+        } catch (DiffException e) {
+            throw new MergeException("Faile to diff between common ancestor and next version", e);
+        }
+        mergeResult.getLog().addAll(diffNextResult.getLog());
+
+        Patch<E> patchNext = diffNextResult.getPatch();
+
+        // If there is no modification stop there
+
+        if (patchNext.isEmpty()) {
             // No change so nothing to do
             return mergeResult;
         }
 
+        // Check current version
+
         if (current.isEmpty()) {
+            // Empty current version
             if (commonAncestor.isEmpty()) {
                 mergeResult.setMerged(next);
             } else if (next.isEmpty()) {
@@ -124,12 +144,21 @@ public class DefaultDiffManager implements DiffManager
                 error(mergeResult, "The current value is empty", null);
             }
         } else {
-            // TODO: have a common implementation whatever the type (the generic one is not very good yet)
-            if (current.get(0) instanceof String) {
-                mergeString((List<String>) commonAncestor, (List<String>) next, (List<String>) current,
-                    (MergeConfiguration<String>) configuration, (DefaultMergeResult<String>) mergeResult);
+            // Get diff between common ancestor and current version
+            DiffResult<E> diffCurrentResult;
+            try {
+                diffCurrentResult = diff(commonAncestor, current, null);
+            } catch (DiffException e) {
+                throw new MergeException("Faile to diff between common ancestor and current version", e);
+            }
+            mergeResult.getLog().addAll(diffCurrentResult.getLog());
+
+            Patch<E> patchCurrent = diffCurrentResult.getPatch();
+
+            if (patchCurrent.isEmpty()) {
+                mergeResult.setMerged(next);
             } else {
-                merge(commonAncestor, next, current, configuration, mergeResult);
+                merge(mergeResult, commonAncestor, patchNext, patchCurrent, configuration);
             }
         }
 
@@ -137,27 +166,110 @@ public class DefaultDiffManager implements DiffManager
     }
 
     /**
-     * Apply 3 ways merge on String lines.
-     * 
-     * @param commonAncestor the common ancestor of the two versions of the content to compare
-     * @param next the next version of the content to compare
-     * @param current the current version of the content to compare
-     * @param configuration the configuration of the merge behavior
+     * @param <E> the type of compared elements
      * @param mergeResult the result of the merge
+     * @param commonAncestor the common ancestor of the two versions of the content to compare
+     * @param patchNext the diff between common ancestor and next version
+     * @param patchCurrent the diff between common ancestor and current version
+     * @param configuration the configuration of the merge behavior
      */
-    private void mergeString(List<String> commonAncestor, List<String> next, List<String> current,
-        MergeConfiguration<String> configuration, DefaultMergeResult<String> mergeResult)
+    private <E> void merge(DefaultMergeResult<E> mergeResult, List<E> commonAncestor, Patch<E> patchNext,
+        Patch<E> patchCurrent, MergeConfiguration<E> configuration)
     {
-        com.qarks.util.files.diff.MergeResult result =
-            com.qarks.util.files.diff.Diff.quickMerge(toString(commonAncestor), toString(next), toString(current),
-                false);
+        // Merge the two diffs
+        List<E> merged = new ArrayList<E>();
+        
+        mergeResult.setMerged(merged);
 
-        if (result.isConflict()) {
-            error(mergeResult, "Failed to merge with previous string [{}], new string [{}] and current string [{}]",
-                null, commonAncestor, next, current);
-        } else {
-            mergeResult.setMerged(toLines(result.getDefaultMergedResult()));
+        Delta<E> deltaNext = nextElement(patchNext);
+        Delta<E> deltaCurrent = nextElement(patchCurrent);
+
+        // Before common ancestor
+        if (deltaCurrent.getType() == TYPE.INSERT && deltaCurrent.getPrevious().getIndex() == 0) {
+            merged.addAll(deltaCurrent.getNext().getElements());
+            deltaCurrent = nextElement(patchCurrent);
+            if (deltaNext.getType() == TYPE.INSERT && deltaNext.getPrevious().getIndex() == 0) {
+                logConflict(mergeResult, deltaCurrent, deltaNext);
+                deltaNext = nextElement(patchNext);
+            }
+        } else if (deltaNext.getType() == TYPE.INSERT && deltaNext.getPrevious().getIndex() == 0) {
+            merged.addAll(deltaNext.getNext().getElements());
+            deltaNext = nextElement(patchNext);
         }
+
+        // In common ancestor
+        int index = 0;
+        for (; index < commonAncestor.size(); ++index) {
+            if (isPreviousIndex(deltaCurrent, index)) {
+                index = apply(deltaCurrent, merged, index);
+
+                if (isInPreviousDelta(deltaNext, deltaCurrent.getPrevious().getLastIndex())) {
+                    logConflict(mergeResult, deltaCurrent, deltaNext);
+                    deltaNext = nextElement(patchNext);
+                }
+            } else if (isPreviousIndex(deltaNext, index)) {
+                if (isInPreviousDelta(deltaCurrent, deltaNext.getPrevious().getLastIndex())) {
+                    logConflict(mergeResult, deltaCurrent, deltaNext);
+                    deltaNext = nextElement(patchNext);
+                } else {
+                    index = apply(deltaNext, merged, index);
+                }
+            } else {
+                merged.add(commonAncestor.get(index));
+            }
+        }
+
+        // After common ancestor
+        if (deltaCurrent != null) {
+            merged.addAll(deltaCurrent.getNext().getElements());
+            if (deltaNext != null) {
+                logConflict(mergeResult, deltaCurrent, deltaNext);
+            }
+        } else if (deltaNext != null) {
+            merged.addAll(deltaNext.getNext().getElements());
+        }
+    }
+    
+    private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext)
+    {
+        error(mergeResult, "Conflict between [{}] and [{}]", null, deltaCurrent, deltaNext);
+    }
+
+    private <E> int apply(Delta<E> delta, List<E> merged, int currentIndex)
+    {
+        int index = currentIndex;
+
+        switch (delta.getType()) {
+            case DELETE:
+                index = delta.getPrevious().getLastIndex();
+                break;
+            case INSERT:
+                merged.addAll(delta.getNext().getElements());
+                break;
+            case CHANGE:
+                merged.addAll(delta.getNext().getElements());
+                index = delta.getPrevious().getLastIndex();
+                break;
+            default:
+                break;
+        }
+
+        return index;
+    }
+
+    private <E> E nextElement(List<E> list)
+    {
+        return list != null && !list.isEmpty() ? list.remove(0) : null;
+    }
+
+    private <E> boolean isPreviousIndex(Delta<E> delta, int index)
+    {
+        return delta != null && delta.getPrevious().getIndex() == index;
+    }
+
+    private <E> boolean isInPreviousDelta(Delta<E> delta, int index)
+    {
+        return delta != null && delta.getPrevious().getIndex() <= index && delta.getPrevious().getIndex() >= index;
     }
 
     /**
@@ -173,6 +285,7 @@ public class DefaultDiffManager implements DiffManager
     public <E> void merge(List<E> commonAncestor, List<E> next, List<E> current, MergeConfiguration<E> configuration,
         DefaultMergeResult<E> mergeResult)
     {
+
         difflib.Patch patch = DiffUtils.diff(commonAncestor, next);
 
         try {

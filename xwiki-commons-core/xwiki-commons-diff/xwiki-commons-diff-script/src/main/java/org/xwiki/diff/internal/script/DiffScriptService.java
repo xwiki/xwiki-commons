@@ -78,7 +78,7 @@ public class DiffScriptService implements ScriptService
     }
 
     /**
-     * Execute a way merge on provided versions.
+     * Execute a 3-way merge on provided versions.
      * 
      * @param <E> the type of compared elements
      * @param commonAncestor the common ancestor of the two versions of the content to compare
