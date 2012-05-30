@@ -35,7 +35,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
     /**
      * @see #getType()
      */
-    private TYPE type;
+    private Type type;
 
     /**
      * @see #getPrevious()
@@ -52,7 +52,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
      * @param next the chunk after the modification
      * @param type the type of modification applied to the list
      */
-    public AbstractDelta(Chunk<E> previous, Chunk<E> next, TYPE type)
+    public AbstractDelta(Chunk<E> previous, Chunk<E> next, Type type)
     {
         this.type = type;
         this.previous = previous;
@@ -64,7 +64,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
      * @param revised the chunk after the modification
      * @param type the type of modification applied to the list
      */
-    public AbstractDelta(difflib.Chunk original, difflib.Chunk revised, TYPE type)
+    public AbstractDelta(difflib.Chunk original, difflib.Chunk revised, Type type)
     {
         this.type = type;
         this.previous = new DefaultChunk<E>(original);
@@ -72,7 +72,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
     }
 
     @Override
-    public TYPE getType()
+    public Type getType()
     {
         return this.type;
     }

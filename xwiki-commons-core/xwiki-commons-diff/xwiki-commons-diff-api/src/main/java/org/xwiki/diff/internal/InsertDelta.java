@@ -38,7 +38,7 @@ public class InsertDelta<E> extends AbstractDelta<E>
      */
     public InsertDelta(Chunk<E> previous, Chunk<E> next)
     {
-        super(previous, next, TYPE.INSERT);
+        super(previous, next, Type.INSERT);
     }
 
     /**
@@ -47,7 +47,7 @@ public class InsertDelta<E> extends AbstractDelta<E>
      */
     public InsertDelta(difflib.Chunk original, difflib.Chunk revised)
     {
-        super(original, revised, TYPE.INSERT);
+        super(original, revised, Type.INSERT);
     }
 
     @Override

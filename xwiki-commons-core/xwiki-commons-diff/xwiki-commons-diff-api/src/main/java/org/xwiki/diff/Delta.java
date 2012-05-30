@@ -34,7 +34,7 @@ public interface Delta<E>
      * 
      * @version $Id$
      */
-    enum TYPE
+    enum Type
     {
         /**
          * Change one or several following elements.
@@ -79,7 +79,7 @@ public interface Delta<E>
     /**
      * @return the type of modification applied to the list
      */
-    TYPE getType();
+    Type getType();
 
     /**
      * @return the chunk before the modification

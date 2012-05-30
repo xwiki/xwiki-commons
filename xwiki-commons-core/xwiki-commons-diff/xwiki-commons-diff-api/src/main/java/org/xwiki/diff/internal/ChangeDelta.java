@@ -39,7 +39,7 @@ public class ChangeDelta<E> extends AbstractDelta<E>
      */
     public ChangeDelta(Chunk<E> previous, Chunk<E> next)
     {
-        super(previous, next, TYPE.CHANGE);
+        super(previous, next, Type.CHANGE);
     }
 
     /**
@@ -48,7 +48,7 @@ public class ChangeDelta<E> extends AbstractDelta<E>
      */
     public ChangeDelta(difflib.Chunk original, difflib.Chunk revised)
     {
-        super(original, revised, TYPE.CHANGE);
+        super(original, revised, Type.CHANGE);
     }
 
     @Override

@@ -25,7 +25,7 @@ import java.util.Collections;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.xwiki.diff.Delta.TYPE;
+import org.xwiki.diff.Delta.Type;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
@@ -73,7 +73,7 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
         result = this.diffManager.diff(Collections.<String> emptyList(), Arrays.asList("next"), null);
 
         Assert.assertEquals(1, result.getPatch().size());
-        Assert.assertEquals(TYPE.INSERT, result.getPatch().get(0).getType());
+        Assert.assertEquals(Type.INSERT, result.getPatch().get(0).getType());
         Assert.assertEquals(Arrays.asList("next"), result.getPatch().get(0).getNext().getElements());
         Assert.assertEquals(0, result.getPatch().get(0).getNext().getIndex());
         Assert.assertEquals(1, result.getUnifiedDiff().size());
@@ -83,7 +83,7 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
         result = this.diffManager.diff(Arrays.asList("previous"), Collections.<String> emptyList(), null);
 
         Assert.assertEquals(1, result.getPatch().size());
-        Assert.assertEquals(TYPE.DELETE, result.getPatch().get(0).getType());
+        Assert.assertEquals(Type.DELETE, result.getPatch().get(0).getType());
         Assert.assertEquals(Arrays.asList("previous"), result.getPatch().get(0).getPrevious().getElements());
         Assert.assertEquals(0, result.getPatch().get(0).getPrevious().getIndex());
         Assert.assertEquals(1, result.getUnifiedDiff().size());
@@ -103,7 +103,7 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
         result = this.diffManager.diff(Arrays.asList('a'), Arrays.asList('b'), null);
 
         Assert.assertEquals(1, result.getPatch().size());
-        Assert.assertEquals(TYPE.CHANGE, result.getPatch().get(0).getType());
+        Assert.assertEquals(Type.CHANGE, result.getPatch().get(0).getType());
     }
 
     @Test

@@ -38,7 +38,7 @@ public class DeleteDelta<E> extends AbstractDelta<E>
      */
     public DeleteDelta(Chunk<E> previous, Chunk<E> next)
     {
-        super(previous, next, TYPE.DELETE);
+        super(previous, next, Type.DELETE);
     }
 
     /**
@@ -47,7 +47,7 @@ public class DeleteDelta<E> extends AbstractDelta<E>
      */
     public DeleteDelta(difflib.Chunk original, difflib.Chunk revised)
     {
-        super(original, revised, TYPE.DELETE);
+        super(original, revised, Type.DELETE);
     }
 
     @Override

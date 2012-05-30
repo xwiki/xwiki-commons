@@ -31,7 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.diff.Delta;
-import org.xwiki.diff.Delta.TYPE;
+import org.xwiki.diff.Delta.Type;
 import org.xwiki.diff.DiffConfiguration;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
@@ -185,14 +185,14 @@ public class DefaultDiffManager implements DiffManager
         Delta<E> deltaCurrent = nextElement(patchCurrent);
 
         // Before common ancestor
-        if (deltaCurrent.getType() == TYPE.INSERT && deltaCurrent.getPrevious().getIndex() == 0) {
+        if (deltaCurrent.getType() == Type.INSERT && deltaCurrent.getPrevious().getIndex() == 0) {
             merged.addAll(deltaCurrent.getNext().getElements());
             deltaCurrent = nextElement(patchCurrent);
-            if (deltaNext.getType() == TYPE.INSERT && deltaNext.getPrevious().getIndex() == 0) {
+            if (deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
                 logConflict(mergeResult, deltaCurrent, deltaNext);
                 deltaNext = nextElement(patchNext);
             }
-        } else if (deltaNext.getType() == TYPE.INSERT && deltaNext.getPrevious().getIndex() == 0) {
+        } else if (deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
             merged.addAll(deltaNext.getNext().getElements());
             deltaNext = nextElement(patchNext);
         }
