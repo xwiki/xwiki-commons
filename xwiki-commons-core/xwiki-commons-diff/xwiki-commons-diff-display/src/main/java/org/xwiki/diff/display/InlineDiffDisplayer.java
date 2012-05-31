@@ -24,10 +24,31 @@ import java.util.List;
 
 import org.xwiki.diff.Delta;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.diff.display.InlineDiffWord.WordType;
+import org.xwiki.diff.display.InlineDiffChunk.Type;
 
 /**
- * Displays a {@link DiffResult} as an in-line diff.
+ * Displays a {@link DiffResult} as an in-line diff. An in-line diff is made of a list of chunks, each marked as added,
+ * removed or unmodified. For instance, if changes are computed at word level then you could have this in-line diff:
+ * 
+ * <pre>
+ * {@code the <del>quick</del><ins>sick</ins> brown fox}
+ * </pre>
+ * 
+ * At character level the diff looks a bit different:
+ * 
+ * <pre>
+ * {@code the <del>qu</del><ins>s</ins>ick brown fox}
+ * </pre>
+ * 
+ * In this case the first chunk is "the ", an unmodified chunk, made of 4 characters and the second chunk is "qu", a
+ * removed chunk, made of 2 characters. An in-line diff can be displayed either as you've seen above, mixing added and
+ * removed chunks in one line, or it can be displayed on two lines, one showing the removed chunks and the other the
+ * added chunks:
+ * 
+ * <pre>
+ * {@code the <del>quick</del> brown fox
+ * the <ins>sick</ins> brown fox}
+ * </pre>
  * 
  * @version $Id$
  * @since 4.1RC1
@@ -37,49 +58,50 @@ public class InlineDiffDisplayer
     /**
      * Displays the given diff result as an in-line diff.
      * 
-     * @param <E> the character type
+     * @param <E> the type of elements that are add/remove/modified in the given diff result (specifies the granularity
+     *            level of changes)
      * @param diffResult the diff result to be displayed
-     * @return the in-line diff
+     * @return the list of chunks that form the in-line diff
      */
-    public <E> List<InlineDiffWord<E>> display(DiffResult<E> diffResult)
+    public <E> List<InlineDiffChunk<E>> display(DiffResult<E> diffResult)
     {
-        List<E> original = diffResult.getPrevious();
-        List<InlineDiffWord<E>> words = new ArrayList<InlineDiffWord<E>>();
+        List<E> previous = diffResult.getPrevious();
+        List<InlineDiffChunk<E>> chunks = new ArrayList<InlineDiffChunk<E>>();
 
-        Delta<E> previousDelta = null;
+        Delta<E> lastDelta = null;
         for (Delta<E> delta : diffResult.getPatch()) {
-            // Add context word between deltas.
-            int contextStart = previousDelta == null ? 0 : previousDelta.getPrevious().getLastIndex() + 1;
+            // Add a chunk with the unmodified elements between the last delta and the current one.
+            int contextStart = lastDelta == null ? 0 : lastDelta.getPrevious().getLastIndex() + 1;
             int contextEnd = delta.getPrevious().getIndex();
             if (contextStart < contextEnd) {
-                words.add(new InlineDiffWord<E>(WordType.CONTEXT, original.subList(contextStart, contextEnd)));
+                chunks.add(new InlineDiffChunk<E>(Type.CONTEXT, previous.subList(contextStart, contextEnd)));
             }
 
-            // Add changed words.
+            // Add changed chunks.
             switch (delta.getType()) {
                 case CHANGE:
-                    words.add(new InlineDiffWord<E>(WordType.DELETED, delta.getPrevious().getElements()));
-                    words.add(new InlineDiffWord<E>(WordType.ADDED, delta.getNext().getElements()));
+                    chunks.add(new InlineDiffChunk<E>(Type.DELETED, delta.getPrevious().getElements()));
+                    chunks.add(new InlineDiffChunk<E>(Type.ADDED, delta.getNext().getElements()));
                     break;
                 case DELETE:
-                    words.add(new InlineDiffWord<E>(WordType.DELETED, delta.getPrevious().getElements()));
+                    chunks.add(new InlineDiffChunk<E>(Type.DELETED, delta.getPrevious().getElements()));
                     break;
                 case INSERT:
-                    words.add(new InlineDiffWord<E>(WordType.ADDED, delta.getNext().getElements()));
+                    chunks.add(new InlineDiffChunk<E>(Type.ADDED, delta.getNext().getElements()));
                     break;
                 default:
                     break;
             }
 
-            previousDelta = delta;
+            lastDelta = delta;
         }
 
-        // Add the final context word.
-        int contextStart = previousDelta == null ? 0 : previousDelta.getPrevious().getLastIndex() + 1;
-        if (contextStart < original.size()) {
-            words.add(new InlineDiffWord<E>(WordType.CONTEXT, original.subList(contextStart, original.size())));
+        // Add the final chunk with the unmodified elements after the last delta.
+        int contextStart = lastDelta == null ? 0 : lastDelta.getPrevious().getLastIndex() + 1;
+        if (contextStart < previous.size()) {
+            chunks.add(new InlineDiffChunk<E>(Type.CONTEXT, previous.subList(contextStart, previous.size())));
         }
 
-        return words;
+        return chunks;
     }
 }

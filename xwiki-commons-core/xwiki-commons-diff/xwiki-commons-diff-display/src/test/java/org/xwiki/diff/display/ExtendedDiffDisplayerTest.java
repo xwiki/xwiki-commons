@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.diff.display.InlineDiffWord.WordType;
+import org.xwiki.diff.display.InlineDiffChunk.Type;
 import org.xwiki.test.AbstractComponentTestCase;
 
 /**
@@ -68,44 +68,44 @@ public class ExtendedDiffDisplayerTest extends AbstractComponentTestCase
     /**
      * Generates the extended diff between the given versions and asserts if it meets the expectation.
      * 
-     * @param original the original version
-     * @param revised the revised version
+     * @param previous the previous version
+     * @param next the next version
      * @param expected the expected extended diff
      * @throws Exception if creating the diff fails
      */
     @SuppressWarnings("unchecked")
-    private void execute(String original, String revised, String expected) throws Exception
+    private void execute(String previous, String next, String expected) throws Exception
     {
         ParameterizedType lineSplitterType =
             new DefaultParameterizedType(null, Splitter.class, String.class, String.class);
         Splitter<String, String> lineSplitter = getComponentManager().getInstance(lineSplitterType, "line");
-        List<String> originalLines = lineSplitter.split(original);
-        List<String> revisedLines = lineSplitter.split(revised);
+        List<String> previousLines = lineSplitter.split(previous);
+        List<String> nextLines = lineSplitter.split(next);
 
-        Map<WordType, String> separators = new HashMap<WordType, String>();
-        separators.put(WordType.ADDED, "+");
-        separators.put(WordType.DELETED, "-");
-        separators.put(WordType.CONTEXT, "");
+        Map<Type, String> separators = new HashMap<Type, String>();
+        separators.put(Type.ADDED, "+");
+        separators.put(Type.DELETED, "-");
+        separators.put(Type.CONTEXT, "");
 
         ParameterizedType charSplitterType =
             new DefaultParameterizedType(null, Splitter.class, String.class, Character.class);
         Splitter<String, Character> charSplitter = getComponentManager().getInstance(charSplitterType, "char");
 
         DiffManager diffManager = getComponentManager().getInstance(DiffManager.class);
-        DiffResult<String> diffResult = diffManager.diff(originalLines, revisedLines, null);
+        DiffResult<String> diffResult = diffManager.diff(previousLines, nextLines, null);
         ExtendedDiffDisplayer<String, Character> builder =
             new ExtendedDiffDisplayer<String, Character>(diffManager, charSplitter);
 
         StringBuilder actual = new StringBuilder();
         for (UnifiedDiffBlock<String> block : builder.display(diffResult)) {
-            actual.append(String.format("@@ -%s,%s +%s,%s @@\n", block.getOriginalStart() + 1, block.getOriginalSize(),
-                block.getRevisedStart() + 1, block.getRevisedSize()));
-            for (UnifiedDiffLine<String> line : block) {
-                if (line instanceof ExtendedDiffLine) {
+            actual.append(String.format("@@ -%s,%s +%s,%s @@\n", block.getPreviousStart() + 1, block.getPreviousSize(),
+                block.getNextStart() + 1, block.getNextSize()));
+            for (UnifiedDiffElement<String> line : block) {
+                if (line instanceof ExtendedDiffElement) {
                     actual.append(line.getType().getSymbol());
-                    for (InlineDiffWord<Character> word : ((ExtendedDiffLine<String, Character>) line).getWords()) {
-                        String separator = separators.get(word.getType());
-                        actual.append(separator).append(word).append(separator);
+                    for (InlineDiffChunk<Character> chunk : ((ExtendedDiffElement<String, Character>) line).getChunks()) {
+                        String separator = separators.get(chunk.getType());
+                        actual.append(separator).append(chunk).append(separator);
                     }
                     actual.append('\n');
                 } else {

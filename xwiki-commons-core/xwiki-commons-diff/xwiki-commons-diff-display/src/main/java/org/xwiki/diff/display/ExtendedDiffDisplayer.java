@@ -26,33 +26,33 @@ import org.xwiki.diff.Delta;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.diff.display.InlineDiffWord.WordType;
 
 /**
- * Extends the {@link UnifiedDiffDisplayer} with the ability to provide character-level changes when a line is modified.
+ * Extends the {@link UnifiedDiffDisplayer} with the ability to provide changes for sub-elements when an element is
+ * modified. This allows us to display changes at two levels of granularity (elements and their sub-elements).
  * 
- * @param <E> the type of line content
- * @param <F> the type of characters within a line
+ * @param <E> the type of elements that are compared to produce the first level of diff
+ * @param <F> the type of sub-elements that are compared to produce the second level of diff
  * @version $Id$
  * @since 4.1RC1
  */
 public class ExtendedDiffDisplayer<E, F> extends UnifiedDiffDisplayer<E>
 {
     /**
-     * The component used to determine character-level changes inside a modified line.
+     * The component used to determine the second level of changes, inside a modified element.
      */
     private final DiffManager diffManager;
 
     /**
-     * The component used to split lines into characters.
+     * The component used to split elements into sub-elements.
      */
     private final Splitter<E, F> splitter;
 
     /**
      * Creates a new instance.
      * 
-     * @param diffManager the component used to determine character-level changes inside a modified line
-     * @param splitter the component used to split lines into characters
+     * @param diffManager the component used to determine the second level of changes, inside a modified element
+     * @param splitter the component used to split elements into sub-elements
      */
     public ExtendedDiffDisplayer(DiffManager diffManager, Splitter<E, F> splitter)
     {
@@ -65,49 +65,50 @@ public class ExtendedDiffDisplayer<E, F> extends UnifiedDiffDisplayer<E>
     {
         super.onChange(delta);
 
-        // A line is modified when it is replaced by a single line.
+        // An element is modified when it is replaced by a single element.
         if (delta.getPrevious().size() == 1 && delta.getNext().size() == 1) {
             UnifiedDiffBlock<E> lastBlock = blocks.peek();
-            UnifiedDiffLine<E> original = lastBlock.get(lastBlock.size() - 2);
-            UnifiedDiffLine<E> revised = lastBlock.get(lastBlock.size() - 1);
-            List<UnifiedDiffLine<E>> extendedLines = displayInlineDiff(original, revised);
-            lastBlock.set(lastBlock.size() - 2, extendedLines.get(0));
-            lastBlock.set(lastBlock.size() - 1, extendedLines.get(1));
+            UnifiedDiffElement<E> previous = lastBlock.get(lastBlock.size() - 2);
+            UnifiedDiffElement<E> next = lastBlock.get(lastBlock.size() - 1);
+            List<UnifiedDiffElement<E>> extendedElements = displayInlineDiff(previous, next);
+            lastBlock.set(lastBlock.size() - 2, extendedElements.get(0));
+            lastBlock.set(lastBlock.size() - 1, extendedElements.get(1));
         }
     }
 
     /**
-     * Displays the in-line diff between two versions of a line.
+     * Computes the changes between two versions of an element by splitting the element into sub-elements and displays
+     * the result using the in-line format.
      * 
-     * @param original the original version
-     * @param revised the revised version
-     * @return the given lines extended with information about character-level changes
+     * @param previous the previous version
+     * @param next the next version version
+     * @return the passed elements extended with information about sub-element changes
      */
-    private List<UnifiedDiffLine<E>> displayInlineDiff(UnifiedDiffLine<E> original, UnifiedDiffLine<E> revised)
+    private List<UnifiedDiffElement<E>> displayInlineDiff(UnifiedDiffElement<E> previous, UnifiedDiffElement<E> next)
     {
-        List<UnifiedDiffLine<E>> result = new ArrayList<UnifiedDiffLine<E>>();
+        List<UnifiedDiffElement<E>> result = new ArrayList<UnifiedDiffElement<E>>();
         try {
-            List<F> originalChars = splitter.split(original.getContent());
-            List<F> revisedChars = splitter.split(revised.getContent());
-            DiffResult<F> diffResult = diffManager.diff(originalChars, revisedChars, null);
+            List<F> previousSubElements = splitter.split(previous.getValue());
+            List<F> nextSubElements = splitter.split(next.getValue());
+            DiffResult<F> diffResult = diffManager.diff(previousSubElements, nextSubElements, null);
 
-            List<InlineDiffWord<F>> words = new InlineDiffDisplayer().display(diffResult);
-            List<InlineDiffWord<F>> originalWords = new ArrayList<InlineDiffWord<F>>();
-            List<InlineDiffWord<F>> revisedWords = new ArrayList<InlineDiffWord<F>>();
-            for (InlineDiffWord<F> word : words) {
-                if (word.getType() != WordType.ADDED) {
-                    originalWords.add(word);
+            List<InlineDiffChunk<F>> chunks = new InlineDiffDisplayer().display(diffResult);
+            List<InlineDiffChunk<F>> previousChunks = new ArrayList<InlineDiffChunk<F>>();
+            List<InlineDiffChunk<F>> nextChunks = new ArrayList<InlineDiffChunk<F>>();
+            for (InlineDiffChunk<F> chunk : chunks) {
+                if (!chunk.isAdded()) {
+                    previousChunks.add(chunk);
                 }
-                if (word.getType() != WordType.DELETED) {
-                    revisedWords.add(word);
+                if (!chunk.isDeleted()) {
+                    nextChunks.add(chunk);
                 }
             }
 
-            result.add(new ExtendedDiffLine<E, F>(original, originalWords));
-            result.add(new ExtendedDiffLine<E, F>(revised, revisedWords));
+            result.add(new ExtendedDiffElement<E, F>(previous, previousChunks));
+            result.add(new ExtendedDiffElement<E, F>(next, nextChunks));
         } catch (DiffException e) {
-            result.add(original);
-            result.add(revised);
+            result.add(previous);
+            result.add(next);
         }
         return result;
     }
