@@ -26,6 +26,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
 import org.xwiki.diff.DiffConfiguration;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
@@ -33,6 +34,12 @@ import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
+import org.xwiki.diff.display.ExtendedDiffDisplayer;
+import org.xwiki.diff.display.InlineDiffDisplayer;
+import org.xwiki.diff.display.InlineDiffWord;
+import org.xwiki.diff.display.Splitter;
+import org.xwiki.diff.display.UnifiedDiffBlock;
+import org.xwiki.diff.display.UnifiedDiffDisplayer;
 import org.xwiki.diff.internal.DefaultDiffResult;
 import org.xwiki.diff.internal.DefaultMergeResult;
 import org.xwiki.logging.LogLevel;
@@ -45,10 +52,35 @@ import org.xwiki.script.service.ScriptService;
  * @version $Id$
  */
 @Component
-@Singleton
 @Named("diff")
+@Singleton
 public class DiffScriptService implements ScriptService
 {
+    /**
+     * The key under which the last encountered error is stored in the current execution context.
+     */
+    private static final String DIFF_ERROR_KEY = "scriptservice.diff.error";
+
+    /**
+     * The component used to access the execution context.
+     */
+    @Inject
+    private Execution execution;
+
+    /**
+     * The component used to split a text into lines.
+     */
+    @Inject
+    @Named("line")
+    private Splitter<String, String> lineSplitter;
+
+    /**
+     * The component used to split a text into its characters.
+     */
+    @Inject
+    @Named("char")
+    private Splitter<String, Character> charSplitter;
+
     /**
      * The component used to create the diff.
      */
@@ -99,5 +131,89 @@ public class DiffScriptService implements ScriptService
         }
 
         return result;
+    }
+
+    /**
+     * Builds a unified diff between two versions of a text.
+     * 
+     * @param original the original version
+     * @param revised the revised version
+     * @return the list of unified diff blocks
+     */
+    public List<UnifiedDiffBlock<String>> unified(String original, String revised)
+    {
+        setError(null);
+
+        try {
+            return new UnifiedDiffDisplayer<String>().display(diffManager.diff(lineSplitter.split(original),
+                lineSplitter.split(revised), null));
+        } catch (Exception e) {
+            setError(e);
+            return null;
+        }
+    }
+
+    /**
+     * Builds an in-line diff between two versions of a text.
+     * 
+     * @param original the original version
+     * @param revised the revised version
+     * @return the list of in-line diff words
+     */
+    public List<InlineDiffWord<Character>> inline(String original, String revised)
+    {
+        setError(null);
+
+        try {
+            return new InlineDiffDisplayer().display(diffManager.diff(charSplitter.split(original),
+                charSplitter.split(revised), null));
+        } catch (DiffException e) {
+            setError(e);
+            return null;
+        }
+    }
+
+    /**
+     * Builds an extended diff between two versions of a text. The extended diff is a mix between a unified diff and an
+     * in-line diff: it provides information about both line-level and character-level changes (the later only when a
+     * line is modified).
+     * 
+     * @param original the original version
+     * @param revised the revised version
+     * @return the list of extended diff blocks
+     */
+    public List<UnifiedDiffBlock<String>> extended(String original, String revised)
+    {
+        setError(null);
+
+        try {
+            DiffResult<String> diffResult =
+                diffManager.diff(lineSplitter.split(original), lineSplitter.split(revised), null);
+            return new ExtendedDiffDisplayer<String, Character>(diffManager, charSplitter).display(diffResult);
+        } catch (DiffException e) {
+            setError(e);
+            return null;
+        }
+    }
+
+    /**
+     * Get the error generated while performing the previously called action.
+     * 
+     * @return an eventual exception or {@code null} if no exception was thrown
+     */
+    public Exception getLastError()
+    {
+        return (Exception) this.execution.getContext().getProperty(DIFF_ERROR_KEY);
+    }
+
+    /**
+     * Store a caught exception in the context, so that it can be later retrieved using {@link #getLastError()}.
+     * 
+     * @param e the exception to store, can be {@code null} to clear the previously stored exception
+     * @see #getLastError()
+     */
+    private void setError(Exception e)
+    {
+        this.execution.getContext().setProperty(DIFF_ERROR_KEY, e);
     }
 }
