@@ -29,28 +29,36 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 
 /**
- * Provide an empty Configuration Source if a default one cannot be looked-up.
+ * Common code for Configuration Source Provider implementations.
  * 
  * @version $Id$
- * @since 4.0M1
+ * @since 4.1M2
  */
 @Component
 @Singleton
-public class ConfigurationSourceProvider implements Provider<ConfigurationSource>
+public abstract class AbstractConfigurationSourceProvider implements Provider<ConfigurationSource>
 {
     /**
-     * Used to lookup existing {@link ConfigurationSource} components.
+     * Used to lookup existing {@link org.xwiki.configuration.ConfigurationSource} components.
      */
     @Inject
     private ComponentManager componentManager;
 
-    @Override
-    public ConfigurationSource get()
+    /**
+     * @param hint the hint of the Configuration Source to lookup
+     * @return the Configuration Source implementation with the passed hint or if not found a Memory Configuration
+     *         Source and if not found a Void Configuration Source
+     */
+    protected ConfigurationSource get(String hint)
     {
         ConfigurationSource configurationSource;
 
         try {
-            configurationSource = this.componentManager.getInstance(ConfigurationSource.class);
+            if (hint == null) {
+                configurationSource = this.componentManager.getInstance(ConfigurationSource.class);
+            } else {
+                configurationSource = this.componentManager.getInstance(ConfigurationSource.class, hint);
+            }
         } catch (ComponentLookupException e) {
             try {
                 configurationSource = this.componentManager.getInstance(ConfigurationSource.class, "memory");

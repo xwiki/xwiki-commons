@@ -137,7 +137,7 @@ public class ServletEnvironmentTest
         // Also verify that we log a warning!
         final Logger logger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{
-            oneOf(logger).warn("No permanent directory configured. Using a temporary directory [{}]", servletTmpDir);
+            oneOf(logger).warn("No permanent directory configured. Using a temporary directory.");
         }});
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 
@@ -157,7 +157,7 @@ public class ServletEnvironmentTest
     {
         final ServletContext servletContext = getMockery().mock(ServletContext.class);
         getMockery().checking(new Expectations() {{
-            oneOf(servletContext).getAttribute("javax.servlet.context.tempdir");
+            atLeast(1).of(servletContext).getAttribute("javax.servlet.context.tempdir");
             will(returnValue(servletTmpDir));
         }});
 

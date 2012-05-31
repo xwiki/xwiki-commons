@@ -20,6 +20,7 @@
 package org.xwiki.environment.internal;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -52,10 +53,11 @@ public class DefaultEnvironmentConfiguration implements EnvironmentConfiguration
      * @see #getConfigurationSource()
      *
      * Note that we use a Provider instead of directly injecting a ConfigurationSource so that we always get a valid
-     * Configuration Source even if no "default" Configuration Source implementation is provided (in this case it'll
-     * default to using a Memory Configuration Source).
+     * Configuration Source even if no "restricted" Configuration Source implementation is provided (in this case it'll
+     * default to using a Memory Configuration Source or a Void Configuration Source if no Memory one is found).
      */
     @Inject
+    @Named("restricted")
     private Provider<ConfigurationSource> configurationSourceProvider;
 
     /**

@@ -120,14 +120,52 @@ public class StandardEnvironmentTest
         Assert.assertEquals(permanentDirectory, this.environment.getPermanentDirectory());
     }
 
+    private void setPersistentDir(final String dirPath)
+    {
+        final Provider<EnvironmentConfiguration> configurationProvider =
+            (Provider<EnvironmentConfiguration>) getMockery().mock(Provider.class);
+        final EnvironmentConfiguration config = getMockery().mock(EnvironmentConfiguration.class);
+        getMockery().checking(new Expectations() {{
+            allowing(configurationProvider).get();
+                will(returnValue(config));
+            allowing(config).getPermanentDirectoryPath();
+                will(returnValue(dirPath));
+        }});
+        ReflectionUtils.setFieldValue(this.environment,
+                                      "configurationProvider",
+                                      configurationProvider);
+    }
+
+    @Test
+    public void testGetConfiguredPermanentDirectory()
+    {
+        final File persistentDir =
+            new File(System.getProperty("java.io.tmpdir"), "xwiki-test-persistentDir");
+        this.setPersistentDir(persistentDir.getAbsolutePath());
+        Assert.assertEquals(persistentDir, this.environment.getPermanentDirectory());
+    }
+
+    /**
+     * Check the possibility of a "silly configuration" where the persistent dir
+     * is set to be inside of the ephimeral (delete-on-start) dir.
+     */
+    @Test(expected=RuntimeException.class)
+    public void testGetConfiguredPermanentDirectoryIfInsideOfTempDir()
+    {
+        final File persistentDir = new File(TMPDIR, "xwiki-test-sillyPersistentDir");
+        this.setPersistentDir(persistentDir.getAbsolutePath());
+
+        // This throws an exception because of our configuration.
+        this.environment.getTemporaryDirectory();
+    }
+
     @Test
     public void testGetPermanentDirectoryWhenNotSet()
     {
         // Also verify that we log a warning!
         final Logger logger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{
-            oneOf(logger).warn("No permanent directory configured. Using a temporary directory [{}]",
-                               System.getProperty("java.io.tmpdir"));
+            oneOf(logger).warn("No permanent directory configured. Using a temporary directory.");
         }});
 
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);

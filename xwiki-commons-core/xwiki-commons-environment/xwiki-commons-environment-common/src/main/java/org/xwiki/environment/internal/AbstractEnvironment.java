@@ -90,18 +90,18 @@ public abstract class AbstractEnvironment implements Environment
     public File getPermanentDirectory()
     {
         if (this.permanentDirectory == null) {
-            final String classSpecified = this.getTemporaryDirectoryName();
+            final String classSpecified = this.getPermanentDirectoryName();
             final String configured = this.configurationProvider.get().getPermanentDirectoryPath();
             if (classSpecified == null && configured == null) {
                 // There's no defined permanent directory,
                 // fall back to the temporary directory but issue a warning
                 this.logger.warn("No permanent directory configured. "
-                                 + "Using a temporary directory [{}]",
-                                 DEFAULT_TMP_DIRECTORY);
+                                 + "Using a temporary directory.");
             }
             final String[] locations = new String[] {
                 classSpecified,
                 configured,
+                this.getTemporaryDirectoryName(),
                 DEFAULT_TMP_DIRECTORY
             };
             this.permanentDirectory = this.initializeDirectory(locations, false);
@@ -148,7 +148,7 @@ public abstract class AbstractEnvironment implements Environment
      */
     private File initializeDirectory(final String[] locations, final boolean isTemp)
     {
-        final String tempOrPerminent = (isTemp) ? "temporary" : "permanent";
+        final String tempOrPermanent = (isTemp) ? "temporary" : "permanent";
         boolean first = true;
         for (final String location : locations) {
             if (location == null) {
@@ -156,59 +156,70 @@ public abstract class AbstractEnvironment implements Environment
             }
             if (!first) {
                 this.logger.warn("Falling back on [{}] for {} directory.",
-                                  location, tempOrPerminent);
+                                  location, tempOrPermanent);
             }
             first = false;
-            final File dir = this.initializeDirectory(location, isTemp, tempOrPerminent);
+            final File dir = this.initializeDirectory(location, isTemp, tempOrPermanent);
             if (dir != null) {
                 return dir;
             }
         }
 
-        throw new RuntimeException("Could not find a writable "
-                                   + tempOrPerminent + " directory. "
-                                   + "Check the server log for more information.");
+        throw new RuntimeException(
+            String.format("Could not find a writable [%s] directory. "
+                          + "Check the server log for more information.", tempOrPermanent));
     }
 
     /**
      * @param directoryName the name of the directory to initialize (ensure it exists, create the
      *                      directory)
      * @param isTemp true if we are initializing a temporary directory.
-     * @param tempOrPerminent a string describing the type of directory,
+     * @param tempOrPermanent a string describing the type of directory,
      *                        namely "temporary" or "permanent", to aid logging.
      * @return the initialized directory as a {@link File} or null if the directory doesn't exist
      *         and cannot be created or if the process doesn't have permission to write to it.
      */
     private File initializeDirectory(final String directoryName,
                                      final boolean isTemp,
-                                     final String tempOrPerminent)
+                                     final String tempOrPermanent)
     {
         final File dir = (isTemp) ? new File(directoryName, TEMP_NAME) : new File(directoryName);
 
         if (dir.exists()) {
             if (dir.isDirectory() && dir.canWrite()) {
-                try {
-                    if (isTemp) {
-                        this.initTempDir(dir);
-                    }
-                    return dir;
-                } catch (IOException e) {
-                    // Will be logged below.
-                }
+                return this.initDir(dir, isTemp);
             }
+
+            // Not a directory or can't write to it, lets log an error here.
             final String[] params = new String[] {
-                tempOrPerminent,
+                tempOrPermanent,
                 dir.getAbsolutePath(),
                 (dir.isDirectory()) ? "not writable" : "not a directory"
             };
             this.logger.error("Configured {} directory [{}] is {}.", params);
             return null;
+
         } else if (dir.mkdirs()) {
-            return dir;
+            return this.initDir(dir, isTemp);
         }
         this.logger.error("Configured {} directory [{}] could not be created, check permissions.",
-                          tempOrPerminent, dir.getAbsolutePath());
+                          tempOrPermanent, dir.getAbsolutePath());
         return null;
+    }
+
+    /**
+     * Initialize temporary or permanent directory for use.
+     *
+     * @param directory the directory to initialize.
+     * @param isTemp true if it is a temporary directory.
+     * @return the newly initialized directory.
+     */
+    private File initDir(final File directory, final boolean isTemp)
+    {
+        if (isTemp) {
+            this.initTempDir(directory);
+        }
+        return directory;
     }
 
     /**
@@ -216,23 +227,33 @@ public abstract class AbstractEnvironment implements Environment
      * This function clears the directory out.
      *
      * @param tempDir the xwiki-temp subdirectory which is internal/deleted per load.
-     * @throws IOException if something goes wrong trying to clear the directory.
-     * @throws RuntimeException if the configuration is "silly" and puts the persistent dir
-     *                          inside of the delete-on-start directory.
      */
-    private void initTempDir(final File tempDir) throws IOException
+    private void initTempDir(final File tempDir)
     {
         // We can't prevent all bad configurations eg: persistent dir == /dev/null
         // But setting the persistent dir to the xwiki-temp subdir is easy enough to catch.
         final File permDir = this.getPermanentDirectory();
-        if (tempDir.equals(permDir) || FileUtils.directoryContains(tempDir, permDir)) {
-            throw new RuntimeException(
-                "The configured persistent store directory falls within the "
-                + TEMP_NAME + " sub-directory of the temporary directory, this "
-                + "sub-directory is reserved (deleted on start-up) and must never "
-                + "be used. Please review your configuration.");
+        try {
+            if (tempDir.equals(permDir) || FileUtils.directoryContains(tempDir, permDir)) {
+                throw new RuntimeException(
+                    "The configured persistent store directory falls within the "
+                    + TEMP_NAME + " sub-directory of the temporary directory, this "
+                    + "sub-directory is reserved (deleted on start-up) and must never "
+                    + "be used. Please review your configuration.");
+            }
+        } catch (IOException e) {
+            // Shouldn't happen since these directories were already verified to be writable.
+            throw new RuntimeException("Failure when checking if configured permanent store "
+                                       + "directory is subdirectory of temporary directory.");
         }
 
-        FileUtils.cleanDirectory(tempDir);
+        try {
+            FileUtils.cleanDirectory(tempDir);
+        } catch (IOException e) {
+            throw new RuntimeException(
+                String.format("Failed to empty the temporary directory [%s], are their files "
+                              + "inside of it which xwiki does not have permission to delete?",
+                              tempDir.getAbsolutePath()));
+        }
     }
 }
