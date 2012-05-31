@@ -1,0 +1,2 @@
+org.xwiki.diff.display.internal.LineSplitter
+org.xwiki.diff.display.internal.CharSplitter

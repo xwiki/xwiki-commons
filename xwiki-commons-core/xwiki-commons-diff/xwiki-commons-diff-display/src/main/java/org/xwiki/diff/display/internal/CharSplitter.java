@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,23 +16,33 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package org.xwiki.diff.display.internal;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
-    <version>4.1-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-diff</artifactId>
-  <name>XWiki Commons - Diff</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Diff</description>
-  <modules>
-    <module>xwiki-commons-diff-api</module>
-    <module>xwiki-commons-diff-display</module>
-    <module>xwiki-commons-diff-script</module>
-  </modules>
-</project>
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.diff.display.Splitter;
+
+/**
+ * Splits a string into its characters.
+ * 
+ * @version $Id$
+ * @since 4.1RC1
+ */
+@Component
+@Named("char")
+@Singleton
+public class CharSplitter implements Splitter<String, Character>
+{
+    @Override
+    public List<Character> split(String composite)
+    {
+        return Arrays.asList(ArrayUtils.toObject(composite.toCharArray()));
+    }
+}
