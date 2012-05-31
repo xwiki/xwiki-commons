@@ -30,7 +30,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.diff.display.InlineDiffWord.WordType;
+import org.xwiki.diff.display.InlineDiffChunk.Type;
 import org.xwiki.test.AbstractComponentTestCase;
 
 /**
@@ -116,28 +116,28 @@ public class InlineDiffDisplayerTest extends AbstractComponentTestCase
     /**
      * Builds the in-line diff between the given versions and asserts if the result meets the expectation.
      * 
-     * @param original the original version
-     * @param revised the revised version
+     * @param previous the previous version
+     * @param next the next version
      * @param expected the expected in-line diff
      * @throws Exception if creating the diff fails
      */
-    private void execute(String original, String revised, String expected) throws Exception
+    private void execute(String previous, String next, String expected) throws Exception
     {
-        List<Character> originalChars = Arrays.asList(ArrayUtils.toObject(original.toCharArray()));
-        List<Character> revisedChars = Arrays.asList(ArrayUtils.toObject(revised.toCharArray()));
+        List<Character> previousChars = Arrays.asList(ArrayUtils.toObject(previous.toCharArray()));
+        List<Character> nextChars = Arrays.asList(ArrayUtils.toObject(next.toCharArray()));
 
         DiffManager diffManager = getComponentManager().getInstance(DiffManager.class);
-        DiffResult<Character> diffResult = diffManager.diff(originalChars, revisedChars, null);
+        DiffResult<Character> diffResult = diffManager.diff(previousChars, nextChars, null);
 
-        Map<WordType, String> separators = new HashMap<WordType, String>();
-        separators.put(WordType.ADDED, "+");
-        separators.put(WordType.DELETED, "-");
-        separators.put(WordType.CONTEXT, "");
+        Map<Type, String> separators = new HashMap<Type, String>();
+        separators.put(Type.ADDED, "+");
+        separators.put(Type.DELETED, "-");
+        separators.put(Type.CONTEXT, "");
 
         StringBuilder actual = new StringBuilder();
-        for (InlineDiffWord<Character> word : new InlineDiffDisplayer().display(diffResult)) {
-            String separator = separators.get(word.getType());
-            actual.append(separator).append(word).append(separator);
+        for (InlineDiffChunk<Character> chunk : new InlineDiffDisplayer().display(diffResult)) {
+            String separator = separators.get(chunk.getType());
+            actual.append(separator).append(chunk).append(separator);
         }
 
         Assert.assertEquals(expected, actual.toString());

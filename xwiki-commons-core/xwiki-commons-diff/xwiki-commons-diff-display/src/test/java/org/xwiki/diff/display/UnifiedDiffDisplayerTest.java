@@ -49,14 +49,14 @@ import org.xwiki.test.AbstractComponentTestCase;
 public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
 {
     /**
-     * The original version.
+     * The previous version.
      */
-    private final List<String> original;
+    private final List<String> previous;
 
     /**
-     * The revised version.
+     * The next version.
      */
-    private final List<String> revised;
+    private final List<String> next;
 
     /**
      * The expected unified diff.
@@ -66,14 +66,14 @@ public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
     /**
      * Creates a new test with the given input and the specified expected output.
      * 
-     * @param original the original version
-     * @param revised the revised version
+     * @param previous the previous version
+     * @param next the next version
      * @param expected the expected unified diff
      */
-    public UnifiedDiffDisplayerTest(List<String> original, List<String> revised, String expected)
+    public UnifiedDiffDisplayerTest(List<String> previous, List<String> next, String expected)
     {
-        this.original = original;
-        this.revised = revised;
+        this.previous = previous;
+        this.next = next;
         this.expected = expected;
     }
 
@@ -85,7 +85,7 @@ public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
     {
         DiffManager diffManager = getComponentManager().getInstance(DiffManager.class);
         List<UnifiedDiffBlock<String>> blocks =
-            new UnifiedDiffDisplayer<String>().display(diffManager.diff(original, revised, null));
+            new UnifiedDiffDisplayer<String>().display(diffManager.diff(previous, next, null));
 
         StringBuilder actual = new StringBuilder();
         for (UnifiedDiffBlock<String> block : blocks) {
@@ -106,17 +106,17 @@ public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
         // Add special tests.
         //
 
-        // Both original and revised are empty.
+        // Both previous and next are empty.
         data.add(new Object[] {Collections.<String> emptyList(), Collections.<String> emptyList(), ""});
 
-        // Original and revised are equal.
+        // Previous and next are equal.
         List<String> lines = Arrays.asList("one", "two", "three");
         data.add(new Object[] {lines, lines, ""});
 
-        // Original is empty.
+        // Previous is empty.
         data.add(new Object[] {Collections.<String> emptyList(), lines, "@@ -1,0 +1,3 @@\n+one\n+two\n+three\n"});
 
-        // Revised is empty.
+        // Next is empty.
         data.add(new Object[] {lines, Collections.<String> emptyList(), "@@ -1,3 +1,0 @@\n-one\n-two\n-three\n"});
 
         // Line removed.
@@ -135,10 +135,10 @@ public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
         // Add tests from files.
         //
 
-        List<String> original = readLines("original.txt");
+        List<String> previous = readLines("previous.txt");
         String[] testNames = new String[] {"twoContexts", "sharedContext"};
         for (String testName : testNames) {
-            data.add(new Object[] {original, readLines(testName + ".txt"), readContent(testName + ".diff")});
+            data.add(new Object[] {previous, readLines(testName + ".txt"), readContent(testName + ".diff")});
         }
 
         return data;

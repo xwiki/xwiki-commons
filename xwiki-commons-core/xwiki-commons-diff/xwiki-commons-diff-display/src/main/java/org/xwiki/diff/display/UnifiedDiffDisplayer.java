@@ -26,17 +26,19 @@ import java.util.Stack;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.Delta;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.diff.display.UnifiedDiffLine.LineType;
+import org.xwiki.diff.display.UnifiedDiffElement.Type;
 
 /**
- * Displays a {@link DiffResult} as a <a href="http://en.wikipedia.org/wiki/Diff#Unified_format">unified diff</a>.
+ * Displays a {@link DiffResult} as a <a href="http://en.wikipedia.org/wiki/Diff#Unified_format">unified diff</a>. The
+ * unified diff consists in a sequence of blocks, each having elements marked as either added or removed, padded with
+ * unmodified elements that put changes in context.
  * <p>
  * NOTE: This class was greatly inspired by the <a href="http
  * ://cvsgrab.cvs.sourceforge.net/viewvc/cvsgrab/cvsgrab/src/java/org/apache/commons/jrcs/diff/print/UnifiedPrint
  * .java">{@code UnifiedPrint}</a> class written by <a href="mailto:ludovicc@users.sourceforge.net">Ludovic Claude</a>
  * for the <a href="http://cvsgrab.sourceforge.net/">CVSGrab</a> project under the Apache Software License version 1.1.
  * 
- * @param <E> the type of content that is being compared
+ * @param <E> the type of elements that are compared to produce the diff
  * @version $Id$
  * @since 4.1RC1
  */
@@ -48,22 +50,24 @@ public class UnifiedDiffDisplayer<E>
     protected Stack<UnifiedDiffBlock<E>> blocks;
 
     /**
-     * The number of unmodified lines to display before and after a block of modified lines.
+     * The number of unmodified elements to display before and after a chunk of modified elements. This number
+     * determines how blocks are created. If the distance between two changes is less than the double of this value then
+     * those changes are put in the same block (they share the same context).
      */
     private int contextSize = 3;
 
     /**
-     * The last change processed by this builder.
+     * The last change processed by this displayer.
      */
     private Delta<E> lastDelta;
 
     /**
-     * The original version.
+     * The previous version.
      */
-    private List<E> original;
+    private List<E> previous;
 
     /**
-     * @return the number of unmodified lines to display before and after a block of modified lines
+     * @return the number of unmodified elements to display before and after a chunk of modified elements
      */
     public int getContextSize()
     {
@@ -71,7 +75,7 @@ public class UnifiedDiffDisplayer<E>
     }
 
     /**
-     * Sets the number of unmodified lines to display before and after a block of modified lines.
+     * Sets the number of unmodified elements to display before and after a chunk of modified elements.
      * 
      * @param contextSize the context size
      */
@@ -81,31 +85,32 @@ public class UnifiedDiffDisplayer<E>
     }
 
     /**
-     * Displays the give diff result as a unified diff.
+     * Displays the given diff result as an unified diff.
      * 
      * @param diffResult the diff result
-     * @return the unified diff
+     * @return the list of blocks that form the unified diff
      */
     public List<UnifiedDiffBlock<E>> display(DiffResult<E> diffResult)
     {
         lastDelta = null;
-        original = diffResult.getPrevious();
+        previous = diffResult.getPrevious();
         blocks = new Stack<UnifiedDiffBlock<E>>();
 
         for (Delta<E> delta : diffResult.getPatch()) {
-            // Add context lines before changed lines.
+            // Add unmodified elements before the current delta. Start a new block if the distance between the current
+            // delta and the last one is greater than or equal to 2 * context size.
             maybeStartBlock(delta);
 
-            // Add changed lines.
+            // Add changed elements.
             switch (delta.getType()) {
                 case CHANGE:
                     onChange(delta);
                     break;
                 case DELETE:
-                    blocks.peek().addAll(getLines(delta.getPrevious(), LineType.DELETED));
+                    blocks.peek().addAll(getElements(delta.getPrevious(), Type.DELETED));
                     break;
                 case INSERT:
-                    blocks.peek().addAll(getLines(delta.getNext(), LineType.ADDED));
+                    blocks.peek().addAll(getElements(delta.getNext(), Type.ADDED));
                     break;
                 default:
                     break;
@@ -114,14 +119,15 @@ public class UnifiedDiffDisplayer<E>
             lastDelta = delta;
         }
 
-        // Add context lines after the last changed line.
+        // Add unmodified elements after the last delta.
         maybeEndBlock();
 
         return blocks;
     }
 
     /**
-     * Starts a new {@link UnifiedDiffBlock} if the provided change is in a different context.
+     * Starts a new {@link UnifiedDiffBlock} if the provided change is in a different context. The distance between two
+     * changes inside the same block is less than 2 * context size.
      * 
      * @param delta the change
      */
@@ -135,10 +141,10 @@ public class UnifiedDiffDisplayer<E>
 
         int anchor = delta.getPrevious().getIndex();
         int border = blocks.peek().isEmpty() ? getContextSize() : getContextSize() * 2;
-        int lastChangedLineNumber = lastDelta == null ? -1 : lastDelta.getPrevious().getLastIndex();
+        int lastChangeIndex = lastDelta == null ? -1 : lastDelta.getPrevious().getLastIndex();
         for (int i = border; i > 0; i--) {
-            if (anchor - i > lastChangedLineNumber) {
-                blocks.peek().add(new UnifiedDiffLine<E>(anchor - i, LineType.CONTEXT, original.get(anchor - i)));
+            if (anchor - i > lastChangeIndex) {
+                blocks.peek().add(new UnifiedDiffElement<E>(anchor - i, Type.CONTEXT, previous.get(anchor - i)));
             }
         }
 
@@ -146,29 +152,30 @@ public class UnifiedDiffDisplayer<E>
     }
 
     /**
-     * Processed a change.
+     * Processes a change. In a unified diff the modified elements are either added or removed so we model a modified
+     * element with two elements: one removed (the previous version) and one added (the next version).
      * 
      * @param delta the change
      */
     protected void onChange(Delta<E> delta)
     {
-        blocks.peek().addAll(getLines(delta.getPrevious(), LineType.DELETED));
-        blocks.peek().addAll(getLines(delta.getNext(), LineType.ADDED));
+        blocks.peek().addAll(getElements(delta.getPrevious(), Type.DELETED));
+        blocks.peek().addAll(getElements(delta.getNext(), Type.ADDED));
     }
 
     /**
-     * @param chunk the modified lines
-     * @param lineType the modification type
-     * @return the list of corresponding unified diff lines
+     * @param chunk the modified elements (both added and deleted)
+     * @param changeType the change type
+     * @return the list of corresponding unified diff elements, matching the change type
      */
-    private List<UnifiedDiffLine<E>> getLines(Chunk<E> chunk, LineType lineType)
+    private List<UnifiedDiffElement<E>> getElements(Chunk<E> chunk, Type changeType)
     {
-        int lineNumber = chunk.getIndex();
-        List<UnifiedDiffLine<E>> lines = new ArrayList<UnifiedDiffLine<E>>();
-        for (E lineContent : chunk.getElements()) {
-            lines.add(new UnifiedDiffLine<E>(lineNumber++, lineType, lineContent));
+        int index = chunk.getIndex();
+        List<UnifiedDiffElement<E>> elements = new ArrayList<UnifiedDiffElement<E>>();
+        for (E element : chunk.getElements()) {
+            elements.add(new UnifiedDiffElement<E>(index++, changeType, element));
         }
-        return lines;
+        return elements;
     }
 
     /**
@@ -177,9 +184,9 @@ public class UnifiedDiffDisplayer<E>
     private void maybeEndBlock()
     {
         if (!blocks.isEmpty()) {
-            int lastLineNumber = lastDelta.getPrevious().getLastIndex();
-            for (int i = lastLineNumber + 1; i <= lastLineNumber + getContextSize() && i < original.size(); i++) {
-                blocks.peek().add(new UnifiedDiffLine<E>(i, LineType.CONTEXT, original.get(i)));
+            int lastIndex = lastDelta.getPrevious().getLastIndex();
+            for (int i = lastIndex + 1; i <= lastIndex + getContextSize() && i < previous.size(); i++) {
+                blocks.peek().add(new UnifiedDiffElement<E>(i, Type.CONTEXT, previous.get(i)));
             }
         }
     }

@@ -35,8 +35,8 @@ import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.display.ExtendedDiffDisplayer;
+import org.xwiki.diff.display.InlineDiffChunk;
 import org.xwiki.diff.display.InlineDiffDisplayer;
-import org.xwiki.diff.display.InlineDiffWord;
 import org.xwiki.diff.display.Splitter;
 import org.xwiki.diff.display.UnifiedDiffBlock;
 import org.xwiki.diff.display.UnifiedDiffDisplayer;
@@ -136,17 +136,17 @@ public class DiffScriptService implements ScriptService
     /**
      * Builds a unified diff between two versions of a text.
      * 
-     * @param original the original version
-     * @param revised the revised version
+     * @param previous the previous version
+     * @param next the next version version
      * @return the list of unified diff blocks
      */
-    public List<UnifiedDiffBlock<String>> unified(String original, String revised)
+    public List<UnifiedDiffBlock<String>> unified(String previous, String next)
     {
         setError(null);
 
         try {
-            return new UnifiedDiffDisplayer<String>().display(diffManager.diff(lineSplitter.split(original),
-                lineSplitter.split(revised), null));
+            return new UnifiedDiffDisplayer<String>().display(diffManager.diff(lineSplitter.split(previous),
+                lineSplitter.split(next), null));
         } catch (Exception e) {
             setError(e);
             return null;
@@ -156,17 +156,17 @@ public class DiffScriptService implements ScriptService
     /**
      * Builds an in-line diff between two versions of a text.
      * 
-     * @param original the original version
-     * @param revised the revised version
-     * @return the list of in-line diff words
+     * @param previous the previous version
+     * @param next the next version
+     * @return the list of in-line diff chunks
      */
-    public List<InlineDiffWord<Character>> inline(String original, String revised)
+    public List<InlineDiffChunk<Character>> inline(String previous, String next)
     {
         setError(null);
 
         try {
-            return new InlineDiffDisplayer().display(diffManager.diff(charSplitter.split(original),
-                charSplitter.split(revised), null));
+            return new InlineDiffDisplayer().display(diffManager.diff(charSplitter.split(previous),
+                charSplitter.split(next), null));
         } catch (DiffException e) {
             setError(e);
             return null;
@@ -178,17 +178,17 @@ public class DiffScriptService implements ScriptService
      * in-line diff: it provides information about both line-level and character-level changes (the later only when a
      * line is modified).
      * 
-     * @param original the original version
-     * @param revised the revised version
+     * @param previous the previous version
+     * @param next the next version
      * @return the list of extended diff blocks
      */
-    public List<UnifiedDiffBlock<String>> extended(String original, String revised)
+    public List<UnifiedDiffBlock<String>> extended(String previous, String next)
     {
         setError(null);
 
         try {
             DiffResult<String> diffResult =
-                diffManager.diff(lineSplitter.split(original), lineSplitter.split(revised), null);
+                diffManager.diff(lineSplitter.split(previous), lineSplitter.split(next), null);
             return new ExtendedDiffDisplayer<String, Character>(diffManager, charSplitter).display(diffResult);
         } catch (DiffException e) {
             setError(e);

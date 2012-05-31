@@ -21,17 +21,16 @@ package org.xwiki.diff.display;
 
 import java.util.ArrayList;
 
-import org.xwiki.diff.display.UnifiedDiffLine.LineType;
-
 /**
- * Represents a block of lines from a unified diff. A block includes one or more lines that have been changed (added or
- * removed) in a specific context.
+ * Represents a list of {@link UnifiedDiffElement}s that share the same context. The context is defined based on the
+ * distance between changes. Changes that are close to each other are grouped in a single block. A block can contain
+ * both added and removed elements. Blocks also contain unmodified elements that put changes in context.
  * 
- * @param <E> the type of line content
+ * @param <E> the type of elements that are compared to produce the diff
  * @version $Id$
  * @since 4.1RC1
  */
-public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffLine<E>>
+public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffElement<E>>
 {
     /**
      * Needed for serialization.
@@ -39,26 +38,28 @@ public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffLine<E>>
     private static final long serialVersionUID = 1L;
 
     /**
-     * @return the line number where this block starts in the original version
+     * @return the index where this block starts in the previous version; since blocks are most of the time not empty,
+     *         the returned value is the index of the first unmodified or removed element in this group
      */
-    public int getOriginalStart()
+    public int getPreviousStart()
     {
-        for (UnifiedDiffLine<E> line : this) {
-            if (line.getType() != LineType.ADDED) {
-                return line.getNumber();
+        for (UnifiedDiffElement<E> element : this) {
+            if (!element.isAdded()) {
+                return element.getIndex();
             }
         }
         return 0;
     }
 
     /**
-     * @return the size of this block (number of lines) in the original version
+     * @return the size of this block (number of elements) in the previous version; unmodified elements and elements
+     *         marked as removed are counted only
      */
-    public int getOriginalSize()
+    public int getPreviousSize()
     {
         int size = 0;
-        for (UnifiedDiffLine<E> line : this) {
-            if (line.getType() != LineType.ADDED) {
+        for (UnifiedDiffElement<E> element : this) {
+            if (!element.isAdded()) {
                 size++;
             }
         }
@@ -66,26 +67,28 @@ public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffLine<E>>
     }
 
     /**
-     * @return the line number where this block starts in the revised version
+     * @return the index where this block starts in the next version; since blocks are most of the time not empty, the
+     *         returned value is the index of the first unmodified or added element in this group
      */
-    public int getRevisedStart()
+    public int getNextStart()
     {
-        for (UnifiedDiffLine<E> line : this) {
-            if (line.getType() != LineType.DELETED) {
-                return line.getNumber();
+        for (UnifiedDiffElement<E> element : this) {
+            if (!element.isDeleted()) {
+                return element.getIndex();
             }
         }
         return 0;
     }
 
     /**
-     * @return the size of this block (number of lines) in the revised version
+     * @return the size of this block (number of elements) in the next version; unmodified elements and elements marked
+     *         as added are counted only
      */
-    public int getRevisedSize()
+    public int getNextSize()
     {
         int size = 0;
-        for (UnifiedDiffLine<E> line : this) {
-            if (line.getType() != LineType.DELETED) {
+        for (UnifiedDiffElement<E> element : this) {
+            if (!element.isDeleted()) {
                 size++;
             }
         }
@@ -95,13 +98,13 @@ public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffLine<E>>
     @Override
     public String toString()
     {
-        StringBuilder result = new StringBuilder();
-        // The line number starts from 0 so we add 1 for display.
-        result.append(String.format("@@ -%s,%s +%s,%s @@\n", getOriginalStart() + 1, getOriginalSize(),
-            getRevisedStart() + 1, getRevisedSize()));
-        for (UnifiedDiffLine<E> line : this) {
-            result.append(line);
+        StringBuilder stringBuilder = new StringBuilder();
+        // The element index is 0-based so we add 1 for display.
+        stringBuilder.append(String.format("@@ -%s,%s +%s,%s @@\n", getPreviousStart() + 1, getPreviousSize(),
+            getNextStart() + 1, getNextSize()));
+        for (UnifiedDiffElement<E> element : this) {
+            stringBuilder.append(element);
         }
-        return result.toString();
+        return stringBuilder.toString();
     }
 }
