@@ -50,9 +50,4 @@ public interface DiffResult<E>
      * @return the produced patch
      */
     Patch<E> getPatch();
-
-    /**
-     * @return the unified diff
-     */
-    Patch<E> getUnifiedDiff();
 }
