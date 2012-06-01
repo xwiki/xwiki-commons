@@ -20,6 +20,8 @@
 package org.xwiki.logging;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -76,6 +78,26 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
         add(logEvent);
 
         return logEvent;
+    }
+
+    /**
+     * Filter logs of a specific level.
+     * 
+     * @param level the level of the logs to return
+     * @return the filtered logs
+     * @since 4.1RC1
+     */
+    public List<LogEvent> getLogs(LogLevel level)
+    {
+        List<LogEvent> levelLogs = new LinkedList<LogEvent>();
+
+        for (LogEvent log : this) {
+            if (log.getLevel() == level) {
+                levelLogs.add(log);
+            }
+        }
+
+        return levelLogs;
     }
 
     // Logger

@@ -83,10 +83,9 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
     {
         Job installJob = this.jobManager.executeJob(jobId, request);
 
-        List<LogEvent> errors = installJob.getStatus().getLog(LogLevel.ERROR);
+        List<LogEvent> errors = installJob.getStatus().getLog().getLogs(LogLevel.ERROR);
         if (!errors.isEmpty()) {
-            throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable() : new Exception(errors.get(0)
-                .getFormattedMessage());
+            throw new Exception(errors.get(0).getFormattedMessage(), errors.get(0).getThrowable());
         }
 
         return installJob;
