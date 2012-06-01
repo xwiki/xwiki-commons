@@ -35,8 +35,6 @@ import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.internal.DefaultDiffResult;
 import org.xwiki.diff.internal.DefaultMergeResult;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.event.LogEvent;
 import org.xwiki.script.service.ScriptService;
 
 /**
@@ -71,7 +69,7 @@ public class DiffScriptService implements ScriptService
             result = this.diffManager.diff(previous, next, configuration);
         } catch (DiffException e) {
             result = new DefaultDiffResult<E>(previous, next);
-            result.getLog().add(new LogEvent(LogLevel.ERROR, "Failed to execute diff", null, e));
+            result.getLog().error("Failed to execute diff", e);
         }
 
         return result;
@@ -95,7 +93,7 @@ public class DiffScriptService implements ScriptService
             result = this.diffManager.merge(commonAncestor, next, current, configuration);
         } catch (MergeException e) {
             result = new DefaultMergeResult<E>(commonAncestor, next, current);
-            result.getLog().add(new LogEvent(LogLevel.ERROR, "Failed to execute merge", null, e));
+            result.getLog().error("Failed to execute merge", e);
         }
 
         return result;
