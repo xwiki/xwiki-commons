@@ -34,12 +34,6 @@ import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
-import org.xwiki.diff.display.ExtendedDiffDisplayer;
-import org.xwiki.diff.display.InlineDiffChunk;
-import org.xwiki.diff.display.InlineDiffDisplayer;
-import org.xwiki.diff.display.Splitter;
-import org.xwiki.diff.display.UnifiedDiffBlock;
-import org.xwiki.diff.display.UnifiedDiffDisplayer;
 import org.xwiki.diff.internal.DefaultDiffResult;
 import org.xwiki.diff.internal.DefaultMergeResult;
 import org.xwiki.logging.LogLevel;
@@ -50,6 +44,7 @@ import org.xwiki.script.service.ScriptService;
  * Provide script oriented APIs to do diff and merges.
  * 
  * @version $Id$
+ * @since 4.1RC1
  */
 @Component
 @Named("diff")
@@ -59,7 +54,7 @@ public class DiffScriptService implements ScriptService
     /**
      * The key under which the last encountered error is stored in the current execution context.
      */
-    private static final String DIFF_ERROR_KEY = "scriptservice.diff.error";
+    static final String DIFF_ERROR_KEY = "scriptservice.diff.error";
 
     /**
      * The component used to access the execution context.
@@ -68,24 +63,24 @@ public class DiffScriptService implements ScriptService
     private Execution execution;
 
     /**
-     * The component used to split a text into lines.
-     */
-    @Inject
-    @Named("line")
-    private Splitter<String, String> lineSplitter;
-
-    /**
-     * The component used to split a text into its characters.
-     */
-    @Inject
-    @Named("char")
-    private Splitter<String, Character> charSplitter;
-
-    /**
      * The component used to create the diff.
      */
     @Inject
     private DiffManager diffManager;
+
+    /**
+     * The displayer oriented sub API.
+     */
+    @Inject
+    private ScriptService diffDisplayScriptService;
+
+    /**
+     * @return the display oriented API
+     */
+    public ScriptService getDisplay()
+    {
+        return this.diffDisplayScriptService;
+    }
 
     /**
      * Produce a diff between the two provided versions.
@@ -134,69 +129,6 @@ public class DiffScriptService implements ScriptService
     }
 
     /**
-     * Builds a unified diff between two versions of a text.
-     * 
-     * @param previous the previous version
-     * @param next the next version version
-     * @return the list of unified diff blocks
-     */
-    public List<UnifiedDiffBlock<String>> unified(String previous, String next)
-    {
-        setError(null);
-
-        try {
-            return new UnifiedDiffDisplayer<String>().display(diffManager.diff(lineSplitter.split(previous),
-                lineSplitter.split(next), null));
-        } catch (Exception e) {
-            setError(e);
-            return null;
-        }
-    }
-
-    /**
-     * Builds an in-line diff between two versions of a text.
-     * 
-     * @param previous the previous version
-     * @param next the next version
-     * @return the list of in-line diff chunks
-     */
-    public List<InlineDiffChunk<Character>> inline(String previous, String next)
-    {
-        setError(null);
-
-        try {
-            return new InlineDiffDisplayer().display(diffManager.diff(charSplitter.split(previous),
-                charSplitter.split(next), null));
-        } catch (DiffException e) {
-            setError(e);
-            return null;
-        }
-    }
-
-    /**
-     * Builds an extended diff between two versions of a text. The extended diff is a mix between a unified diff and an
-     * in-line diff: it provides information about both line-level and character-level changes (the later only when a
-     * line is modified).
-     * 
-     * @param previous the previous version
-     * @param next the next version
-     * @return the list of extended diff blocks
-     */
-    public List<UnifiedDiffBlock<String>> extended(String previous, String next)
-    {
-        setError(null);
-
-        try {
-            DiffResult<String> diffResult =
-                diffManager.diff(lineSplitter.split(previous), lineSplitter.split(next), null);
-            return new ExtendedDiffDisplayer<String, Character>(diffManager, charSplitter).display(diffResult);
-        } catch (DiffException e) {
-            setError(e);
-            return null;
-        }
-    }
-
-    /**
      * Get the error generated while performing the previously called action.
      * 
      * @return an eventual exception or {@code null} if no exception was thrown
@@ -204,16 +136,5 @@ public class DiffScriptService implements ScriptService
     public Exception getLastError()
     {
         return (Exception) this.execution.getContext().getProperty(DIFF_ERROR_KEY);
-    }
-
-    /**
-     * Store a caught exception in the context, so that it can be later retrieved using {@link #getLastError()}.
-     * 
-     * @param e the exception to store, can be {@code null} to clear the previously stored exception
-     * @see #getLastError()
-     */
-    private void setError(Exception e)
-    {
-        this.execution.getContext().setProperty(DIFF_ERROR_KEY, e);
     }
 }
