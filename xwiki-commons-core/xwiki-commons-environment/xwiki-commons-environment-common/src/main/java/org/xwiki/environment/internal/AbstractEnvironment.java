@@ -85,7 +85,16 @@ public abstract class AbstractEnvironment implements Environment
         this.temporaryDirectory = temporaryDirectory;
     }
 
-    /* Rather than overriding this, it is safer to override getPermanentDirectoryName() */
+    /**
+     * {@inheritDoc}
+     *
+     * Rather than overriding this, it is safer to override {@link #getPermanentDirectoryName()}
+     * This is because this function does a number of checks to make sure the directory exists,
+     * is a directory (not a file) and the XWiki process has permission to write to it. If the
+     * directory doesn't exist it is created and if it cannot be written to, an error is printed
+     * in the log and it is passed over for the default permanent directory.
+     * @see Environment#getPermanentDirectory()
+     */
     @Override
     public File getPermanentDirectory()
     {
@@ -114,6 +123,11 @@ public abstract class AbstractEnvironment implements Environment
     }
 
     /**
+     * Get the name of the permanent directory to use.
+     * This name will be preferred when choosing the permanent directory and if it is not
+     * able to be written to, this class will fail over to the default directory after
+     * printing an error in the log file.
+     *
      * @return the permanent directory as specified
      */
     protected String getPermanentDirectoryName()
@@ -121,7 +135,16 @@ public abstract class AbstractEnvironment implements Environment
         return null;
     }
 
-    /* Rather than overriding this, it is safer to override getTemporaryDirectoryName() */
+    /**
+     * {@inheritDoc}
+     *
+     * Rather than overriding this, it is safer to override {@link #getTemporaryDirectoryName()}
+     * This is because this function does a number of checks to make sure the directory exists,
+     * is a directory (not a file) and the XWiki process has permission to write to it. If the
+     * directory doesn't exist it is created and if it cannot be written to, an erroris printed
+     * in the log and it is passed over for the default temporary directory.
+     * @see Environment#getTemporaryDirectory()
+     */
     @Override
     public File getTemporaryDirectory()
     {
@@ -136,6 +159,11 @@ public abstract class AbstractEnvironment implements Environment
     }
 
     /**
+     * Get the name of the temporary directory to use.
+     * The path given name will be preferred when choosing the temporary directory and
+     * if it is not able to be written to, this class will fail over to the default
+     * directory after printing an error in the log file.
+     *
      * @return the temporary directory as specified
      */
     protected String getTemporaryDirectoryName()
@@ -253,7 +281,7 @@ public abstract class AbstractEnvironment implements Environment
         } catch (IOException e) {
             throw new RuntimeException(
                 String.format("Failed to empty the temporary directory [%s]. Are their files inside of it which XWiki "
-                    + "does not have permission to delete?",tempDir.getAbsolutePath()));
+                    + "does not have permission to delete?", tempDir.getAbsolutePath()));
         }
     }
 }
