@@ -112,6 +112,14 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
 
         Assert.assertEquals(Arrays.asList("some new content"), result.getMerged());
 
+        // Only current
+
+        result =
+            this.diffManager.merge(Arrays.asList("some content"), Arrays.asList("some content"),
+                Arrays.asList("some current content"), null);
+
+        Assert.assertEquals(Arrays.asList("some current content"), result.getMerged());
+
         // New after
 
         result =

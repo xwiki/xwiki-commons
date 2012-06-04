@@ -110,7 +110,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
 
             ExtensionPlan plan = (ExtensionPlan) this.uninstallPlanJob.getStatus();
 
-            List<LogEvent> log = plan.getLog(LogLevel.ERROR);
+            List<LogEvent> log = plan.getLog().getLogs(LogLevel.ERROR);
             if (!log.isEmpty()) {
                 throw new UninstallException("Failed to create install plan: " + log.get(0).getFormattedMessage(), log
                     .get(0).getThrowable());

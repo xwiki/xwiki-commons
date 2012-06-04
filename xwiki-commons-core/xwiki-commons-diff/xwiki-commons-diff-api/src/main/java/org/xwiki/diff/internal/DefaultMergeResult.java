@@ -67,6 +67,9 @@ public class DefaultMergeResult<E> implements MergeResult<E>
         this.commonAncestor = commonAncestor;
         this.next = next;
         this.current = current;
+
+        // Default to current
+        this.merged = current;
     }
 
     @Override

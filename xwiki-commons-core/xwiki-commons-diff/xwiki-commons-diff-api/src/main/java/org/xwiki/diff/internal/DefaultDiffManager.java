@@ -19,16 +19,12 @@
  */
 package org.xwiki.diff.internal;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Singleton;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.diff.Delta;
 import org.xwiki.diff.Delta.Type;
@@ -40,8 +36,6 @@ import org.xwiki.diff.MergeConfiguration;
 import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.Patch;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.event.LogEvent;
 
 import difflib.DiffUtils;
 import difflib.PatchFailedException;
@@ -81,30 +75,6 @@ public class DefaultDiffManager implements DiffManager
         return result;
     }
 
-    /**
-     * @param <E> the type of compared elements
-     * @param mergeResult the result of the merge
-     * @param message the error message
-     * @param throwable the error exception
-     * @param arguments the error message arguments
-     */
-    private <E> void error(MergeResult<E> mergeResult, String message, Throwable throwable, Object... arguments)
-    {
-        mergeResult.getLog().add(new LogEvent(LogLevel.ERROR, message, arguments, throwable));
-    }
-
-    /**
-     * @param <E> the type of compared elements
-     * @param mergeResult the result of the merge
-     * @param message the warning message
-     * @param throwable the warning exception
-     * @param arguments the warning message arguments
-     */
-    private <E> void warn(MergeResult<E> mergeResult, String message, Throwable throwable, Object... arguments)
-    {
-        mergeResult.getLog().add(new LogEvent(LogLevel.WARN, message, arguments, throwable));
-    }
-
     @Override
     public <E> MergeResult<E> merge(List<E> commonAncestor, List<E> next, List<E> current,
         MergeConfiguration<E> configuration) throws MergeException
@@ -138,10 +108,10 @@ public class DefaultDiffManager implements DiffManager
                 mergeResult.setMerged(next);
             } else if (next.isEmpty()) {
                 // The new modification was already applied
-                warn(mergeResult, "The modification was already applied", null);
+                mergeResult.getLog().warn("The modification was already applied");
             } else {
                 // The current version has been replaced by an empty string
-                error(mergeResult, "The current value is empty", null);
+                mergeResult.getLog().error("The current value is empty");
             }
         } else {
             // Get diff between common ancestor and current version
@@ -178,7 +148,7 @@ public class DefaultDiffManager implements DiffManager
     {
         // Merge the two diffs
         List<E> merged = new ArrayList<E>();
-        
+
         mergeResult.setMerged(merged);
 
         Delta<E> deltaNext = nextElement(patchNext);
@@ -229,10 +199,10 @@ public class DefaultDiffManager implements DiffManager
             merged.addAll(deltaNext.getNext().getElements());
         }
     }
-    
+
     private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext)
     {
-        error(mergeResult, "Conflict between [{}] and [{}]", null, deltaCurrent, deltaNext);
+        mergeResult.getLog().error("Conflict between [{}] and [{}]", deltaCurrent, deltaNext);
     }
 
     private <E> int apply(Delta<E> delta, List<E> merged, int currentIndex)
@@ -293,31 +263,8 @@ public class DefaultDiffManager implements DiffManager
 
             mergeResult.setMerged(result);
         } catch (PatchFailedException e) {
-            error(mergeResult, "Failed to apply differences between [{}] and [{}] on current list [{}]", e,
-                commonAncestor, next, current);
-        }
-    }
-
-    /**
-     * @param list the lines
-     * @return the multilines text
-     */
-    private String toString(List<String> list)
-    {
-        return StringUtils.join(list, '\n');
-    }
-
-    /**
-     * @param str the multilines text
-     * @return the lines
-     */
-    private List<String> toLines(String str)
-    {
-        try {
-            return IOUtils.readLines(new StringReader(str));
-        } catch (IOException e) {
-            // Should never happen
-            return null;
+            mergeResult.getLog().error("Failed to apply differences between [{}] and [{}] on current list [{}]",
+                new Object[] {commonAncestor, next, current, e});
         }
     }
 }

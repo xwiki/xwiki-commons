@@ -123,7 +123,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
 
             ExtensionPlan plan = (ExtensionPlan) this.installPlanJob.getStatus();
 
-            List<LogEvent> log = plan.getLog(LogLevel.ERROR);
+            List<LogEvent> log = plan.getLog().getLogs(LogLevel.ERROR);
             if (!log.isEmpty()) {
                 throw new InstallException("Failed to create install plan: " + log.get(0).getFormattedMessage(), log
                     .get(0).getThrowable());

@@ -79,12 +79,6 @@ public interface JobStatus
     LogQueue getLog();
 
     /**
-     * @param level the level of the log
-     * @return the log sent with the provided level
-     */
-    List<LogEvent> getLog(LogLevel level);
-
-    /**
      * @return progress information about the job (percent, etc.)
      */
     JobProgress getProgress();
@@ -118,4 +112,14 @@ public interface JobStatus
      * @return the date and time when the job finished
      */
     Date getEndDate();
+
+    // Deprecated
+
+    /**
+     * @param level the level of the log
+     * @return the log sent with the provided level
+     * @deprecated since 4.1RC1 use {@link LogQueue#getLogs(LogLevel)} instead
+     */
+    @Deprecated
+    List<LogEvent> getLog(LogLevel level);
 }
