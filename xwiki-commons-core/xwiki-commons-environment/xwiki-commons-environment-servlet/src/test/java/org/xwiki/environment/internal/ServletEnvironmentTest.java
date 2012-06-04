@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Unit tests for {@link ServletEnvironment}.
@@ -137,7 +138,8 @@ public class ServletEnvironmentTest
         // Also verify that we log a warning!
         final Logger logger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{
-            oneOf(logger).warn("No permanent directory configured. Using a temporary directory.");
+            oneOf(logger).warn(with(startsWith("No permanent directory configured. Using temporary directory")),
+                with(any(String.class)));
         }});
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 

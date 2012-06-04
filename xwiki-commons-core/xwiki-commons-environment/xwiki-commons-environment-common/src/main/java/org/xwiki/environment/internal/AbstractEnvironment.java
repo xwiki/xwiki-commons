@@ -95,8 +95,8 @@ public abstract class AbstractEnvironment implements Environment
             if (classSpecified == null && configured == null) {
                 // There's no defined permanent directory,
                 // fall back to the temporary directory but issue a warning
-                this.logger.warn("No permanent directory configured. "
-                                 + "Using a temporary directory.");
+                this.logger.warn("No permanent directory configured. Using temporary directory [{}].",
+                    DEFAULT_TMP_DIRECTORY);
             }
             final String[] locations = new String[] {
                 classSpecified,
@@ -155,8 +155,7 @@ public abstract class AbstractEnvironment implements Environment
                 continue;
             }
             if (!first) {
-                this.logger.warn("Falling back on [{}] for {} directory.",
-                                  location, tempOrPermanent);
+                this.logger.warn("Falling back on [{}] as the {} directory.", location, tempOrPermanent);
             }
             first = false;
             final File dir = this.initializeDirectory(location, isTemp, tempOrPermanent);
@@ -165,9 +164,8 @@ public abstract class AbstractEnvironment implements Environment
             }
         }
 
-        throw new RuntimeException(
-            String.format("Could not find a writable [%s] directory. "
-                          + "Check the server log for more information.", tempOrPermanent));
+        throw new RuntimeException(String.format(
+            "Could not find a writable %s directory. Check the server logs for more information.", tempOrPermanent));
     }
 
     /**
@@ -203,7 +201,7 @@ public abstract class AbstractEnvironment implements Environment
             return this.initDir(dir, isTemp);
         }
         this.logger.error("Configured {} directory [{}] could not be created, check permissions.",
-                          tempOrPermanent, dir.getAbsolutePath());
+            tempOrPermanent, dir.getAbsolutePath());
         return null;
     }
 
@@ -235,25 +233,23 @@ public abstract class AbstractEnvironment implements Environment
         final File permDir = this.getPermanentDirectory();
         try {
             if (tempDir.equals(permDir) || FileUtils.directoryContains(tempDir, permDir)) {
-                throw new RuntimeException(
-                    "The configured persistent store directory falls within the "
-                    + TEMP_NAME + " sub-directory of the temporary directory, this "
-                    + "sub-directory is reserved (deleted on start-up) and must never "
-                    + "be used. Please review your configuration.");
+                throw new RuntimeException(String.format(
+                    "The configured persistent store directory falls within the [%s] sub-directory of the temporary "
+                    + "directory, this sub-directory is reserved (deleted on start-up) and must never be used. Please "
+                    + "review your configuration.", TEMP_NAME));
             }
         } catch (IOException e) {
             // Shouldn't happen since these directories were already verified to be writable.
-            throw new RuntimeException("Failure when checking if configured permanent store "
-                                       + "directory is subdirectory of temporary directory.");
+            throw new RuntimeException("Failure when checking if configured permanent store directory is subdirectory "
+                + "of temporary directory.", e);
         }
 
         try {
             FileUtils.cleanDirectory(tempDir);
         } catch (IOException e) {
             throw new RuntimeException(
-                String.format("Failed to empty the temporary directory [%s], are their files "
-                              + "inside of it which xwiki does not have permission to delete?",
-                              tempDir.getAbsolutePath()));
+                String.format("Failed to empty the temporary directory [%s]. Are their files inside of it which XWiki "
+                    + "does not have permission to delete?", tempDir.getAbsolutePath()));
         }
     }
 }
