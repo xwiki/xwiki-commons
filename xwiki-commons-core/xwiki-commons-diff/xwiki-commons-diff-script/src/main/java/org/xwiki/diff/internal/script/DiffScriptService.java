@@ -72,6 +72,7 @@ public class DiffScriptService implements ScriptService
      * The displayer oriented sub API.
      */
     @Inject
+    @Named("diff.display")
     private ScriptService diffDisplayScriptService;
 
     /**

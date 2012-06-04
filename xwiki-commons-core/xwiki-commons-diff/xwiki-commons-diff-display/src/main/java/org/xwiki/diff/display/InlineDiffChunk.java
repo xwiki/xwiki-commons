@@ -45,7 +45,7 @@ public class InlineDiffChunk<E>
          * A chunk that stays unmodified. The elements of this chunk are neither added nor removed. They indicate the
          * context where a change has been made.
          */
-        CONTEXT;
+        UNMODIFIED;
     }
 
     /**
@@ -100,6 +100,14 @@ public class InlineDiffChunk<E>
     public boolean isDeleted()
     {
         return type == Type.DELETED;
+    }
+
+    /**
+     * @return {@code true} if this chunk was left unmodified, {@code false} otherwise
+     */
+    public boolean isUnmodified()
+    {
+        return type == Type.UNMODIFIED;
     }
 
     @Override

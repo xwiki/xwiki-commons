@@ -19,12 +19,10 @@
  */
 package org.xwiki.diff.display;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.xwiki.diff.Delta;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.diff.display.InlineDiffChunk.Type;
 
 /**
  * Displays a {@link DiffResult} as an in-line diff. An in-line diff is made of a list of chunks, each marked as added,
@@ -53,55 +51,32 @@ import org.xwiki.diff.display.InlineDiffChunk.Type;
  * @version $Id$
  * @since 4.1RC1
  */
-public class InlineDiffDisplayer
+@Role
+public interface InlineDiffDisplayer
 {
     /**
-     * Displays the given diff result as an in-line diff.
+     * Displays the given diff result as an in-line diff. An in-line diff is a list of group of elements, each group
+     * being marked as added, removed or unmodified. The in-line diff includes all the elements from the previous and
+     * the next version that were compared to produce the diff:
+     * <ul>
+     * <li>the elements found in the previous version but not in the next version are marked at removed</li>
+     * <li>the elements from the next version that are not present in the previous version are marked as added</li>
+     * <li>the rest of the elements that are found in both versions are marked as unmodified.</li>
+     * </ul>
+     * If changes are computed at character level, i.e. the type of elements that are compared is {@link Character},
+     * then the in-line diff between "the quick fox" and "the sick fox" is:
+     * 
+     * <pre>
+     * {@code the <del>qu</del><ins>s</ins>ick fox}
+     * </pre>
+     * 
+     * and is made of 4 groups of {@link Character}s: "the " unmodified, "qu" removed, "s" added and "ick fox"
+     * unmodified.
      * 
      * @param <E> the type of elements that are add/remove/modified in the given diff result (specifies the granularity
      *            level of changes)
      * @param diffResult the diff result to be displayed
      * @return the list of chunks that form the in-line diff
      */
-    public <E> List<InlineDiffChunk<E>> display(DiffResult<E> diffResult)
-    {
-        List<E> previous = diffResult.getPrevious();
-        List<InlineDiffChunk<E>> chunks = new ArrayList<InlineDiffChunk<E>>();
-
-        Delta<E> lastDelta = null;
-        for (Delta<E> delta : diffResult.getPatch()) {
-            // Add a chunk with the unmodified elements between the last delta and the current one.
-            int contextStart = lastDelta == null ? 0 : lastDelta.getPrevious().getLastIndex() + 1;
-            int contextEnd = delta.getPrevious().getIndex();
-            if (contextStart < contextEnd) {
-                chunks.add(new InlineDiffChunk<E>(Type.CONTEXT, previous.subList(contextStart, contextEnd)));
-            }
-
-            // Add changed chunks.
-            switch (delta.getType()) {
-                case CHANGE:
-                    chunks.add(new InlineDiffChunk<E>(Type.DELETED, delta.getPrevious().getElements()));
-                    chunks.add(new InlineDiffChunk<E>(Type.ADDED, delta.getNext().getElements()));
-                    break;
-                case DELETE:
-                    chunks.add(new InlineDiffChunk<E>(Type.DELETED, delta.getPrevious().getElements()));
-                    break;
-                case INSERT:
-                    chunks.add(new InlineDiffChunk<E>(Type.ADDED, delta.getNext().getElements()));
-                    break;
-                default:
-                    break;
-            }
-
-            lastDelta = delta;
-        }
-
-        // Add the final chunk with the unmodified elements after the last delta.
-        int contextStart = lastDelta == null ? 0 : lastDelta.getPrevious().getLastIndex() + 1;
-        if (contextStart < previous.size()) {
-            chunks.add(new InlineDiffChunk<E>(Type.CONTEXT, previous.subList(contextStart, previous.size())));
-        }
-
-        return chunks;
-    }
+    <E> List<InlineDiffChunk<E>> display(DiffResult<E> diffResult);
 }

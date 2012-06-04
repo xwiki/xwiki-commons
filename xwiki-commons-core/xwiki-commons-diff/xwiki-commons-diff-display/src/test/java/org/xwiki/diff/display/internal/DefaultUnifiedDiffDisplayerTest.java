@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff.display;
+package org.xwiki.diff.display.internal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,16 +37,18 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.xwiki.diff.DiffManager;
+import org.xwiki.diff.display.UnifiedDiffBlock;
+import org.xwiki.diff.display.UnifiedDiffDisplayer;
 import org.xwiki.test.AbstractComponentTestCase;
 
 /**
- * Unit tests for {@link UnifiedDiffDisplayer}.
+ * Unit tests for {@link DefaultUnifiedDiffDisplayer}.
  * 
  * @version $Id$
  * @since 4.1M2
  */
 @RunWith(Parameterized.class)
-public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
+public class DefaultUnifiedDiffDisplayerTest extends AbstractComponentTestCase
 {
     /**
      * The previous version.
@@ -70,7 +72,7 @@ public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
      * @param next the next version
      * @param expected the expected unified diff
      */
-    public UnifiedDiffDisplayerTest(List<String> previous, List<String> next, String expected)
+    public DefaultUnifiedDiffDisplayerTest(List<String> previous, List<String> next, String expected)
     {
         this.previous = previous;
         this.next = next;
@@ -84,11 +86,12 @@ public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
     public void execute() throws Exception
     {
         DiffManager diffManager = getComponentManager().getInstance(DiffManager.class);
-        List<UnifiedDiffBlock<String>> blocks =
-            new UnifiedDiffDisplayer<String>().display(diffManager.diff(previous, next, null));
+        UnifiedDiffDisplayer unifiedDiffDisplayer = getComponentManager().getInstance(UnifiedDiffDisplayer.class);
+        List<UnifiedDiffBlock<String, Object>> blocks =
+            unifiedDiffDisplayer.display(diffManager.diff(previous, next, null));
 
         StringBuilder actual = new StringBuilder();
-        for (UnifiedDiffBlock<String> block : blocks) {
+        for (UnifiedDiffBlock<String, ? > block : blocks) {
             actual.append(block);
         }
         Assert.assertEquals(expected, actual.toString());
@@ -153,7 +156,7 @@ public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
      */
     private static List<String> readLines(String fileName) throws IOException
     {
-        InputStream stream = UnifiedDiffDisplayerTest.class.getResourceAsStream('/' + fileName);
+        InputStream stream = DefaultUnifiedDiffDisplayerTest.class.getResourceAsStream('/' + fileName);
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         return IOUtils.readLines(reader);
     }
@@ -167,7 +170,7 @@ public class UnifiedDiffDisplayerTest extends AbstractComponentTestCase
      */
     private static String readContent(String fileName) throws IOException
     {
-        InputStream stream = UnifiedDiffDisplayerTest.class.getResourceAsStream('/' + fileName);
+        InputStream stream = DefaultUnifiedDiffDisplayerTest.class.getResourceAsStream('/' + fileName);
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         return IOUtils.toString(reader);
     }

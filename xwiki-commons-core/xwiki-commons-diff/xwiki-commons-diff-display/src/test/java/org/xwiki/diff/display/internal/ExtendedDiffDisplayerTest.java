@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff.display;
+package org.xwiki.diff.display.internal;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
@@ -30,7 +30,13 @@ import org.junit.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
+import org.xwiki.diff.display.InlineDiffChunk;
 import org.xwiki.diff.display.InlineDiffChunk.Type;
+import org.xwiki.diff.display.Splitter;
+import org.xwiki.diff.display.UnifiedDiffBlock;
+import org.xwiki.diff.display.UnifiedDiffConfiguration;
+import org.xwiki.diff.display.UnifiedDiffDisplayer;
+import org.xwiki.diff.display.UnifiedDiffElement;
 import org.xwiki.test.AbstractComponentTestCase;
 
 /**
@@ -73,7 +79,6 @@ public class ExtendedDiffDisplayerTest extends AbstractComponentTestCase
      * @param expected the expected extended diff
      * @throws Exception if creating the diff fails
      */
-    @SuppressWarnings("unchecked")
     private void execute(String previous, String next, String expected) throws Exception
     {
         ParameterizedType lineSplitterType =
@@ -82,28 +87,30 @@ public class ExtendedDiffDisplayerTest extends AbstractComponentTestCase
         List<String> previousLines = lineSplitter.split(previous);
         List<String> nextLines = lineSplitter.split(next);
 
-        Map<Type, String> separators = new HashMap<Type, String>();
-        separators.put(Type.ADDED, "+");
-        separators.put(Type.DELETED, "-");
-        separators.put(Type.CONTEXT, "");
+        DiffManager diffManager = getComponentManager().getInstance(DiffManager.class);
+        DiffResult<String> diffResult = diffManager.diff(previousLines, nextLines, null);
 
         ParameterizedType charSplitterType =
             new DefaultParameterizedType(null, Splitter.class, String.class, Character.class);
-        Splitter<String, Character> charSplitter = getComponentManager().getInstance(charSplitterType, "char");
+        Splitter<String, Character> charSplitter = getComponentManager().getInstance(charSplitterType);
 
-        DiffManager diffManager = getComponentManager().getInstance(DiffManager.class);
-        DiffResult<String> diffResult = diffManager.diff(previousLines, nextLines, null);
-        ExtendedDiffDisplayer<String, Character> builder =
-            new ExtendedDiffDisplayer<String, Character>(diffManager, charSplitter);
+        UnifiedDiffDisplayer unifiedDiffDisplayer = getComponentManager().getInstance(UnifiedDiffDisplayer.class);
+        UnifiedDiffConfiguration<String, Character> config = unifiedDiffDisplayer.getDefaultConfiguration();
+        config.setSplitter(charSplitter);
+
+        Map<Type, String> separators = new HashMap<Type, String>();
+        separators.put(Type.ADDED, "+");
+        separators.put(Type.DELETED, "-");
+        separators.put(Type.UNMODIFIED, "");
 
         StringBuilder actual = new StringBuilder();
-        for (UnifiedDiffBlock<String> block : builder.display(diffResult)) {
+        for (UnifiedDiffBlock<String, Character> block : unifiedDiffDisplayer.display(diffResult, config)) {
             actual.append(String.format("@@ -%s,%s +%s,%s @@\n", block.getPreviousStart() + 1, block.getPreviousSize(),
                 block.getNextStart() + 1, block.getNextSize()));
-            for (UnifiedDiffElement<String> line : block) {
-                if (line instanceof ExtendedDiffElement) {
+            for (UnifiedDiffElement<String, Character> line : block) {
+                if (line.getChunks() != null) {
                     actual.append(line.getType().getSymbol());
-                    for (InlineDiffChunk<Character> chunk : ((ExtendedDiffElement<String, Character>) line).getChunks()) {
+                    for (InlineDiffChunk<Character> chunk : line.getChunks()) {
                         String separator = separators.get(chunk.getType());
                         actual.append(separator).append(chunk).append(separator);
                     }

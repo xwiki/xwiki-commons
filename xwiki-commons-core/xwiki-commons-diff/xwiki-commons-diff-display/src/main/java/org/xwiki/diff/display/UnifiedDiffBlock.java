@@ -26,11 +26,12 @@ import java.util.ArrayList;
  * distance between changes. Changes that are close to each other are grouped in a single block. A block can contain
  * both added and removed elements. Blocks also contain unmodified elements that put changes in context.
  * 
- * @param <E> the type of elements that are compared to produce the diff
+ * @param <E> the type of elements that are compared to produce the first level diff
+ * @param <F> the type of sub-element that are compared to produce the second level diff
  * @version $Id$
  * @since 4.1RC1
  */
-public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffElement<E>>
+public class UnifiedDiffBlock<E, F> extends ArrayList<UnifiedDiffElement<E, F>>
 {
     /**
      * Needed for serialization.
@@ -43,7 +44,7 @@ public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffElement<E>>
      */
     public int getPreviousStart()
     {
-        for (UnifiedDiffElement<E> element : this) {
+        for (UnifiedDiffElement<E, F> element : this) {
             if (!element.isAdded()) {
                 return element.getIndex();
             }
@@ -58,7 +59,7 @@ public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffElement<E>>
     public int getPreviousSize()
     {
         int size = 0;
-        for (UnifiedDiffElement<E> element : this) {
+        for (UnifiedDiffElement<E, F> element : this) {
             if (!element.isAdded()) {
                 size++;
             }
@@ -72,7 +73,7 @@ public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffElement<E>>
      */
     public int getNextStart()
     {
-        for (UnifiedDiffElement<E> element : this) {
+        for (UnifiedDiffElement<E, F> element : this) {
             if (!element.isDeleted()) {
                 return element.getIndex();
             }
@@ -87,7 +88,7 @@ public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffElement<E>>
     public int getNextSize()
     {
         int size = 0;
-        for (UnifiedDiffElement<E> element : this) {
+        for (UnifiedDiffElement<E, F> element : this) {
             if (!element.isDeleted()) {
                 size++;
             }
@@ -102,7 +103,7 @@ public class UnifiedDiffBlock<E> extends ArrayList<UnifiedDiffElement<E>>
         // The element index is 0-based so we add 1 for display.
         stringBuilder.append(String.format("@@ -%s,%s +%s,%s @@\n", getPreviousStart() + 1, getPreviousSize(),
             getNextStart() + 1, getNextSize()));
-        for (UnifiedDiffElement<E> element : this) {
+        for (UnifiedDiffElement<E, F> element : this) {
             stringBuilder.append(element);
         }
         return stringBuilder.toString();

@@ -30,11 +30,11 @@ import org.xwiki.context.Execution;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.diff.display.ExtendedDiffDisplayer;
 import org.xwiki.diff.display.InlineDiffChunk;
 import org.xwiki.diff.display.InlineDiffDisplayer;
 import org.xwiki.diff.display.Splitter;
 import org.xwiki.diff.display.UnifiedDiffBlock;
+import org.xwiki.diff.display.UnifiedDiffConfiguration;
 import org.xwiki.diff.display.UnifiedDiffDisplayer;
 import org.xwiki.script.service.ScriptService;
 
@@ -66,7 +66,6 @@ public class DiffDisplayerScriptService implements ScriptService
      * The component used to split a text into its characters.
      */
     @Inject
-    @Named("char")
     private Splitter<String, Character> charSplitter;
 
     /**
@@ -76,20 +75,32 @@ public class DiffDisplayerScriptService implements ScriptService
     private DiffManager diffManager;
 
     /**
-     * Builds a unified diff between two versions of a text.
+     * The component used to display in-line diffs.
+     */
+    @Inject
+    private InlineDiffDisplayer inlineDiffDisplayer;
+
+    /**
+     * The component used to display unified diffs.
+     */
+    @Inject
+    private UnifiedDiffDisplayer unifiedDiffDisplayer;
+
+    /**
+     * Builds an in-line diff between two versions of a list of elements.
      * 
      * @param previous the previous version
-     * @param next the next version version
-     * @return the list of unified diff blocks
+     * @param next the next version
+     * @param <E> the type of elements that are compared to produce the diff
+     * @return the list of in-line diff chunks
      */
-    public List<UnifiedDiffBlock<String>> unified(String previous, String next)
+    public <E> List<InlineDiffChunk<E>> inline(List<E> previous, List<E> next)
     {
         setError(null);
 
         try {
-            return new UnifiedDiffDisplayer<String>().display(diffManager.diff(lineSplitter.split(previous),
-                lineSplitter.split(next), null));
-        } catch (Exception e) {
+            return inlineDiffDisplayer.display(diffManager.diff(previous, next, null));
+        } catch (DiffException e) {
             setError(e);
             return null;
         }
@@ -107,8 +118,8 @@ public class DiffDisplayerScriptService implements ScriptService
         setError(null);
 
         try {
-            return new InlineDiffDisplayer().display(diffManager.diff(charSplitter.split(previous),
-                charSplitter.split(next), null));
+            return inlineDiffDisplayer.display(diffManager.diff(charSplitter.split(previous), charSplitter.split(next),
+                null));
         } catch (DiffException e) {
             setError(e);
             return null;
@@ -116,26 +127,63 @@ public class DiffDisplayerScriptService implements ScriptService
     }
 
     /**
-     * Builds an extended diff between two versions of a text. The extended diff is a mix between a unified diff and an
-     * in-line diff: it provides information about both line-level and character-level changes (the later only when a
-     * line is modified).
+     * Builds an unified diff between two versions of a text. The unified diff provides information about both
+     * line-level and character-level changes (the later only when a line is modified).
      * 
      * @param previous the previous version
      * @param next the next version
      * @return the list of extended diff blocks
      */
-    public List<UnifiedDiffBlock<String>> extended(String previous, String next)
+    public List<UnifiedDiffBlock<String, Character>> unified(String previous, String next)
     {
         setError(null);
 
         try {
             DiffResult<String> diffResult =
                 diffManager.diff(lineSplitter.split(previous), lineSplitter.split(next), null);
-            return new ExtendedDiffDisplayer<String, Character>(diffManager, charSplitter).display(diffResult);
+            UnifiedDiffConfiguration<String, Character> config = unifiedDiffDisplayer.getDefaultConfiguration();
+            config.setSplitter(charSplitter);
+            return unifiedDiffDisplayer.display(diffResult, config);
         } catch (DiffException e) {
             setError(e);
             return null;
         }
+    }
+
+    /**
+     * Builds an unified diff between two versions of a list of elements. If a splitter is provided through the given
+     * configuration object then the unified diff will display changes at two levels of granularity: elements and their
+     * sub-elements.
+     * 
+     * @param previous the previous version
+     * @param next the next version
+     * @param config the configuration object
+     * @param <E> the type of composite elements that are compared to produce the first level diff
+     * @param <F> the type of sub-elements that are compared to produce the second level diff when a composite element
+     * @return the list of extended diff blocks
+     */
+    public <E, F> List<UnifiedDiffBlock<E, F>> unified(List<E> previous, List<E> next,
+        UnifiedDiffConfiguration<E, F> config)
+    {
+        setError(null);
+
+        try {
+            return unifiedDiffDisplayer.display(diffManager.diff(previous, next, null), config);
+        } catch (DiffException e) {
+            setError(e);
+            return null;
+        }
+    }
+
+    /**
+     * @param <E> the type of composite elements that are compared to produce the first level diff
+     * @param <F> the type of sub-elements that are compared to produce the second level diff when a composite element
+     *            is modified
+     * @return the unified diff configuration
+     */
+    public <E, F> UnifiedDiffConfiguration<E, F> getUnifiedDiffConfiguration()
+    {
+        return unifiedDiffDisplayer.getDefaultConfiguration();
     }
 
     /**

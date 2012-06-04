@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff.display;
+package org.xwiki.diff.display.internal;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,16 +30,18 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
+import org.xwiki.diff.display.InlineDiffChunk;
 import org.xwiki.diff.display.InlineDiffChunk.Type;
+import org.xwiki.diff.display.InlineDiffDisplayer;
 import org.xwiki.test.AbstractComponentTestCase;
 
 /**
- * Unit tests for {@link InlineDiffDisplayer}.
+ * Unit tests for {@link DefaultInlineDiffDisplayer}.
  * 
  * @version $Id$
  * @since 4.1M2
  */
-public class InlineDiffDisplayerTest extends AbstractComponentTestCase
+public class DefaultInlineDiffDisplayerTest extends AbstractComponentTestCase
 {
     @Test
     public void testBothEmpty() throws Exception
@@ -132,10 +134,11 @@ public class InlineDiffDisplayerTest extends AbstractComponentTestCase
         Map<Type, String> separators = new HashMap<Type, String>();
         separators.put(Type.ADDED, "+");
         separators.put(Type.DELETED, "-");
-        separators.put(Type.CONTEXT, "");
+        separators.put(Type.UNMODIFIED, "");
 
         StringBuilder actual = new StringBuilder();
-        for (InlineDiffChunk<Character> chunk : new InlineDiffDisplayer().display(diffResult)) {
+        InlineDiffDisplayer inlineDiffDisplayer = getComponentManager().getInstance(InlineDiffDisplayer.class);
+        for (InlineDiffChunk<Character> chunk : inlineDiffDisplayer.display(diffResult)) {
             String separator = separators.get(chunk.getType());
             actual.append(separator).append(chunk).append(separator);
         }

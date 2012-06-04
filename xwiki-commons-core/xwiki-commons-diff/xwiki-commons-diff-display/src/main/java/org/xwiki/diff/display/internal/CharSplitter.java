@@ -22,7 +22,6 @@ package org.xwiki.diff.display.internal;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -36,7 +35,6 @@ import org.xwiki.diff.display.Splitter;
  * @since 4.1RC1
  */
 @Component
-@Named("char")
 @Singleton
 public class CharSplitter implements Splitter<String, Character>
 {

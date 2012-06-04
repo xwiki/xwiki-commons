@@ -19,15 +19,20 @@
  */
 package org.xwiki.diff.display;
 
+import java.util.List;
+
 /**
  * Wraps the elements that are compared to produce a diff, holding information like their index and type of change
- * (added, removed, unmodified) to simplify the process of displaying them in an unified diff.
+ * (added, removed, unmodified) to simplify the process of displaying them in an unified diff. If the wrapped element is
+ * a composite element (can be split in sub-elements) and was modified (replaced by another element) then this class can
+ * also store information about changes at the level of sub-elements.
  * 
- * @param <E> the type of elements that are compared to produce the diff
+ * @param <E> the type of elements that are compared to produce the first-level diff
+ * @param <F> the type of sub-elements that are compared to produce the second-level diff
  * @version $Id$
  * @since 4.1RC1
  */
-public class UnifiedDiffElement<E>
+public class UnifiedDiffElement<E, F>
 {
     /**
      * The possible types of elements you can find within a unified diff.
@@ -85,6 +90,11 @@ public class UnifiedDiffElement<E>
     private final E value;
 
     /**
+     * The list of chunks of sub-elements that form this element.
+     */
+    private List<InlineDiffChunk<F>> chunks;
+
+    /**
      * Creates a new element in a unified diff.
      * 
      * @param index the element index
@@ -120,6 +130,24 @@ public class UnifiedDiffElement<E>
     public E getValue()
     {
         return value;
+    }
+
+    /**
+     * @return the list of chunks of sub-elements that form this element
+     */
+    public List<InlineDiffChunk<F>> getChunks()
+    {
+        return chunks;
+    }
+
+    /**
+     * Sets the list of chunks of sub-elements that form this element.
+     * 
+     * @param chunks the list of chunks
+     */
+    public void setChunks(List<InlineDiffChunk<F>> chunks)
+    {
+        this.chunks = chunks;
     }
 
     /**
