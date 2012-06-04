@@ -89,6 +89,10 @@ public abstract class AbstractEnvironment implements Environment
     @Override
     public File getPermanentDirectory()
     {
+        // Note: We're initializing the permanent directory here instead of in an Initializable.initialize() method
+        // since otherwise we get a cyclic dependency with the Configuration Source implementation used to get the
+        // Environment configuration property for the permanent directory location (since that Source require the
+        // Environment for finding the configuration resource in the executing Environment).
         if (this.permanentDirectory == null) {
             final String classSpecified = this.getPermanentDirectoryName();
             final String configured = this.configurationProvider.get().getPermanentDirectoryPath();
@@ -249,7 +253,7 @@ public abstract class AbstractEnvironment implements Environment
         } catch (IOException e) {
             throw new RuntimeException(
                 String.format("Failed to empty the temporary directory [%s]. Are their files inside of it which XWiki "
-                    + "does not have permission to delete?", tempDir.getAbsolutePath()));
+                    + "does not have permission to delete?",tempDir.getAbsolutePath()));
         }
     }
 }
