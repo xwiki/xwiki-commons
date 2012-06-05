@@ -17,44 +17,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.diff.internal;
+package org.xwiki.diff.display.internal;
 
+import java.util.Arrays;
 import java.util.List;
 
-import org.xwiki.diff.Chunk;
-import org.xwiki.diff.PatchException;
+import javax.inject.Singleton;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.diff.display.Splitter;
 
 /**
- * Implementation of {@link org.xwiki.diff.Delta} representing a chunk which is the same in both version.
+ * Splits a string into its characters.
  * 
- * @param <E> the type of compared elements
  * @version $Id$
+ * @since 4.1RC1
  */
-public class SameDelta<E> extends AbstractDelta<E>
+@Component
+@Singleton
+public class CharSplitter implements Splitter<String, Character>
 {
-    /**
-     * @param chunk the chunk
-     */
-    public SameDelta(Chunk<E> chunk)
-    {
-        super(chunk, chunk, null);
-    }
-
     @Override
-    public void apply(List<E> target) throws PatchException
+    public List<Character> split(String composite)
     {
-        // Do nothing
-    }
-
-    @Override
-    public void restore(List<E> target)
-    {
-        // Do nothing
-    }
-
-    @Override
-    public void verify(List<E> target) throws PatchException
-    {
-        // Do nothing
+        return Arrays.asList(ArrayUtils.toObject(composite.toCharArray()));
     }
 }

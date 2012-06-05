@@ -29,24 +29,14 @@
     <artifactId>xwiki-commons-diff</artifactId>
     <version>4.1-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-diff-script</artifactId>
-  <name>XWiki Commons - Diff Script API</name>
+  <artifactId>xwiki-commons-diff-display</artifactId>
+  <name>XWiki Commons - Diff Display API</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Diff Script API</description>
+  <description>APIs that help you display diffs.</description>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-diff-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-diff-display</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-script</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -58,4 +48,22 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- Unfortunately we need to copy some excludes from the top level POM since Maven or the License plugin
+                 don't merge excludes apparently... -->
+            <exclude>**/components.txt</exclude>
+            <exclude>target-eclipse/**</exclude>
+            <!-- Exclude test data files -->
+            <exclude>src/test/resources/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
