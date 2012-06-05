@@ -26,6 +26,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
 import org.xwiki.diff.DiffConfiguration;
 import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
@@ -41,17 +42,44 @@ import org.xwiki.script.service.ScriptService;
  * Provide script oriented APIs to do diff and merges.
  * 
  * @version $Id$
+ * @since 4.1RC1
  */
 @Component
-@Singleton
 @Named("diff")
+@Singleton
 public class DiffScriptService implements ScriptService
 {
+    /**
+     * The key under which the last encountered error is stored in the current execution context.
+     */
+    static final String DIFF_ERROR_KEY = "scriptservice.diff.error";
+
+    /**
+     * The component used to access the execution context.
+     */
+    @Inject
+    private Execution execution;
+
     /**
      * The component used to create the diff.
      */
     @Inject
     private DiffManager diffManager;
+
+    /**
+     * The displayer oriented sub API.
+     */
+    @Inject
+    @Named("diff.display")
+    private ScriptService diffDisplayScriptService;
+
+    /**
+     * @return the display oriented API
+     */
+    public ScriptService getDisplay()
+    {
+        return this.diffDisplayScriptService;
+    }
 
     /**
      * Produce a diff between the two provided versions.
@@ -97,5 +125,15 @@ public class DiffScriptService implements ScriptService
         }
 
         return result;
+    }
+
+    /**
+     * Get the error generated while performing the previously called action.
+     * 
+     * @return an eventual exception or {@code null} if no exception was thrown
+     */
+    public Exception getLastError()
+    {
+        return (Exception) this.execution.getContext().getProperty(DIFF_ERROR_KEY);
     }
 }
