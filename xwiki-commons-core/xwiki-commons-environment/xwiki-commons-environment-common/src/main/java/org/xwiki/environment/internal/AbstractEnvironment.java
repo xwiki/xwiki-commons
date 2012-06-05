@@ -42,7 +42,9 @@ public abstract class AbstractEnvironment implements Environment
      */
     private static final String DEFAULT_TMP_DIRECTORY = System.getProperty("java.io.tmpdir");
 
-    /** The name of the temporary directory which will be cleaned every restart. */
+    /**
+     * The name of the temporary directory which will be cleaned at every restart.
+     */
     private static final String TEMP_NAME = "xwiki-temp";
 
     /**
@@ -88,12 +90,14 @@ public abstract class AbstractEnvironment implements Environment
     /**
      * {@inheritDoc}
      *
-     * Rather than overriding this, it is safer to override {@link #getPermanentDirectoryName()}
-     * This is because this function does a number of checks to make sure the directory exists,
+     * <p>
+     * Rather than overriding this, it is safer to override {@link #getPermanentDirectoryName()} if you need to change
+     * the default behavior. This is because this method does a number of checks to make sure the directory exists,
      * is a directory (not a file) and the XWiki process has permission to write to it. If the
      * directory doesn't exist it is created and if it cannot be written to, an error is printed
-     * in the log and it is passed over for the default permanent directory.
-     * @see Environment#getPermanentDirectory()
+     * in the log and it is passed over for the default permanent directory. Thus by overriding
+     * {@link #getPermanentDirectoryName()} you'll still benefit from all those checks.
+     * </p>
      */
     @Override
     public File getPermanentDirectory()
@@ -103,21 +107,20 @@ public abstract class AbstractEnvironment implements Environment
         // Environment configuration property for the permanent directory location (since that Source require the
         // Environment for finding the configuration resource in the executing Environment).
         if (this.permanentDirectory == null) {
-            final String classSpecified = this.getPermanentDirectoryName();
+            final String classSpecified = getPermanentDirectoryName();
             final String configured = this.configurationProvider.get().getPermanentDirectoryPath();
             if (classSpecified == null && configured == null) {
-                // There's no defined permanent directory,
-                // fall back to the temporary directory but issue a warning
+                // There's no defined permanent directory, fall back to the temporary directory but issue a warning
                 this.logger.warn("No permanent directory configured. Using temporary directory [{}].",
                     DEFAULT_TMP_DIRECTORY);
             }
             final String[] locations = new String[] {
                 classSpecified,
                 configured,
-                this.getTemporaryDirectoryName(),
+                getTemporaryDirectoryName(),
                 DEFAULT_TMP_DIRECTORY
             };
-            this.permanentDirectory = this.initializeDirectory(locations, false);
+            this.permanentDirectory = initializeDirectory(locations, false);
         }
         return this.permanentDirectory;
     }
@@ -150,10 +153,10 @@ public abstract class AbstractEnvironment implements Environment
     {
         if (this.temporaryDirectory == null) {
             final String[] locations = new String[] {
-                this.getTemporaryDirectoryName(),
+                getTemporaryDirectoryName(),
                 DEFAULT_TMP_DIRECTORY
             };
-            this.temporaryDirectory = this.initializeDirectory(locations, true);
+            this.temporaryDirectory = initializeDirectory(locations, true);
         }
         return this.temporaryDirectory;
     }
@@ -190,7 +193,7 @@ public abstract class AbstractEnvironment implements Environment
                 this.logger.warn("Falling back on [{}] as the {} directory.", location, tempOrPermanent);
             }
             first = false;
-            final File dir = this.initializeDirectory(location, isTemp, tempOrPermanent);
+            final File dir = initializeDirectory(location, isTemp, tempOrPermanent);
             if (dir != null) {
                 return dir;
             }
@@ -217,7 +220,7 @@ public abstract class AbstractEnvironment implements Environment
 
         if (dir.exists()) {
             if (dir.isDirectory() && dir.canWrite()) {
-                return this.initDir(dir, isTemp);
+                return initDir(dir, isTemp);
             }
 
             // Not a directory or can't write to it, lets log an error here.
@@ -230,7 +233,7 @@ public abstract class AbstractEnvironment implements Environment
             return null;
 
         } else if (dir.mkdirs()) {
-            return this.initDir(dir, isTemp);
+            return initDir(dir, isTemp);
         }
         this.logger.error("Configured {} directory [{}] could not be created, check permissions.",
             tempOrPermanent, dir.getAbsolutePath());
@@ -247,7 +250,7 @@ public abstract class AbstractEnvironment implements Environment
     private File initDir(final File directory, final boolean isTemp)
     {
         if (isTemp) {
-            this.initTempDir(directory);
+            initTempDir(directory);
         }
         return directory;
     }
@@ -262,7 +265,7 @@ public abstract class AbstractEnvironment implements Environment
     {
         // We can't prevent all bad configurations eg: persistent dir == /dev/null
         // But setting the persistent dir to the xwiki-temp subdir is easy enough to catch.
-        final File permDir = this.getPermanentDirectory();
+        final File permDir = getPermanentDirectory();
         try {
             if (tempDir.equals(permDir) || FileUtils.directoryContains(tempDir, permDir)) {
                 throw new RuntimeException(String.format(

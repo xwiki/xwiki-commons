@@ -28,6 +28,7 @@ import java.net.URL;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.xwiki.component.annotation.Component;
 
 /**
@@ -87,12 +88,12 @@ public class ServletEnvironment extends AbstractEnvironment
         final String tmpDirectory = super.getTemporaryDirectoryName();
         try {
             if (tmpDirectory == null) {
-                return ((File) this.getServletContext().getAttribute("javax.servlet.context.tempdir"))
-                    .getCanonicalPath();
+                File tempDir = (File) this.getServletContext().getAttribute("javax.servlet.context.tempdir");
+                return tempDir == null ? null : tempDir.getCanonicalPath();
             }
         } catch (IOException e) {
-            this.logger.warn("Unable to get servlet temporary directory due to error [{}], "
-                             + "falling back on default temp directory.", e.getMessage());
+            this.logger.warn("Unable to get Servlet temporary directory due to error [{}], "
+                 + "falling back on the default System temporary directory.", ExceptionUtils.getMessage(e));
         }
         return tmpDirectory;
     }
