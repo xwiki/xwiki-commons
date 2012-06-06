@@ -21,6 +21,8 @@ package org.xwiki.xml.internal.html;
 
 import java.io.StringReader;
 import java.util.Collections;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -197,6 +199,28 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
         // Note that if the default Body filter had been executed the result would have been:
         // <p>something</p>.
         Assert.assertEquals(HEADER_FULL + "something" + FOOTER, result);
+    }
+
+    /**
+     * Verify that the restricted parameter works.
+     */
+    @Test
+    public void restrictedHtml()
+    {
+        HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.putAll(configuration.getParameters());
+        parameters.put("restricted", "true");
+        configuration.setParameters(parameters);
+
+        String result = HTMLUtils.toString(this.cleaner.clean(new StringReader("<script>alert(\"foo\")</script>"), 
+                                                              configuration));
+        Assert.assertEquals(HEADER_FULL + "<pre>alert(\"foo\")</pre>" + FOOTER, result);
+
+        result = HTMLUtils.toString(this.cleaner.clean(new StringReader("<style>p {color:white;}</style>"), 
+                                                              configuration));
+        Assert.assertEquals(HEADER_FULL + "<pre>p {color:white;}</pre>" + FOOTER, result);
+
     }
 
     /**

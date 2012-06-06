@@ -123,7 +123,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         CleanerProperties cleanerProperties = getDefaultCleanerProperties(configuration);
         HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
 
-        cleaner.setTransformations(getDefaultCleanerTransformations());
+        cleaner.setTransformations(getDefaultCleanerTransformations(configuration));
         TagNode cleanedNode;
         try {
             cleanedNode = cleaner.clean(originalHtmlContent);
@@ -206,10 +206,11 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     }
 
     /**
+     * @param configuration The cleaner configuration.
      * @return the default cleaning transformations to perform on tags, in addition to the base transformations done by
      *         HTML Cleaner
      */
-    private CleanerTransformations getDefaultCleanerTransformations()
+    private CleanerTransformations getDefaultCleanerTransformations(HTMLCleanerConfiguration configuration)
     {
         CleanerTransformations defaultTransformations = new CleanerTransformations();
 
@@ -231,6 +232,16 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         tt = new TagTransformation(HTMLConstants.TAG_CENTER, HTMLConstants.TAG_P, false);
         tt.addAttributeTransformation(HTMLConstants.ATTRIBUTE_STYLE, "text-align:center");
         defaultTransformations.addTransformation(tt);
+
+        String restricted = configuration.getParameters().get("restricted");
+        if ("true".equalsIgnoreCase(restricted)) {
+
+            tt = new TagTransformation(HTMLConstants.TAG_SCRIPT, HTMLConstants.TAG_PRE, false);
+            defaultTransformations.addTransformation(tt);
+
+            tt = new TagTransformation(HTMLConstants.TAG_STYLE, HTMLConstants.TAG_PRE, false);
+            defaultTransformations.addTransformation(tt);
+        }
 
         return defaultTransformations;
     }
