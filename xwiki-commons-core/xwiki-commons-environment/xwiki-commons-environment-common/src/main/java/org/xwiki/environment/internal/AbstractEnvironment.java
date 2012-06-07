@@ -107,14 +107,16 @@ public abstract class AbstractEnvironment implements Environment
         // Environment configuration property for the permanent directory location (since that Source require the
         // Environment for finding the configuration resource in the executing Environment).
         if (this.permanentDirectory == null) {
+            String systemProperty = System.getProperty("xwiki.data.dir");
             final String classSpecified = getPermanentDirectoryName();
             final String configured = this.configurationProvider.get().getPermanentDirectoryPath();
-            if (classSpecified == null && configured == null) {
+            if (systemProperty == null && classSpecified == null && configured == null) {
                 // There's no defined permanent directory, fall back to the temporary directory but issue a warning
                 this.logger.warn("No permanent directory configured. Using temporary directory [{}].",
                     DEFAULT_TMP_DIRECTORY);
             }
             final String[] locations = new String[] {
+                systemProperty,
                 classSpecified,
                 configured,
                 getTemporaryDirectoryName(),

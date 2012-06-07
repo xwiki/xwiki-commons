@@ -113,13 +113,35 @@ public class ServletEnvironmentTest
         this.environment.getResourceAsStream("/test");
     }
 
+
     @Test
-    public void testGetPermanentDirectory() throws Exception
+    public void testGetPermanentDirectoryWhenSetWithAPI() throws Exception
     {
         File permanentDirectory = new File("/permanent");
         this.environment.setPermanentDirectory(permanentDirectory);
         Assert.assertEquals(permanentDirectory.getCanonicalFile(),
             this.environment.getPermanentDirectory().getCanonicalFile());
+    }
+
+    @Test
+    public void testGetPermanentDirectoryWhenSetWithSystemProperty() throws Exception
+    {
+        File expectedPermanentDirectory = new File(System.getProperty("java.io.tmpdir"), "permanent");
+        System.setProperty("xwiki.data.dir", expectedPermanentDirectory.toString());
+
+        try {
+            final ServletContext servletContext = getMockery().mock(ServletContext.class);
+            getMockery().checking(new Expectations() {{
+                oneOf(servletContext).getAttribute("javax.servlet.context.tempdir");
+                will(returnValue(servletTmpDir));
+            }});
+            this.environment.setServletContext(servletContext);
+
+            Assert.assertEquals(expectedPermanentDirectory.getCanonicalFile(),
+                this.environment.getPermanentDirectory().getCanonicalFile());
+        } finally {
+            System.clearProperty("xwiki.data.dir");
+        }
     }
 
     @Test
