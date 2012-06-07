@@ -49,7 +49,8 @@ public interface VelocityEngine
      * 
      * @param context the Velocity context to use in rendering the input string
      * @param out the writer in which to render the output
-     * @param templateName the string to be used as the template name for log messages in case of error
+     * @param templateName the string to be used as the template name for log messages in case of error.  Also used
+     *                     internally by Velocity as a cache index key for caching macros.
      * @param source the input string containing the VTL to be rendered
      * @return true if successful, false otherwise. If false, see the Velocity runtime log
      * @throws XWikiVelocityException in case of error
@@ -61,7 +62,8 @@ public interface VelocityEngine
      * 
      * @param context the Velocity context to use in rendering the input string
      * @param out the writer in which to render the output
-     * @param templateName the string to be used as the template name for log messages in case of error
+     * @param templateName the string to be used as the template name for log messages in case of error.  Also used
+     *                     internally by Velocity as a cache index key for caching macros.
      * @param source the input containing the VTL to be rendered, as a Reader
      * @return true if successful, false otherwise. If false, see the Velocity runtime log
      * @throws XWikiVelocityException in case of error
