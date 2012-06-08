@@ -72,6 +72,12 @@ public final class XMLUtils
     /** Regular expression recognizing XML-escaped "double quote" characters. */
     private static final Pattern QUOT_PATTERN = Pattern.compile("&(?:quot|#0*+34|#x0*+22);");
 
+    /** XML encoding of the "left curly bracket". */
+    private static final String LCURL = "&#123;";
+
+    /** Regular expression recognizing XML-escaped "left curly bracket" characters. */
+    private static final Pattern LCURL_PATTERN = Pattern.compile("&(?:#0*+123|#x0*+7[bB]);");
+
     /** XML encoding of the "less than" character. */
     private static final String LT = "&#60;";
 
@@ -204,7 +210,8 @@ public final class XMLUtils
 
     /**
      * Escapes all the XML special characters in a <code>String</code> using numerical XML entities. Specifically,
-     * escapes &lt;, &gt;, ", ' and &amp;.
+     * escapes &lt;, &gt;, ", ', &amp; and {.  Left curly bracket is included here to protect against {{/html}} in
+     * xwiki 2.x syntax.
      *
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
@@ -215,8 +222,9 @@ public final class XMLUtils
     }
 
     /**
-     * Escapes all the XML special characters in a <code>String</code> using numerical XML entities, so that the
-     * resulting string can safely be used as an XML attribute value. Specifically, escapes &lt;, &gt;, ", ' and &amp;.
+     * Escapes all the XML special characters and left curly bracket in a <code>String</code> using numerical XML
+     * entities, so that the resulting string can safely be used as an XML attribute value. Specifically, escapes &lt;,
+     * &gt;, ", ', &amp; and {.  Left curly bracket is included here to protect against {{/html}} in xwiki 2.x syntax.
      *
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
@@ -247,6 +255,9 @@ public final class XMLUtils
                     break;
                 case '>':
                     result.append(GT);
+                    break;
+                case '{':
+                    result.append(LCURL);
                     break;
                 default:
                     result.append(c);
@@ -291,7 +302,7 @@ public final class XMLUtils
     }
 
     /**
-     * Unescape encoded special XML characters. Only &gt;, &lt; &amp;, " and ' are unescaped, since they are the only
+     * Unescape encoded special XML characters. Only &gt;, &lt; &amp;, ", ' and { are unescaped, since they are the only
      * ones that affect the resulting markup.
      *
      * @param content the text to decode, may be {@code null}
@@ -309,6 +320,7 @@ public final class XMLUtils
         str = LT_PATTERN.matcher(str).replaceAll("<");
         str = GT_PATTERN.matcher(str).replaceAll(">");
         str = AMP_PATTERN.matcher(str).replaceAll("&");
+        str = LCURL_PATTERN.matcher(str).replaceAll("{");
 
         return str;
     }
