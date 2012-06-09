@@ -233,7 +233,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         tt.addAttributeTransformation(HTMLConstants.ATTRIBUTE_STYLE, "text-align:center");
         defaultTransformations.addTransformation(tt);
 
-        String restricted = configuration.getParameters().get("restricted");
+        String restricted = configuration.getParameters().get(HTMLCleanerConfiguration.RESTRICTED);
         if ("true".equalsIgnoreCase(restricted)) {
 
             tt = new TagTransformation(HTMLConstants.TAG_SCRIPT, HTMLConstants.TAG_PRE, false);
