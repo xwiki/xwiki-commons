@@ -437,8 +437,8 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
                information is not fetched from the local working copy but from the SCM pom configuration. This forces
                us to specify SCM configuration in every module which has its own lifecycle. Inheritance can't be used
                for SCM configuration since a released parent pom contains SCM information about its tag and not about
-               the trunk. We could have globally set remoteTagging to false but we haven't since it would have
-               prevented us from using SVN 1.5. We also prefer to follow maven conventions as much as possible. -->
+               the trunk. We could have globally set remoteTagging to false but we haven't since we prefer to follow
+               maven conventions as much as possible. -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
