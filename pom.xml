@@ -697,7 +697,7 @@ mmmm]]></license>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.0</version>
+          <version>3.1</version>
           <!-- Site Plugin doesn’t automatically pull the Apache Wagon SSH implementation which is needed for
                site:deploy goal when using SCP protocol. -->
           <dependencies>
