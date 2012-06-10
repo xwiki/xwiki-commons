@@ -567,12 +567,6 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <version>1.5</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <!-- Lock down plugin version for build reproducibility -->
-          <version>2.8</version>
-        </plugin>
-        <plugin>
           <groupId>org.mortbay.jetty</groupId>
           <artifactId>maven-jetty-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
