@@ -32,6 +32,10 @@
   <artifactId>xwiki-commons-pom</artifactId>
   <name>XWiki Commons - Root POM</name>
   <packaging>pom</packaging>
+  <properties>
+    <!-- By default License check is on -->
+    <xwiki.license.skip>false</xwiki.license.skip>
+  </properties>
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
@@ -124,6 +128,7 @@
           <groupId>com.mycila.maven-license-plugin</groupId>
           <artifactId>maven-license-plugin</artifactId>
           <configuration>
+            <skip>${xwiki.license.skip}</skip>
             <header>license.txt</header>
             <strictCheck>true</strictCheck>
             <headerDefinitions>
