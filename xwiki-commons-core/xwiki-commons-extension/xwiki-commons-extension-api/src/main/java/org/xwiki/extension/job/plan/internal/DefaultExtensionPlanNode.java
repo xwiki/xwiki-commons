@@ -38,17 +38,25 @@ public class DefaultExtensionPlanNode implements ExtensionPlanNode
     /**
      * @see #getAction()
      */
-    private ExtensionPlanAction action;
+    protected ExtensionPlanAction action;
 
     /**
      * @see #getChildren()
      */
-    private Collection<ExtensionPlanNode> children;
+    protected Collection<ExtensionPlanNode> children;
 
     /**
-     * @see #getVersionConstraint()
+     * @see #getInitialVersionConstraint()
      */
-    private VersionConstraint initialVersionConstraint;
+    protected VersionConstraint initialVersionConstraint;
+
+    /**
+     * Default constructor.
+     */
+    public DefaultExtensionPlanNode()
+    {
+
+    }
 
     /**
      * @param node a node to copy
@@ -93,7 +101,7 @@ public class DefaultExtensionPlanNode implements ExtensionPlanNode
     @Override
     public Collection<ExtensionPlanNode> getChildren()
     {
-        return this.children;
+        return this.children != null ? this.children : Collections.<ExtensionPlanNode> emptyList();
     }
 
     @Override

@@ -22,7 +22,6 @@ package org.xwiki.extension.job.internal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,13 +38,13 @@ import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.job.ExtensionRequest;
+import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
-import org.xwiki.extension.job.plan.ExtensionPlanTree;
-import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
-import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
+import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
+import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
@@ -61,12 +60,8 @@ import org.xwiki.extension.version.VersionConstraint;
  */
 public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends AbstractExtensionJob<R>
 {
-    protected static class ModifableExtensionPlanTree extends ArrayList<ModifableExtensionPlanNode> implements
-        Cloneable
+    protected static class ModifableExtensionPlanTree extends DefaultExtensionPlanTree implements Cloneable
     {
-        /**
-         * 
-         */
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -74,25 +69,21 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         {
             ModifableExtensionPlanTree tree = new ModifableExtensionPlanTree();
 
-            for (ModifableExtensionPlanNode node : this) {
-                tree.add(node.clone());
+            for (ExtensionPlanNode node : this) {
+                tree.add(((ModifableExtensionPlanNode) node).clone());
             }
 
             return tree;
         }
     }
 
-    protected static class ModifableExtensionPlanNode implements Cloneable
+    protected static class ModifableExtensionPlanNode extends DefaultExtensionPlanNode implements Cloneable
     {
         // never change
 
         private final ExtensionDependency initialDependency;
 
         // can change
-
-        public DefaultExtensionPlanAction action;
-
-        public List<ModifableExtensionPlanNode> children;
 
         public VersionConstraint versionConstraint;
 
@@ -135,9 +126,20 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             this.children = node.children;
         }
 
-        public List<ModifableExtensionPlanNode> getChildren()
+        @Override
+        public VersionConstraint getInitialVersionConstraint()
         {
-            return this.children != null ? this.children : Collections.<ModifableExtensionPlanNode> emptyList();
+            return this.initialDependency.getVersionConstraint();
+        }
+
+        public void setAction(ExtensionPlanAction action)
+        {
+            this.action = action;
+        }
+
+        public void setChildren(Collection< ? extends ExtensionPlanNode> children)
+        {
+            this.children = (Collection) children;
         }
     }
 
@@ -168,11 +170,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     /**
      * The install plan.
      */
-    protected ExtensionPlanTree finalExtensionTree = new DefaultExtensionPlanTree();
-
-    /**
-     * The temporary install plan. There is two because we want the one in the status to be unmodifiable.
-     */
     protected ModifableExtensionPlanTree extensionTree = new ModifableExtensionPlanTree();
 
     /**
@@ -186,8 +183,13 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     @Override
     protected DefaultExtensionPlan<R> createNewStatus(R request)
     {
-        return new DefaultExtensionPlan<R>(request, this.observationManager, this.loggerManager,
-            this.finalExtensionTree);
+        return new DefaultExtensionPlan<R>(request, this.observationManager, this.loggerManager, this.extensionTree);
+    }
+
+    protected void setExtensionTree(ModifableExtensionPlanTree extensionTree)
+    {
+        this.extensionTree = extensionTree;
+        ((DefaultExtensionPlan<R>) this.status).setTree(this.extensionTree);
     }
 
     /**
@@ -249,35 +251,18 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         } finally {
             notifyPopLevelProgress();
         }
-
-        // Create the final tree
-
-        this.finalExtensionTree.addAll(createFinalTree(this.extensionTree));
     }
 
-    protected List<ExtensionPlanNode> createFinalTree(List<ModifableExtensionPlanNode> tree)
-    {
-        List<ExtensionPlanNode> finalTree = new ArrayList<ExtensionPlanNode>(tree.size());
-
-        for (ModifableExtensionPlanNode node : tree) {
-            List<ExtensionPlanNode> children;
-            if (!node.getChildren().isEmpty()) {
-                children = createFinalTree(node.children);
-            } else {
-                children = null;
-            }
-
-            // Set the initial dependency version constraint
-            DefaultExtensionPlanAction action =
-                new DefaultExtensionPlanAction(node.action.getExtension(), node.action.getPreviousExtension(),
-                    node.action.getAction(), node.action.getNamespace(), node.initialDependency != null);
-
-            finalTree.add(new DefaultExtensionPlanNode(action, children, node.initialDependency != null
-                ? node.initialDependency.getVersionConstraint() : null));
-        }
-
-        return finalTree;
-    }
+    /*
+     * protected List<ExtensionPlanNode> createFinalTree(ModifableExtensionPlanNode tree) { List<ExtensionPlanNode>
+     * finalTree = new ArrayList<ExtensionPlanNode>(tree.size()); for (ModifableExtensionPlanNode node : tree) {
+     * List<ExtensionPlanNode> children; if (!node.getChildren().isEmpty()) { children = createFinalTree((Collection)
+     * node.getChildren()); } else { children = null; } // Set the initial dependency version constraint
+     * DefaultExtensionPlanAction action = new DefaultExtensionPlanAction(node.getAction().getExtension(),
+     * node.getAction().getPreviousExtension(), node.getAction().getAction(), node.getAction() .getNamespace(),
+     * node.initialDependency != null); finalTree.add(new AbstractExtensionPlanNode(action, children,
+     * node.initialDependency != null ? node.initialDependency.getVersionConstraint() : null)); } return finalTree; }
+     */
 
     private ModifableExtensionPlanNode getExtensionNode(String id, String namespace)
     {
@@ -296,7 +281,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     private void addExtensionNode(ModifableExtensionPlanNode node)
     {
-        String id = node.action.getExtension().getId().getId();
+        String id = node.getAction().getExtension().getId().getId();
 
         Map<String, ModifableExtensionPlanNode> extensionsById = this.extensionsNodeCache.get(id);
 
@@ -305,7 +290,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             this.extensionsNodeCache.put(id, extensionsById);
         }
 
-        ModifableExtensionPlanNode existingNode = extensionsById.get(node.action.getNamespace());
+        ModifableExtensionPlanNode existingNode = extensionsById.get(node.getAction().getNamespace());
 
         if (existingNode != null) {
             existingNode.set(node);
@@ -314,7 +299,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             }
             existingNode.duplicates.add(node);
         } else {
-            extensionsById.put(node.action.getNamespace(), node);
+            extensionsById.put(node.getAction().getNamespace(), node);
         }
     }
 
@@ -326,8 +311,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
      * @throws InstallException error when trying to install provided extension
      */
-    protected void installExtension(ExtensionId extensionId, String namespace,
-        List<ModifableExtensionPlanNode> parentBranch) throws InstallException
+    protected void installExtension(ExtensionId extensionId, String namespace, ModifableExtensionPlanTree parentBranch)
+        throws InstallException
     {
         installExtension(extensionId, false, namespace, parentBranch);
     }
@@ -342,7 +327,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @throws InstallException error when trying to install provided extension
      */
     protected void installExtension(ExtensionId extensionId, boolean dependency, String namespace,
-        List<ModifableExtensionPlanNode> parentBranch) throws InstallException
+        ModifableExtensionPlanTree parentBranch) throws InstallException
     {
         if (namespace != null) {
             this.logger.info("Resolving extension [{}] on namespace [{}]", extensionId, namespace);
@@ -403,7 +388,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                 ModifableExtensionPlanNode node =
                     new ModifableExtensionPlanNode(extensionDependency, extensionDependency.getVersionConstraint());
-                node.action = new DefaultExtensionPlanAction(coreExtension, null, Action.NONE, null, true);
+                node.setAction(new DefaultExtensionPlanAction(coreExtension, null, Action.NONE, null, true));
 
                 parentBranch.add(node);
 
@@ -422,7 +407,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         ModifableExtensionPlanNode existingNode = getExtensionNode(extensionDependency.getId(), namespace);
         if (existingNode != null) {
-            if (versionConstraint.isCompatible(existingNode.action.getExtension().getId().getVersion())) {
+            if (versionConstraint.isCompatible(existingNode.getAction().getExtension().getId().getVersion())) {
                 ModifableExtensionPlanNode node = new ModifableExtensionPlanNode(extensionDependency, existingNode);
                 addExtensionNode(node);
                 parentBranch.add(node);
@@ -438,7 +423,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     }
                 } else {
                     throw new InstallException("Dependency [" + extensionDependency + "] incompatible with extension ["
-                        + existingNode.action.getExtension() + "]");
+                        + existingNode.getAction().getExtension() + "]");
                 }
             }
         }
@@ -459,9 +444,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                 ModifableExtensionPlanNode node =
                     new ModifableExtensionPlanNode(extensionDependency, versionConstraint);
-                node.action =
-                    new DefaultExtensionPlanAction(installedExtension, null, Action.NONE, namespace,
-                        installedExtension.isDependency());
+                node.setAction(new DefaultExtensionPlanAction(installedExtension, null, Action.NONE, namespace,
+                    installedExtension.isDependency()));
 
                 addExtensionNode(node);
                 parentBranch.add(node);
@@ -749,11 +733,10 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 initialDependency != null ? new ModifableExtensionPlanNode(initialDependency,
                     initialDependency.getVersionConstraint()) : new ModifableExtensionPlanNode();
 
-            node.children = children;
-            node.action =
-                new DefaultExtensionPlanAction(extension, previousExtension, previousExtension != null
-                    ? DefaultExtensionPlanAction.Action.UPGRADE : DefaultExtensionPlanAction.Action.INSTALL, namespace,
-                    dependency);
+            node.setChildren(children);
+            node.setAction(new DefaultExtensionPlanAction(extension, previousExtension, previousExtension != null
+                ? DefaultExtensionPlanAction.Action.UPGRADE : DefaultExtensionPlanAction.Action.INSTALL, namespace,
+                dependency));
 
             return node;
         } finally {

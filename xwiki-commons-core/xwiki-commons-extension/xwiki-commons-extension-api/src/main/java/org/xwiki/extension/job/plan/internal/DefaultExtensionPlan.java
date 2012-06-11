@@ -20,7 +20,6 @@
 package org.xwiki.extension.job.plan.internal;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -47,12 +46,7 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
      */
     // TODO: find a way to serialize before making DefaultExtensionPlan Serializable (the main issue is the Extension
     // objects in the nodes)
-    private transient ExtensionPlanTree tree;
-
-    /**
-     * @see #getActions()
-     */
-    private transient Set<ExtensionPlanAction> actionsCache;
+    protected transient ExtensionPlanTree tree;
 
     /**
      * @param request the request provided when started the job
@@ -61,8 +55,8 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
      * @param tree the tree representation of the plan, it's not copied but taken as it it to allow filling it from
      *            outside
      */
-    public DefaultExtensionPlan(R request, ObservationManager observationManager,
-        LoggerManager loggerManager, ExtensionPlanTree tree)
+    public DefaultExtensionPlan(R request, ObservationManager observationManager, LoggerManager loggerManager,
+        ExtensionPlanTree tree)
     {
         super(request, observationManager, loggerManager);
 
@@ -88,6 +82,14 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
         return this.tree;
     }
 
+    /**
+     * @param tree the tree
+     */
+    public void setTree(ExtensionPlanTree tree)
+    {
+        this.tree = tree;
+    }
+
     @Override
     public Collection<ExtensionPlanAction> getActions()
     {
@@ -97,12 +99,10 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
 
             return extensions;
         } else {
-            if (this.actionsCache == null) {
-                this.actionsCache = new LinkedHashSet<ExtensionPlanAction>();
-                fillExtensionActions(this.actionsCache, this.tree);
-            }
+            Set<ExtensionPlanAction> actionsCache = new LinkedHashSet<ExtensionPlanAction>();
+            fillExtensionActions(actionsCache, this.tree);
 
-            return Collections.unmodifiableCollection(this.actionsCache);
+            return actionsCache;
         }
     }
 }

@@ -127,7 +127,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
         try {
             installExtension(extensionId, namespace, currentTree);
 
-            this.extensionTree = currentTree;
+            setExtensionTree(currentTree);
 
             return true;
         } catch (InstallException e) {
@@ -165,9 +165,5 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                 }
             }
         }
-
-        // Create the final tree
-
-        this.finalExtensionTree.addAll(createFinalTree(this.extensionTree));
     }
 }
