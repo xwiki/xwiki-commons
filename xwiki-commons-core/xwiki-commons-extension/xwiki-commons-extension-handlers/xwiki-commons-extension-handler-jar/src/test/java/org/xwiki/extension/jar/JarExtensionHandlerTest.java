@@ -35,7 +35,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
-import org.xwiki.extension.repository.internal.local.DefaultInstalledExtension;
+import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.observation.ObservationManager;
 
