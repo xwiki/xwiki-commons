@@ -55,9 +55,9 @@ public class WrappingInstalledExtension<E extends InstalledExtension> extends Wr
     }
 
     @Override
-    public boolean isValid()
+    public boolean isValid(String namespace)
     {
-        return getWrapped().isValid();
+        return getWrapped().isValid(namespace);
     }
 
     @Override

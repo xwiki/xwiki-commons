@@ -19,7 +19,6 @@
  */
 package org.xwiki.extension.job.internal;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,10 +40,10 @@ import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
-import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
-import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
+import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
+import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
@@ -253,17 +252,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         }
     }
 
-    /*
-     * protected List<ExtensionPlanNode> createFinalTree(ModifableExtensionPlanNode tree) { List<ExtensionPlanNode>
-     * finalTree = new ArrayList<ExtensionPlanNode>(tree.size()); for (ModifableExtensionPlanNode node : tree) {
-     * List<ExtensionPlanNode> children; if (!node.getChildren().isEmpty()) { children = createFinalTree((Collection)
-     * node.getChildren()); } else { children = null; } // Set the initial dependency version constraint
-     * DefaultExtensionPlanAction action = new DefaultExtensionPlanAction(node.getAction().getExtension(),
-     * node.getAction().getPreviousExtension(), node.getAction().getAction(), node.getAction() .getNamespace(),
-     * node.initialDependency != null); finalTree.add(new AbstractExtensionPlanNode(action, children,
-     * node.initialDependency != null ? node.initialDependency.getVersionConstraint() : null)); } return finalTree; }
-     */
-
     private ModifableExtensionPlanNode getExtensionNode(String id, String namespace)
     {
         Map<String, ModifableExtensionPlanNode> extensionsById = this.extensionsNodeCache.get(id);
@@ -337,7 +325,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         // Make sure the extension is not already a core extension
         if (this.coreExtensionRepository.exists(extensionId.getId())) {
-            throw new InstallException(MessageFormat.format("There is already a core extension with the id [{0}]",
+            throw new InstallException(String.format("There is already a core extension with the id [%s]",
                 extensionId.getId()));
         }
 
@@ -349,17 +337,20 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             this.logger.info("Found already installed extension with id [{}]. Checking compatibility.", extensionId);
 
             if (extensionId.getVersion() == null) {
-                throw new InstallException(MessageFormat.format("The extension with id [{0}] is already installed",
+                throw new InstallException(String.format("The extension with id [%s] is already installed",
+                    extensionId.getId()));
+            } else if (!installedExtension.isValid(namespace)
+                && extensionId.getVersion().equals(installedExtension.getId().getVersion())) {
+                throw new InstallException(String.format("The extension with id [%s] is already installed",
                     extensionId.getId()));
             }
 
             int diff = extensionId.getVersion().compareTo(installedExtension.getId().getVersion());
 
             if (diff == 0) {
-                throw new InstallException(
-                    MessageFormat.format("The extension [{0}] is already installed", extensionId));
+                throw new InstallException(String.format("The extension [%s] is already installed", extensionId));
             } else if (diff < 0) {
-                throw new InstallException(MessageFormat.format("A more recent version of [{0}] is already installed",
+                throw new InstallException(String.format("A more recent version of [%s] is already installed",
                     extensionId.getId()));
             } else {
                 // upgrade
@@ -438,7 +429,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         ExtensionDependency targetDependency = extensionDependency;
 
         if (installedExtension != null) {
-            if (versionConstraint.isCompatible(installedExtension.getId().getVersion())) {
+            // Check if already installed version is compatible
+            if (installedExtension.isValid(namespace)
+                && versionConstraint.isCompatible(installedExtension.getId().getVersion())) {
                 this.logger.info("There is already an installed extension [{}] covering extension dependency [{}]",
                     installedExtension, extensionDependency);
 
@@ -453,6 +446,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 return null;
             }
 
+            // If not compatible with it, try to merge dependencies constraint of all backward dependencies to find a
+            // new compatible version for this extension
             VersionConstraint mergedVersionContraint;
             try {
                 if (installedExtension.isInstalled(null)) {
@@ -510,7 +505,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         // Make sure the dependency is not already a core extension
         if (checkCoreExtension(extensionDependency, parentBranch)) {
-            // Already exists and added to the tree by #checkExistingPlan
+            // Already exists and added to the tree by #checkCoreExtension
             return;
         }
 
@@ -527,7 +522,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         ExtensionDependency targetDependency =
             checkInstalledExtension(previousExtension, extensionDependency, versionConstraint, namespace, parentBranch);
         if (targetDependency == null) {
-            // Already exists and added to the tree by #checkExistingPlan
+            // Already exists and added to the tree by #checkInstalledExtension
             return;
         }
 
@@ -669,7 +664,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             try {
                 extension = this.repositoryManager.resolve(extensionId);
             } catch (ResolveException e1) {
-                throw new InstallException(MessageFormat.format("Failed to resolve extension [{0}]", extensionId), e1);
+                throw new InstallException(String.format("Failed to resolve extension [%s]", extensionId), e1);
             }
         }
 
@@ -694,7 +689,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             try {
                 extension = this.repositoryManager.resolve(extensionDependency);
             } catch (ResolveException e1) {
-                throw new InstallException(MessageFormat.format("Failed to resolve extension dependency [{0}]",
+                throw new InstallException(String.format("Failed to resolve extension dependency [%s]",
                     extensionDependency), e1);
             }
         }

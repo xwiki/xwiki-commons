@@ -143,6 +143,10 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
     private void loadExtensionInNamespace(InstalledExtension installedExtension, String namespace,
         Map<String, Set<InstalledExtension>> loadedExtensions) throws ExtensionException
     {
+        if (!installedExtension.isValid(namespace)) {
+            return;
+        }
+
         Set<InstalledExtension> loadedExtensionsInNamespace = loadedExtensions.get(namespace);
 
         if (loadedExtensionsInNamespace == null) {

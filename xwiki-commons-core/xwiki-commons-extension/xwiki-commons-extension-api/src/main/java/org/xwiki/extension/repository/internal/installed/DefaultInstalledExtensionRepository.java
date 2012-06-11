@@ -344,7 +344,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         }
 
         installedExtension.setInstalled(true, namespace);
-        installedExtension.setValid(valid);
+        installedExtension.setValid(namespace, valid);
 
         addInstalledExtension(installedExtension, namespace);
     }

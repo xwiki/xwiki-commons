@@ -20,7 +20,9 @@
 package org.xwiki.extension.repository.internal.installed;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
@@ -43,9 +45,9 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     private LocalExtension localExtension;
 
     /**
-     * @see #isValid()
+     * @see #isValid(String)
      */
-    private boolean valid;
+    private Map<String, Boolean> valid = new HashMap<String, Boolean>();
 
     /**
      * @param localExtension the wrapped local extension
@@ -173,10 +175,18 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     public void setInstalled(boolean installed, String namespace)
     {
         if (namespace == null) {
+            if (installed && !isInstalled()) {
+                setValid(namespace, true);
+            }
+
             setInstalled(installed);
             setNamespaces(null);
         } else {
             if (installed) {
+                if (!isInstalled(namespace)) {
+                    setValid(namespace, true);
+                }
+
                 setInstalled(true);
                 addNamespace(namespace);
             } else {
@@ -191,20 +201,27 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                 }
             }
         }
+
+        if (!installed) {
+            this.valid.remove(namespace);
+        }
     }
 
     @Override
-    public boolean isValid()
+    public boolean isValid(String namespace)
     {
-        return this.valid;
+        Boolean isvalid = this.valid.get(namespace);
+
+        return isvalid != null ? isvalid : true;
     }
 
     /**
      * @param valid indicate of the installed extension is valid
+     * @param namespace the namespace to look at, if null it means the extension is installed for all the namespaces
      */
-    public void setValid(boolean valid)
+    public void setValid(String namespace, boolean valid)
     {
-        this.valid = valid;
+        this.valid.put(namespace, valid);
     }
 
     @Override
