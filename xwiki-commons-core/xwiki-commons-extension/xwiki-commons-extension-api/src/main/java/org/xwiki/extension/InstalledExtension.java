@@ -58,6 +58,17 @@ public interface InstalledExtension extends LocalExtension
     boolean isInstalled();
 
     /**
+     * Indicate if the extension is working.
+     * <p>
+     * An installed extension can be invalid for example when one of the core extensions has been changed and is now
+     * incompatible with this installed extension.
+     * 
+     * @return true is valid
+     * @since 4.2M1
+     */
+    boolean isValid();
+
+    /**
      * Indicate if the extension is installed in the provided namespace.
      * 
      * @param namespace the namespace to look at, if null it means the extension is installed for all the namespaces

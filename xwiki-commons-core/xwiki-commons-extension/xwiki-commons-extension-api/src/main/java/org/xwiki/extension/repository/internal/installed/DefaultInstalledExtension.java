@@ -43,6 +43,11 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     private LocalExtension localExtension;
 
     /**
+     * @see #isValid()
+     */
+    private boolean valid;
+
+    /**
      * @param localExtension the wrapped local extension
      * @param repository the repository
      */
@@ -186,6 +191,20 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isValid()
+    {
+        return this.valid;
+    }
+
+    /**
+     * @param valid indicate of the installed extension is valid
+     */
+    public void setValid(boolean valid)
+    {
+        this.valid = valid;
     }
 
     @Override

@@ -141,11 +141,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
         for (LocalExtension localExtension : this.localRepository.getLocalExtensions()) {
             if (DefaultInstalledExtension.isInstalled(localExtension)) {
-                try {
-                    validateExtension(localExtension);
-                } catch (InvalidExtensionException e) {
-                    this.logger.error("Invalid extension [" + localExtension + "] it will not be loaded", e);
-                }
+                validateExtension(localExtension);
             }
         }
     }
@@ -158,15 +154,28 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * @param localExtension the extension to validate
      * @throws InvalidExtensionException when the passed extension is fond invalid
      */
-    private void validateExtension(LocalExtension localExtension) throws InvalidExtensionException
+    private void validateExtension(LocalExtension localExtension)
     {
         Collection<String> namespaces = DefaultInstalledExtension.getNamespaces(localExtension);
 
         if (namespaces == null) {
-            validateExtension(localExtension, null);
+            try {
+                validateExtension(localExtension, null);
+            } catch (InvalidExtensionException e) {
+                this.logger.error("Invalid extension [" + localExtension + "] it will not be loaded", e);
+
+                addInstalledExtension(localExtension, null, false);
+            }
         } else {
             for (String namespace : namespaces) {
-                validateExtension(localExtension, namespace);
+                try {
+                    validateExtension(localExtension, namespace);
+                } catch (InvalidExtensionException e) {
+                    this.logger.error("Invalid extension [" + localExtension + "] on namespace [" + namespace
+                        + "], it will not be loaded", e);
+                }
+
+                addInstalledExtension(localExtension, namespace, false);
             }
         }
     }
@@ -231,7 +240,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         }
 
         // Complete local extension installation
-        addInstalledExtension(localExtension, namespace);
+        addInstalledExtension(localExtension, namespace, true);
     }
 
     private boolean isCompatible(Version existingVersion, VersionConstraint versionConstraint)
@@ -298,7 +307,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
         // Update caches
 
-        addInstalledExtension(installedExtension, namespace);
+        addInstalledExtension(installedExtension, namespace, true);
     }
 
     private void removeFromBackwardDependencies(DefaultInstalledExtension installedExtension, String namespace)
@@ -325,8 +334,9 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * 
      * @param localExtension the local extension to register
      * @param namespace the namespace
+     * @param valid is the extension valid
      */
-    private void addInstalledExtension(LocalExtension localExtension, String namespace)
+    private void addInstalledExtension(LocalExtension localExtension, String namespace, boolean valid)
     {
         DefaultInstalledExtension installedExtension = this.extensions.get(localExtension.getId());
         if (installedExtension == null) {
@@ -334,6 +344,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         }
 
         installedExtension.setInstalled(true, namespace);
+        installedExtension.setValid(valid);
 
         addInstalledExtension(installedExtension, namespace);
     }
