@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.repository.internal.installed;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -349,11 +349,11 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         this.extensions.put(installedExtension.getId(), installedExtension);
 
         // Register the extension in the installed extensions for the provided namespace
-        getInstalledFeatureFromCache(installedExtension.getId().getId(), namespace, installedExtension);
+        addInstalledFeatureToCache(installedExtension.getId().getId(), namespace, installedExtension);
 
         // Add virtual extensions
         for (String feature : installedExtension.getFeatures()) {
-            getInstalledFeatureFromCache(feature, namespace, installedExtension);
+            addInstalledFeatureToCache(feature, namespace, installedExtension);
         }
 
         // Add backward dependencies
@@ -365,7 +365,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
                 // Make sure to register backward dependency on the right namespace
                 InstalledFeature dependencyInstalledExtension =
-                    getInstalledFeatureFromCache(dependency.getId(), namespace, dependencyLocalExtension);
+                    addInstalledFeatureToCache(dependency.getId(), namespace, dependencyLocalExtension);
 
                 dependencyInstalledExtension.backwardDependencies.add(installedExtension);
             }
@@ -382,7 +382,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      * @param localExtension the extension
      * @return the installed extension informations
      */
-    private InstalledFeature getInstalledFeatureFromCache(String feature, String namespace,
+    private InstalledFeature addInstalledFeatureToCache(String feature, String namespace,
         DefaultInstalledExtension localExtension)
     {
         Map<String, InstalledFeature> installedExtensionsForFeature = this.extensionNamespaceByFeature.get(feature);
