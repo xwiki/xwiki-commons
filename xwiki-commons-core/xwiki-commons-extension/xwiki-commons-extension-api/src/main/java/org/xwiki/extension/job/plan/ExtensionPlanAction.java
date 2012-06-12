@@ -53,6 +53,11 @@ public interface ExtensionPlanAction
         UPGRADE,
 
         /**
+         * Downgrade the extension.
+         */
+        DOWNGRADE,
+
+        /**
          * Uninstall the extension.
          */
         UNINSTALL

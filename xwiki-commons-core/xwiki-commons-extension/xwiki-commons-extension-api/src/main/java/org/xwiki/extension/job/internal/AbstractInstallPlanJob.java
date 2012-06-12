@@ -302,7 +302,11 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     protected void installExtension(ExtensionId extensionId, String namespace, ModifableExtensionPlanTree parentBranch)
         throws InstallException
     {
-        installExtension(extensionId, false, namespace, parentBranch);
+        try {
+            installExtension(extensionId, false, namespace, parentBranch);
+        } catch (ResolveException e) {
+            throw new InstallException("An unexpected exception has been raised", e);
+        }
     }
 
     /**
@@ -313,9 +317,10 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @param namespace the namespace where to install the extension
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
      * @throws InstallException error when trying to install provided extension
+     * @throws ResolveException unexpected exception has been raised
      */
     protected void installExtension(ExtensionId extensionId, boolean dependency, String namespace,
-        ModifableExtensionPlanTree parentBranch) throws InstallException
+        ModifableExtensionPlanTree parentBranch) throws InstallException, ResolveException
     {
         if (namespace != null) {
             this.logger.info("Resolving extension [{}] on namespace [{}]", extensionId, namespace);
@@ -339,22 +344,50 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             if (extensionId.getVersion() == null) {
                 throw new InstallException(String.format("The extension with id [%s] is already installed",
                     extensionId.getId()));
-            } else if (!installedExtension.isValid(namespace)
-                && extensionId.getVersion().equals(installedExtension.getId().getVersion())) {
-                throw new InstallException(String.format("The extension with id [%s] is already installed",
-                    extensionId.getId()));
             }
 
-            int diff = extensionId.getVersion().compareTo(installedExtension.getId().getVersion());
+            int versionDiff = extensionId.getVersion().compareTo(installedExtension.getId().getVersion());
 
-            if (diff == 0) {
+            if (versionDiff == 0) {
                 throw new InstallException(String.format("The extension [%s] is already installed", extensionId));
-            } else if (diff < 0) {
-                throw new InstallException(String.format("A more recent version of [%s] is already installed",
-                    extensionId.getId()));
             } else {
-                // upgrade
+                // Change version
                 previousExtension = installedExtension;
+
+                // Make sure the new version is compatible with old version backward dependencies
+                if (installedExtension.isInstalled(null)) {
+                    Map<String, Collection<InstalledExtension>> backwardDependencies =
+                        this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId());
+
+                    if (!isCompatible(backwardDependencies.get(null), extensionId)) {
+                        throw new InstallException(String.format(
+                            "The extension [%s] is not compatible with previous version ([%s]) backward dependencies",
+                            extensionId, installedExtension.getId()));
+                    }
+
+                    if (namespace != null) {
+                        if (!isCompatible(backwardDependencies.get(namespace), extensionId)) {
+                            throw new InstallException(
+                                String
+                                    .format(
+                                        "The extension [%s] is not compatible with previous version ([%s]) backward dependencies on namespace [%s]",
+                                        extensionId, installedExtension.getId(), namespace));
+                        }
+                    }
+                } else {
+                    Collection<InstalledExtension> backwardDependencies =
+                        this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId().getId(),
+                            namespace);
+
+                    if (!isCompatible(backwardDependencies, extensionId)) {
+                        throw new InstallException(
+                            String
+                                .format(
+                                    "The extension [%s] is not compatible with previous version ([%s]) backward dependencies on namespace [%s]",
+                                    extensionId, installedExtension.getId(), namespace));
+                    }
+                }
+
             }
         }
 
@@ -362,6 +395,26 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         addExtensionNode(node);
         parentBranch.add(node);
+    }
+
+    /**
+     * Check if provided id/version is compatible with provided extensions dependencies constraints.
+     */
+    private boolean isCompatible(Collection< ? extends Extension> extensions, ExtensionId extensionId)
+    {
+        if (extensions != null) {
+            for (Extension extension : extensions) {
+                for (ExtensionDependency dependency : extension.getDependencies()) {
+                    if (dependency.getId().equals(extensionId.getId())) {
+                        if (!dependency.getVersionConstraint().isCompatible(extensionId.getVersion())) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     private boolean checkCoreExtension(ExtensionDependency extensionDependency,
@@ -729,9 +782,19 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     initialDependency.getVersionConstraint()) : new ModifableExtensionPlanNode();
 
             node.setChildren(children);
-            node.setAction(new DefaultExtensionPlanAction(extension, previousExtension, previousExtension != null
-                ? DefaultExtensionPlanAction.Action.UPGRADE : DefaultExtensionPlanAction.Action.INSTALL, namespace,
-                dependency));
+
+            Action action;
+            if (previousExtension != null) {
+                if (previousExtension.getId().getVersion().compareTo(extension.getId().getVersion()) > 0) {
+                    action = Action.DOWNGRADE;
+                } else {
+                    action = Action.UPGRADE;
+                }
+            } else {
+                action = Action.INSTALL;
+            }
+
+            node.setAction(new DefaultExtensionPlanAction(extension, previousExtension, action, namespace, dependency));
 
             return node;
         } finally {

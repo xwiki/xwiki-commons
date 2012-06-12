@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
@@ -41,7 +40,6 @@ import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
-import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.job.Request;
 
 /**
@@ -68,12 +66,6 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
      * Error message used in exception throw when trying to uninstall an extension which is not installed.
      */
     private static final String EXCEPTION_NOTINSTALLEDNAMESPACE = EXCEPTION_NOTINSTALLED + " from namespace [{1}]";
-
-    /**
-     * Used to manipulate installed extensions repository.
-     */
-    @Inject
-    private InstalledExtensionRepository installedExtensionRepository;
 
     /**
      * The install plan.
