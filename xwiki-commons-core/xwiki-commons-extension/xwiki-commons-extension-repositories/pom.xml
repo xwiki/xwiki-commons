@@ -37,7 +37,7 @@
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
   </properties>
   <modules>
-    <module>xwiki-commons-extension-repository-aether</module>
+    <module>xwiki-commons-extension-repository-maven</module>
     <module>xwiki-commons-extension-repository-xwiki</module>
   </modules>
 </project>

@@ -29,15 +29,15 @@
     <artifactId>xwiki-commons-extension-repositories</artifactId>
     <version>4.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-extension-repository-aether</artifactId>
-  <name>XWiki Commons - Extension - Repository - Aether</name>
+  <artifactId>xwiki-commons-extension-repository-maven</artifactId>
+  <name>XWiki Commons - Extension - Repository - Maven</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Extension - Repository - Aether</description>
+  <description>XWiki Commons - Extension - Repository - Maven</description>
   <properties>
     <aether.version>1.13.1</aether.version>
 
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
-    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-aether</xwiki.extension.features>
+    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-aether,org.xwiki.commons:xwiki-commons-extension-repository-maven</xwiki.extension.features>
   </properties>
   <dependencies>
     <dependency>
