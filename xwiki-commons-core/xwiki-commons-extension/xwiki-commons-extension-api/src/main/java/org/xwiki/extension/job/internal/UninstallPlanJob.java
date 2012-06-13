@@ -225,9 +225,9 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
 
         // Log progression
         if (namespace != null) {
-            this.logger.info("Resolving extension [{}] from namespace [{}]", installedExtension, namespace);
+            this.logger.info("Resolving extension [{}] from namespace [{}]", installedExtension.getId(), namespace);
         } else {
-            this.logger.info("Resolving extension [{}]", installedExtension);
+            this.logger.info("Resolving extension [{}]", installedExtension.getId());
         }
 
         notifyPushLevelProgress(2);

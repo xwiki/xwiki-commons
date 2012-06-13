@@ -81,9 +81,9 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends A
 
         if (namespace != null) {
             this.logger.info("Applying {} for extension [{}] and namespace [{}]", new Object[] {action.getAction(),
-                extension.toString(), namespace});
+                extension.getId(), namespace});
         } else {
-            this.logger.info("Applying {} for extension [{}]", action.getAction(), extension.toString());
+            this.logger.info("Applying {} for extension [{}]", action.getAction(), extension.getId());
         }
 
         notifyPushLevelProgress(2);
@@ -108,9 +108,9 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends A
 
             if (namespace != null) {
                 this.logger.info("Successfully applied {} for extension [{}] and namespace [{}]",
-                    new Object[] {action.getAction(), extension, namespace});
+                    new Object[] {action.getAction(), extension.getId(), namespace});
             } else {
-                this.logger.info("Successfully applied {} for extension [{}]", action.getAction(), extension);
+                this.logger.info("Successfully applied {} for extension [{}]", action.getAction(), extension.getId());
             }
         } finally {
             notifyPopLevelProgress();
@@ -158,7 +158,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends A
             try {
                 this.installedExtensionRepository.uninstallExtension(previousExtension, namespace);
             } catch (UninstallException e) {
-                this.logger.error("Failed to uninstall extension [" + previousExtension + "]", e);
+                this.logger.error("Failed to uninstall extension [" + previousExtension.getId() + "]", e);
             }
 
             InstalledExtension installedExtension =

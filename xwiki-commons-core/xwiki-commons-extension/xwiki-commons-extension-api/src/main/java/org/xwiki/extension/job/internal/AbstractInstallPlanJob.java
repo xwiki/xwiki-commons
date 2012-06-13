@@ -46,8 +46,6 @@ import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
-import org.xwiki.extension.repository.InstalledExtensionRepository;
-import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.version.IncompatibleVersionConstraintException;
 import org.xwiki.extension.version.VersionConstraint;
 
@@ -153,18 +151,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      */
     @Inject
     protected CoreExtensionRepository coreExtensionRepository;
-
-    /**
-     * Used to manipulate installed extensions repository.
-     */
-    @Inject
-    protected LocalExtensionRepository localExtensionRepository;
-
-    /**
-     * Used to manipulate local extensions repository.
-     */
-    @Inject
-    protected InstalledExtensionRepository installedExtensionRepository;
 
     /**
      * The install plan.
@@ -428,7 +414,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     + "] is not compatible with core extension [" + coreExtension + "]");
             } else {
                 this.logger.info("There is already a core extension [{}] covering extension dependency [{}]",
-                    coreExtension, extensionDependency);
+                    coreExtension.getId(), extensionDependency);
 
                 ModifableExtensionPlanNode node =
                     new ModifableExtensionPlanNode(extensionDependency, extensionDependency.getVersionConstraint());
@@ -486,7 +472,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             if (installedExtension.isValid(namespace)
                 && versionConstraint.isCompatible(installedExtension.getId().getVersion())) {
                 this.logger.info("There is already an installed extension [{}] covering extension dependency [{}]",
-                    installedExtension, extensionDependency);
+                    installedExtension.getId(), extensionDependency);
 
                 ModifableExtensionPlanNode node =
                     new ModifableExtensionPlanNode(extensionDependency, versionConstraint);
