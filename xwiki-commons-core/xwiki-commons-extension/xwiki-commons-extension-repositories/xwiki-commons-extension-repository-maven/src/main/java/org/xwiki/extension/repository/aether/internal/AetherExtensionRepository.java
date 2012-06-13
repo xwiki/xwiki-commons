@@ -86,25 +86,25 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
      */
     private static final GenericVersionScheme AETHERVERSIONSCHEME = new GenericVersionScheme();
 
-    private ComponentManager componentManager;
-
-    private PlexusComponentManager plexusComponentManager;
-
-    private RemoteRepository remoteRepository;
-
-    private ArtifactDescriptorReader mavenDescriptorReader;
-
-    private VersionRangeResolver versionRangeResolver;
-
     private static Method loadPomMethod;
 
     private static Method convertMethod;
 
-    private ConverterManager converter;
+    private transient ComponentManager componentManager;
 
-    private ExtensionLicenseManager licenseManager;
+    private transient PlexusComponentManager plexusComponentManager;
 
-    private AetherExtensionRepositoryFactory repositoryFactory;
+    private transient RemoteRepository remoteRepository;
+
+    private transient ArtifactDescriptorReader mavenDescriptorReader;
+
+    private transient VersionRangeResolver versionRangeResolver;
+
+    private transient ConverterManager converter;
+
+    private transient ExtensionLicenseManager licenseManager;
+
+    private transient AetherExtensionRepositoryFactory repositoryFactory;
 
     public AetherExtensionRepository(ExtensionRepositoryId repositoryId,
         AetherExtensionRepositoryFactory repositoryFactory, PlexusComponentManager mavenComponentManager,

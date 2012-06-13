@@ -64,19 +64,19 @@ import org.xwiki.extension.version.internal.DefaultVersion;
  */
 public class XWikiExtensionRepository extends AbstractExtensionRepository implements Searchable
 {
-    private final XWikiExtensionRepositoryFactory repositoryFactory;
+    private transient final XWikiExtensionRepositoryFactory repositoryFactory;
 
-    private final ExtensionLicenseManager licenseManager;
+    private transient final ExtensionLicenseManager licenseManager;
 
-    private final ExtensionManagerConfiguration configuration;
+    private transient final ExtensionManagerConfiguration configuration;
 
-    private final UriBuilder extensionVersionUriBuider;
+    private transient final UriBuilder extensionVersionUriBuider;
 
-    private final UriBuilder extensionVersionFileUriBuider;
+    private transient final UriBuilder extensionVersionFileUriBuider;
 
-    private final UriBuilder extensionVersionsUriBuider;
+    private transient final UriBuilder extensionVersionsUriBuider;
 
-    private final UriBuilder searchUriBuider;
+    private transient final UriBuilder searchUriBuider;
 
     public XWikiExtensionRepository(ExtensionRepositoryId repositoryId,
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,

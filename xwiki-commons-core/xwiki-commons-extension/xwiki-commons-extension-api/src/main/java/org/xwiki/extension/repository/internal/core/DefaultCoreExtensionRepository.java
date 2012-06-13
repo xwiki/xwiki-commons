@@ -62,19 +62,19 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     /**
      * The core extensions.
      */
-    protected Map<String, DefaultCoreExtension> extensions;
+    protected transient Map<String, DefaultCoreExtension> extensions;
 
     /**
      * The logger to log.
      */
     @Inject
-    private Logger logger;
+    private transient Logger logger;
 
     /**
      * Used to scan jars to find extensions.
      */
     @Inject
-    private CoreExtensionScanner scanner;
+    private transient CoreExtensionScanner scanner;
 
     /**
      * Default constructor.

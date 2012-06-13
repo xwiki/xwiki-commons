@@ -73,29 +73,29 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
      * Used to get repository path.
      */
     @Inject
-    private ExtensionManagerConfiguration configuration;
+    private transient ExtensionManagerConfiguration configuration;
 
     /**
      * The logger to log.
      */
     @Inject
-    private Logger logger;
+    private transient Logger logger;
 
     /**
      * The component manager.
      */
     @Inject
-    private ComponentManager componentManager;
+    private transient ComponentManager componentManager;
 
     /**
      * Used to manipulate filesystem repository storage.
      */
-    private ExtensionStorage storage;
+    private transient ExtensionStorage storage;
 
     /**
      * The local extensions.
      */
-    private Map<ExtensionId, DefaultLocalExtension> extensions =
+    private transient Map<ExtensionId, DefaultLocalExtension> extensions =
         new ConcurrentHashMap<ExtensionId, DefaultLocalExtension>();
 
     /**

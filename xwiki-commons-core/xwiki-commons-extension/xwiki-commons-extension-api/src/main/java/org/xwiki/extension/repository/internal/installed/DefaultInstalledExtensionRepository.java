@@ -96,19 +96,19 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     }
 
     @Inject
-    private LocalExtensionRepository localRepository;
+    private transient LocalExtensionRepository localRepository;
 
     /**
      * Used to check for existing core extensions.
      */
     @Inject
-    private CoreExtensionRepository coreExtensionRepository;
+    private transient CoreExtensionRepository coreExtensionRepository;
 
     /**
      * The logger to log.
      */
     @Inject
-    private Logger logger;
+    private transient Logger logger;
 
     /**
      * The installed extensions.
