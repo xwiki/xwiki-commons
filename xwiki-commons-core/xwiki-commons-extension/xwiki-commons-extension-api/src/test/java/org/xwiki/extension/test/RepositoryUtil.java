@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -75,7 +76,7 @@ public class RepositoryUtil
     {
         this.componentManager = componentManager;
 
-        File testDirectory = new File("target/test-" + RandomStringUtils.randomAlphabetic(10));
+        File testDirectory = new File("target/test-" + new Date().getTime());
 
         this.temporaryDirectory = new File(testDirectory, "temporary-dir");
 
