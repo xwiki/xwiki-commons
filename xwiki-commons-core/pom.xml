@@ -146,6 +146,8 @@
             <!-- Remove the following excludes after we release the current version as final -->
             <!-- New #isValid() method -->
             <exclude>org/xwiki/extension/InstalledExtension</exclude>
+            <!-- [YOUNG API] Moved from Exception to Thowable parameter for extending jobs -->
+            <exclude>org/xwiki/job/AbstractJob</exclude>
           </excludes>
         </configuration>
       </plugin>
