@@ -35,6 +35,8 @@ import org.apache.maven.plugin.testing.SilentLog;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.zip.ZipFile;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 /**
  * Unit tests for {@link XARMojo}.
@@ -125,6 +127,7 @@ public class XARMojoTest extends AbstractMojoTestCase
 
         // Checking whether the generated xar archive contains the right data.
         ZipUnArchiver unarchiver = new ZipUnArchiver(new File(XAR_PATH_VALIDXML));
+        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "logname"));
 
         ZipFile zip = new ZipFile(XAR_PATH_VALIDXML);
         Enumeration entries = zip.getEntries();
@@ -174,6 +177,8 @@ public class XARMojoTest extends AbstractMojoTestCase
         // Extract package.xml and extract all the entries one by one and read them as a XWiki Document to verify
         // they're valid.
         ZipUnArchiver unarchiver = new ZipUnArchiver(new File(XAR_PATH_NOXML));
+        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "logname"));
+        
         unarchiver.extract(XARMojo.PACKAGE_XML, this.tempDir);
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(this.tempDir, XARMojo.PACKAGE_XML));
         int countEntries = 0;
