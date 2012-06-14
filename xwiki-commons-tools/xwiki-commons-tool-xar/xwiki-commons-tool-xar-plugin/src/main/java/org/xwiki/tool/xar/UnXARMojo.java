@@ -77,8 +77,8 @@ public class UnXARMojo extends AbstractXARMojo
     }
 
     /**
-     * @return the maven artifact.
-     * @throws MojoExecutionException error when seraching for the mavebn artifact.
+     * @return the Maven artifact.
+     * @throws MojoExecutionException error when searching for the Maven artifact.
      */
     private Artifact findArtifact() throws MojoExecutionException
     {
@@ -87,7 +87,7 @@ public class UnXARMojo extends AbstractXARMojo
         getLog().debug(
             String.format("Searching for an artifact that matches [%s:%s]...", this.groupId, this.artifactId));
 
-        for (Artifact artifact : (Set<Artifact>) this.project.getArtifacts()) {
+        for (Artifact artifact : this.project.getArtifacts()) {
             getLog().debug(String.format("Checking artifact [%s:%s:%s]...",
                 artifact.getGroupId(), artifact.getArtifactId(), artifact.getType()));
 
