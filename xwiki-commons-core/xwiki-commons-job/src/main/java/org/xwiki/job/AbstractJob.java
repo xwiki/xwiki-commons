@@ -129,14 +129,14 @@ public abstract class AbstractJob<R extends Request> implements Job
 
         jobStarting();
 
-        Exception exception = null;
+        Throwable error = null;
         try {
             start();
-        } catch (Exception e) {
-            this.logger.error("Exception thrown during job execution", e);
-            exception = e;
+        } catch (Throwable t) {
+            this.logger.error("Exception thrown during job execution", t);
+            error = t;
         } finally {
-            jobFinished(exception);
+            jobFinished(error);
         }
     }
 
@@ -160,7 +160,7 @@ public abstract class AbstractJob<R extends Request> implements Job
      * 
      * @param exception the exception throw during execution of the job
      */
-    protected void jobFinished(Exception exception)
+    protected void jobFinished(Throwable exception)
     {
         this.lock.lock();
 
@@ -180,8 +180,8 @@ public abstract class AbstractJob<R extends Request> implements Job
                 if (this.request.getId() != null) {
                     this.storage.store(this.status);
                 }
-            } catch (Exception e) {
-                this.logger.warn("Failed to store job status [{}]", this.status, e);
+            } catch (Throwable t) {
+                this.logger.warn("Failed to store job status [{}]", this.status, t);
             }
         } finally {
             this.lock.unlock();
