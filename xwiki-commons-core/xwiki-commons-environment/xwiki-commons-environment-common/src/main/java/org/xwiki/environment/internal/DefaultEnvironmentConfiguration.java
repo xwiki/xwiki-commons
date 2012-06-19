@@ -24,7 +24,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 
@@ -42,12 +41,6 @@ public class DefaultEnvironmentConfiguration implements EnvironmentConfiguration
      * The name of the property for configuring the permanent directory.
      */
     private static final String PROPERTY_PERMANENTDIRECTORY = "environment.permanentDirectory";
-
-    /**
-     * The logger to log.
-     */
-    @Inject
-    private Logger logger;
 
     /**
      * @see #getConfigurationSource()
