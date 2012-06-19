@@ -123,13 +123,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void trace(String format, Object arg)
     {
-        trace(format, Arrays.asList(arg));
+        trace(format, new Object[] {arg});
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2)
     {
-        trace(format, Arrays.asList(arg1, arg2));
+        trace(format, new Object[] {arg1, arg2});
     }
 
     @Override
@@ -159,7 +159,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void trace(Marker marker, String format, Object arg)
     {
-        trace(marker, format, arg);
+        trace(format, arg);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void trace(Marker marker, String format, Object[] argArray)
     {
-        trace(marker, format, argArray);
+        trace(format, argArray);
     }
 
     @Override
@@ -195,13 +195,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void debug(String format, Object arg)
     {
-        debug(format, Arrays.asList(arg));
+        debug(format, new Object[] {arg});
     }
 
     @Override
     public void debug(String format, Object arg1, Object arg2)
     {
-        debug(format, Arrays.asList(arg1, arg2));
+        debug(format, new Object[] {arg1, arg2});
     }
 
     @Override
@@ -231,7 +231,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void debug(Marker marker, String format, Object arg)
     {
-        debug(marker, format, arg);
+        debug(format, arg);
     }
 
     @Override
@@ -243,7 +243,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void debug(Marker marker, String format, Object[] argArray)
     {
-        debug(marker, format, argArray);
+        debug(format, argArray);
     }
 
     @Override
@@ -267,13 +267,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void info(String format, Object arg)
     {
-        info(format, Arrays.asList(arg));
+        info(format, new Object[] {arg});
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2)
     {
-        info(format, Arrays.asList(arg1, arg2));
+        info(format, new Object[] {arg1, arg2});
     }
 
     @Override
@@ -303,7 +303,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void info(Marker marker, String format, Object arg)
     {
-        info(marker, format, arg);
+        info(format, arg);
     }
 
     @Override
@@ -315,7 +315,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void info(Marker marker, String format, Object[] argArray)
     {
-        info(marker, format, argArray);
+        info(format, argArray);
     }
 
     @Override
@@ -339,13 +339,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void warn(String format, Object arg)
     {
-        warn(format, Arrays.asList(arg));
+        warn(format, new Object[] {arg});
     }
 
     @Override
     public void warn(String format, Object arg1, Object arg2)
     {
-        warn(format, Arrays.asList(arg1, arg2));
+        warn(format, new Object[] {arg1, arg2});
     }
 
     @Override
@@ -375,7 +375,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void warn(Marker marker, String format, Object arg)
     {
-        warn(marker, format, arg);
+        warn(format, arg);
     }
 
     @Override
@@ -387,7 +387,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void warn(Marker marker, String format, Object[] argArray)
     {
-        warn(marker, format, argArray);
+        warn(format, argArray);
     }
 
     @Override
@@ -411,13 +411,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void error(String format, Object arg)
     {
-        error(format, Arrays.asList(arg));
+        error(format, new Object[] {arg});
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2)
     {
-        error(format, Arrays.asList(arg1, arg2));
+        error(format, new Object[] {arg1, arg2});
     }
 
     @Override
@@ -447,7 +447,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void error(Marker marker, String format, Object arg)
     {
-        error(marker, format, arg);
+        error(format, arg);
     }
 
     @Override
@@ -459,7 +459,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void error(Marker marker, String format, Object[] argArray)
     {
-        error(marker, format, argArray);
+        error(format, argArray);
     }
 
     @Override
