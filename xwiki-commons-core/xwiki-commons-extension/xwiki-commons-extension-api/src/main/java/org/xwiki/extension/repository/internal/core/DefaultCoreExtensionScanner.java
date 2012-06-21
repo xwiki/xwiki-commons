@@ -292,19 +292,18 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     {
         Map<String, DefaultCoreExtension> extensions = new HashMap<String, DefaultCoreExtension>();
 
-        loadExtensionsFromEnvironment(extensions, repository);
         loadExtensionsFromClassloaders(extensions, repository);
 
         return extensions;
     }
 
-    private void loadExtensionsFromEnvironment(Map<String, DefaultCoreExtension> extensions,
-        DefaultCoreExtensionRepository repository)
+    @Override
+    public DefaultCoreExtension loadEnvironmentExtensions(DefaultCoreExtensionRepository repository)
     {
         InputStream is = this.environment.getResourceAsStream("META-INF/MANIFEST.MF");
 
         if (is != null) {
-            // Probably not running in an application server
+            // Probably running in an application server
             try {
                 Manifest manifest = new Manifest(is);
 
@@ -321,7 +320,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     try {
                         DefaultCoreExtension coreExtension = parseMavenPom(descriptorUrl, repository);
 
-                        extensions.put(coreExtension.getId().getId(), coreExtension);
+                        return coreExtension;
                     } catch (Exception e) {
                         this.logger.warn("Failed to pase extension descriptor [{}]", descriptorUrl, e);
                     }
@@ -332,6 +331,10 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                 IOUtils.closeQuietly(is);
             }
         }
+
+        this.logger.debug("No declared environmennt extension");
+
+        return null;
     }
 
     private void loadExtensionsFromClassloaders(Map<String, DefaultCoreExtension> extensions,

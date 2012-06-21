@@ -48,6 +48,14 @@ public interface CoreExtensionRepository extends ExtensionRepository, Searchable
     Collection<CoreExtension> getCoreExtensions();
 
     /**
+     * Return the extension corresponding to the current environment if any. Generally used to get the current XWiki
+     * distribution.
+     * 
+     * @return the core extension associated to the environment
+     */
+    CoreExtension getEnvironmentExtension();
+
+    /**
      * @param id the extension identifier (version is not needed since there can be only one version of a core
      *            extension)
      * @return the core extension, null if none is found
