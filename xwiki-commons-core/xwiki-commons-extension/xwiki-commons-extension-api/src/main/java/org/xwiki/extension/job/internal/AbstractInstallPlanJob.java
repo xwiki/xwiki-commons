@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
@@ -36,6 +37,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
@@ -748,6 +750,12 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private ModifableExtensionPlanNode installExtension(InstalledExtension previousExtension, Extension extension,
         boolean dependency, String namespace, ExtensionDependency initialDependency) throws InstallException
     {
+        try {
+            this.componentManager.getInstance(ExtensionHandler.class, extension.getType());
+        } catch (ComponentLookupException e) {
+            throw new InstallException(String.format("Unsupported type [%s]", extension.getType()), e);
+        }
+
         Collection< ? extends ExtensionDependency> dependencies = extension.getDependencies();
 
         notifyPushLevelProgress(dependencies.size() + 1);

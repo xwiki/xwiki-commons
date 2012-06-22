@@ -55,6 +55,8 @@ public class TestResources
 
     public static final ExtensionId REMOTE_UPGRADE20_ID = new ExtensionId("upgrade", "2.0");
 
+    public static final ExtensionId REMOTE_UNSUPPORTED_ID = new ExtensionId("unsupported", "version");
+
     // Methods
 
     public void init(InstalledExtensionRepository installedExtensionRepository) throws ResolveException

@@ -23,6 +23,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.job.plan.ExtensionPlan;
@@ -136,7 +137,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     {
         install(TestResources.REMOTE_UPGRADE10_ID, null);
 
-        ////////////////////
+        // //////////////////
         // Test upgrade
 
         ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE20_ID, null);
@@ -153,13 +154,13 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertNull(action.getNamespace());
         Assert.assertEquals(0, node.getChildren().size());
     }
-    
+
     @Test
     public void testInstallPlanWithDowngradeOnRoot() throws Throwable
     {
         install(TestResources.REMOTE_UPGRADE20_ID, null);
 
-        ////////////////////
+        // //////////////////
         // Test downgrade
 
         ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE10_ID, null);
@@ -175,5 +176,18 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getPreviousExtension().getId());
         Assert.assertNull(action.getNamespace());
         Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallPlanWithUnsupportedType() throws Throwable
+    {
+        try {
+            installPlan(TestResources.REMOTE_UNSUPPORTED_ID, null);
+
+            Assert.fail("Should have failed");
+        } catch (InstallException e) {
+            // expected
+        }
+
     }
 }
