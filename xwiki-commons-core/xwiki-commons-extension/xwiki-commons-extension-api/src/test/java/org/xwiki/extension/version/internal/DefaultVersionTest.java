@@ -57,6 +57,7 @@ public class DefaultVersionTest
         Assert.assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1w")) < 0);
 
         Assert.assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1-milestone-1")) > 0);
+        Assert.assertTrue(new DefaultVersion("1.1.1").compareTo(new DefaultVersion("1.1-milestone-1")) > 0);
     }
 
     @Test
