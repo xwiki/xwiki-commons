@@ -216,7 +216,7 @@
       <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
-        <version>0.9.7</version>
+        <version>0.9.8</version>
         <exclusions>
           <!-- Prevent future conflicts -->
           <exclusion>
