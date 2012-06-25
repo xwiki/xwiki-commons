@@ -651,7 +651,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>com.atlassian.maven.plugins</groupId>
           <artifactId>maven-clover2-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.4</version>
+          <version>3.1.6</version>
           <configuration>
             <license><![CDATA[mMrRvxjjbfhaCfMulFPnUUpeNQTJOMWcRiBJSAJDFtqBOB
 mi2K4jUCxeZ5N1tfFUViFQV32K7TEehr8rqeYLcnr>xtEQ
