@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.reflections.Reflections;
@@ -68,13 +67,21 @@ public class RepositoryUtil
 
     private ComponentManager componentManager;
 
+    private Mockery mockery;
+
     private ExtensionPackager extensionPackager;
 
     private ComponentAnnotationLoader componentLoader;
 
-    public RepositoryUtil(ComponentManager componentManager)
+    public RepositoryUtil()
+    {
+        this(null, null);
+    }
+
+    public RepositoryUtil(ComponentManager componentManager, Mockery mockery)
     {
         this.componentManager = componentManager;
+        this.mockery = mockery;
 
         File testDirectory = new File("target/test-" + new Date().getTime());
 
@@ -125,29 +132,33 @@ public class RepositoryUtil
         return MAVENREPOSITORY_ID;
     }
 
-    public void setup(Mockery mockery) throws Exception
+    public void setup() throws Exception
     {
         // Mock Environment
-        final Environment environment = mockery.mock(Environment.class);
-        mockery.checking(new Expectations()
-        {
+        if (this.componentManager != null) {
+            final Environment environment = this.mockery.mock(Environment.class);
+            this.mockery.checking(new Expectations()
             {
-                allowing(environment).getPermanentDirectory();
-                will(returnValue(getPermanentDirectory()));
-                allowing(environment).getTemporaryDirectory();
-                will(returnValue(getTemporaryDirectory()));
-            }
-        });
-        DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
-        dcd.setRoleType(Environment.class);
-        this.componentManager.registerComponent(dcd, environment);
+                {
+                    allowing(environment).getPermanentDirectory();
+                    will(returnValue(getPermanentDirectory()));
+                    allowing(environment).getTemporaryDirectory();
+                    will(returnValue(getTemporaryDirectory()));
+                }
+            });
+            DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
+            dcd.setRoleType(Environment.class);
+            this.componentManager.registerComponent(dcd, environment);
+        }
 
         // add default test core extension
 
-        registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
-        ((ConfigurableDefaultCoreExtensionRepository) this.componentManager
-            .getInstance(CoreExtensionRepository.class)).addExtensions("coreextension", new DefaultVersion(
-            "version"));
+        if (this.componentManager != null) {
+            registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
+            ((ConfigurableDefaultCoreExtensionRepository) this.componentManager
+                .getInstance(CoreExtensionRepository.class)).addExtensions("coreextension", new DefaultVersion(
+                "version"));
+        }
 
         // copy
 
@@ -155,21 +166,23 @@ public class RepositoryUtil
 
         // remote repositories
 
-        ExtensionRepositoryManager repositoryManager =
-            this.componentManager.getInstance(ExtensionRepositoryManager.class);
+        if (this.componentManager != null) {
+            ExtensionRepositoryManager repositoryManager =
+                this.componentManager.getInstance(ExtensionRepositoryManager.class);
 
-        // light remote repository
+            // light remote repository
 
-        if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
-            this.remoteRepository = new FileExtensionRepository(getRemoteRepository(), this.componentManager);
-            repositoryManager.addRepository(remoteRepository);
-        }
+            if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
+                this.remoteRepository = new FileExtensionRepository(getRemoteRepository(), this.componentManager);
+                repositoryManager.addRepository(remoteRepository);
+            }
 
-        // maven resource repository
+            // maven resource repository
 
-        if (copyResourceFolder(getMavenRepository(), "repository.maven") > 0) {
-            repositoryManager.addRepository(new ExtensionRepositoryId(MAVENREPOSITORY_ID, "maven", getMavenRepository()
-                .toURI()));
+            if (copyResourceFolder(getMavenRepository(), "repository.maven") > 0) {
+                repositoryManager.addRepository(new ExtensionRepositoryId(MAVENREPOSITORY_ID, "maven",
+                    getMavenRepository().toURI()));
+            }
         }
 
         // generated extensions
@@ -178,7 +191,9 @@ public class RepositoryUtil
 
         // init
 
-        this.componentManager.<ExtensionInitializer>getInstance(ExtensionInitializer.class).initialize();
+        if (this.componentManager != null) {
+            this.componentManager.<ExtensionInitializer> getInstance(ExtensionInitializer.class).initialize();
+        }
     }
 
     public ComponentAnnotationLoader getComponentLoader()
