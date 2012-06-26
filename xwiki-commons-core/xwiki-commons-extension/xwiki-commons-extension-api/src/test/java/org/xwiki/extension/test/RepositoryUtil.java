@@ -132,6 +132,11 @@ public class RepositoryUtil
         return MAVENREPOSITORY_ID;
     }
 
+    public ExtensionPackager getExtensionPackager()
+    {
+        return extensionPackager;
+    }
+
     public void setup() throws Exception
     {
         // Mock Environment

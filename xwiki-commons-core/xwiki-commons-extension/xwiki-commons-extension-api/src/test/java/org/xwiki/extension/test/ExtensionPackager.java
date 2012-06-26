@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -40,6 +42,7 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.reflections.vfs.Vfs;
+import org.xwiki.extension.ExtensionId;
 
 import com.google.common.base.Predicates;
 
@@ -58,10 +61,17 @@ public class ExtensionPackager
 
     private File defaultDirectory;
 
+    private Map<ExtensionId, File> extensionsFiles = new HashMap<ExtensionId, File>();
+
     public ExtensionPackager(File workingDirectory, File defaultDirectory)
     {
         this.workingDirectory = workingDirectory;
         this.defaultDirectory = defaultDirectory;
+    }
+
+    public File getExtensionFile(ExtensionId extensionId)
+    {
+        return this.extensionsFiles.get(extensionId);
     }
 
     public void generateExtensions() throws IOException
@@ -151,6 +161,9 @@ public class ExtensionPackager
             } finally {
                 zos.close();
             }
+
+            // Register the extension
+            this.extensionsFiles.put(new ExtensionId(id, version), packageFile);
         } finally {
             fos.close();
         }
