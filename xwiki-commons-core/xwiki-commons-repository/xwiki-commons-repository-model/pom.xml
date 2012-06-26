@@ -26,22 +26,47 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-extension-repository-xwiki</artifactId>
+    <artifactId>xwiki-commons-repository</artifactId>
     <version>4.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-extension-repository-xwiki-api</artifactId>
-  <name>XWiki Commons - Extension - Repository - XWiki api</name>
+  <artifactId>xwiki-commons-repository-model</artifactId>
+  <name>XWiki Commons - Repository - Model</name>
   <packaging>jar</packaging>
-  <description>Contains stuff common to server and client</description>
+  <description>The (JAXB) model for XML resource representations served by the Extension REST module.</description>
   <properties>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
-    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-xwiki-api</xwiki.extension.features>
+    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-xwiki-model:org.xwiki.commons:xwiki-commons-extension-repository-xwiki-model</xwiki.extension.features>
   </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-extension-repository-xwiki-model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.8.0</version>
+        <configuration>
+          <extension>true</extension>
+          <args>
+            <arg>-Xfluent-api</arg>
+          </args>
+          <generatePackage>org.xwiki.extension.repository.xwiki.model.jaxb</generatePackage>
+          <verbose>true</verbose>
+          <removeOldOutput>false</removeOldOutput>
+          <plugins>
+            <plugin>
+              <groupId>org.jvnet.jaxb2_commons</groupId>
+              <artifactId>jaxb2-fluent-api</artifactId>
+              <version>3.0</version>
+            </plugin>
+          </plugins>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
