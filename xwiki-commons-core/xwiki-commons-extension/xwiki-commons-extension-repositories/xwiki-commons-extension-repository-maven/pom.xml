@@ -126,4 +126,30 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <excludes>
+              **/AetherExtension.java,
+              **/AetherExtensionDependency.java,
+              **/AetherExtensionFile.java,
+              **/AetherExtensionRepository.java,
+              **/AetherExtensionRepositoryFactory.java,
+              **/AetherUtils.java,
+              **/XWikiLogger.java,
+              **/XWikiLoggerManager.java,
+              **/AetherConfiguration.java,
+              **/DefaultAetherConfiguration.java,
+              **/DefaultPlexusComponentManager.java,
+              **/PlexusComponentManager.java
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
