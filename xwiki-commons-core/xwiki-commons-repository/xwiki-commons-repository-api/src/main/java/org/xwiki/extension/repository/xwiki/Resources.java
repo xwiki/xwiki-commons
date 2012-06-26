@@ -25,91 +25,91 @@ package org.xwiki.extension.repository.xwiki;
  * @version $Id$
  * @since 4.0M1
  */
-public class Resources
+public interface Resources
 {
     // Entry point
 
     /**
      * Entry point of XWiki Repository protocol.
      */
-    public final static String ENTRYPOINT = "/repository";
+    String ENTRYPOINT = "/repository";
 
     // Path parameters
 
     /**
      * Name of the parameter indication the id of the extension.
      */
-    public final static String PPARAM_EXTENSIONID = "extensionId";
+    String PPARAM_EXTENSIONID = "extensionId";
 
     /**
      * Name of the parameter indication the version of the extension.
      */
-    public final static String PPARAM_EXTENSIONVERSION = "extensionVersion";
+    String PPARAM_EXTENSIONVERSION = "extensionVersion";
 
     // Extensions
 
     /**
      * Get extensions.
      */
-    public final static String EXTENSIONS = ENTRYPOINT + "/extensions";
+    String EXTENSIONS = ENTRYPOINT + "/extensions";
 
     /**
      * Get extension informations.
      */
-    public final static String EXTENSION = EXTENSIONS + "/{" + PPARAM_EXTENSIONID + "}";
+    String EXTENSION = EXTENSIONS + '/' + '{' + PPARAM_EXTENSIONID + '}';
 
     /**
-     * Get extension versions
+     * Get extension versions.
      */
-    public final static String EXTENSION_VERSIONS = EXTENSION + "/versions";
+    String EXTENSION_VERSIONS = EXTENSION + "/versions";
 
     /**
-     * Get extension version informations
+     * Get extension version informations.
      */
-    public final static String EXTENSION_VERSION = EXTENSION_VERSIONS + "/{" + PPARAM_EXTENSIONVERSION + "}";
+    String EXTENSION_VERSION = EXTENSION_VERSIONS + '/' + '{' + PPARAM_EXTENSIONVERSION + '}';
 
     /**
      * Download extension file.
      */
-    public final static String EXTENSION_VERSION_FILE = EXTENSION_VERSION + "/file";
+    String EXTENSION_VERSION_FILE = EXTENSION_VERSION + "/file";
 
     // Search
 
     /**
      * Execute search query among extensions.
      */
-    public final static String SEARCH = ENTRYPOINT + "/search";
+    String SEARCH = ENTRYPOINT + "/search";
 
     // Query parameters
 
     /**
      * Language of the result to produce.
      */
-    public final static String QPARAM_LANGUAGE = "language";
+    String QPARAM_LANGUAGE = "language";
 
     /**
      * Used to indicate versions ranges to filter versions request.
      */
-    public final static String QPARAM_VERSIONS_RANGES = "versionRanges";
+    String QPARAM_VERSIONS_RANGES = "versionRanges";
 
     /**
      * The search query.
      */
-    public final static String QPARAM_SEARCH_QUERY = "q";
+    String QPARAM_SEARCH_QUERY = "q";
 
     /**
      * Offset from where the search start to return results.
      */
-    public final static String QPARAM_LIST_START = "start";
+    String QPARAM_LIST_START = "start";
 
     /**
      * Indicate if we want to get the total number of possible result without limits in the result. Allow to speed up a
      * bit the query when we don't care since it generally mean one more query on server side.
      */
-    public final static String QPARAM_LIST_REQUIRETOTALHITS = "requireTotalHits";
+    String QPARAM_LIST_REQUIRETOTALHITS = "requireTotalHits";
 
     /**
      * Maximum number of results.
      */
-    public final static String QPARAM_LIST_NUMBER = "number";
+    String QPARAM_LIST_NUMBER = "number";
 }
