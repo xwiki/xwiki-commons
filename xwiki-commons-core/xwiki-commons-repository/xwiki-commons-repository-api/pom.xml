@@ -30,7 +30,7 @@
     <version>4.2-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-repository-api</artifactId>
-  <name>XWiki Commons - Extension - Repository - API</name>
+  <name>XWiki Commons - Repository - API</name>
   <packaging>jar</packaging>
   <description>Contains commons stuff to use in a a client or a server implementation</description>
   <properties>
