@@ -64,19 +64,19 @@ import org.xwiki.extension.version.internal.DefaultVersion;
  */
 public class XWikiExtensionRepository extends AbstractExtensionRepository implements Searchable
 {
-    private transient final XWikiExtensionRepositoryFactory repositoryFactory;
+    private final transient XWikiExtensionRepositoryFactory repositoryFactory;
 
-    private transient final ExtensionLicenseManager licenseManager;
+    private final transient ExtensionLicenseManager licenseManager;
 
-    private transient final ExtensionManagerConfiguration configuration;
+    private final transient ExtensionManagerConfiguration configuration;
 
-    private transient final UriBuilder extensionVersionUriBuider;
+    private final transient UriBuilder extensionVersionUriBuider;
 
-    private transient final UriBuilder extensionVersionFileUriBuider;
+    private final transient UriBuilder extensionVersionFileUriBuider;
 
-    private transient final UriBuilder extensionVersionsUriBuider;
+    private final transient UriBuilder extensionVersionsUriBuider;
 
-    private transient final UriBuilder searchUriBuider;
+    private final transient UriBuilder searchUriBuider;
 
     public XWikiExtensionRepository(ExtensionRepositoryId repositoryId,
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,
@@ -101,7 +101,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         return this.extensionVersionFileUriBuider;
     }
 
-    protected HttpResponse getRESTResource(UriBuilder builder, Object... values) throws IOException, IOException
+    protected HttpResponse getRESTResource(UriBuilder builder, Object... values) throws IOException
     {
         String url;
         try {
@@ -129,7 +129,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         return response;
     }
 
-    protected InputStream getRESTResourceAsStream(UriBuilder builder, Object... values) throws IOException, IOException
+    protected InputStream getRESTResourceAsStream(UriBuilder builder, Object... values) throws IOException
     {
         return getRESTResource(builder, values).getEntity().getContent();
     }

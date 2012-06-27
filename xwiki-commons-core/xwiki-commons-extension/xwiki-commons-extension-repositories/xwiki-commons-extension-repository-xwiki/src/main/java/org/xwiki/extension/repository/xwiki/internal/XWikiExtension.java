@@ -29,7 +29,6 @@ import org.apache.commons.io.IOUtils;
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
-import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
@@ -40,7 +39,7 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.License;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
- * XWiki Repository implementation of {@link Extension}.
+ * XWiki Repository implementation of {@link org.xwiki.extension.Extension}.
  * 
  * @version $Id$
  * @since 4.0M1
