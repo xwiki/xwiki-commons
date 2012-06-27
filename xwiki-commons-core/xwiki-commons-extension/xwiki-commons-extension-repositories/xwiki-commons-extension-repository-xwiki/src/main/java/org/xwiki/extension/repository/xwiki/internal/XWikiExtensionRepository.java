@@ -48,8 +48,6 @@ import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.repository.search.Searchable;
-import org.xwiki.extension.repository.xwiki.Resources;
-import org.xwiki.extension.repository.xwiki.UriBuilder;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersionSummary;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersions;
@@ -57,6 +55,8 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionsSearchResult;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.internal.DefaultVersion;
+import org.xwiki.repository.Resources;
+import org.xwiki.repository.UriBuilder;
 
 /**
  * @version $Id$

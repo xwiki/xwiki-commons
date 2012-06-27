@@ -24,92 +24,10 @@ package org.xwiki.extension.repository.xwiki;
  * 
  * @version $Id$
  * @since 4.0M1
+ * @deprecated since 4.2M1 use {@link org.xwiki.repository.Resources} instead
  */
-public interface Resources
+@Deprecated
+public interface Resources extends org.xwiki.repository.Resources
 {
-    // Entry point
 
-    /**
-     * Entry point of XWiki Repository protocol.
-     */
-    String ENTRYPOINT = "/repository";
-
-    // Path parameters
-
-    /**
-     * Name of the parameter indication the id of the extension.
-     */
-    String PPARAM_EXTENSIONID = "extensionId";
-
-    /**
-     * Name of the parameter indication the version of the extension.
-     */
-    String PPARAM_EXTENSIONVERSION = "extensionVersion";
-
-    // Extensions
-
-    /**
-     * Get extensions.
-     */
-    String EXTENSIONS = ENTRYPOINT + "/extensions";
-
-    /**
-     * Get extension informations.
-     */
-    String EXTENSION = EXTENSIONS + '/' + '{' + PPARAM_EXTENSIONID + '}';
-
-    /**
-     * Get extension versions.
-     */
-    String EXTENSION_VERSIONS = EXTENSION + "/versions";
-
-    /**
-     * Get extension version informations.
-     */
-    String EXTENSION_VERSION = EXTENSION_VERSIONS + '/' + '{' + PPARAM_EXTENSIONVERSION + '}';
-
-    /**
-     * Download extension file.
-     */
-    String EXTENSION_VERSION_FILE = EXTENSION_VERSION + "/file";
-
-    // Search
-
-    /**
-     * Execute search query among extensions.
-     */
-    String SEARCH = ENTRYPOINT + "/search";
-
-    // Query parameters
-
-    /**
-     * Language of the result to produce.
-     */
-    String QPARAM_LANGUAGE = "language";
-
-    /**
-     * Used to indicate versions ranges to filter versions request.
-     */
-    String QPARAM_VERSIONS_RANGES = "versionRanges";
-
-    /**
-     * The search query.
-     */
-    String QPARAM_SEARCH_QUERY = "q";
-
-    /**
-     * Offset from where the search start to return results.
-     */
-    String QPARAM_LIST_START = "start";
-
-    /**
-     * Indicate if we want to get the total number of possible result without limits in the result. Allow to speed up a
-     * bit the query when we don't care since it generally mean one more query on server side.
-     */
-    String QPARAM_LIST_REQUIRETOTALHITS = "requireTotalHits";
-
-    /**
-     * Maximum number of results.
-     */
-    String QPARAM_LIST_NUMBER = "number";
 }
