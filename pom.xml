@@ -930,6 +930,16 @@ mmmm]]></license>
         <!-- Skip Enforcer since we don't need it for coverage and it speeds up the build not to run it -->
         <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
       </properties>
+      <dependencyManagement>
+        <dependencies>
+          <!-- Needed when using Clover for runtime execution of integration tests -->
+          <dependency>
+            <groupId>com.cenqua.clover</groupId>
+            <artifactId>clover</artifactId>
+            <version>3.1.6</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
     </profile>
     <!-- Profile for m2eclipse which is used to tell m2eclipse to use a different output directory -->
     <profile>
