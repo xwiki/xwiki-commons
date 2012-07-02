@@ -51,25 +51,27 @@ public class RepositoryUtil
 {
     private static final String MAVENREPOSITORY_ID = "test-maven";
 
-    private File permanentDirectory;
+    private static final File TESTDIRECCTORY = new File("target/test-" + new Date().getTime());
 
-    private File temporaryDirectory;
+    private final File permanentDirectory;
 
-    private File extensionDirectory;
+    private final File temporaryDirectory;
 
-    private File localRepositoryRoot;
+    private final File extensionDirectory;
 
-    private File mavenRepositoryRoot;
+    private final File localRepositoryRoot;
 
-    private File remoteRepositoryRoot;
+    private final File mavenRepositoryRoot;
+
+    private final File remoteRepositoryRoot;
+
+    private final ComponentManager componentManager;
+
+    private final Mockery mockery;
+
+    private final ExtensionPackager extensionPackager;
 
     private FileExtensionRepository remoteRepository;
-
-    private ComponentManager componentManager;
-
-    private Mockery mockery;
-
-    private ExtensionPackager extensionPackager;
 
     private ComponentAnnotationLoader componentLoader;
 
@@ -83,16 +85,14 @@ public class RepositoryUtil
         this.componentManager = componentManager;
         this.mockery = mockery;
 
-        File testDirectory = new File("target/test-" + new Date().getTime());
+        this.temporaryDirectory = new File(TESTDIRECCTORY, "temporary-dir");
 
-        this.temporaryDirectory = new File(testDirectory, "temporary-dir");
-
-        this.permanentDirectory = new File(testDirectory, "permanent-dir");
+        this.permanentDirectory = new File(TESTDIRECCTORY, "permanent-dir");
         this.extensionDirectory = new File(this.permanentDirectory, "extension/");
         this.localRepositoryRoot = new File(this.extensionDirectory, "repository/");
 
-        this.mavenRepositoryRoot = new File(testDirectory, "maven/");
-        this.remoteRepositoryRoot = new File(testDirectory, "remote/");
+        this.mavenRepositoryRoot = new File(TESTDIRECCTORY, "maven/");
+        this.remoteRepositoryRoot = new File(TESTDIRECCTORY, "remote/");
 
         this.extensionPackager = new ExtensionPackager(this.permanentDirectory, this.remoteRepositoryRoot);
     }
@@ -127,7 +127,7 @@ public class RepositoryUtil
         return this.mavenRepositoryRoot;
     }
 
-    public String getRemoteRepositoryId()
+    public String getMavenRepositoryId()
     {
         return MAVENREPOSITORY_ID;
     }
