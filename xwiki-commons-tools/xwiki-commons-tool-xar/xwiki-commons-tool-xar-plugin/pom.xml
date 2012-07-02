@@ -173,19 +173,5 @@
         </executions>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <!-- Exclude from being Clovered since our integration tests are complex and will fail otherwise since they
-               don't contain the Clover JAR. So far we haven't found a solution to add the Clover JAR. Namely the
-               problem is in xwiki-commons-tool-xar-integration-tests, when the Verifier Maven code executes. -->
-          <groupId>com.atlassian.maven.plugins</groupId>
-          <artifactId>maven-clover2-plugin</artifactId>
-          <configuration>
-            <skip>true</skip>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 </project>
