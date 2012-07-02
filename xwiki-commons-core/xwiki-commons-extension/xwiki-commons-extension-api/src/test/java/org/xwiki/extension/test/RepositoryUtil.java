@@ -168,6 +168,7 @@ public class RepositoryUtil
         // copy
 
         copyResourceFolder(getLocalRepository(), "repository.local");
+        boolean mavenRepository = copyResourceFolder(getMavenRepository(), "repository.maven") > 0;
 
         // remote repositories
 
@@ -182,9 +183,9 @@ public class RepositoryUtil
                 repositoryManager.addRepository(remoteRepository);
             }
 
-            // maven resource repository
+            // maven repository
 
-            if (copyResourceFolder(getMavenRepository(), "repository.maven") > 0) {
+            if (mavenRepository) {
                 repositoryManager.addRepository(new ExtensionRepositoryId(MAVENREPOSITORY_ID, "maven",
                     getMavenRepository().toURI()));
             }
