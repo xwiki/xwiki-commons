@@ -79,8 +79,8 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
     {
         super.setUp();
 
-        this.repositoryUtil = new RepositoryUtil(getComponentManager());
-        this.repositoryUtil.setup(getMockery());
+        this.repositoryUtil = new RepositoryUtil(getComponentManager(), getMockery());
+        this.repositoryUtil.setup();
 
         this.extensionId = new ExtensionId(GROUPID + ':' + ARTIfACTID, "version");
         this.extensionDependencyId = new ExtensionId("dgroupid:dartifactid", "dversion");
@@ -113,7 +113,7 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         Assert.assertEquals(this.extensionId.getId(), extension.getId().getId());
         Assert.assertEquals(this.extensionId.getVersion(), extension.getId().getVersion());
         Assert.assertEquals("type", extension.getType());
-        Assert.assertEquals(this.repositoryUtil.getRemoteRepositoryId(), extension.getRepository().getId().getId());
+        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getId().getId());
         Assert.assertEquals("name", extension.getName());
         Assert.assertEquals("summary", extension.getSummary());
         Assert.assertEquals("http://website", extension.getWebSite());
@@ -130,7 +130,7 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
 
         // check that a new resolve of an already resolved extension provide the proper repository
         extension = this.repositoryManager.resolve(this.extensionId);
-        Assert.assertEquals(this.repositoryUtil.getRemoteRepositoryId(), extension.getRepository().getId().getId());
+        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getId().getId());
 
         // TODO: see http://jira.xwiki.org/browse/XWIKI-7163 // Modify the file on the descriptor on the repository
         // File pomFile =

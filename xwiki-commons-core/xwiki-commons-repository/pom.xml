@@ -26,16 +26,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-extension</artifactId>
+    <artifactId>xwiki-commons-core</artifactId>
     <version>4.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-extension-repositories</artifactId>
-  <name>XWiki Commons - Extension - Repository - Parent POM</name>
+  <artifactId>xwiki-commons-repository</artifactId>
+  <name>XWiki Commons - Repository</name>
   <packaging>pom</packaging>
-  <description>XWiki Commons - Extension - Repository - Parent POM</description>
+  <description>XWiki Commons - Repository</description>
   <modules>
-    <module>xwiki-commons-extension-repository-maven</module>
-    <module>xwiki-commons-extension-repository-xwiki</module>
+    <module>xwiki-commons-repository-api</module>
+    <module>xwiki-commons-repository-model</module>
   </modules>
 </project>
-       

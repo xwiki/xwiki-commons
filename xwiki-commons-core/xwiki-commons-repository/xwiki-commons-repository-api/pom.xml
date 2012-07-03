@@ -26,59 +26,22 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-extension-repositories</artifactId>
+    <artifactId>xwiki-commons-repository</artifactId>
     <version>4.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-extension-repository-xwiki</artifactId>
-  <name>XWiki Commons - Extension - Repository - XWiki</name>
+  <artifactId>xwiki-commons-repository-api</artifactId>
+  <name>XWiki Commons - Repository - API</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Extension - Repository - XWiki</description>
+  <description>Contains commons stuff to use in a a client or a server implementation</description>
   <properties>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
-    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-xwiki-handler,org.xwiki.commons:xwiki-commons-extension-repository-xwiki-handler</xwiki.extension.features>
+    <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-xwiki-api,org.xwiki.commons:xwiki-commons-extension-repository-xwiki-api</xwiki.extension.features>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-extension-api</artifactId>
+      <artifactId>xwiki-commons-repository-model</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-repository-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.restlet.jse</groupId>
-      <artifactId>org.restlet.ext.jaxrs</artifactId>
-      <version>${restlet.version}</version>
-      <scope>provided</scope>
-      <exclusions>
-        <!-- Included in Java6 -->
-      	<exclusion>
-          <artifactId>jaxb-api</artifactId>
-      	  <groupId>javax.xml.bind</groupId>
-      	</exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-    </dependency>
-    
-    <!-- Test dependencies -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-extension-api</artifactId>
-      <version>${project.version}</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   
@@ -90,14 +53,10 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-              **/XWikiExtension.java,
-              **/XWikiExtensionFile.java,
-              **/XWikiExtensionRepository.java,
-              **/XWikiExtensionRepositoryFactory.java
+              **/UriBuilder.java
           </excludes>
         </configuration>
       </plugin>
     </plugins>
   </build>
 </project>
-       

@@ -208,14 +208,14 @@ public class DefaultVersion implements Version
         enum ElementType
         {
             /**
-             * An integer.
-             */
-            INT,
-
-            /**
              * A known qualifier id.
              */
             QUALIFIER,
+
+            /**
+             * An integer.
+             */
+            INT,
 
             /**
              * An unknown literal string.

@@ -52,7 +52,7 @@ public class DefaultLocalExtensionFile implements LocalExtensionFile
      */
     public File getFile()
     {
-        return file;
+        return this.file;
     }
 
     // ExtensionFile
@@ -60,13 +60,13 @@ public class DefaultLocalExtensionFile implements LocalExtensionFile
     @Override
     public long getLength()
     {
-        return this.file.length();
+        return getFile().length();
     }
 
     @Override
     public InputStream openStream() throws IOException
     {
-        return new FileInputStream(this.file);
+        return new FileInputStream(getFile());
     }
 
     // LocalExtensionFile
@@ -74,12 +74,12 @@ public class DefaultLocalExtensionFile implements LocalExtensionFile
     @Override
     public String getAbsolutePath()
     {
-        return this.file.getAbsolutePath();
+        return getFile().getAbsolutePath();
     }
 
     @Override
     public String getName()
     {
-        return this.file.getName();
+        return getFile().getName();
     }
 }

@@ -209,7 +209,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                     desc.setDefaultValue(field.get(defaultInstance));
                 } catch (Exception e) {
                     LOGGER.error(
-                        MessageFormat.format("Failed to get default prperty value from field {0} in class {1}",
+                        MessageFormat.format("Failed to get default property value from field {0} in class {1}",
                             field.getName(), this.beanClass), e);
                 }
             }

@@ -185,9 +185,13 @@ public class JarProxy implements JarURLConnection.JarOpener
     }
 
     @Override
-    protected void finalize()
+    protected void finalize() throws java.lang.Throwable
     {
-        clear();
+        try {
+            clear();
+        } finally {
+            super.finalize();
+        }
     }
 
     private static class CachedJarFile extends JarFile
@@ -226,7 +230,11 @@ public class JarProxy implements JarURLConnection.JarOpener
         @Override
         protected void finalize() throws IOException
         {
-            closeCachedFile();
+            try {
+                closeCachedFile();
+            } finally {
+                super.finalize();
+            }
         }
 
         protected void closeCachedFile() throws IOException

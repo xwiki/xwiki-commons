@@ -46,28 +46,30 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 /**
- * Base class for {@code xar} and {@code unwar} mojos.
+ * Base class for {@code xar} and {@code unxar} mojos.
  * 
  * @version $Id$
  */
 abstract class AbstractXARMojo extends AbstractMojo
 {
     /**
-     * The name of the file in the package when to find general informations.
+     * The name of the XAR descriptor file.
      */
     protected static final String PACKAGE_XML = "package.xml";
 
     /**
-     * The name of the tag that marks the list of files in PACKAGE_XML.
+     * The name of the tag that marks the list of files in {@code link #PACKAGE_XML}.
      */
     protected static final String FILES_TAG = "files";
 
     /**
-     * The name of the tag that marks a specific file in PACKAGE_XML.
+     * The name of the tag that marks a specific file in {@code link #PACKAGE_XML}.
      */
     protected static final String FILE_TAG = "file";
 
-    /** Default encoding to use. */
+    /**
+     * Default encoding to use.
+     */
     private static final String DEFAULT_ENCODING = "UTF-8";
 
     /**
@@ -80,9 +82,10 @@ abstract class AbstractXARMojo extends AbstractMojo
     private static final String[] DEFAULT_EXCLUDES = new String[] {"**/META-INF/**"};
 
     /**
-     * Default includes.
+     * Default includes; only include XML files since XWiki pages are stored in this format and we don't want to include
+     * other files.
      */
-    private static final String[] DEFAULT_INCLUDES = new String[] {"**/**"};
+    private static final String[] DEFAULT_INCLUDES = new String[] {"**/*.xml"};
 
     /**
      * List of files to include. Specified as fileset patterns.
@@ -314,7 +317,7 @@ abstract class AbstractXARMojo extends AbstractMojo
      */
     protected XWikiDocument getDocFromXML(File file)
     {
-        XWikiDocument doc = null;
+        XWikiDocument doc;
 
         try {
             doc = new XWikiDocument();
@@ -322,6 +325,7 @@ abstract class AbstractXARMojo extends AbstractMojo
         } catch (Exception e) {
             getLog().warn(String.format("Failed to parse [%s], skipping it. The error was [%s]",
                 file.getAbsolutePath(), e.getMessage()));
+            doc = null;
         }
 
         return doc;

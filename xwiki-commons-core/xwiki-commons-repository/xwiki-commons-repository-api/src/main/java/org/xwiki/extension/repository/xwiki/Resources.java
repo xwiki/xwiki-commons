@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,23 +16,18 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package org.xwiki.extension.repository.xwiki;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-extension</artifactId>
-    <version>4.2-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-extension-repositories</artifactId>
-  <name>XWiki Commons - Extension - Repository - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Extension - Repository - Parent POM</description>
-  <modules>
-    <module>xwiki-commons-extension-repository-maven</module>
-    <module>xwiki-commons-extension-repository-xwiki</module>
-  </modules>
-</project>
-       
+/**
+ * Resources to use to access Extension Manager REST service.
+ * 
+ * @version $Id$
+ * @since 4.0M1
+ * @deprecated since 4.2M1 use {@link org.xwiki.repository.Resources} instead
+ */
+@Deprecated
+public interface Resources extends org.xwiki.repository.Resources
+{
+
+}

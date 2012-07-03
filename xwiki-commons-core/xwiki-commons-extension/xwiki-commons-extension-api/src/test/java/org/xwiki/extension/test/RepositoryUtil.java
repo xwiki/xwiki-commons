@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.reflections.Reflections;
@@ -52,29 +51,37 @@ public class RepositoryUtil
 {
     private static final String MAVENREPOSITORY_ID = "test-maven";
 
-    private File permanentDirectory;
+    private final File permanentDirectory;
 
-    private File temporaryDirectory;
+    private final File temporaryDirectory;
 
-    private File extensionDirectory;
+    private final File extensionDirectory;
 
-    private File localRepositoryRoot;
+    private final File localRepositoryRoot;
 
-    private File mavenRepositoryRoot;
+    private final File mavenRepositoryRoot;
 
-    private File remoteRepositoryRoot;
+    private final File remoteRepositoryRoot;
+
+    private final ComponentManager componentManager;
+
+    private final Mockery mockery;
+
+    private final ExtensionPackager extensionPackager;
 
     private FileExtensionRepository remoteRepository;
 
-    private ComponentManager componentManager;
-
-    private ExtensionPackager extensionPackager;
-
     private ComponentAnnotationLoader componentLoader;
 
-    public RepositoryUtil(ComponentManager componentManager)
+    public RepositoryUtil()
+    {
+        this(null, null);
+    }
+
+    public RepositoryUtil(ComponentManager componentManager, Mockery mockery)
     {
         this.componentManager = componentManager;
+        this.mockery = mockery;
 
         File testDirectory = new File("target/test-" + new Date().getTime());
 
@@ -120,56 +127,68 @@ public class RepositoryUtil
         return this.mavenRepositoryRoot;
     }
 
-    public String getRemoteRepositoryId()
+    public String getMavenRepositoryId()
     {
         return MAVENREPOSITORY_ID;
     }
 
-    public void setup(Mockery mockery) throws Exception
+    public ExtensionPackager getExtensionPackager()
+    {
+        return extensionPackager;
+    }
+
+    public void setup() throws Exception
     {
         // Mock Environment
-        final Environment environment = mockery.mock(Environment.class);
-        mockery.checking(new Expectations()
-        {
+        if (this.componentManager != null) {
+            final Environment environment = this.mockery.mock(Environment.class);
+            this.mockery.checking(new Expectations()
             {
-                allowing(environment).getPermanentDirectory();
-                will(returnValue(getPermanentDirectory()));
-                allowing(environment).getTemporaryDirectory();
-                will(returnValue(getTemporaryDirectory()));
-            }
-        });
-        DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
-        dcd.setRoleType(Environment.class);
-        this.componentManager.registerComponent(dcd, environment);
+                {
+                    allowing(environment).getPermanentDirectory();
+                    will(returnValue(getPermanentDirectory()));
+                    allowing(environment).getTemporaryDirectory();
+                    will(returnValue(getTemporaryDirectory()));
+                }
+            });
+            DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
+            dcd.setRoleType(Environment.class);
+            this.componentManager.registerComponent(dcd, environment);
+        }
 
         // add default test core extension
 
-        registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
-        ((ConfigurableDefaultCoreExtensionRepository) this.componentManager
-            .getInstance(CoreExtensionRepository.class)).addExtensions("coreextension", new DefaultVersion(
-            "version"));
+        if (this.componentManager != null) {
+            registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
+            ((ConfigurableDefaultCoreExtensionRepository) this.componentManager
+                .getInstance(CoreExtensionRepository.class)).addExtensions("coreextension", new DefaultVersion(
+                "version"));
+        }
 
         // copy
 
         copyResourceFolder(getLocalRepository(), "repository.local");
+        boolean mavenRepository = copyResourceFolder(getMavenRepository(), "repository.maven") > 0;
 
         // remote repositories
 
-        ExtensionRepositoryManager repositoryManager =
-            this.componentManager.getInstance(ExtensionRepositoryManager.class);
+        if (this.componentManager != null) {
+            ExtensionRepositoryManager repositoryManager =
+                this.componentManager.getInstance(ExtensionRepositoryManager.class);
 
-        // light remote repository
+            // light remote repository
 
-        if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
-            this.remoteRepository = new FileExtensionRepository(getRemoteRepository(), this.componentManager);
-            repositoryManager.addRepository(remoteRepository);
-        }
+            if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
+                this.remoteRepository = new FileExtensionRepository(getRemoteRepository(), this.componentManager);
+                repositoryManager.addRepository(remoteRepository);
+            }
 
-        // maven resource repository
+            // maven repository
 
-        if (copyResourceFolder(getMavenRepository(), "repository.maven") > 0) {
-            repositoryManager.addRepository(new ExtensionRepositoryId(MAVENREPOSITORY_ID, "maven", getMavenRepository()
-                .toURI()));
+            if (mavenRepository) {
+                repositoryManager.addRepository(new ExtensionRepositoryId(MAVENREPOSITORY_ID, "maven",
+                    getMavenRepository().toURI()));
+            }
         }
 
         // generated extensions
@@ -178,7 +197,9 @@ public class RepositoryUtil
 
         // init
 
-        this.componentManager.<ExtensionInitializer>getInstance(ExtensionInitializer.class).initialize();
+        if (this.componentManager != null) {
+            this.componentManager.<ExtensionInitializer> getInstance(ExtensionInitializer.class).initialize();
+        }
     }
 
     public ComponentAnnotationLoader getComponentLoader()

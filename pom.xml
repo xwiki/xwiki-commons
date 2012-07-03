@@ -651,7 +651,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>com.atlassian.maven.plugins</groupId>
           <artifactId>maven-clover2-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.4</version>
+          <version>3.1.6</version>
           <configuration>
             <license><![CDATA[mMrRvxjjbfhaCfMulFPnUUpeNQTJOMWcRiBJSAJDFtqBOB
 mi2K4jUCxeZ5N1tfFUViFQV32K7TEehr8rqeYLcnr>xtEQ
@@ -673,7 +673,7 @@ mmmm]]></license>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.0-beta-2</version>
+          <version>2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -755,7 +755,7 @@ mmmm]]></license>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.7</version>
+          <version>1.7.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -795,6 +795,20 @@ mmmm]]></license>
             <multiWindow>true</multiWindow>
             <port>4444</port>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>0.5.7.201204190339</version>
+          <executions>
+            <execution>
+              <id>prepare</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -930,6 +944,16 @@ mmmm]]></license>
         <!-- Skip Enforcer since we don't need it for coverage and it speeds up the build not to run it -->
         <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
       </properties>
+      <dependencyManagement>
+        <dependencies>
+          <!-- Needed when using Clover for runtime execution of integration tests -->
+          <dependency>
+            <groupId>com.cenqua.clover</groupId>
+            <artifactId>clover</artifactId>
+            <version>3.1.6</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
     </profile>
     <!-- Profile for m2eclipse which is used to tell m2eclipse to use a different output directory -->
     <profile>

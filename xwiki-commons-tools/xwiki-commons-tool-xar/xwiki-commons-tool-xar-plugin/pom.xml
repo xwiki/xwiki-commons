@@ -136,6 +136,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
         <configuration>
+          <!-- This to allow calling mvn xar:<mojo> from the command line. For example mvn xar:format
+               Without this users would need to call mvn xwiki-commons-tool-xar-plugin:format -->
           <goalPrefix>xar</goalPrefix>
         </configuration>
       </plugin>

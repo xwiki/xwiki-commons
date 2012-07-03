@@ -280,7 +280,7 @@ public abstract class AbstractExtension implements Extension
     /**
      * @param authors the authors of the extension
      */
-    public void setAuthors(Collection<ExtensionAuthor> authors)
+    public void setAuthors(Collection< ? extends ExtensionAuthor> authors)
     {
         this.authors = new ArrayList<ExtensionAuthor>(authors);
     }
