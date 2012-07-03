@@ -51,8 +51,6 @@ public class RepositoryUtil
 {
     private static final String MAVENREPOSITORY_ID = "test-maven";
 
-    private static final File TESTDIRECCTORY = new File("target/test-" + new Date().getTime());
-
     private final File permanentDirectory;
 
     private final File temporaryDirectory;
@@ -85,14 +83,16 @@ public class RepositoryUtil
         this.componentManager = componentManager;
         this.mockery = mockery;
 
-        this.temporaryDirectory = new File(TESTDIRECCTORY, "temporary-dir");
+        File testDirectory = new File("target/test-" + new Date().getTime());
 
-        this.permanentDirectory = new File(TESTDIRECCTORY, "permanent-dir");
+        this.temporaryDirectory = new File(testDirectory, "temporary-dir");
+
+        this.permanentDirectory = new File(testDirectory, "permanent-dir");
         this.extensionDirectory = new File(this.permanentDirectory, "extension/");
         this.localRepositoryRoot = new File(this.extensionDirectory, "repository/");
 
-        this.mavenRepositoryRoot = new File(TESTDIRECCTORY, "maven/");
-        this.remoteRepositoryRoot = new File(TESTDIRECCTORY, "remote/");
+        this.mavenRepositoryRoot = new File(testDirectory, "maven/");
+        this.remoteRepositoryRoot = new File(testDirectory, "remote/");
 
         this.extensionPackager = new ExtensionPackager(this.permanentDirectory, this.remoteRepositoryRoot);
     }
