@@ -162,7 +162,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
             try {
                 validateExtension(localExtension, null);
             } catch (InvalidExtensionException e) {
-                this.logger.error("Invalid extension [" + localExtension + "] it will not be loaded", e);
+                this.logger.error("Invalid extension [{}] it will not be loaded", localExtension.getId(), e);
 
                 addInstalledExtension(localExtension, null, false);
             }
@@ -171,8 +171,8 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
                 try {
                     validateExtension(localExtension, namespace);
                 } catch (InvalidExtensionException e) {
-                    this.logger.error("Invalid extension [" + localExtension + "] on namespace [" + namespace
-                        + "], it will not be loaded", e);
+                    this.logger.error("Invalid extension [{}] on namespace [], it will not be loaded", new Object[] {
+                    localExtension.getId(), namespace, e});
                 }
 
                 addInstalledExtension(localExtension, namespace, false);
@@ -319,11 +319,11 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
                 if (installedFeature == null) {
                     // That should never happen so lets log it
-                    this.logger.warn("Extension [" + installedExtension + "] is not installed");
-                } else if (installedFeature.backwardDependencies.remove(installedExtension)) {
+                    this.logger.warn("Extension [{}] is not installed", installedExtension.getId());
+                } else if (!installedFeature.backwardDependencies.remove(installedExtension)) {
                     // That should never happen so lets log it
-                    this.logger.warn("Extension [" + installedExtension
-                        + "] was not regisistered as backward dependency of [" + installedFeature.extension + "]");
+                    this.logger.warn("Extension [{}] was not regisistered as backward dependency of [{}]",
+                        installedExtension.getId(), installedFeature.extension.getId());
                 }
             }
         }
