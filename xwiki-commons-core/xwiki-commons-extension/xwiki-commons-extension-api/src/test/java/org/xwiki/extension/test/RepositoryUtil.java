@@ -149,6 +149,8 @@ public class RepositoryUtil
                     will(returnValue(getPermanentDirectory()));
                     allowing(environment).getTemporaryDirectory();
                     will(returnValue(getTemporaryDirectory()));
+                    allowing(environment).getResourceAsStream(with(any(String.class)));
+                    will(returnValue(null));
                 }
             });
             DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
