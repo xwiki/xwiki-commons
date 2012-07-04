@@ -310,11 +310,11 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
 
                 if (installedFeature == null) {
                     // That should never happen so lets log it
-                    this.logger.warn("Extension [" + installedExtension + "] is not installed");
-                } else if (installedFeature.backwardDependencies.remove(installedExtension)) {
+                    this.logger.warn("Extension [{}] is not installed", installedExtension.getId());
+                } else if (!installedFeature.backwardDependencies.remove(installedExtension)) {
                     // That should never happen so lets log it
-                    this.logger.warn("Extension [" + installedExtension
-                        + "] was not regisistered as backward dependency of [" + installedFeature.extension + "]");
+                    this.logger.warn("Extension [{}] was not regisistered as backward dependency of [{}]",
+                        installedExtension.getId(), installedFeature.extension.getId());
                 }
             }
         }
