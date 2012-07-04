@@ -100,6 +100,26 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
         return levelLogs;
     }
 
+    /**
+     * Filter logs of a specific level.
+     * 
+     * @param level the level of the logs to return
+     * @return the filtered logs
+     * @since 4.2M1
+     */
+    public List<LogEvent> getLogsFrom(LogLevel level)
+    {
+        List<LogEvent> levelLogs = new LinkedList<LogEvent>();
+
+        for (LogEvent log : this) {
+            if (log.getLevel().compareTo(level) <= 0) {
+                levelLogs.add(log);
+            }
+        }
+
+        return levelLogs;
+    }
+
     // Logger
 
     @Override
