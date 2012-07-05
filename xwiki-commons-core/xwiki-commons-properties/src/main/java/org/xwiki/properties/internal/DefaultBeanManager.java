@@ -152,8 +152,8 @@ public class DefaultBeanManager implements BeanManager
 
                     if (propertyDescriptor.getWriteMethod() != null) {
                         propertyDescriptor.getWriteMethod().invoke(bean, convertedValue);
-                    } else if (propertyDescriptor.getFied() != null) {
-                        propertyDescriptor.getFied().set(bean, convertedValue);
+                    } else if (propertyDescriptor.getField() != null) {
+                        propertyDescriptor.getField().set(bean, convertedValue);
                     }
                 } catch (Exception e) {
                     throw new PropertyException("Failed to populate property [" + propertyId + "]", e);

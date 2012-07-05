@@ -161,7 +161,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals(false, lowerPropertyDescriptor.isMandatory());
         Assert.assertNotNull(lowerPropertyDescriptor.getWriteMethod());
         Assert.assertNotNull(lowerPropertyDescriptor.getReadMethod());
-        Assert.assertNull(lowerPropertyDescriptor.getFied());
+        Assert.assertNull(lowerPropertyDescriptor.getField());
 
         PropertyDescriptor prop1Descriptor = this.beanDescriptor.getProperty("prop1");
 
@@ -181,7 +181,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals(false, upperPropertyDescriptor.isMandatory());
         Assert.assertNotNull(upperPropertyDescriptor.getWriteMethod());
         Assert.assertNotNull(upperPropertyDescriptor.getReadMethod());
-        Assert.assertNull(upperPropertyDescriptor.getFied());
+        Assert.assertNull(upperPropertyDescriptor.getField());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals(false, publicFieldPropertyDescriptor.isMandatory());
         Assert.assertNull(publicFieldPropertyDescriptor.getWriteMethod());
         Assert.assertNull(publicFieldPropertyDescriptor.getReadMethod());
-        Assert.assertNotNull(publicFieldPropertyDescriptor.getFied());
+        Assert.assertNotNull(publicFieldPropertyDescriptor.getField());
     }
 
     @Test
@@ -212,7 +212,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals(false, prop1Descriptor.isMandatory());
         Assert.assertNotNull(prop1Descriptor.getWriteMethod());
         Assert.assertNotNull(prop1Descriptor.getReadMethod());
-        Assert.assertNull(prop1Descriptor.getFied());
+        Assert.assertNull(prop1Descriptor.getField());
     }
 
     @Test
@@ -227,7 +227,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals(true, prop2Descriptor.isMandatory());
         Assert.assertNotNull(prop2Descriptor.getWriteMethod());
         Assert.assertNotNull(prop2Descriptor.getReadMethod());
-        Assert.assertNull(prop2Descriptor.getFied());
+        Assert.assertNull(prop2Descriptor.getField());
     }
 
     @Test
@@ -242,7 +242,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals(true, prop3Descriptor.isMandatory());
         Assert.assertNotNull(prop3Descriptor.getWriteMethod());
         Assert.assertNotNull(prop3Descriptor.getReadMethod());
-        Assert.assertNull(prop3Descriptor.getFied());
+        Assert.assertNull(prop3Descriptor.getField());
     }
 
     @Test
@@ -261,7 +261,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals(false, genericPropertyDescriptor.isMandatory());
         Assert.assertNotNull(genericPropertyDescriptor.getWriteMethod());
         Assert.assertNotNull(genericPropertyDescriptor.getReadMethod());
-        Assert.assertNull(genericPropertyDescriptor.getFied());
+        Assert.assertNull(genericPropertyDescriptor.getField());
 
         PropertyDescriptor prop1Descriptor = this.beanDescriptor.getProperty("prop1");
 
@@ -284,6 +284,6 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals(false, genericFieldPropertyDescriptor.isMandatory());
         Assert.assertNull(genericFieldPropertyDescriptor.getWriteMethod());
         Assert.assertNull(genericFieldPropertyDescriptor.getReadMethod());
-        Assert.assertNotNull(genericFieldPropertyDescriptor.getFied());
+        Assert.assertNotNull(genericFieldPropertyDescriptor.getField());
     }
 }

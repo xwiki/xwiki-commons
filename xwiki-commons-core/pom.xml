@@ -147,8 +147,11 @@
             <!-- Remove the following excludes after we release the current version as final -->
             <!-- New #isValid() method -->
             <exclude>org/xwiki/extension/InstalledExtension</exclude>
-            <!-- [YOUNG API] Moved from Exception to Thowable parameter for extending jobs -->
+            <!-- [YOUNG API] Moved from Exception to Throwable parameter for extending jobs -->
             <exclude>org/xwiki/job/AbstractJob</exclude>
+            <!-- Fix method name typo (adding new method). 
+            This interface is not really supposed to be implemented except by internal class. -->
+            <exclude>org/xwiki/properties/PropertyDescriptor</exclude>
           </excludes>
         </configuration>
       </plugin>
