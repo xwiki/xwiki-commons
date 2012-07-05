@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Provider;
@@ -109,9 +108,6 @@ public class EmbeddableComponentManager implements ComponentManager
         // Extension point to allow component to manipulate ComponentManager initialized state.
         try {
             List<ComponentManagerInitializer> initializers = this.getInstanceList(ComponentManagerInitializer.class);
-
-            Set keySet = this.componentEntries.keySet();
-            
             for (ComponentManagerInitializer initializer : initializers) {
                 initializer.initialize(this);
             }
