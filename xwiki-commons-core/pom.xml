@@ -149,6 +149,8 @@
             <exclude>org/xwiki/extension/InstalledExtension</exclude>
             <!-- [YOUNG API] Moved from Exception to Throwable parameter for extending jobs -->
             <exclude>org/xwiki/job/AbstractJob</exclude>
+            <!-- [YOUNG API] New method to access environment extension -->
+            <exclude>org/xwiki/extension/repository/CoreExtensionRepository</exclude>
             <!-- Fix method name typo (adding new method). 
             This interface is not really supposed to be implemented except by internal class. -->
             <exclude>org/xwiki/properties/PropertyDescriptor</exclude>
