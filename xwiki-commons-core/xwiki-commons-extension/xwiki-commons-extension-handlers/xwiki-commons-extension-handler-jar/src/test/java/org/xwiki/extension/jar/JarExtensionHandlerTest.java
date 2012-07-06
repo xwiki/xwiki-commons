@@ -37,6 +37,7 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
+import org.xwiki.logging.LogLevel;
 import org.xwiki.observation.ObservationManager;
 
 import packagefile.jarextension.DefaultTestComponent;
@@ -196,8 +197,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Class< ? > loadedClass = null;
         if (namespace != null) {
             loadedClass =
-                this.componentManagerManager.getComponentManager(namespace, false).getInstance(loadedRole)
-                    .getClass();
+                this.componentManagerManager.getComponentManager(namespace, false).getInstance(loadedRole).getClass();
 
             try {
                 getComponentManager().getInstance(loadedRole);
@@ -306,12 +306,12 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         if (namespace != null) {
             // Simulate the context for the initializer
             this.execution.getContext().setProperty("xwikicontext", new HashMap<String, Object>());
-            getComponentManager().<ExecutionContextInitializer>getInstance(ExecutionContextInitializer.class,
+            getComponentManager().<ExecutionContextInitializer> getInstance(ExecutionContextInitializer.class,
                 "jarextension").initialize(null);
             // Drop simulated context
             this.execution.getContext().removeProperty("xwikicontext");
         } else {
-            getComponentManager().<ExecutionContextInitializer>getInstance(ExecutionContextInitializer.class,
+            getComponentManager().<ExecutionContextInitializer> getInstance(ExecutionContextInitializer.class,
                 "jarextension").initialize(null);
         }
 
@@ -643,7 +643,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             checkJarExtensionAvailability(TestComponent.class, DefaultTestComponent.class, namespace1);
 
         // actual install test
-        installedExtension = install(extensionId, namespace2);
+        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
 
@@ -705,7 +706,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Class< ? > extensionDep1 =
             checkJarExtensionAvailability(TestComponent.class, DefaultTestComponent.class, namespace1);
 
-        installedExtension = install(extensionId, namespace2);
+        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
 
@@ -758,7 +760,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Class< ? > extensionDep1 =
             checkJarExtensionAvailability(TestComponent.class, DefaultTestComponent.class, namespace1);
 
-        installedExtension = install(extensionId, namespace2);
+        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
 
@@ -802,7 +805,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Class< ? > extensionDep1 =
             checkJarExtensionAvailability(TestComponent.class, DefaultTestComponent.class, namespace1);
 
-        installedExtension = install(extensionId, namespace2);
+        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
 

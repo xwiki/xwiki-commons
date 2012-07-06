@@ -199,7 +199,14 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     }
 
     @Override
+    @Deprecated
     public Field getFied()
+    {
+        return getField();
+    }
+
+    @Override
+    public Field getField()
     {
         return this.field;
     }

@@ -79,11 +79,11 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
         registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
     }
 
-    protected Job executeJob(String jobId, Request request) throws Throwable
+    protected Job executeJob(String jobId, Request request, LogLevel failFrom) throws Throwable
     {
         Job installJob = this.jobManager.executeJob(jobId, request);
 
-        List<LogEvent> errors = installJob.getStatus().getLog().getLogs(LogLevel.ERROR);
+        List<LogEvent> errors = installJob.getStatus().getLog().getLogsFrom(failFrom);
         if (!errors.isEmpty()) {
             throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable() : new Exception(errors.get(0)
                 .getFormattedMessage());
@@ -94,19 +94,29 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
 
     protected InstalledExtension install(ExtensionId extensionId, String namespace) throws Throwable
     {
-        install("install", extensionId, namespace);
+        return install(extensionId, namespace, LogLevel.WARN);
+    }
+
+    protected InstalledExtension install(ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
+    {
+        install("install", extensionId, namespace, failFrom);
 
         return this.installedExtensionRepository.resolve(extensionId);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String namespace) throws Throwable
     {
-        Job installJob = install("installplan", extensionId, namespace);
+        return installPlan(extensionId, namespace, LogLevel.WARN);
+    }
+
+    protected ExtensionPlan installPlan(ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
+    {
+        Job installJob = install("installplan", extensionId, namespace, failFrom);
 
         return (ExtensionPlan) installJob.getStatus();
     }
 
-    protected Job install(String jobId, ExtensionId extensionId, String namespace) throws Throwable
+    protected Job install(String jobId, ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
     {
         InstallRequest installRequest = new InstallRequest();
         installRequest.setId(extensionId.getId());
@@ -115,25 +125,31 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
             installRequest.addNamespace(namespace);
         }
 
-        return executeJob(jobId, installRequest);
+        return executeJob(jobId, installRequest, failFrom);
     }
 
     protected LocalExtension uninstall(ExtensionId extensionId, String namespace) throws Throwable
     {
-        uninstall("uninstall", extensionId, namespace);
+        return uninstall(extensionId, namespace, LogLevel.WARN);
+    }
+
+    protected LocalExtension uninstall(ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
+    {
+        uninstall("uninstall", extensionId, namespace, failFrom);
 
         return this.localExtensionRepository.resolve(extensionId);
     }
 
-    protected DefaultExtensionPlan<UninstallRequest> uninstallPlan(ExtensionId extensionId, String namespace)
-        throws Throwable
+    protected DefaultExtensionPlan<UninstallRequest> uninstallPlan(ExtensionId extensionId, String namespace,
+        LogLevel failFrom) throws Throwable
     {
-        Job uninstallJob = uninstall("installplan", extensionId, namespace);
+        Job uninstallJob = uninstall("installplan", extensionId, namespace, failFrom);
 
         return (DefaultExtensionPlan<UninstallRequest>) uninstallJob.getStatus();
     }
 
-    protected Job uninstall(String jobId, ExtensionId extensionId, String namespace) throws Throwable
+    protected Job uninstall(String jobId, ExtensionId extensionId, String namespace, LogLevel failFrom)
+        throws Throwable
     {
         UninstallRequest uninstallRequest = new UninstallRequest();
         uninstallRequest.setId(extensionId.getId());
@@ -142,13 +158,18 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
             uninstallRequest.addNamespace(namespace);
         }
 
-        return executeJob(jobId, uninstallRequest);
+        return executeJob(jobId, uninstallRequest, failFrom);
     }
 
     protected ExtensionPlan upgradePlan() throws Throwable
     {
+        return upgradePlan(LogLevel.WARN);
+    }
+
+    protected ExtensionPlan upgradePlan(LogLevel failFrom) throws Throwable
+    {
         InstallRequest installRequest = new InstallRequest();
 
-        return (ExtensionPlan) executeJob("upgradeplan", installRequest).getStatus();
+        return (ExtensionPlan) executeJob("upgradeplan", installRequest, failFrom).getStatus();
     }
 }
