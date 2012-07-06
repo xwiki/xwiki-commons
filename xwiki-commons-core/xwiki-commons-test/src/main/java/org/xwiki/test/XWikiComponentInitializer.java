@@ -20,7 +20,6 @@
 package org.xwiki.test;
 
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
-import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -33,7 +32,7 @@ import org.xwiki.context.ExecutionContextManager;
  */
 public class XWikiComponentInitializer
 {
-    private EmbeddableComponentManager componentManager;
+    private MockingComponentManager componentManager;
 
     private MockConfigurationSource configurationSource;
 
@@ -78,10 +77,10 @@ public class XWikiComponentInitializer
     /**
      * @return a configured Component Manager
      */
-    public EmbeddableComponentManager getComponentManager() throws Exception
+    public MockingComponentManager getComponentManager() throws Exception
     {
         if (this.componentManager == null) {
-            EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+            MockingComponentManager ecm = new MockingComponentManager();
             ecm.initialize(this.getClass().getClassLoader());
             this.componentManager = ecm;
         }

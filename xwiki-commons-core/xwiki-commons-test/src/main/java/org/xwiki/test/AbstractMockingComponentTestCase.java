@@ -36,7 +36,6 @@ import org.xwiki.component.annotation.ComponentDescriptorFactory;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
-import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.annotation.MockingRequirement;
 
@@ -71,7 +70,7 @@ import org.xwiki.test.annotation.MockingRequirement;
  */
 public abstract class AbstractMockingComponentTestCase extends AbstractMockingTestCase
 {
-    private EmbeddableComponentManager componentManager;
+    private MockingComponentManager componentManager;
 
     private ComponentAnnotationLoader loader = new ComponentAnnotationLoader();
 
@@ -83,7 +82,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
      * Extend EmbeddableComponentManager in order to mock Loggers since they're handled specially and are not
      * components.
      */
-    private class MockingEmbeddableComponentManager extends EmbeddableComponentManager
+    private class LogSpecificMockingComponentManager extends MockingComponentManager
     {
         private List<Class< ? >> mockedComponentClasses = new ArrayList<Class< ? >>();
 
@@ -133,7 +132,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
     @Before
     public void setUp() throws Exception
     {
-        this.componentManager = new MockingEmbeddableComponentManager();
+        this.componentManager = new MockingComponentManager();
 
         // Step 1: Register all components available
         // TODO: Remove this so that tests are executed faster. Need to offer a way to register components manually.
@@ -151,7 +150,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
                 // Mark the component class having its deps mocked so that our MockingEmbeddableComponentManager will
                 // server a mock Logger (but only if the Logger class is not in the exclusion list)
                 if (!exclusions.contains(Logger.class)) {
-                    ((MockingEmbeddableComponentManager) this.componentManager)
+                    ((LogSpecificMockingComponentManager) this.componentManager)
                         .addMockedComponentClass(field.getType());
                 }
 
@@ -252,7 +251,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
      * @return a configured Component Manager
      */
     @Override
-    public EmbeddableComponentManager getComponentManager() throws Exception
+    public MockingComponentManager getComponentManager() throws Exception
     {
         return this.componentManager;
     }
