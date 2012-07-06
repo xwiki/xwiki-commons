@@ -86,6 +86,21 @@ public class MockingComponentManager extends EmbeddableComponentManager
      * Register a mock component.
      *
      * @param mockery the JMock mockery instance to create the mock component
+     * @param role the role of the component to register
+     * @param mockId the JMock id (this is needed when registering several mocks for the same interface)
+     * @param <T> the component role class
+     * @return the registered mock component instance
+     * @throws Exception if the registration failed
+     */
+    public <T> T registerMockComponentWithId(Mockery mockery, Type role, String mockId) throws Exception
+    {
+        return registerMockComponent(mockery, this.<T> createComponentDescriptor(role), mockId);
+    }
+
+    /**
+     * Register a mock component.
+     *
+     * @param mockery the JMock mockery instance to create the mock component
      * @param descriptor the component descriptor for the component to register
      * @param <T> the component role class
      * @return the registered mock component instance
