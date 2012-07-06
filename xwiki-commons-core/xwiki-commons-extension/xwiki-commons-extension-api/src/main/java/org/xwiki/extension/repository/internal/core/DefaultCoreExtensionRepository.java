@@ -65,6 +65,11 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     protected transient Map<String, DefaultCoreExtension> extensions;
 
     /**
+     * The extension associated to the environment.
+     */
+    protected transient DefaultCoreExtension environmentExtension;
+
+    /**
      * The logger to log.
      */
     @Inject
@@ -89,6 +94,11 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     {
         try {
             this.extensions = new ConcurrentHashMap<String, DefaultCoreExtension>(this.scanner.loadExtensions(this));
+
+            this.environmentExtension = this.scanner.loadEnvironmentExtensions(this);
+            if (this.environmentExtension != null) {
+                this.extensions.put(this.environmentExtension.getId().getId(), this.environmentExtension);
+            }
 
             // Start a background thread to get more details about the found extensions
             Thread thread = new Thread(new Runnable()
@@ -176,6 +186,12 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     }
 
     // CoreExtensionRepository
+
+    @Override
+    public CoreExtension getEnvironmentExtension()
+    {
+        return this.environmentExtension;
+    }
 
     @Override
     public int countExtensions()

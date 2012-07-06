@@ -21,6 +21,7 @@ package org.xwiki.extension.repository;
 
 import junit.framework.Assert;
 
+import org.jmock.Expectations;
 import org.junit.Test;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
@@ -40,7 +41,15 @@ public class DefaultCoreExtensionRepositoryTest extends AbstractComponentTestCas
         super.setUp();
 
         // Mock Environment
-        registerMockComponent(Environment.class);
+        final Environment environment = registerMockComponent(Environment.class);
+
+        getMockery().checking(new Expectations()
+        {
+            {
+                allowing(environment).getResourceAsStream(with(any(String.class)));
+                will(returnValue(null));
+            }
+        });
 
         this.coreExtensionRepository =
             (ConfigurableDefaultCoreExtensionRepository) getComponentManager().getInstance(

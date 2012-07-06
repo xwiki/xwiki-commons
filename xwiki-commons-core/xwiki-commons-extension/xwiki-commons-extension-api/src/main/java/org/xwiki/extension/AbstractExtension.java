@@ -147,6 +147,8 @@ public abstract class AbstractExtension implements Extension
         setSummary(extension.getSummary());
 
         setDependencies(extension.getDependencies());
+
+        setProperties(extension.getProperties());
     }
 
     @Override

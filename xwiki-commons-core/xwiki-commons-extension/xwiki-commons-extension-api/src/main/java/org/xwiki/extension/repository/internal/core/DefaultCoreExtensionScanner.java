@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,6 +53,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.environment.Environment;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
@@ -96,6 +99,11 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     private static final Pattern PARSER_ID = Pattern.compile("([^: ]+):([^: ]+)(:([^: ]+))?");
 
     /**
+     * MANIFEST.MF attribute containing extension identifier.
+     */
+    private static final String MF_EXTENSION_ID = "XWiki-Extension-Id";
+
+    /**
      * The logger to log.
      */
     @Inject
@@ -118,6 +126,9 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
      */
     @Inject
     private ExtensionLicenseManager licenseManager;
+
+    @Inject
+    private Environment environment;
 
     private Dependency toDependency(String id, String version, String type) throws ResolveException
     {
@@ -271,13 +282,63 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
                 extension.set(remoteExtension);
             } catch (ResolveException e) {
-                this.logger.debug("Can't find remote extension with id [" + extension.getId() + "]", e);
+                this.logger.debug("Can't find remote extension with id [{}]", extension.getId(), e);
             }
         }
     }
 
     @Override
     public Map<String, DefaultCoreExtension> loadExtensions(DefaultCoreExtensionRepository repository)
+    {
+        Map<String, DefaultCoreExtension> extensions = new HashMap<String, DefaultCoreExtension>();
+
+        loadExtensionsFromClassloaders(extensions, repository);
+
+        return extensions;
+    }
+
+    @Override
+    public DefaultCoreExtension loadEnvironmentExtensions(DefaultCoreExtensionRepository repository)
+    {
+        InputStream is = this.environment.getResourceAsStream("META-INF/MANIFEST.MF");
+
+        if (is != null) {
+            // Probably running in an application server
+            try {
+                Manifest manifest = new Manifest(is);
+
+                Attributes manifestAttributes = manifest.getMainAttributes();
+                String extensionId = manifestAttributes.getValue(MF_EXTENSION_ID);
+
+                if (extensionId != null) {
+                    String[] mavenId = StringUtils.split(extensionId, ':');
+
+                    URL descriptorUrl =
+                        this.environment.getResource(String.format("META-INF/maven/%s/%s/pom.xml", mavenId[0],
+                            mavenId[1]));
+
+                    try {
+                        DefaultCoreExtension coreExtension = parseMavenPom(descriptorUrl, repository);
+
+                        return coreExtension;
+                    } catch (Exception e) {
+                        this.logger.warn("Failed to pase extension descriptor [{}]", descriptorUrl, e);
+                    }
+                }
+            } catch (IOException e) {
+                this.logger.error("Failed to parse environment META-INF/MANIFEST.MF file", e);
+            } finally {
+                IOUtils.closeQuietly(is);
+            }
+        }
+
+        this.logger.debug("No declared environmennt extension");
+
+        return null;
+    }
+
+    private void loadExtensionsFromClassloaders(Map<String, DefaultCoreExtension> extensions,
+        DefaultCoreExtensionRepository repository)
     {
         Set<URL> mavenURLs = ClasspathHelper.forPackage(MAVENPACKAGE);
 
@@ -290,8 +351,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
         Set<String> descriptors = reflections.getResources(Predicates.equalTo("pom.xml"));
 
-        Map<String, DefaultCoreExtension> extensions = new HashMap<String, DefaultCoreExtension>(descriptors.size());
-
         for (String descriptor : descriptors) {
             URL descriptorUrl = getClass().getClassLoader().getResource(descriptor);
 
@@ -300,15 +359,13 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
                 extensions.put(coreExtension.getId().getId(), coreExtension);
             } catch (Exception e) {
-                this.logger.warn("Failed to pase extension descriptor [" + descriptorUrl + "]", e);
+                this.logger.warn("Failed to pase extension descriptor [{}]", descriptorUrl, e);
             }
         }
 
         // Try to find more
 
         guess(extensions, repository);
-
-        return extensions;
     }
 
     private void guess(Map<String, DefaultCoreExtension> extensions, DefaultCoreExtensionRepository repository)
@@ -355,7 +412,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     guessedArtefacts.put(artefactname, new Object[] {version, url, type});
                 }
             } catch (Exception e) {
-                this.logger.warn("Failed to parse resource name [" + url + "]", e);
+                this.logger.warn("Failed to parse resource name [{}]", url, e);
             }
         }
 

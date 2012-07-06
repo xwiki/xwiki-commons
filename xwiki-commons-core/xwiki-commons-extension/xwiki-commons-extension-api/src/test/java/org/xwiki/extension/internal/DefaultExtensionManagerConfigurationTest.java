@@ -20,16 +20,18 @@
 package org.xwiki.extension.internal;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import junit.framework.Assert;
 
+import org.jmock.Expectations;
 import org.junit.Test;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.logging.LoggerManager;
 import org.xwiki.test.AbstractComponentTestCase;
 
 public class DefaultExtensionManagerConfigurationTest extends AbstractComponentTestCase
@@ -42,14 +44,28 @@ public class DefaultExtensionManagerConfigurationTest extends AbstractComponentT
         super.setUp();
 
         // Register a Mocked Environment since we need to provide one.
-        registerMockComponent(Environment.class);
+        final Environment environment = registerMockComponent(Environment.class);
+
+        getMockery().checking(new Expectations()
+        {
+            {
+                allowing(environment).getPermanentDirectory();
+                will(returnValue(null));
+                allowing(environment).getResourceAsStream(with(any(String.class)));
+                will(returnValue(null));
+            }
+        });
 
         this.configuration = getComponentManager().getInstance(ExtensionManagerConfiguration.class);
     }
 
     @Test
-    public void testGetRepositoriesWithInvalid() throws URISyntaxException
+    public void testGetRepositoriesWithInvalid() throws ComponentLookupException, Exception
     {
+        // Expect warnings to be logged
+        LoggerManager logManager = getComponentManager().getInstance(LoggerManager.class);
+        logManager.pushLogListener(null);
+
         getConfigurationSource().setProperty("extension.repositories", Arrays.asList("id:type:http://url", "invalid"));
 
         Assert.assertEquals(Arrays.asList(new ExtensionRepositoryId("id", "type", new URI("http://url"))),

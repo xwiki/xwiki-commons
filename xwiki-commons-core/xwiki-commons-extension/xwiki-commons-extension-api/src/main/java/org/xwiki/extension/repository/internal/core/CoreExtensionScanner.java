@@ -42,10 +42,18 @@ public interface CoreExtensionScanner
     void updateExtensions(Collection<DefaultCoreExtension> extensions);
 
     /**
+     * Scan environment resources to find core extension.
+     * 
+     * @param repository the repository used to create {@link DefaultCoreExtension}s.
+     * @return the found extension. Null if none is declared.
+     */
+    DefaultCoreExtension loadEnvironmentExtensions(DefaultCoreExtensionRepository repository);
+
+    /**
      * Scan classpath to find core extensions.
      * 
      * @param repository the repository used to create {@link DefaultCoreExtension}s.
-     * @return scan jar files in classpath to find core extensions
+     * @return found extensions. Empty {@link Map} if none can be found.
      */
     Map<String, DefaultCoreExtension> loadExtensions(DefaultCoreExtensionRepository repository);
 }
