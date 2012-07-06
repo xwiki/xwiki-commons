@@ -132,7 +132,7 @@ public abstract class AbstractMockingComponentTestCase extends AbstractMockingTe
     @Before
     public void setUp() throws Exception
     {
-        this.componentManager = new MockingComponentManager();
+        this.componentManager = new LogSpecificMockingComponentManager();
 
         // Step 1: Register all components available
         // TODO: Remove this so that tests are executed faster. Need to offer a way to register components manually.
