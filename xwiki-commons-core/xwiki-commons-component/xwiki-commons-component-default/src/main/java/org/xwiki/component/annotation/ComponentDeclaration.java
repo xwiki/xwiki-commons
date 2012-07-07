@@ -31,6 +31,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 public class ComponentDeclaration
 {
     /**
+     * Default priorities under which components are registered when no explicit priority is defined.
+     */
+    private static final int DEFAULT_PRIORITY = 1000;
+
+    /**
      * @see #getPriority()
      */
     private int priority;
@@ -39,6 +44,15 @@ public class ComponentDeclaration
      * @see #getImplementationClassName()
      */
     private String implementationClassName;
+
+    /**
+     * @param implementationClassName see {@link #getImplementationClassName()}
+     * @since 4.2M1
+     */
+    public ComponentDeclaration(String implementationClassName)
+    {
+        this(implementationClassName, DEFAULT_PRIORITY);
+    }
 
     /**
      * @param implementationClassName see {@link #getImplementationClassName()}

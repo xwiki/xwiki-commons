@@ -27,7 +27,6 @@ import junit.framework.Assert;
 
 import org.jmock.Expectations;
 import org.junit.Test;
-import org.slf4j.Logger;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.test.AbstractMockingComponentTestCase;
@@ -43,7 +42,7 @@ public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCas
     /**
      * The object being tested.
      */
-    @MockingRequirement(exceptions = Logger.class)
+    @MockingRequirement
     private DefaultJobStatusStorage storage;
 
     @Override

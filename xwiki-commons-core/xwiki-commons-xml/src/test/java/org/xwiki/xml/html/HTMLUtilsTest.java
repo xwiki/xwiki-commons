@@ -25,10 +25,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.annotation.MockingRequirement;
 import org.xwiki.xml.html.filter.HTMLFilter;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
+import org.xwiki.xml.internal.html.filter.BodyFilter;
+import org.xwiki.xml.internal.html.filter.FontFilter;
+import org.xwiki.xml.internal.html.filter.ListFilter;
+import org.xwiki.xml.internal.html.filter.ListItemFilter;
 
 /**
  * Unit tests for {@link org.xwiki.xml.html.HTMLUtils}.
@@ -36,6 +41,12 @@ import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
  * @version $Id$
  * @since 1.8.3
  */
+@ComponentList({
+    ListFilter.class,
+    ListItemFilter.class,
+    FontFilter.class,
+    BodyFilter.class
+})
 public class HTMLUtilsTest extends AbstractMockingComponentTestCase
 {
     @MockingRequirement(exceptions = {HTMLFilter.class})

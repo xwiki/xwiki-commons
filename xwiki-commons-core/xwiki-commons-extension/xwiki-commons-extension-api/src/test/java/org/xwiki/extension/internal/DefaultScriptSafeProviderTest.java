@@ -30,11 +30,20 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.xwiki.component.internal.DefaultComponentManager;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.extension.internal.safe.CollectionScriptSafeProvider;
 import org.xwiki.extension.internal.safe.DefaultScriptSafeProvider;
+import org.xwiki.extension.internal.safe.MapScriptSafeProvider;
 import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.annotation.MockingRequirement;
 
+@ComponentList({
+    DefaultComponentManager.class,
+    CollectionScriptSafeProvider.class,
+    MapScriptSafeProvider.class
+})
 public class DefaultScriptSafeProviderTest extends AbstractMockingComponentTestCase
 {
     @MockingRequirement(exceptions = ComponentManager.class)

@@ -28,7 +28,10 @@ import org.jmock.Expectations;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContextManager;
+import org.xwiki.context.internal.DefaultExecution;
+import org.xwiki.context.internal.DefaultExecutionContextManager;
 import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.annotation.MockingRequirement;
 
 /**
@@ -36,6 +39,10 @@ import org.xwiki.test.annotation.MockingRequirement;
  * 
  * @version $Id$
  */
+@ComponentList({
+    DefaultExecution.class,
+    DefaultExecutionContextManager.class
+})
 public class DefaultJobManagerTest extends AbstractMockingComponentTestCase
 {
     /**

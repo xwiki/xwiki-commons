@@ -76,11 +76,6 @@ public class ComponentAnnotationLoader
     private static final String COMPONENT_LIST_ENCODING = "UTF-8";
 
     /**
-     * Default priorities under which components are registered when no priority is defined in COMPONENT_LIST.
-     */
-    private static final int COMPONENT_DEFAULT_PRIORITY = 1000;
-
-    /**
      * Factory to create a Component Descriptor from an annotated class.
      */
     private ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
@@ -448,7 +443,7 @@ public class ComponentAnnotationLoader
                     if (chunks.length > 1) {
                         annotatedClassNames.add(new ComponentDeclaration(chunks[1], Integer.parseInt(chunks[0])));
                     } else {
-                        annotatedClassNames.add(new ComponentDeclaration(chunks[0], COMPONENT_DEFAULT_PRIORITY));
+                        annotatedClassNames.add(new ComponentDeclaration(chunks[0]));
                     }
                 } catch (Exception e) {
                     getLogger().error("Failed to parse component declaration from [{}]", inputLine, e);
