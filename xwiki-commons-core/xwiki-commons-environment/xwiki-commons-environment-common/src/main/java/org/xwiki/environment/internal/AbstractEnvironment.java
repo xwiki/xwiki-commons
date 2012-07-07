@@ -252,41 +252,15 @@ public abstract class AbstractEnvironment implements Environment
     private File initDir(final File directory, final boolean isTemp)
     {
         if (isTemp) {
-            initTempDir(directory);
+            try {
+                FileUtils.cleanDirectory(directory);
+            } catch (IOException e) {
+                throw new RuntimeException(
+                    String.format("Failed to empty the temporary directory [%s]. "
+                        + "Are their files inside of it which XWiki "
+                        + "does not have permission to delete?", directory.getAbsolutePath()));
+            }
         }
         return directory;
-    }
-
-    /**
-     * Initialize the internal xwiki-temp directory.
-     * This function clears the directory out.
-     *
-     * @param tempDir the xwiki-temp subdirectory which is internal/deleted per load.
-     */
-    private void initTempDir(final File tempDir)
-    {
-        // We can't prevent all bad configurations eg: persistent dir == /dev/null
-        // But setting the persistent dir to the xwiki-temp subdir is easy enough to catch.
-        final File permDir = getPermanentDirectory();
-        try {
-            if (tempDir.equals(permDir) || FileUtils.directoryContains(tempDir, permDir)) {
-                throw new RuntimeException(String.format(
-                    "The configured persistent store directory falls within the [%s] sub-directory of the temporary "
-                    + "directory, this sub-directory is reserved (deleted on start-up) and must never be used. Please "
-                    + "review your configuration.", TEMP_NAME));
-            }
-        } catch (IOException e) {
-            // Shouldn't happen since these directories were already verified to be writable.
-            throw new RuntimeException("Failure when checking if configured permanent store directory is subdirectory "
-                + "of temporary directory.", e);
-        }
-
-        try {
-            FileUtils.cleanDirectory(tempDir);
-        } catch (IOException e) {
-            throw new RuntimeException(
-                String.format("Failed to empty the temporary directory [%s]. Are their files inside of it which XWiki "
-                    + "does not have permission to delete?", tempDir.getAbsolutePath()));
-        }
     }
 }

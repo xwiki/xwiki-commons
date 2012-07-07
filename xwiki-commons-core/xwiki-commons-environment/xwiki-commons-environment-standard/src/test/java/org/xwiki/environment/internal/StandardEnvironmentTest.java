@@ -145,20 +145,6 @@ public class StandardEnvironmentTest
         Assert.assertEquals(persistentDir, this.environment.getPermanentDirectory());
     }
 
-    /**
-     * Check the possibility of a "silly configuration" where the persistent dir
-     * is set to be inside of the ephimeral (delete-on-start) dir.
-     */
-    @Test(expected=RuntimeException.class)
-    public void testGetConfiguredPermanentDirectoryIfInsideOfTempDir()
-    {
-        final File persistentDir = new File(TMPDIR, "xwiki-test-sillyPersistentDir");
-        this.setPersistentDir(persistentDir.getAbsolutePath());
-
-        // This throws an exception because of our configuration.
-        this.environment.getTemporaryDirectory();
-    }
-
     @Test
     public void testGetPermanentDirectoryWhenNotSet()
     {
@@ -230,9 +216,6 @@ public class StandardEnvironmentTest
         final Logger logger = getMockery().mock(Logger.class);
         getMockery().checking(new Expectations() {{
             allowing(logger).error(with(any(String.class)), with(any(String[].class)));
-            // Getting the tmp dir causes the permenant dir to be checked.
-            oneOf(logger).warn("Falling back on [{}] as the {} directory.",
-               System.getProperty("java.io.tmpdir"), "permanent");
         }});
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 
