@@ -84,12 +84,17 @@ public class XARMojo extends AbstractXARMojo
     {
         File xarFile = new File(this.project.getBuild().getDirectory(), this.project.getArtifactId() + ".xar");
         
-        File resourcesDir = getResourcesDirectory();
-
         // The source dir points to the target/classes directory where the Maven resources plugin
         // has copied the XAR files during the process-resources phase.
-        // For package.xml, however, we look in src/main/resources.
+        // For package.xml, however, we look in the resources directory (i.e. src/main/resources).
         File sourceDir = new File(this.project.getBuild().getOutputDirectory());
+        File resourcesDir = getResourcesDirectory();
+
+        // Check that there are files in the source dir
+        if (sourceDir.listFiles() == null) {
+            throw new Exception(
+                String.format("No XAR XML files found in [%s]. Has the Maven Resource plugin be called?", sourceDir));
+        }
 
         ZipArchiver archiver = new ZipArchiver();
         archiver.setEncoding(this.encoding);

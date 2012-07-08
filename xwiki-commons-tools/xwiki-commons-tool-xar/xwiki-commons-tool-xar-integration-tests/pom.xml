@@ -38,7 +38,7 @@
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
