@@ -257,7 +257,7 @@ public abstract class AbstractEnvironment implements Environment
             } catch (IOException e) {
                 throw new RuntimeException(
                     String.format("Failed to empty the temporary directory [%s]. "
-                        + "Are their files inside of it which XWiki "
+                        + "Are there files inside of it which XWiki "
                         + "does not have permission to delete?", directory.getAbsolutePath()));
             }
         }
