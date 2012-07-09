@@ -108,8 +108,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.request = request;
         this.observationManager = observationManager;
         this.loggerManager = loggerManager;
-
-        this.progress = new DefaultJobProgress();
     }
 
     /**
@@ -118,6 +116,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public void startListening()
     {
         // Register progress listener
+        this.progress = new DefaultJobProgress(Thread.currentThread());
         this.observationManager.addListener(this.progress);
 
         // Isolate log for the job status

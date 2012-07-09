@@ -55,6 +55,11 @@ public class DefaultJobProgress implements EventListener, JobProgress
     private String name;
 
     /**
+     * The thread on which to filter events.
+     */
+    private Thread thread;
+
+    /**
      * The progress stack.
      */
     private Stack<Level> progress = new Stack<Level>();
@@ -119,11 +124,12 @@ public class DefaultJobProgress implements EventListener, JobProgress
     }
 
     /**
-     * Default constructor.
+     * @param thread the thread on which to filter events
      */
-    public DefaultJobProgress()
+    public DefaultJobProgress(Thread thread)
     {
         this.name = getClass().getName() + '_' + hashCode();
+        this.thread = thread;
 
         // Push the root level to be able to distinguish between the case when the progress hasn't started yet and the
         // case when the progress is over. Otherwise we would have an empty progress stack for both cases.
@@ -147,14 +153,16 @@ public class DefaultJobProgress implements EventListener, JobProgress
     @Override
     public void onEvent(Event event, Object arg1, Object arg2)
     {
-        boolean ignoreNextStep = this.ignoreNextStepProgressEvent;
-        this.ignoreNextStepProgressEvent = false;
-        if (event instanceof PushLevelProgressEvent) {
-            onPushLevelProgress((PushLevelProgressEvent) event);
-        } else if (event instanceof PopLevelProgressEvent) {
-            onPopLevelProgress();
-        } else if (event instanceof StepProgressEvent && !ignoreNextStep) {
-            onStepProgress();
+        if (this.thread == null || this.thread == Thread.currentThread()) {
+            boolean ignoreNextStep = this.ignoreNextStepProgressEvent;
+            this.ignoreNextStepProgressEvent = false;
+            if (event instanceof PushLevelProgressEvent) {
+                onPushLevelProgress((PushLevelProgressEvent) event);
+            } else if (event instanceof PopLevelProgressEvent) {
+                onPopLevelProgress();
+            } else if (event instanceof StepProgressEvent && !ignoreNextStep) {
+                onStepProgress();
+            }
         }
     }
 
@@ -180,7 +188,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
         } else {
             LOGGER.warn("StepProgressEvent was fired too many times: [{}] instead of [{}]. The number of times"
                 + " StepProgressEvent is fired must match the number of steps passed to PushLevelProgressEvent.",
-                level.steps, level.currentStep);
+                level.currentStep, level.steps);
         }
     }
 
