@@ -46,9 +46,11 @@ import org.xwiki.test.annotation.MockingRequirement;
  * Unit tests for Components should extend this class instead of the older
  * {@link org.xwiki.test.AbstractComponentTestCase} test class. To use this class, add a private field of the type of
  * the component class being tested and annotate it with {@link org.xwiki.test.annotation.MockingRequirement}. This test
- * case will then find all Requirements of the component class being tested and inject mocks for each of them. To set
+ * case will then find all Requirements of the component class being tested and register mocks for each of them. To set
  * expectations simply look them up in setUp() (for example) and define their expectations in your test methods or
- * setUp(). For example: <code><pre>
+ * setUp().
+ *
+ * For example: <code><pre>
  * public class MyComponentTest
  * {
  *     &#64;MockingRequirement
@@ -65,9 +67,22 @@ import org.xwiki.test.annotation.MockingRequirement;
  *     }
  *     ...
  * }
- * </code></pre> Note that if your component under test is using other components in its {@code initialize()} method
+ * </code></pre>
+ *
+ * <p/>
+ * Note that if your component under test is using other components in its {@code initialize()} method
  * you'll need to override the {@link #configure} method to add Mock expectations there.
- * 
+ * </p>
+ * Also note that by default there are no component registered against the component manager except those mocked
+ * automatically by the {@code @MockingRequirement} annotation. This has 2 advantages:
+ * <ul>
+ *   <li>This is the spirit of AbstractMockingComponentTestCase since they're supposed to mock all dependencies and
+ *       define their behaviors</li>
+ *   <li>It makes the tests up to 10 times faster</li>
+ * </ul>
+ * If you really need to register some components, use the {@link ComponentList} annotation and if you really really
+ * need to register all components (it takes time) then use {@link AllComponents}.
+ *
  * @version $Id$
  * @since 2.2M1
  */
