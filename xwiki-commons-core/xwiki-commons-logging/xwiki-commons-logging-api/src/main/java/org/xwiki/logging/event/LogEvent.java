@@ -137,4 +137,10 @@ public class LogEvent implements Event
 
         return this.formattedMessage;
     }
+
+    @Override
+    public String toString()
+    {
+        return getLevel().toString() + ':' + getFormattedMessage();
+    }
 }
