@@ -313,7 +313,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         if (namespace != null) {
             this.logger.info("Resolving extension [{}] on namespace [{}]", extensionId, namespace);
         } else {
-            this.logger.info("Resolving extension [{}]", extensionId);
+            this.logger.info("Resolving extension [{}] on all namespaces", extensionId);
         }
 
         // Make sure the extension is not already a core extension
@@ -539,7 +539,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         if (namespace != null) {
             this.logger.info("Resolving extension dependency [{}] on namespace [{}]", extensionDependency, namespace);
         } else {
-            this.logger.info("Resolving extension dependency [{}]", extensionDependency);
+            this.logger.info("Resolving extension dependency [{}] on all namespaces", extensionDependency);
         }
 
         VersionConstraint versionConstraint = extensionDependency.getVersionConstraint();

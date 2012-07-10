@@ -80,10 +80,10 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends A
         String namespace = action.getNamespace();
 
         if (namespace != null) {
-            this.logger.info("Applying {} for extension [{}] and namespace [{}]", new Object[] {action.getAction(),
+            this.logger.info("Applying {} for extension [{}] on namespace [{}]", new Object[] {action.getAction(),
                 extension.getId(), namespace});
         } else {
-            this.logger.info("Applying {} for extension [{}]", action.getAction(), extension.getId());
+            this.logger.info("Applying {} for extension [{}] on all namespaces", action.getAction(), extension.getId());
         }
 
         notifyPushLevelProgress(2);
@@ -107,10 +107,11 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends A
             }
 
             if (namespace != null) {
-                this.logger.info("Successfully applied {} for extension [{}] and namespace [{}]",
+                this.logger.info("Successfully applied {} for extension [{}] on namespace [{}]",
                     new Object[] {action.getAction(), extension.getId(), namespace});
             } else {
-                this.logger.info("Successfully applied {} for extension [{}]", action.getAction(), extension.getId());
+                this.logger.info("Successfully applied {} for extension [{}] on all namespaces", action.getAction(),
+                    extension.getId());
             }
         } finally {
             notifyPopLevelProgress();
