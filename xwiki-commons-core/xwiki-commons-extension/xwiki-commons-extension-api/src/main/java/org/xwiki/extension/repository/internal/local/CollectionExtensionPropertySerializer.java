@@ -101,6 +101,23 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
     }
 
     /**
+     * @param valueClass the class of the value to serialize
+     * @param serializerByClass the serializers by class
+     * @return the serializer for the provided class
+     */
+    public static ExtensionPropertySerializer getSerializerByClass(Class< ? > valueClass,
+        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
+    {
+        for (Map.Entry<Class< ? >, ExtensionPropertySerializer> entry : serializerByClass.entrySet()) {
+            if (entry.getKey().isAssignableFrom(valueClass)) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param value the value to serialize
      * @param document the document used to create new {@link Element}
      * @param elementName the name of the element to create
@@ -111,7 +128,7 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
         Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
     {
         if (value != null) {
-            ExtensionPropertySerializer serializer = serializerByClass.get(value.getClass());
+            ExtensionPropertySerializer serializer = getSerializerByClass(value.getClass(), serializerByClass);
 
             if (serializer != null) {
                 return serializer.toElement(document, elementName, value);
@@ -131,11 +148,13 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
         for (int i = 0; i < featuresNodes.getLength(); ++i) {
             Node node = featuresNodes.item(i);
 
-            if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Object value = toValue((Element) node, this.serializerById);
 
                 if (value == null) {
                     return null;
+                } else {
+                    collection.add(value);
                 }
             }
         }

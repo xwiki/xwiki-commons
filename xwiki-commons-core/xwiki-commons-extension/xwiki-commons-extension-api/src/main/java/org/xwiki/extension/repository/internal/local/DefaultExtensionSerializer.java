@@ -26,13 +26,13 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -140,7 +140,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     {
         {
             this.serializerById = new HashMap<String, ExtensionPropertySerializer>();
-            this.serializerByClass = new HashMap<Class< ? >, ExtensionPropertySerializer>();
+            this.serializerByClass = new LinkedHashMap<Class< ? >, ExtensionPropertySerializer>();
 
             StringExtensionPropertySerializer stringSerializer = new StringExtensionPropertySerializer();
             IntegerExtensionPropertySerializer integerSerializer = new IntegerExtensionPropertySerializer();
@@ -160,9 +160,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             this.serializerByClass.put(String.class, stringSerializer);
             this.serializerByClass.put(Integer.class, integerSerializer);
             this.serializerByClass.put(Boolean.class, booleanSerializer);
-            this.serializerByClass.put(ArrayList.class, collectionSerializer);
-            this.serializerByClass.put(LinkedList.class, collectionSerializer);
-            this.serializerByClass.put(HashSet.class, setSerializer);
+            this.serializerByClass.put(Set.class, setSerializer);
+            this.serializerByClass.put(Collection.class, collectionSerializer);
         }
     }
 
