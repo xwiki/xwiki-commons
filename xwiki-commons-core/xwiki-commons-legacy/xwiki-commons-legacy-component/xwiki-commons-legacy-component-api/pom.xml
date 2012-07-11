@@ -38,6 +38,7 @@
     <xwiki.extension.features>org.xwiki.commons:xwiki-commons-component-api</xwiki.extension.features>
   </properties>
   <dependencies>
+    <!-- We need this dependency so that the wrapped module is built before this one -->
     <!-- FIXME: this package should be scope provided otherwise it will be triggered as transitive dependency -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -77,6 +78,17 @@
               <artifactId>xwiki-commons-component-api</artifactId>
             </weaveDependency>
           </weaveDependencies>
+        </configuration>
+      </plugin>
+      <!-- Make sure we run the tests only with the aspectified JARs since otherwise components will be registered
+           twice for example. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <classpathDependencyExcludes>
+            <classpathDependencyExcludes>org.xwiki.commons:xwiki-commons-component-api:jar</classpathDependencyExcludes>
+          </classpathDependencyExcludes>
         </configuration>
       </plugin>
     </plugins>

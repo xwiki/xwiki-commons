@@ -43,6 +43,7 @@
       <artifactId>xwiki-commons-legacy-component-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- We need this dependency so that the wrapped module is built before this one -->
     <!-- FIXME: this package should be scope provided otherwise it will be triggered as transitive dependency -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -59,26 +60,26 @@
   <build>
     <plugins>
       <!-- Apply Compatibility Aspects -->
-     <plugin>
-       <groupId>org.codehaus.mojo</groupId>
-       <artifactId>aspectj-maven-plugin</artifactId>
-       <executions>
-         <execution>
-           <id>backward-compatibility-aspects</id>
-           <goals>
-             <goal>compile</goal>
-           </goals>
-         </execution>
-       </executions>
-       <configuration>
-         <weaveDependencies>
-           <weaveDependency>
-             <groupId>org.xwiki.commons</groupId>
-             <artifactId>xwiki-commons-component-default</artifactId>
-           </weaveDependency>
-         </weaveDependencies>
-       </configuration>
-     </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>backward-compatibility-aspects</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <weaveDependencies>
+            <weaveDependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-component-default</artifactId>
+            </weaveDependency>
+          </weaveDependencies>
+        </configuration>
+      </plugin>
       <!-- We need to merge the content of the files that have the same names in the JAR we're aspectifying and
            in this module -->
       <plugin>
@@ -89,11 +90,17 @@
             <phase>process-classes</phase>
             <configuration>
               <target>
-                <concat destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.annotation.ComponentDependencyFactory" append="true">
-                  <filelist dir="${basedir}/src/main/resources/META-INF/services" files="org.xwiki.component.annotation.ComponentDependencyFactory" />
+                <concat
+                    destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.annotation.ComponentDependencyFactory"
+                    append="true">
+                  <filelist dir="${basedir}/src/main/resources/META-INF/services"
+                      files="org.xwiki.component.annotation.ComponentDependencyFactory"/>
                 </concat>
-                <concat destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.embed.LifecycleHandler" append="true">
-                  <filelist dir="${basedir}/src/main/resources/META-INF/services" files="org.xwiki.component.embed.LifecycleHandler" />
+                <concat
+                    destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.embed.LifecycleHandler"
+                    append="true">
+                  <filelist dir="${basedir}/src/main/resources/META-INF/services"
+                      files="org.xwiki.component.embed.LifecycleHandler"/>
                 </concat>
               </target>
             </configuration>
@@ -103,8 +110,9 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Make sure we run the tests only with the aspectified JARs -->
-     <plugin>
+      <!-- Make sure we run the tests only with the aspectified JARs since otherwise components will be registered
+           twice for example. -->
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
