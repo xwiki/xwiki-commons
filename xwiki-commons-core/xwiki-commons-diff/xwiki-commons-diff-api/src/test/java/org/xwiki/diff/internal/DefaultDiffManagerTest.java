@@ -24,6 +24,7 @@ import java.util.Collections;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.xwiki.diff.Delta.Type;
 import org.xwiki.diff.DiffException;
@@ -183,5 +184,15 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
         result = this.diffManager.merge(Arrays.asList('b'), Arrays.asList('b', 'c'), Arrays.asList('a', 'b'), null);
 
         Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
+
+        // Misc
+
+        result =
+            this.diffManager.merge(Arrays.asList(ArrayUtils.toObject("Alice Macro".toCharArray())),
+                Arrays.asList(ArrayUtils.toObject("Alice Wiki Macro (upgraded)".toCharArray())),
+                Arrays.asList(ArrayUtils.toObject("Alice Extension".toCharArray())), null);
+
+        Assert.assertEquals(Arrays.asList(ArrayUtils.toObject("Alice Wiki Extension (upgraded)".toCharArray())),
+            result.getMerged());
     }
 }

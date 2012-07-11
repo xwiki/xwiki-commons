@@ -38,7 +38,6 @@ import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.Patch;
 
 import difflib.DiffUtils;
-import difflib.PatchFailedException;
 
 /**
  * Default implementation of {@link DiffManager}.
@@ -158,11 +157,9 @@ public class DefaultDiffManager implements DiffManager
         if (deltaCurrent.getType() == Type.INSERT && deltaCurrent.getPrevious().getIndex() == 0) {
             merged.addAll(deltaCurrent.getNext().getElements());
             deltaCurrent = nextElement(patchCurrent);
-            if (deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
-                logConflict(mergeResult, deltaCurrent, deltaNext);
-                deltaNext = nextElement(patchNext);
-            }
-        } else if (deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
+        }
+
+        if (deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
             merged.addAll(deltaNext.getNext().getElements());
             deltaNext = nextElement(patchNext);
         }
@@ -171,19 +168,41 @@ public class DefaultDiffManager implements DiffManager
         int index = 0;
         for (; index < commonAncestor.size(); ++index) {
             if (isPreviousIndex(deltaCurrent, index)) {
-                index = apply(deltaCurrent, merged, index);
+                // Modification in current
+                if (isPreviousIndex(deltaNext, index)) {
+                    // Modifications in both current and next at the same index
+                    if (deltaCurrent.getType() == Type.INSERT) {
+                        index = apply(deltaCurrent, merged, index);
+                        index = apply(deltaNext, merged, index);
+                    } else if (deltaNext.getType() == Type.INSERT) {
+                        index = apply(deltaNext, merged, index);
+                        index = apply(deltaCurrent, merged, index);
+                    } else {
+                        // Conflict
+                        logConflict(mergeResult, deltaCurrent, deltaNext);
+                    }
 
-                if (isInPreviousDelta(deltaNext, deltaCurrent.getPrevious().getLastIndex())) {
-                    logConflict(mergeResult, deltaCurrent, deltaNext);
                     deltaNext = nextElement(patchNext);
+                } else {
+                    index = apply(deltaCurrent, merged, index);
+
+                    if (isInPreviousDelta(deltaNext, deltaCurrent.getPrevious().getLastIndex())) {
+                        // Conflict
+                        logConflict(mergeResult, deltaCurrent, deltaNext);
+                    }
                 }
+
+                deltaCurrent = nextElement(patchCurrent);
             } else if (isPreviousIndex(deltaNext, index)) {
+                // Modification in next
                 if (isInPreviousDelta(deltaCurrent, deltaNext.getPrevious().getLastIndex())) {
+                    // Conflict
                     logConflict(mergeResult, deltaCurrent, deltaNext);
-                    deltaNext = nextElement(patchNext);
                 } else {
                     index = apply(deltaNext, merged, index);
                 }
+
+                deltaNext = nextElement(patchNext);
             } else {
                 merged.add(commonAncestor.get(index));
             }
@@ -192,10 +211,9 @@ public class DefaultDiffManager implements DiffManager
         // After common ancestor
         if (deltaCurrent != null) {
             merged.addAll(deltaCurrent.getNext().getElements());
-            if (deltaNext != null) {
-                logConflict(mergeResult, deltaCurrent, deltaNext);
-            }
-        } else if (deltaNext != null) {
+        }
+
+        if (deltaNext != null) {
             merged.addAll(deltaNext.getNext().getElements());
         }
     }
@@ -240,31 +258,5 @@ public class DefaultDiffManager implements DiffManager
     private <E> boolean isInPreviousDelta(Delta<E> delta, int index)
     {
         return delta != null && delta.getPrevious().getIndex() <= index && delta.getPrevious().getIndex() >= index;
-    }
-
-    /**
-     * @param <E> the type of compared elements
-     * @param commonAncestor the common ancestor of the two versions of the content to compare
-     * @param next the next version of the content to compare
-     * @param current the current version of the content to compare
-     * @param configuration the configuration of the merge behavior
-     * @param mergeResult the result of the merge
-     */
-    // TODO: improve the algo and get rid of String special case, just applying a patch on the current version does not
-    // always give good result
-    public <E> void merge(List<E> commonAncestor, List<E> next, List<E> current, MergeConfiguration<E> configuration,
-        DefaultMergeResult<E> mergeResult)
-    {
-
-        difflib.Patch patch = DiffUtils.diff(commonAncestor, next);
-
-        try {
-            List<E> result = (List<E>) patch.applyTo(current);
-
-            mergeResult.setMerged(result);
-        } catch (PatchFailedException e) {
-            mergeResult.getLog().error("Failed to apply differences between [{}] and [{}] on current list [{}]",
-                new Object[] {commonAncestor, next, current, e});
-        }
     }
 }
