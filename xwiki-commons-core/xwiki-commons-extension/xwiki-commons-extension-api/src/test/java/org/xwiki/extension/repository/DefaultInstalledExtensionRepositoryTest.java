@@ -87,7 +87,13 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
     @Test
     public void testInit()
     {
-        Assert.assertEquals(2, this.installedExtensionRepository.countExtensions());
+        Assert.assertEquals(3, this.installedExtensionRepository.countExtensions());
+
+        // installedonnamespace
+        InstalledExtension extension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ONNAMESPACE_ID.getId(),
+                "namespace");
+        Assert.assertTrue(extension.isValid("namespace"));
     }
 
     @Test
