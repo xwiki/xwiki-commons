@@ -29,4 +29,48 @@ import java.util.HashMap;
  */
 public class MergeConfiguration<E> extends HashMap<String, Object>
 {
+    /**
+     * The name of the key used to setup the default fallback to use when finding a conflict.
+     */
+    public static final String KEY_FALLBACKONCONFLICT = "fallbackonconflict";
+
+    /**
+     * One of the merged versions.
+     * 
+     * @version $Id$
+     */
+    public enum Version
+    {
+        /**
+         * The common ancestor.
+         */
+        PREVIOUS,
+
+        /**
+         * The new version.
+         */
+        NEXT,
+
+        /**
+         * The current version.
+         */
+        CURRENT
+    }
+
+    /**
+     * @param version the version to fallback on when finding a conflict
+     */
+    public void setFallbackOnConflict(Version version)
+    {
+        put(KEY_FALLBACKONCONFLICT, version);
+    }
+
+    /**
+     * @return the version to fallback on when finding a conflict
+     */
+    public Version getFallbackOnConflict()
+    {
+        // Default is Version.NEXT
+        return containsKey(KEY_FALLBACKONCONFLICT) ? (Version) get(KEY_FALLBACKONCONFLICT) : Version.NEXT;
+    }
 }
