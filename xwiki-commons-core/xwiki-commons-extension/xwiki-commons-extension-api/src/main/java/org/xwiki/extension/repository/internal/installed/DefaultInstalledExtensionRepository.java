@@ -173,9 +173,9 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
                 } catch (InvalidExtensionException e) {
                     this.logger.error("Invalid extension [{}] on namespace [], it will not be loaded", new Object[] {
                     localExtension.getId(), namespace, e});
+                
+                    addInstalledExtension(localExtension, namespace, false);
                 }
-
-                addInstalledExtension(localExtension, namespace, false);
             }
         }
     }
