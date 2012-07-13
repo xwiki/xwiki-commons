@@ -152,7 +152,8 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
      */
     private void store(ExtensionPlanAction action) throws LocalExtensionRepositoryException, InstallException
     {
-        if (action.getAction() == Action.INSTALL || action.getAction() == Action.UPGRADE) {
+        if (action.getAction() == Action.INSTALL || action.getAction() == Action.UPGRADE
+            || action.getAction() == Action.DOWNGRADE) {
             storeExtension(action.getExtension());
         }
     }
