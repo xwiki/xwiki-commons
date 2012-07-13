@@ -19,11 +19,14 @@
  */
 package org.xwiki.extension.repository;
 
+import java.util.Collections;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
@@ -159,5 +162,24 @@ public class DefaultLocalExtensionRepositoryTest extends AbstractComponentTestCa
         Assert.assertEquals(2, result.getTotalHits());
         Assert.assertEquals(1, result.getSize());
         Assert.assertEquals(-1, result.getOffset());
+    }
+
+    @Test
+    public void testRemove() throws ResolveException
+    {
+        LocalExtension localExtension = this.localExtensionRepository.resolve(TestResources.INSTALLED_ID);
+
+        this.localExtensionRepository.removeExtension(localExtension);
+
+        try {
+            this.localExtensionRepository.resolve(TestResources.INSTALLED_ID);
+            Assert.fail("Extension [" + TestResources.INSTALLED_ID
+                + "] should not exist anymore in the local repository");
+        } catch (ResolveException e) {
+            // expected
+        }
+
+        Assert.assertEquals(Collections.EMPTY_LIST,
+            this.localExtensionRepository.getLocalExtensionVersions(TestResources.INSTALLED_ID.getId()));
     }
 }
