@@ -31,6 +31,7 @@ import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeResult;
+import org.xwiki.logging.LogLevel;
 import org.xwiki.test.AbstractComponentTestCase;
 
 public class DefaultDiffManagerTest extends AbstractComponentTestCase
@@ -144,6 +145,14 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
                 Arrays.asList("before", "some content"), null);
 
         Assert.assertEquals(Arrays.asList("before", "some content", "after"), result.getMerged());
+
+        // Same current and next
+
+        result =
+            this.diffManager.merge(Arrays.asList("some content"), Arrays.asList("some new content"),
+                Arrays.asList("some new content"), null);
+
+        Assert.assertEquals(Arrays.asList("some new content"), result.getMerged());
     }
 
     @Test
@@ -155,6 +164,7 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
             this.diffManager
                 .merge(Arrays.asList('b', 'c'), Arrays.asList('a', 'b', 'c'), Arrays.asList('b', 'c'), null);
 
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
 
         // New after
@@ -163,6 +173,7 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
             this.diffManager
                 .merge(Arrays.asList('a', 'b'), Arrays.asList('a', 'b', 'c'), Arrays.asList('a', 'b'), null);
 
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
 
         // New middle
@@ -171,18 +182,21 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
             this.diffManager
                 .merge(Arrays.asList('a', 'c'), Arrays.asList('a', 'b', 'c'), Arrays.asList('a', 'c'), null);
 
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
 
         // Before and after
 
         result = this.diffManager.merge(Arrays.asList('b'), Arrays.asList('a', 'b'), Arrays.asList('b', 'c'), null);
 
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
 
         // After and before
 
         result = this.diffManager.merge(Arrays.asList('b'), Arrays.asList('b', 'c'), Arrays.asList('a', 'b'), null);
 
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
 
         // Misc
@@ -192,7 +206,19 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
                 Arrays.asList(ArrayUtils.toObject("Alice Wiki Macro (upgraded)".toCharArray())),
                 Arrays.asList(ArrayUtils.toObject("Alice Extension".toCharArray())), null);
 
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(Arrays.asList(ArrayUtils.toObject("Alice Wiki Extension (upgraded)".toCharArray())),
             result.getMerged());
+    }
+
+    @Test
+    public void testMergeCharOnConflicts() throws DiffException
+    {
+        // Current and new at the same place
+        MergeResult<Character> result =
+            this.diffManager.merge(Arrays.asList('a'), Arrays.asList('b'), Arrays.asList('c'), null);
+
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(Arrays.asList('b'), result.getMerged());
     }
 }

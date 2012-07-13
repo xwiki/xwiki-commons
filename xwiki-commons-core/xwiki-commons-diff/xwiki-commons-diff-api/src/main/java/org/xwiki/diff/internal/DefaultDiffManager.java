@@ -33,6 +33,7 @@ import org.xwiki.diff.DiffException;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeConfiguration;
+import org.xwiki.diff.MergeConfiguration.Version;
 import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.diff.Patch;
@@ -134,6 +135,39 @@ public class DefaultDiffManager implements DiffManager
         return mergeResult;
     }
 
+    private <E> int fallback(List<E> commonAncestor, Delta<E> deltaNext, Delta<E> deltaCurrent, List<E> merged,
+        int currentIndex, MergeConfiguration<E> configuration)
+    {
+        int newIndex = currentIndex;
+
+        Version fallbackVersion;
+        if (configuration != null) {
+            fallbackVersion = configuration.getFallbackOnConflict();
+        } else {
+            fallbackVersion = Version.NEXT;
+        }
+
+        switch (fallbackVersion) {
+            case CURRENT:
+                newIndex = apply(deltaCurrent, merged, currentIndex);
+                break;
+            case PREVIOUS:
+                for (; newIndex < deltaNext.getPrevious().getIndex(); ++newIndex) {
+                    merged.add(commonAncestor.get(newIndex));
+                }
+                for (; newIndex < deltaCurrent.getPrevious().getIndex(); ++newIndex) {
+                    merged.add(commonAncestor.get(newIndex));
+                }
+                break;
+            default:
+                // NEXT is the default
+                newIndex = apply(deltaNext, merged, currentIndex);
+                break;
+        }
+
+        return newIndex;
+    }
+
     /**
      * @param <E> the type of compared elements
      * @param mergeResult the result of the merge
@@ -171,7 +205,10 @@ public class DefaultDiffManager implements DiffManager
                 // Modification in current
                 if (isPreviousIndex(deltaNext, index)) {
                     // Modifications in both current and next at the same index
-                    if (deltaCurrent.getType() == Type.INSERT) {
+                    if (deltaNext.equals(deltaCurrent)) {
+                        // Choose current
+                        index = apply(deltaCurrent, merged, index);
+                    } else if (deltaCurrent.getType() == Type.INSERT) {
                         index = apply(deltaCurrent, merged, index);
                         index = apply(deltaNext, merged, index);
                     } else if (deltaNext.getType() == Type.INSERT) {
@@ -180,6 +217,8 @@ public class DefaultDiffManager implements DiffManager
                     } else {
                         // Conflict
                         logConflict(mergeResult, deltaCurrent, deltaNext);
+
+                        index = fallback(commonAncestor, deltaNext, deltaCurrent, merged, index, configuration);
                     }
 
                     deltaNext = nextElement(patchNext);
@@ -189,6 +228,7 @@ public class DefaultDiffManager implements DiffManager
                     if (isInPreviousDelta(deltaNext, deltaCurrent.getPrevious().getLastIndex())) {
                         // Conflict
                         logConflict(mergeResult, deltaCurrent, deltaNext);
+                        deltaNext = nextElement(patchNext);
                     }
                 }
 
@@ -198,6 +238,7 @@ public class DefaultDiffManager implements DiffManager
                 if (isInPreviousDelta(deltaCurrent, deltaNext.getPrevious().getLastIndex())) {
                     // Conflict
                     logConflict(mergeResult, deltaCurrent, deltaNext);
+                    deltaCurrent = nextElement(patchCurrent);
                 } else {
                     index = apply(deltaNext, merged, index);
                 }
