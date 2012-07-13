@@ -312,6 +312,15 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
 
             this.logger.error("Failed to remove extension [" + extension + "]", e);
         }
+
+        // Remove the extension from the memory.
+        this.extensions.remove(localExtension.getId());
+        List<DefaultLocalExtension> localExtensionVersions =
+            this.extensionsVersions.get(localExtension.getId().getId());
+        localExtensionVersions.remove(localExtension);
+        if (localExtensionVersions.isEmpty()) {
+            this.extensionsVersions.remove(localExtension.getId().getId());
+        }
     }
 
     // Searchable
