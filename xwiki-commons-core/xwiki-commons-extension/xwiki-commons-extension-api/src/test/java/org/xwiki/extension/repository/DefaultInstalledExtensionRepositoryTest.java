@@ -286,14 +286,14 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
         CollectionIterableResult<Extension> result =
             (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 0, -1);
 
-        Assert.assertEquals(2, result.getTotalHits());
-        Assert.assertEquals(2, result.getSize());
+        Assert.assertEquals(3, result.getTotalHits());
+        Assert.assertEquals(3, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search("", 0, -1);
 
-        Assert.assertEquals(2, result.getTotalHits());
-        Assert.assertEquals(2, result.getSize());
+        Assert.assertEquals(3, result.getTotalHits());
+        Assert.assertEquals(3, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search("extension", 0, -1);
@@ -310,43 +310,43 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 0, 0);
 
-        Assert.assertEquals(2, result.getTotalHits());
+        Assert.assertEquals(3, result.getTotalHits());
         Assert.assertEquals(0, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 0, 2);
 
-        Assert.assertEquals(2, result.getTotalHits());
+        Assert.assertEquals(3, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 0, 1);
 
-        Assert.assertEquals(2, result.getTotalHits());
+        Assert.assertEquals(3, result.getTotalHits());
         Assert.assertEquals(1, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 1, 2);
 
-        Assert.assertEquals(2, result.getTotalHits());
-        Assert.assertEquals(1, result.getSize());
+        Assert.assertEquals(3, result.getTotalHits());
+        Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(1, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 2, 2);
 
-        Assert.assertEquals(2, result.getTotalHits());
-        Assert.assertEquals(0, result.getSize());
+        Assert.assertEquals(3, result.getTotalHits());
+        Assert.assertEquals(1, result.getSize());
         Assert.assertEquals(2, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, -1, 2);
 
-        Assert.assertEquals(2, result.getTotalHits());
+        Assert.assertEquals(3, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(-1, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, -1, 1);
 
-        Assert.assertEquals(2, result.getTotalHits());
+        Assert.assertEquals(3, result.getTotalHits());
         Assert.assertEquals(1, result.getSize());
         Assert.assertEquals(-1, result.getOffset());
     }
