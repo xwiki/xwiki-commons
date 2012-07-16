@@ -283,15 +283,16 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     {
         Map<String, ModifableExtensionPlanNode> extensionsById = this.extensionsNodeCache.get(id);
 
+        ModifableExtensionPlanNode node = null;
         if (extensionsById != null) {
-            ModifableExtensionPlanNode node = extensionsById.get(namespace);
+            node = extensionsById.get(namespace);
 
             if (node == null && namespace != null) {
                 node = extensionsById.get(null);
             }
         }
 
-        return null;
+        return node;
     }
 
     private void addExtensionNode(ModifableExtensionPlanNode node)
