@@ -20,6 +20,8 @@
 package org.xwiki.script.internal.service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -44,7 +46,8 @@ public class DefaultScriptServiceManager implements ScriptServiceManager
      * component manager obviously).
      */
     @Inject
-    private ComponentManager componentManager;
+    @Named("context")
+    private Provider<ComponentManager> componentManager;
 
     /**
      * The logger to log.
@@ -58,7 +61,7 @@ public class DefaultScriptServiceManager implements ScriptServiceManager
         ScriptService scriptService;
 
         try {
-            scriptService = this.componentManager.getInstance(ScriptService.class, serviceName);
+            scriptService = this.componentManager.get().getInstance(ScriptService.class, serviceName);
         } catch (Exception e) {
             this.logger.debug("Failed to lookup script service for role hint [{}]", serviceName, e);
 
