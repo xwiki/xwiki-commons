@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.ProviderTest;
 import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.component.internal.DefaultComponentManager;
 import org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory;
 import org.xwiki.component.internal.multi.DefaultComponentManagerManager;
@@ -191,14 +192,16 @@ public class ComponentAnnotationLoaderTest
             this.loader.getComponentsDescriptors(EmbeddableComponentManagerFactory.class).get(0);
         final ComponentDescriptor descriptor5 =
             this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).get(0);
-
         final ComponentDescriptor descriptor6 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProvider1.class).get(0);
+            this.loader.getComponentsDescriptors(ContextComponentManagerProvider.class).get(0);
+
         final ComponentDescriptor descriptor7 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProvider12.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderTest.TestProvider1.class).get(0);
         final ComponentDescriptor descriptor8 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProvider2.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderTest.TestProvider12.class).get(0);
         final ComponentDescriptor descriptor9 =
+            this.loader.getComponentsDescriptors(ProviderTest.TestProvider2.class).get(0);
+        final ComponentDescriptor descriptor10 =
             this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviders.class).get(0);
 
         // This is the test, we verify that registerComponent() is called for each of the descriptor we're expecting
@@ -215,6 +218,7 @@ public class ComponentAnnotationLoaderTest
                 oneOf(mockManager).registerComponent(descriptor7);
                 oneOf(mockManager).registerComponent(descriptor8);
                 oneOf(mockManager).registerComponent(descriptor9);
+                oneOf(mockManager).registerComponent(descriptor10);
             }
         });
 
