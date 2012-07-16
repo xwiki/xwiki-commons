@@ -23,6 +23,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.TestResources;
@@ -188,6 +189,23 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         } catch (InstallException e) {
             // expected
         }
+    }
 
+    @Test
+    public void testInstallPlanWithDependenciesCollision() throws Throwable
+    {
+        // greater last
+
+        ExtensionPlan /*plan = installPlan(new ExtensionId("dependenciescollision", "1.0"), null);
+
+        Assert.assertEquals(new ExtensionId("upgrade", "2.0"), plan.getActions().iterator().next().getExtension()
+            .getId());*/
+
+        // smaller last
+
+        plan = installPlan(new ExtensionId("dependenciescollision", "2.0"), null);
+
+        Assert.assertEquals(new ExtensionId("upgrade", "2.0"), plan.getActions().iterator().next().getExtension()
+            .getId());
     }
 }
