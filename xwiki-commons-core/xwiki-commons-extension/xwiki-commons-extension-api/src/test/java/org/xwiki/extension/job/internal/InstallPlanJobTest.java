@@ -196,10 +196,10 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     {
         // greater last
 
-        ExtensionPlan /*plan = installPlan(new ExtensionId("dependenciescollision", "1.0"), null);
+        ExtensionPlan plan = installPlan(new ExtensionId("dependenciescollision", "1.0"), null);
 
         Assert.assertEquals(new ExtensionId("upgrade", "2.0"), plan.getActions().iterator().next().getExtension()
-            .getId());*/
+            .getId());
 
         // smaller last
 
