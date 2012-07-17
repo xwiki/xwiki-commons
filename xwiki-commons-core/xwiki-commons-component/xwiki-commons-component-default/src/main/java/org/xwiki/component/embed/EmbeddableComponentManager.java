@@ -95,6 +95,22 @@ public class EmbeddableComponentManager implements ComponentManager
      */
     private ServiceLoader<LifecycleHandler> lifecycleHandlers = ServiceLoader.load(LifecycleHandler.class);
 
+    public EmbeddableComponentManager()
+    {
+        registerThis();
+    }
+
+    /**
+     * Allow to lookup the this as default {@link ComponentManager} implementation.
+     */
+    private void registerThis()
+    {
+        DefaultComponentDescriptor<ComponentManager> cd = new DefaultComponentDescriptor<ComponentManager>();
+        cd.setRoleType(ComponentManager.class);
+
+        registerComponent(cd, this);
+    }
+
     /**
      * Load all component annotations and register them as components.
      * 
@@ -176,7 +192,7 @@ public class EmbeddableComponentManager implements ComponentManager
         // Add parent's list of components
         if (getParent() != null) {
             // If the hint already exists in the children Component Manager then don't add the one from the parent.
-            for (Map.Entry<String, T> entry : getParent().<T>getInstanceMap(role).entrySet()) {
+            for (Map.Entry<String, T> entry : getParent().<T> getInstanceMap(role).entrySet()) {
                 if (!objects.containsKey(entry.getKey())) {
                     objects.put(entry.getKey(), entry.getValue());
                 }

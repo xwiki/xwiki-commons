@@ -19,26 +19,36 @@
  */
 package org.xwiki.component.internal;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.internal.multi.DelegateComponentManager;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 
 /**
- * Wraps the Component Manager in a component so that components requiring the component Manager can have it injected
- * automatically.
+ * Allow injecting the root component manager.
  * 
  * @version $Id$
- * @since 2.0M1
+ * @since 4.1.4
  */
 @Component
 @Singleton
-public class DefaultComponentManager extends DelegateComponentManager implements Composable
+@Named("root")
+public class RootComponentManager extends DelegateComponentManager implements Initializable
 {
+    /**
+     * The root component manager injected at init.
+     */
+    @Inject
+    private ComponentManager rootComponentManager;
+
     @Override
-    public void compose(ComponentManager componentManager)
+    public void initialize() throws InitializationException
     {
-        setComponentManager(componentManager);
+        setComponentManager(this.rootComponentManager);
     }
 }

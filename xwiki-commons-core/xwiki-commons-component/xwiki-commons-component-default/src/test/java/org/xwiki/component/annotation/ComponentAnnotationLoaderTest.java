@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.xwiki.component.ProviderTest;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
-import org.xwiki.component.internal.DefaultComponentManager;
+import org.xwiki.component.internal.RootComponentManager;
 import org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory;
 import org.xwiki.component.internal.multi.DefaultComponentManagerManager;
 import org.xwiki.component.manager.ComponentManager;
@@ -186,7 +186,7 @@ public class ComponentAnnotationLoaderTest
         final ComponentDescriptor descriptor1 =
             this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).get(0);
         final ComponentDescriptor descriptor2 =
-            this.loader.getComponentsDescriptors(DefaultComponentManager.class).get(0);
+            this.loader.getComponentsDescriptors(RootComponentManager.class).get(0);
         final ComponentDescriptor descriptor3 = this.loader.getComponentsDescriptors(OverrideRole.class).get(0);
         final ComponentDescriptor descriptor4 =
             this.loader.getComponentsDescriptors(EmbeddableComponentManagerFactory.class).get(0);
