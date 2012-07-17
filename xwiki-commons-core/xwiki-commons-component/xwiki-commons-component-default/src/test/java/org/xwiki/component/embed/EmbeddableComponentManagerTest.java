@@ -113,6 +113,14 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
+    public void testLookupThisComponentManager() throws ComponentLookupException
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        
+        Assert.assertSame(ecm.getInstance(ComponentManager.class), ecm);
+    }
+
+    @Test
     public void testGetComponentDescriptorList() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
