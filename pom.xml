@@ -46,7 +46,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>4.2-SNAPSHOT</commons.version>
+    <commons.version>4.2-milestone-1</commons.version>
 
     <!-- REST -->
     <restlet.version>2.0.14</restlet.version>
@@ -57,10 +57,11 @@
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>4.1.3</xwiki.clirr.previous.version>
 
-    <!-- By default Checkstyle, CLIRR and Enforcer plugins are on -->
+    <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.clirr.skip>false</xwiki.clirr.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
+    <xwiki.license.skip>false</xwiki.license.skip>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
