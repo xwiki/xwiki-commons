@@ -485,7 +485,7 @@ public class VelocityParser
         int i = currentIndex + 1;
 
         // A Velocity method starts with [a-zA-Z]
-        if (Character.isLetter(array[i])) {
+        if (i < array.length && Character.isLetter(array[i])) {
             for (; i < array.length; ++i) {
                 if (array[i] == '(') {
                     i = getMethodParameters(array, i, null, context);
