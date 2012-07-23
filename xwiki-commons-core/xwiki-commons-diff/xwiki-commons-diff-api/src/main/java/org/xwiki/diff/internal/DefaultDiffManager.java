@@ -208,9 +208,15 @@ public class DefaultDiffManager implements DiffManager
                     if (deltaNext.equals(deltaCurrent)) {
                         // Choose current
                         index = apply(deltaCurrent, merged, index);
+                        if (deltaCurrent.getType() == Type.INSERT) {
+                            merged.add(commonAncestor.get(index));
+                        }
                     } else if (deltaCurrent.getType() == Type.INSERT) {
                         index = apply(deltaCurrent, merged, index);
                         index = apply(deltaNext, merged, index);
+                        if (deltaNext.getType() == Type.INSERT) {
+                            merged.add(commonAncestor.get(index));
+                        }
                     } else if (deltaNext.getType() == Type.INSERT) {
                         index = apply(deltaNext, merged, index);
                         index = apply(deltaCurrent, merged, index);
@@ -224,6 +230,9 @@ public class DefaultDiffManager implements DiffManager
                     deltaNext = nextElement(patchNext);
                 } else {
                     index = apply(deltaCurrent, merged, index);
+                    if (deltaCurrent.getType() == Type.INSERT) {
+                        merged.add(commonAncestor.get(index));
+                    }
 
                     if (isInPreviousDelta(deltaNext, deltaCurrent.getPrevious().getLastIndex())) {
                         // Conflict
@@ -235,12 +244,15 @@ public class DefaultDiffManager implements DiffManager
                 deltaCurrent = nextElement(patchCurrent);
             } else if (isPreviousIndex(deltaNext, index)) {
                 // Modification in next
+                index = apply(deltaNext, merged, index);
+                if (deltaNext.getType() == Type.INSERT) {
+                    merged.add(commonAncestor.get(index));
+                }
+
                 if (isInPreviousDelta(deltaCurrent, deltaNext.getPrevious().getLastIndex())) {
                     // Conflict
                     logConflict(mergeResult, deltaCurrent, deltaNext);
                     deltaCurrent = nextElement(patchCurrent);
-                } else {
-                    index = apply(deltaNext, merged, index);
                 }
 
                 deltaNext = nextElement(patchNext);
