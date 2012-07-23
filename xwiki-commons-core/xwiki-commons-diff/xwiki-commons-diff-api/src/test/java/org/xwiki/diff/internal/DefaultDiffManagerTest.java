@@ -199,6 +199,22 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
         Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(Arrays.asList('a', 'b', 'c'), result.getMerged());
 
+        // Insert current and next
+
+        result =
+            this.diffManager.merge(Arrays.asList('a', 'b', 'c'), Arrays.asList('a', 'i', 'b', 'c'),
+                Arrays.asList('a', 'b', 'c', 'j'), null);
+
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(Arrays.asList('a', 'i', 'b', 'c', 'j'), result.getMerged());
+
+        result =
+            this.diffManager.merge(Arrays.asList('a', 'b', 'c'), Arrays.asList('a', 'b', 'c', 'j'),
+                Arrays.asList('a', 'i', 'b', 'c'), null);
+
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(Arrays.asList('a', 'i', 'b', 'c', 'j'), result.getMerged());
+        
         // Misc
 
         result =
