@@ -300,7 +300,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     @Override
     public DefaultCoreExtension loadEnvironmentExtensions(DefaultCoreExtensionRepository repository)
     {
-        InputStream is = this.environment.getResourceAsStream("META-INF/MANIFEST.MF");
+        InputStream is = this.environment.getResourceAsStream("/META-INF/MANIFEST.MF");
 
         if (is != null) {
             // Probably running in an application server
@@ -314,7 +314,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     String[] mavenId = StringUtils.split(extensionId, ':');
 
                     URL descriptorUrl =
-                        this.environment.getResource(String.format("META-INF/maven/%s/%s/pom.xml", mavenId[0],
+                        this.environment.getResource(String.format("/META-INF/maven/%s/%s/pom.xml", mavenId[0],
                             mavenId[1]));
 
                     try {
