@@ -32,11 +32,18 @@ import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.logging.LogLevel;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.annotation.MockingRequirement;
 
-public class DefaultDiffManagerTest extends AbstractComponentTestCase
+@ComponentList({DefaultDiffManager.class})
+public class DefaultDiffManagerTest extends AbstractMockingComponentTestCase
 {
-    private DiffManager diffManager;
+    /**
+     * The object being tested.
+     */
+    @MockingRequirement
+    private DefaultDiffManager diffManager;
 
     @Override
     public void setUp() throws Exception
@@ -214,7 +221,7 @@ public class DefaultDiffManagerTest extends AbstractComponentTestCase
 
         Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(Arrays.asList('a', 'i', 'b', 'c', 'j'), result.getMerged());
-        
+
         // Misc
 
         result =
