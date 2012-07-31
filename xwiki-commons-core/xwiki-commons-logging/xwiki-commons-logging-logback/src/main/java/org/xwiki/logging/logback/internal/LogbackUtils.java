@@ -21,7 +21,9 @@ package org.xwiki.logging.logback.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.logging.LogLevel;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 
 /**
@@ -41,12 +43,36 @@ public final class LogbackUtils
     }
 
     /**
+     * @return the root {@link LoggerContext}.
+     */
+    public static LoggerContext getLoggerContext()
+    {
+        return (LoggerContext) LoggerFactory.getILoggerFactory();
+    }
+
+    /**
      * @return the Logback root logger
      */
     public static ch.qos.logback.classic.Logger getRootLogger()
     {
-        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        return getLoggerContext().getLogger(Logger.ROOT_LOGGER_NAME);
+    }
 
-        return lc.getLogger(Logger.ROOT_LOGGER_NAME);
+    /**
+     * @param level the Logback log level
+     * @return the XWiki log level
+     */
+    public static LogLevel toLogLevel(Level level)
+    {
+        return level != null ? LogLevel.valueOf(level.toString()) : null;
+    }
+
+    /**
+     * @param logLevel the XWikilog level
+     * @return the Logback log level
+     */
+    public static Level toLevel(LogLevel logLevel)
+    {
+        return Level.toLevel(logLevel.toString(), null);
     }
 }

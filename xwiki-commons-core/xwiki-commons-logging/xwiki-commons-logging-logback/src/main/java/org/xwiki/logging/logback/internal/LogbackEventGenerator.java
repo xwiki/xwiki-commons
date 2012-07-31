@@ -126,7 +126,7 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
         }
 
         try {
-            LogLevel logLevel = LogLevel.valueOf(event.getLevel().toString());
+            LogLevel logLevel = LogbackUtils.toLogLevel(event.getLevel());
 
             LogEvent logevent = new LogEvent(logLevel, event.getMessage(), event.getArgumentArray(), throwable);
 

@@ -21,20 +21,25 @@ package org.xwiki.logging.logback.internal;
 
 import java.util.Iterator;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
-import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.event.LogQueueListener;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.observation.ObservationManager;
+import org.xwiki.observation.internal.DefaultObservationManager;
+import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.annotation.MockingRequirement;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.FilterReply;
-import junit.framework.Assert;
 
 /**
  * Unit tests for {@link DefaultLoggerManager}.
@@ -42,24 +47,22 @@ import junit.framework.Assert;
  * @version $Id$
  * @since 3.2M3
  */
-public class DefaultLoggerManagerTest extends AbstractComponentTestCase
+@ComponentList({DefaultLoggerManager.class, DefaultObservationManager.class, LogbackEventGenerator.class})
+public class DefaultLoggerManagerTest extends AbstractMockingComponentTestCase
 {
+    @MockingRequirement(exceptions = ObservationManager.class)
+    private DefaultLoggerManager loggerManager;
+
     private Logger logger;
-
-    private Logger logger2;
-
-    private LoggerManager loggerManager;
 
     private ListAppender<ILoggingEvent> listAppender;
 
     @Override
     public void setUp() throws Exception
     {
-        super.setUp();
-
         ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
 
-        // Disable all appenders to havoid unnecessary log
+        // Disable all appenders to avoid unnecessary log
         Filter<ILoggingEvent> filter = new Filter<ILoggingEvent>()
         {
             @Override
@@ -83,14 +86,13 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
         this.listAppender.start();
         rootLogger.addAppender(this.listAppender);
 
-        this.loggerManager = getComponentManager().getInstance(LoggerManager.class);
+        super.setUp();
 
         this.logger = LoggerFactory.getLogger(getClass());
-        this.logger2 = LoggerFactory.getLogger(getClass());
     }
 
     @Test
-    public void test() throws InterruptedException
+    public void testPushPopLogListener() throws InterruptedException
     {
         this.logger.error("[test] before push");
 
@@ -114,7 +116,7 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
             @Override
             public void run()
             {
-                logger2.error("[test] other thread");
+                logger.error("[test] other thread");
             }
         });
         thread.start();
@@ -132,7 +134,7 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testStackedLisneters()
+    public void testStackedListeners()
     {
         this.logger.error("[test] before push");
 
@@ -186,5 +188,29 @@ public class DefaultLoggerManagerTest extends AbstractComponentTestCase
 
         // Make sure the log has been sent to the logback appender
         Assert.assertEquals("[test] after pop", this.listAppender.list.get(1).getMessage());
+    }
+
+    @Test
+    public void testGetSetLoggerLevel()
+    {
+        Assert.assertNull(this.loggerManager.getLoggerLevel(getClass().getName()));
+
+        LogQueue queue = new LogQueue();
+
+        this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid", queue));
+
+        this.logger.debug("[test] debug message 1");
+        Assert.assertEquals(0, queue.size());
+
+        this.loggerManager.setLoggerLevel(getClass().getName(), LogLevel.DEBUG);
+
+        this.logger.debug("[test] debug message 2");
+        Assert.assertEquals(1, queue.size());
+    }
+
+    @Test
+    public void testGetLoggers()
+    {
+        this.loggerManager.getLoggers();
     }
 }

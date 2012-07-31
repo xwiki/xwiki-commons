@@ -19,14 +19,17 @@
  */
 package org.xwiki.logging.logback.internal;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Stack;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
@@ -116,8 +119,7 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
             } else {
                 EventListener topListener = listenerStack.peek();
                 if (topListener != null) {
-                    this.observation.addListener(new WrappedThreadEventListener(topListener,
-                        Thread.currentThread()));
+                    this.observation.addListener(new WrappedThreadEventListener(topListener, Thread.currentThread()));
                 }
             }
         } else {
@@ -145,5 +147,26 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     private void ungrabLog(Thread thread)
     {
         this.forbiddenThreads.removeThread(thread);
+    }
+
+    @Override
+    public void setLoggerLevel(String loggerName, LogLevel logLevel)
+    {
+        ch.qos.logback.classic.Logger logger = LogbackUtils.getLoggerContext().getLogger(loggerName);
+        logger.setLevel(LogbackUtils.toLevel(logLevel));
+    }
+
+    @Override
+    public LogLevel getLoggerLevel(String loggerName)
+    {
+        ch.qos.logback.classic.Logger logger = LogbackUtils.getLoggerContext().exists(loggerName);
+
+        return logger != null ? LogbackUtils.toLogLevel(logger.getLevel()) : null;
+    }
+
+    @Override
+    public Collection<Logger> getLoggers()
+    {
+        return (Collection) LogbackUtils.getLoggerContext().getLoggerList();
     }
 }

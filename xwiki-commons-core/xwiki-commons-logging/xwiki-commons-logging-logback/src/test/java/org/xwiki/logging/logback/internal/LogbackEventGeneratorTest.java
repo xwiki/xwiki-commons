@@ -34,24 +34,24 @@ import org.xwiki.test.AbstractComponentTestCase;
 
 /**
  * Unit tests for {@link LogbackEventGenerator}.
- *
+ * 
  * @version $Id$
  * @since 3.2M3
  */
 public class LogbackEventGeneratorTest extends AbstractComponentTestCase
 {
     private Logger logger;
-    
+
     private ObservationManager observationManager;
 
     @Override
     public void setUp() throws Exception
     {
         super.setUp();
-        
+
         this.observationManager = getComponentManager().getInstance(ObservationManager.class);
-        
-        this.logger = LoggerFactory.getLogger(getClass());   
+
+        this.logger = LoggerFactory.getLogger(getClass());
     }
 
     /**
@@ -63,11 +63,16 @@ public class LogbackEventGeneratorTest extends AbstractComponentTestCase
         final EventListener listener = getMockery().mock(EventListener.class);
         final Event event = new LogEvent(LogLevel.ERROR, "error message", null, null);
 
-        getMockery().checking(new Expectations() {{
-            allowing(listener).getName(); will(returnValue("mylistener"));
-            allowing(listener).getEvents(); will(returnValue(Arrays.asList(event)));
-            oneOf(listener).onEvent(with(any(LogEvent.class)), with(anything()), with(anything()));
-        }});
+        getMockery().checking(new Expectations()
+        {
+            {
+                allowing(listener).getName();
+                will(returnValue("mylistener"));
+                allowing(listener).getEvents();
+                will(returnValue(Arrays.asList(event)));
+                oneOf(listener).onEvent(with(any(LogEvent.class)), with(anything()), with(anything()));
+            }
+        });
 
         this.observationManager.addListener(listener);
 

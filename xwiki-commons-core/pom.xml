@@ -154,6 +154,8 @@
             <!-- Fix method name typo (adding new method). 
             This interface is not really supposed to be implemented except by internal class. -->
             <exclude>org/xwiki/properties/PropertyDescriptor</exclude>
+            <!-- [YOUNG API] New methods to manipulate loggers levels -->
+            <exclude>org/xwiki/logging/LoggerManager</exclude>
           </excludes>
         </configuration>
       </plugin>
