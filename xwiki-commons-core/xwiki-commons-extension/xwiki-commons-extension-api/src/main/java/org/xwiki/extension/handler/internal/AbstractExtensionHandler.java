@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.xwiki.extension.ExtensionException;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
@@ -59,5 +60,17 @@ public abstract class AbstractExtensionHandler implements ExtensionHandler
     public void initialize(LocalExtension localExtension, String namespace) throws ExtensionException
     {
         // do nothing by default
+    }
+
+    @Override
+    public void checkInstall(ExtensionId extensionId, String namespace, Request request) throws InstallException
+    {
+        // To be overwritten if anything special to check
+    }
+
+    @Override
+    public void checkUninstall(ExtensionId extensionId, String namespace, Request request) throws UninstallException
+    {
+        // To be overwritten if anything special to check
     }
 }

@@ -21,6 +21,7 @@ package org.xwiki.extension.handler;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.ExtensionException;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
@@ -68,11 +69,39 @@ public interface ExtensionHandler
         Request request) throws InstallException;
 
     /**
-     * Initialize the provided local extension (during application startup, reinitialization...).
+     * Initialize the provided local extension (during application startup, re-initialization...).
      * 
      * @param localExtension the extension to install
      * @param namespace the namespace where to install the extension
      * @throws ExtensionException error when trying to install the extension
      */
     void initialize(LocalExtension localExtension, String namespace) throws ExtensionException;
+
+    /**
+     * Check if installing the passed extension is allowed.
+     * <p>
+     * It is generally used to do some non generic checking of whether or not it is possible to install the passed
+     * extension (not the right environment, not enough rights, etc.).
+     * 
+     * @param extensionId the extension id and version to install
+     * @param namespace the namespace from where to install
+     * @param request extra parameters
+     * @throws InstallException installing the extension will fail
+     * @since 4.2M2
+     */
+    void checkInstall(ExtensionId extensionId, String namespace, Request request) throws InstallException;
+
+    /**
+     * Check if uninstalling the passed extension is allowed.
+     * <p>
+     * It is generally used to do some non generic checking of whether or not it is possible to uninstall the passed
+     * extension (not the right environment, not enough rights, etc.).
+     * 
+     * @param extensionId the extension id and version to uninstall
+     * @param namespace the namespace from where to uninstall
+     * @param request extra parameters
+     * @throws UninstallException uninstalling the extension will fail
+     * @since 4.2M2
+     */
+    void checkUninstall(ExtensionId extensionId, String namespace, Request request) throws UninstallException;
 }
