@@ -80,7 +80,6 @@ public final class ExtendedMessageFormatter
 
         int argumentsIndex;
         for (argumentsIndex = 0; argumentsIndex < arguments.length; ++argumentsIndex) {
-
             j = messagePattern.indexOf(DELIM_STR, i);
 
             if (j == -1) {
