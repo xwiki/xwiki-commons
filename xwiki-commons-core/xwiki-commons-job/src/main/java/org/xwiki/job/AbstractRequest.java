@@ -147,4 +147,16 @@ public abstract class AbstractRequest implements Request
     {
         return this.properties.keySet();
     }
+
+    @Override
+    public boolean containsProperty(String key)
+    {
+        return this.properties.containsKey(key);
+    }
+
+    @Override
+    public <T> T removeProperty(String key)
+    {
+        return (T) this.properties.remove(key);
+    }
 }

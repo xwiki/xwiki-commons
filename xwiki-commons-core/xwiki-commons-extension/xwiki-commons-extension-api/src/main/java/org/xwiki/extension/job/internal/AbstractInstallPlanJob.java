@@ -751,12 +751,19 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private ModifableExtensionPlanNode installExtension(InstalledExtension previousExtension, Extension extension,
         boolean dependency, String namespace, ExtensionDependency initialDependency) throws InstallException
     {
+        ExtensionHandler extensionHandler;
+
+        // Is type supported ?
         try {
-            this.componentManager.getInstance(ExtensionHandler.class, extension.getType());
+            extensionHandler = this.componentManager.getInstance(ExtensionHandler.class, extension.getType());
         } catch (ComponentLookupException e) {
             throw new InstallException(String.format("Unsupported type [%s]", extension.getType()), e);
         }
 
+        // Is installing the extension allowed ?
+        extensionHandler.checkInstall(extension, namespace, getRequest());
+
+        // Check dependencies
         Collection< ? extends ExtensionDependency> dependencies = extension.getDependencies();
 
         notifyPushLevelProgress(dependencies.size() + 1);

@@ -21,63 +21,24 @@ package org.xwiki.extension.handler;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
-import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.job.Request;
 
 /**
- * Handle extension related tasks depending of the type (install, uninstall, etc...).
+ * Check if executing a given action on a passed extension is allowed.
+ * <p>
+ * Mostly used for default behavior when {@link ExtensionHandler} does not have any special check for its type. The goal
+ * is to make easy for any environment using commons-extension module to have a default restriction on all extensions
+ * types (for example in XWiki unless the type has special checking you need programming right to install an extension).
  * 
  * @version $Id$
- * @since 4.0M1
+ * @since 4.2M2
  */
 @Role
-public interface ExtensionHandler
+public interface ExtensionValidator
 {
-    /**
-     * Install the provided local extension.
-     * 
-     * @param localExtension the extension to install
-     * @param namespace the namespace where to install the extension
-     * @param request extra parameters
-     * @throws InstallException error when trying to install the extension
-     */
-    void install(LocalExtension localExtension, String namespace, Request request) throws InstallException;
-
-    /**
-     * Uninstall the provided local extension.
-     * 
-     * @param localExtension the extension to uninstall
-     * @param namespace the namespace from where to uninstall the extension
-     * @param request extra parameters
-     * @throws UninstallException error when trying to uninstall the extension
-     */
-    void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException;
-
-    /**
-     * Upgrade the provided local extension.
-     * 
-     * @param previousLocalExtension the previous installed version of the extension
-     * @param newLocalExtension the extension to install
-     * @param namespace the namespace from where to uninstall the extension
-     * @param request extra parameters
-     * @throws InstallException error when trying to upgrade the extension
-     */
-    void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
-        Request request) throws InstallException;
-
-    /**
-     * Initialize the provided local extension (during application startup, re-initialization...).
-     * 
-     * @param localExtension the extension to install
-     * @param namespace the namespace where to install the extension
-     * @throws ExtensionException error when trying to install the extension
-     */
-    void initialize(LocalExtension localExtension, String namespace) throws ExtensionException;
-
     /**
      * Check if installing the passed extension is allowed.
      * <p>
@@ -88,7 +49,6 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to install
      * @param request extra parameters
      * @throws InstallException installing the extension will fail
-     * @since 4.2M2
      */
     void checkInstall(Extension extension, String namespace, Request request) throws InstallException;
 
@@ -102,7 +62,6 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to uninstall
      * @param request extra parameters
      * @throws UninstallException uninstalling the extension will fail
-     * @since 4.2M2
      */
     void checkUninstall(InstalledExtension extension, String namespace, Request request) throws UninstallException;
 }

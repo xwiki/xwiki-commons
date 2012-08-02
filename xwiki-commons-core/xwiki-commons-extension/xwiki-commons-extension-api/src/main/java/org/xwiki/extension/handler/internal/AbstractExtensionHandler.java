@@ -20,14 +20,17 @@
 package org.xwiki.extension.handler.internal;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.slf4j.Logger;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionException;
-import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
+import org.xwiki.extension.handler.ExtensionValidator;
 import org.xwiki.job.Request;
 
 /**
@@ -43,6 +46,14 @@ public abstract class AbstractExtensionHandler implements ExtensionHandler
      */
     @Inject
     protected Logger logger;
+
+    /**
+     * Used to check if an extension it is possible to install/uninstall a given extension.
+     */
+    @Inject
+    private Provider<ExtensionValidator> defaultValidatorProvider;
+
+    // ExtensionHandler
 
     @Override
     public void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
@@ -63,14 +74,15 @@ public abstract class AbstractExtensionHandler implements ExtensionHandler
     }
 
     @Override
-    public void checkInstall(ExtensionId extensionId, String namespace, Request request) throws InstallException
+    public void checkInstall(Extension extension, String namespace, Request request) throws InstallException
     {
-        // To be overwritten if anything special to check
+        this.defaultValidatorProvider.get().checkInstall(extension, namespace, request);
     }
 
     @Override
-    public void checkUninstall(ExtensionId extensionId, String namespace, Request request) throws UninstallException
+    public void checkUninstall(InstalledExtension extension, String namespace, Request request)
+        throws UninstallException
     {
-        // To be overwritten if anything special to check
+        this.defaultValidatorProvider.get().checkUninstall(extension, namespace, request);
     }
 }

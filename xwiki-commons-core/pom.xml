@@ -149,13 +149,17 @@
             <exclude>org/xwiki/extension/InstalledExtension</exclude>
             <!-- [YOUNG API] Moved from Exception to Throwable parameter for extending jobs -->
             <exclude>org/xwiki/job/AbstractJob</exclude>
+            <!-- [YOUNG API] Two new methods to check and remove custom properties -->
+            <exclude>org/xwiki/job/Request</exclude>
             <!-- [YOUNG API] New method to access environment extension -->
             <exclude>org/xwiki/extension/repository/CoreExtensionRepository</exclude>
+            <!-- [YOUNG API] New methods to execute custom checking before installing/uninstalling extension -->
+            <exclude>org/xwiki/extension/handler/ExtensionHandler</exclude>
+            <!-- [YOUNG API] New methods to manipulate loggers levels -->
+            <exclude>org/xwiki/logging/LoggerManager</exclude>
             <!-- Fix method name typo (adding new method). 
             This interface is not really supposed to be implemented except by internal class. -->
             <exclude>org/xwiki/properties/PropertyDescriptor</exclude>
-            <!-- [YOUNG API] New methods to manipulate loggers levels -->
-            <exclude>org/xwiki/logging/LoggerManager</exclude>
           </excludes>
         </configuration>
       </plugin>
