@@ -20,12 +20,14 @@
 package org.xwiki.logging.internal.helpers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Provide what is missing in {@link org.slf4j.helpers.MessageFormatter}.
  * 
  * @version $Id$
+ * @since 4.2M1
  */
 // TODO: remove as soon as all that is provided by org.slf4j.helpers.MessageFormatter
 public final class ExtendedMessageFormatter
@@ -69,8 +71,8 @@ public final class ExtendedMessageFormatter
             return null;
         }
 
-        if (arguments == null) {
-            return null;
+        if (arguments == null || arguments.length == 0) {
+            return Arrays.asList(messagePattern);
         }
 
         List<String> messageList = new ArrayList<String>(arguments.length + 1);

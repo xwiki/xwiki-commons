@@ -37,7 +37,11 @@ public class LogEventTest
     @Test
     public void testGetMessageElements()
     {
-        LogEvent logEvent = new LogEvent(LogLevel.ERROR, "", ArrayUtils.EMPTY_OBJECT_ARRAY, null);
+        LogEvent logEvent = new LogEvent(LogLevel.ERROR, "", null, null);
+
+        Assert.assertEquals(logEvent.getMessageElements(), Arrays.asList(""));
+
+        logEvent = new LogEvent(LogLevel.ERROR, "", ArrayUtils.EMPTY_OBJECT_ARRAY, null);
 
         Assert.assertEquals(logEvent.getMessageElements(), Arrays.asList(""));
 

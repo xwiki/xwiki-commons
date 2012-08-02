@@ -143,6 +143,7 @@ public class LogEvent implements Event
 
     /**
      * @return the log message cut in peaces
+     * @since 4.2M1
      */
     public List<String> getMessageElements()
     {
