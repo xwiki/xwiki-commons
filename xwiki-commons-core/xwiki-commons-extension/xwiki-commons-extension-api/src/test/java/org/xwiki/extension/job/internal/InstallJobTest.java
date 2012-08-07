@@ -43,7 +43,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         // lookup
 
-        this.handler = (TestExtensionHandler) getComponentManager().getInstance(ExtensionHandler.class, "type");
+        this.handler = (TestExtensionHandler) getComponentManager().getInstance(ExtensionHandler.class, "test");
     }
 
     @Test

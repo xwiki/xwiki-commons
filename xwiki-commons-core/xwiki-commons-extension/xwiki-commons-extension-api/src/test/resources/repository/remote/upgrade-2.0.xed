@@ -3,5 +3,5 @@
 <extension>
   <id>upgrade</id>
   <version>2.0</version>
-  <type>type</type>
+  <type>test</type>
 </extension>

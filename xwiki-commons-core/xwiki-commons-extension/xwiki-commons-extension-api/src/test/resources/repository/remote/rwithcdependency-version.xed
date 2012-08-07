@@ -3,7 +3,7 @@
 <extension>
   <id>rwithcdependency</id>
   <version>version</version>
-  <type>type</type>
+  <type>test</type>
   <features>
     <feature>rwithcdependency-feature</feature>
   </features>

@@ -3,7 +3,7 @@
 <extension>
   <id>dependenciescollision</id>
   <version>1.0</version>
-  <type>type</type>
+  <type>test</type>
   <dependencies>
     <dependency>
       <id>upgrade</id>

@@ -106,7 +106,7 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
 
         Assert.assertNotNull(extension);
         Assert.assertEquals(TestResources.INSTALLED_ID, extension.getId());
-        Assert.assertEquals("type", extension.getType());
+        Assert.assertEquals("test", extension.getType());
         Assert.assertEquals(Arrays.asList(TestResources.INSTALLED_ID.getId() + "-feature"), new ArrayList<String>(
             extension.getFeatures()));
 

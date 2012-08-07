@@ -41,7 +41,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
 
         // lookup
 
-        this.handler = (TestExtensionHandler) getComponentManager().getInstance(ExtensionHandler.class, "type");
+        this.handler = (TestExtensionHandler) getComponentManager().getInstance(ExtensionHandler.class, "test");
 
         // resources
 

@@ -37,7 +37,7 @@ import org.xwiki.job.Request;
 /**
  * Basic handler used for tests.
  */
-@Component("type")
+@Component("test")
 @Singleton
 public class TestExtensionHandler extends AbstractExtensionHandler
 {

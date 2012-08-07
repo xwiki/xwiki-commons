@@ -3,7 +3,7 @@
 <extension>
   <id>rwithldependency</id>
   <version>version</version>
-  <type>type</type>
+  <type>test</type>
   <features>
     <feature>rwithldependency-feature</feature>
   </features>
