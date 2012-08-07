@@ -21,6 +21,7 @@ package org.xwiki.extension.repository.aether.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -71,7 +72,6 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.properties.ConverterManager;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -79,7 +79,15 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 {
     public static final String MPKEYPREFIX = "xwiki.extension.";
 
-    public static final String MPKEY_FEATURES = MPKEYPREFIX + "features";
+    public static final String MPNAME_NAME = "name";
+
+    public static final String MPNAME_SUMMARY = "summary";
+
+    public static final String MPNAME_WEBSITE = "website";
+
+    public static final String MPNAME_DESCRIPTION = "description";
+
+    public static final String MPNAME_FEATURES = "features";
 
     /**
      * Used to parse the version.
@@ -289,6 +297,28 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return rangeResult.getVersions();
     }
 
+    private String getProperty(Model model, String propertyName)
+    {
+        return model.getProperties().getProperty(MPKEYPREFIX + propertyName);
+    }
+
+    private <T> T getProperty(Model model, String propertyName, T def, Type targetType)
+    {
+        T value = def;
+
+        String stringValue = getProperty(model, propertyName);
+        if (stringValue != null) {
+            value = this.converter.<T> convert(targetType, stringValue);
+        }
+
+        return value;
+    }
+
+    private String getPropertyString(Model model, String propertyName, String def)
+    {
+        return StringUtils.defaultString(getProperty(model, propertyName), def);
+    }
+
     protected AetherExtension resolveMaven(ExtensionDependency extensionDependency) throws ResolveException
     {
         RepositorySystemSession session = createRepositorySystemSession();
@@ -334,8 +364,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         AetherExtension extension = new AetherExtension(artifact, model, this, this.plexusComponentManager);
 
-        extension.setName(model.getName());
-        extension.setSummary(model.getDescription());
+        extension.setName(getPropertyString(model, MPNAME_NAME, model.getName()));
+        extension.setSummary(getPropertyString(model, MPNAME_SUMMARY, model.getDescription()));
+        extension.setWebsite(getPropertyString(model, MPNAME_WEBSITE, model.getUrl()));
+
+        // authors
         for (Developer developer : model.getDevelopers()) {
             URL authorURL = null;
             if (developer.getUrl() != null) {
@@ -349,7 +382,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             extension.addAuthor(new DefaultExtensionAuthor(StringUtils.defaultIfBlank(developer.getName(),
                 developer.getId()), authorURL));
         }
-        extension.setWebsite(model.getUrl());
 
         // licenses
         for (License license : model.getLicenses()) {
@@ -357,10 +389,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         // features
-        String featuresString = model.getProperties().getProperty(MPKEY_FEATURES);
-        if (StringUtils.isNotBlank(featuresString)) {
-            extension.setFeatures(this.converter.<Collection<String>> convert(List.class, featuresString));
-        }
+        extension.setFeatures(getProperty(model, MPNAME_FEATURES, Collections.<String> emptySet(), Collection.class));
 
         // dependencies
         try {
@@ -369,8 +398,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             for (org.apache.maven.model.Dependency mavenDependency : model.getDependencies()) {
                 if (!mavenDependency.isOptional()
                     && (mavenDependency.getScope().equals("compile") || mavenDependency.getScope().equals("runtime"))) {
-                    extension
-                        .addDependency(new AetherExtensionDependency(convertToAether(mavenDependency, stereotypes), mavenDependency));
+                    extension.addDependency(new AetherExtensionDependency(
+                        convertToAether(mavenDependency, stereotypes), mavenDependency));
                 }
             }
         } catch (Exception e) {

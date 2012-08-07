@@ -70,7 +70,7 @@ public interface LoggerManager
 
     /**
      * @param loggerName the logger
-     * @return the log level associated to the logger
+     * @return the log level associated to the logger, return null if the level is inherited from parent logger
      */
     LogLevel getLoggerLevel(String loggerName);
 
