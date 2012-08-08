@@ -27,10 +27,12 @@ import java.util.Map;
 import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
@@ -220,6 +222,18 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
             || !installedExtension.getNamespaces().contains(namespace))) {
             throw new UninstallException(String.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension, namespace));
         }
+
+        ExtensionHandler extensionHandler;
+
+        // Is type supported ?
+        try {
+            extensionHandler = this.componentManager.getInstance(ExtensionHandler.class, installedExtension.getType());
+        } catch (ComponentLookupException e) {
+            throw new UninstallException(String.format("Unsupported type [%s]", installedExtension.getType()), e);
+        }
+
+        // Is uninstalling the extension allowed ?
+        extensionHandler.checkUninstall(installedExtension, namespace, getRequest());
 
         // Log progression
         if (namespace != null) {
