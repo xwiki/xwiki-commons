@@ -21,9 +21,9 @@ package org.xwiki.classloader;
 
 import java.net.URI;
 
-
 /**
- * A {@link URIClassLoader} associated to a namespace.
+ * A {@link URIClassLoader} associated with a namespace. The namespace can be anything. For example it's used by
+ * the Extension Manager to have one classloader per wiki using a namrspace of the type {@code wiki:wikiname}.
  * 
  * @version $Id$
  * @since 4.0M1
@@ -31,24 +31,24 @@ import java.net.URI;
 public class NamespaceURLClassLoader extends URIClassLoader
 {
     /**
-     * @see #getn
+     * @see #getNamespace()
      */
     private String namespace;
 
     /**
      * @param uris the search path
      * @param parent the parent class loader
-     * @param namepsace the namespace associated to the classloader
+     * @param namespace see {@link #getNamespace()}
      */
-    public NamespaceURLClassLoader(URI[] uris, ClassLoader parent, String namepsace)
+    public NamespaceURLClassLoader(URI[] uris, ClassLoader parent, String namespace)
     {
         super(uris, parent);
 
-        this.namespace = namepsace;
+        this.namespace = namespace;
     }
 
     /**
-     * @return the namepsace associated to the classloader
+     * @return the namespace associated with the classloader
      */
     public String getNamespace()
     {
