@@ -26,6 +26,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.jmock.Expectations;
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus;
@@ -37,19 +38,14 @@ import org.xwiki.test.annotation.MockingRequirement;
  * 
  * @version $Id$
  */
+@MockingRequirement(DefaultJobStatusStorage.class)
 public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCase
 {
-    /**
-     * The object being tested.
-     */
-    @MockingRequirement
-    private DefaultJobStatusStorage storage;
+    private JobStatusStorage storage;
 
-    @Override
-    protected void setupDependencies() throws Exception
+    @Before
+    public void configure() throws Exception
     {
-        super.setupDependencies();
-
         final JobManagerConfiguration jobManagerConfiguration =
             getComponentManager().getInstance(JobManagerConfiguration.class);
 
@@ -60,6 +56,8 @@ public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCas
                 will(returnValue(new File("src/test/resources/jobs")));
             }
         });
+
+        this.storage = getComponentManager().getInstance(JobStatusStorage.class);
     }
 
     @Test

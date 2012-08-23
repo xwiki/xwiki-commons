@@ -25,6 +25,7 @@ import java.util.Collections;
 import junit.framework.Assert;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.diff.Delta.Type;
 import org.xwiki.diff.DiffException;
@@ -37,19 +38,17 @@ import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.annotation.MockingRequirement;
 
 @ComponentList({DefaultDiffManager.class})
+@MockingRequirement(DefaultDiffManager.class)
 public class DefaultDiffManagerTest extends AbstractMockingComponentTestCase
 {
     /**
      * The object being tested.
      */
-    @MockingRequirement
-    private DefaultDiffManager diffManager;
+    private DiffManager diffManager;
 
-    @Override
-    public void setUp() throws Exception
+    @Before
+    public void configure() throws Exception
     {
-        super.setUp();
-
         this.diffManager = getComponentManager().getInstance(DiffManager.class);
     }
 

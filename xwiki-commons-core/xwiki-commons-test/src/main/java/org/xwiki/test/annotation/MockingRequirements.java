@@ -19,8 +19,6 @@
  */
 package org.xwiki.test.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -28,35 +26,17 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Defines a component that needs to have its injected components mocked.
- *
+ * Used to be able to define several {@link MockingRequirement} annotations.
+ * 
  * @version $Id$
- * @since 2.4RC1
+ * @since 4.2M3
  */
-@Documented
 @Retention(RUNTIME)
 @Target(TYPE)
-@Inherited
-public @interface MockingRequirement
+public @interface MockingRequirements
 {
     /**
-     * @return the Component implementation class
-     * @since 4.2M3
+     * @return the list of annotations within the compound
      */
-    Class< ? > value();
-
-    /**
-     * @return the role if the component implementation implements several roles
-     */
-    Class< ? > role() default Object.class;
-
-    /**
-     * @return the hint if the component implementation has several roles
-     */
-    String hint() default "";
-
-    /**
-     * @return a list of component roles for classes that shouldn't be mocked
-     */
-    Class< ? >[] exceptions() default { };
+    MockingRequirement[] value();
 }

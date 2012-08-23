@@ -114,9 +114,10 @@
             org/xwiki/test/AbstractComponentTestCase.java,
             org/xwiki/test/AbstractMockingComponentTestCase.java,
             org/xwiki/test/AbstractMockingTestCase.java,
-            org/xwiki/test/annotation/MockingRequirement.java,
             org/xwiki/test/MockConfigurationSource.java,
-            org/xwiki/test/XWikiComponentInitializer.java
+            org/xwiki/test/XWikiComponentInitializer.java,
+            org/xwiki/test/annotation/MockingRequirement.java,
+            org/xwiki/test/annotation/MockingRequirements.java
           </excludes>
         </configuration>
       </plugin>

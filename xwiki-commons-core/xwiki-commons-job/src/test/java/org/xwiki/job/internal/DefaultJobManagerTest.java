@@ -25,11 +25,13 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.jmock.Expectations;
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.context.internal.DefaultExecution;
 import org.xwiki.context.internal.DefaultExecutionContextManager;
+import org.xwiki.job.JobManager;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.annotation.MockingRequirement;
@@ -39,17 +41,20 @@ import org.xwiki.test.annotation.MockingRequirement;
  * 
  * @version $Id$
  */
+@MockingRequirement(value = DefaultJobManager.class, exceptions = {ExecutionContextManager.class, Execution.class})
 @ComponentList({
     DefaultExecution.class,
     DefaultExecutionContextManager.class
 })
 public class DefaultJobManagerTest extends AbstractMockingComponentTestCase
 {
-    /**
-     * The object being tested.
-     */
-    @MockingRequirement(exceptions = {ExecutionContextManager.class, Execution.class})
-    private DefaultJobManager jobManager;
+    private JobManager jobManager;
+
+    @Before
+    public void configure() throws Exception
+    {
+        this.jobManager = getComponentManager().getInstance(JobManager.class);
+    }
 
     @Test
     public void testGetJobStatusForUnexistingJob() throws Exception

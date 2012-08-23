@@ -30,10 +30,12 @@ import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.jmock.Expectations;
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.groovy.GroovyCompilationCustomizer;
+import org.xwiki.groovy.GroovyConfiguration;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 
@@ -45,10 +47,16 @@ import junit.framework.Assert;
  * @version $Id$
  * @since 4.1M1
  */
+@MockingRequirement(DefaultGroovyConfiguration.class)
 public class DefaultGroovyConfigurationTest extends AbstractMockingComponentTestCase
 {
-    @MockingRequirement
-    private DefaultGroovyConfiguration configuration;
+    private GroovyConfiguration configuration;
+
+    @Before
+    public void configure() throws Exception
+    {
+        this.configuration = getComponentManager().getInstance(GroovyConfiguration.class);
+    }
 
     @Test
     public void getCustomizersWhenNoCustomizersDeclared() throws Exception
@@ -58,7 +66,6 @@ public class DefaultGroovyConfigurationTest extends AbstractMockingComponentTest
             oneOf(source).getProperty("groovy.compilationCustomizers", Collections.emptyList());
             will(returnValue(Collections.emptyList()));
         }});
-
 
         List<CompilationCustomizer> customizers = this.configuration.getCompilationCustomizers();
         Assert.assertEquals(0, customizers.size());

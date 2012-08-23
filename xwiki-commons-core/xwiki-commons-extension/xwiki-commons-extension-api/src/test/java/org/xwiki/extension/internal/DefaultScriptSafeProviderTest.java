@@ -29,23 +29,31 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.internal.safe.CollectionScriptSafeProvider;
 import org.xwiki.extension.internal.safe.DefaultScriptSafeProvider;
 import org.xwiki.extension.internal.safe.MapScriptSafeProvider;
+import org.xwiki.extension.internal.safe.ScriptSafeProvider;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.annotation.MockingRequirement;
 
+@MockingRequirement(value = DefaultScriptSafeProvider.class, exceptions = ComponentManager.class)
 @ComponentList({
     CollectionScriptSafeProvider.class,
     MapScriptSafeProvider.class
 })
 public class DefaultScriptSafeProviderTest extends AbstractMockingComponentTestCase
 {
-    @MockingRequirement(exceptions = ComponentManager.class)
-    private DefaultScriptSafeProvider defaultProvider;
+    private ScriptSafeProvider defaultProvider;
+
+    @Before
+    public void configure() throws Exception
+    {
+        this.defaultProvider = getComponentManager().getInstance(ScriptSafeProvider.class);
+    }
 
     @Test
     public void testGetWithNoProvider()

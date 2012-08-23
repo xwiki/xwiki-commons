@@ -27,10 +27,12 @@ import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.util.introspection.SecureUberspector;
 import org.jmock.Expectations;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
+import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
@@ -41,12 +43,12 @@ import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
  * @version $Id$
  * @since 2.4RC1
  */
+@MockingRequirement(DefaultVelocityConfiguration.class)
 public class DefaultVelocityConfigurationTest extends AbstractMockingComponentTestCase
 {
-    @MockingRequirement
-    private DefaultVelocityConfiguration configuration;
+    private VelocityConfiguration configuration;
 
-    @Override
+    @Before
     public void configure() throws Exception
     {
         final ConfigurationSource source = getComponentManager().getInstance(ConfigurationSource.class);
@@ -56,6 +58,8 @@ public class DefaultVelocityConfigurationTest extends AbstractMockingComponentTe
             allowing(source).getProperty("velocity.properties", Properties.class);
             will(returnValue(Collections.emptyMap()));
         }});
+
+        this.configuration = getComponentManager().getInstance(VelocityConfiguration.class);
     }
 
     @Test
