@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Provider;
-
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
@@ -230,16 +228,15 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
         for (ComponentDependency< ? > dependencyDescriptor : dependencyDescriptors) {
             Class<?> roleTypeClass = ReflectionUtils.getTypeClass(dependencyDescriptor.getRoleType());
             // Only register a mock if it isn't:
-            // - An explicit exception
+            // - An explicit exception specified by the user
             // - A logger
             // - A collection of components, we want to keep them  as Java collections. Those collections are later
             //   filled by the component manager with available components. Developers can register mocked components
             //   in an override of #setupDependencies().
-            // - A component provider
             // TODO: Handle multiple roles/hints.
             if (!exceptions.contains(roleTypeClass) && Logger.class != roleTypeClass
-                && !roleTypeClass.isAssignableFrom(List.class) && !roleTypeClass.isAssignableFrom(Map.class)
-                && !roleTypeClass.isAssignableFrom(Provider.class)) {
+                && !roleTypeClass.isAssignableFrom(List.class) && !roleTypeClass.isAssignableFrom(Map.class))
+            {
                 DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
                 cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
