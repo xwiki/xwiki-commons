@@ -200,10 +200,11 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
 
     /**
      * If the user has specified the {@link org.xwiki.test.annotation.AllComponents} annotation then all components
-     * are lodaded; however this is not recommended since it slows down the execution time; we recommend instead to
-     * use the {@link ComponentList} annotation which only registers the component implementation you pass to it; or
-     * even better don't use any annotation which means no component is registered explicitely which should be the
-     * default since you're mocking all component dependencies with the {@link MockingRequirement} annotation.
+     * are lodaded; however this is not recommended since it slows down the execution time and makes the test less
+     * controlled; we recommend instead to use the {@link ComponentList} annotation which only registers the component
+     * implementation you pass to it; or even better don't use any annotation which means no component is registered
+     * explicitly which should be the default since you're mocking all component dependencies with the
+     * {@link MockingRequirement} annotation.
      */
     private void registerComponents()
     {
