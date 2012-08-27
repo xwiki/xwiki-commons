@@ -73,6 +73,6 @@ public final class LogbackUtils
      */
     public static Level toLevel(LogLevel logLevel)
     {
-        return Level.toLevel(logLevel.toString(), null);
+        return logLevel != null ? Level.toLevel(logLevel.toString(), null) : null;
     }
 }
