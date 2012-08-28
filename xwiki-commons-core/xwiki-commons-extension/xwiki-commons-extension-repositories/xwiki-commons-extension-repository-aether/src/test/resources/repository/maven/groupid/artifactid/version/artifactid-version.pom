@@ -37,7 +37,10 @@
       </developer>
     </developers>
     <properties>
-      <xwiki.extension.features>groupid1:feature1,groupid2:feature2</xwiki.extension.features>
+      <xwiki.extension.features>
+        groupid1:feature1,
+        groupid2:feature2
+      </xwiki.extension.features>
     </properties>
     <licenses>
       <license>
