@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -35,7 +36,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * An application started listener to initialize extensions.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -51,9 +52,11 @@ public class ExtensionApplicationStartedListener implements EventListener
 
     /**
      * The extension initializer.
+     * <p>
+     * Use it only when receiving an {@link ApplicationStartedEvent} event.
      */
     @Inject
-    private ExtensionInitializer extensionInitializer;
+    private Provider<ExtensionInitializer> extensionInitializer;
 
     @Override
     public List<Event> getEvents()
@@ -70,6 +73,6 @@ public class ExtensionApplicationStartedListener implements EventListener
     @Override
     public void onEvent(Event arg0, Object arg1, Object arg2)
     {
-        extensionInitializer.initialize();
+        this.extensionInitializer.get().initialize();
     }
 }
