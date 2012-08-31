@@ -512,6 +512,14 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.4</version>
+          <configuration>
+            <!-- Add some useful information about the extension in the manifest file. -->
+            <archive>
+              <manifestEntries>
+                <XWiki-Extension-Id>${project.groupId}:${project.artifactId}</XWiki-Extension-Id>
+              </manifestEntries>
+            </archive>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -530,6 +538,14 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <artifactId>maven-war-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.2</version>
+          <configuration>
+            <!-- Add some useful information about the extension in the manifest file. -->
+            <archive>
+              <manifestEntries>
+                <XWiki-Extension-Id>${project.groupId}:${project.artifactId}</XWiki-Extension-Id>
+              </manifestEntries>
+            </archive>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
