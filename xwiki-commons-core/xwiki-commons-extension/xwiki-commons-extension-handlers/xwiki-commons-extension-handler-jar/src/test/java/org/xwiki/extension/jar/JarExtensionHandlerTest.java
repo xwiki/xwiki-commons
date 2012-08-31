@@ -203,10 +203,6 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Assert.assertNotNull(extensionLoader);
         Assert.assertNotSame(this.testApplicationClassloader, extensionLoader);
 
-        // Class loadedImplementation = Class.forName(implementation.getName(), true, extensionLoader);
-        // Field field = ReflectionUtils.getField(loadedImplementation, "testComponent");
-        // Type fieldType = field.getGenericType();
-
         Type loadedRole = getLoadedType(role, extensionLoader);
         // Ensure the loaded role does not came from the application classloader (a check to validate the test)
         Assert.assertFalse(loadedRole.equals(role));
