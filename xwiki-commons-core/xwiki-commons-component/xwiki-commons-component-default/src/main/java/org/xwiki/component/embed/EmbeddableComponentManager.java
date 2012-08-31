@@ -220,8 +220,6 @@ public class EmbeddableComponentManager implements ComponentManager
     {
         List<ComponentDescriptor<T>> results = new ArrayList<ComponentDescriptor<T>>();
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
-            // It's possible Class reference are not the same when it coming for different ClassLoader so we
-            // compare class names
             if (entry.getKey().getRoleType().equals(role)) {
                 results.add((ComponentDescriptor<T>) entry.getValue().descriptor);
             }
@@ -334,7 +332,7 @@ public class EmbeddableComponentManager implements ComponentManager
             }
         } else {
             if (getParent() != null) {
-                instance = getParent().getInstance(roleHint.getRoleClass(), roleHint.getHint());
+                instance = getParent().getInstance(roleHint.getRoleType(), roleHint.getHint());
             } else {
                 throw new ComponentLookupException("Can't find descriptor for the component [" + roleHint + "]");
             }
@@ -521,8 +519,6 @@ public class EmbeddableComponentManager implements ComponentManager
     {
         List<ComponentDescriptor<T>> results = new ArrayList<ComponentDescriptor<T>>();
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
-            // It's possible Class reference are not the same when it coming for different ClassLoader so we
-            // compare class names
             if (entry.getKey().getRoleClass() == role) {
                 results.add((ComponentDescriptor<T>) entry.getValue().descriptor);
             }
