@@ -64,6 +64,9 @@
     <xwiki.license.skip>false</xwiki.license.skip>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- Default Clover TPC threshold for the Quality profile -->
+    <xwiki.clover.targetPercentage>70%</xwiki.clover.targetPercentage>
   </properties>
   <prerequisites>
     <maven>3.0</maven>
@@ -985,6 +988,33 @@ mmmm]]></license>
       </activation>
       <build>
         <directory>${m2BuildDirectory}</directory>
+      </build>
+    </profile>
+    <!-- Profile for QA verifications that takes time -->
+    <profile>
+      <id>quality</id>
+      <build>
+        <plugins>
+          <!-- Fail the build if the test coverage is below a given value. -->
+          <plugin>
+            <groupId>com.atlassian.maven.plugins</groupId>
+            <artifactId>maven-clover2-plugin</artifactId>
+            <configuration>
+              <!-- Note that the overall TPC when including functional tests for this module is around 78% -->
+              <targetPercentage>${xwiki.clover.targetPercentage}%</targetPercentage>
+            </configuration>
+            <executions>
+              <execution>
+                <id>clover-check</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>instrument-test</goal>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
       </build>
     </profile>
   </profiles>
