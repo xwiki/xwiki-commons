@@ -54,18 +54,12 @@ import org.xwiki.test.annotation.MockingRequirements;
  *
  * For example: <code><pre>
  * &#64;MockingRequirement(MyComponentImplementation.class)
- * public class MyComponentTest
+ * public class MyComponentTest extends AbstractMockingComponentTestCase&lt;MyComponent&gt;
  * {
- *     private MyComponent myComponent;
- * 
- *     private SomeRequirementComponentRoleClass requirement;
- * 
- *     &#64;Before
- *     public void configure() throws Exception
+ *     &#64;Test
+ *     public void someTest() throws Exception
  *     {
- *         myComponent = getComponentManager().getInstance(MyComponent.class, "myhint");
- *         requirement = getComponentManager().lookup(SomeRequirementComponentRoleClass.class);
- *     }
+ *         MyComponent myComponent = getMockedComponent();
  *     ...
  * }
  * </code></pre>
