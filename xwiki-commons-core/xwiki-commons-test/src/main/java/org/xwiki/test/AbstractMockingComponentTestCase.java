@@ -37,6 +37,8 @@ import org.xwiki.component.annotation.ComponentDescriptorFactory;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
+import org.xwiki.component.internal.RoleHint;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.annotation.ComponentList;
@@ -91,6 +93,8 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
 
     private Map<Class, Logger> mockLoggers = new HashMap<Class, Logger>();
 
+    private Map<Class, RoleHint<T>> mockedComponents = new HashMap<Class, RoleHint<T>>();
+
     /**
      * Extend EmbeddableComponentManager in order to mock Loggers since they're handled specially and are not
      * components.
@@ -117,6 +121,24 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
             }
             return logger;
         }
+    }
+
+    /**
+     * @return the first component mocked by a {@link MockingRequirement} annotation
+     */
+    public T getMockedComponent() throws ComponentLookupException
+    {
+        return getMockedComponent(this.mockedComponents.keySet().iterator().next());
+    }
+
+    /**
+     * @param mockedComponentClass the class of the mocked component to return
+     * @return the component mocked by a {@link MockingRequirement} annotation that is of the passed class type
+     */
+    public T getMockedComponent(Class mockedComponentClass) throws ComponentLookupException
+    {
+        RoleHint<T> roleHint = this.mockedComponents.get(mockedComponentClass);
+        return this.componentManager.getInstance(roleHint.getRoleType(), roleHint.getHint());
     }
 
     /**
@@ -172,6 +194,11 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
                 {
                     registerMockDependencies(descriptor, exclusions);
                     getComponentManager().registerComponent(descriptor);
+
+                    // Save the mocked component information so that the test can get an instance of this component
+                    // easily by calling getMockedComponent(...)
+                    this.mockedComponents.put(mockingRequirement.value(),
+                        new RoleHint<T>(descriptor.getRoleType(), descriptor.getRoleHint()));
                     break;
                 }
             }

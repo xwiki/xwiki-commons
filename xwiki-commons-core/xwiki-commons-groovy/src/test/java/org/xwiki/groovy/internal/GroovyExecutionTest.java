@@ -48,16 +48,12 @@ import org.xwiki.test.annotation.MockingRequirement;
  * @since 4.1M1
  */
 @MockingRequirement(GroovyScriptEngineFactory.class)
-public class GroovyExecutionTest extends AbstractMockingComponentTestCase
+public class GroovyExecutionTest extends AbstractMockingComponentTestCase<ScriptEngineFactory>
 {
-    private ScriptEngineFactory factory;
-
     @Before
     public void configure() throws Exception
     {
         getMockery().setImposteriser(ClassImposteriser.INSTANCE);
-
-        this.factory = getComponentManager().getInstance(ScriptEngineFactory.class, "groovy");
     }
 
     @Test
@@ -83,7 +79,7 @@ public class GroovyExecutionTest extends AbstractMockingComponentTestCase
         }});
 
         ScriptEngineManager manager = new ScriptEngineManager();
-        manager.registerEngineName("groovy", this.factory);
+        manager.registerEngineName("groovy", getMockedComponent());
 
         ScriptEngine engine = manager.getEngineByName("groovy");
 

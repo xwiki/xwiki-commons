@@ -39,10 +39,8 @@ import org.xwiki.test.annotation.MockingRequirement;
  * @version $Id$
  */
 @MockingRequirement(DefaultJobStatusStorage.class)
-public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCase
+public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCase<JobStatusStorage>
 {
-    private JobStatusStorage storage;
-
     @Before
     public void configure() throws Exception
     {
@@ -56,26 +54,24 @@ public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCas
                 will(returnValue(new File("src/test/resources/jobs")));
             }
         });
-
-        this.storage = getComponentManager().getInstance(JobStatusStorage.class);
     }
 
     @Test
     public void testGetJobStatusForUnexistingJob() throws Exception
     {
-        JobStatus jobStatus = this.storage.getJobStatus((List<String>) null);
+        JobStatus jobStatus = getMockedComponent().getJobStatus((List<String>) null);
 
         Assert.assertNotNull(jobStatus);
         Assert.assertNull(jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        jobStatus = this.storage.getJobStatus(Arrays.asList("id1", "id2"));
+        jobStatus = getMockedComponent().getJobStatus(Arrays.asList("id1", "id2"));
 
         Assert.assertNotNull(jobStatus);
         Assert.assertEquals(Arrays.asList("id1", "id2"), jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        jobStatus = this.storage.getJobStatus(Arrays.asList("id1", "id2", "id3"));
+        jobStatus = getMockedComponent().getJobStatus(Arrays.asList("id1", "id2", "id3"));
 
         Assert.assertNotNull(jobStatus);
         Assert.assertEquals(Arrays.asList("id1", "id2", "id3"), jobStatus.getRequest().getId());
