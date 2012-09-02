@@ -115,6 +115,8 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
             }
             return logger;
         }
+
+
     }
 
     /**
@@ -149,10 +151,9 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
      */
     public Logger getMockLogger(Class< ? > mockedComponentClass) throws Exception
     {
-        // Make sure that the mocked component has been loaded at least once as otherwise the Component Manager will
-        // not have injected any mock logger at this point!
-        getMockedComponent(mockedComponentClass);
-
+        // Note: the test class must get the mocked component instance before calling this method since this is this
+        // action that injects the mock loggers... Note that we cannot call the mocked component here since the
+        // component can be per-lookup and we would get a different instance...
         return this.mockLoggers.get(mockedComponentClass);
     }
 
@@ -161,9 +162,9 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
      */
     public Logger getMockLogger() throws Exception
     {
-        // Make sure that the mocked component has been loaded at least once as otherwise the Component Manager will
-        // not have injected any mock logger at this point!
-        getMockedComponent();
+        // Note: the test class must get the mocked component instance before calling this method since this is this
+        // action that injects the mock loggers... Note that we cannot call the mocked component here since the
+        // component can be per-lookup and we would get a different instance...
 
         if (this.mockLoggers.size() == 1) {
             return this.mockLoggers.values().iterator().next();
