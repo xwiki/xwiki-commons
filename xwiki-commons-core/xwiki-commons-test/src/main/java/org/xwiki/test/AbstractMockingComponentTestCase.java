@@ -119,15 +119,24 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
 
     /**
      * @return the first component mocked by a {@link MockingRequirement} annotation
+     * @since 4.2M3
      */
     public T getMockedComponent() throws ComponentLookupException
     {
-        return getMockedComponent(this.mockedComponents.keySet().iterator().next());
+        if (this.mockedComponents.size() == 0) {
+            throw new RuntimeException("You need to have at least one @MockingRequirement annotation!");
+        } if (this.mockedComponents.size() > 1) {
+            throw new RuntimeException("When there are several @MockingRequirement annotations you muse use the "
+                + "getMockedComponent(mockedComponentClass) signature!");
+        } else {
+            return getMockedComponent(this.mockedComponents.keySet().iterator().next());
+        }
     }
 
     /**
      * @param mockedComponentClass the class of the mocked component to return
      * @return the component mocked by a {@link MockingRequirement} annotation that is of the passed class type
+     * @since 4.2M3
      */
     public T getMockedComponent(Class mockedComponentClass) throws ComponentLookupException
     {
