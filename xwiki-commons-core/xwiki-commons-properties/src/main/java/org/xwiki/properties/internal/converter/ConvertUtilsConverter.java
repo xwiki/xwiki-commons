@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.properties.converter.Converter;
@@ -75,8 +76,8 @@ public class ConvertUtilsConverter implements Converter, Initializable
         }
 
         // BeanUtils converters will return the passed value if no converter has been found. Thus we need to check
-        // the return value and raise a ConversionException if not valid
-        if (!targetType.isInstance(result)) {
+        // that the returned value is compatible with the expected type and raise a ConversionException if not.
+        if (!TypeUtils.isAssignable(targetType, result.getClass())) {
             throw new org.xwiki.properties.converter.ConversionException(String.format(
                 "Failed to find a Converter to convert from [%s] to [%s]",
                 sourceValue.getClass().getName(), targetType.getName()));
