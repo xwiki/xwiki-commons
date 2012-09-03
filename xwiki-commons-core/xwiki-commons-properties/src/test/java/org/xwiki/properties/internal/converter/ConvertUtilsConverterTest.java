@@ -22,6 +22,7 @@ package org.xwiki.properties.internal.converter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.converter.Converter;
 import org.xwiki.test.AbstractComponentTestCase;
 
@@ -62,5 +63,17 @@ public class ConvertUtilsConverterTest extends AbstractComponentTestCase
 
         Assert.assertArrayEquals(new Integer[] {1, 2, 3}, this.convertUtilsConverter.<Integer[]> convert(
             ConvertUtilsConverterTest.class.getField("field").getGenericType(), "1, 2, 3"));
+    }
+
+    @Test
+    public void convertWhenNoConverterAvailable()
+    {
+        try {
+            this.convertUtilsConverter.convert(ConvertUtilsConverter.class, "");
+            Assert.fail("Should have thrown an exception here");
+        } catch (ConversionException expected) {
+            Assert.assertEquals("Failed to find a Converter to convert from [java.lang.String] to "
+                + "[" + ConvertUtilsConverter.class.getName() + "]", expected.getMessage());
+        }
     }
 }
