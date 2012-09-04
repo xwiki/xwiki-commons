@@ -168,7 +168,7 @@ public abstract class AbstractJob<R extends Request> implements Job
             this.status.stopListening();
 
             this.status.setState(JobStatus.State.FINISHED);
-            this.status.setStartDate(new Date());
+            this.status.setEndDate(new Date());
 
             this.finishedCondition.signalAll();
 
