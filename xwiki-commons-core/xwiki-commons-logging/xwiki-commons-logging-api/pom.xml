@@ -33,6 +33,9 @@
   <name>XWiki Commons - Logging - API</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Logging - API</description>
+  <properties>
+    <xwiki.clover.targetPercentage>28.1%</xwiki.clover.targetPercentage>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
