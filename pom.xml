@@ -820,7 +820,7 @@ mmmm]]></license>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.5.7.201204190339</version>
+          <version>0.5.10.201208310627</version>
           <executions>
             <execution>
               <id>prepare</id>
