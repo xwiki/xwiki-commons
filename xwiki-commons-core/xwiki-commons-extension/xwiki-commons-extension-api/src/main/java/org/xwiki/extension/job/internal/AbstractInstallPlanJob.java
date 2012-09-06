@@ -751,6 +751,13 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private ModifableExtensionPlanNode installExtension(InstalledExtension previousExtension, Extension extension,
         boolean dependency, String namespace, ExtensionDependency initialDependency) throws InstallException
     {
+        // Is feature core extension
+        for (String feature : extension.getFeatures()) {
+            if (this.coreExtensionRepository.exists(feature)) {
+                throw new InstallException(String.format("There is already a core extension with the id [%s]", feature));
+            }
+        }
+
         ExtensionHandler extensionHandler;
 
         // Is type supported ?

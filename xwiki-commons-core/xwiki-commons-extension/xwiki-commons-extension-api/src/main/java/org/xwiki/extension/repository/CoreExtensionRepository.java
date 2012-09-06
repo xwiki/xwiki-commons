@@ -56,18 +56,18 @@ public interface CoreExtensionRepository extends ExtensionRepository, Searchable
     CoreExtension getEnvironmentExtension();
 
     /**
-     * @param id the extension identifier (version is not needed since there can be only one version of a core
-     *            extension)
+     * @param feature the feature provided by the extension including its identifier (version is not needed since there
+     *            can be only one version of a core extension)
      * @return the core extension, null if none is found
      */
-    CoreExtension getCoreExtension(String id);
+    CoreExtension getCoreExtension(String feature);
 
     /**
-     * @param id the extension identifier (version is not needed since there can be only one version of a core
-     *            extension)
+     * @param feature the feature provided by the extension including its identifier (version is not needed since there
+     *            can be only one version of a core extension)
      * @return true if the extension exists, false otherwise
      */
-    boolean exists(String id);
+    boolean exists(String feature);
 
     // ExtensionRepository
 
