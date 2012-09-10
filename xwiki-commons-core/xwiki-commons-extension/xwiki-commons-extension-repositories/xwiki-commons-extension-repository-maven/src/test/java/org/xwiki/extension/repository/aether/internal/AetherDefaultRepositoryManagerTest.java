@@ -145,6 +145,17 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         // Assert.assertEquals("modified description", extension.getSummary());
     }
 
+    @Test
+    public void testResolveOverriddenProperties() throws ResolveException
+    {
+        Extension extension = this.repositoryManager.resolve(new ExtensionId("groupid:oartifactid", "version"));
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals("oname", extension.getName());
+        Assert.assertEquals("osummary", extension.getSummary());
+        Assert.assertEquals("http://owebsite", extension.getWebSite());
+    }
+
     /**
      * Make sure any <code>version</code> property coming from system properties will not be resolved instead of the
      * actual pom version.
