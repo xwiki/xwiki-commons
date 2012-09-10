@@ -173,7 +173,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
                 } catch (InvalidExtensionException e) {
                     this.logger.error("Invalid extension [{}] on namespace [], it will not be loaded", new Object[] {
                     localExtension.getId(), namespace, e});
-                
+
                     addInstalledExtension(localExtension, namespace, false);
                 }
             }
@@ -527,6 +527,12 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     }
 
     @Override
+    public InstalledExtension getInstalledExtension(ExtensionId extensionId)
+    {
+        return this.extensions.get(extensionId);
+    }
+
+    @Override
     public InstalledExtension getInstalledExtension(String feature, String namespace)
     {
         InstalledFeature installedFeature = getInstalledFeatureFromCache(feature, namespace);
@@ -559,10 +565,9 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
                 throw new InstallException("Failed to modify extension descriptor", e);
             }
         } else {
-            LocalExtension localExtension;
-            try {
-                localExtension = this.localRepository.resolve(extension.getId());
-            } catch (ResolveException e) {
+            LocalExtension localExtension = this.localRepository.getLocalExtension(extension.getId());
+
+            if (localExtension == null) {
                 // Should be a very rare use case since we explicitly ask for a LocalExtension
                 throw new InstallException("The extension [" + extension + "] need to be stored first");
             }

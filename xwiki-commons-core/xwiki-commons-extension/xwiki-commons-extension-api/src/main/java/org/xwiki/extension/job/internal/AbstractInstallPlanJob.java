@@ -696,11 +696,10 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private Extension resolveExtension(ExtensionId extensionId) throws InstallException
     {
         // Check is the extension is already in local repository
-        Extension extension;
-        try {
-            extension = this.localExtensionRepository.resolve(extensionId);
-        } catch (ResolveException e) {
-            this.logger.debug("Can't find extension in local repository, trying to download it.", e);
+        Extension extension = this.localExtensionRepository.getLocalExtension(extensionId);
+
+        if (extension == null) {
+            this.logger.debug("Can't find extension in local repository, trying to download it.");
 
             // Resolve extension
             try {
