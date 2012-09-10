@@ -696,11 +696,10 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private Extension resolveExtension(ExtensionId extensionId) throws InstallException
     {
         // Check is the extension is already in local repository
-        Extension extension;
-        try {
-            extension = this.localExtensionRepository.resolve(extensionId);
-        } catch (ResolveException e) {
-            this.logger.debug("Can't find extension in local repository, trying to download it.", e);
+        Extension extension = this.localExtensionRepository.getLocalExtension(extensionId);
+
+        if (extension == null) {
+            this.logger.debug("Can't find extension in local repository, trying to download it.");
 
             // Resolve extension
             try {
@@ -751,6 +750,13 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private ModifableExtensionPlanNode installExtension(InstalledExtension previousExtension, Extension extension,
         boolean dependency, String namespace, ExtensionDependency initialDependency) throws InstallException
     {
+        // Is feature core extension
+        for (String feature : extension.getFeatures()) {
+            if (this.coreExtensionRepository.exists(feature)) {
+                throw new InstallException(String.format("There is already a core extension with the id [%s]", feature));
+            }
+        }
+
         ExtensionHandler extensionHandler;
 
         // Is type supported ?

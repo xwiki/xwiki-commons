@@ -29,23 +29,25 @@ import org.apache.velocity.context.Context;
 import org.apache.velocity.util.introspection.SecureUberspector;
 import org.jmock.Expectations;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 import org.xwiki.velocity.VelocityConfiguration;
+import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 
 /**
  * Unit tests for {@link DefaultVelocityEngine}.
  */
+@MockingRequirement(DefaultVelocityEngine.class)
 public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
 {
-    @MockingRequirement
-    private DefaultVelocityEngine engine;
+    private VelocityEngine engine;
 
-    @Override
+    @Before
     public void configure() throws Exception
     {
         final Properties properties = new Properties();
@@ -66,6 +68,8 @@ public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
             ignoring(any(Logger.class)).method("debug");
             allowing(any(Logger.class)).method("is.*Enabled"); will(returnValue(true));
         }});
+
+        this.engine = getComponentManager().getInstance(VelocityEngine.class);
     }
 
     @Test

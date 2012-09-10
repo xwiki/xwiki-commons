@@ -100,6 +100,13 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
                 this.extensions.put(this.environmentExtension.getId().getId(), this.environmentExtension);
             }
 
+            // Put extensions features in the map
+            for (DefaultCoreExtension extension : this.extensions.values()) {
+                for (String feature : extension.getFeatures()) {
+                    this.extensions.put(feature, extension);
+                }
+            }
+
             // Start a background thread to get more details about the found extensions
             Thread thread = new Thread(new Runnable()
             {
@@ -161,9 +168,9 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     }
 
     @Override
-    public boolean exists(String id)
+    public boolean exists(String feature)
     {
-        return this.extensions.containsKey(id);
+        return this.extensions.containsKey(feature);
     }
 
     @Override
@@ -206,9 +213,9 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     }
 
     @Override
-    public CoreExtension getCoreExtension(String id)
+    public CoreExtension getCoreExtension(String feature)
     {
-        return this.extensions.get(id);
+        return this.extensions.get(feature);
     }
 
     // Searchable

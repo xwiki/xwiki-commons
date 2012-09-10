@@ -23,11 +23,13 @@ import java.util.Iterator;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.event.LogQueueListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.internal.DefaultObservationManager;
@@ -48,17 +50,17 @@ import ch.qos.logback.core.spi.FilterReply;
  * @since 3.2M3
  */
 @ComponentList({DefaultLoggerManager.class, DefaultObservationManager.class, LogbackEventGenerator.class})
+@MockingRequirement(value = DefaultLoggerManager.class, exceptions = ObservationManager.class)
 public class DefaultLoggerManagerTest extends AbstractMockingComponentTestCase
 {
-    @MockingRequirement(exceptions = ObservationManager.class)
-    private DefaultLoggerManager loggerManager;
+    private LoggerManager loggerManager;
 
     private Logger logger;
 
     private ListAppender<ILoggingEvent> listAppender;
 
-    @Override
-    public void setUp() throws Exception
+    @Before
+    public void configure() throws Exception
     {
         ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
 
@@ -86,9 +88,8 @@ public class DefaultLoggerManagerTest extends AbstractMockingComponentTestCase
         this.listAppender.start();
         rootLogger.addAppender(this.listAppender);
 
-        super.setUp();
-
         this.logger = LoggerFactory.getLogger(getClass());
+        this.loggerManager = getComponentManager().getInstance(LoggerManager.class);
     }
 
     @Test

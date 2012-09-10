@@ -32,6 +32,9 @@
   <artifactId>xwiki-commons-script</artifactId>
   <name>XWiki Commons - Script</name>
   <description>XWiki Commons - Script</description>
+  <properties>
+    <xwiki.clover.targetPercentage>0%</xwiki.clover.targetPercentage>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

@@ -19,7 +19,6 @@
  */
 package org.xwiki.extension.job.internal;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,10 +27,12 @@ import java.util.Map;
 import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
@@ -60,12 +61,12 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     /**
      * Error message used in exception throw when trying to uninstall an extension which is not installed.
      */
-    private static final String EXCEPTION_NOTINSTALLED = "Extension [{0}] is not installed";
+    private static final String EXCEPTION_NOTINSTALLED = "Extension [%s] is not installed";
 
     /**
      * Error message used in exception throw when trying to uninstall an extension which is not installed.
      */
-    private static final String EXCEPTION_NOTINSTALLEDNAMESPACE = EXCEPTION_NOTINSTALLED + " from namespace [{1}]";
+    private static final String EXCEPTION_NOTINSTALLEDNAMESPACE = EXCEPTION_NOTINSTALLED + " on namespace [%s]";
 
     /**
      * The install plan.
@@ -169,7 +170,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
             this.installedExtensionRepository.getInstalledExtension(extensionId, namespace);
 
         if (installedExtension == null) {
-            throw new UninstallException(MessageFormat.format(EXCEPTION_NOTINSTALLED, extensionId));
+            throw new UninstallException(String.format(EXCEPTION_NOTINSTALLED, extensionId));
         }
 
         try {
@@ -219,9 +220,20 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
         if (namespace != null
             && (installedExtension.getNamespaces() == null
             || !installedExtension.getNamespaces().contains(namespace))) {
-            throw new UninstallException(MessageFormat.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension,
-                namespace));
+            throw new UninstallException(String.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension, namespace));
         }
+
+        ExtensionHandler extensionHandler;
+
+        // Is type supported ?
+        try {
+            extensionHandler = this.componentManager.getInstance(ExtensionHandler.class, installedExtension.getType());
+        } catch (ComponentLookupException e) {
+            throw new UninstallException(String.format("Unsupported type [%s]", installedExtension.getType()), e);
+        }
+
+        // Is uninstalling the extension allowed ?
+        extensionHandler.checkUninstall(installedExtension, namespace, getRequest());
 
         // Log progression
         if (namespace != null) {

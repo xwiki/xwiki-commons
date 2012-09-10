@@ -25,7 +25,7 @@
 <extension>
   <id>installedonnamespace</id>
   <version>version</version>
-  <type>type</type>
+  <type>test</type>
   <properties>
     <installed.namespaces type="set">
       <installed.namespaces>namespace</installed.namespaces>

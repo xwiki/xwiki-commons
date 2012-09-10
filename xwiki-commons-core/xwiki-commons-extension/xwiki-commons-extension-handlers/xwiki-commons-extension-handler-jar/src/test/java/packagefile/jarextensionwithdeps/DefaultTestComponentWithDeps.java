@@ -32,12 +32,12 @@ import packagefile.jarextension.TestComponent;
 public class DefaultTestComponentWithDeps implements TestComponentWithDeps, Initializable
 {
     @Inject
-    private TestComponent testComponent;
+    private TestComponent<String> testComponent;
 
     @Override
     public void initialize() throws InitializationException
     {
-        if (testComponent == null) {
+        if (this.testComponent == null) {
             throw new InitializationException("Injection of dependency failed");
         }
     }

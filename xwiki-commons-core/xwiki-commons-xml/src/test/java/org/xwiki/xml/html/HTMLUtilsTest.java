@@ -22,6 +22,7 @@ package org.xwiki.xml.html;
 import java.io.StringReader;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xwiki.test.AbstractMockingComponentTestCase;
@@ -41,6 +42,7 @@ import org.xwiki.xml.internal.html.filter.ListItemFilter;
  * @version $Id$
  * @since 1.8.3
  */
+@MockingRequirement(value = DefaultHTMLCleaner.class, exceptions = {HTMLFilter.class})
 @ComponentList({
     ListFilter.class,
     ListItemFilter.class,
@@ -49,8 +51,13 @@ import org.xwiki.xml.internal.html.filter.ListItemFilter;
 })
 public class HTMLUtilsTest extends AbstractMockingComponentTestCase
 {
-    @MockingRequirement(exceptions = {HTMLFilter.class})
-    private DefaultHTMLCleaner cleaner;
+    private HTMLCleaner cleaner;
+
+    @Before
+    public void configure() throws Exception
+    {
+        this.cleaner = getComponentManager().getInstance(HTMLCleaner.class);
+    }
 
     @Test
     public void testStripHTMLEnvelope() throws Exception

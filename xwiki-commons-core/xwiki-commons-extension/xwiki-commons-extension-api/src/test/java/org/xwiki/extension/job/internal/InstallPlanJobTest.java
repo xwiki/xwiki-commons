@@ -19,11 +19,13 @@
  */
 package org.xwiki.extension.job.internal;
 
+import java.util.Arrays;
+
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.extension.CoreExtension;
-import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.TestResources;
@@ -31,10 +33,24 @@ import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
+import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
+import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
+import org.xwiki.extension.version.internal.DefaultVersion;
 
 public class InstallPlanJobTest extends AbstractExtensionHandlerTest
 {
+    private ConfigurableDefaultCoreExtensionRepository coreRepository;
+
+    @Override
+    @Before
+    public void setUp() throws Exception
+    {
+        super.setUp();
+
+        this.coreRepository = getComponentManager().getInstance(CoreExtensionRepository.class);
+    }
+
     @Test
     public void testInstallPlanWithSimpleRemoteExtensionOnRoot() throws Throwable
     {
@@ -179,33 +195,45 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(0, node.getChildren().size());
     }
 
-    @Test
+    // Errors
+
+    @Test(expected = InstallException.class)
     public void testInstallPlanWithUnsupportedType() throws Throwable
     {
-        try {
-            installPlan(TestResources.REMOTE_UNSUPPORTED_ID, null);
-
-            Assert.fail("Should have failed");
-        } catch (InstallException e) {
-            // expected
-        }
+        installPlan(TestResources.REMOTE_UNSUPPORTED_ID, null);
     }
 
-    @Test
-    public void testInstallPlanWithDependenciesCollision() throws Throwable
+    @Test(expected = InstallException.class)
+    public void testInstallPlanWithCoreExtension() throws Throwable
     {
-        // greater last
+        this.coreRepository.addExtensions(TestResources.REMOTE_SIMPLE_ID.getId(), new DefaultVersion("version"));
 
-        ExtensionPlan plan = installPlan(new ExtensionId("dependenciescollision", "1.0"), null);
+        installPlan(TestResources.REMOTE_SIMPLE_ID, null);
+    }
 
-        Assert.assertEquals(new ExtensionId("upgrade", "2.0"), plan.getActions().iterator().next().getExtension()
-            .getId());
+    @Test(expected = InstallException.class)
+    public void testInstallPlanWithFeatureAsCoreExtension() throws Throwable
+    {
+        this.coreRepository.addExtensions("rsimple-feature", new DefaultVersion("version"));
 
-        // smaller last
+        installPlan(TestResources.REMOTE_SIMPLE_ID, null);
+    }
 
-        plan = installPlan(new ExtensionId("dependenciescollision", "2.0"), null);
+    @Test(expected = InstallException.class)
+    public void testInstallPlanWithFeatureAsCoreExtensionFeature() throws Throwable
+    {
+        this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
+            Arrays.asList("rsimple-feature"));
 
-        Assert.assertEquals(new ExtensionId("upgrade", "2.0"), plan.getActions().iterator().next().getExtension()
-            .getId());
+        installPlan(TestResources.REMOTE_SIMPLE_ID, null);
+    }
+
+    @Test(expected = InstallException.class)
+    public void testInstallPlanWithCoreExtensionFeature() throws Throwable
+    {
+        this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
+            Arrays.asList(TestResources.REMOTE_SIMPLE_ID.getId()));
+
+        installPlan(TestResources.REMOTE_SIMPLE_ID, null);
     }
 }

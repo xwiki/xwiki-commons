@@ -24,25 +24,31 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Defines a field that needs to be injected with a mocked component.
+ * Defines a component that needs to have its injected components mocked.
  *
  * @version $Id$
  * @since 2.4RC1
  */
 @Documented
 @Retention(RUNTIME)
-@Target(FIELD)
+@Target(TYPE)
 @Inherited
 public @interface MockingRequirement
 {
     /**
+     * @return the Component implementation class
+     * @since 4.2M3
+     */
+    Class< ? > value();
+
+    /**
      * @return the role if the component implementation implements several roles
      */
-    Class< ? > value() default Object.class;
+    Class< ? > role() default Object.class;
 
     /**
      * @return the hint if the component implementation has several roles

@@ -25,10 +25,6 @@ import org.junit.Test;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.handler.ExtensionHandler;
-import org.xwiki.extension.job.plan.ExtensionPlan;
-import org.xwiki.extension.job.plan.ExtensionPlanAction;
-import org.xwiki.extension.job.plan.ExtensionPlanNode;
-import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.extension.test.TestExtensionHandler;
 
@@ -43,7 +39,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         // lookup
 
-        this.handler = (TestExtensionHandler) getComponentManager().getInstance(ExtensionHandler.class, "type");
+        this.handler = (TestExtensionHandler) getComponentManager().getInstance(ExtensionHandler.class, "test");
     }
 
     @Test

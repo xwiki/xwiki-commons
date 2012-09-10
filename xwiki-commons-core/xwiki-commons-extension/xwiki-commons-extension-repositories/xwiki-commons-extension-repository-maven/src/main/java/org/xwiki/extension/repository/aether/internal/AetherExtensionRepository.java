@@ -389,7 +389,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         // features
-        extension.setFeatures(getProperty(model, MPNAME_FEATURES, Collections.<String> emptySet(), Collection.class));
+        String featuresString = model.getProperties().getProperty(MPNAME_FEATURES);
+        if (StringUtils.isNotBlank(featuresString)) {
+            featuresString = featuresString.replaceAll("[\r\n]", "");
+            extension.setFeatures(this.converter.<Collection<String>> convert(List.class, featuresString));
+        }
 
         // dependencies
         try {

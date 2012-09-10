@@ -22,6 +22,7 @@ package org.xwiki.groovy.internal;
 import java.util.Arrays;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
@@ -33,6 +34,7 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.jmock.Expectations;
 import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.groovy.GroovyConfiguration;
 import org.xwiki.test.AbstractMockingComponentTestCase;
@@ -45,15 +47,12 @@ import org.xwiki.test.annotation.MockingRequirement;
  * @version $Id$
  * @since 4.1M1
  */
-public class GroovyExecutionTest extends AbstractMockingComponentTestCase
+@MockingRequirement(GroovyScriptEngineFactory.class)
+public class GroovyExecutionTest extends AbstractMockingComponentTestCase<ScriptEngineFactory>
 {
-    @MockingRequirement
-    private GroovyScriptEngineFactory factory;
-
-    @Override
-    public void setUp() throws Exception
+    @Before
+    public void configure() throws Exception
     {
-        super.setUp();
         getMockery().setImposteriser(ClassImposteriser.INSTANCE);
     }
 
@@ -80,7 +79,7 @@ public class GroovyExecutionTest extends AbstractMockingComponentTestCase
         }});
 
         ScriptEngineManager manager = new ScriptEngineManager();
-        manager.registerEngineName("groovy", this.factory);
+        manager.registerEngineName("groovy", getMockedComponent());
 
         ScriptEngine engine = manager.getEngineByName("groovy");
 

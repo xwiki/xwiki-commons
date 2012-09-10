@@ -17,41 +17,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.classloader;
+package org.xwiki.test.annotation;
 
-import java.net.URI;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * A {@link URIClassLoader} associated with a namespace. The namespace can be anything. For example it's used by
- * the Extension Manager to have one classloader per wiki using a namrspace of the type {@code wiki:wikiname}.
+ * Used to be able to define several {@link MockingRequirement} annotations.
  * 
  * @version $Id$
- * @since 4.0M1
+ * @since 4.2M3
  */
-public class NamespaceURLClassLoader extends URIClassLoader
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface MockingRequirements
 {
     /**
-     * @see #getNamespace()
+     * @return the list of annotations within the compound
      */
-    private String namespace;
-
-    /**
-     * @param uris the search path
-     * @param parent the parent class loader
-     * @param namespace see {@link #getNamespace()}
-     */
-    public NamespaceURLClassLoader(URI[] uris, ClassLoader parent, String namespace)
-    {
-        super(uris, parent);
-
-        this.namespace = namespace;
-    }
-
-    /**
-     * @return the namespace associated with the classloader
-     */
-    public String getNamespace()
-    {
-        return namespace;
-    }
+    MockingRequirement[] value();
 }

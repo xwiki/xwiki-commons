@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.test;
 
+import java.util.Collection;
+
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -38,6 +40,22 @@ public class ConfigurableDefaultCoreExtensionRepository extends DefaultCoreExten
 
     public void addExtensions(String id, Version version)
     {
-        this.extensions.put(id, new DefaultCoreExtension(null, null, new ExtensionId(id, version), "unknown"));
+        addExtensions(id, version, null);
+    }
+
+    public void addExtensions(String id, Version version, Collection<String> features)
+    {
+        DefaultCoreExtension coreExtension =
+            new DefaultCoreExtension(null, null, new ExtensionId(id, version), "unknown");
+
+        if (features != null) {
+            coreExtension.setFeatures(features);
+        }
+
+        this.extensions.put(id, coreExtension);
+
+        for (String feature : coreExtension.getFeatures()) {
+            this.extensions.put(feature, coreExtension);
+        }
     }
 }

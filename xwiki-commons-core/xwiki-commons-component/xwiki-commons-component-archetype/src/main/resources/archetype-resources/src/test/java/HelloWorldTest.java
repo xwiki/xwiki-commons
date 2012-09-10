@@ -20,6 +20,7 @@
 package ${package};
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import ${package}.internal.DefaultHelloWorld;
 import org.xwiki.test.AbstractMockingComponentTestCase;
@@ -28,14 +29,20 @@ import org.xwiki.test.annotation.MockingRequirement;
 /**
  * Tests for the {@link HelloWorld} component.
  */
+@MockingRequirement(DefaultHelloWorld.class)
 public class HelloWorldTest extends AbstractMockingComponentTestCase
 {
-    @MockingRequirement
-    private DefaultHelloWorld hw;
+    private HelloWorld hw;
+
+    @Before
+    public void configure() throws Exception
+    {
+        this.hw = getComponentManager().getInstance(HelloWorld.class);
+    }
 
     @Test
     public void testSayHello()
     {
-        Assert.assertEquals("Hello", hw.sayHello());
+        Assert.assertEquals("Hello", this.hw.sayHello());
     }
 }

@@ -26,12 +26,14 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.ListTool;
 import org.jmock.Expectations;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 import org.xwiki.velocity.VelocityConfiguration;
+import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityContextInitializer;
 
 /**
@@ -39,12 +41,12 @@ import org.xwiki.velocity.VelocityContextInitializer;
  *
  * @version $Id$
  */
+@MockingRequirement(DefaultVelocityContextFactory.class)
 public class DefaultVelocityContextFactoryTest extends AbstractMockingComponentTestCase
 {
-    @MockingRequirement
-    private DefaultVelocityContextFactory factory;
+    private VelocityContextFactory factory;
 
-    @Override
+    @Before
     public void configure() throws Exception
     {
         final VelocityConfiguration configuration = getComponentManager().getInstance(VelocityConfiguration.class);
@@ -59,6 +61,8 @@ public class DefaultVelocityContextFactoryTest extends AbstractMockingComponentT
             // important to test.
             ignoring(any(Logger.class)).method("debug");
         }});
+
+        this.factory = getComponentManager().getInstance(VelocityContextFactory.class);
     }
 
     /**

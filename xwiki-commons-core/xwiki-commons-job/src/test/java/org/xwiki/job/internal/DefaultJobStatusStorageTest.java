@@ -26,6 +26,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.jmock.Expectations;
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus;
@@ -37,19 +38,12 @@ import org.xwiki.test.annotation.MockingRequirement;
  * 
  * @version $Id$
  */
-public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCase
+@MockingRequirement(DefaultJobStatusStorage.class)
+public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCase<JobStatusStorage>
 {
-    /**
-     * The object being tested.
-     */
-    @MockingRequirement
-    private DefaultJobStatusStorage storage;
-
-    @Override
-    protected void setupDependencies() throws Exception
+    @Before
+    public void configure() throws Exception
     {
-        super.setupDependencies();
-
         final JobManagerConfiguration jobManagerConfiguration =
             getComponentManager().getInstance(JobManagerConfiguration.class);
 
@@ -65,19 +59,19 @@ public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCas
     @Test
     public void testGetJobStatusForUnexistingJob() throws Exception
     {
-        JobStatus jobStatus = this.storage.getJobStatus((List<String>) null);
+        JobStatus jobStatus = getMockedComponent().getJobStatus((List<String>) null);
 
         Assert.assertNotNull(jobStatus);
         Assert.assertNull(jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        jobStatus = this.storage.getJobStatus(Arrays.asList("id1", "id2"));
+        jobStatus = getMockedComponent().getJobStatus(Arrays.asList("id1", "id2"));
 
         Assert.assertNotNull(jobStatus);
         Assert.assertEquals(Arrays.asList("id1", "id2"), jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        jobStatus = this.storage.getJobStatus(Arrays.asList("id1", "id2", "id3"));
+        jobStatus = getMockedComponent().getJobStatus(Arrays.asList("id1", "id2", "id3"));
 
         Assert.assertNotNull(jobStatus);
         Assert.assertEquals(Arrays.asList("id1", "id2", "id3"), jobStatus.getRequest().getId());

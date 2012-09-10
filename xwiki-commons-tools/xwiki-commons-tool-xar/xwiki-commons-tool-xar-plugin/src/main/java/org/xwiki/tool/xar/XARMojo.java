@@ -83,7 +83,7 @@ public class XARMojo extends AbstractXARMojo
     private void performArchive() throws Exception
     {
         File xarFile = new File(this.project.getBuild().getDirectory(), this.project.getArtifactId() + ".xar");
-        
+
         // The source dir points to the target/classes directory where the Maven resources plugin
         // has copied the XAR files during the process-resources phase.
         // For package.xml, however, we look in the resources directory (i.e. src/main/resources).
@@ -92,8 +92,8 @@ public class XARMojo extends AbstractXARMojo
 
         // Check that there are files in the source dir
         if (sourceDir.listFiles() == null) {
-            throw new Exception(
-                String.format("No XAR XML files found in [%s]. Has the Maven Resource plugin be called?", sourceDir));
+            throw new Exception(String.format(
+                "No XAR XML files found in [%s]. Has the Maven Resource plugin be called?", sourceDir));
         }
 
         ZipArchiver archiver = new ZipArchiver();
@@ -149,7 +149,7 @@ public class XARMojo extends AbstractXARMojo
             }
         }
     }
-    
+
     /**
      * Create and add package configuration file to the package.
      * 
@@ -221,6 +221,10 @@ public class XARMojo extends AbstractXARMojo
 
         el = new DOMElement("author");
         el.addText("XWiki.Admin");
+        infoElement.add(el);
+
+        el = new DOMElement("extensionId");
+        el.addText(this.project.getGroupId() + ':' + this.project.getArtifactId());
         infoElement.add(el);
 
         el = new DOMElement("version");

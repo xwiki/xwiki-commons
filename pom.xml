@@ -64,6 +64,9 @@
     <xwiki.license.skip>false</xwiki.license.skip>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- Default Clover TPC threshold for the Quality profile -->
+    <xwiki.clover.targetPercentage>70%</xwiki.clover.targetPercentage>
   </properties>
   <prerequisites>
     <maven>3.0</maven>
@@ -493,7 +496,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.12</version>
+          <version>2.12.3</version>
           <!-- XWiki rule is to put test in *Test classes -->
           <configuration>
             <includes>
@@ -505,13 +508,21 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5</version>
+          <version>2.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.4</version>
+          <configuration>
+            <!-- Add some useful information about the extension in the manifest file. -->
+            <archive>
+              <manifestEntries>
+                <XWiki-Extension-Id>${project.groupId}:${project.artifactId}</XWiki-Extension-Id>
+              </manifestEntries>
+            </archive>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -523,13 +534,21 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>2.5.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.2</version>
+          <configuration>
+            <!-- Add some useful information about the extension in the manifest file. -->
+            <archive>
+              <manifestEntries>
+                <XWiki-Extension-Id>${project.groupId}:${project.artifactId}</XWiki-Extension-Id>
+              </manifestEntries>
+            </archive>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -565,7 +584,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-invoker-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.5</version>
+          <version>1.7</version>
         </plugin>
         <plugin>
           <groupId>org.mortbay.jetty</groupId>
@@ -756,7 +775,7 @@ mmmm]]></license>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.7.1</version>
+          <version>2.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -801,7 +820,7 @@ mmmm]]></license>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.5.7.201204190339</version>
+          <version>0.5.10.201208310627</version>
           <executions>
             <execution>
               <id>prepare</id>
@@ -969,6 +988,33 @@ mmmm]]></license>
       </activation>
       <build>
         <directory>${m2BuildDirectory}</directory>
+      </build>
+    </profile>
+    <!-- Profile for QA verifications that takes time -->
+    <profile>
+      <id>quality</id>
+      <build>
+        <plugins>
+          <!-- Fail the build if the test coverage is below a given value. -->
+          <plugin>
+            <groupId>com.atlassian.maven.plugins</groupId>
+            <artifactId>maven-clover2-plugin</artifactId>
+            <configuration>
+              <!-- Note that the overall TPC when including functional tests for this module is around 78% -->
+              <targetPercentage>${xwiki.clover.targetPercentage}%</targetPercentage>
+            </configuration>
+            <executions>
+              <execution>
+                <id>clover-check</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>instrument-test</goal>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
       </build>
     </profile>
   </profiles>

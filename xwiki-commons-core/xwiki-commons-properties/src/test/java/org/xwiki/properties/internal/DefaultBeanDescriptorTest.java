@@ -93,9 +93,9 @@ public class DefaultBeanDescriptorTest
 
         @PropertyMandatory
         @PropertyDescription("prop2 description")
-        public void setProp2(int prop1)
+        public void setProp2(int prop2)
         {
-            this.prop2 = prop1;
+            this.prop2 = prop2;
         }
 
         public int getProp2()
@@ -103,9 +103,9 @@ public class DefaultBeanDescriptorTest
             return this.prop2;
         }
 
-        public void setProp3(boolean prop1)
+        public void setProp3(boolean prop3)
         {
-            this.prop3 = prop1;
+            this.prop3 = prop3;
         }
 
         @PropertyMandatory

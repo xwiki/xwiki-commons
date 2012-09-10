@@ -138,6 +138,7 @@
             <configuration>
               <includes>
                 <include>**/test/**.class</include>
+                <include>META-INF/**</include>
               </includes>
             </configuration>
           </execution>

@@ -19,10 +19,13 @@
  */
 package packagefile.jarextension;
 
+import java.lang.reflect.ParameterizedType;
+
 import org.xwiki.component.annotation.Role;
+import org.xwiki.component.util.DefaultParameterizedType;
 
 @Role
-public interface TestComponent
+public interface TestComponent<T>
 {
-    
+    ParameterizedType TYPE_STRING = new DefaultParameterizedType(null, TestComponent.class, String.class);
 }

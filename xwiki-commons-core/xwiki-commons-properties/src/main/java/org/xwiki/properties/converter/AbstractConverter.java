@@ -56,7 +56,7 @@ public abstract class AbstractConverter implements Converter
     /**
      * Convert the input object into a String.
      * <p>
-     * <b>N.B.</b>This implementation simply uses the value's <code>toString()</code> method and should be overriden if
+     * <b>N.B.</b>This implementation simply uses the value's <code>toString()</code> method and should be overridden if
      * a more sophisticated mechanism for <i>conversion to a String</i> is required.
      * 
      * @param value The input value to be converted.

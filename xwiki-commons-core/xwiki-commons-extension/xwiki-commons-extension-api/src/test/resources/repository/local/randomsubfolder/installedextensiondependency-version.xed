@@ -25,7 +25,7 @@
 <extension>
   <id>installedextensiondependency</id>
   <version>version</version>
-  <type>type</type>
+  <type>test</type>
   <features>
     <feature>installedextensiondependency-feature</feature>
   </features>

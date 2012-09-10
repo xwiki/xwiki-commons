@@ -27,12 +27,13 @@ import javax.inject.Singleton;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.properties.converter.Converter;
 
 /**
- * {@link ConvertUtils} based converter.
+ * {@link ConvertUtils}-based converter.
  * <p>
  * It's the default {@link Converter}, the one used when no other Converter could be found by
  * {@link org.xwiki.properties.ConverterManager}.
@@ -63,14 +64,26 @@ public class ConvertUtilsConverter implements Converter, Initializable
      */
     private <T> T convert(Class<T> targetType, Object sourceValue)
     {
+        T result;
+
         // We can't use Class#cast(Object) because ConvertUtils#convert always return Object form of the targetType even
         // if targetType is a primitive. When using casting syntax Object form is implicitly converter to proper
         // primitive type.
         try {
-            return (T) ConvertUtils.convert(sourceValue, targetType);
+            result = (T) ConvertUtils.convert(sourceValue, targetType);
         } catch (ConversionException ex) {
             throw new org.xwiki.properties.converter.ConversionException("Error while performing type conversion", ex);
         }
+
+        // BeanUtils converters will return the passed value if no converter has been found. Thus we need to check
+        // that the returned value is compatible with the expected type and raise a ConversionException if not.
+        if (!TypeUtils.isAssignable(targetType, result.getClass())) {
+            throw new org.xwiki.properties.converter.ConversionException(String.format(
+                "Failed to find a Converter to convert from [%s] to [%s]",
+                sourceValue.getClass().getName(), targetType.getName()));
+        }
+
+        return result;
     }
 
     @Override
