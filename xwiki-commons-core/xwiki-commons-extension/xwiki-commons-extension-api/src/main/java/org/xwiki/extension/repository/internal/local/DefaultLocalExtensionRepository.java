@@ -215,6 +215,12 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
     // LocalRepository
 
     @Override
+    public LocalExtension getLocalExtension(ExtensionId extensionId)
+    {
+        return this.extensions.get(extensionId);
+    }
+
+    @Override
     public Collection<LocalExtension> getLocalExtensions()
     {
         return Collections.<LocalExtension> unmodifiableCollection(this.extensions.values());

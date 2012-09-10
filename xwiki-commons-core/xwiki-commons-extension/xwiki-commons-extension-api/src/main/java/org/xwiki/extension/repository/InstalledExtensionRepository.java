@@ -91,6 +91,15 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
         throws InstallException;
 
     /**
+     * Return extension descriptor from the repository. If the extension can't be found <code>null</code> is returned.
+     * 
+     * @param extensionId the extension identifier
+     * @return the found extension descriptor or null if none could be found
+     * @since 4.2RC1
+     */
+    InstalledExtension getInstalledExtension(ExtensionId extensionId);
+
+    /**
      * Indicate that the provided extension is uninstalled from provided namespace.
      * <p>
      * Extension is never removed form the local repository. It's just namespace related informations.
