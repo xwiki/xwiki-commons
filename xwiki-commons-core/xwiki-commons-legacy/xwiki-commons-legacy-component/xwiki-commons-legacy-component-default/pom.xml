@@ -27,7 +27,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-legacy-component</artifactId>
-    <version>4.2-SNAPSHOT</version>
+    <version>4.2-milestone-3</version>
   </parent>
   <artifactId>xwiki-commons-legacy-component-default</artifactId>
   <name>XWiki Commons - Legacy - Component - Default Implementation</name>
@@ -90,17 +90,11 @@
             <phase>process-classes</phase>
             <configuration>
               <target>
-                <concat
-                    destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.annotation.ComponentDependencyFactory"
-                    append="true">
-                  <filelist dir="${basedir}/src/main/resources/META-INF/services"
-                      files="org.xwiki.component.annotation.ComponentDependencyFactory"/>
+                <concat destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.annotation.ComponentDependencyFactory" append="true">
+                  <filelist dir="${basedir}/src/main/resources/META-INF/services" files="org.xwiki.component.annotation.ComponentDependencyFactory" />
                 </concat>
-                <concat
-                    destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.embed.LifecycleHandler"
-                    append="true">
-                  <filelist dir="${basedir}/src/main/resources/META-INF/services"
-                      files="org.xwiki.component.embed.LifecycleHandler"/>
+                <concat destfile="${project.build.directory}/classes/META-INF/services/org.xwiki.component.embed.LifecycleHandler" append="true">
+                  <filelist dir="${basedir}/src/main/resources/META-INF/services" files="org.xwiki.component.embed.LifecycleHandler" />
                 </concat>
               </target>
             </configuration>
