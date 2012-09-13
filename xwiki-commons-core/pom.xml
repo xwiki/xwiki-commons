@@ -147,8 +147,6 @@
             <!-- Remove the following excludes after we release the current version as final -->
             <!-- New #isValid() method -->
             <exclude>org/xwiki/extension/InstalledExtension</exclude>
-            <!-- [YOUNG API] Moved from Exception to Throwable parameter for extending jobs -->
-            <exclude>org/xwiki/job/AbstractJob</exclude>
             <!-- [YOUNG API] Two new methods to check and remove custom properties -->
             <exclude>org/xwiki/job/Request</exclude>
             <!-- [YOUNG API] New method to access environment extension -->
