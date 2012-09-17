@@ -135,6 +135,17 @@
         <artifactId>commons-lang3</artifactId>
         <version>3.1</version>
       </dependency>
+      <!-- We don't use Commons Lang 2.x ourselves (we use Commons Lang 3.x) but some of our transitive dependencies
+           require Commons Lang. The issue is that Maven uses a "closest-to-root" strategy to resolve dependency
+           versions and since the transitive dependencies that require Commons Lang don't use version ranges we need
+           to help them... (see http://guntherpopp.blogspot.fr/2011/02/understanding-maven-dependency.html). Since
+           the Commons Lang project takes a lot of care of preserving backward compatibility we force to use the
+           latest version which is the version that has the least chance of causing problems! -->
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.6</version>
+      </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
