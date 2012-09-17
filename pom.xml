@@ -131,11 +131,6 @@
     <dependencies>
       <!-- Apache Commons -->
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>3.1</version>
@@ -350,6 +345,7 @@
           <skip>${xwiki.enforcer.skip}</skip>
         </configuration>
         <executions>
+          <!-- Check that all Maven plugins have versions defined -->
           <execution>
             <id>enforce-plugins</id>
             <goals>
@@ -366,6 +362,7 @@
               </rules>
             </configuration>
           </execution>
+          <!-- Check that we're using jthe unit-dep and not the junit dependency -->
           <execution>
             <id>enforce-correct-junit-dependency</id>
             <goals>
@@ -385,6 +382,7 @@ Use the junit-dep artifact instead of the junit one which wrongly bundles hamcre
               </rules>
             </configuration>
           </execution>
+          <!-- Check that we're using SLF4J only -->
           <execution>
             <id>enforce-jcl-log4j-isolation</id>
             <goals>
@@ -400,6 +398,26 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
                   <excludes>
                     <exclude>commons-logging:commons-logging</exclude>
                     <exclude>log4j:log4j</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using commons-lang3 and not commons-lang -->
+          <execution>
+            <id>enforce-commons-lang3</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+                    Best practice is to use Commons Lang 3.x
+                  </message>
+                  <excludes>
+                    <exclude>commons-lang:commons-lang</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
