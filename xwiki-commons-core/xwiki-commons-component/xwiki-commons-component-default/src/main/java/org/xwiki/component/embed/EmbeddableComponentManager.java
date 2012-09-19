@@ -206,8 +206,18 @@ public class EmbeddableComponentManager implements ComponentManager
     @SuppressWarnings("unchecked")
     public <T> ComponentDescriptor<T> getComponentDescriptor(Type role, String hint)
     {
+        ComponentDescriptor<T> result = null;
         ComponentEntry<T> componentEntry = (ComponentEntry<T>) this.componentEntries.get(new RoleHint<T>(role, hint));
-        return componentEntry != null ? componentEntry.descriptor : null;
+        if (componentEntry == null) {
+            // Check in parent!
+            if (getParent() != null) {
+                result = getParent().getComponentDescriptor(role, hint);
+            }
+        } else {
+            result = componentEntry.descriptor;
+        }
+
+        return result;
     }
 
     @Override
@@ -215,6 +225,13 @@ public class EmbeddableComponentManager implements ComponentManager
     public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Type role)
     {
         List<ComponentDescriptor<T>> results = new ArrayList<ComponentDescriptor<T>>();
+
+        // Add Component Descriptors found in parent first
+        if (getParent() != null) {
+            List<ComponentDescriptor<T>> cdsInParent = getParent().getComponentDescriptorList(role);
+            results.addAll(cdsInParent);
+        }
+
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
             if (entry.getKey().getRoleType().equals(role)) {
                 results.add((ComponentDescriptor<T>) entry.getValue().descriptor);

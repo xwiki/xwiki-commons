@@ -19,6 +19,7 @@
  */
 package org.xwiki.component.embed;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -139,6 +140,27 @@ public class EmbeddableComponentManagerTest
         Assert.assertEquals(2, cds.size());
         Assert.assertTrue(cds.contains(d1));
         Assert.assertTrue(cds.contains(d2));
+    }
+
+    @Test
+    public void getComponentDescriptorListInParent() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ecm.setParent(createParentComponentManager());
+
+        List<ComponentDescriptor<Role>> cds = ecm.getComponentDescriptorList((Type) Role.class);
+        Assert.assertEquals(1, cds.size());
+    }
+
+    @Test
+    public void getComponentDescriptorInParent() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ecm.setParent(createParentComponentManager("somehint"));
+
+        ComponentDescriptor<Role> cd = ecm.getComponentDescriptor(Role.class, "somehint");
+        Assert.assertNotNull(cd);
+        Assert.assertEquals(RoleImpl.class, cd.getImplementation());
     }
 
     @Test
@@ -290,10 +312,18 @@ public class EmbeddableComponentManagerTest
 
     private ComponentManager createParentComponentManager() throws Exception
     {
+        return createParentComponentManager(null);
+    }
+
+    private ComponentManager createParentComponentManager(String hint) throws Exception
+    {
         EmbeddableComponentManager parent = new EmbeddableComponentManager();
         DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
         cd.setRole(Role.class);
         cd.setImplementation(RoleImpl.class);
+        if (hint != null) {
+            cd.setRoleHint(hint);
+        }
         parent.registerComponent(cd);
         return parent;
     }
