@@ -36,15 +36,19 @@ public class RestrictParseLocationEventHandler implements IncludeEventHandler
     /** Logging helper object. */
     private static final Logger LOGGER = LoggerFactory.getLogger(RestrictParseLocationEventHandler.class);
 
+    /**
+     * Base template directory from where template inclusion is allowed.
+     */
+    private static final String BASE_TEMPLATE_DIRECTORY = "/templates/";
+
     @Override
     public String includeEvent(String includeResourcePath, String currentResourcePath,
         String directiveName)
     {
         LOGGER.trace("Velocity include event: include [{}] from [{}] using [{}]",
             new Object[] {includeResourcePath, currentResourcePath, directiveName});
-        String baseDirectory = "/templates/";
-        String template = URI.create(baseDirectory + includeResourcePath).normalize().toString();
-        if (!template.startsWith(baseDirectory)) {
+        String template = URI.create(BASE_TEMPLATE_DIRECTORY + includeResourcePath).normalize().toString();
+        if (!template.startsWith(BASE_TEMPLATE_DIRECTORY)) {
             LOGGER.warn("Direct access to template file [{}] refused. Possible break-in attempt!", template);
             return null;
         }
