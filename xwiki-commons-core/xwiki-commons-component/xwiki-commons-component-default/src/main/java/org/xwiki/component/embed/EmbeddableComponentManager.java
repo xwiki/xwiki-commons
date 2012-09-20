@@ -224,21 +224,26 @@ public class EmbeddableComponentManager implements ComponentManager
     @SuppressWarnings("unchecked")
     public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Type role)
     {
-        List<ComponentDescriptor<T>> results = new ArrayList<ComponentDescriptor<T>>();
-
-        // Add Component Descriptors found in parent first
-        if (getParent() != null) {
-            List<ComponentDescriptor<T>> cdsInParent = getParent().getComponentDescriptorList(role);
-            results.addAll(cdsInParent);
-        }
+        Map<String, ComponentDescriptor<T>> descriptors = new HashMap<String, ComponentDescriptor<T>>();
 
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
             if (entry.getKey().getRoleType().equals(role)) {
-                results.add((ComponentDescriptor<T>) entry.getValue().descriptor);
+                descriptors.put(entry.getKey().getHint(), (ComponentDescriptor<T>) entry.getValue().descriptor);
             }
         }
 
-        return results;
+        // Add Component Descriptors found in parent first
+        if (getParent() != null) {
+            List<ComponentDescriptor<T>> parentDescriptors = getParent().getComponentDescriptorList(role);
+            for (ComponentDescriptor<T> parentDescriptor : parentDescriptors) {
+                // If the hint already exists in the children Component Manager then don't add the one from the parent.
+                if (!descriptors.containsKey(parentDescriptor.getRoleHint())) {
+                    descriptors.put(parentDescriptor.getRoleHint(), parentDescriptor);
+                }
+            }
+        }
+
+        return new ArrayList<ComponentDescriptor<T>>(descriptors.values());
     }
 
     @Override

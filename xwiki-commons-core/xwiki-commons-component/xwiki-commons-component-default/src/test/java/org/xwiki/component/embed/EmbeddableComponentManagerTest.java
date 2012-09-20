@@ -164,6 +164,34 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
+    public void getComponentDescriptorWhenSomeComponentsInParent() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+        ecm.setParent(createParentComponentManager());
+
+        // Register a component with the same Role and Hint as in the parent
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
+        cd1.setRoleType(Role.class);
+        cd1.setImplementation(RoleImpl.class);
+        Role roleImpl = new RoleImpl();
+        ecm.registerComponent(cd1, roleImpl);
+
+        // Register a component with the same Role as in the parent but with a different hint
+        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<Role>();
+        cd2.setRoleType(Role.class);
+        cd2.setRoleHint("hint");
+        cd2.setImplementation(RoleImpl.class);
+        ecm.registerComponent(cd2);
+
+        // Verify that the components are found
+        // Note: We find only 2 components since 2 components are registered with the same Role and Hint.
+
+        List<ComponentDescriptor<Role>> descriptors = ecm.getComponentDescriptorList(Role.class);
+        Assert.assertEquals(2, descriptors.size());
+    }
+
+    
+    @Test
     public void testRegisterComponentOverExistingOne() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
