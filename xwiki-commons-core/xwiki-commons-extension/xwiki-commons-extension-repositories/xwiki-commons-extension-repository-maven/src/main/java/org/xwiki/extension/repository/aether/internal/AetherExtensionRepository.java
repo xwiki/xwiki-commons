@@ -21,7 +21,6 @@ package org.xwiki.extension.repository.aether.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -300,18 +299,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     private String getProperty(Model model, String propertyName)
     {
         return model.getProperties().getProperty(MPKEYPREFIX + propertyName);
-    }
-
-    private <T> T getProperty(Model model, String propertyName, T def, Type targetType)
-    {
-        T value = def;
-
-        String stringValue = getProperty(model, propertyName);
-        if (stringValue != null) {
-            value = this.converter.<T> convert(targetType, stringValue);
-        }
-
-        return value;
     }
 
     private String getPropertyString(Model model, String propertyName, String def)
