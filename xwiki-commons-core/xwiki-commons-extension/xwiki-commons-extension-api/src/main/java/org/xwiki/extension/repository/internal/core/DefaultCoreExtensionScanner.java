@@ -195,6 +195,17 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         String extensionURLStr = descriptorUrl.toString();
         extensionURLStr =
             extensionURLStr.substring(0, descriptorUrl.toString().indexOf(MAVENPACKAGE.replace('.', '/')));
+
+        if (extensionURLStr.startsWith("jar:")) {
+            int start = "jar:".length();
+            int end = extensionURLStr.length();
+            if (extensionURLStr.endsWith("!/")) {
+                end -= "!/".length();
+            }
+
+            extensionURLStr = extensionURLStr.substring(start, end);
+        }
+
         return new URL(extensionURLStr);
     }
 
@@ -372,9 +383,14 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     {
         Set<ExtensionDependency> dependencies = new HashSet<ExtensionDependency>();
 
+        Set<String> validaedFiles = new HashSet<String>();
         for (DefaultCoreExtension coreExtension : extensions.values()) {
+            validaedFiles.add(coreExtension.getURL().toString());
+
             for (ExtensionDependency dependency : coreExtension.getDependencies()) {
-                dependencies.add(dependency);
+                if (!extensions.containsKey(dependency.getId())) {
+                    dependencies.add(dependency);
+                }
             }
         }
 
@@ -385,34 +401,36 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         Set<URL> urls = ClasspathHelper.forClassLoader();
 
         for (URL url : urls) {
-            try {
-                String path = url.toURI().getPath();
-                String filename = path.substring(path.lastIndexOf('/') + 1);
-                String type = null;
+            if (!validaedFiles.contains(url.toString())) {
+                try {
+                    String path = url.toURI().getPath();
+                    String filename = path.substring(path.lastIndexOf('/') + 1);
+                    String type = null;
 
-                int extIndex = filename.lastIndexOf('.');
-                if (extIndex != -1) {
-                    type = filename.substring(extIndex + 1);
-                    filename = filename.substring(0, extIndex);
+                    int extIndex = filename.lastIndexOf('.');
+                    if (extIndex != -1) {
+                        type = filename.substring(extIndex + 1);
+                        filename = filename.substring(0, extIndex);
+                    }
+
+                    int index;
+                    if (!filename.endsWith(SNAPSHOTSUFFIX)) {
+                        index = filename.lastIndexOf('-');
+                    } else {
+                        index = filename.lastIndexOf('-', filename.length() - SNAPSHOTSUFFIX.length());
+                    }
+
+                    if (index != -1) {
+                        fileNames.put(filename, new Object[] {url});
+
+                        String artefactname = filename.substring(0, index);
+                        String version = filename.substring(index + 1);
+
+                        guessedArtefacts.put(artefactname, new Object[] {version, url, type});
+                    }
+                } catch (Exception e) {
+                    this.logger.warn("Failed to parse resource name [{}]", url, e);
                 }
-
-                int index;
-                if (!filename.endsWith(SNAPSHOTSUFFIX)) {
-                    index = filename.lastIndexOf('-');
-                } else {
-                    index = filename.lastIndexOf('-', filename.length() - SNAPSHOTSUFFIX.length());
-                }
-
-                if (index != -1) {
-                    fileNames.put(filename, new Object[] {url});
-
-                    String artefactname = filename.substring(0, index);
-                    String version = filename.substring(index + 1);
-
-                    guessedArtefacts.put(artefactname, new Object[] {version, url, type});
-                }
-            } catch (Exception e) {
-                this.logger.warn("Failed to parse resource name [{}]", url, e);
             }
         }
 
