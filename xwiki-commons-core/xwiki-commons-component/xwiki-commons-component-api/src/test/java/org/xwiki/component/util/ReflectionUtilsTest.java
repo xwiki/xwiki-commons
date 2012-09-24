@@ -20,9 +20,11 @@
 package org.xwiki.component.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.component.descriptor.ComponentRole;
 
 /**
  * Unit tests for {@link ReflectionUtils}.
@@ -70,5 +72,60 @@ public class ReflectionUtilsTest
             Assert.assertEquals("No field named [doesntexist] in class ["
                 + TestFieldClass.class.getName() + "] or superclasses", expected.getMessage());
         }
+    }
+
+    @Test
+    public void testUnserializeType() throws Exception
+    {
+        Type simpleType = ComponentRole.class;
+        Assert.assertEquals(simpleType,
+            ReflectionUtils.unserializeType("org.xwiki.component.descriptor.ComponentRole"));
+    }
+
+    @Test
+    public void testUnserializeTypeWithGenerics() throws Exception
+    {
+        Type genericsType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
+        Assert.assertEquals(genericsType,
+            ReflectionUtils.unserializeType("org.xwiki.component.descriptor.ComponentRole<java.lang.String>"));
+    }
+
+    @Test
+    public void testUnserializeListType() throws Exception
+    {
+        Type listType = new DefaultParameterizedType(null, java.util.List.class, ComponentRole.class);
+        Assert.assertEquals(listType,
+            ReflectionUtils.unserializeType("java.util.List<org.xwiki.component.descriptor.ComponentRole>"));
+    }
+
+    @Test
+    public void testUnserializeMapType() throws Exception
+    {
+        Type mapType = new DefaultParameterizedType(null, java.util.Map.class, String.class, ComponentRole.class);
+        Assert.assertEquals(mapType,
+            ReflectionUtils.unserializeType("java.util.Map<java.lang.String, "
+                + "org.xwiki.component.descriptor.ComponentRole>"));
+    }
+
+    @Test
+    public void testUnserializeMapTypeWithGenerics() throws Exception
+    {
+        Type annotatedType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
+        Type mapType = new DefaultParameterizedType(null, java.util.Map.class, String.class, annotatedType);
+        Assert.assertEquals(mapType,
+            ReflectionUtils.unserializeType(
+                "java.util.Map<java.lang.String, org.xwiki.component.descriptor.ComponentRole<java.lang.String>>"));
+    }
+
+    @Test
+    public void testUnserializeMapInMapWithTypeWithGenerics() throws Exception
+    {
+        Type annotatedType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
+        Type mapType1 = new DefaultParameterizedType(null, java.util.Map.class, String.class, annotatedType);
+        Type mapType2 = new DefaultParameterizedType(null, java.util.Map.class, String.class, mapType1);
+        Assert.assertEquals(mapType2,
+            ReflectionUtils.unserializeType(
+                "java.util.Map<java.lang.String, java.util.Map<java.lang.String, "
+                    + "org.xwiki.component.descriptor.ComponentRole<java.lang.String>>>"));
     }
 }

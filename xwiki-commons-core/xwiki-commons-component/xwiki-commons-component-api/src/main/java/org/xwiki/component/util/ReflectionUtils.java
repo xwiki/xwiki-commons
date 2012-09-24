@@ -27,6 +27,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -415,6 +416,66 @@ public final class ReflectionUtils
         }
 
         return resolvedType;
+    }
+
+    /**
+     * Retrieve a {@link Type} object from it's serialized form.
+     *
+     * @param serializedType the serialized form of the {@link Type} to retrieve
+     * @return the type built from the given {@link String}
+     * @throws ClassNotFoundException if no class corresponding to the passed serialized type can be found
+     */
+    public static Type unserializeType(String serializedType) throws ClassNotFoundException
+    {
+        String sType = serializedType.replaceAll(" ", "");
+        String superior = "<";
+        Type type = null;
+
+        // A real parser could be used here but it would probably be overkill.
+        if (sType.contains(superior)) {
+            // Parameterized type
+            int firstInferior = sType.indexOf(superior);
+            int lastSuperior = sType.lastIndexOf(">");
+            String rawType = sType.substring(0, firstInferior);
+            String sArguments = sType.substring(firstInferior + 1, lastSuperior);
+            List<Type> argumentTypes = new ArrayList<Type>();
+            int nestedArgsDepth = 0;
+            int previousSplit = 0;
+            // We'll go through all the Type arguments and they will be unserialized, since arguments can be
+            // ParameterizedTypes themselves we need to avoid parsing their arguments, that's why we need the
+            // nestedArgsDepth counter.
+            for (int i = 0; i < sArguments.length(); i++) {
+                char current = sArguments.charAt(i);
+                switch (current) {
+                    case '<':
+                        nestedArgsDepth++;
+                        break;
+                    case '>':
+                        nestedArgsDepth--;
+                        break;
+                    case ',':
+                        if (nestedArgsDepth == 0) {
+                            argumentTypes.add(unserializeType(sArguments.substring(previousSplit, i)));
+                            previousSplit = i + 1;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                if (i == sArguments.length() - 1) {
+                    // We're at the end of the parameter list, we need to unserialize the Type of the last element.
+                    // If there was only one argument it will be unserialized here.
+                    argumentTypes.add(unserializeType(sArguments.substring(previousSplit)));
+                }
+            }
+
+            type = new DefaultParameterizedType(null, Class.forName(rawType), argumentTypes.toArray(new Type[1]));
+        } else {
+            // This was a simple type, no type arguments were found.
+            type = Class.forName(sType);
+        }
+
+        return type;
     }
 
     /**
