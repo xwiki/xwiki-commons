@@ -144,23 +144,6 @@
           <excludes>
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>
-            <!-- Remove the following excludes after we release the current version as final -->
-            <!-- New #isValid() method -->
-            <exclude>org/xwiki/extension/InstalledExtension</exclude>
-            <!-- [YOUNG API] Two new methods to check and remove custom properties -->
-            <exclude>org/xwiki/job/Request</exclude>
-            <!-- [YOUNG API] New method to access environment extension -->
-            <exclude>org/xwiki/extension/repository/CoreExtensionRepository</exclude>
-            <!-- [YOUNG API] New method to access local:installed extensions -->
-            <exclude>org/xwiki/extension/repository/LocalExtensionRepository</exclude>
-            <exclude>org/xwiki/extension/repository/InstalledExtensionRepository</exclude>
-            <!-- [YOUNG API] New methods to execute custom checking before installing/uninstalling extension -->
-            <exclude>org/xwiki/extension/handler/ExtensionHandler</exclude>
-            <!-- [YOUNG API] New methods to manipulate loggers levels -->
-            <exclude>org/xwiki/logging/LoggerManager</exclude>
-            <!-- Fix method name typo (adding new method). 
-            This interface is not really supposed to be implemented except by internal class. -->
-            <exclude>org/xwiki/properties/PropertyDescriptor</exclude>
           </excludes>
         </configuration>
       </plugin>
