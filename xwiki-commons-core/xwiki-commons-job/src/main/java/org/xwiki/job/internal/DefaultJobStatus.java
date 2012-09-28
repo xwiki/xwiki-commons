@@ -43,9 +43,11 @@ public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R> im
      * @param request the request provided when started the job
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
+     * @param subJob indicate of the job has been started by another one
      */
-    public DefaultJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager)
+    public DefaultJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager,
+        boolean subJob)
     {
-        super(request, observationManager, loggerManager);
+        super(request, observationManager, loggerManager, subJob);
     }
 }

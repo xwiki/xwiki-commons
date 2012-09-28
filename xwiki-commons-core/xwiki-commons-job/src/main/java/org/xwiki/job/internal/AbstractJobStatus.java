@@ -99,15 +99,28 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private transient DefaultJobProgress progress;
 
     /**
+     * Indicate of the job has been started by another one.
+     */
+    private boolean subJob;
+
+    /**
+     * Used to listen to all the log produced during job execution.
+     */
+    private LogQueueListener logListener;
+
+    /**
      * @param request the request provided when started the job
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
+     * @param subJob indicate of the job has been started by another one
      */
-    public AbstractJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager)
+    public AbstractJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager,
+        boolean subJob)
     {
         this.request = request;
         this.observationManager = observationManager;
         this.loggerManager = loggerManager;
+        this.subJob = subJob;
     }
 
     /**
@@ -120,8 +133,12 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.observationManager.addListener(this.progress);
 
         // Isolate log for the job status
-        this.loggerManager.pushLogListener(new LogQueueListener(LogQueueListener.class.getName() + '_' + hashCode(),
-            this.logs));
+        this.logListener = new LogQueueListener(LogQueueListener.class.getName() + '_' + hashCode(), this.logs);
+        if (this.subJob) {
+            this.observationManager.addListener(this.logListener);
+        } else {
+            this.loggerManager.pushLogListener(this.logListener);
+        }
     }
 
     /**
@@ -129,7 +146,11 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      */
     public void stopListening()
     {
-        this.loggerManager.popLogListener();
+        if (this.subJob) {
+            this.observationManager.removeListener(this.logListener.getName());
+        } else {
+            this.loggerManager.popLogListener();
+        }
         this.observationManager.removeListener(this.progress.getName());
     }
 

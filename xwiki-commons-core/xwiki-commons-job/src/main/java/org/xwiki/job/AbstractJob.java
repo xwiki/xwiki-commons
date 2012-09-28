@@ -206,7 +206,8 @@ public abstract class AbstractJob<R extends Request> implements Job
      */
     protected AbstractJobStatus<R> createNewStatus(R request)
     {
-        return new DefaultJobStatus<R>(request, this.observationManager, this.loggerManager);
+        return new DefaultJobStatus<R>(request, this.observationManager, this.loggerManager,
+            this.jobContext.getCurrentJob() != null);
     }
 
     /**
