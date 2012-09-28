@@ -83,7 +83,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     protected DefaultExtensionPlan<UninstallRequest> createNewStatus(UninstallRequest request)
     {
         return new DefaultExtensionPlan<UninstallRequest>(request, this.observationManager, this.loggerManager,
-            this.extensionTree);
+            this.extensionTree, this.jobContext.getCurrentJob() != null);
     }
 
     @Override
