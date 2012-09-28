@@ -94,7 +94,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends A
 
                 notifyStepPropress();
 
-                // Uinstall
+                // Uninstall
                 uninstallExtension(installedExtension, namespace);
             } else {
                 // Store extension in local repository
