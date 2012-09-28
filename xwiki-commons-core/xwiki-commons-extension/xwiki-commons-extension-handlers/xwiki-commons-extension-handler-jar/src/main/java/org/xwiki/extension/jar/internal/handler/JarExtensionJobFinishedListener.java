@@ -113,13 +113,7 @@ public class JarExtensionJobFinishedListener implements EventListener
         ExecutionContext context = this.execution.getContext();
 
         if (context != null) {
-            Stack<UninstalledExtensionCollection> extensions =
-                (Stack<UninstalledExtensionCollection>) context.getProperty("extension.jar.uninstalledExtensions");
-
-            if (extensions == null) {
-                extensions = new Stack<JarExtensionJobFinishedListener.UninstalledExtensionCollection>();
-                context.setProperty("extension.jar.uninstalledExtensions", extensions);
-            }
+            Stack<UninstalledExtensionCollection> extensions = getUninstalledExtensionCollectionStack(true);
 
             extensions.push(null);
         }
@@ -130,8 +124,7 @@ public class JarExtensionJobFinishedListener implements EventListener
         ExecutionContext context = this.execution.getContext();
 
         if (context != null) {
-            Stack<UninstalledExtensionCollection> extensions =
-                (Stack<UninstalledExtensionCollection>) context.getProperty("extension.jar.uninstalledExtensions");
+            Stack<UninstalledExtensionCollection> extensions = getUninstalledExtensionCollectionStack(false);
 
             if (extensions != null) {
                 extensions.pop();
@@ -139,13 +132,31 @@ public class JarExtensionJobFinishedListener implements EventListener
         }
     }
 
-    private UninstalledExtensionCollection getCurrentJobUninstalledExtensions(boolean create)
+    private Stack<UninstalledExtensionCollection> getUninstalledExtensionCollectionStack(boolean create)
     {
         ExecutionContext context = this.execution.getContext();
 
         if (context != null) {
             Stack<UninstalledExtensionCollection> extensions =
                 (Stack<UninstalledExtensionCollection>) context.getProperty("extension.jar.uninstalledExtensions");
+
+            if (extensions == null && create) {
+                extensions = new Stack<UninstalledExtensionCollection>();
+                context.setProperty("extension.jar.uninstalledExtensions", extensions);
+            }
+
+            return extensions;
+        }
+
+        return null;
+    }
+
+    private UninstalledExtensionCollection getCurrentJobUninstalledExtensions(boolean create)
+    {
+        ExecutionContext context = this.execution.getContext();
+
+        if (context != null) {
+            Stack<UninstalledExtensionCollection> extensions = getUninstalledExtensionCollectionStack(false);
 
             if (extensions != null) {
                 UninstalledExtensionCollection collection = extensions.peek();
