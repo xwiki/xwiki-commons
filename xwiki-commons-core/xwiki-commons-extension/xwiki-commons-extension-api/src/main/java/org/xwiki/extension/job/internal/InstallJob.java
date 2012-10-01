@@ -165,6 +165,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
     private void storeExtension(Extension extension) throws LocalExtensionRepositoryException
     {
         if (!(extension instanceof LocalExtension)) {
+            this.logger.info("Downloading [{}]", extension.getId());
             this.localExtensionRepository.storeExtension(extension);
         }
     }
