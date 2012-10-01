@@ -189,8 +189,16 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     private void uninstallExtension(InstalledExtension installedExtension, Collection<String> namespaces,
         Collection<ExtensionPlanNode> parentBranch) throws UninstallException
     {
-        for (String namespace : namespaces) {
-            uninstallExtension(installedExtension, namespace, parentBranch);
+        notifyPushLevelProgress(namespaces.size());
+
+        try {
+            for (String namespace : namespaces) {
+                uninstallExtension(installedExtension, namespace, parentBranch);
+
+                notifyStepPropress();
+            }
+        } finally {
+            notifyPopLevelProgress();
         }
     }
 
@@ -203,8 +211,16 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     private void uninstallExtensions(Collection<InstalledExtension> extensions, String namespace,
         Collection<ExtensionPlanNode> parentBranch) throws UninstallException
     {
-        for (InstalledExtension backardDependency : extensions) {
-            uninstallExtension(backardDependency, namespace, parentBranch);
+        notifyPushLevelProgress(extensions.size());
+
+        try {
+            for (InstalledExtension backardDependency : extensions) {
+                uninstallExtension(backardDependency, namespace, parentBranch);
+
+                notifyStepPropress();
+            }
+        } finally {
+            notifyPopLevelProgress();
         }
     }
 
@@ -252,10 +268,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
                     uninstallExtensions(this.installedExtensionRepository.getBackwardDependencies(installedExtension
                         .getId().getId(), namespace), namespace, children);
                 } else {
-                    for (Map.Entry<String, Collection<InstalledExtension>> entry : this.installedExtensionRepository
-                        .getBackwardDependencies(installedExtension.getId()).entrySet()) {
-                        uninstallExtensions(entry.getValue(), entry.getKey(), children);
-                    }
+                    uninstallBackwardDependencies(installedExtension, children);
                 }
             } catch (ResolveException e) {
                 throw new UninstallException("Failed to resolve backward dependencies of extension ["
@@ -271,4 +284,30 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
             notifyPopLevelProgress();
         }
     }
+
+    /**
+     * @param installedExtension the extension to uninstall
+     * @param parentBranch the children of the parent {@link ExtensionPlanNode}
+     * @throws UninstallException error when trying to uninstall backward dependencies
+     * @throws ResolveException error when trying to resolve backward dependencies
+     */
+    private void uninstallBackwardDependencies(InstalledExtension installedExtension,
+        List<ExtensionPlanNode> parentBranch) throws UninstallException, ResolveException
+    {
+        Map<String, Collection<InstalledExtension>> backwardDependencies =
+            this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId());
+
+        notifyPushLevelProgress(backwardDependencies.size());
+
+        try {
+            for (Map.Entry<String, Collection<InstalledExtension>> entry : backwardDependencies.entrySet()) {
+                uninstallExtensions(entry.getValue(), entry.getKey(), parentBranch);
+
+                notifyStepPropress();
+            }
+        } finally {
+            notifyPopLevelProgress();
+        }
+    }
+
 }
