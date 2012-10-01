@@ -22,6 +22,7 @@ package org.xwiki.extension.job.internal;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
@@ -84,7 +85,7 @@ public class UninstallJobTest extends AbstractExtensionHandlerTest
 
         try {
             uninstall(TestResources.INSTALLED_ID, null);
-        } catch (UninstallException expected) {
+        } catch (ResolveException expected) {
             // expected
         }
     }
