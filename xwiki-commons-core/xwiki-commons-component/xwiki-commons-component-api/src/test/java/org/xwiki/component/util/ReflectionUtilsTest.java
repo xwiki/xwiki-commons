@@ -79,7 +79,8 @@ public class ReflectionUtilsTest
     {
         Type simpleType = ComponentRole.class;
         Assert.assertEquals(simpleType,
-            ReflectionUtils.unserializeType("org.xwiki.component.descriptor.ComponentRole"));
+            ReflectionUtils.unserializeType("org.xwiki.component.descriptor.ComponentRole",
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
@@ -87,7 +88,8 @@ public class ReflectionUtilsTest
     {
         Type genericsType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
         Assert.assertEquals(genericsType,
-            ReflectionUtils.unserializeType("org.xwiki.component.descriptor.ComponentRole<java.lang.String>"));
+            ReflectionUtils.unserializeType("org.xwiki.component.descriptor.ComponentRole<java.lang.String>",
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
@@ -95,7 +97,8 @@ public class ReflectionUtilsTest
     {
         Type listType = new DefaultParameterizedType(null, java.util.List.class, ComponentRole.class);
         Assert.assertEquals(listType,
-            ReflectionUtils.unserializeType("java.util.List<org.xwiki.component.descriptor.ComponentRole>"));
+            ReflectionUtils.unserializeType("java.util.List<org.xwiki.component.descriptor.ComponentRole>",
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
@@ -104,7 +107,7 @@ public class ReflectionUtilsTest
         Type mapType = new DefaultParameterizedType(null, java.util.Map.class, String.class, ComponentRole.class);
         Assert.assertEquals(mapType,
             ReflectionUtils.unserializeType("java.util.Map<java.lang.String, "
-                + "org.xwiki.component.descriptor.ComponentRole>"));
+                + "org.xwiki.component.descriptor.ComponentRole>", Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
@@ -114,7 +117,8 @@ public class ReflectionUtilsTest
         Type mapType = new DefaultParameterizedType(null, java.util.Map.class, String.class, annotatedType);
         Assert.assertEquals(mapType,
             ReflectionUtils.unserializeType(
-                "java.util.Map<java.lang.String, org.xwiki.component.descriptor.ComponentRole<java.lang.String>>"));
+                "java.util.Map<java.lang.String, org.xwiki.component.descriptor.ComponentRole<java.lang.String>>",
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
@@ -126,6 +130,7 @@ public class ReflectionUtilsTest
         Assert.assertEquals(mapType2,
             ReflectionUtils.unserializeType(
                 "java.util.Map<java.lang.String, java.util.Map<java.lang.String, "
-                    + "org.xwiki.component.descriptor.ComponentRole<java.lang.String>>>"));
+                    + "org.xwiki.component.descriptor.ComponentRole<java.lang.String>>>",
+                Thread.currentThread().getContextClassLoader()));
     }
 }

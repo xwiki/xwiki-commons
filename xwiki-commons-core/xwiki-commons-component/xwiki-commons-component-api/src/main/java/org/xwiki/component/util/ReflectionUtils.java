@@ -422,10 +422,11 @@ public final class ReflectionUtils
      * Retrieve a {@link Type} object from it's serialized form.
      *
      * @param serializedType the serialized form of the {@link Type} to retrieve
+     * @param classLoader the {@link ClassLoader} to look into to find the given {@link Type}
      * @return the type built from the given {@link String}
      * @throws ClassNotFoundException if no class corresponding to the passed serialized type can be found
      */
-    public static Type unserializeType(String serializedType) throws ClassNotFoundException
+    public static Type unserializeType(String serializedType, ClassLoader classLoader) throws ClassNotFoundException
     {
         String sType = serializedType.replaceAll(" ", "");
         String inferior = "<";
@@ -455,7 +456,7 @@ public final class ReflectionUtils
                         break;
                     case ',':
                         if (nestedArgsDepth == 0) {
-                            argumentTypes.add(unserializeType(sArguments.substring(previousSplit, i)));
+                            argumentTypes.add(unserializeType(sArguments.substring(previousSplit, i), classLoader));
                             previousSplit = i + 1;
                         }
                         break;
@@ -465,14 +466,15 @@ public final class ReflectionUtils
                 if (i == sArguments.length() - 1) {
                     // We're at the end of the parameter list, we need to unserialize the Type of the last element.
                     // If there was only one argument it will be unserialized here.
-                    argumentTypes.add(unserializeType(sArguments.substring(previousSplit)));
+                    argumentTypes.add(unserializeType(sArguments.substring(previousSplit), classLoader));
                 }
             }
 
-            type = new DefaultParameterizedType(null, Class.forName(rawType), argumentTypes.toArray(new Type[1]));
+            type = new DefaultParameterizedType(null, Class.forName(rawType, false, classLoader),
+                argumentTypes.toArray(new Type[1]));
         } else {
             // This was a simple type, no type arguments were found.
-            type = Class.forName(sType);
+            type = Class.forName(sType, false, classLoader);
         }
 
         return type;
