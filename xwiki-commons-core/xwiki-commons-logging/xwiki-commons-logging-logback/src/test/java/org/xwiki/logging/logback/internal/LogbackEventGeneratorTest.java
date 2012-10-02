@@ -61,7 +61,7 @@ public class LogbackEventGeneratorTest extends AbstractComponentTestCase
     public void test()
     {
         final EventListener listener = getMockery().mock(EventListener.class);
-        final Event event = new LogEvent(LogLevel.ERROR, "error message", null, null);
+        final Event event = new LogEvent(null, LogLevel.ERROR, "error message", null, null);
 
         getMockery().checking(new Expectations()
         {

@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
+import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.logging.LogLevel;
@@ -39,6 +40,11 @@ import org.xwiki.observation.event.Event;
 @Singleton
 public class LogEvent implements Event
 {
+    /**
+     * @see #getMarker()
+     */
+    private Marker marker;
+
     /**
      * @see #getLevel()
      */
@@ -80,6 +86,20 @@ public class LogEvent implements Event
      */
     public LogEvent(LogLevel level, String message, Object[] argumentArray, Throwable throwable)
     {
+        this(null, level, message, argumentArray, throwable);
+    }
+
+    /**
+     * @param marker the log marker
+     * @param level the log level
+     * @param message the log message
+     * @param argumentArray the event arguments to insert in the message
+     * @param throwable the throwable associated to the event
+     * @since 4.3M
+     */
+    public LogEvent(Marker marker, LogLevel level, String message, Object[] argumentArray, Throwable throwable)
+    {
+        this.marker = marker;
         this.level = level;
         this.message = message;
         this.argumentArray = argumentArray;
@@ -90,6 +110,15 @@ public class LogEvent implements Event
     public boolean matches(Object otherEvent)
     {
         return true;
+    }
+
+    /**
+     * @return the log marker
+     * @since 4.3M1
+     */
+    public Marker getMarker()
+    {
+        return this.marker;
     }
 
     /**

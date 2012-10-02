@@ -45,17 +45,16 @@ import ch.qos.logback.core.AppenderBase;
 
 /**
  * Bridge converting log to Observation Events.
- *
  * <p>
  * Note that this class is implemented as an Event Listener only because we needed a way for this component to be
  * initialized early when the system starts and the Observation Manager Component is the first Component loaded in the
  * system and in its own initialization it initializes all Event Listeners... The reason we want this component
  * initialized early is because it adds itself as a Logback Appender in its initialization and thus by having it done
  * early any other component wishing to listen to logs will be able to do so and not "loose" events (there's still a
- * possibility that some logs will not be seen if some Event Listeners do logging in their initialization and it
- * happens that they're initialized before this component...).
+ * possibility that some logs will not be seen if some Event Listeners do logging in their initialization and it happens
+ * that they're initialized before this component...).
  * </p>
- *
+ * 
  * @version $Id$
  * @since 3.2M1
  */
@@ -128,7 +127,8 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
         try {
             LogLevel logLevel = LogbackUtils.toLogLevel(event.getLevel());
 
-            LogEvent logevent = new LogEvent(logLevel, event.getMessage(), event.getArgumentArray(), throwable);
+            LogEvent logevent =
+                new LogEvent(event.getMarker(), logLevel, event.getMessage(), event.getArgumentArray(), throwable);
 
             getObservationManager().notify(logevent, event.getLoggerName(), null);
         } catch (IllegalArgumentException e) {
