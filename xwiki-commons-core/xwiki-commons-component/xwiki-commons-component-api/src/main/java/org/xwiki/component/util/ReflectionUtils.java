@@ -428,13 +428,13 @@ public final class ReflectionUtils
     public static Type unserializeType(String serializedType) throws ClassNotFoundException
     {
         String sType = serializedType.replaceAll(" ", "");
-        String superior = "<";
+        String inferior = "<";
         Type type = null;
 
         // A real parser could be used here but it would probably be overkill.
-        if (sType.contains(superior)) {
+        if (sType.contains(inferior)) {
             // Parameterized type
-            int firstInferior = sType.indexOf(superior);
+            int firstInferior = sType.indexOf(inferior);
             int lastSuperior = sType.lastIndexOf(">");
             String rawType = sType.substring(0, firstInferior);
             String sArguments = sType.substring(firstInferior + 1, lastSuperior);
