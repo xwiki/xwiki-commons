@@ -44,52 +44,64 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
 
     /**
      * @param level the log level
-     * @param message the log message
-     * @param argumentArray the event arguments to insert in the message
+     * @param format the log message
+     * @param arguments the event arguments to insert in the message
      * @return the created {@link LogEvent} instance
      * @since 4.1RC1
      */
-    public LogEvent addLogEvent(LogLevel level, String message, Object[] argumentArray)
+    public LogEvent addLogEvent(LogLevel level, String format, Object[] arguments)
     {
-        Object[] actualArray;
-        Throwable throwable;
-        if (argumentArray.length > 0 && argumentArray[argumentArray.length - 1] instanceof Throwable) {
-            actualArray = Arrays.copyOf(argumentArray, argumentArray.length - 1);
-            throwable = (Throwable) argumentArray[argumentArray.length - 1];
-        } else {
-            actualArray = argumentArray;
-            throwable = null;
-        }
-
-        return addLogEvent(level, message, actualArray, throwable);
-    }
-
-    /**
-     * @param level the log level
-     * @param message the log message
-     * @param argumentArray the event arguments to insert in the message
-     * @param throwable the throwable associated to the event
-     * @return the created {@link LogEvent} instance
-     * @since 4.1RC1
-     */
-    public LogEvent addLogEvent(LogLevel level, String message, Object[] argumentArray, Throwable throwable)
-    {
-        return addLogEvent(null, level, message, argumentArray, throwable);
+        return addLogEvent(null, level, format, arguments);
     }
 
     /**
      * @param marker the log marker
      * @param level the log level
-     * @param message the log message
-     * @param argumentArray the event arguments to insert in the message
+     * @param format the log message
+     * @param arguments the event arguments to insert in the message
+     * @return the created {@link LogEvent} instance
+     * @since 4.3M1
+     */
+    public LogEvent addLogEvent(Marker marker, LogLevel level, String format, Object[] arguments)
+    {
+        Object[] actualArray;
+        Throwable throwable;
+        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
+            actualArray = Arrays.copyOf(arguments, arguments.length - 1);
+            throwable = (Throwable) arguments[arguments.length - 1];
+        } else {
+            actualArray = arguments;
+            throwable = null;
+        }
+
+        return addLogEvent(level, format, actualArray, throwable);
+    }
+
+    /**
+     * @param level the log level
+     * @param format the log message
+     * @param arguments the event arguments to insert in the message
+     * @param throwable the throwable associated to the event
+     * @return the created {@link LogEvent} instance
+     * @since 4.1RC1
+     */
+    public LogEvent addLogEvent(LogLevel level, String format, Object[] arguments, Throwable throwable)
+    {
+        return addLogEvent(null, level, format, arguments, throwable);
+    }
+
+    /**
+     * @param marker the log marker
+     * @param level the log level
+     * @param format the log message
+     * @param arguments the event arguments to insert in the message
      * @param throwable the throwable associated to the event
      * @return the created {@link LogEvent} instance
      * @since 4.3M1
      */
-    public LogEvent addLogEvent(Marker marker, LogLevel level, String message, Object[] argumentArray,
-        Throwable throwable)
+    public LogEvent addLogEvent(Marker marker, LogLevel level, String format, Object[] arguments, Throwable throwable)
     {
-        LogEvent logEvent = new LogEvent(marker, level, message, argumentArray, throwable);
+        LogEvent logEvent = new LogEvent(marker, level, format, arguments, throwable);
         add(logEvent);
 
         return logEvent;
@@ -143,6 +155,8 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
         return null;
     }
 
+    // TRACE
+
     @Override
     public boolean isTraceEnabled()
     {
@@ -158,25 +172,25 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void trace(String format, Object arg)
     {
-        trace(format, new Object[] {arg});
+        trace((Marker) null, format, arg);
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2)
     {
-        trace(format, new Object[] {arg1, arg2});
+        trace((Marker) null, format, arg1, arg2);
     }
 
     @Override
     public void trace(String format, Object... arguments)
     {
-        addLogEvent(LogLevel.TRACE, format, arguments);
+        trace((Marker) null, format, arguments);
     }
 
     @Override
     public void trace(String msg, Throwable t)
     {
-        addLogEvent(LogLevel.TRACE, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
+        trace((Marker) null, msg, t);
     }
 
     @Override
@@ -188,32 +202,34 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void trace(Marker marker, String msg)
     {
-        trace(msg);
+        trace(marker, msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg)
     {
-        trace(format, arg);
+        trace(marker, format, new Object[] {arg});
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2)
     {
-        trace(format, arg1, arg2);
+        trace(marker, format, new Object[] {arg1, arg2});
     }
 
     @Override
     public void trace(Marker marker, String format, Object... arguments)
     {
-        trace(format, arguments);
+        addLogEvent(marker, LogLevel.TRACE, format, arguments);
     }
 
     @Override
     public void trace(Marker marker, String msg, Throwable t)
     {
-        trace(msg, t);
+        addLogEvent(marker, LogLevel.TRACE, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
     }
+
+    // DEBUG
 
     @Override
     public boolean isDebugEnabled()
@@ -224,31 +240,31 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void debug(String msg)
     {
-        debug(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
+        debug((Marker) null, msg);
     }
 
     @Override
     public void debug(String format, Object arg)
     {
-        debug(format, new Object[] {arg});
+        debug((Marker) null, format, arg);
     }
 
     @Override
     public void debug(String format, Object arg1, Object arg2)
     {
-        debug(format, new Object[] {arg1, arg2});
+        debug((Marker) null, format, arg1, arg2);
     }
 
     @Override
     public void debug(String format, Object... arguments)
     {
-        addLogEvent(LogLevel.DEBUG, format, arguments);
+        debug((Marker) null, format, arguments);
     }
 
     @Override
     public void debug(String msg, Throwable t)
     {
-        addLogEvent(LogLevel.DEBUG, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
+        debug((Marker) null, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
     }
 
     @Override
@@ -260,32 +276,34 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void debug(Marker marker, String msg)
     {
-        debug(msg);
+        debug(marker, msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg)
     {
-        debug(format, arg);
+        debug(marker, format, new Object[] {arg});
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg1, Object arg2)
     {
-        debug(format, arg1, arg2);
+        debug(marker, format, new Object[] {arg1, arg2});
     }
 
     @Override
     public void debug(Marker marker, String format, Object... arguments)
     {
-        debug(format, arguments);
+        addLogEvent(marker, LogLevel.DEBUG, format, arguments);
     }
 
     @Override
     public void debug(Marker marker, String msg, Throwable t)
     {
-        debug(msg, t);
+        addLogEvent(marker, LogLevel.DEBUG, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
     }
+
+    // INFO
 
     @Override
     public boolean isInfoEnabled()
@@ -296,31 +314,31 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void info(String msg)
     {
-        info(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
+        info((Marker) null, msg);
     }
 
     @Override
     public void info(String format, Object arg)
     {
-        info(format, new Object[] {arg});
+        info((Marker) null, format, arg);
     }
 
     @Override
     public void info(String format, Object arg1, Object arg2)
     {
-        info(format, new Object[] {arg1, arg2});
+        info((Marker) null, format, arg1, arg2);
     }
 
     @Override
     public void info(String format, Object... arguments)
     {
-        addLogEvent(LogLevel.INFO, format, arguments);
+        info((Marker) null, format, arguments);
     }
 
     @Override
     public void info(String msg, Throwable t)
     {
-        addLogEvent(LogLevel.INFO, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
+        info((Marker) null, msg, t);
     }
 
     @Override
@@ -332,32 +350,34 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void info(Marker marker, String msg)
     {
-        info(msg);
+        info(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
     }
 
     @Override
     public void info(Marker marker, String format, Object arg)
     {
-        info(format, arg);
+        info(format, new Object[] {arg});
     }
 
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2)
     {
-        info(format, arg1, arg2);
+        info(format, new Object[] {arg1, arg2});
     }
 
     @Override
     public void info(Marker marker, String format, Object... arguments)
     {
-        info(format, arguments);
+        addLogEvent(marker, LogLevel.INFO, format, arguments);
     }
 
     @Override
     public void info(Marker marker, String msg, Throwable t)
     {
-        info(msg, t);
+        addLogEvent(marker, LogLevel.INFO, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
     }
+
+    // WARN
 
     @Override
     public boolean isWarnEnabled()
@@ -368,31 +388,31 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void warn(String msg)
     {
-        warn(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
+        warn((Marker) null, msg);
     }
 
     @Override
     public void warn(String format, Object arg)
     {
-        warn(format, new Object[] {arg});
+        warn((Marker) null, format, arg);
     }
 
     @Override
     public void warn(String format, Object arg1, Object arg2)
     {
-        warn(format, new Object[] {arg1, arg2});
+        warn((Marker) null, format, arg1, arg2);
     }
 
     @Override
     public void warn(String format, Object... arguments)
     {
-        addLogEvent(LogLevel.WARN, format, arguments);
+        warn((Marker) null, format, arguments);
     }
 
     @Override
     public void warn(String msg, Throwable t)
     {
-        addLogEvent(LogLevel.WARN, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
+        warn((Marker) null, msg, t);
     }
 
     @Override
@@ -404,32 +424,34 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void warn(Marker marker, String msg)
     {
-        warn(msg);
+        warn(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg)
     {
-        warn(format, arg);
+        warn(format, new Object[] {arg});
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2)
     {
-        warn(format, arg1, arg2);
+        warn(format, new Object[] {arg1, arg2});
     }
 
     @Override
     public void warn(Marker marker, String format, Object... arguments)
     {
-        warn(format, arguments);
+        addLogEvent(marker, LogLevel.WARN, format, arguments);
     }
 
     @Override
     public void warn(Marker marker, String msg, Throwable t)
     {
-        warn(msg, t);
+        addLogEvent(marker, LogLevel.WARN, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
     }
+
+    // ERROR
 
     @Override
     public boolean isErrorEnabled()
@@ -440,31 +462,31 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void error(String msg)
     {
-        error(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
+        error((Marker) null, msg);
     }
 
     @Override
     public void error(String format, Object arg)
     {
-        error(format, new Object[] {arg});
+        error((Marker) null, format, arg);
     }
 
     @Override
     public void error(String format, Object arg1, Object arg2)
     {
-        error(format, new Object[] {arg1, arg2});
+        error((Marker) null, format, arg1, arg2);
     }
 
     @Override
     public void error(String format, Object... arguments)
     {
-        addLogEvent(LogLevel.ERROR, format, arguments);
+        error((Marker) null, format, arguments);
     }
 
     @Override
     public void error(String msg, Throwable t)
     {
-        addLogEvent(LogLevel.ERROR, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
+        error((Marker) null, msg, t);
     }
 
     @Override
@@ -476,30 +498,30 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void error(Marker marker, String msg)
     {
-        error(msg);
+        error(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
     }
 
     @Override
     public void error(Marker marker, String format, Object arg)
     {
-        error(format, arg);
+        error(format, new Object[] {arg});
     }
 
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2)
     {
-        error(format, arg1, arg2);
+        error(format, new Object[] {arg1, arg2});
     }
 
     @Override
     public void error(Marker marker, String format, Object... arguments)
     {
-        error(format, arguments);
+        addLogEvent(marker, LogLevel.ERROR, format, arguments);
     }
 
     @Override
     public void error(Marker marker, String msg, Throwable t)
     {
-        error(msg, t);
+        addLogEvent(marker, LogLevel.ERROR, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
     }
 }
