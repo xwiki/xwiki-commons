@@ -32,12 +32,12 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
 import org.xwiki.extension.repository.ExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -83,10 +83,17 @@ public class XWikiExtensionRepositoryFactory implements ExtensionRepositoryFacto
     @Override
     public ExtensionRepository createRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException
     {
+        return createRepository((ExtensionRepositoryDescriptor) repositoryId);
+    }
+
+    @Override
+    public ExtensionRepository createRepository(ExtensionRepositoryDescriptor repositoryDescriptor)
+        throws ExtensionRepositoryException
+    {
         try {
-            return new XWikiExtensionRepository(repositoryId, this, this.licenseManager, this.configuration);
+            return new XWikiExtensionRepository(repositoryDescriptor, this, this.licenseManager, this.configuration);
         } catch (Exception e) {
-            throw new ExtensionRepositoryException("Failed to create repository [" + repositoryId + "]", e);
+            throw new ExtensionRepositoryException("Failed to create repository [" + repositoryDescriptor + "]", e);
         }
     }
 }

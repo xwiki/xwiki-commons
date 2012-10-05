@@ -36,8 +36,16 @@ public interface ExtensionRepository
 {
     /**
      * @return the repository identifier.
+     * @deprecated since 4.3M1 use {@link #getDescriptor()} instead
      */
+    @Deprecated
     ExtensionRepositoryId getId();
+
+    /**
+     * @return the repository descriptor
+     * @since 4.3M1
+     */
+    ExtensionRepositoryDescriptor getDescriptor();
 
     /**
      * Return extension descriptor from the repository. If the extension can't be found a {@link ResolveException} is

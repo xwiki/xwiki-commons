@@ -19,28 +19,26 @@
  */
 package org.xwiki.extension.repository;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
-import org.xwiki.component.annotation.Role;
-
 /**
- * A repository identifiers source (for example xwiki.properties).
+ * Base class for {@link ExtensionRepositorySource} implementations.
  * 
  * @version $Id$
- * @since 4.0M1
+ * @since 4.3M1
  */
-@Role
-public interface ExtensionRepositorySource
+public abstract class AbstractExtensionRepositorySource implements ExtensionRepositorySource
 {
-    /**
-     * @return the extension repositories identifiers
-     * @deprecated since 4.3M1 use {@link #getExtensionRepositoryDescriptors()} instead
-     */
-    @Deprecated
-    Collection<ExtensionRepositoryId> getExtensionRepositories();
+    @Override
+    public Collection<ExtensionRepositoryId> getExtensionRepositories()
+    {
+        Collection<ExtensionRepositoryId> repositories = new ArrayList<ExtensionRepositoryId>();
 
-    /**
-     * @return the extension repositories identifiers
-     */
-    Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors();
+        for (ExtensionRepositoryDescriptor descriptor : getExtensionRepositoryDescriptors()) {
+            repositories.add(new ExtensionRepositoryId(descriptor));
+        }
+
+        return repositories;
+    }
 }

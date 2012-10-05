@@ -29,6 +29,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -43,7 +45,7 @@ import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
@@ -78,12 +80,13 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
     private final transient UriBuilder searchUriBuider;
 
-    public XWikiExtensionRepository(ExtensionRepositoryId repositoryId,
+    public XWikiExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,
         ExtensionManagerConfiguration configuration) throws Exception
     {
-        super(repositoryId.getURI().getPath().endsWith("/") ? new ExtensionRepositoryId(repositoryId.getId(),
-            repositoryId.getType(), new URI(StringUtils.chop(repositoryId.getURI().toString()))) : repositoryId);
+        super(repositoryDescriptor.getURI().getPath().endsWith("/") ? new ExtensionRepositoryDescriptor(
+            repositoryDescriptor.getId(), repositoryDescriptor.getType(), new URI(StringUtils.chop(repositoryDescriptor
+                .getURI().toString()))) : repositoryDescriptor);
 
         this.repositoryFactory = repositoryFactory;
         this.licenseManager = licenseManager;
@@ -142,17 +145,22 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 60000);
         httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
 
+        // Setup proxy
         ProxySelectorRoutePlanner routePlanner =
             new ProxySelectorRoutePlanner(httpClient.getConnectionManager().getSchemeRegistry(),
                 ProxySelector.getDefault());
         httpClient.setRoutePlanner(routePlanner);
+
+        // Setup authentication
+        httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
+            new UsernamePasswordCredentials(username, password));
 
         return httpClient;
     }
 
     private UriBuilder createUriBuilder(String path)
     {
-        return new UriBuilder(getId().getURI(), path);
+        return new UriBuilder(getDescriptor().getURI(), path);
     }
 
     // ExtensionRepository

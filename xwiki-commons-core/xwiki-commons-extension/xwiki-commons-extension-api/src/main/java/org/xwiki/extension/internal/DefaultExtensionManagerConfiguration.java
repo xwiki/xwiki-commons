@@ -22,6 +22,7 @@ package org.xwiki.extension.internal;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -40,6 +41,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.ExtensionManagerConfiguration;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 
 /**
@@ -112,9 +114,9 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     }
 
     @Override
-    public Collection<ExtensionRepositoryId> getRepositories()
+    public Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors()
     {
-        Collection<ExtensionRepositoryId> repositories;
+        Collection<ExtensionRepositoryDescriptor> repositories;
 
         List<String> repositoryStrings =
             this.configuration.get().getProperty("extension.repositories", Collections.<String> emptyList());
@@ -122,11 +124,12 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         if (repositoryStrings.isEmpty()) {
             repositories = null;
         } else {
-            Map<String, ExtensionRepositoryId> repositoriesMap = new LinkedHashMap<String, ExtensionRepositoryId>();
+            Map<String, ExtensionRepositoryDescriptor> repositoriesMap =
+                new LinkedHashMap<String, ExtensionRepositoryDescriptor>();
             for (String repositoryString : repositoryStrings) {
                 if (StringUtils.isNotBlank(repositoryString)) {
                     try {
-                        ExtensionRepositoryId extensionRepositoryId = parseRepository(repositoryString);
+                        ExtensionRepositoryDescriptor extensionRepositoryId = parseRepository(repositoryString);
                         if (repositoriesMap.containsKey(extensionRepositoryId.getId())) {
                             this.logger.warn(
                                 "Duplicated repository id in [{}] first found in [{}]. The last one will be used.",
@@ -147,21 +150,33 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         return repositories;
     }
 
+    @Override
+    public Collection<ExtensionRepositoryId> getRepositories()
+    {
+        Collection<ExtensionRepositoryId> repositories = new ArrayList<ExtensionRepositoryId>();
+
+        for (ExtensionRepositoryDescriptor descriptor : getExtensionRepositoryDescriptors()) {
+            repositories.add(new ExtensionRepositoryId(descriptor));
+        }
+
+        return repositories;
+    }
+
     /**
-     * Create a {@link ExtensionRepositoryId} from a string entry.
+     * Create a {@link ExtensionRepositoryDescriptor} from a string entry.
      * 
      * @param repositoryString the repository configuration entry
-     * @return the {@link ExtensionRepositoryId}
+     * @return the {@link ExtensionRepositoryDescriptor}
      * @throws URISyntaxException Failed to create an {@link URI} object from the configuration entry
      * @throws ExtensionManagerConfigurationException Failed to parse configuration
      */
-    private ExtensionRepositoryId parseRepository(String repositoryString) throws URISyntaxException,
+    private ExtensionRepositoryDescriptor parseRepository(String repositoryString) throws URISyntaxException,
         ExtensionManagerConfigurationException
     {
         Matcher matcher = REPOSITORYIDPATTERN.matcher(repositoryString);
 
         if (matcher.matches()) {
-            return new ExtensionRepositoryId(matcher.group(1), matcher.group(2), new URI(matcher.group(3)));
+            return new ExtensionRepositoryDescriptor(matcher.group(1), matcher.group(2), new URI(matcher.group(3)));
         }
 
         throw new ExtensionManagerConfigurationException("Don't match repository configuration [" + repositoryString

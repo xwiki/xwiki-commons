@@ -49,7 +49,7 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.CoreExtensionRepository;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.internal.RepositoryUtils;
@@ -135,7 +135,8 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     @Override
     public void initialize() throws InitializationException
     {
-        setId(new ExtensionRepositoryId("installed", "installed", this.localRepository.getId().getURI()));
+        setDescriptor(new ExtensionRepositoryDescriptor("installed", "installed", this.localRepository.getDescriptor()
+            .getURI()));
 
         // Validate local extension
 

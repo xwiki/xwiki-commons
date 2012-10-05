@@ -24,6 +24,7 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
@@ -47,6 +48,12 @@ public class WrappingExtensionRepository<T extends ExtensionRepository> extends 
     }
 
     // ExtensionRepository
+
+    @Override
+    public ExtensionRepositoryDescriptor getDescriptor()
+    {
+        return getWrapped().getDescriptor();
+    }
 
     @Override
     public ExtensionRepositoryId getId()

@@ -40,6 +40,7 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
 import org.xwiki.extension.repository.ExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
@@ -90,11 +91,12 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     {
         // Load extension repositories
         for (ExtensionRepositorySource repositoriesSource : this.repositoriesSources) {
-            for (ExtensionRepositoryId repositoryId : repositoriesSource.getExtensionRepositories()) {
+            for (ExtensionRepositoryDescriptor repositoryDescriptor : repositoriesSource
+                .getExtensionRepositoryDescriptors()) {
                 try {
-                    addRepository(repositoryId);
+                    addRepository(repositoryDescriptor);
                 } catch (ExtensionRepositoryException e) {
-                    this.logger.error("Failed to add repository [" + repositoryId + "]", e);
+                    this.logger.error("Failed to add repository [" + repositoryDescriptor + "]", e);
                 }
             }
         }
@@ -103,17 +105,25 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public ExtensionRepository addRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException
     {
+        return addRepository((ExtensionRepositoryDescriptor) repositoryId);
+    }
+
+    @Override
+    public ExtensionRepository addRepository(ExtensionRepositoryDescriptor repositoryDescriptor)
+        throws ExtensionRepositoryException
+    {
         ExtensionRepository repository;
 
         try {
             ExtensionRepositoryFactory repositoryFactory =
-                this.componentManager.getInstance(ExtensionRepositoryFactory.class, repositoryId.getType());
+                this.componentManager.getInstance(ExtensionRepositoryFactory.class, repositoryDescriptor.getType());
 
-            repository = repositoryFactory.createRepository(repositoryId);
+            repository = repositoryFactory.createRepository(repositoryDescriptor);
 
             addRepository(repository);
         } catch (ComponentLookupException e) {
-            throw new ExtensionRepositoryException("Unsupported repository type [" + repositoryId.getType() + "]", e);
+            throw new ExtensionRepositoryException("Unsupported repository type [" + repositoryDescriptor.getType()
+                + "]", e);
         }
 
         return repository;
@@ -122,7 +132,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public void addRepository(ExtensionRepository repository)
     {
-        this.repositories.put(repository.getId().getId(), repository);
+        this.repositories.put(repository.getDescriptor().getId(), repository);
     }
 
     @Override
@@ -152,7 +162,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
             } catch (ResolveException e) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Could not find extension [{}] in repository [{}]", new Object[] {extensionId,
-                        repository.getId(), e});
+                    repository.getDescriptor(), e});
                 }
             }
         }
@@ -169,7 +179,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
             } catch (ResolveException e) {
                 if (this.logger.isDebugEnabled()) {
                     this.logger.debug("Could not find extension dependency [{}] in repository [{}]", new Object[] {
-                        extensionDependency, repository.getId(), e});
+                    extensionDependency, repository.getDescriptor(), e});
                 }
             }
         }

@@ -28,8 +28,8 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionManagerConfiguration;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
-import org.xwiki.extension.repository.ExtensionRepositorySource;
+import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
  * Extensions repositories identifier stored in the configuration.
@@ -40,7 +40,7 @@ import org.xwiki.extension.repository.ExtensionRepositorySource;
 @Component
 @Singleton
 @Named("extension.configuration")
-public class ConfigurationExtensionRepositorySource implements ExtensionRepositorySource
+public class ConfigurationExtensionRepositorySource extends AbstractExtensionRepositorySource
 {
     /**
      * Used to get configuration properties containing repositories.
@@ -49,10 +49,10 @@ public class ConfigurationExtensionRepositorySource implements ExtensionReposito
     private ExtensionManagerConfiguration configuration;
 
     @Override
-    public Collection<ExtensionRepositoryId> getExtensionRepositories()
+    public Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors()
     {
-        Collection<ExtensionRepositoryId> repositories = this.configuration.getRepositories();
+        Collection<ExtensionRepositoryDescriptor> repositories = this.configuration.getExtensionRepositoryDescriptors();
 
-        return repositories != null ? repositories : Collections.<ExtensionRepositoryId> emptyList();
+        return repositories != null ? repositories : Collections.<ExtensionRepositoryDescriptor> emptyList();
     }
 }

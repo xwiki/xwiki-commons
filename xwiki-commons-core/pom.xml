@@ -144,6 +144,13 @@
           <excludes>
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>
+            <!-- Remove the following excludes after we release the current version as final -->
+            <!-- [Young API] Introduce ExtensionRepositoryDescriptor as a replacement of ExtensionRepositoryId -->
+            <exclude>org/xwiki/extension/ExtensionManagerConfiguration</exclude>
+            <exclude>org/xwiki/extension/repository/ExtensionRepository</exclude>
+            <exclude>org/xwiki/extension/repository/ExtensionRepositoryFactory</exclude>
+            <exclude>org/xwiki/extension/repository/ExtensionRepositoryManager</exclude>
+            <exclude>org/xwiki/extension/repository/ExtensionRepositorySource</exclude>
           </excludes>
         </configuration>
       </plugin>

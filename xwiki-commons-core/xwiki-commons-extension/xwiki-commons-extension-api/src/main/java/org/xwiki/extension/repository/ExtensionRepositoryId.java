@@ -26,32 +26,17 @@ import java.net.URI;
  * 
  * @version $Id$
  * @since 4.0M1
+ * @deprecated use {@link ExtensionRepositoryDescriptor} instead
  */
-public class ExtensionRepositoryId
+@Deprecated
+public class ExtensionRepositoryId extends ExtensionRepositoryDescriptor
 {
-    /**
-     * @see #getId()
-     */
-    private final String id;
-
-    /**
-     * @see #getType()
-     */
-    private final String type;
-
-    /**
-     * @see #getURI()
-     */
-    private final URI uri;
-
     /**
      * @param id the identifier to clone
      */
     public ExtensionRepositoryId(ExtensionRepositoryId id)
     {
-        this.id = id.getId();
-        this.type = id.getType();
-        this.uri = id.getURI();
+        super(id);
     }
 
     /**
@@ -61,57 +46,15 @@ public class ExtensionRepositoryId
      */
     public ExtensionRepositoryId(String id, String type, URI uri)
     {
-        this.id = id;
-        this.type = type;
-        this.uri = uri;
+        super(id, type, uri);
     }
 
     /**
-     * @return the unique identifier
+     * @param descriptor the descriptor to copy
+     * @since 4.3M1
      */
-    public String getId()
+    public ExtensionRepositoryId(ExtensionRepositoryDescriptor descriptor)
     {
-        return id;
-    }
-
-    /**
-     * @return the repository type (maven, xwiki, etc.)
-     */
-    public String getType()
-    {
-        return type;
-    }
-
-    /**
-     * @return the repository adress
-     */
-    public URI getURI()
-    {
-        return uri;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (obj instanceof ExtensionRepositoryId) {
-            ExtensionRepositoryId extensionId = (ExtensionRepositoryId) obj;
-
-            return id.equals(extensionId.getId()) && type.equals(extensionId.getType())
-                && uri.equals(extensionId.getURI());
-        }
-
-        return false;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return toString().hashCode();
-    }
-
-    @Override
-    public String toString()
-    {
-        return this.id + " (" + this.uri + ')';
+        this(descriptor.getId(), descriptor.getType(), descriptor.getURI());
     }
 }

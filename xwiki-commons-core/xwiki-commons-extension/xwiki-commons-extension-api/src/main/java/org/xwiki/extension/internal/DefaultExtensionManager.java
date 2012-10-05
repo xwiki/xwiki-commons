@@ -81,9 +81,11 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     @Override
     public void initialize() throws InitializationException
     {
-        this.standardRepositories.put(this.coreExtensionRepository.getId().getId(), this.coreExtensionRepository);
-        this.standardRepositories.put(this.localExtensionRepository.getId().getId(), this.localExtensionRepository);
-        this.standardRepositories.put(this.installedExtensionRepository.getId().getId(),
+        this.standardRepositories.put(this.coreExtensionRepository.getDescriptor().getId(),
+            this.coreExtensionRepository);
+        this.standardRepositories.put(this.localExtensionRepository.getDescriptor().getId(),
+            this.localExtensionRepository);
+        this.standardRepositories.put(this.installedExtensionRepository.getDescriptor().getId(),
             this.installedExtensionRepository);
     }
 

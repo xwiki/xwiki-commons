@@ -38,7 +38,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepository;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.repository.internal.local.ExtensionSerializer;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
@@ -54,7 +54,7 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
 
     public FileExtensionRepository(File directory, ComponentManager componentManager) throws ComponentLookupException
     {
-        super(new ExtensionRepositoryId("test-file", "file", null));
+        super(new ExtensionRepositoryDescriptor("test-file", "file", null));
 
         this.extensionSerializer = componentManager.getInstance(ExtensionSerializer.class);
 

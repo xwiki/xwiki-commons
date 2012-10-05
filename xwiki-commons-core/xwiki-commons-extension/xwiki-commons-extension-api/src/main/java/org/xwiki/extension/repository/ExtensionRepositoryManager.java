@@ -48,6 +48,16 @@ public interface ExtensionRepositoryManager
     ExtensionRepository addRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException;
 
     /**
+     * Create and add a new repository.
+     * 
+     * @param repositoryDescriptor the repository descriptor
+     * @return the newly created repository
+     * @throws ExtensionRepositoryException failed to create {@link ExtensionRepository} for provided identifier
+     */
+    ExtensionRepository addRepository(ExtensionRepositoryDescriptor repositoryDescriptor)
+        throws ExtensionRepositoryException;
+
+    /**
      * @param repository add an existing repository
      */
     void addRepository(ExtensionRepository repository);

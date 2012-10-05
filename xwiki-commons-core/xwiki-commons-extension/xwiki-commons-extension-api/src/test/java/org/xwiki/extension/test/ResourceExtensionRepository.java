@@ -33,7 +33,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepository;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.repository.internal.local.ExtensionSerializer;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
@@ -52,7 +52,7 @@ public class ResourceExtensionRepository extends AbstractExtensionRepository imp
     public ResourceExtensionRepository(ClassLoader classLoader, String baseResource, ComponentManager componentManager)
         throws ComponentLookupException
     {
-        super(new ExtensionRepositoryId("test-resources", "resources", null));
+        super(new ExtensionRepositoryDescriptor("test-resources", "resources", null));
 
         this.extensionSerializer = componentManager.getInstance(ExtensionSerializer.class);
 

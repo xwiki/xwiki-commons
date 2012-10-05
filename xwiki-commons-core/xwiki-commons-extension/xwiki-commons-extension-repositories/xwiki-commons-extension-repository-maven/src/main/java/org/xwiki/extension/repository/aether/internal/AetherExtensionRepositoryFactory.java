@@ -37,6 +37,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
 import org.xwiki.extension.repository.ExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
@@ -100,10 +101,18 @@ public class AetherExtensionRepositoryFactory implements ExtensionRepositoryFact
     @Override
     public ExtensionRepository createRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException
     {
+        return createRepository(repositoryId);
+    }
+
+    @Override
+    public ExtensionRepository createRepository(ExtensionRepositoryDescriptor repositoryDescriptor)
+        throws ExtensionRepositoryException
+    {
         try {
-            return new AetherExtensionRepository(repositoryId, this, this.plexusComponentManager, this.componentManager);
+            return new AetherExtensionRepository(repositoryDescriptor, this, this.plexusComponentManager,
+                this.componentManager);
         } catch (Exception e) {
-            throw new ExtensionRepositoryException("Failed to create repository [" + repositoryId + "]", e);
+            throw new ExtensionRepositoryException("Failed to create repository [" + repositoryDescriptor + "]", e);
         }
     }
 }

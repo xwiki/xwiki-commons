@@ -59,7 +59,7 @@ import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
@@ -113,7 +113,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private transient AetherExtensionRepositoryFactory repositoryFactory;
 
-    public AetherExtensionRepository(ExtensionRepositoryId repositoryId,
+    public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryId,
         AetherExtensionRepositoryFactory repositoryFactory, PlexusComponentManager mavenComponentManager,
         ComponentManager componentManager) throws Exception
     {
@@ -171,7 +171,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        if (getId().getType().equals("maven") && this.mavenDescriptorReader != null) {
+        if (getDescriptor().getType().equals("maven") && this.mavenDescriptorReader != null) {
             return resolveMaven(extensionDependency);
         } else {
             // FIXME: impossible to resolve extension type as well as most of the information with pure Aether API

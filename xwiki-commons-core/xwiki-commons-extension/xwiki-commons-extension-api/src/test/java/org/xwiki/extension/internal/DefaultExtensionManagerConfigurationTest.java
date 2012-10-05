@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.ExtensionManagerConfiguration;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.test.AbstractComponentTestCase;
@@ -68,13 +69,13 @@ public class DefaultExtensionManagerConfigurationTest extends AbstractComponentT
 
         getConfigurationSource().setProperty("extension.repositories", Arrays.asList("id:type:http://url", "invalid"));
 
-        Assert.assertEquals(Arrays.asList(new ExtensionRepositoryId("id", "type", new URI("http://url"))),
-            new ArrayList<ExtensionRepositoryId>(this.configuration.getRepositories()));
+        Assert.assertEquals(Arrays.asList(new ExtensionRepositoryDescriptor("id", "type", new URI("http://url"))),
+            new ArrayList<ExtensionRepositoryDescriptor>(this.configuration.getExtensionRepositoryDescriptors()));
     }
 
     @Test
-    public void testGetRepositoriesEmpty()
+    public void testGetExtensionRepositoryDescriptorsEmpty()
     {
-        Assert.assertEquals(null, this.configuration.getRepositories());
+        Assert.assertEquals(null, this.configuration.getExtensionRepositoryDescriptors());
     }
 }

@@ -40,7 +40,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.CoreExtensionRepository;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.internal.RepositoryUtils;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
@@ -86,7 +86,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
      */
     public DefaultCoreExtensionRepository()
     {
-        super(new ExtensionRepositoryId("core", "xwiki-core", null));
+        super(new ExtensionRepositoryDescriptor("core", "xwiki-core", null));
     }
 
     @Override

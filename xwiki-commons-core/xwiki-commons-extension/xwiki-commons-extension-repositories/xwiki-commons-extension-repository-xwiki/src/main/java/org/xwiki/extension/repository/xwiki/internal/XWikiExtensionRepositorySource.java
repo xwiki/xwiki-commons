@@ -31,8 +31,8 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionManagerConfiguration;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
-import org.xwiki.extension.repository.ExtensionRepositorySource;
+import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
  * Extensions repositories identifier stored in the configuration.
@@ -43,7 +43,7 @@ import org.xwiki.extension.repository.ExtensionRepositorySource;
 @Component
 @Singleton
 @Named("default.xwiki")
-public class XWikiExtensionRepositorySource implements ExtensionRepositorySource
+public class XWikiExtensionRepositorySource extends AbstractExtensionRepositorySource
 {
     /**
      * Used to get configuration properties containing repositories.
@@ -52,12 +52,12 @@ public class XWikiExtensionRepositorySource implements ExtensionRepositorySource
     private ExtensionManagerConfiguration configuration;
 
     @Override
-    public Collection<ExtensionRepositoryId> getExtensionRepositories()
+    public Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors()
     {
-        Collection<ExtensionRepositoryId> repositories = this.configuration.getRepositories();
+        Collection<ExtensionRepositoryDescriptor> repositories = this.configuration.getExtensionRepositoryDescriptors();
 
         try {
-            return repositories != null ? repositories : Arrays.asList(new ExtensionRepositoryId(
+            return repositories != null ? repositories : Arrays.asList(new ExtensionRepositoryDescriptor(
                 "extensions.xwiki.org", "xwiki", new URI("http://extensions.xwiki.org/xwiki/rest/")));
         } catch (URISyntaxException e) {
             // Should never happen

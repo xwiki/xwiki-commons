@@ -31,9 +31,9 @@ import org.xwiki.extension.ResolveException;
 public abstract class AbstractExtensionRepository implements ExtensionRepository
 {
     /**
-     * The repository identifier.
+     * @see #getDescriptor()
      */
-    private ExtensionRepositoryId id;
+    private ExtensionRepositoryDescriptor descriptor;
 
     /**
      * Default constructor. Used by extended classes which can't set the id in there constructor but make sure it's set
@@ -45,27 +45,55 @@ public abstract class AbstractExtensionRepository implements ExtensionRepository
     }
 
     /**
-     * @param id the repository identifier
+     * @param descriptor the repository descriptor
+     * @since 4.3M1
      */
+    protected AbstractExtensionRepository(ExtensionRepositoryDescriptor descriptor)
+    {
+        setDescriptor(descriptor);
+    }
+
+    /**
+     * @param id the repository identifier
+     * @deprecated since 4.3M1 use {@link #AbstractExtensionRepository(ExtensionRepositoryDescriptor)} instead
+     */
+    @Deprecated
     protected AbstractExtensionRepository(ExtensionRepositoryId id)
     {
         setId(new ExtensionRepositoryId(id));
     }
 
     /**
-     * @param id the repository identifier
+     * @param descriptor the repository descriptor
+     * @since 4.3M1
      */
+    protected void setDescriptor(ExtensionRepositoryDescriptor descriptor)
+    {
+        this.descriptor = descriptor;
+    }
+
+    /**
+     * @param id the repository identifier
+     * @deprecated since 4.3M1 use {@link #setDescriptor(ExtensionRepositoryDescriptor)} instead
+     */
+    @Deprecated
     protected void setId(ExtensionRepositoryId id)
     {
-        this.id = id;
+        this.descriptor = id;
     }
 
     // ExtensionRepository
 
     @Override
+    public ExtensionRepositoryDescriptor getDescriptor()
+    {
+        return this.descriptor;
+    }
+
+    @Override
     public ExtensionRepositoryId getId()
     {
-        return this.id;
+        return new ExtensionRepositoryId(this.descriptor);
     }
 
     @Override

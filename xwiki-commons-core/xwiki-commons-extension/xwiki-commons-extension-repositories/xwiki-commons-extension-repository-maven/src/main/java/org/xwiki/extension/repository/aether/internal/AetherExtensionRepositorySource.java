@@ -31,8 +31,8 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionManagerConfiguration;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
-import org.xwiki.extension.repository.ExtensionRepositorySource;
+import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
  * Extensions repositories identifier stored in the configuration.
@@ -43,7 +43,7 @@ import org.xwiki.extension.repository.ExtensionRepositorySource;
 @Component
 @Singleton
 @Named("default.aether")
-public class AetherExtensionRepositorySource implements ExtensionRepositorySource
+public class AetherExtensionRepositorySource extends AbstractExtensionRepositorySource
 {
     /**
      * Used to get configuration properties containing repositories.
@@ -52,12 +52,12 @@ public class AetherExtensionRepositorySource implements ExtensionRepositorySourc
     private ExtensionManagerConfiguration configuration;
 
     @Override
-    public Collection<ExtensionRepositoryId> getExtensionRepositories()
+    public Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors()
     {
-        Collection<ExtensionRepositoryId> repositories = this.configuration.getRepositories();
+        Collection<ExtensionRepositoryDescriptor> repositories = this.configuration.getExtensionRepositoryDescriptors();
 
         try {
-            return repositories != null ? repositories : Arrays.asList(new ExtensionRepositoryId("maven-xwiki",
+            return repositories != null ? repositories : Arrays.asList(new ExtensionRepositoryDescriptor("maven-xwiki",
                 "maven", new URI("http://nexus.xwiki.org/nexus/content/groups/public")));
         } catch (URISyntaxException e) {
             // Should never happen

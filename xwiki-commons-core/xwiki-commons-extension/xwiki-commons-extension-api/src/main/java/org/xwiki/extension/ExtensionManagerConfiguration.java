@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.Collection;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 
 /**
@@ -42,8 +43,16 @@ public interface ExtensionManagerConfiguration
 
     /**
      * @return the configured repositories
+     * @deprecated since 4.3M1 use {@link #getExtensionRepositoryDescriptors()} instead
      */
+    @Deprecated
     Collection<ExtensionRepositoryId> getRepositories();
+
+    /**
+     * @return the configured repositories
+     * @since 4.3M1
+     */
+    Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors();
 
     /**
      * @return the user agent to declare when communication with external services (generally repositories)

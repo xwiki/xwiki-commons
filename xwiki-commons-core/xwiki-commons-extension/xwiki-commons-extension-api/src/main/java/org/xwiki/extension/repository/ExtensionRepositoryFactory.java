@@ -36,6 +36,19 @@ public interface ExtensionRepositoryFactory
      * @param repositoryId the repository identifier
      * @return the {@link ExtensionRepository}
      * @throws ExtensionRepositoryException failed to create a {@link ExtensionRepository} for the provided identifier
+     * @deprecated since 4.3M1 use {@link #createRepository(ExtensionRepositoryDescriptor)}
      */
+    @Deprecated
     ExtensionRepository createRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException;
+
+    /**
+     * Create a new {@link ExtensionRepository}.
+     * 
+     * @param repositoryDescriptor the repository descriptor
+     * @return the {@link ExtensionRepository}
+     * @throws ExtensionRepositoryException failed to create a {@link ExtensionRepository} for the provided identifier
+     * @since 4.3M1
+     */
+    ExtensionRepository createRepository(ExtensionRepositoryDescriptor repositoryDescriptor)
+        throws ExtensionRepositoryException;
 }
