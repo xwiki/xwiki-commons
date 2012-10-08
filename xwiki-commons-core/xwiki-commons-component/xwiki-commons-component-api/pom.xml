@@ -60,13 +60,14 @@
   <build>
     <plugins>
       <plugin>
+        <!-- We need to disable the FanOut complexity check for some classes until the following issue is fixed:
+             http://sourceforge.net/tracker/?func=detail&aid=3575496&group_id=29721&atid=397078
+             -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
-          <excludes>
-            <!-- Class Fan-Out Complexity is over 20, which can be considered normal in the case of Utils classes -->
-            org/xwiki/component/util/ReflectionUtils.java
-          </excludes>
+          <failsOnError>true</failsOnError>
+          <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
         </configuration>
       </plugin>
     </plugins>
