@@ -31,11 +31,10 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionManagerConfiguration;
+import org.xwiki.extension.repository.AbstractExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
-import org.xwiki.extension.repository.ExtensionRepositoryFactory;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
 
 /**
  * @version $Id$
@@ -44,7 +43,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryId;
 @Component
 @Singleton
 @Named("xwiki")
-public class XWikiExtensionRepositoryFactory implements ExtensionRepositoryFactory, Initializable
+public class XWikiExtensionRepositoryFactory extends AbstractExtensionRepositoryFactory implements Initializable
 {
     @Inject
     private ExtensionLicenseManager licenseManager;
@@ -79,12 +78,6 @@ public class XWikiExtensionRepositoryFactory implements ExtensionRepositoryFacto
     }
 
     // ExtensionRepositoryFactory
-
-    @Override
-    public ExtensionRepository createRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException
-    {
-        return createRepository((ExtensionRepositoryDescriptor) repositoryId);
-    }
 
     @Override
     public ExtensionRepository createRepository(ExtensionRepositoryDescriptor repositoryDescriptor)

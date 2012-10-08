@@ -45,6 +45,7 @@ import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
@@ -84,7 +85,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,
         ExtensionManagerConfiguration configuration) throws Exception
     {
-        super(repositoryDescriptor.getURI().getPath().endsWith("/") ? new ExtensionRepositoryDescriptor(
+        super(repositoryDescriptor.getURI().getPath().endsWith("/") ? new DefaultExtensionRepositoryDescriptor(
             repositoryDescriptor.getId(), repositoryDescriptor.getType(), new URI(StringUtils.chop(repositoryDescriptor
                 .getURI().toString()))) : repositoryDescriptor);
 
@@ -152,8 +153,11 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         httpClient.setRoutePlanner(routePlanner);
 
         // Setup authentication
-        httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
-            new UsernamePasswordCredentials(username, password));
+        String user = getDescriptor().getProperty("auth.user");
+        if (user != null) {
+            httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
+                new UsernamePasswordCredentials(user, getDescriptor().getProperty("auth.password")));
+        }
 
         return httpClient;
     }

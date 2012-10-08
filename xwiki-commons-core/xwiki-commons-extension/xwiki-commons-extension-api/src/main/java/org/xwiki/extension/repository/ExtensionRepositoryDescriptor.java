@@ -20,97 +20,41 @@
 package org.xwiki.extension.repository;
 
 import java.net.URI;
+import java.util.Map;
 
 /**
  * Describe a repository.
  * 
  * @version $Id$
+ * @since 4.3M1
  */
-public class ExtensionRepositoryDescriptor
+public interface ExtensionRepositoryDescriptor
 {
-    /**
-     * @see #getId()
-     */
-    private final String id;
-
-    /**
-     * @see #getType()
-     */
-    private final String type;
-
-    /**
-     * @see #getURI()
-     */
-    private final URI uri;
-
-    /**
-     * @param id the identifier to clone
-     */
-    public ExtensionRepositoryDescriptor(ExtensionRepositoryDescriptor id)
-    {
-        this.id = id.getId();
-        this.type = id.getType();
-        this.uri = id.getURI();
-    }
-
-    /**
-     * @param id the unique identifier
-     * @param type the repository type (maven, xwiki, etc.)
-     * @param uri the repository adress
-     */
-    public ExtensionRepositoryDescriptor(String id, String type, URI uri)
-    {
-        this.id = id;
-        this.type = type;
-        this.uri = uri;
-    }
-
     /**
      * @return the unique identifier
      */
-    public String getId()
-    {
-        return id;
-    }
+    String getId();
 
     /**
      * @return the repository type (maven, xwiki, etc.)
      */
-    public String getType()
-    {
-        return type;
-    }
+    String getType();
 
     /**
      * @return the repository adress
      */
-    public URI getURI()
-    {
-        return uri;
-    }
+    URI getURI();
 
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (obj instanceof ExtensionRepositoryDescriptor) {
-            ExtensionRepositoryDescriptor extensionId = (ExtensionRepositoryDescriptor) obj;
+    /**
+     * @param key the property key
+     * @return the property value
+     */
+    String getProperty(String key);
 
-            return getId().equals(extensionId.getId()) && getType().equals(extensionId.getType())
-                && getURI().equals(extensionId.getURI());
-        }
-
-        return false;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return toString().hashCode();
-    }
-
-    @Override
-    public String toString()
-    {
-        return getId() + " (" + getURI() + ')';
-    }
+    /**
+     * Extends {@link ExtensionRepositoryDescriptor} standard properties.
+     * 
+     * @return the properties
+     */
+    Map<String, String> getProperties();
 }

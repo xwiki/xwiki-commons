@@ -40,6 +40,7 @@ import org.sonatype.aether.artifact.ArtifactTypeRegistry;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.impl.ArtifactDescriptorReader;
 import org.sonatype.aether.impl.VersionRangeResolver;
+import org.sonatype.aether.repository.Authentication;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactDescriptorRequest;
 import org.sonatype.aether.resolution.ArtifactDescriptorResult;
@@ -124,6 +125,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         this.plexusComponentManager = mavenComponentManager;
 
         this.remoteRepository = new RemoteRepository(repositoryId.getId(), "default", repositoryId.getURI().toString());
+        String user = getDescriptor().getProperty("auth.user");
+        if (user != null) {
+            this.remoteRepository.setAuthentication(new Authentication(user, getDescriptor().getProperty(
+                "auth.password")));
+        }
 
         this.converter = this.componentManager.getInstance(ConverterManager.class);
         this.licenseManager = this.componentManager.getInstance(ExtensionLicenseManager.class);

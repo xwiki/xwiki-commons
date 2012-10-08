@@ -41,6 +41,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.ExtensionManagerConfiguration;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 
@@ -63,6 +64,16 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
      * The default user agent.
      */
     private static final String DEFAULT_USERAGENT = "XWikiExtensionManager";
+
+    /**
+     * The prefix of all the extension related properties.
+     */
+    private static final String CK_PEFIX = "extension.";
+
+    /**
+     * The prefix of all the extension related properties.
+     */
+    private static final String CK_REPOSITORIES_PEFIX = CK_PEFIX + "repositories.";
 
     /**
      * The logger to log.
@@ -101,7 +112,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     public File getLocalRepository()
     {
         if (this.localRepository == null) {
-            String localRepositoryPath = this.configuration.get().getProperty("extension.localRepository");
+            String localRepositoryPath = this.configuration.get().getProperty(CK_PEFIX + "localRepository");
 
             if (localRepositoryPath == null) {
                 this.localRepository = new File(getHome(), "repository/");
@@ -119,7 +130,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         Collection<ExtensionRepositoryDescriptor> repositories;
 
         List<String> repositoryStrings =
-            this.configuration.get().getProperty("extension.repositories", Collections.<String> emptyList());
+            this.configuration.get().getProperty(CK_PEFIX + "repositories", Collections.<String> emptyList());
 
         if (repositoryStrings.isEmpty()) {
             repositories = null;
@@ -129,7 +140,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
             for (String repositoryString : repositoryStrings) {
                 if (StringUtils.isNotBlank(repositoryString)) {
                     try {
-                        ExtensionRepositoryDescriptor extensionRepositoryId = parseRepository(repositoryString);
+                        DefaultExtensionRepositoryDescriptor extensionRepositoryId = parseRepository(repositoryString);
                         if (repositoriesMap.containsKey(extensionRepositoryId.getId())) {
                             this.logger.warn(
                                 "Duplicated repository id in [{}] first found in [{}]. The last one will be used.",
@@ -145,9 +156,34 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
             }
 
             repositories = repositoriesMap.values();
+
+            // Get extended properties
+
+            for (ExtensionRepositoryDescriptor descriptor : repositories) {
+                setRepositoryProperties((DefaultExtensionRepositoryDescriptor) descriptor);
+            }
         }
 
         return repositories;
+    }
+
+    /**
+     * @param descriptor the repository descriptor to update with custom properties
+     */
+    private void setRepositoryProperties(DefaultExtensionRepositoryDescriptor descriptor)
+    {
+        String id = descriptor.getId();
+
+        String prefix = CK_REPOSITORIES_PEFIX + id + '.';
+
+        ConfigurationSource configurationSource = this.configuration.get();
+
+        for (String key : configurationSource.getKeys()) {
+            if (key.startsWith(prefix)) {
+                descriptor.putProperty(key.substring(prefix.length()),
+                    configurationSource.getProperty(key, String.class));
+            }
+        }
     }
 
     @Override
@@ -163,20 +199,21 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     }
 
     /**
-     * Create a {@link ExtensionRepositoryDescriptor} from a string entry.
+     * Create a {@link DefaultExtensionRepositoryDescriptor} from a string entry.
      * 
      * @param repositoryString the repository configuration entry
-     * @return the {@link ExtensionRepositoryDescriptor}
+     * @return the {@link DefaultExtensionRepositoryDescriptor}
      * @throws URISyntaxException Failed to create an {@link URI} object from the configuration entry
      * @throws ExtensionManagerConfigurationException Failed to parse configuration
      */
-    private ExtensionRepositoryDescriptor parseRepository(String repositoryString) throws URISyntaxException,
+    private DefaultExtensionRepositoryDescriptor parseRepository(String repositoryString) throws URISyntaxException,
         ExtensionManagerConfigurationException
     {
         Matcher matcher = REPOSITORYIDPATTERN.matcher(repositoryString);
 
         if (matcher.matches()) {
-            return new ExtensionRepositoryDescriptor(matcher.group(1), matcher.group(2), new URI(matcher.group(3)));
+            return new DefaultExtensionRepositoryDescriptor(matcher.group(1), matcher.group(2), new URI(
+                matcher.group(3)));
         }
 
         throw new ExtensionManagerConfigurationException("Don't match repository configuration [" + repositoryString
@@ -187,6 +224,6 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     public String getUserAgent()
     {
         // TODO: add version (need a way to get platform version first)
-        return this.configuration.get().getProperty("extension.userAgent", DEFAULT_USERAGENT);
+        return this.configuration.get().getProperty(CK_PEFIX + ".userAgent", DEFAULT_USERAGENT);
     }
 }

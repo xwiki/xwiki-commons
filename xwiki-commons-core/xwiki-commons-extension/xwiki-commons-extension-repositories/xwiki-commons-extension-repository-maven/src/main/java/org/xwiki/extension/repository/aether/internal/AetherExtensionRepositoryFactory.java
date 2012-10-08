@@ -36,11 +36,10 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.ExtensionManagerConfiguration;
+import org.xwiki.extension.repository.AbstractExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
-import org.xwiki.extension.repository.ExtensionRepositoryFactory;
-import org.xwiki.extension.repository.ExtensionRepositoryId;
 import org.xwiki.extension.repository.aether.internal.configuration.AetherConfiguration;
 import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 
@@ -51,7 +50,7 @@ import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentMana
 @Component
 @Singleton
 @Named("maven")
-public class AetherExtensionRepositoryFactory implements ExtensionRepositoryFactory, Initializable
+public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositoryFactory implements Initializable
 {
     @Inject
     private ComponentManager componentManager;
@@ -96,12 +95,6 @@ public class AetherExtensionRepositoryFactory implements ExtensionRepositoryFact
         session.setSystemProperty("groupId", null);
 
         return session;
-    }
-
-    @Override
-    public ExtensionRepository createRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException
-    {
-        return createRepository(repositoryId);
     }
 
     @Override

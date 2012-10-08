@@ -32,6 +32,7 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
@@ -57,8 +58,9 @@ public class XWikiExtensionRepositorySource extends AbstractExtensionRepositoryS
         Collection<ExtensionRepositoryDescriptor> repositories = this.configuration.getExtensionRepositoryDescriptors();
 
         try {
-            return repositories != null ? repositories : Arrays.asList(new ExtensionRepositoryDescriptor(
-                "extensions.xwiki.org", "xwiki", new URI("http://extensions.xwiki.org/xwiki/rest/")));
+            return repositories != null ? repositories : Arrays
+                .<ExtensionRepositoryDescriptor> asList(new DefaultExtensionRepositoryDescriptor(
+                    "extensions.xwiki.org", "xwiki", new URI("http://extensions.xwiki.org/xwiki/rest/")));
         } catch (URISyntaxException e) {
             // Should never happen
             return Collections.emptyList();

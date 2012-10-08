@@ -19,42 +19,17 @@
  */
 package org.xwiki.extension.repository;
 
-import java.net.URI;
-
 /**
- * An extension repository identifier.
+ * Base class for all implementations of {@link ExtensionRepositoryFactory}.
  * 
  * @version $Id$
- * @since 4.0M1
- * @deprecated use {@link ExtensionRepositoryDescriptor} instead
+ * @since 4.3M1
  */
-@Deprecated
-public class ExtensionRepositoryId extends DefaultExtensionRepositoryDescriptor
+public abstract class AbstractExtensionRepositoryFactory implements ExtensionRepositoryFactory
 {
-    /**
-     * @param id the identifier to clone
-     */
-    public ExtensionRepositoryId(ExtensionRepositoryId id)
+    @Override
+    public ExtensionRepository createRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException
     {
-        super(id);
-    }
-
-    /**
-     * @param id the unique identifier
-     * @param type the repository type (maven, xwiki, etc.)
-     * @param uri the repository adress
-     */
-    public ExtensionRepositoryId(String id, String type, URI uri)
-    {
-        super(id, type, uri);
-    }
-
-    /**
-     * @param descriptor the descriptor to copy
-     * @since 4.3M1
-     */
-    public ExtensionRepositoryId(ExtensionRepositoryDescriptor descriptor)
-    {
-        this(descriptor.getId(), descriptor.getType(), descriptor.getURI());
+        return createRepository((ExtensionRepositoryDescriptor) repositoryId);
     }
 }

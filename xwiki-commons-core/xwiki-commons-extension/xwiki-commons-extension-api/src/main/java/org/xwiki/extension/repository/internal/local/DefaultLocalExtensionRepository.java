@@ -47,7 +47,7 @@ import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
-import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.extension.repository.internal.RepositoryUtils;
@@ -115,7 +115,7 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
             throw new InitializationException("Failed to intialize local extension storage", e);
         }
 
-        setDescriptor(new ExtensionRepositoryDescriptor("local", "xwiki", this.storage.getRootFolder().toURI()));
+        setDescriptor(new DefaultExtensionRepositoryDescriptor("local", "xwiki", this.storage.getRootFolder().toURI()));
 
         this.storage.loadExtensions();
     }

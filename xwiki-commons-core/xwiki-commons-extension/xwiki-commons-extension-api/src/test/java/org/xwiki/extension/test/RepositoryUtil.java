@@ -43,7 +43,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.handler.ExtensionInitializer;
 import org.xwiki.extension.repository.CoreExtensionRepository;
-import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.version.internal.DefaultVersion;
 
@@ -188,7 +188,7 @@ public class RepositoryUtil
             // maven repository
 
             if (mavenRepository) {
-                repositoryManager.addRepository(new ExtensionRepositoryDescriptor(MAVENREPOSITORY_ID, "maven",
+                repositoryManager.addRepository(new DefaultExtensionRepositoryDescriptor(MAVENREPOSITORY_ID, "maven",
                     getMavenRepository().toURI()));
             }
         }
