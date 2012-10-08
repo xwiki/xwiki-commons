@@ -481,7 +481,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 ModifableExtensionPlanNode node =
                     new ModifableExtensionPlanNode(extensionDependency, versionConstraint);
                 node.setAction(new DefaultExtensionPlanAction(installedExtension, null, Action.NONE, namespace,
-                    installedExtension.isDependency()));
+                    installedExtension.isDependency(namespace)));
 
                 addExtensionNode(node);
                 parentBranch.add(node);

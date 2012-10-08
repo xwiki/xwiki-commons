@@ -104,6 +104,8 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
             "<font face=\"Arial\" size=\"3\" color=\"red\">This is some text!</font>");
         assertHTML("<p><span style=\"font-size:1.6em;\">This is some text!</span></p>",
         "<font size=\"+3\">This is some text!</font>");
+        assertHTML("<table><tbody><tr><td style=\"text-align:right;background-color:red;vertical-align:top\">"
+            + "x</td></tr></tbody></table>", "<table><tr><td align=right valign=top bgcolor=red>x</td></tr></table>");
     }
 
     @Test

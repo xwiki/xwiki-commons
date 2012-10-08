@@ -557,7 +557,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
                     + "] is already installed on namespace [" + namespace + "]");
             }
 
-            installedExtension.setDependency(dependency);
+            installedExtension.setDependency(dependency, namespace);
 
             try {
                 this.localRepository.setProperties(installedExtension.getLocalExtension(),
@@ -578,7 +578,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
             }
 
             if (dependency || installedExtension.getProperty(InstalledExtension.PKEY_DEPENDENCY) == null) {
-                installedExtension.setDependency(dependency);
+                installedExtension.setDependency(dependency, namespace);
             }
 
             applyInstallExtension(installedExtension, namespace);

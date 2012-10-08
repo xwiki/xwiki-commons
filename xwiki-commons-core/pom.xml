@@ -145,6 +145,8 @@
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>
             <!-- Remove the following excludes after we release the current version as final -->
+            <!-- [Young API] Introduce API to associate dependency status to the namespace -->
+            <exclude>org/xwiki/extension/InstalledExtension</exclude>
             <!-- [Young API] Introduce ExtensionRepositoryDescriptor as a replacement of ExtensionRepositoryId -->
             <exclude>org/xwiki/extension/ExtensionManagerConfiguration</exclude>
             <exclude>org/xwiki/extension/repository/ExtensionRepository</exclude>

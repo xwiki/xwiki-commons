@@ -20,8 +20,8 @@
 package org.xwiki.extension.repository.internal.installed;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.xwiki.extension.AbstractExtension;
@@ -48,6 +48,11 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      * @see #isValid(String)
      */
     private Map<String, Boolean> valid = new HashMap<String, Boolean>();
+
+    /**
+     * Cache namespaces since they are used a lot.
+     */
+    private Collection<String> namespacesCache;
 
     /**
      * @param localExtension the wrapped local extension
@@ -86,7 +91,20 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public static Collection<String> getNamespaces(Extension extension)
     {
-        return extension.getProperty(PKEY_NAMESPACES, (Collection<String>) null);
+        Collection<String> namespaces;
+
+        Object namespacesObject = extension.getProperty(PKEY_NAMESPACES);
+
+        // RETRO-COMPATIBILITY: used to be a String collection with just the actual namespaces
+        if (namespacesObject == null) {
+            namespaces = null;
+        } else if (namespacesObject instanceof Collection) {
+            namespaces = (Collection<String>) namespacesObject;
+        } else {
+            namespaces = ((Map<String, Map<String, Object>>) namespacesObject).keySet();
+        }
+
+        return namespaces;
     }
 
     // Extension
@@ -105,26 +123,18 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         return this.localExtension;
     }
 
-    /**
-     * @param create if true it create and add a new collection of namespaces if there is none
-     * @return the namespaces
-     */
-    private Collection<String> getNamespaces(boolean create)
-    {
-        Collection<String> namespaces = getProperty(PKEY_NAMESPACES, (Collection<String>) null);
-
-        if (namespaces == null && create) {
-            namespaces = new HashSet<String>();
-            putProperty(PKEY_NAMESPACES, namespaces);
-        }
-
-        return namespaces;
-    }
-
     @Override
     public Collection<String> getNamespaces()
     {
-        return getNamespaces(false);
+        if (this.namespacesCache == null) {
+            Map<String, Map<String, Object>> installedNamespaces = getInstalledNamespaces(false);
+
+            if (installedNamespaces != null) {
+                this.namespacesCache = Collections.unmodifiableSet(installedNamespaces.keySet());
+            }
+        }
+
+        return this.namespacesCache;
     }
 
     /**
@@ -134,7 +144,18 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setNamespaces(Collection<String> namespaces)
     {
-        putProperty(PKEY_NAMESPACES, namespaces != null ? new HashSet<String>(namespaces) : null);
+        if (namespaces == null) {
+            this.namespacesCache = null;
+            putProperty(PKEY_NAMESPACES, null);
+        } else {
+            Map<String, Map<String, Object>> installedNamespaces = new HashMap<String, Map<String, Object>>();
+            for (String namespace : namespaces) {
+                Map<String, Object> namespaceData = new HashMap<String, Object>();
+                namespaceData.put(PKEY_NAMESPACES_NAMESPACE, namespace);
+                installedNamespaces.put(namespace, namespaceData);
+                putProperty(PKEY_NAMESPACES, installedNamespaces);
+            }
+        }
     }
 
     /**
@@ -143,7 +164,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void addNamespace(String namespace)
     {
-        getNamespaces(true).add(namespace);
+        getInstalledNamespace(namespace, true);
     }
 
     @Override
@@ -190,9 +211,9 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                 setInstalled(true);
                 addNamespace(namespace);
             } else {
-                Collection<String> namespaces = getNamespaces(false);
-                if (namespaces != null) {
-                    namespaces.remove(namespace);
+                Map<String, Map<String, Object>> installedNamespaces = getInstalledNamespaces(false);
+                if (installedNamespaces != null) {
+                    installedNamespaces.remove(namespace);
 
                     if (getNamespaces().isEmpty()) {
                         setInstalled(false);
@@ -224,19 +245,106 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         this.valid.put(namespace, valid);
     }
 
+    /**
+     * @return the installed namespaces
+     * @param create indicate if the map should be create if it does not exists
+     */
+    private Map<String, Map<String, Object>> getInstalledNamespaces(boolean create)
+    {
+        Object namespacesObject = getProperty(PKEY_NAMESPACES);
+
+        Map<String, Map<String, Object>> installedNamespaces = null;
+        // RETRO-COMPATIBILITY: used to be a String collection with just the actual namespaces
+        if (namespacesObject instanceof Collection) {
+            Collection<String> namespaces = (Collection<String>) namespacesObject;
+            setNamespaces(namespaces);
+        } else {
+            installedNamespaces = (Map<String, Map<String, Object>>) namespacesObject;
+
+        }
+
+        if (installedNamespaces == null && create) {
+            installedNamespaces = new HashMap<String, Map<String, Object>>();
+            putProperty(PKEY_NAMESPACES, installedNamespaces);
+        }
+
+        return installedNamespaces;
+    }
+
+    /**
+     * @param namespace the namespace
+     * @param create indicate if the {@link InstalledNamespace} should be create if it does not exists
+     * @return the corresponding {@link InstalledNamespace}
+     */
+    private Map<String, Object> getInstalledNamespace(String namespace, boolean create)
+    {
+        Map<String, Map<String, Object>> namespaces = getInstalledNamespaces(create);
+
+        if (namespaces == null) {
+            return null;
+        }
+
+        Map<String, Object> installedNamespace = namespaces.get(namespace);
+
+        if (installedNamespace == null && create) {
+            installedNamespace = new HashMap<String, Object>();
+            namespaces.put(namespace, installedNamespace);
+        }
+
+        return installedNamespace;
+    }
+
     @Override
     public boolean isDependency()
     {
-        return getProperty(PKEY_DEPENDENCY, false);
+        return isDependency(null);
+    }
+
+    @Override
+    public boolean isDependency(String namespace)
+    {
+        boolean isDependency;
+
+        if (namespace == null) {
+            isDependency = getProperty(PKEY_DEPENDENCY, false);
+        } else {
+            Map<String, Object> installedNamespace = getInstalledNamespace(namespace, false);
+
+            isDependency =
+                installedNamespace != null ? (installedNamespace.get(PKEY_NAMESPACES_DEPENDENCY) == Boolean.TRUE)
+                    : false;
+        }
+
+        return isDependency;
     }
 
     /**
      * @param dependency indicate if the extension as been installed as a dependency of another one.
      * @see #isDependency()
+     * @deprecated
      */
+    @Deprecated
     public void setDependency(boolean dependency)
     {
         putProperty(PKEY_DEPENDENCY, dependency);
+    }
+
+    /**
+     * @param dependency indicate if the extension as been installed as a dependency of another one.
+     * @param namespace the namespace
+     * @see #isDependency(String)
+     */
+    public void setDependency(boolean dependency, String namespace)
+    {
+        if (namespace == null) {
+            putProperty(PKEY_DEPENDENCY, dependency);
+        } else {
+            Map<String, Object> installedNamespace = getInstalledNamespace(namespace, false);
+
+            if (installedNamespace != null) {
+                installedNamespace.put(PKEY_NAMESPACES_DEPENDENCY, dependency);
+            }
+        }
     }
 
     // LocalExtension

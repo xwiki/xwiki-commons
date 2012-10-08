@@ -149,6 +149,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                 new CollectionExtensionPropertySerializer(this.serializerById, this.serializerByClass);
             SetExtensionPropertySerializer setSerializer =
                 new SetExtensionPropertySerializer(this.serializerById, this.serializerByClass);
+            StringKeyMapExtensionPropertySerializer mapSerializer =
+                new StringKeyMapExtensionPropertySerializer(this.serializerById, this.serializerByClass);
 
             this.serializerById.put(null, stringSerializer);
             this.serializerById.put("", stringSerializer);
@@ -156,12 +158,14 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             this.serializerById.put(booleanSerializer.getType(), booleanSerializer);
             this.serializerById.put(collectionSerializer.getType(), collectionSerializer);
             this.serializerById.put(setSerializer.getType(), setSerializer);
+            this.serializerById.put(mapSerializer.getType(), mapSerializer);
 
             this.serializerByClass.put(String.class, stringSerializer);
             this.serializerByClass.put(Integer.class, integerSerializer);
             this.serializerByClass.put(Boolean.class, booleanSerializer);
             this.serializerByClass.put(Set.class, setSerializer);
             this.serializerByClass.put(Collection.class, collectionSerializer);
+            this.serializerByClass.put(Map.class, mapSerializer);
         }
     }
 

@@ -89,6 +89,14 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     @Named("body")
     private HTMLFilter bodyFilter;
 
+    /**
+     * {@link HTMLFilter} for filtering HTML attributes that are used by many different elements and for which we cannot
+     * write simple transformations like in {@link #getDefaultCleanerTransformations(HTMLCleanerConfiguration)}.
+     */
+    @Inject
+    @Named("attribute")
+    private HTMLFilter attributeFilter;
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -176,7 +184,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             this.bodyFilter,
             this.listItemFilter,
             this.listFilter,
-            this.fontFilter));
+            this.fontFilter,
+            this.attributeFilter));
         return configuration;
     }
 

@@ -31,6 +31,7 @@ import org.xwiki.test.annotation.MockingRequirement;
 import org.xwiki.xml.html.filter.HTMLFilter;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
+import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
 import org.xwiki.xml.internal.html.filter.FontFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
@@ -47,7 +48,8 @@ import org.xwiki.xml.internal.html.filter.ListItemFilter;
     ListFilter.class,
     ListItemFilter.class,
     FontFilter.class,
-    BodyFilter.class
+    BodyFilter.class,
+    AttributeFilter.class
 })
 public class HTMLUtilsTest extends AbstractMockingComponentTestCase
 {

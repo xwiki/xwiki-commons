@@ -45,6 +45,6 @@ public class SetExtensionPropertySerializer extends CollectionExtensionPropertyS
      */
     protected Set createCollection()
     {
-        return new HashSet<String>();
+        return new HashSet();
     }
 }

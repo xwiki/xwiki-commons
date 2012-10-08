@@ -76,7 +76,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
      */
     protected void upgradeExtension(InstalledExtension extension, String namespace)
     {
-        if (!extension.isDependency()) {
+        if (!extension.isDependency(namespace)) {
             String extensionId = extension.getId().getId();
 
             IterableResult<Version> versions;
