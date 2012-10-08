@@ -77,4 +77,10 @@ public class WrappingInstalledExtension<E extends InstalledExtension> extends Wr
     {
         return getWrapped().isDependency();
     }
+
+    @Override
+    public boolean isDependency(String namespace)
+    {
+        return getWrapped().isDependency(namespace);
+    }
 }

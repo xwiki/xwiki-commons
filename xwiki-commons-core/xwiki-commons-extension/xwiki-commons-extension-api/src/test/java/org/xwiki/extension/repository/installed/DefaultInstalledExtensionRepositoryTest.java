@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository;
+package org.xwiki.extension.repository.installed;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +38,10 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
+import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
@@ -147,12 +151,12 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
     {
         // Change status
         this.installedExtensionRepository.installExtension(this.resources.installed, "namespace",
-            !this.resources.installed.isDependency());
+            !this.resources.installed.isDependency("namespace"));
 
         // Try to install again with the same status
         try {
             this.installedExtensionRepository.installExtension(this.resources.installed, "namespace",
-                this.resources.installed.isDependency());
+                this.resources.installed.isDependency("namespace"));
             Assert.fail("Install should have failed");
         } catch (InstallException expected) {
             // expected

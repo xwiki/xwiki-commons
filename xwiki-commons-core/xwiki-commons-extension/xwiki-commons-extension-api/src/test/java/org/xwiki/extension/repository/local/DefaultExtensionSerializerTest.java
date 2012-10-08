@@ -95,25 +95,30 @@ public class DefaultExtensionSerializerTest extends AbstractComponentTestCase
             new DefaultLocalExtension(null, new ExtensionId("extensionid", "extensionversion"), "type");
 
         // Minimum extension
-        //serializeAndUnserialize(extension);
+        // serializeAndUnserialize(extension);
 
         DefaultExtensionDependency dependency =
             new DefaultExtensionDependency("dependencyid", new DefaultVersionConstraint("dependencyversion"));
         extension.addDependency(dependency);
 
         // Minimum extension with minimum dependency
-        //serializeAndUnserialize(extension);
+        // serializeAndUnserialize(extension);
 
         extension.setDescription("description");
         extension.setSummary("summary");
         extension.setWebsite("website");
         extension.setName("name");
 
-        extension.putProperty("key1", "value1");
+        /*extension.putProperty("key1", "value1");
         extension.putProperty("key2", true);
         extension.putProperty("key3", 42);
         extension.putProperty("key4", Arrays.asList("list1", "list2"));
         extension.putProperty("key5", new HashSet<String>(Arrays.asList("list1", "list2")));
+        extension.putProperty("key6", Collections.<String, Object> singletonMap("key", "value"));*/
+        extension.putProperty(
+            "key7",
+            Collections.<String, Object> singletonMap("key",
+                Collections.<String, Object> singletonMap("subkey", "subvalue")));
 
         extension.addAuthor(new DefaultExtensionAuthor("authorname", new URL("http://authorurl")));
         extension.addFeature("feature1");

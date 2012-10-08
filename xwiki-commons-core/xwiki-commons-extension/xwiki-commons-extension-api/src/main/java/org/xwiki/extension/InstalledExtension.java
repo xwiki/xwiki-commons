@@ -38,14 +38,26 @@ public interface InstalledExtension extends LocalExtension
     String PKEY_INSTALLED = "installed.installed";
 
     /**
-     * Custom property key containing {@link #isDependency()}.
+     * Custom property key containing {@link #getNamespaces()}.
+     * <p>
+     * Since 4.3M1 it's a Map<String, Object>.
      */
-    String PKEY_DEPENDENCY = "installed.dependency";
+    String PKEY_NAMESPACES = "installed.namespaces";
 
     /**
      * Custom property key containing {@link #getNamespaces()}.
      */
-    String PKEY_NAMESPACES = "installed.namespaces";
+    String PKEY_NAMESPACES_NAMESPACE = "installed.namespaces.namespace";
+
+    /**
+     * Custom property key containing {@link #isInstalled(String)}.
+     */
+    String PKEY_NAMESPACES_DEPENDENCY = "installed.namespaces.dependency";
+
+    /**
+     * Custom property key containing {@link #isDependency(String)} with <code>null</code> namespace.
+     */
+    String PKEY_DEPENDENCY = "installed.dependency";
 
     /**
      * @return the actual extension
@@ -56,6 +68,14 @@ public interface InstalledExtension extends LocalExtension
      * @return indicate if the extension is installed
      */
     boolean isInstalled();
+
+    /**
+     * Indicate if the extension is installed in the provided namespace.
+     * 
+     * @param namespace the namespace to look at, if null it means the extension is installed on the root namespaces
+     * @return true if the extension is installed in the provided namespace
+     */
+    boolean isInstalled(String namespace);
 
     /**
      * Indicate if the extension is working.
@@ -70,14 +90,6 @@ public interface InstalledExtension extends LocalExtension
     boolean isValid(String namespace);
 
     /**
-     * Indicate if the extension is installed in the provided namespace.
-     * 
-     * @param namespace the namespace to look at, if null it means the extension is installed for all the namespaces
-     * @return true if the extension is installed in the provided namespace
-     */
-    boolean isInstalled(String namespace);
-
-    /**
      * @return the namespaces in which this extension is enabled. Null means root namespace (i.e all namespaces).
      */
     Collection<String> getNamespaces();
@@ -89,6 +101,19 @@ public interface InstalledExtension extends LocalExtension
      * possible to know which extension are not really required anymore.
      * 
      * @return true if the the extension has been installed only because it was a dependency of another extension
+     * @deprecated since 4.3M1 use {@link #isDependency(String)} with <code>null</code> namespace instead
      */
+    @Deprecated
     boolean isDependency();
+
+    /**
+     * Indicate if the extension as been installed as a dependency of another one.
+     * <p>
+     * The idea is to be able to make the difference between extension specifically installed by a user so that it's
+     * possible to know which extension are not really required anymore.
+     * 
+     * @param namespace the namespace to look at, null indicate the root namespace
+     * @return true if the the extension has been installed only because it was a dependency of another extension
+     */
+    boolean isDependency(String namespace);
 }
