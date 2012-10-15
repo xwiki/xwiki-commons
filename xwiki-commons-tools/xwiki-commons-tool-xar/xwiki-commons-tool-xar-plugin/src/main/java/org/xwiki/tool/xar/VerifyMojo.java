@@ -44,9 +44,21 @@ import org.apache.maven.plugin.MojoFailureException;
  */
 public class VerifyMojo extends AbstractVerifyMojo
 {
+    /**
+     * Disables the plugin execution.
+     *
+     * @parameter expression="${xar.verify.skip}" default-value="false"
+     * @since 4.3M1
+     */
+    private boolean skip;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+        if (this.skip) {
+            return;
+        }
+
         // Only format XAR modules or when forced
         if (!getProject().getPackaging().equals("xar") && !this.force) {
             getLog().info("Not a XAR module, skipping validity check...");
