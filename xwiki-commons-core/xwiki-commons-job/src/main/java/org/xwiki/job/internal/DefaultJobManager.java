@@ -142,8 +142,6 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
             throw new RuntimeException("Failed to initialize IRC Bot's execution context", e);
         }
 
-        this.execution.pushContext(context);
-
         try {
             while (!this.thread.isInterrupted()) {
                 try {
