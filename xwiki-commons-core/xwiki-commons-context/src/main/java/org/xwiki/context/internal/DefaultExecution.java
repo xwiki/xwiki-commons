@@ -51,6 +51,8 @@ public class DefaultExecution implements Execution
         if (stack == null) {
             stack = new Stack<ExecutionContext>();
             this.context.set(stack);
+        } else if (!stack.isEmpty()) {
+            context.inheritFrom(stack.peek());
         }
 
         stack.push(context);
@@ -77,7 +79,12 @@ public class DefaultExecution implements Execution
             stack = new Stack<ExecutionContext>();
             this.context.set(stack);
             stack.push(context);
+        } else if (stack.isEmpty()) {
+            stack.push(context);
         } else {
+            if (context != null) {
+                context.inheritFrom(stack.peek());
+            }
             stack.set(stack.size() - 1, context);
         }
     }

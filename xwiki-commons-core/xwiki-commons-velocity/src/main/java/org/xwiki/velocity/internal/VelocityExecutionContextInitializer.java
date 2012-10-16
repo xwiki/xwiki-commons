@@ -26,6 +26,7 @@ import javax.inject.Singleton;
 import org.apache.velocity.VelocityContext;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.context.ExecutionContextProperty;
 import org.xwiki.context.ExecutionContextInitializer;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.velocity.VelocityContextFactory;
@@ -60,8 +61,14 @@ public class VelocityExecutionContextInitializer implements ExecutionContextInit
     public void initialize(ExecutionContext executionContext) throws ExecutionContextException
     {
         try {
-            VelocityContext context = this.velocityContextFactory.createContext();
-            executionContext.setProperty(VelocityExecutionContextInitializer.VELOCITY_CONTEXT_ID, context);
+            if (!executionContext.hasProperty(VELOCITY_CONTEXT_ID)) {
+                VelocityContext context = this.velocityContextFactory.createContext();
+                ExecutionContextProperty property = new ExecutionContextProperty(VELOCITY_CONTEXT_ID);
+                property.setCloneValue(true);
+                property.setInherited(true);
+                property.setValue(context);
+                executionContext.declareProperty(property);
+            }
         } catch (XWikiVelocityException e) {
             throw new ExecutionContextException("Failed to initialize Velocity Context", e);
         }
