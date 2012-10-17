@@ -93,8 +93,8 @@ public class ExecutionContext
             return;
         }
 
-        if (property.isReadonly()) {
-            throw new PropertyIsReadonlyException(key);
+        if (property.isFinal()) {
+            throw new PropertyIsFinalException(key);
         }
 
         this.properties.remove(key);
@@ -112,8 +112,8 @@ public class ExecutionContext
             LOGGER.debug("Implicit declaration of property {}.", key);
             property = new ExecutionContextProperty(key);
             properties.put(key, property);
-        } else if (property.isReadonly()) {
-            throw new PropertyIsReadonlyException(key);
+        } else if (property.isFinal()) {
+            throw new PropertyIsFinalException(key);
         }
 
         property.setValue(value);
@@ -156,7 +156,7 @@ public class ExecutionContext
      * All properties marked as 'inherited' will be copied into this context, unless the property already is declared in
      * this context.
      *
-     * It is an error if this context contain a value that was declared as 'inherited' and 'read-only' in the inherited
+     * It is an error if this context contain a value that was declared as 'inherited' and 'final' in the inherited
      * execution context and an exception will be thrown.
      * 
      * @param executionContext The execution to inherit.
@@ -182,13 +182,13 @@ public class ExecutionContext
      */
     private void checkIfInheritedPropertyMayBeIgnored(ExecutionContextProperty property)
     {
-        if (property.isReadonly()) {
+        if (property.isFinal()) {
             ExecutionContextProperty shadowingProperty = this.properties.get(property.getKey());
             if (!shadowingProperty.isClonedFrom(property)) {
                 throw new IllegalStateException(
                      String.format("Execution context cannot be inherited because it already contains"
-                                 + "  property [%s] which must be inherited because it is an inherited"
-                                 + " read-only property.", property.getKey()));
+                                 + " property [%s] which must be inherited because it is an inherited"
+                                 + " final property.", property.getKey()));
             }
         }
     }

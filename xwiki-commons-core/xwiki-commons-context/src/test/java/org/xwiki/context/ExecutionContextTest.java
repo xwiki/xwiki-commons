@@ -57,7 +57,7 @@ public class ExecutionContextTest
         ExecutionContextProperty cloned = new ExecutionContextProperty("cloned");
         cloned.setValue("cloned");
         cloned.setInherited(true);
-        cloned.setReadonly(true);
+        cloned.setFinal(true);
 
         parent.declareProperty(cloned);
         context.declareProperty(cloned.clone());
@@ -78,7 +78,7 @@ public class ExecutionContextTest
         ExecutionContextProperty inherited = new ExecutionContextProperty("inherited");
         inherited.setInherited(true);
         inherited.setValue("test");
-        inherited.setReadonly(true);
+        inherited.setFinal(true);
 
         context.declareProperty(inherited);
         parent.declareProperty(inherited);

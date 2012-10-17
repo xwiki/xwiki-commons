@@ -20,20 +20,20 @@
 package org.xwiki.context;
 
 /**
- * Thrown when reading the value of a non-existing property.
+ * Thrown when trying to update a final value.
  * 
  * @version $Id$ 
  * @since 4.3M1
  */
-public class PropertyIsReadonlyException extends RuntimeException
+public class PropertyIsFinalException extends RuntimeException
 {
     /** The serial verion uid. */
     private static final long serialVersionUID = 1L;
 
     /** @param key The key of the property in question. */
-    public PropertyIsReadonlyException(String key)
+    public PropertyIsFinalException(String key)
     {
-        super(String.format("The property [%s] is read-only.", key));
+        super(String.format("The value of property [%s] is final.", key));
     }
 
 }

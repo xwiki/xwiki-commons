@@ -45,8 +45,8 @@ public class ExecutionContextProperty implements Cloneable
      */
     private boolean cloneValue;
 
-    /** Controls whether this property is read-only. */
-    private boolean readonly;
+    /** Controls whether the value of this property is final. */
+    private boolean isFinal;
 
     /**
      *  Controls whether this property should be inherited across execution contexts.  It will be inherited as long as
@@ -108,16 +108,16 @@ public class ExecutionContextProperty implements Cloneable
         this.cloneValue = cloneValue;
     }
 
-    /** @param readonly Set wether the property is read-only or not. */
-    public void setReadonly(boolean readonly)
+    /** @param isFinal Set wether the property is final or not. */
+    public void setFinal(boolean isFinal)
     {
-        this.readonly = readonly;
+        this.isFinal = isFinal;
     }
 
-    /** @return wether this property is read-only or not. */
-    public boolean isReadonly()
+    /** @return wether this property is final or not. */
+    public boolean isFinal()
     {
-        return this.readonly;
+        return this.isFinal;
     }
 
     /** @param inherited Set wether this property should be inherited across execution contexts or not. */
@@ -172,11 +172,11 @@ public class ExecutionContextProperty implements Cloneable
         }
         clone.key        = key;
         clone.cloneValue = cloneValue;
-        clone.readonly   = readonly;
+        clone.isFinal    = isFinal;
         clone.inherited  = inherited;
         clone.nonNull    = nonNull;
         clone.type       = type;
-        if (readonly && inherited) {
+        if (isFinal && inherited) {
             // We make this a weak reference, because we are only interested in it as long
             // as it is references by the current execution co
             clone.clonedFrom = new WeakReference<ExecutionContextProperty>(this);
