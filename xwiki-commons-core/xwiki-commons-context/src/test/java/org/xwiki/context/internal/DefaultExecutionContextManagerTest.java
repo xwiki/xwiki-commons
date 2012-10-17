@@ -59,7 +59,7 @@ public class DefaultExecutionContextManagerTest extends TestCase
         ExecutionContextProperty velocityContextProperty = new ExecutionContextProperty("velocitycontext");
         velocityContextProperty.setValue(xwikicontext);
         velocityContextProperty.setInherited(true);
-        velocityContextProperty.setReadonly(true);
+        velocityContextProperty.setFinal(true);
         velocityContextProperty.setCloneValue(true);
         context.declareProperty(velocityContextProperty);
 

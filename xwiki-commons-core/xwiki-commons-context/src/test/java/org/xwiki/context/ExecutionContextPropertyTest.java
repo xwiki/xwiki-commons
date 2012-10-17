@@ -34,7 +34,7 @@ public class ExecutionContextPropertyTest
     {
         ExecutionContextProperty property = new ExecutionContextProperty("test");
 
-        Assert.assertFalse(property.isReadonly());
+        Assert.assertFalse(property.isFinal());
         Assert.assertTrue("test".equals(property.getKey()));
         Assert.assertTrue(null == property.getValue());
         Assert.assertFalse(property.isInherited());
@@ -65,7 +65,7 @@ public class ExecutionContextPropertyTest
 
         Assert.assertTrue(value != clone.getValue() && ((TestCloneable) clone.getValue()).value.equals("clone"));
 
-        property.setReadonly(true);
+        property.setFinal(true);
         property.setInherited(true);
 
         clone = property.clone();
@@ -91,7 +91,7 @@ public class ExecutionContextPropertyTest
     {
         ExecutionContextProperty property = new ExecutionContextProperty("test");
 
-        property.setReadonly(true);
+        property.setFinal(true);
         property.setInherited(true);
 
         ExecutionContextProperty clone = property.clone();
