@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -108,12 +109,12 @@ public class DefaultExtensionSerializerTest extends AbstractComponentTestCase
         extension.setWebsite("website");
         extension.setName("name");
 
-        /*extension.putProperty("key1", "value1");
+        extension.putProperty("key1", "value1");
         extension.putProperty("key2", true);
         extension.putProperty("key3", 42);
         extension.putProperty("key4", Arrays.asList("list1", "list2"));
         extension.putProperty("key5", new HashSet<String>(Arrays.asList("list1", "list2")));
-        extension.putProperty("key6", Collections.<String, Object> singletonMap("key", "value"));*/
+        extension.putProperty("key6", Collections.<String, Object> singletonMap("key", "value"));
         extension.putProperty(
             "key7",
             Collections.<String, Object> singletonMap("key",
