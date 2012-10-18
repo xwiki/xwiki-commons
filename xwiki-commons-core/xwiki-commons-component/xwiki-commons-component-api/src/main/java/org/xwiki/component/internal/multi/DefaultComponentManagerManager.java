@@ -65,7 +65,7 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
             componentManager = this.rootComponentManager;
         } else {
             componentManager = this.componentManagers.get(path);
-            if (componentManager == null) {
+            if (componentManager == null && create) {
                 componentManager = createComponentManager(path);
                 this.componentManagers.put(path, componentManager);
             }

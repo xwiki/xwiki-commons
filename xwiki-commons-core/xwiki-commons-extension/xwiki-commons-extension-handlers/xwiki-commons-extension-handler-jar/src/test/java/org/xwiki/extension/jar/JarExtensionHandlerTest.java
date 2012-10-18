@@ -20,7 +20,6 @@
 package org.xwiki.extension.jar;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -32,6 +31,7 @@ import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
@@ -119,7 +119,26 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         if (extensionLoader == null) {
             extensionLoader = ((TestJarExtensionClassLoader) this.jarExtensionClassLoader).getSystemClassLoader();
         }
+
         return extensionLoader;
+    }
+
+    /**
+     * @param namespace the namespace to be used
+     * @return the extension ComponentManager for the current namespace
+     */
+    private ComponentManager getExtensionComponentManager(String namespace)
+    {
+        ComponentManager extensionComponentManager = this.componentManagerManager.getComponentManager(namespace, false);
+        if (extensionComponentManager == null) {
+            try {
+                extensionComponentManager = getComponentManager().getInstance(ComponentManager.class);
+            } catch (Exception e) {
+                // Should never happen
+            }
+        }
+
+        return extensionComponentManager;
     }
 
     /**
@@ -223,7 +242,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Class< ? > componentInstanceClass = null;
         if (namespace != null) {
             componentInstanceClass =
-                this.componentManagerManager.getComponentManager(namespace, false).getInstance(loadedRole).getClass();
+                getExtensionComponentManager(namespace).getInstance(loadedRole).getClass();
 
             try {
                 getComponentManager().getInstance(loadedRole);
