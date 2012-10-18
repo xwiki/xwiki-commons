@@ -218,17 +218,20 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
             } else {
                 boolean valid = false;
 
-                List<LocalExtension> dependencyVersions =
-                    new ArrayList<LocalExtension>(this.localRepository.getLocalExtensionVersions(dependency.getId()));
-                Collections.reverse(dependencyVersions);
-                for (LocalExtension dependencyVersion : dependencyVersions) {
-                    if (isCompatible(dependencyVersion.getId().getVersion(), dependency.getVersionConstraint())) {
-                        try {
-                            validateExtension(dependencyVersion, namespace);
-                            valid = true;
-                            break;
-                        } catch (InvalidExtensionException e) {
-                            // Lets try next one
+                Collection<LocalExtension> dependencyVersionsCollection =
+                    this.localRepository.getLocalExtensionVersions(dependency.getId());
+                if (!dependencyVersionsCollection.isEmpty()) {
+                    List<LocalExtension> dependencyVersions = new ArrayList<LocalExtension>(dependencyVersionsCollection);
+                    Collections.reverse(dependencyVersions);
+                    for (LocalExtension dependencyVersion : dependencyVersions) {
+                        if (isCompatible(dependencyVersion.getId().getVersion(), dependency.getVersionConstraint())) {
+                            try {
+                                validateExtension(dependencyVersion, namespace);
+                                valid = true;
+                                break;
+                            } catch (InvalidExtensionException e) {
+                                // Lets try next one
+                            }
                         }
                     }
                 }

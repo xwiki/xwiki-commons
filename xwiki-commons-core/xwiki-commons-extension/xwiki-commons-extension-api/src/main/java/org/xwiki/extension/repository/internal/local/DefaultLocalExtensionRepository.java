@@ -24,8 +24,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -131,11 +133,20 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
         this.extensions.put(localExtension.getId(), localExtension);
 
         // versions
-        List<DefaultLocalExtension> versions = this.extensionsVersions.get(localExtension.getId().getId());
+        addLocalExtensionVersion(localExtension.getId().getId(), localExtension);
+        for (String feature : localExtension.getFeatures()) {
+            addLocalExtensionVersion(feature, localExtension);
+        }
+    }
+
+    protected void addLocalExtensionVersion(String feature, DefaultLocalExtension localExtension)
+    {
+        // versions
+        List<DefaultLocalExtension> versions = this.extensionsVersions.get(feature);
 
         if (versions == null) {
             versions = new ArrayList<DefaultLocalExtension>();
-            this.extensionsVersions.put(localExtension.getId().getId(), versions);
+            this.extensionsVersions.put(feature, versions);
 
             versions.add(localExtension);
         } else {
@@ -338,13 +349,16 @@ public class DefaultLocalExtensionRepository extends AbstractExtensionRepository
             StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
                 + pattern + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
 
-        List<Extension> result = new ArrayList<Extension>();
+        Set<Extension> set = new HashSet<Extension>();
+        List<Extension> result = new ArrayList<Extension>(this.extensionsVersions.size());
 
         for (List<DefaultLocalExtension> versions : this.extensionsVersions.values()) {
-            Extension extension = versions.get(0);
+            DefaultLocalExtension extension = versions.get(0);
 
-            if (patternMatcher == null || RepositoryUtils.matches(patternMatcher, extension)) {
+            if ((patternMatcher == null || RepositoryUtils.matches(patternMatcher, extension))
+                && !set.contains(extension)) {
                 result.add(extension);
+                set.add(extension);
             }
         }
 
