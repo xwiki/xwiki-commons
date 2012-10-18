@@ -76,8 +76,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
             if (convertedArguments != null) {
                 method = super.getMethod(obj, methodName, convertedArguments, i);
                 if (method != null) {
-                    // Overwrite the given arguments because they are used to invoke the method.
-                    System.arraycopy(convertedArguments, 0, args, 0, args.length);
+                    method = new ConvertingVelMethod(method);
                 }
             }
         }
@@ -127,5 +126,50 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
             }
         }
         return convertedArguments;
+    }
+
+    /**
+     * Wrapper for a real VelMethod that converts the passed arguments to the real arguments expected by the method.
+     *
+     * @version $Id$
+     */
+    private class ConvertingVelMethod implements VelMethod
+    {
+        /** The real method that performs the actual call. */
+        private VelMethod innerMethod;
+
+        /**
+         * Constructor.
+         *
+         * @param realMethod the real method to wrap
+         */
+        public ConvertingVelMethod(VelMethod realMethod)
+        {
+            this.innerMethod = realMethod;
+        }
+
+        @Override
+        public Object invoke(Object o, Object[] params) throws Exception
+        {
+            return this.innerMethod.invoke(o, convertArguments(o, this.innerMethod.getMethodName(), params));
+        }
+
+        @Override
+        public boolean isCacheable()
+        {
+            return this.innerMethod.isCacheable();
+        }
+
+        @Override
+        public String getMethodName()
+        {
+            return this.innerMethod.getMethodName();
+        }
+
+        @Override
+        public Class< ? > getReturnType()
+        {
+            return this.innerMethod.getReturnType();
+        }
     }
 }
