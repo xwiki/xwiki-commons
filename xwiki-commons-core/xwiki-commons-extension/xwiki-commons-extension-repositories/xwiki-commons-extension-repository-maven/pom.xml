@@ -34,7 +34,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Extension - Repository - Maven</description>
   <properties>
-    <xwiki.clover.targetPercentage>64.3%</xwiki.clover.targetPercentage>
+    <xwiki.clover.targetPercentage>63.5%</xwiki.clover.targetPercentage>
     <aether.version>1.13.1</aether.version>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-aether,org.xwiki.commons:xwiki-commons-extension-repository-maven</xwiki.extension.features>
