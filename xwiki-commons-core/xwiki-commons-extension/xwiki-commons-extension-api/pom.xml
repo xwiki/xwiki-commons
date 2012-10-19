@@ -34,6 +34,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Extension - API</description>
   <properties>
+    <xwiki.clover.targetPercentage>70.6%</xwiki.clover.targetPercentage>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-api</xwiki.extension.features>
   </properties>

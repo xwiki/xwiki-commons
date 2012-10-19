@@ -33,18 +33,19 @@
   <name>XWiki Commons - Logging - Logback</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Logging - Logback</description>
+  <properties>
+    <xwiki.clover.targetPercentage>90.4%</xwiki.clover.targetPercentage>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-logging-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
     </dependency>
-
     <!-- Tests dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>

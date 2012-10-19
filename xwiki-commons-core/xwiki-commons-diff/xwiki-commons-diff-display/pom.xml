@@ -33,13 +33,15 @@
   <name>XWiki Commons - Diff Display API</name>
   <packaging>jar</packaging>
   <description>APIs that help you display diffs.</description>
+  <properties>
+    <xwiki.clover.targetPercentage>95%</xwiki.clover.targetPercentage>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-diff-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
