@@ -65,8 +65,9 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Default Clover TPC threshold for the Quality profile -->
-    <xwiki.clover.targetPercentage>70%</xwiki.clover.targetPercentage>
+    <!-- Default Clover TPC threshold for the Quality profile. We use 100% to force each module to define its
+         own threshold. Note that good values are above 70%. -->
+    <xwiki.clover.targetPercentage>100%</xwiki.clover.targetPercentage>
   </properties>
   <prerequisites>
     <maven>3.0</maven>
