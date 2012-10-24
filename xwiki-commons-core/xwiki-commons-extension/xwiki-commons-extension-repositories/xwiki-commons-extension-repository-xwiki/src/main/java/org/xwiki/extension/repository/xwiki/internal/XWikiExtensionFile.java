@@ -54,7 +54,7 @@ public class XWikiExtensionFile implements ExtensionFile
                 this.repository.getRESTResource(this.repository.getExtensionFileUriBuider(), this.id.getId(), this.id
                     .getVersion().getValue());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to acess extension [" + this + "]");
+            throw new RuntimeException("Failed to acess extension [" + this + "]", e);
         }
 
         HttpEntity entity = response.getEntity();

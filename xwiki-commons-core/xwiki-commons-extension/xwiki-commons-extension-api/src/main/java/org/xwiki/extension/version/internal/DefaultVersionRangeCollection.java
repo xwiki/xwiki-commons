@@ -130,8 +130,8 @@ public class DefaultVersionRangeCollection implements VersionRangeCollection
         }
 
         if (!currentRanges.isEmpty()) {
-            throw new InvalidVersionRangeException("Invalid version range [" + rawRanges
-                + "], expected [ or ( but got " + currentRanges);
+            throw new InvalidVersionRangeException(String.format(
+                "Invalid version range [%s], expected [ or ( but got [%s]", rawRanges, currentRanges));
         }
     }
 
@@ -148,8 +148,8 @@ public class DefaultVersionRangeCollection implements VersionRangeCollection
         try {
             this.ranges.add(new DefaultVersionRange(range));
         } catch (InvalidVersionRangeException e) {
-            throw new InvalidVersionRangeException("Failed to parse version range [" + range + "] in constraint ["
-                + rawRanges + "]");
+            throw new InvalidVersionRangeException(String.format(
+                "Failed to parse version range [%s] in constraint [%s]", range, rawRanges), e);
         }
 
         return currentRanges.substring(index + 1).trim();

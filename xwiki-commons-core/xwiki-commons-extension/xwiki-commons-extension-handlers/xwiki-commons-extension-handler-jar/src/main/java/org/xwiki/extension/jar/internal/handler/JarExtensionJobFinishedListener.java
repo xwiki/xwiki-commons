@@ -161,7 +161,7 @@ public class JarExtensionJobFinishedListener implements EventListener
             if (extensions != null) {
                 UninstalledExtensionCollection collection = extensions.peek();
 
-                if (collection == null) {
+                if (collection == null && create) {
                     collection = new UninstalledExtensionCollection();
                     extensions.set(extensions.size() - 1, collection);
                 }

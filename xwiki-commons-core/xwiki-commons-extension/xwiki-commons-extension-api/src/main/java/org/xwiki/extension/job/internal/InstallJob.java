@@ -127,19 +127,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
 
             // Install all extensions
 
-            notifyPushLevelProgress(actions.size());
-
-            try {
-                for (ExtensionPlanAction action : actions) {
-                    if (action.getAction() != Action.NONE) {
-                        applyAction(action);
-                    }
-
-                    notifyStepPropress();
-                }
-            } finally {
-                notifyPopLevelProgress();
-            }
+            applyActions(actions);
         } finally {
             notifyPopLevelProgress();
         }

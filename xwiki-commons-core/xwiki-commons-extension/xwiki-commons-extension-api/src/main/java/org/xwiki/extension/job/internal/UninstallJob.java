@@ -30,7 +30,6 @@ import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
-import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.job.Job;
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
@@ -106,19 +105,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
 
             Collection<ExtensionPlanAction> actions = plan.getActions();
 
-            notifyPushLevelProgress(actions.size());
-
-            try {
-                for (ExtensionPlanAction action : actions) {
-                    if (action.getAction() != Action.NONE) {
-                        applyAction(action);
-                    }
-
-                    notifyStepPropress();
-                }
-            } finally {
-                notifyPopLevelProgress();
-            }
+            applyActions(actions);
         } finally {
             notifyPopLevelProgress();
         }

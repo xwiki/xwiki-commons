@@ -22,7 +22,6 @@ package org.xwiki.extension.version.internal;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -151,7 +150,7 @@ public class DefaultVersionConstraint implements VersionConstraint
             int index = constraint.indexOf('}');
 
             if (index < 0) {
-                throw new InvalidVersionConstraintException(MessageFormat.format("Unbounded version range [{0}]",
+                throw new InvalidVersionConstraintException(String.format("Unbounded version range [{%s}]",
                     rawConstraint));
             }
 
@@ -159,8 +158,8 @@ public class DefaultVersionConstraint implements VersionConstraint
             try {
                 newRanges.add(new DefaultVersionRangeCollection(range));
             } catch (InvalidVersionRangeException e) {
-                throw new InvalidVersionConstraintException(MessageFormat.format(
-                    "Failed to parse version range [{0}] in constraint [{1}]", range, rawConstraint));
+                throw new InvalidVersionConstraintException(String.format(
+                    "Failed to parse version range [%s] in constraint [%s]", range, rawConstraint, e));
             }
 
             constraint = constraint.substring(index + 1).trim();
@@ -175,12 +174,12 @@ public class DefaultVersionConstraint implements VersionConstraint
                 try {
                     newRanges.add(new DefaultVersionRangeCollection(constraint));
                 } catch (InvalidVersionRangeException e) {
-                    throw new InvalidVersionConstraintException(MessageFormat.format(
-                        "Failed to parse version range [{0}]", constraint));
+                    throw new InvalidVersionConstraintException(String.format("Failed to parse version range [{%s}]",
+                        constraint), e);
                 }
             } else {
-                throw new InvalidVersionConstraintException(MessageFormat.format(
-                    "Invalid version range [{0}], expected [ or ( but got [{1}]", rawConstraint, constraint));
+                throw new InvalidVersionConstraintException(String.format(
+                    "Invalid version range [{%s}], expected [ or ( but got [{%s}]", rawConstraint, constraint));
             }
         }
 

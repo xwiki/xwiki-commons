@@ -62,7 +62,7 @@ public abstract class AbstractExtensionHandler implements ExtensionHandler
         try {
             uninstall(previousLocalExtension, namespace, request);
         } catch (UninstallException e) {
-            throw new InstallException("Failed to uninstall previous extension [" + previousLocalExtension + "]");
+            throw new InstallException("Failed to uninstall previous extension [" + previousLocalExtension + "]", e);
         }
         install(newLocalExtension, namespace, null);
     }

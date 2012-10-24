@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.job.internal;
 
+import java.util.Collection;
+
 import javax.inject.Inject;
 
 import org.xwiki.extension.Extension;
@@ -65,6 +67,31 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends A
      */
     @Inject
     protected InstalledExtensionRepository installedExtensionRepository;
+
+    /**
+     * @param actions the actions to apply
+     * @throws InstallException failed to install extension
+     * @throws UninstallException failed to uninstall extension
+     * @throws LocalExtensionRepositoryException failed to store extension
+     * @throws ResolveException could not find extension in the local repository
+     */
+    protected void applyActions(Collection<ExtensionPlanAction> actions) throws LocalExtensionRepositoryException,
+        InstallException, UninstallException, ResolveException
+    {
+        notifyPushLevelProgress(actions.size());
+
+        try {
+            for (ExtensionPlanAction action : actions) {
+                if (action.getAction() != Action.NONE) {
+                    applyAction(action);
+                }
+
+                notifyStepPropress();
+            }
+        } finally {
+            notifyPopLevelProgress();
+        }
+    }
 
     /**
      * @param action the action to perform
