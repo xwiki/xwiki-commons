@@ -45,6 +45,6 @@ public class DefaultRequest extends AbstractRequest
      */
     public DefaultRequest(Request request)
     {
-
+        super(request);
     }
 }
