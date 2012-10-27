@@ -62,6 +62,8 @@ public abstract class AbstractRequest implements Request
      */
     public AbstractRequest(Request request)
     {
+        setId(request.getId());
+
         for (String key : request.getPropertyNames()) {
             setProperty(key, request.getProperty(key));
         }
