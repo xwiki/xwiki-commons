@@ -116,7 +116,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
         HttpClient httpClient = createClient();
 
-        HttpGet getMethod = new HttpGet(url.toString());
+        HttpGet getMethod = new HttpGet(url);
         getMethod.addHeader("Accept", MediaType.APPLICATION_XML.toString());
         HttpResponse response;
         try {

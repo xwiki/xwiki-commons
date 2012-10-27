@@ -106,8 +106,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AetherExtensionRepository.class);
 
-    private transient ComponentManager componentManager;
-
     private transient PlexusComponentManager plexusComponentManager;
 
     private transient RemoteRepository remoteRepository;
@@ -129,7 +127,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         super(repositoryDescriptor);
 
         this.repositoryFactory = repositoryFactory;
-        this.componentManager = componentManager;
         this.plexusComponentManager = mavenComponentManager;
 
         this.remoteRepository =
@@ -149,8 +146,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             LOGGER.warn("Unexpected exception when trying to find a proxy for [{}]", repositoryDescriptor.getURI());
         }
 
-        this.converter = this.componentManager.getInstance(ConverterManager.class);
-        this.licenseManager = this.componentManager.getInstance(ExtensionLicenseManager.class);
+        this.converter = componentManager.getInstance(ConverterManager.class);
+        this.licenseManager = componentManager.getInstance(ExtensionLicenseManager.class);
 
         this.versionRangeResolver = this.plexusComponentManager.getPlexus().lookup(VersionRangeResolver.class);
 

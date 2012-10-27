@@ -95,12 +95,10 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
 
         try {
             extensionHandler.uninstall(localExtension, namespace, request);
+        } catch (UninstallException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof UninstallException) {
-                throw (UninstallException) e;
-            } else {
-                throw new UninstallException("Failed to uninstall extension [" + localExtension.getId() + "]", e);
-            }
+            throw new UninstallException("Failed to uninstall extension [" + localExtension.getId() + "]", e);
         }
     }
 
@@ -117,13 +115,11 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
 
         try {
             extensionHandler.upgrade(previousLocalExtension, newLocalExtension, namespace, request);
+        } catch (InstallException e) {
+            throw e;
         } catch (Exception e) {
-            if (e instanceof InstallException) {
-                throw (InstallException) e;
-            } else {
-                throw new InstallException("Failed to upgrade from extension [" + previousLocalExtension
-                    + "] to extension [" + newLocalExtension.getId() + "]", e);
-            }
+            throw new InstallException("Failed to upgrade from extension [" + previousLocalExtension
+                + "] to extension [" + newLocalExtension.getId() + "]", e);
         }
     }
 

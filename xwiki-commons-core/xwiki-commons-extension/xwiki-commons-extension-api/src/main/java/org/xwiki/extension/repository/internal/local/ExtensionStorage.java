@@ -76,11 +76,6 @@ public class ExtensionStorage
     private File rootFolder;
 
     /**
-     * Used to lookup the extension serializer.
-     */
-    private ComponentManager componentManager;
-
-    /**
      * @param repository the repository
      * @param rootFolder the repository folder
      * @param componentManager used to lookup needed components
@@ -91,9 +86,8 @@ public class ExtensionStorage
     {
         this.repository = repository;
         this.rootFolder = rootFolder;
-        this.componentManager = componentManager;
 
-        this.extensionSerializer = this.componentManager.getInstance(ExtensionSerializer.class);
+        this.extensionSerializer = componentManager.getInstance(ExtensionSerializer.class);
     }
 
     /**

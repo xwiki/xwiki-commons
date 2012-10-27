@@ -254,7 +254,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             for (int i = 0; i < authors.getLength(); ++i) {
                 Node authorNode = authors.item(i);
 
-                if (authorNode.getNodeName() == ELEMENT_AAUTHOR) {
+                if (authorNode.getNodeName().equals(ELEMENT_AAUTHOR)) {
                     Node authorNameNode = getNode(authorNode, ELEMENT_AANAME);
                     Node authorURLNode = getNode(authorNode, ELEMENT_AAURL);
 

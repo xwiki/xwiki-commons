@@ -184,7 +184,7 @@ public class DefaultVersion implements Version
         @Override
         public String toString()
         {
-            return this.token.toString();
+            return this.token;
         }
     }
 
