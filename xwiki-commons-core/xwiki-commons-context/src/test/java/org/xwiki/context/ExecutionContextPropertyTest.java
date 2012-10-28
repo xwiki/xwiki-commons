@@ -32,105 +32,99 @@ public class ExecutionContextPropertyTest
     @Test
     public void defaultValues() throws Exception
     {
-        ExecutionContextProperty property = new ExecutionContextProperty("test");
+        final String key = "test";
 
-        Assert.assertFalse(property.isFinal());
-        Assert.assertTrue("test".equals(property.getKey()));
-        Assert.assertTrue(null == property.getValue());
-        Assert.assertFalse(property.isInherited());
+        ExecutionContext context = new ExecutionContext();
+        context.newProperty(key).declare();
+
+        Assert.assertFalse(context.fetchProperty(key).isFinal());
+        Assert.assertTrue(key.equals(context.fetchProperty(key).getKey()));
+        Assert.assertTrue(null == context.fetchProperty(key).getValue());
+        Assert.assertFalse(context.fetchProperty(key).isInherited());
 
         Object o = new Object();
-        property.setValue(o);
-        Assert.assertTrue(property.getValue() == o);
-        property.setValue(null);
-        Assert.assertTrue(property.getValue() == null);
+        context.setProperty(key, o);
+        Assert.assertTrue(context.fetchProperty(key).getValue() == o);
+        context.setProperty(key, null);
+        Assert.assertTrue(context.fetchProperty(key).getValue() == null);
     }
 
     @Test
     public void cloning() throws Exception
     {
-        ExecutionContextProperty property = new ExecutionContextProperty("test");
+        final String k1 = "test1";
+        final String k2 = "test2";
+        final String k3 = "test3";
+
+        ExecutionContext context = new ExecutionContext();
 
         TestCloneable value = new TestCloneable();
 
-        property.setValue(value);
+        context.newProperty(k1).initial(value).declare();
 
-        ExecutionContextProperty clone = property.clone();
+        Assert.assertTrue(value == context.fetchProperty(k1).clone().getValue());
 
-        Assert.assertTrue(value == clone.getValue());
+        context.newProperty(k2).initial(value).cloneValue().declare();
 
-        property.setCloneValue(true);
+        TestCloneable clonedValue = (TestCloneable) context.fetchProperty(k2).clone().getValue();
 
-        clone = property.clone();
+        Assert.assertTrue(value != clonedValue && clonedValue.value.equals("clone"));
 
-        Assert.assertTrue(value != clone.getValue() && ((TestCloneable) clone.getValue()).value.equals("clone"));
+        context.newProperty(k3).initial(value).cloneValue().makeFinal().inherited().declare();
 
-        property.setFinal(true);
-        property.setInherited(true);
-
-        clone = property.clone();
-
-        Assert.assertTrue(clone.isClonedFrom(property));
+        Assert.assertTrue(context.fetchProperty(k3).clone().isClonedFrom(context.fetchProperty(k3)));
     }
 
     @Test(expected=IllegalStateException.class)
     public void cloningNonPublicCloneMethod()
     {
-        ExecutionContextProperty property = new ExecutionContextProperty("test");
+        ExecutionContext context = new ExecutionContext();
+
+        final String key = "test";
 
         TestNonpublicClone value = new TestNonpublicClone();
 
-        property.setCloneValue(true);
-        property.setValue(value);
+        context.newProperty(key).cloneValue().initial(value).declare();
 
-        property.clone();
-    }
-
-    @Test
-    public void assertClonedFrom()
-    {
-        ExecutionContextProperty property = new ExecutionContextProperty("test");
-
-        property.setFinal(true);
-        property.setInherited(true);
-
-        ExecutionContextProperty clone = property.clone();
-
-        Assert.assertFalse(clone.isClonedFrom(clone));
+        context.fetchProperty(key).clone();
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void nonNullCheck()
     {
-        ExecutionContextProperty property = new ExecutionContextProperty("test");
+        ExecutionContext context = new ExecutionContext();
 
-        property.setNonNull(true);
+        final String key = "test";
 
-        property.setValue(null);
+        context.newProperty(key).nonNull().initial(null).declare();
     }
 
     @Test
     public void typeChecking()
     {
-        ExecutionContextProperty property = new ExecutionContextProperty("test");
+        ExecutionContext context = new ExecutionContext();
 
-        property.setType(SomeClass.class);
+        final String key = "test";
 
-        property.setValue(new SomeClass());
-        property.setValue(new SomeSubClass());
+        context.newProperty(key).type(SomeClass.class).declare();
+
+        context.setProperty(key, new SomeClass());
+        context.setProperty(key, new SomeSubClass());
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void typeCheckingMismatch()
     {
-        ExecutionContextProperty property = new ExecutionContextProperty("test");
+        ExecutionContext context = new ExecutionContext();
 
-        property.setType(SomeSubClass.class);
+        final String key = "test";
 
-        property.setValue(new SomeClass());
+        context.newProperty(key).type(SomeSubClass.class).declare();
+
+        context.setProperty(key, new SomeClass());
     }
 
-    private static class TestCloneable implements Cloneable
+    public static class TestCloneable implements Cloneable
     {
 
         public String value = "original";
@@ -144,7 +138,7 @@ public class ExecutionContextPropertyTest
         }
     }
 
-    private static class TestNonpublicClone implements Cloneable
+    public static class TestNonpublicClone implements Cloneable
     {
         @Override
         protected Object clone() throws CloneNotSupportedException
@@ -153,11 +147,11 @@ public class ExecutionContextPropertyTest
         }
     }
 
-    private static class SomeClass
+    public static class SomeClass
     {
     }
 
-    private static class SomeSubClass extends SomeClass
+    public static class SomeSubClass extends SomeClass
     {
     }
 

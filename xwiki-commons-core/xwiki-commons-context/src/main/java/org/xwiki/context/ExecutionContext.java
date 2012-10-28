@@ -25,6 +25,8 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.xwiki.context.internal.ExecutionContextProperty;
+
 /**
  * Contains all state data related to the current user action. Note that the execution context is independent of the
  * environment and all environment-dependent data are stored in the Container component instead.
@@ -56,6 +58,16 @@ public class ExecutionContext
         }
 
         return property.getValue();
+    }
+
+    /**
+     * @param key the key of the property.
+     * @return a builder object for performing the declaration.  The property will not be declared until the declare
+     * method is called on the builder object.
+     */
+    public DeclarationBuilder newProperty(String key)
+    {
+        return new DeclarationBuilder(key);
     }
 
     /**
@@ -110,8 +122,8 @@ public class ExecutionContext
 
         if (property == null) {
             LOGGER.debug("Implicit declaration of property {}.", key);
-            property = new ExecutionContextProperty(key);
-            properties.put(key, property);
+            newProperty(key).declare();
+            property = properties.get(key);
         } else if (property.isFinal()) {
             throw new PropertyIsFinalException(key);
         }
@@ -138,7 +150,7 @@ public class ExecutionContext
      * 
      * @since 4.3M1
      */
-    public void declareProperty(ExecutionContextProperty property)
+    private void declareProperty(ExecutionContextProperty property)
     {
         if (properties.containsKey(property.getKey())) {
             throw new PropertyAlreadyExistsException(property.getKey());
@@ -177,6 +189,18 @@ public class ExecutionContext
     }
 
     /**
+     * This method is intentionally non-public and should only be used for unit testing the property objects.
+     * 
+     * @param key The property key.
+     * @return The declared property.
+     * @since 4.3M2
+     */
+    ExecutionContextProperty fetchProperty(String key)
+    {
+        return properties.get(key);
+    }
+
+    /**
      * @param property Property to check.
      * @throws IllegalStateException if the property may not be ignored.
      */
@@ -192,4 +216,121 @@ public class ExecutionContext
             }
         }
     }
+
+    /**
+     * Builder class for declaring a new proprety.
+     *
+     * @since 4.3M2
+     */
+    public final class DeclarationBuilder
+    {
+
+        /** @see ExecutionContextProperty#key */
+        private final String key;
+
+        /** @see ExecutionContextProperty#value */
+        private Object value;
+
+        /** @see ExecutionContextProperty#cloneValue */
+        private boolean cloneValue;
+
+        /** @see ExecutionContextProperty#isFinal */
+        private boolean isFinal;
+
+        /** @see ExecutionContextProperty#inherited */
+        private boolean inherited;
+
+        /** @see ExecutionContextProperty#nonNull */
+        private boolean nonNull;
+
+        /** @see ExecutionContextProperty#type */
+        private Class<?> type;
+
+        /**
+         * Start building a property for the given key.
+         *
+         * @param key The property key.
+         */
+        private DeclarationBuilder(String key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * Finish the building by declaring the property in this execution context.
+         */
+        public void declare()
+        {
+            ExecutionContext.this.declareProperty(
+                 new ExecutionContextProperty(key, value, cloneValue, isFinal, inherited, nonNull, type));
+        }
+
+        /**
+         * @param value The initial value.
+         * @return this declaration builder.
+         */
+        public DeclarationBuilder initial(Object value)
+        {
+            this.value = value;
+            return this;
+        }
+
+        /** 
+         * Make the initial value the final value.
+         *
+         * @return this declaration builder.
+         */
+        public DeclarationBuilder makeFinal()
+        {
+            isFinal = true;
+            return this;
+        }
+
+        /**
+         * Indicate that the value should be cloned when the property is cloned.
+         *
+         * @return this declaration builder.
+         */
+        public DeclarationBuilder cloneValue()
+        {
+            cloneValue = true;
+            return this;
+        }
+
+        /**
+         * Set the type of the value.
+         *
+         * @param type The type to declare for the property.
+         * 
+         * @return this declaration builder.
+         */
+        public DeclarationBuilder type(Class<?> type)
+        {
+            this.type = type;
+            return this;
+        }
+
+        /**
+         * Indicate that the property should be inherited. 
+         *
+         * @return this declaration builder.
+         */
+        public DeclarationBuilder inherited()
+        {
+            inherited = true;
+            return this;
+        }
+
+        /**
+         * Indicate that the property value may not be {@literal null}.
+         * 
+         * @return this declaration builder.
+         */
+        public DeclarationBuilder nonNull()
+        {
+            nonNull = true;
+            return this;
+        }
+    }
+
 }
