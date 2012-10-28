@@ -36,37 +36,16 @@ public class ExecutionContextTest
         ExecutionContext context = new ExecutionContext();
         ExecutionContext parent = new ExecutionContext();
 
-        ExecutionContextProperty inherited = new ExecutionContextProperty("inherited");
-        inherited.setInherited(true);
-        inherited.setValue("test");
+        parent.newProperty("inherited").inherited().initial("test").declare();
 
-        parent.declareProperty(inherited);
+        parent.newProperty("shadowed").inherited().initial("original").declare();
 
-        ExecutionContextProperty original = new ExecutionContextProperty("shadowed");
-        original.setInherited(true);
-        original.setValue("original");
-
-        ExecutionContextProperty shadowed = new ExecutionContextProperty("shadowed");
-        shadowed.setInherited(true);
-        shadowed.setValue("shadowed");
-
-        parent.declareProperty(original);
-        context.declareProperty(shadowed);
-
-
-        ExecutionContextProperty cloned = new ExecutionContextProperty("cloned");
-        cloned.setValue("cloned");
-        cloned.setInherited(true);
-        cloned.setFinal(true);
-
-        parent.declareProperty(cloned);
-        context.declareProperty(cloned.clone());
+        context.newProperty("shadowed").inherited().initial("shadowed").declare();
 
         context.inheritFrom(parent);
 
         Assert.assertTrue(context.getProperty("inherited").equals("test"));
         Assert.assertTrue(context.getProperty("shadowed").equals("shadowed"));
-        Assert.assertTrue(context.getProperty("cloned").equals("cloned"));
     }
 
     @Test(expected=IllegalStateException.class)
@@ -75,13 +54,8 @@ public class ExecutionContextTest
         ExecutionContext context = new ExecutionContext();
         ExecutionContext parent = new ExecutionContext();
 
-        ExecutionContextProperty inherited = new ExecutionContextProperty("inherited");
-        inherited.setInherited(true);
-        inherited.setValue("test");
-        inherited.setFinal(true);
-
-        context.declareProperty(inherited);
-        parent.declareProperty(inherited);
+        parent.newProperty("inherited").inherited().initial("test").makeFinal().declare();
+        context.newProperty("inherited").inherited().initial("test").makeFinal().declare();
 
         context.inheritFrom(parent);
     }

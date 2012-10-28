@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.context;
+package org.xwiki.context.internal;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
@@ -33,43 +33,74 @@ import java.lang.reflect.InvocationTargetException;
 public class ExecutionContextProperty implements Cloneable
 {
     /** The key that is the name of this property in the execution context. */
-    private String key;
+    private final String key;
 
     /** This is the actual property value.  */
     private Object value;
 
     /**
      * Clone the value when this property is cloned.
-     *
-     * ReflectPermission suppressAccessChecks may be required.
      */
-    private boolean cloneValue;
+    private final boolean cloneValue;
 
     /** Controls whether the value of this property is final. */
-    private boolean isFinal;
+    private final boolean isFinal;
 
     /**
      *  Controls whether this property should be inherited across execution contexts.  It will be inherited as long as
      *  an execution context containing the property is the current execution context.  It will not be propagated to
      *  parent execution contexts.  Hence, it may be removed by a call to popExecutionContext.
      */
-    private boolean inherited;
+    private final boolean inherited;
 
     /** Indicate that the value may not be {@code null}. */
-    private boolean nonNull;
+    private final boolean nonNull;
 
     /** The type of the value. */
-    private Class<?> type;
+    private final Class<?> type;
 
     /** @see isClonedFrom(ExecutionContextProperty property). */
     private WeakReference<ExecutionContextProperty> clonedFrom;
 
     /**
      * @param key The execution context key.
+     * @param initialValue The initial value.
+     * @param cloneValue Indicate that the value should be cloned when the property is cloned.
+     * @param isFinal Indicate that the value may not be updated from the initial value.
+     * @param inherited Indicate that the property should be inherited when activating a new execution context.
+     * @param nonNull Indicate that the property value may not be {@literal null}.
+     * @param type Set a class which the value must be assignable to.
      */
-    public ExecutionContextProperty(String key)
+    public ExecutionContextProperty(String key, Object initialValue, boolean cloneValue, boolean isFinal,
+                                    boolean inherited, boolean nonNull, Class<?> type)
     {
         this.key = key;
+        this.value = initialValue;
+        this.cloneValue = cloneValue;
+        this.isFinal = isFinal;
+        this.inherited = inherited;
+        this.nonNull = nonNull;
+        this.type = type;
+        checkValue(initialValue);
+    }
+
+    /**
+     * Check that the value is compatible with the configure constraints.
+     * 
+     * @param value The value.
+     * @throws IllegalArgumentException if the value is null and this property has the nonNull attribute set, or if the
+     * type is set for this value, but the value is not assignable to the set type.
+     */
+    private void checkValue(Object value)
+    {
+        if (nonNull && value == null) {
+            throw new IllegalArgumentException(String.format("The property [%s] may not be null!", key));
+        }
+        if (type != null && value != null && !type.isAssignableFrom(value.getClass())) {
+            throw new IllegalArgumentException(
+                String.format("The value of property [%s] must be of type [%s], but was [%s]",
+                              key, type, value.getClass()));
+        }
     }
 
     /**
@@ -79,14 +110,7 @@ public class ExecutionContextProperty implements Cloneable
      */
     public void setValue(Object value)
     {
-        if (nonNull && value == null) {
-            throw new IllegalArgumentException(String.format("The property [%s] may not be null!", key));
-        }
-        if (type != null && !type.isAssignableFrom(value.getClass())) {
-            throw new IllegalArgumentException(
-                String.format("The value of property [%s] must be of type [%s], but was [%s]",
-                              key, type, value.getClass()));
-        }
+        checkValue(value);
         this.value = value;
     }
 
@@ -102,28 +126,10 @@ public class ExecutionContextProperty implements Cloneable
         return this.key;
     }
 
-    /** @param cloneValue Set wether the value should be cloned when this property is cloned. */
-    public void setCloneValue(boolean cloneValue)
-    {
-        this.cloneValue = cloneValue;
-    }
-
-    /** @param isFinal Set wether the property is final or not. */
-    public void setFinal(boolean isFinal)
-    {
-        this.isFinal = isFinal;
-    }
-
     /** @return wether this property is final or not. */
     public boolean isFinal()
     {
         return this.isFinal;
-    }
-
-    /** @param inherited Set wether this property should be inherited across execution contexts or not. */
-    public void setInherited(boolean inherited)
-    {
-        this.inherited = inherited;
     }
 
     /** @return wether this property should be inherited across execution contexts or not. */
@@ -132,31 +138,16 @@ public class ExecutionContextProperty implements Cloneable
         return this.inherited;
     }
 
-    /** @param nonNull Indicate wether it is an error if th value of this property is set to {@code null} or not. */
-    public void setNonNull(boolean nonNull)
-    {
-        this.nonNull = nonNull;
-    }
-
-    /** @param type The type of this property's value.  If set, the value will be typechecked when set. */
-    public void setType(Class<?> type)
-    {
-        this.type = type;
-    }
-
     @Override
     public ExecutionContextProperty clone()
     {
         ExecutionContextProperty clone;
-        try {
-            clone = (ExecutionContextProperty) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+
+        Object clonedValue;
 
         if (cloneValue) {
             try {
-                clone.value = value.getClass().getMethod("clone").invoke(value);
+                clonedValue = value.getClass().getMethod("clone").invoke(value);
             } catch (NoSuchMethodException e) {
                 throw new IllegalStateException(String.format(
                      "cloneValue attribute was set on property [%s], "
@@ -168,14 +159,11 @@ public class ExecutionContextProperty implements Cloneable
                 throw new RuntimeException(e);
             }
         } else {
-            clone.value = value;
+            clonedValue = value;
         }
-        clone.key        = key;
-        clone.cloneValue = cloneValue;
-        clone.isFinal    = isFinal;
-        clone.inherited  = inherited;
-        clone.nonNull    = nonNull;
-        clone.type       = type;
+
+        clone = new ExecutionContextProperty(key, clonedValue, cloneValue, isFinal, inherited, nonNull, type);
+
         if (isFinal && inherited) {
             // We make this a weak reference, because we are only interested in it as long
             // as it is references by the current execution co
@@ -195,7 +183,7 @@ public class ExecutionContextProperty implements Cloneable
      * @param property The original property.
      * @return If the return value is {@code true}, then this property was cloned from the given property.
      */
-    boolean isClonedFrom(ExecutionContextProperty property)
+    public boolean isClonedFrom(ExecutionContextProperty property)
     {
         return clonedFrom != null && clonedFrom.get() == property;
     }

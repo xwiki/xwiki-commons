@@ -28,7 +28,6 @@ import junit.framework.TestCase;
 
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.context.ExecutionContextProperty;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextInitializer;
 
@@ -51,17 +50,10 @@ public class DefaultExecutionContextManagerTest extends TestCase
         execution.setContext(context);
 
         Map xwikicontext = new HashMap();
-        ExecutionContextProperty xwikiContextProperty = new ExecutionContextProperty("xwikicontext");
-        xwikiContextProperty.setValue(xwikicontext);
-        xwikiContextProperty.setInherited(true);
-        context.declareProperty(xwikiContextProperty);
+        context.newProperty("xwikicontext").initial(xwikicontext).inherited().declare();
         Map velocitycontext = new HashMap();
-        ExecutionContextProperty velocityContextProperty = new ExecutionContextProperty("velocitycontext");
-        velocityContextProperty.setValue(xwikicontext);
-        velocityContextProperty.setInherited(true);
-        velocityContextProperty.setFinal(true);
-        velocityContextProperty.setCloneValue(true);
-        context.declareProperty(velocityContextProperty);
+        context.newProperty("velocitycontext").initial(xwikicontext)
+            .inherited().makeFinal().cloneValue().declare();
 
         DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager(execution);
         contextManager.addExecutionContextInitializer(new ExecutionContextInitializer() {
