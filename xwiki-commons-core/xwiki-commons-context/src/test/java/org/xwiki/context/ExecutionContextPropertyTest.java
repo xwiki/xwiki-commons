@@ -22,12 +22,37 @@ package org.xwiki.context;
 import org.junit.Test;
 import org.junit.Assert;
 
+import java.util.Map;
+import java.lang.reflect.Field;
+
+import org.xwiki.context.internal.ExecutionContextProperty;
+
 /**
  * @version $Id$ 
  * @since 4.3M1
  */
 public class ExecutionContextPropertyTest
 {
+
+    /**
+     * Access the properties via reflection.  This method requires ReflectPermission suppressAccessChecks.
+     *
+     * @param context The execution context
+     * @param key The property key
+     * @return the execution context property corresponding to the given key.
+     */
+    @SuppressWarnings("unchecked")
+    private ExecutionContextProperty fetch(ExecutionContext context, String key) throws Exception
+    {
+        Field propertiesField = ExecutionContext.class.getDeclaredField("properties");
+
+        propertiesField.setAccessible(true);
+
+        Map<String, ExecutionContextProperty> properties
+            = (Map<String, ExecutionContextProperty>) propertiesField.get(context);
+
+        return properties.get(key);
+    }
 
     @Test
     public void defaultValues() throws Exception
@@ -37,16 +62,16 @@ public class ExecutionContextPropertyTest
         ExecutionContext context = new ExecutionContext();
         context.newProperty(key).declare();
 
-        Assert.assertFalse(context.fetchProperty(key).isFinal());
-        Assert.assertTrue(key.equals(context.fetchProperty(key).getKey()));
-        Assert.assertTrue(null == context.fetchProperty(key).getValue());
-        Assert.assertFalse(context.fetchProperty(key).isInherited());
+        Assert.assertFalse(fetch(context, key).isFinal());
+        Assert.assertTrue(key.equals(fetch(context, key).getKey()));
+        Assert.assertTrue(null == fetch(context, key).getValue());
+        Assert.assertFalse(fetch(context, key).isInherited());
 
         Object o = new Object();
         context.setProperty(key, o);
-        Assert.assertTrue(context.fetchProperty(key).getValue() == o);
+        Assert.assertTrue(fetch(context, key).getValue() == o);
         context.setProperty(key, null);
-        Assert.assertTrue(context.fetchProperty(key).getValue() == null);
+        Assert.assertTrue(fetch(context, key).getValue() == null);
     }
 
     @Test
@@ -62,21 +87,21 @@ public class ExecutionContextPropertyTest
 
         context.newProperty(k1).initial(value).declare();
 
-        Assert.assertTrue(value == context.fetchProperty(k1).clone().getValue());
+        Assert.assertTrue(value == fetch(context, k1).clone().getValue());
 
         context.newProperty(k2).initial(value).cloneValue().declare();
 
-        TestCloneable clonedValue = (TestCloneable) context.fetchProperty(k2).clone().getValue();
+        TestCloneable clonedValue = (TestCloneable) fetch(context, k2).clone().getValue();
 
         Assert.assertTrue(value != clonedValue && clonedValue.value.equals("clone"));
 
         context.newProperty(k3).initial(value).cloneValue().makeFinal().inherited().declare();
 
-        Assert.assertTrue(context.fetchProperty(k3).clone().isClonedFrom(context.fetchProperty(k3)));
+        Assert.assertTrue(fetch(context, k3).clone().isClonedFrom(fetch(context, k3)));
     }
 
     @Test(expected=IllegalStateException.class)
-    public void cloningNonPublicCloneMethod()
+    public void cloningNonPublicCloneMethod() throws Exception
     {
         ExecutionContext context = new ExecutionContext();
 
@@ -86,7 +111,7 @@ public class ExecutionContextPropertyTest
 
         context.newProperty(key).cloneValue().initial(value).declare();
 
-        context.fetchProperty(key).clone();
+        fetch(context, key).clone();
     }
 
     @Test(expected=IllegalArgumentException.class)
