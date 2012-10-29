@@ -41,7 +41,9 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.test.RepositoryUtil;
+import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.AbstractComponentTestCase;
 
@@ -249,4 +251,14 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
             is.close();
         }
     }
+    
+    @Test
+    public void testResolveVersions() throws ExtensionException, IOException
+    {
+        IterableResult<Version> versions = this.repositoryManager.resolveVersions(this.extensionId.getId(), 0, -1);
+
+        Assert.assertEquals(1, versions.getTotalHits());
+        Assert.assertEquals(1, versions.getSize());
+        Assert.assertEquals(0, versions.getOffset());
+    }    
 }
