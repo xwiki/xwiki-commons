@@ -189,18 +189,6 @@ public class ExecutionContext
     }
 
     /**
-     * This method is intentionally non-public and should only be used for unit testing the property objects.
-     * 
-     * @param key The property key.
-     * @return The declared property.
-     * @since 4.3M2
-     */
-    ExecutionContextProperty fetchProperty(String key)
-    {
-        return properties.get(key);
-    }
-
-    /**
      * @param property Property to check.
      * @throws IllegalStateException if the property may not be ignored.
      */
@@ -332,5 +320,4 @@ public class ExecutionContext
             return this;
         }
     }
-
 }
