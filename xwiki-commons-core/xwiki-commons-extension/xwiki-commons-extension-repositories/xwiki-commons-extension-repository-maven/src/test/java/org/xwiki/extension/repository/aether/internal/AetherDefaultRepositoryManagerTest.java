@@ -253,7 +253,7 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
     }
     
     @Test
-    public void testResolveVersions() throws ExtensionException, IOException
+    public void testResolveVersions() throws ExtensionException
     {
         IterableResult<Version> versions = this.repositoryManager.resolveVersions(this.extensionId.getId(), 0, -1);
 
