@@ -90,7 +90,7 @@ public class DefaultBeanManager implements BeanManager
             try {
                 this.validatorFactory = Validation.buildDefaultValidatorFactory();
             } catch (ValidationException e) {
-                this.logger.warn("Unable to find default JSR 303 provider. There will be no Java bean validation.");
+                this.logger.debug("Unable to find default JSR 303 provider. There will be no Java bean validation.");
             }
         }
 
