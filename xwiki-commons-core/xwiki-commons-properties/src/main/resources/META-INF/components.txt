@@ -4,3 +4,5 @@ org.xwiki.properties.internal.converter.ConvertUtilsConverter
 org.xwiki.properties.internal.converter.ColorConverter
 org.xwiki.properties.internal.converter.EnumConverter
 org.xwiki.properties.internal.converter.ListConverter
+org.xwiki.properties.internal.converter.LocaleConverter
+org.xwiki.properties.internal.converter.SetConverter
