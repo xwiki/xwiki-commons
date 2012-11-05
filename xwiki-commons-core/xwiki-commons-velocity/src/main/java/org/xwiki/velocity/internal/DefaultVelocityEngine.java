@@ -35,7 +35,6 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.directive.Scope;
 import org.apache.velocity.runtime.directive.StopCommand;
-import org.apache.velocity.runtime.log.LogChute;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -46,18 +45,21 @@ import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.XWikiVelocityException;
-import org.xwiki.velocity.internal.log.SLF4JLogChute;
+import org.xwiki.velocity.internal.log.AbstractSLF4JLogChute;
 
 /**
  * Default implementation of the Velocity service which initializes the Velocity system using configuration values
  * defined in the component's configuration. Note that the {@link #initialize} method has to be executed before any
  * other method can be called.
+ * <p>
+ * This class implements {@link org.apache.velocity.runtime.log.LogChute} (through {@link AbstractSLF4JLogChute}) to
+ * access to {@link RuntimeServices}.
  * 
  * @version $Id$
  */
 @Component
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class DefaultVelocityEngine implements VelocityEngine, LogChute
+public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements VelocityEngine
 {
     /**
      * The name of the context variable used for the template-level scope.
@@ -110,7 +112,6 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
 
         // Add the Component Manager to allow Velocity extensions to lookup components.
         velocityEngine.setApplicationAttribute(ComponentManager.class.getName(), this.componentManager);
-        velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM, new SLF4JLogChute());
 
         initializeProperties(velocityEngine, this.velocityConfiguration.getProperties(), overridingProperties);
 
@@ -127,7 +128,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
      * @param velocityEngine the Velocity engine against which to initialize Velocity properties
      * @param configurationProperties the Velocity properties coming from XWiki's configuration
      * @param overridingProperties the Velocity properties that override the properties coming from XWiki's
-     *        configuration
+     *            configuration
      */
     private void initializeProperties(org.apache.velocity.app.VelocityEngine velocityEngine,
         Properties configurationProperties, Properties overridingProperties)
@@ -209,8 +210,9 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
             nodeTree = this.rsvc.parse(source, templateName, false);
 
             if (nodeTree != null) {
-                InternalContextAdapterImpl ica = new InternalContextAdapterImpl(
-                    context != null ? context : this.velocityContextFactory.createContext());
+                InternalContextAdapterImpl ica =
+                    new InternalContextAdapterImpl(context != null ? context
+                        : this.velocityContextFactory.createContext());
                 ica.pushCurrentTemplateName(templateName);
                 boolean provideTemplateScope = this.rsvc.getBoolean("template.provide.scope.control", true);
                 Object templateScopeMarker = new Object();
@@ -246,20 +248,12 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * @since 2.4M2
-     */
     @Override
     public void clearMacroNamespace(String templateName)
     {
         this.rsvc.dumpVMNamespace(templateName);
     }
 
-    /**
-     * {@inheritDoc}
-     * @since 2.4RC1
-     */
     @Override
     public void startedUsingMacroNamespace(String namespace)
     {
@@ -273,10 +267,6 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * @since 2.4RC1
-     */
     @Override
     public void stoppedUsingMacroNamespace(String namespace)
     {
@@ -284,7 +274,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
             Integer count = this.namespaceUsageCount.get(namespace);
             if (count == null) {
                 // This shouldn't happen
-                this.log(LogChute.WARN_ID, "Wrong usage count for namespace [" + namespace + "]");
+                this.logger.warn("Wrong usage count for namespace [{}]", namespace);
                 return;
             }
             count = count - 1;
@@ -312,75 +302,8 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
     }
 
     @Override
-    public void log(int level, String message)
+    public Logger getLogger()
     {
-        switch (level) {
-            case LogChute.WARN_ID:
-                this.logger.warn(message);
-                break;
-            case LogChute.INFO_ID:
-                // Velocity info messages are too verbose, just consider them as debug messages...
-                this.logger.debug(message);
-                break;
-            case LogChute.DEBUG_ID:
-                this.logger.debug(message);
-                break;
-            case LogChute.ERROR_ID:
-                this.logger.error(message);
-                break;
-            default:
-                this.logger.debug(message);
-                break;
-        }
-    }
-
-    @Override
-    public void log(int level, String message, Throwable throwable)
-    {
-        switch (level) {
-            case LogChute.WARN_ID:
-                this.logger.warn(message, throwable);
-                break;
-            case LogChute.INFO_ID:
-                // Velocity info messages are too verbose, just consider them as debug messages...
-                this.logger.debug(message, throwable);
-                break;
-            case LogChute.DEBUG_ID:
-                this.logger.debug(message, throwable);
-                break;
-            case LogChute.ERROR_ID:
-                this.logger.error(message, throwable);
-                break;
-            default:
-                this.logger.debug(message, throwable);
-                break;
-        }
-    }
-
-    @Override
-    public boolean isLevelEnabled(int level)
-    {
-        boolean isEnabled;
-
-        switch (level) {
-            case LogChute.WARN_ID:
-                isEnabled = this.logger.isWarnEnabled();
-                break;
-            case LogChute.INFO_ID:
-                // Velocity info messages are too verbose, just consider them as debug messages...
-                isEnabled = this.logger.isDebugEnabled();
-                break;
-            case LogChute.DEBUG_ID:
-                isEnabled = this.logger.isDebugEnabled();
-                break;
-            case LogChute.ERROR_ID:
-                isEnabled = this.logger.isErrorEnabled();
-                break;
-            default:
-                isEnabled = this.logger.isDebugEnabled();
-                break;
-        }
-
-        return isEnabled;
+        return this.logger;
     }
 }

@@ -20,7 +20,6 @@
 package org.xwiki.velocity.internal.log;
 
 import org.apache.velocity.runtime.RuntimeServices;
-import org.apache.velocity.runtime.log.LogChute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  * @since 4.3M2
  */
-public class SLF4JLogChute implements LogChute
+public class SLF4JLogChute extends AbstractSLF4JLogChute
 {
     /**
      * The name of the property containing custom logger name.
@@ -48,7 +47,7 @@ public class SLF4JLogChute implements LogChute
     protected Logger logger;
 
     @Override
-    public void init(RuntimeServices rs) throws Exception
+    public void init(RuntimeServices rs)
     {
         String name = (String) rs.getProperty(RUNTIME_LOG_SLF4J_LOGGER);
 
@@ -57,81 +56,11 @@ public class SLF4JLogChute implements LogChute
         }
 
         this.logger = LoggerFactory.getLogger(name);
-
-        log(LogChute.DEBUG_ID, "SLF4JLogChute name is '" + name + "'");
     }
 
     @Override
-    public void log(int level, String message)
+    protected Logger getLogger()
     {
-        switch (level) {
-            case LogChute.WARN_ID:
-                this.logger.warn(message);
-                break;
-            case LogChute.INFO_ID:
-                this.logger.info(message);
-                break;
-            case LogChute.TRACE_ID:
-                this.logger.trace(message);
-                break;
-            case LogChute.ERROR_ID:
-                this.logger.error(message);
-                break;
-            case LogChute.DEBUG_ID:
-            default:
-                this.logger.debug(message);
-                break;
-        }
-    }
-
-    @Override
-    public void log(int level, String message, Throwable t)
-    {
-        switch (level) {
-            case LogChute.WARN_ID:
-                this.logger.warn(message, t);
-                break;
-            case LogChute.INFO_ID:
-                this.logger.info(message, t);
-                break;
-            case LogChute.TRACE_ID:
-                this.logger.trace(message, t);
-                break;
-            case LogChute.ERROR_ID:
-                this.logger.error(message, t);
-                break;
-            case LogChute.DEBUG_ID:
-            default:
-                this.logger.debug(message, t);
-                break;
-        }
-    }
-
-    @Override
-    public boolean isLevelEnabled(int level)
-    {
-        boolean islevelEnabled;
-
-        switch (level) {
-            case LogChute.DEBUG_ID:
-                islevelEnabled = this.logger.isDebugEnabled();
-                break;
-            case LogChute.INFO_ID:
-                islevelEnabled = this.logger.isInfoEnabled();
-                break;
-            case LogChute.TRACE_ID:
-                islevelEnabled = this.logger.isTraceEnabled();
-                break;
-            case LogChute.WARN_ID:
-                islevelEnabled = this.logger.isWarnEnabled();
-                break;
-            case LogChute.ERROR_ID:
-                islevelEnabled = this.logger.isErrorEnabled();
-                break;
-            default:
-                islevelEnabled = true;
-        }
-
-        return islevelEnabled;
+        return this.logger;
     }
 }
