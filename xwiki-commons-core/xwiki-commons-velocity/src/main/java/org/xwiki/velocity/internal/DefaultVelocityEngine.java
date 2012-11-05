@@ -46,6 +46,7 @@ import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.XWikiVelocityException;
+import org.xwiki.velocity.internal.log.SLF4JLogChute;
 
 /**
  * Default implementation of the Velocity service which initializes the Velocity system using configuration values
@@ -109,6 +110,7 @@ public class DefaultVelocityEngine implements VelocityEngine, LogChute
 
         // Add the Component Manager to allow Velocity extensions to lookup components.
         velocityEngine.setApplicationAttribute(ComponentManager.class.getName(), this.componentManager);
+        velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM, new SLF4JLogChute());
 
         initializeProperties(velocityEngine, this.velocityConfiguration.getProperties(), overridingProperties);
 
