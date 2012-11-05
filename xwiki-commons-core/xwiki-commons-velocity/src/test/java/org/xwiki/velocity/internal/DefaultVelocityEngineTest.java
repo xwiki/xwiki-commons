@@ -65,6 +65,7 @@ public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
 
             // Ignore all calls to debug() and enable all logs so that we can assert info(), warn() and error()
             // calls.
+            ignoring(any(Logger.class)).method("trace");
             ignoring(any(Logger.class)).method("debug");
             allowing(any(Logger.class)).method("is.*Enabled"); will(returnValue(true));
         }});
