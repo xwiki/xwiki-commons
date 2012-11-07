@@ -249,6 +249,13 @@
         </exclusions>
       </dependency>
 
+      <!-- Groovy engine. Used in both commons and platform -->
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>1.8.8</version>
+      </dependency>
+
       <!-- Everybody logs -->
       <dependency>
         <groupId>org.slf4j</groupId>

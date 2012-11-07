@@ -51,7 +51,6 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.8.6</version>
     </dependency>
     <!-- Adding a dependency on Ivy since groovy-all only has an optional dependency on it and since we want to bundle
          it so that XWiki users scripting in Groovy can use Grapes out of the box. -->
