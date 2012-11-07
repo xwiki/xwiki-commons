@@ -281,6 +281,13 @@
         <version>1.7.2</version>
       </dependency>
 
+      <!-- Triggerd by several Maven related projects (Dexis, Maven, Aether) as transitive dependency -->
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>2.0.7</version>
+      </dependency>
+
       <!-- Everybody tests -->
       <!-- Note: We're using junit-dep and not junit because the junit artifact bundles the Hamcrest jar, leading to
            JAR Classloader hell with incompatible versions between the Hamcrest version bundled in JUnit and the
