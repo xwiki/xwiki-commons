@@ -43,6 +43,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.internal.xstream.SafeArrayConverter;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -102,6 +103,9 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     public void initialize() throws InitializationException
     {
         this.xstream = new XStream();
+
+        // Make unserialization of LogEvent as strong as possible
+        this.xstream.registerConverter(new SafeArrayConverter(this.xstream.getMapper(), this.logger));
 
         try {
             load();
