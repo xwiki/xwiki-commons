@@ -249,6 +249,13 @@
         </exclusions>
       </dependency>
 
+      <!-- Used by reflections and other projects in commons, platform and rendering -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>12.0</version>
+      </dependency>
+
       <!-- Groovy engine. Used in both commons and platform -->
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
