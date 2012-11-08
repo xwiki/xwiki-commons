@@ -253,7 +253,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>12.0</version>
+        <version>13.0.1</version>
       </dependency>
 
       <!-- Groovy engine. Used in both commons and platform -->
