@@ -52,7 +52,7 @@
     <restlet.version>2.0.14</restlet.version>
 
     <!-- Selenium -->
-    <selenium.version>2.25.0</selenium.version>
+    <selenium.version>2.26.0</selenium.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>4.2</xwiki.clirr.previous.version>
