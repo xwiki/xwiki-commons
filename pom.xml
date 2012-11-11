@@ -68,6 +68,10 @@
     <!-- Default Clover TPC threshold for the Quality profile. We use 100% to force each module to define its
          own threshold. Note that good values are above 70%. -->
     <xwiki.clover.targetPercentage>100%</xwiki.clover.targetPercentage>
+
+    <!-- Default Jacoco Instruction Ratio for the Quality profile. We use 100% to force each module to define its
+         own ratio. Note that good values are above 70%. -->
+    <xwiki.jacoco.instructionRatio>100</xwiki.jacoco.instructionRatio>
   </properties>
   <prerequisites>
     <maven>3.0</maven>
@@ -877,15 +881,7 @@ mmmm]]></license>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.5.10.201208310627</version>
-          <executions>
-            <execution>
-              <id>prepare</id>
-              <goals>
-                <goal>prepare-agent</goal>
-              </goals>
-            </execution>
-          </executions>
+          <version>0.6.1-SNAPSHOT</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1050,6 +1046,38 @@ mmmm]]></license>
     <!-- Profile for QA verifications that takes time -->
     <profile>
       <id>quality</id>
+      <build>
+        <plugins>
+          <!-- Fail the build if the test coverage is below a given value. -->
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jacoco-prepare</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>jacoco-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <check>
+                <instructionRatio>${xwiki.jacoco.instructionRatio}</instructionRatio>
+              </check>}
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!-- Alternate QA profiles that uses Clover (slower than Jacoco) to test if coverage is below a given value -->
+    <profile>
+      <id>quality-clover</id>
       <build>
         <plugins>
           <!-- Fail the build if the test coverage is below a given value. -->
