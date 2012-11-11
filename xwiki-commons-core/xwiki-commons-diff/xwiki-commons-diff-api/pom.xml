@@ -35,6 +35,7 @@
   <description>XWiki Commons - Diff API</description>
   <properties>
     <xwiki.clover.targetPercentage>51.8%</xwiki.clover.targetPercentage>
+    <xwiki.jacoco.instructionRatio>56.88</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
