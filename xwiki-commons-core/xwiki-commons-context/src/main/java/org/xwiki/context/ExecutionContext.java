@@ -196,7 +196,7 @@ public class ExecutionContext
     {
         if (property.isFinal()) {
             ExecutionContextProperty shadowingProperty = this.properties.get(property.getKey());
-            if (!shadowingProperty.isClonedFrom(property)) {
+            if (!(shadowingProperty == property || shadowingProperty.isClonedFrom(property))) {
                 throw new IllegalStateException(
                      String.format("Execution context cannot be inherited because it already contains"
                                  + " property [%s] which must be inherited because it is an inherited"
