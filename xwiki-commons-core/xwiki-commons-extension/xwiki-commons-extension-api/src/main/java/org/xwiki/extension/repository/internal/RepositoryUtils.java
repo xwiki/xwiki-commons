@@ -130,7 +130,8 @@ public final class RepositoryUtils
     {
         List<Extension> result = new ArrayList<Extension>();
 
-        Pattern patternMatcher = Pattern.compile(SEARCH_PATTERN_SUFFIXNPREFIX + pattern + SEARCH_PATTERN_SUFFIXNPREFIX);
+        Pattern patternMatcher =
+            Pattern.compile(SEARCH_PATTERN_SUFFIXNPREFIX + pattern.toLowerCase() + SEARCH_PATTERN_SUFFIXNPREFIX);
 
         for (Extension extension : extensions) {
             if (matches(patternMatcher, extension)) {
@@ -142,7 +143,9 @@ public final class RepositoryUtils
     }
 
     /**
-     * @param patternMatcher matches a set of elements
+     * Matches an extension in a case insensitive way.
+     * 
+     * @param patternMatcher the pattern to match
      * @param extension the extension to match
      * @return true if one of the element is matched
      */
@@ -153,7 +156,9 @@ public final class RepositoryUtils
     }
 
     /**
-     * @param patternMatcher matches a set of elements
+     * Matches a set of elements in a case insensitive way.
+     * 
+     * @param patternMatcher the pattern to match
      * @param elements the elements to match
      * @return true if one of the element is matched
      */
@@ -161,7 +166,7 @@ public final class RepositoryUtils
     {
         for (Object element : elements) {
             if (element != null) {
-                if (patternMatcher.matcher(element.toString()).matches()) {
+                if (patternMatcher.matcher(element.toString().toLowerCase()).matches()) {
                     return true;
                 }
             }
