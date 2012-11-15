@@ -324,16 +324,21 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                 if (extensionId != null) {
                     String[] mavenId = StringUtils.split(extensionId, ':');
 
-                    URL descriptorUrl =
-                        this.environment.getResource(String.format("/META-INF/maven/%s/%s/pom.xml", mavenId[0],
-                            mavenId[1]));
+                    String descriptorPath = String.format("/META-INF/maven/%s/%s/pom.xml", mavenId[0], mavenId[1]);
 
-                    try {
-                        DefaultCoreExtension coreExtension = parseMavenPom(descriptorUrl, repository);
+                    URL descriptorUrl = this.environment.getResource(descriptorPath);
 
-                        return coreExtension;
-                    } catch (Exception e) {
-                        this.logger.warn("Failed to pase extension descriptor [{}]", descriptorUrl, e);
+                    if (descriptorUrl != null) {
+                        try {
+                            DefaultCoreExtension coreExtension = parseMavenPom(descriptorUrl, repository);
+
+                            return coreExtension;
+                        } catch (Exception e) {
+                            this.logger.warn("Failed to pase extension descriptor [{}]", descriptorUrl, e);
+                        }
+                    } else {
+                        this.logger.warn("Can't find resource file [{}] which contains distribution informations.",
+                            descriptorPath);
                     }
                 }
             } catch (IOException e) {
