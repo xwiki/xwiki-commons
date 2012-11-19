@@ -160,10 +160,8 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
             try {
                 return repository.resolve(extensionId);
             } catch (ResolveException e) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Could not find extension [{}] in repository [{}]", new Object[] {extensionId,
-                    repository.getDescriptor(), e});
-                }
+                this.logger.debug("Could not find extension [{}] in repository [{}]", extensionId,
+                    repository.getDescriptor(), e);
             }
         }
 
@@ -177,10 +175,8 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
             try {
                 return repository.resolve(extensionDependency);
             } catch (ResolveException e) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Could not find extension dependency [{}] in repository [{}]", new Object[] {
-                    extensionDependency, repository.getDescriptor(), e});
-                }
+                this.logger.debug("Could not find extension dependency [{}] in repository [{}]", extensionDependency,
+                    repository.getDescriptor(), e);
             }
         }
 
@@ -195,9 +191,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
             try {
                 return repository.resolveVersions(id, offset, nb);
             } catch (ResolveException e) {
-                if (this.logger.isDebugEnabled()) {
-                    this.logger.debug("Could not find versions for extension with id [{}]", id, e);
-                }
+                this.logger.debug("Could not find versions for extension with id [{}]", id, e);
             }
         }
 
@@ -234,7 +228,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
                 }
             } catch (SearchException e) {
                 this.logger.error("Failed to search on repository [{}] with pattern=[{}], offset=[{}] and nb=[{}]."
-                    + " Ignore and go to next repository.", new Object[] {repository, pattern, offset, nb, e});
+                    + " Ignore and go to next repository.", repository, pattern, offset, nb, e);
             }
         }
 
