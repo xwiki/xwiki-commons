@@ -175,9 +175,10 @@ public class DefaultDiffManager implements DiffManager
      * @param patchNext the diff between common ancestor and next version
      * @param patchCurrent the diff between common ancestor and current version
      * @param configuration the configuration of the merge behavior
+     * @throws MergeException failed to merge
      */
     private <E> void merge(DefaultMergeResult<E> mergeResult, List<E> commonAncestor, Patch<E> patchNext,
-        Patch<E> patchCurrent, MergeConfiguration<E> configuration)
+        Patch<E> patchCurrent, MergeConfiguration<E> configuration) throws MergeException
     {
         // Merge the two diffs
         List<E> merged = new ArrayList<E>();
@@ -188,14 +189,21 @@ public class DefaultDiffManager implements DiffManager
         Delta<E> deltaCurrent = nextElement(patchCurrent);
 
         // Before common ancestor
-        if (deltaCurrent.getType() == Type.INSERT && deltaCurrent.getPrevious().getIndex() == 0) {
-            merged.addAll(deltaCurrent.getNext().getElements());
+        if (deltaCurrent.getType() == Type.INSERT && deltaCurrent.getPrevious().getIndex() == 0
+            && deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
+            merged.addAll(or(deltaCurrent.getNext().getElements(), deltaNext.getNext().getElements()));
             deltaCurrent = nextElement(patchCurrent);
-        }
-
-        if (deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
-            merged.addAll(deltaNext.getNext().getElements());
             deltaNext = nextElement(patchNext);
+        } else {
+            if (deltaCurrent.getType() == Type.INSERT && deltaCurrent.getPrevious().getIndex() == 0) {
+                merged.addAll(deltaCurrent.getNext().getElements());
+                deltaCurrent = nextElement(patchCurrent);
+            }
+
+            if (deltaNext.getType() == Type.INSERT && deltaNext.getPrevious().getIndex() == 0) {
+                merged.addAll(deltaNext.getNext().getElements());
+                deltaNext = nextElement(patchNext);
+            }
         }
 
         // In common ancestor
@@ -212,10 +220,12 @@ public class DefaultDiffManager implements DiffManager
                             merged.add(commonAncestor.get(index));
                         }
                     } else if (deltaCurrent.getType() == Type.INSERT) {
-                        index = apply(deltaCurrent, merged, index);
-                        index = apply(deltaNext, merged, index);
                         if (deltaNext.getType() == Type.INSERT) {
+                            merged.addAll(or(deltaNext.getNext().getElements(), deltaCurrent.getNext().getElements()));
                             merged.add(commonAncestor.get(index));
+                        } else {
+                            index = apply(deltaCurrent, merged, index);
+                            index = apply(deltaNext, merged, index);
                         }
                     } else if (deltaNext.getType() == Type.INSERT) {
                         index = apply(deltaNext, merged, index);
@@ -269,6 +279,39 @@ public class DefaultDiffManager implements DiffManager
         if (deltaNext != null) {
             merged.addAll(deltaNext.getNext().getElements());
         }
+    }
+
+    private <E> List<E> or(List<E> previous, List<E> next) throws MergeException
+    {
+        DiffResult<E> diffCurrentResult;
+        try {
+            diffCurrentResult = diff(previous, next, null);
+        } catch (DiffException e) {
+            throw new MergeException("Faile to diff between two versions", e);
+        }
+
+        List<E> result = new ArrayList<E>(previous.size() + next.size());
+        int index = 0;
+        for (Delta<E> delta : diffCurrentResult.getPatch()) {
+            if (delta.getPrevious().getIndex() > index) {
+                result.addAll(previous.subList(index, delta.getPrevious().getIndex()));
+            }
+
+            if (delta.getType() != Type.INSERT) {
+                result.addAll(delta.getPrevious().getElements());
+            }
+            if (delta.getType() != Type.DELETE) {
+                result.addAll(delta.getNext().getElements());
+            }
+
+            index = delta.getPrevious().getLastIndex() + 1;
+        }
+
+        if (previous.size() > index) {
+            result.addAll(previous.subList(index, previous.size()));
+        }
+
+        return result;
     }
 
     private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext)
