@@ -221,7 +221,8 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
                 Collection<LocalExtension> dependencyVersionsCollection =
                     this.localRepository.getLocalExtensionVersions(dependency.getId());
                 if (!dependencyVersionsCollection.isEmpty()) {
-                    List<LocalExtension> dependencyVersions = new ArrayList<LocalExtension>(dependencyVersionsCollection);
+                    List<LocalExtension> dependencyVersions =
+                        new ArrayList<LocalExtension>(dependencyVersionsCollection);
                     Collections.reverse(dependencyVersions);
                     for (LocalExtension dependencyVersion : dependencyVersions) {
                         if (isCompatible(dependencyVersion.getId().getVersion(), dependency.getVersionConstraint())) {
@@ -273,19 +274,35 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     private void removeInstalledExtension(DefaultInstalledExtension installedExtension, String namespace)
         throws UninstallException
     {
-        if (namespace == null) {
-            this.extensionNamespaceByFeature.remove(installedExtension.getId().getId());
-        } else {
-            Map<String, InstalledFeature> namespaceInstalledExtension =
-                this.extensionNamespaceByFeature.get(installedExtension.getId().getId());
+        removeInstalledFeature(installedExtension.getId().getId(), namespace);
 
-            namespaceInstalledExtension.remove(namespace);
+        for (String feature : installedExtension.getFeatures()) {
+            removeInstalledFeature(feature, namespace);
         }
 
         removeFromBackwardDependencies(installedExtension, namespace);
 
         if (!installedExtension.isInstalled()) {
             this.extensions.remove(installedExtension.getId());
+        }
+    }
+
+    /**
+     * Uninstall provided extension.
+     * 
+     * @param feature the feature to uninstall
+     * @param namespace the namespace
+     * @throws UninstallException error when trying to uninstall extension
+     * @see #uninstallExtension(LocalExtension, String)
+     */
+    private void removeInstalledFeature(String feature, String namespace) throws UninstallException
+    {
+        if (namespace == null) {
+            this.extensionNamespaceByFeature.remove(feature);
+        } else {
+            Map<String, InstalledFeature> namespaceInstalledExtension = this.extensionNamespaceByFeature.get(feature);
+
+            namespaceInstalledExtension.remove(namespace);
         }
     }
 
