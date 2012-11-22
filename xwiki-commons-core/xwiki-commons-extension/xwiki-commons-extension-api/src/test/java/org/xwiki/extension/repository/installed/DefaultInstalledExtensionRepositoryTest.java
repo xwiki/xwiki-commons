@@ -195,21 +195,54 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
         // uninstall from root
 
         this.installedExtensionRepository.uninstallExtension(this.resources.installed, null);
+
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(),
+            null));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(),
+            "namespace"));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId()
+            + "-feature", null));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId()
+            + "-feature", "namespace"));
+
         this.installedExtensionRepository.uninstallExtension(this.resources.installedDependency, null);
+
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.INSTALLED_DEPENDENCY_ID.getId(), null));
 
         // uninstall from namespace
 
         this.installedExtensionRepository.installExtension(this.resources.installedDependency, "namespace", false);
         this.installedExtensionRepository.installExtension(this.resources.installed, "namespace", false);
+
         this.installedExtensionRepository.uninstallExtension(this.resources.installed, "namespace");
+
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(),
+            "namespace"));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId()
+            + "-feature", "namespace"));
+
         this.installedExtensionRepository.uninstallExtension(this.resources.installedDependency, "namespace");
+
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.INSTALLED_DEPENDENCY_ID.getId(), "namespace"));
 
         // uninstall from namespace with dependency on root
 
         this.installedExtensionRepository.installExtension(this.resources.installedDependency, null, false);
         this.installedExtensionRepository.installExtension(this.resources.installed, "namespace", false);
+
         this.installedExtensionRepository.uninstallExtension(this.resources.installed, "namespace");
+
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(),
+            "namespace"));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId()
+            + "-feature", "namespace"));
+
         this.installedExtensionRepository.uninstallExtension(this.resources.installedDependency, null);
+
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.INSTALLED_DEPENDENCY_ID.getId(), null));
     }
 
     @Test
@@ -353,5 +386,29 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
         Assert.assertEquals(4, result.getTotalHits());
         Assert.assertEquals(1, result.getSize());
         Assert.assertEquals(-1, result.getOffset());
+    }
+
+    @Test
+    public void testgetInstalledExtensionFeatureNamespace()
+    {
+        InstalledExtension extension;
+
+        // installed extension
+
+        extension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(),
+                TestResources.INSTALLED_ID.getVersion().toString());
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_ID, extension.getId());
+
+        // installed feature
+
+        extension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId() + "-feature",
+                TestResources.INSTALLED_ID.getVersion().toString());
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_ID, extension.getId());
     }
 }
