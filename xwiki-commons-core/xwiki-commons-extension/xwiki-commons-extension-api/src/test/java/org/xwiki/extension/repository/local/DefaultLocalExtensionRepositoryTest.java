@@ -24,6 +24,7 @@ import java.util.Collections;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.LocalExtension;
@@ -34,6 +35,7 @@ import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
 import org.xwiki.extension.test.RepositoryUtil;
+import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.AbstractComponentTestCase;
 
 public class DefaultLocalExtensionRepositoryTest extends AbstractComponentTestCase
@@ -89,6 +91,35 @@ public class DefaultLocalExtensionRepositoryTest extends AbstractComponentTestCa
         }
 
         Extension extension = this.localExtensionRepository.resolve(TestResources.INSTALLED_ID);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_ID, extension.getId());
+    }
+
+    @Test
+    public void testResolveDependency() throws ResolveException
+    {
+        try {
+            this.localExtensionRepository.resolve(new DefaultExtensionDependency("unexistingextension",
+                new DefaultVersionConstraint("version")));
+
+            Assert.fail("Resolve should have failed");
+        } catch (ResolveException expected) {
+            // expected
+        }
+
+        try {
+            this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
+                new DefaultVersionConstraint("wrongversion")));
+
+            Assert.fail("Resolve should have failed");
+        } catch (ResolveException expected) {
+            // expected
+        }
+
+        Extension extension =
+            this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
+                new DefaultVersionConstraint(TestResources.INSTALLED_ID.getVersion().getValue())));
 
         Assert.assertNotNull(extension);
         Assert.assertEquals(TestResources.INSTALLED_ID, extension.getId());

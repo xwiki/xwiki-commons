@@ -38,7 +38,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.CoreExtension;
-import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -47,16 +46,11 @@ import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
-import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
-import org.xwiki.extension.repository.internal.RepositoryUtils;
-import org.xwiki.extension.repository.result.CollectionIterableResult;
-import org.xwiki.extension.repository.result.IterableResult;
-import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.repository.search.Searchable;
+import org.xwiki.extension.repository.internal.local.AbstractCachedExtensionRepository;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 
@@ -69,8 +63,8 @@ import org.xwiki.extension.version.VersionConstraint;
 @Component
 @Singleton
 // TODO: move all installation related code from local repository to here
-public class DefaultInstalledExtensionRepository extends AbstractExtensionRepository implements
-    InstalledExtensionRepository, Initializable, Searchable
+public class DefaultInstalledExtensionRepository extends AbstractCachedExtensionRepository<DefaultInstalledExtension>
+    implements InstalledExtensionRepository, Initializable
 {
     private static class InstalledFeature
     {
@@ -95,6 +89,9 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         }
     }
 
+    /**
+     * Used to access all local extensions.
+     */
     @Inject
     private transient LocalExtensionRepository localRepository;
 
@@ -111,26 +108,12 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     private transient Logger logger;
 
     /**
-     * The installed extensions.
-     */
-    private Map<ExtensionId, DefaultInstalledExtension> extensions =
-        new ConcurrentHashMap<ExtensionId, DefaultInstalledExtension>();
-
-    /**
      * The installed extensions sorted by provided feature and namespace.
      * <p>
      * <feature, <namespace, extension>>
      */
     private Map<String, Map<String, InstalledFeature>> extensionNamespaceByFeature =
         new ConcurrentHashMap<String, Map<String, InstalledFeature>>();
-
-    /**
-     * The installed extensions grouped by ids and ordered by version DESC.
-     * <p>
-     * <extension id, extensions>
-     */
-    private Map<String, List<DefaultInstalledExtension>> extensionsVersionsById =
-        new ConcurrentHashMap<String, List<DefaultInstalledExtension>>();
 
     @Override
     public void initialize() throws InitializationException
@@ -283,7 +266,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         removeFromBackwardDependencies(installedExtension, namespace);
 
         if (!installedExtension.isInstalled()) {
-            this.extensions.remove(installedExtension.getId());
+            removeCachedExtension(installedExtension);
         }
     }
 
@@ -297,6 +280,8 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      */
     private void removeInstalledFeature(String feature, String namespace) throws UninstallException
     {
+        // Extensions namespaces by feature
+
         if (namespace == null) {
             this.extensionNamespaceByFeature.remove(feature);
         } else {
@@ -378,7 +363,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
      */
     private void addInstalledExtension(DefaultInstalledExtension installedExtension, String namespace)
     {
-        this.extensions.put(installedExtension.getId(), installedExtension);
+        addCachedExtension(installedExtension);
 
         // Register the extension in the installed extensions for the provided namespace
         addInstalledFeatureToCache(installedExtension.getId().getId(), namespace, installedExtension);
@@ -455,69 +440,6 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         }
 
         return installedExtension;
-    }
-
-    // ExtensionRepository
-
-    @Override
-    public InstalledExtension resolve(ExtensionId extensionId) throws ResolveException
-    {
-        InstalledExtension extension = this.extensions.get(extensionId);
-
-        if (extension == null) {
-            throw new ResolveException("Extension [" + extensionId + "] is not installed");
-        }
-
-        return extension;
-    }
-
-    @Override
-    public InstalledExtension resolve(ExtensionDependency extensionDependency) throws ResolveException
-    {
-        List<DefaultInstalledExtension> versions = this.extensionsVersionsById.get(extensionDependency.getId());
-
-        if (versions != null) {
-            for (DefaultInstalledExtension extension : versions) {
-                if (extensionDependency.getVersionConstraint().containsVersion(extension.getId().getVersion())) {
-                    // Return the higher version which satisfy the version constraint
-                    return extension;
-                }
-            }
-        }
-
-        throw new ResolveException("Can't find extension dependency [" + extensionDependency + "]");
-    }
-
-    @Override
-    public boolean exists(ExtensionId extensionId)
-    {
-        return this.extensions.containsKey(extensionId);
-    }
-
-    @Override
-    public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
-    {
-        List<DefaultInstalledExtension> versions = this.extensionsVersionsById.get(id);
-
-        if (versions == null) {
-            throw new ResolveException("Can't find extension with id [" + id + "]");
-        }
-
-        if (nb == 0 || offset >= versions.size()) {
-            return new CollectionIterableResult<Version>(versions.size(), offset, Collections.<Version> emptyList());
-        }
-
-        int fromId = offset < 0 ? 0 : offset;
-        int toId = offset + nb > versions.size() || nb < 0 ? versions.size() - 1 : offset + nb;
-
-        List<Version> result = new ArrayList<Version>(toId - fromId);
-
-        // Invert to sort in ascendent order
-        for (int i = toId - 1; i >= fromId; --i) {
-            result.add(versions.get(i).getId().getVersion());
-        }
-
-        return new CollectionIterableResult<Version>(versions.size(), offset, result);
     }
 
     // InstalledExtensionRepository
@@ -666,7 +588,7 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
     {
         Map<String, Collection<InstalledExtension>> result;
 
-        DefaultInstalledExtension installedExtension = (DefaultInstalledExtension) resolve(extensionId);
+        DefaultInstalledExtension installedExtension = resolve(extensionId);
 
         Collection<String> namespaces = installedExtension.getNamespaces();
 
@@ -689,11 +611,5 @@ public class DefaultInstalledExtensionRepository extends AbstractExtensionReposi
         }
 
         return result;
-    }
-
-    @Override
-    public IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException
-    {
-        return RepositoryUtils.searchInCollection(pattern, offset, nb, this.extensions.values());
     }
 }

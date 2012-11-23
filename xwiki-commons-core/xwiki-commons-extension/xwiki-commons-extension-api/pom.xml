@@ -155,7 +155,6 @@
               **/DefaultExtensionRepositoryManager.java,
               **/DefaultExtensionSerializer.java,
               **/DefaultInstalledExtensionRepository.java,
-              **/DefaultLocalExtensionRepository.java,
               **/DefaultVersion.java,
               **/AbstractInstallPlanJob.java,
               **/UnmodifiableUtils.java
