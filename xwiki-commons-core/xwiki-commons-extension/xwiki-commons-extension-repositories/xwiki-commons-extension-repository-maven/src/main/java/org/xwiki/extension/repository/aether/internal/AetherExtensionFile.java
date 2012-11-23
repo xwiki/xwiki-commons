@@ -24,15 +24,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
+import org.sonatype.aether.impl.RemoteRepositoryManager;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.ArtifactResolutionException;
 import org.sonatype.aether.resolution.ArtifactResult;
+import org.sonatype.aether.spi.connector.ArtifactDownload;
+import org.sonatype.aether.spi.connector.RepositoryConnector;
+import org.sonatype.aether.transfer.NoRepositoryConnectorException;
 import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 
@@ -88,19 +93,41 @@ public class AetherExtensionFile implements ExtensionFile
     public InputStream openStream() throws IOException
     {
         RepositorySystem repositorySystem;
+        RemoteRepositoryManager remoteRepositoryManager;
         try {
             repositorySystem = this.plexusComponentManager.getPlexus().lookup(RepositorySystem.class);
+            remoteRepositoryManager = this.plexusComponentManager.getPlexus().lookup(RemoteRepositoryManager.class);
         } catch (ComponentLookupException e) {
             throw new IOException("Failed to get org.sonatype.aether.RepositorySystem component", e);
         }
 
+        RepositorySystemSession session = this.repository.createRepositorySystemSession();
+
+        RepositoryConnector connector;
+        try {
+            connector = remoteRepositoryManager.getRepositoryConnector(session, this.repository.getRemoteRepository());
+        } catch (NoRepositoryConnectorException e) {
+            throw new IOException("Failed to download artifact [" + this.artifact + "]", e);
+        }
+
+        ArtifactDownload download = new ArtifactDownload();
+        download.setArtifact(this.artifact);
+        download.setRepositories(Arrays.asList(this.repository.getRemoteRepository()));
+
+        try {
+            connector.get(Arrays.asList(download), null);
+        } finally {
+            connector.close();    
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////:
+        
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.addRepository(this.repository.getRemoteRepository());
         artifactRequest.setArtifact(this.artifact);
 
         ArtifactResult artifactResult;
         try {
-            RepositorySystemSession session = this.repository.createRepositorySystemSession();
 
             artifactResult = repositorySystem.resolveArtifact(session, artifactRequest);
         } catch (ArtifactResolutionException e) {
