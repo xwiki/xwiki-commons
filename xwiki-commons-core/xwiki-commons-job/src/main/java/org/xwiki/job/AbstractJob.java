@@ -165,8 +165,6 @@ public abstract class AbstractJob<R extends Request> implements Job
         this.lock.lock();
 
         try {
-            this.status.stopListening();
-
             this.status.setState(JobStatus.State.FINISHED);
             this.status.setEndDate(new Date());
 
@@ -174,6 +172,9 @@ public abstract class AbstractJob<R extends Request> implements Job
 
             this.observationManager.notify(new JobFinishedEvent(getRequest().getId(), getType(), this.request), this,
                 exception);
+
+            this.status.stopListening();
+
             this.jobContext.popCurrentJob();
 
             try {
