@@ -126,6 +126,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
         this.thread = new Thread(this);
         this.thread.setDaemon(true);
         this.thread.start();
+        this.thread.setName("Job Manager daemon thread");
     }
 
     // Runnable
