@@ -34,6 +34,8 @@ import org.xwiki.observation.event.Event;
 @Singleton
 public class TestListener implements EventListener
 {
+    public static final String NAME = "TestListener";
+
     @Override
     public List<Event> getEvents()
     {
@@ -43,12 +45,12 @@ public class TestListener implements EventListener
     @Override
     public String getName()
     {
-        return "TestListener";
+        return NAME;
     }
 
     @Override
     public void onEvent(Event arg0, Object arg1, Object arg2)
     {
-        
+
     }
 }

@@ -21,8 +21,11 @@
 package org.xwiki.extension.jar.internal.handler;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -30,14 +33,20 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.InstalledExtension;
+import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.event.ExtensionUninstalledEvent;
+import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.handler.ExtensionInitializer;
 import org.xwiki.extension.job.internal.UninstallJob;
+import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.observation.EventListener;
@@ -93,8 +102,24 @@ public class JarExtensionJobFinishedListener implements EventListener
     @Inject
     private ExtensionInitializer extensionInitializer;
 
+    /**
+     * The local extension repository from which extension are initialized.
+     */
+    @Inject
+    private InstalledExtensionRepository installedExtensionRepository;
+
+    @Inject
+    @Named("jar")
+    private ExtensionHandler jarHandler;
+
     @Inject
     private Execution execution;
+
+    /**
+     * The logger to log.
+     */
+    @Inject
+    private Logger logger;
 
     @Override
     public String getName()
@@ -214,13 +239,107 @@ public class JarExtensionJobFinishedListener implements EventListener
 
         if (collection != null) {
             if (collection.rootNamespace) {
+                // Unload extensions
+                unloadJARsFromNamespace(null, null);
+
+                // Drop class loaders
                 this.jarExtensionClassLoader.dropURLClassLoaders();
+
+                // Load extensions
                 this.extensionInitializer.initialize(null, "jar");
             } else if (collection.namespaces != null) {
                 for (String namespace : collection.namespaces) {
+                    // Unload extensions
+                    unloadJARsFromNamespace(namespace, null);
+
+                    // Drop class loader
                     this.jarExtensionClassLoader.dropURLClassLoader(namespace);
+
+                    // Load extensions
                     this.extensionInitializer.initialize(namespace, "jar");
                 }
+            }
+        }
+    }
+
+    private void unloadJARsFromNamespace(String namespace, Map<String, Set<InstalledExtension>> unloadedExtensions)
+    {
+        if (unloadedExtensions == null) {
+            unloadedExtensions = new HashMap<String, Set<InstalledExtension>>();
+        }
+
+        // Load extensions from local repository
+        Collection<InstalledExtension> installedExtensions;
+        if (namespace != null) {
+            installedExtensions = this.installedExtensionRepository.getInstalledExtensions(namespace);
+        } else {
+            installedExtensions = this.installedExtensionRepository.getInstalledExtensions();
+        }
+
+        for (InstalledExtension installedExtension : installedExtensions) {
+            if ("jar".equals(installedExtension.getType())) {
+                if (namespace == null || !installedExtension.isInstalled(null)) {
+                    try {
+                        unloadJAR(installedExtension, namespace, unloadedExtensions);
+                    } catch (Exception e) {
+                        this.logger.error("Failed to unload installed extension [{}]", installedExtension, e);
+                    }
+                }
+            }
+        }
+    }
+
+    private void unloadJAR(InstalledExtension installedExtension, String namespace,
+        Map<String, Set<InstalledExtension>> unloadedExtensions) throws UninstallException
+    {
+        Set<InstalledExtension> unloadedExtensionsInNamespace = unloadedExtensions.get(namespace);
+
+        if (unloadedExtensionsInNamespace == null) {
+            unloadedExtensionsInNamespace = new HashSet<InstalledExtension>();
+            unloadedExtensions.put(namespace, unloadedExtensionsInNamespace);
+        }
+
+        if (!unloadedExtensionsInNamespace.contains(installedExtension)) {
+            if (namespace == null) {
+                if (installedExtension.isInstalled(null)) {
+                    try {
+                        Map<String, Collection<InstalledExtension>> bDependencies =
+                            this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId());
+
+                        for (Map.Entry<String, Collection<InstalledExtension>> entry : bDependencies.entrySet()) {
+                            for (InstalledExtension bDependency : entry.getValue()) {
+                                unloadJAR(bDependency, entry.getKey(), unloadedExtensions);
+                            }
+                        }
+                    } catch (ResolveException e) {
+                        this.logger.error("Failed to get backward dependencies for installed extension [{}]",
+                            installedExtension, e);
+                    }
+
+                    this.jarHandler.uninstall(installedExtension, null, null);
+                    unloadedExtensionsInNamespace.add(installedExtension);
+                } else {
+                    for (String namespace2 : installedExtension.getNamespaces()) {
+                        unloadJAR(installedExtension, namespace2, unloadedExtensions);
+                    }
+                }
+            } else {
+                try {
+                    Collection<InstalledExtension> bDependencies =
+                        this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId().getId(),
+                            namespace);
+
+                    for (InstalledExtension bDependency : bDependencies) {
+                        unloadJAR(bDependency, namespace, unloadedExtensions);
+                    }
+                } catch (ResolveException e) {
+                    this.logger.error(
+                        "Failed to get backward dependencies for installed extension [{}] on namespace [{}]",
+                        installedExtension, namespace, e);
+                }
+
+                this.jarHandler.uninstall(installedExtension, namespace, null);
+                unloadedExtensionsInNamespace.add(installedExtension);
             }
         }
     }
