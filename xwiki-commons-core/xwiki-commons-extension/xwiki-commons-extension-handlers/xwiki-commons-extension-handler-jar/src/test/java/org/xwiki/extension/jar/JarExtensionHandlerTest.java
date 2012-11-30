@@ -47,7 +47,6 @@ import org.xwiki.observation.ObservationManager;
 
 import packagefile.jarextension.DefaultTestComponent;
 import packagefile.jarextension.TestComponent;
-import packagefile.jarextension.TestListener;
 import packagefile.jarextensionwithdeps.DefaultTestComponentWithDeps;
 import packagefile.jarextensionwithdeps.TestComponentWithDeps;
 
