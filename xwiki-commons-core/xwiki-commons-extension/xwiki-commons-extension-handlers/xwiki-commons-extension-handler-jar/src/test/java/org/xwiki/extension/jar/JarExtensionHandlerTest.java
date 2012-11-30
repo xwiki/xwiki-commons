@@ -47,6 +47,7 @@ import org.xwiki.observation.ObservationManager;
 
 import packagefile.jarextension.DefaultTestComponent;
 import packagefile.jarextension.TestComponent;
+import packagefile.jarextension.TestListener;
 import packagefile.jarextensionwithdeps.DefaultTestComponentWithDeps;
 import packagefile.jarextensionwithdeps.TestComponentWithDeps;
 
@@ -241,8 +242,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         // check components managers
         Class< ? > componentInstanceClass = null;
         if (namespace != null) {
-            componentInstanceClass =
-                getExtensionComponentManager(namespace).getInstance(loadedRole).getClass();
+            componentInstanceClass = getExtensionComponentManager(namespace).getInstance(loadedRole).getClass();
 
             try {
                 getComponentManager().getInstance(loadedRole);
@@ -702,7 +702,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         assertNotEquals(extensionDep1, extensionDep2);
 
         // actual uninstall test
-        LocalExtension localExtension = uninstall(extensionId, namespace1);
+        // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
+        LocalExtension localExtension = uninstall(extensionId, namespace1, LogLevel.ERROR);
 
         ckeckUninstallStatus(localExtension);
 
@@ -719,7 +720,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(extensionDep2, extensionDep4);
 
         // actual uninstall test
-        localExtension = uninstall(extensionId, namespace2);
+     // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
+        localExtension = uninstall(extensionId, namespace2, LogLevel.ERROR);
 
         ckeckUninstallStatus(localExtension);
 
@@ -819,7 +821,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         assertNotEquals(extensionDep1, extensionDep2);
 
         // actual uninstall test
-        LocalExtension localExtension = uninstall(extensionId, null);
+        // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
+        LocalExtension localExtension = uninstall(extensionId, null, LogLevel.ERROR);
 
         ckeckUninstallStatus(localExtension);
 

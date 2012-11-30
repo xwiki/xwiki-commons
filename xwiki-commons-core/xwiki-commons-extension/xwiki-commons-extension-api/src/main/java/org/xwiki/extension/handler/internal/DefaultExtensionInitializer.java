@@ -86,23 +86,23 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
     }
 
     @Override
-    public void initialize(String namespaceToLoad, String type)
+    public void initialize(String namespaceToInitialize, String type)
     {
-        Map<String, Set<InstalledExtension>> loadedExtensions = new HashMap<String, Set<InstalledExtension>>();
+        Map<String, Set<InstalledExtension>> initializedExtensions = new HashMap<String, Set<InstalledExtension>>();
 
         // Load extensions from local repository
         Collection<InstalledExtension> installedExtensions;
-        if (namespaceToLoad != null) {
-            installedExtensions = this.installedExtensionRepository.getInstalledExtensions(namespaceToLoad);
+        if (namespaceToInitialize != null) {
+            installedExtensions = this.installedExtensionRepository.getInstalledExtensions(namespaceToInitialize);
         } else {
             installedExtensions = this.installedExtensionRepository.getInstalledExtensions();
         }
         for (InstalledExtension installedExtension : installedExtensions) {
             if (type == null || type.equals(installedExtension.getType())) {
                 try {
-                    loadExtension(installedExtension, namespaceToLoad, loadedExtensions);
+                    initializeExtension(installedExtension, namespaceToInitialize, initializedExtensions);
                 } catch (Exception e) {
-                    this.logger.error("Failed to initialize local extension [" + installedExtension + "]", e);
+                    this.logger.error("Failed to initialize local extension [{}]", installedExtension.getId(), e);
                 }
             }
         }
@@ -113,22 +113,22 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
      * 
      * @param installedExtension the extension to initialize
      * @param namespaceToLoad the namespace to be initialized, null for all
-     * @param loadedExtensions the currently initialized extensions set
+     * @param initializedExtensions the currently initialized extensions set
      * @throws ExtensionException when an initialization error occurs
      */
-    private void loadExtension(InstalledExtension installedExtension, String namespaceToLoad,
-        Map<String, Set<InstalledExtension>> loadedExtensions) throws ExtensionException
+    private void initializeExtension(InstalledExtension installedExtension, String namespaceToLoad,
+        Map<String, Set<InstalledExtension>> initializedExtensions) throws ExtensionException
     {
         if (installedExtension.getNamespaces() != null) {
             if (namespaceToLoad == null) {
                 for (String namespace : installedExtension.getNamespaces()) {
-                    loadExtensionInNamespace(installedExtension, namespace, loadedExtensions);
+                    initializeExtensionInNamespace(installedExtension, namespace, initializedExtensions);
                 }
             } else if (installedExtension.getNamespaces().contains(namespaceToLoad)) {
-                loadExtensionInNamespace(installedExtension, namespaceToLoad, loadedExtensions);
+                initializeExtensionInNamespace(installedExtension, namespaceToLoad, initializedExtensions);
             }
         } else if (namespaceToLoad == null) {
-            loadExtensionInNamespace(installedExtension, null, loadedExtensions);
+            initializeExtensionInNamespace(installedExtension, null, initializedExtensions);
         }
     }
 
@@ -137,35 +137,35 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
      * 
      * @param installedExtension the extension to initialize
      * @param namespace the namespace in which the extention is initialized, null for global
-     * @param loadedExtensions the currently initialized extensions set (to avoid initializing twice a dependency)
+     * @param initializedExtensions the currently initialized extensions set (to avoid initializing twice a dependency)
      * @throws ExtensionException when an initialization error occurs
      */
-    private void loadExtensionInNamespace(InstalledExtension installedExtension, String namespace,
-        Map<String, Set<InstalledExtension>> loadedExtensions) throws ExtensionException
+    private void initializeExtensionInNamespace(InstalledExtension installedExtension, String namespace,
+        Map<String, Set<InstalledExtension>> initializedExtensions) throws ExtensionException
     {
         if (!installedExtension.isValid(namespace)) {
             return;
         }
 
-        Set<InstalledExtension> loadedExtensionsInNamespace = loadedExtensions.get(namespace);
+        Set<InstalledExtension> initializedExtensionsInNamespace = initializedExtensions.get(namespace);
 
-        if (loadedExtensionsInNamespace == null) {
-            loadedExtensionsInNamespace = new HashSet<InstalledExtension>();
-            loadedExtensions.put(namespace, loadedExtensionsInNamespace);
+        if (initializedExtensionsInNamespace == null) {
+            initializedExtensionsInNamespace = new HashSet<InstalledExtension>();
+            initializedExtensions.put(namespace, initializedExtensionsInNamespace);
         }
 
-        if (!loadedExtensionsInNamespace.contains(installedExtension)) {
+        if (!initializedExtensionsInNamespace.contains(installedExtension)) {
             for (ExtensionDependency dependency : installedExtension.getDependencies()) {
                 if (!this.coreExtensionRepository.exists(dependency.getId())) {
                     InstalledExtension dependencyExtension =
                         this.installedExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
-                    loadExtensionInNamespace(dependencyExtension, namespace, loadedExtensions);
+                    initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
                 }
             }
 
             this.extensionHandlerManager.initialize(installedExtension, namespace);
 
-            loadedExtensionsInNamespace.add(installedExtension);
+            initializedExtensionsInNamespace.add(installedExtension);
         }
     }
 }
