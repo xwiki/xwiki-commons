@@ -19,6 +19,8 @@
  */
 package org.xwiki.component.event;
 
+import java.lang.reflect.Type;
+
 /**
  * Event sent to tell that a new Component Descriptor has been unregistered.
  * 
@@ -37,19 +39,42 @@ public class ComponentDescriptorRemovedEvent extends AbstractComponentDescriptor
 
     /**
      * @param role the component role to watch (all components matching this role will trigger this event)
+     * @deprecated since 4.4M1 use {@link #ComponentDescriptorRemovedEvent(Type)} instead
      */
+    @Deprecated
     public ComponentDescriptorRemovedEvent(Class< ? > role)
     {
         super(role);
     }
 
     /**
+     * @param roleType the component role to watch (all components matching this role will trigger this event)
+     * @since 4.4M1
+     */
+    public ComponentDescriptorRemovedEvent(Type roleType)
+    {
+        super(roleType);
+    }
+
+    /**
      * @param role the component role to watch
      * @param roleHint the component role hint to watch
+     * @deprecated since 4.4M1 use {@link #ComponentDescriptorRemovedEvent(Type, String)} instead
      */
+    @Deprecated
     public ComponentDescriptorRemovedEvent(Class< ? > role, String roleHint)
     {
         super(role, roleHint);
+    }
+
+    /**
+     * @param roleType the component role to watch
+     * @param roleHint the component role hint to watch
+     * @since 4.4M1
+     */
+    public ComponentDescriptorRemovedEvent(Type roleType, String roleHint)
+    {
+        super(roleType, roleHint);
     }
 
     @Override

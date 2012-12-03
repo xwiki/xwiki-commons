@@ -21,12 +21,10 @@ package org.xwiki.extension.jar.internal.handler;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -150,7 +148,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
                     }
 
                     stackingComponentEventManager.setObservationManager(componentManager
-                        .<ObservationManager>getInstance(ObservationManager.class));
+                        .<ObservationManager> getInstance(ObservationManager.class));
                     stackingComponentEventManager.shouldStack(false);
                     stackingComponentEventManager.flushEvents();
                 }
@@ -162,37 +160,13 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
 
     private List<ComponentDeclaration> getDeclaredComponents(LocalExtensionFile jarFile) throws IOException
     {
-        ZipInputStream zis = new ZipInputStream(jarFile.openStream());
-
-        List<ComponentDeclaration> componentDeclarations = null;
-        List<ComponentDeclaration> componentOverrideDeclarations = null;
+        InputStream is = jarFile.openStream();
 
         try {
-            for (ZipEntry entry = zis.getNextEntry(); entry != null
-                && (componentDeclarations == null || componentOverrideDeclarations == null); entry = zis.getNextEntry()) {
-                if (entry.getName().equals(ComponentAnnotationLoader.COMPONENT_LIST)) {
-                    componentDeclarations = this.jarLoader.getDeclaredComponents(zis);
-                } else if (entry.getName().equals(ComponentAnnotationLoader.COMPONENT_OVERRIDE_LIST)) {
-                    componentOverrideDeclarations = this.jarLoader.getDeclaredComponents(zis);
-                }
-            }
+            return this.jarLoader.getDeclaredComponentsFromJAR(is);
         } finally {
-            zis.close();
+            is.close();
         }
-
-        // Merge all overrides found with a priority of 0. This is purely for backward compatibility since the
-        // override files is now deprecated.
-        if (componentOverrideDeclarations != null) {
-            if (componentDeclarations == null) {
-                componentDeclarations = new ArrayList<ComponentDeclaration>();
-            }
-            for (ComponentDeclaration componentOverrideDeclaration : componentOverrideDeclarations) {
-                componentDeclarations.add(new ComponentDeclaration(componentOverrideDeclaration
-                    .getImplementationClassName(), 0));
-            }
-        }
-
-        return componentDeclarations;
     }
 
     private void unloadComponents(LocalExtensionFile jarFile, NamespaceURLClassLoader classLoader, String namespace)

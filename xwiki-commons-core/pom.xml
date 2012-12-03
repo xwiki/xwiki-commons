@@ -141,6 +141,27 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>clirr-maven-plugin</artifactId>
         <configuration>
+          <!-- List of specific CLIRR excludes. Example:
+
+               <difference>
+                 <className>org/xwiki/ircbot/IRCBot</className>
+                 <method>void initialize(java.lang.String)</method>
+                 <differenceType>7012</differenceType>
+                 <justification>IRCBot is still a young API. Added a new initialize() method to support installing the
+                 IRC Bot application in a subwiki</justification>
+               </difference>
+               
+               See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
+          -->
+          <ignored>
+            <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <className>org/xwiki/component/event/ComponentDescriptorEvent</className>
+              <method>java.lang.reflect.Type getRoleType()</method>
+              <differenceType>7012</differenceType>
+              <justification>Was missing in a previous refactoring from Class to Type.</justification>
+            </difference>
+          </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
             <exclude>**/test/**</exclude>

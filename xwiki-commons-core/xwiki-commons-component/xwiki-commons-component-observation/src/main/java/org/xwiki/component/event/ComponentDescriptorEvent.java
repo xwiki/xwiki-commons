@@ -19,6 +19,8 @@
  */
 package org.xwiki.component.event;
 
+import java.lang.reflect.Type;
+
 import org.xwiki.observation.event.Event;
 
 /**
@@ -31,8 +33,16 @@ public interface ComponentDescriptorEvent extends Event
 {
     /**
      * @return the role of the component
+     * @deprecated since 4.4MA use {@link #getRoleType()} instead
      */
+    @Deprecated
     Class< ? > getRole();
+
+    /**
+     * @return the role type of the component
+     * @since 4.4M1
+     */
+    Type getRoleType();
 
     /**
      * @return the role hint of the component

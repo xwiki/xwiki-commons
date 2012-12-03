@@ -26,11 +26,11 @@ import org.junit.Test;
 import org.xwiki.observation.event.Event;
 
 /**
- * Unit tests for {@link ComponentDescriptorAddedEvent}.
+ * Unit tests for {@link ComponentDescriptorRemovedEvent}.
  * 
  * @version $Id$
  */
-public class ComponentDescriptorAddedEventTest
+public class ComponentDescriptorRemovedEventTest
 {
     /**
      * Used in tests below.
@@ -42,15 +42,15 @@ public class ComponentDescriptorAddedEventTest
     @Test
     public void testMatchesAllComponentRoles()
     {
-        ComponentDescriptorAddedEvent event = new ComponentDescriptorAddedEvent();
+        ComponentDescriptorRemovedEvent event = new ComponentDescriptorRemovedEvent();
         // Note: We use any class for the test but it's supposed to be a component role class.
-        Assert.assertTrue(event.matches(new ComponentDescriptorAddedEvent((Type) Dummy.class, "rolehint")));
+        Assert.assertTrue(event.matches(new ComponentDescriptorRemovedEvent((Type) Dummy.class, "rolehint")));
     }
 
     @Test
     public void testMatchesWhenDifferentEvent()
     {
-        ComponentDescriptorAddedEvent event = new ComponentDescriptorAddedEvent();
+        ComponentDescriptorRemovedEvent event = new ComponentDescriptorRemovedEvent();
         Assert.assertFalse(event.matches(new Event()
         {
             @Override
@@ -65,30 +65,10 @@ public class ComponentDescriptorAddedEventTest
     public void testMatchesWhenSpecificRoleSpecified()
     {
         // Note: We use any class for the test but it's supposed to be a component role class.
-        ComponentDescriptorAddedEvent event = new ComponentDescriptorAddedEvent((Type) Dummy.class);
-        Assert.assertTrue(event.matches(new ComponentDescriptorAddedEvent((Type) Dummy.class, "rolehint")));
+        ComponentDescriptorRemovedEvent event = new ComponentDescriptorRemovedEvent((Type) Dummy.class);
+        Assert.assertTrue(event.matches(new ComponentDescriptorRemovedEvent((Type) Dummy.class, "rolehint")));
         // Use a different class so that it doesn't match
-        Assert.assertFalse(event.matches(new ComponentDescriptorAddedEvent((Type) ComponentDescriptorAddedEvent.class,
+        Assert.assertFalse(event.matches(new ComponentDescriptorRemovedEvent((Type) ComponentDescriptorRemovedEvent.class,
             "rolehint")));
-    }
-
-    @Test
-    public void testEquals()
-    {
-        Assert.assertEquals(new ComponentDescriptorAddedEvent(), new ComponentDescriptorAddedEvent());
-        Assert.assertEquals(new ComponentDescriptorAddedEvent((Type) Dummy.class), new ComponentDescriptorAddedEvent(
-            (Type) Dummy.class));
-        Assert.assertEquals(new ComponentDescriptorAddedEvent((Type) Dummy.class, "rolehint"),
-            new ComponentDescriptorAddedEvent((Type) Dummy.class, "rolehint"));
-    }
-
-    public void testHashCode()
-    {
-        Assert.assertEquals(new ComponentDescriptorAddedEvent().hashCode(),
-            new ComponentDescriptorAddedEvent().hashCode());
-        Assert.assertEquals(new ComponentDescriptorAddedEvent((Type) Dummy.class).hashCode(),
-            new ComponentDescriptorAddedEvent((Type) Dummy.class).hashCode());
-        Assert.assertEquals(new ComponentDescriptorAddedEvent((Type) Dummy.class, "rolehint").hashCode(),
-            new ComponentDescriptorAddedEvent((Type) Dummy.class, "rolehint").hashCode());
     }
 }

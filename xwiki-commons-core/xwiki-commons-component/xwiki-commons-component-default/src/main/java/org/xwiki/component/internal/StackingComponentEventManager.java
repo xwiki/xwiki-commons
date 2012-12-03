@@ -57,28 +57,28 @@ public class StackingComponentEventManager implements ComponentEventManager
     @Override
     public void notifyComponentRegistered(ComponentDescriptor< ? > descriptor)
     {
-        notifyComponentEvent(new ComponentDescriptorAddedEvent(descriptor.getRole(), descriptor.getRoleHint()),
+        notifyComponentEvent(new ComponentDescriptorAddedEvent(descriptor.getRoleType(), descriptor.getRoleHint()),
             descriptor, null);
     }
 
     @Override
     public void notifyComponentRegistered(ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
     {
-        notifyComponentEvent(new ComponentDescriptorAddedEvent(descriptor.getRole(), descriptor.getRoleHint()),
+        notifyComponentEvent(new ComponentDescriptorAddedEvent(descriptor.getRoleType(), descriptor.getRoleHint()),
             descriptor, componentManager);
     }
 
     @Override
     public void notifyComponentUnregistered(ComponentDescriptor< ? > descriptor)
     {
-        notifyComponentEvent(new ComponentDescriptorRemovedEvent(descriptor.getRole(), descriptor.getRoleHint()),
+        notifyComponentEvent(new ComponentDescriptorRemovedEvent(descriptor.getRoleType(), descriptor.getRoleHint()),
             descriptor, null);
     }
 
     @Override
     public void notifyComponentUnregistered(ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
     {
-        notifyComponentEvent(new ComponentDescriptorRemovedEvent(descriptor.getRole(), descriptor.getRoleHint()),
+        notifyComponentEvent(new ComponentDescriptorRemovedEvent(descriptor.getRoleType(), descriptor.getRoleHint()),
             descriptor, componentManager);
     }
 

@@ -35,6 +35,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.inject.Provider;
 
@@ -452,6 +454,44 @@ public class ComponentAnnotationLoader
         }
 
         return annotatedClassNames;
+    }
+
+    /**
+     * Get all components listed in a JAR file.
+     * 
+     * @param jarFile the JAR file to parse
+     * @return the list of component declaration (implementation class names and priorities)
+     * @throws IOException in case of an error loading the component list resource
+     */
+    public List<ComponentDeclaration> getDeclaredComponentsFromJAR(InputStream jarFile) throws IOException
+    {
+        ZipInputStream zis = new ZipInputStream(jarFile);
+
+        List<ComponentDeclaration> componentDeclarations = null;
+        List<ComponentDeclaration> componentOverrideDeclarations = null;
+
+        for (ZipEntry entry = zis.getNextEntry(); entry != null
+            && (componentDeclarations == null || componentOverrideDeclarations == null); entry = zis.getNextEntry()) {
+            if (entry.getName().equals(ComponentAnnotationLoader.COMPONENT_LIST)) {
+                componentDeclarations = getDeclaredComponents(zis);
+            } else if (entry.getName().equals(ComponentAnnotationLoader.COMPONENT_OVERRIDE_LIST)) {
+                componentOverrideDeclarations = getDeclaredComponents(zis);
+            }
+        }
+
+        // Merge all overrides found with a priority of 0. This is purely for backward compatibility since the
+        // override files is now deprecated.
+        if (componentOverrideDeclarations != null) {
+            if (componentDeclarations == null) {
+                componentDeclarations = new ArrayList<ComponentDeclaration>();
+            }
+            for (ComponentDeclaration componentOverrideDeclaration : componentOverrideDeclarations) {
+                componentDeclarations.add(new ComponentDeclaration(componentOverrideDeclaration
+                    .getImplementationClassName(), 0));
+            }
+        }
+
+        return componentDeclarations;
     }
 
     /**

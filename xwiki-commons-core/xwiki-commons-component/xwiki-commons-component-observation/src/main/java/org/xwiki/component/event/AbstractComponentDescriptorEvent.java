@@ -19,6 +19,13 @@
  */
 package org.xwiki.component.event;
 
+import java.lang.reflect.Type;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.xwiki.component.util.ReflectionUtils;
+
 /**
  * Base class for events about components descriptors.
  * 
@@ -30,7 +37,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
     /**
      * Component role.
      */
-    private Class< ? > role;
+    private Type roleType;
 
     /**
      * Component role hint.
@@ -42,31 +49,59 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
      */
     public AbstractComponentDescriptorEvent()
     {
-        this.role = null;
     }
 
     /**
      * @param role the component role to watch (all components matching this role will trigger this event)
+     * @deprecated since 4.4M1 use {@link #AbstractComponentDescriptorEvent(Type)} instead
      */
+    @Deprecated
     public AbstractComponentDescriptorEvent(Class< ? > role)
     {
-        this.role = role;
+        this((Type) role);
+    }
+
+    /**
+     * @param roleType the component role type to watch (all components matching this role will trigger this event)
+     * @since 4.4M1
+     */
+    public AbstractComponentDescriptorEvent(Type roleType)
+    {
+        this.roleType = roleType;
     }
 
     /**
      * @param role the component role to watch
      * @param roleHint the component rolehint to watch
+     * @deprecated since 4.4M1 use {@link #AbstractComponentDescriptorEvent(Type, String)} instead
      */
+    @Deprecated
     public AbstractComponentDescriptorEvent(Class< ? > role, String roleHint)
     {
-        this.role = role;
+        this((Type) role, roleHint);
+    }
+
+    /**
+     * @param roleType the component role to watch
+     * @param roleHint the component rolehint to watch
+     * @since 4.4M1
+     */
+    public AbstractComponentDescriptorEvent(Type roleType, String roleHint)
+    {
+        this.roleType = roleType;
         this.roleHint = roleHint;
     }
 
     @Override
     public Class< ? > getRole()
     {
-        return this.role;
+        return ReflectionUtils.getTypeClass(getRoleType());
+    }
+
+    @Override
+    public Type getRoleType()
+    {
+        return this.roleType;
     }
 
     @Override
@@ -86,14 +121,45 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
                 result = true;
             } else {
                 ComponentDescriptorEvent event = (ComponentDescriptorEvent) otherEvent;
-                // It's possible Class reference are not the same when it coming for different ClassLoader so we
-                // compare class names
-                if (getRole().getName().equals(event.getRole().getName())) {
+
+                if (getRoleType().equals(event.getRoleType())) {
                     result = getRoleHint() == null || getRoleHint().equals(event.getRoleHint());
                 }
             }
         }
 
         return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj != null && obj.getClass() == getClass()) {
+            return ObjectUtils.equals(getRoleType(), ((ComponentDescriptorEvent) obj).getRoleType())
+                && StringUtils.equals(getRoleHint(), ((ComponentDescriptorEvent) obj).getRoleHint());
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        HashCodeBuilder builder = new HashCodeBuilder();
+
+        builder.append(getRoleType());
+        builder.append(getRoleHint());
+
+        return builder.toHashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return getRoleType() + ":" + getRoleHint();
     }
 }
