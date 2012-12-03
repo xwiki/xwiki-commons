@@ -82,6 +82,7 @@ public class ComponentDescriptorAddedEventTest
             new ComponentDescriptorAddedEvent((Type) Dummy.class, "rolehint"));
     }
 
+    @Test
     public void testHashCode()
     {
         Assert.assertEquals(new ComponentDescriptorAddedEvent().hashCode(),
