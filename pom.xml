@@ -415,7 +415,7 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we're using jthe unit-dep and not the junit dependency -->
+          <!-- Check that we're using the unit-dep and not the junit dependency -->
           <execution>
             <id>enforce-correct-junit-dependency</id>
             <goals>
