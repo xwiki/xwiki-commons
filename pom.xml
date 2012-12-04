@@ -54,6 +54,9 @@
     <!-- Selenium -->
     <selenium.version>2.26.0</selenium.version>
 
+    <!-- SLF4J -->
+    <slf4j.version>1.7.2</slf4j.version>
+
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>4.3</xwiki.clirr.previous.version>
 
@@ -272,7 +275,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.2</version>
+        <version>${slf4j.version}</version>
       </dependency>
       <!-- SLF4J implementation we use -->
       <dependency>
@@ -284,13 +287,13 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.2</version>
+        <version>${slf4j.version}</version>
       </dependency>
       <!-- External libraries using Log4J will delegate to SLF4J -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>log4j-over-slf4j</artifactId>
-        <version>1.7.2</version>
+        <version>${slf4j.version}</version>
       </dependency>
 
       <!-- Triggerd by several Maven related projects (Dexis, Maven, Aether) as transitive dependency -->
