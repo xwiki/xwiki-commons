@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -40,12 +42,14 @@ import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.handler.ExtensionInitializer;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.version.internal.DefaultVersion;
+import org.xwiki.test.MockConfigurationSource;
 
 public class RepositoryUtil
 {
@@ -158,6 +162,12 @@ public class RepositoryUtil
             this.componentManager.registerComponent(dcd, environment);
         }
 
+        // Disable default repositories
+        ConfigurationSource configuration = this.componentManager.getInstance(ConfigurationSource.class);
+        if (configuration instanceof MockConfigurationSource) {
+            ((MockConfigurationSource) configuration).setProperty("extension.repositories", Arrays.asList(""));
+        }
+
         // add default test core extension
 
         if (this.componentManager != null) {
@@ -180,10 +190,10 @@ public class RepositoryUtil
 
             // light remote repository
 
-            if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
+            /*if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
                 this.remoteRepository = new FileExtensionRepository(getRemoteRepository(), this.componentManager);
                 repositoryManager.addRepository(remoteRepository);
-            }
+            }*/
 
             // maven repository
 

@@ -20,16 +20,27 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<metadata>
+<metadata modelVersion="1.1.0">
   <groupId>groupid</groupId>
   <artifactId>artifactid</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <versioning>
-    <latest>version</latest>
-    <release>version</release>
-    <versions>
-      <version>version</version>
-      <version>1.0-SNAPSHOT</version>
-    </versions>
-    <lastUpdated>20091103142109</lastUpdated>
+    <snapshot>
+      <timestamp>20121204.131238</timestamp>
+      <buildNumber>77</buildNumber>
+    </snapshot>
+    <lastUpdated>20121204131238</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>type</extension>
+        <value>1.0-20121204.131238-77</value>
+        <updated>20121204131238</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.0-20121204.131238-77</value>
+        <updated>20121204131238</updated>
+      </snapshotVersion>
+    </snapshotVersions>
   </versioning>
 </metadata>

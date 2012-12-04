@@ -367,12 +367,12 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     {
         RepositorySystemSession session = createRepositorySystemSession();
 
-        // Get artifact and resolve version
-
         Artifact artifact;
+        String artifactExtension;
         if (extensionDependency instanceof AetherExtensionDependency) {
             artifact = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact();
-            artifact = artifact.setVersion(resolveVersion(artifact, session).toString());
+            artifactExtension =
+                ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact().getExtension();
         } else {
             artifact =
                 AetherUtils.createArtifact(extensionDependency.getId(), extensionDependency.getVersionConstraint()
@@ -380,7 +380,22 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             artifact =
                 artifact.setVersion(resolveVersionConstraint(extensionDependency.getId(),
                     extensionDependency.getVersionConstraint(), session).toString());
+            artifactExtension = null;
         }
+
+        return resolveMaven(artifact, artifactExtension);
+    }
+
+    protected AetherExtension resolveMaven(ExtensionId extensionId, String type) throws ResolveException
+    {
+        Artifact artifact = AetherUtils.createArtifact(extensionId.getId(), extensionId.getVersion().getValue());
+
+        return resolveMaven(artifact, null);
+    }
+
+    protected AetherExtension resolveMaven(Artifact artifact, String artifactExtension) throws ResolveException
+    {
+        RepositorySystemSession session = createRepositorySystemSession();
 
         // Get Maven descriptor
 
@@ -388,16 +403,12 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         try {
             model = loadPom(artifact, session);
         } catch (Exception e) {
-            throw new ResolveException("Failed to resolve extension [" + extensionDependency + "] descriptor", e);
+            throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor", e);
         }
 
         // Set type
 
-        String artifactExtension;
-        if (extensionDependency instanceof AetherExtensionDependency) {
-            artifactExtension =
-                ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact().getExtension();
-        } else {
+        if (artifactExtension == null) {
             // See bundle as jar packages since bundle are actually store as jar files
             artifactExtension = model.getPackaging().equals("bundle") ? "jar" : model.getPackaging();
         }

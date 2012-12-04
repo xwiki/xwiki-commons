@@ -156,32 +156,40 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public Extension resolve(ExtensionId extensionId) throws ResolveException
     {
+        ResolveException lastExtension = null;
+
         for (ExtensionRepository repository : this.repositories.values()) {
             try {
                 return repository.resolve(extensionId);
             } catch (ResolveException e) {
                 this.logger.debug("Could not find extension [{}] in repository [{}]", extensionId,
                     repository.getDescriptor(), e);
+
+                lastExtension = e;
             }
         }
 
-        throw new ResolveException(MessageFormat.format("Could not find extension [{0}]", extensionId));
+        throw new ResolveException(MessageFormat.format("Could not find extension [{0}]", extensionId), lastExtension);
     }
 
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
+        ResolveException lastExtension = null;
+
         for (ExtensionRepository repository : this.repositories.values()) {
             try {
                 return repository.resolve(extensionDependency);
             } catch (ResolveException e) {
                 this.logger.debug("Could not find extension dependency [{}] in repository [{}]", extensionDependency,
                     repository.getDescriptor(), e);
+
+                lastExtension = e;
             }
         }
 
         throw new ResolveException(MessageFormat.format("Could not find extension dependency [{0}]",
-            extensionDependency));
+            extensionDependency), lastExtension);
     }
 
     @Override

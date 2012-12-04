@@ -20,16 +20,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<metadata>
-  <groupId>groupid</groupId>
-  <artifactId>artifactid</artifactId>
-  <versioning>
-    <latest>version</latest>
-    <release>version</release>
-    <versions>
-      <version>version</version>
-      <version>1.0-SNAPSHOT</version>
-    </versions>
-    <lastUpdated>20091103142109</lastUpdated>
-  </versioning>
-</metadata>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>groupid</groupId>
+	<artifactId>artifactid</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>type</packaging>
+</project>

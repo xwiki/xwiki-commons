@@ -31,6 +31,9 @@ import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonatype.aether.artifact.Artifact;
+import org.sonatype.aether.graph.Dependency;
+import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
@@ -56,6 +59,8 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
     private ExtensionRepositoryManager repositoryManager;
 
     private ExtensionId extensionId;
+
+    private ExtensionId snapshotExtensionId;
 
     private ExtensionId extensionDependencyId;
 
@@ -85,6 +90,7 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         this.repositoryUtil.setup();
 
         this.extensionId = new ExtensionId(GROUPID + ':' + ARTIfACTID, "version");
+        this.snapshotExtensionId = new ExtensionId(GROUPID + ':' + ARTIfACTID, "1.0-SNAPSHOT");
         this.extensionDependencyId = new ExtensionId("dgroupid:dartifactid", "dversion");
 
         this.extensionIdClassifier = new ExtensionId(GROUPID + ':' + ARTIfACTID + ":classifier", "version");
@@ -106,6 +112,8 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         this.extensionLicenseManager = getComponentManager().getInstance(ExtensionLicenseManager.class);
     }
 
+    // Tests
+
     @Test
     public void testResolve() throws ResolveException, IOException
     {
@@ -115,7 +123,8 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         Assert.assertEquals(this.extensionId.getId(), extension.getId().getId());
         Assert.assertEquals(this.extensionId.getVersion(), extension.getId().getVersion());
         Assert.assertEquals("type", extension.getType());
-        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor().getId());
+        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor()
+            .getId());
         Assert.assertEquals("name", extension.getName());
         Assert.assertEquals("summary", extension.getSummary());
         Assert.assertEquals("http://website", extension.getWebSite());
@@ -132,7 +141,8 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
 
         // check that a new resolve of an already resolved extension provide the proper repository
         extension = this.repositoryManager.resolve(this.extensionId);
-        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor().getId());
+        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor()
+            .getId());
 
         // TODO: see http://jira.xwiki.org/browse/XWIKI-7163 // Modify the file on the descriptor on the repository
         // File pomFile =
@@ -145,6 +155,51 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
         // "<description>modified summary</description>"), "UTF-8");
         // extension = this.repositoryManager.resolve(this.extensionId);
         // Assert.assertEquals("modified description", extension.getSummary());
+    }
+
+    @Test
+    public void testResolveSNAPSHOT() throws ResolveException
+    {
+        Extension extension = this.repositoryManager.resolve(this.snapshotExtensionId);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(this.snapshotExtensionId.getId(), extension.getId().getId());
+        Assert.assertEquals(this.snapshotExtensionId.getVersion(), extension.getId().getVersion());
+        Assert.assertEquals("type", extension.getType());
+        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor()
+            .getId());
+    }
+
+    @Test
+    public void testResolveAetherDependency() throws ResolveException
+    {
+        Artifact artifact = new DefaultArtifact("groupid", "artifactid", "", "type", "version");
+        Dependency aetherDependency = new Dependency(artifact, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency, null);
+
+        Extension extension = this.repositoryManager.resolve(dependency);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(this.extensionId.getId(), extension.getId().getId());
+        Assert.assertEquals(this.extensionId.getVersion(), extension.getId().getVersion());
+        Assert.assertEquals("type", extension.getType());
+    }
+
+    @Test
+    public void testResolveAetherDependencySNAPSHOT() throws ResolveException
+    {
+        Artifact artifact = new DefaultArtifact("groupid", "artifactid", "", "type", "1.0-SNAPSHOT");
+        Dependency aetherDependency = new Dependency(artifact, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency, null);
+
+        Extension extension = this.repositoryManager.resolve(dependency);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(this.snapshotExtensionId.getId(), extension.getId().getId());
+        Assert.assertEquals(this.snapshotExtensionId.getVersion(), extension.getId().getVersion());
+        Assert.assertEquals("type", extension.getType());
+        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor()
+            .getId());
     }
 
     @Test
@@ -225,6 +280,20 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
     }
 
     @Test
+    public void testDownloadSNAPSHOT() throws ExtensionException, IOException
+    {
+        Extension extension = this.repositoryManager.resolve(this.snapshotExtensionId);
+
+        InputStream is = extension.getFile().openStream();
+
+        try {
+            Assert.assertEquals("snapshot content", IOUtils.toString(is));
+        } finally {
+            is.close();
+        }
+    }
+
+    @Test
     public void testDownloadClassifier() throws ExtensionException, IOException
     {
         Extension extension = this.repositoryManager.resolve(this.extensionIdClassifier);
@@ -251,14 +320,14 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
             is.close();
         }
     }
-    
+
     @Test
     public void testResolveVersions() throws ExtensionException
     {
         IterableResult<Version> versions = this.repositoryManager.resolveVersions(this.extensionId.getId(), 0, -1);
 
-        Assert.assertEquals(1, versions.getTotalHits());
-        Assert.assertEquals(1, versions.getSize());
+        Assert.assertEquals(2, versions.getTotalHits());
+        Assert.assertEquals(2, versions.getSize());
         Assert.assertEquals(0, versions.getOffset());
-    }    
+    }
 }
