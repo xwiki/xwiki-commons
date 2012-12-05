@@ -58,7 +58,6 @@ import org.sonatype.aether.util.version.GenericVersionScheme;
 import org.sonatype.aether.version.InvalidVersionSpecificationException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
@@ -74,7 +73,6 @@ import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.VersionRange;
 import org.xwiki.extension.version.internal.DefaultVersion;
-import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.properties.ConverterManager;
 
 /**
@@ -221,8 +219,12 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     @Override
     public Extension resolve(ExtensionId extensionId) throws ResolveException
     {
-        return resolve(new DefaultExtensionDependency(extensionId.getId(), new DefaultVersionConstraint(null,
-            extensionId.getVersion())));
+        if (getDescriptor().getType().equals("maven") && this.mavenDescriptorReader != null) {
+            return resolveMaven(extensionId);
+        } else {
+            // FIXME: impossible to resolve extension type as well as most of the information with pure Aether API
+            throw new ResolveException("Unsupported");
+        }
     }
 
     @Override
@@ -363,7 +365,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return StringUtils.defaultString(getProperty(model, propertyName), def);
     }
 
-    protected AetherExtension resolveMaven(ExtensionDependency extensionDependency) throws ResolveException
+    private AetherExtension resolveMaven(ExtensionDependency extensionDependency) throws ResolveException
     {
         RepositorySystemSession session = createRepositorySystemSession();
 
@@ -377,23 +379,25 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             artifact =
                 AetherUtils.createArtifact(extensionDependency.getId(), extensionDependency.getVersionConstraint()
                     .getValue());
-            artifact =
-                artifact.setVersion(resolveVersionConstraint(extensionDependency.getId(),
-                    extensionDependency.getVersionConstraint(), session).toString());
+            if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {
+                artifact =
+                    artifact.setVersion(resolveVersionConstraint(extensionDependency.getId(),
+                        extensionDependency.getVersionConstraint(), session).toString());
+            }
             artifactExtension = null;
         }
 
         return resolveMaven(artifact, artifactExtension);
     }
 
-    protected AetherExtension resolveMaven(ExtensionId extensionId, String type) throws ResolveException
+    private AetherExtension resolveMaven(ExtensionId extensionId) throws ResolveException
     {
         Artifact artifact = AetherUtils.createArtifact(extensionId.getId(), extensionId.getVersion().getValue());
 
         return resolveMaven(artifact, null);
     }
 
-    protected AetherExtension resolveMaven(Artifact artifact, String artifactExtension) throws ResolveException
+    private AetherExtension resolveMaven(Artifact artifact, String artifactExtension) throws ResolveException
     {
         RepositorySystemSession session = createRepositorySystemSession();
 
