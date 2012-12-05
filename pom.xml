@@ -170,11 +170,25 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>4.2.2</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
         <version>3.1</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-dbcp</groupId>
@@ -195,11 +209,25 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>1.8.3</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
         <version>1.9</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -241,6 +269,13 @@
         <artifactId>json-lib</artifactId>
         <version>2.4</version>
         <classifier>jdk15</classifier>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
@@ -444,7 +479,7 @@ Use the junit-dep artifact instead of the junit one which wrongly bundles hamcre
             <configuration>
               <rules>
                 <bannedDependencies>
-                  <searchTransitive>false</searchTransitive>
+                  <searchTransitive>true</searchTransitive>
                   <message>
 XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
                   </message>
