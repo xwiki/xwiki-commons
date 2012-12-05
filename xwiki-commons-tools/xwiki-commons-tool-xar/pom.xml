@@ -39,4 +39,21 @@
     <module>xwiki-commons-tool-xar-integration-tests</module>
     <module>xwiki-commons-tool-xar-plugin</module>
   </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-jcl-log4j-isolation</id>
+            <configuration>
+              <!-- Since Maven use Commons Logging we need to exclude this enforcer rule -->
+              <skip>true</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
