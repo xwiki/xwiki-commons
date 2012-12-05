@@ -57,6 +57,9 @@
     <!-- SLF4J -->
     <slf4j.version>1.7.2</slf4j.version>
 
+    <!-- JUnit -->
+    <junit.version>4.10</junit.version>
+
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>4.3</xwiki.clirr.previous.version>
 
@@ -345,7 +348,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit-dep</artifactId>
-        <version>4.10</version>
+        <version>${junit.version}</version>
         <!-- Unfortunately junit-dep has a dependency on Hamcrest so we need to exclude it in order to use another
              version -->
         <exclusions>
