@@ -190,10 +190,10 @@ public class RepositoryUtil
 
             // light remote repository
 
-            /*if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
+            if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
                 this.remoteRepository = new FileExtensionRepository(getRemoteRepository(), this.componentManager);
-                repositoryManager.addRepository(remoteRepository);
-            }*/
+                repositoryManager.addRepository(this.remoteRepository);
+            }
 
             // maven repository
 
