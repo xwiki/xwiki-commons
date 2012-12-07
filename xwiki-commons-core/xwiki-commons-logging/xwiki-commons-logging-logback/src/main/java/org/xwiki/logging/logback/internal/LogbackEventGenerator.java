@@ -94,9 +94,15 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
     {
         // Register appender (see the class documentation above).
         ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
-        setContext(rootLogger.getLoggerContext());
-        rootLogger.addAppender(this);
-        start();
+
+        if (rootLogger != null) {
+            setContext(rootLogger.getLoggerContext());
+            rootLogger.addAppender(this);
+            start();
+        } else {
+            this.logger.warn("Could not find any Logback root logger."
+                + " The logging module won't be able to catch logs.");
+        }
     }
 
     @Override

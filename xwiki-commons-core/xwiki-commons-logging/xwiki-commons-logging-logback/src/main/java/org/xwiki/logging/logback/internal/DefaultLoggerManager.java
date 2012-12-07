@@ -35,6 +35,7 @@ import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
 
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 
@@ -54,6 +55,12 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     private ObservationManager observation;
 
     /**
+     * The logger.
+     */
+    @Inject
+    private Logger logger;
+
+    /**
      * The stack of listeners for the current thread.
      */
     private ThreadLocal<Stack<EventListener>> listeners = new ThreadLocal<Stack<EventListener>>();
@@ -69,14 +76,19 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
         // Register appender
         ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
 
-        Iterator<Appender<ILoggingEvent>> iterator = rootLogger.iteratorForAppenders();
+        if (rootLogger != null) {
+            Iterator<Appender<ILoggingEvent>> iterator = rootLogger.iteratorForAppenders();
 
-        while (iterator.hasNext()) {
-            Appender<ILoggingEvent> appender = iterator.next();
+            while (iterator.hasNext()) {
+                Appender<ILoggingEvent> appender = iterator.next();
 
-            if (!(appender instanceof LogbackEventGenerator)) {
-                appender.addFilter(this.forbiddenThreads);
+                if (!(appender instanceof LogbackEventGenerator)) {
+                    appender.addFilter(this.forbiddenThreads);
+                }
             }
+        } else {
+            this.logger.warn("Could not find any Logback root logger."
+                + " All logging module advanced features will be disabled.");
         }
     }
 
@@ -152,16 +164,28 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     @Override
     public void setLoggerLevel(String loggerName, LogLevel logLevel)
     {
-        ch.qos.logback.classic.Logger logger = LogbackUtils.getLoggerContext().getLogger(loggerName);
-        logger.setLevel(LogbackUtils.toLevel(logLevel));
+        LoggerContext loggerContext = LogbackUtils.getLoggerContext();
+
+        if (loggerContext != null) {
+            ch.qos.logback.classic.Logger askedLogger = loggerContext.getLogger(loggerName);
+            askedLogger.setLevel(LogbackUtils.toLevel(logLevel));
+        }
     }
 
     @Override
     public LogLevel getLoggerLevel(String loggerName)
     {
-        ch.qos.logback.classic.Logger logger = LogbackUtils.getLoggerContext().exists(loggerName);
+        LoggerContext loggerContext = LogbackUtils.getLoggerContext();
 
-        return logger != null ? LogbackUtils.toLogLevel(logger.getLevel()) : null;
+        if (loggerContext != null) {
+            ch.qos.logback.classic.Logger askedLogger = loggerContext.exists(loggerName);
+
+            if (askedLogger != null) {
+                return LogbackUtils.toLogLevel(askedLogger.getLevel());
+            }
+        }
+
+        return null;
     }
 
     @Override
