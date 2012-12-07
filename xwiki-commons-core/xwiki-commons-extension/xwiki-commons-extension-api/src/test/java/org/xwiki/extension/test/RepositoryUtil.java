@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -160,17 +159,14 @@ public class RepositoryUtil
             DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
             dcd.setRoleType(Environment.class);
             this.componentManager.registerComponent(dcd, environment);
-        }
+            
+            // Disable default repositories
+            ConfigurationSource configuration = this.componentManager.getInstance(ConfigurationSource.class);
+            if (configuration instanceof MockConfigurationSource) {
+                ((MockConfigurationSource) configuration).setProperty("extension.repositories", Arrays.asList(""));
+            }
 
-        // Disable default repositories
-        ConfigurationSource configuration = this.componentManager.getInstance(ConfigurationSource.class);
-        if (configuration instanceof MockConfigurationSource) {
-            ((MockConfigurationSource) configuration).setProperty("extension.repositories", Arrays.asList(""));
-        }
-
-        // add default test core extension
-
-        if (this.componentManager != null) {
+            // add default test core extension
             registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
             ((ConfigurableDefaultCoreExtensionRepository) this.componentManager
                 .getInstance(CoreExtensionRepository.class)).addExtensions("coreextension", new DefaultVersion(
@@ -182,8 +178,7 @@ public class RepositoryUtil
         copyResourceFolder(getLocalRepository(), "repository.local");
         boolean mavenRepository = copyResourceFolder(getMavenRepository(), "repository.maven") > 0;
 
-        // remote repositories
-
+        // register repositories
         if (this.componentManager != null) {
             ExtensionRepositoryManager repositoryManager =
                 this.componentManager.getInstance(ExtensionRepositoryManager.class);
