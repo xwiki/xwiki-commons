@@ -34,6 +34,7 @@ import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link ComponentDescriptorFactory}.
@@ -41,7 +42,7 @@ import org.xwiki.component.util.DefaultParameterizedType;
  * @version $Id$
  * @since 1.8.1
  */
-public class ComponentDescriptorFactoryTest
+public class ComponentDescriptorFactoryTest extends AbstractTestCase
 {
     @ComponentRole
     public interface NonGenericFieldRole<T>
@@ -200,9 +201,9 @@ public class ComponentDescriptorFactoryTest
         Assert.assertEquals("default", descriptor.getRoleHint());
         Assert.assertEquals(ComponentInstantiationStrategy.SINGLETON, descriptor.getInstantiationStrategy());
 
-        Collection<ComponentDependency> deps = descriptor.getComponentDependencies();
+        Collection<ComponentDependency<?>> deps = descriptor.getComponentDependencies();
         Assert.assertEquals(6, deps.size());
-        Iterator<ComponentDependency> it = deps.iterator();
+        Iterator<ComponentDependency<?>> it = deps.iterator();
 
         // Test the following injection:
         // @Inject

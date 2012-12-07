@@ -49,31 +49,19 @@
       <artifactId>xwiki-commons-component-observation</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
-    <!-- Test dependencies -->
-    
-    <!-- Make sure we provide a default implementation of SLF4J for unit tests.
-         Note that we have to do this here even though we're also doing it in xwiki-commons-test since use that
-         module would cause a circular build dependency. -->
+    <!-- Testing dependencies -->
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-simple</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-
     <!-- Used to verify that XWiki Components using JSR330 annotations can be used with Guice. This is to prove that
          we're kind of spec-compliant (even if not fully implementing the spec). -->
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
       <version>3.0</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- JMock -->
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock-junit4</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -30,100 +30,12 @@
     <version>4.3-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-test</artifactId>
-  <name>XWiki Commons - Test Framework</name>
-  <packaging>jar</packaging>
+  <name>XWiki Commons - Test Framework - Parent POM</name>
+  <packaging>pom</packaging>
   <description>XWiki Test framework</description>
-  <properties>
-    <xwiki.clover.targetPercentage>0%</xwiki.clover.targetPercentage>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit-dep</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock-junit4</artifactId>
-    </dependency>
-    <!-- To be removed as soon as we get rid of AbstractXWikiComponentTestCase -->
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <version>1.2.0</version>
-      <exclusions>
-        <!-- Exclude JUnit since JMock draws an oldish version of JUnit and we wish to use a newer one -->
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- To be removed as soon as we get rid of AbstractXWikiComponentTestCase -->
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock-cglib</artifactId>
-      <version>1.2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-default</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-context</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-configuration-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <!-- Make sure we provide a default implementation of SLF4J for any test indirectly use it -->
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <excludes>
-            org/xwiki/test/AbstractComponentTestCase.java,
-            org/xwiki/test/AbstractMockingComponentTestCase.java,
-            org/xwiki/test/AbstractMockingTestCase.java,
-            org/xwiki/test/MockConfigurationSource.java,
-            org/xwiki/test/XWikiComponentInitializer.java,
-            org/xwiki/test/annotation/MockingRequirement.java,
-            org/xwiki/test/annotation/MockingRequirements.java
-          </excludes>
-          <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <modules>
+    <!-- Sorted Alphabetically -->
+    <module>xwiki-commons-test-component</module>
+    <module>xwiki-commons-test-simple</module>
+  </modules>
 </project>

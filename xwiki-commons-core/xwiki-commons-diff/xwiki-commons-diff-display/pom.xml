@@ -42,13 +42,6 @@
       <artifactId>xwiki-commons-diff-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- Test dependencies -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>

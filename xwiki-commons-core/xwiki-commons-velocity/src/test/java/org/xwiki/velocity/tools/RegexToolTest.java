@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.test.AbstractTestCase;
 import org.xwiki.velocity.tools.RegexTool.RegexResult;
 
 /**
@@ -33,7 +34,7 @@ import org.xwiki.velocity.tools.RegexTool.RegexResult;
  * @version $Id$
  * @since 2.0RC1
  */
-public class RegexToolTest
+public class RegexToolTest extends AbstractTestCase
 {
     @Test
     public void testFind()

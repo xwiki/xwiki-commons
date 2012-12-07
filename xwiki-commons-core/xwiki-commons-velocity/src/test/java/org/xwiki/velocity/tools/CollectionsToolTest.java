@@ -34,6 +34,7 @@ import java.util.concurrent.BlockingQueue;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link CollectionsTool}.
@@ -41,7 +42,7 @@ import org.junit.Test;
  * @version $Id$
  * @since 4.0M1
  */
-public class CollectionsToolTest
+public class CollectionsToolTest extends AbstractTestCase
 {
     private CollectionsTool tool = new CollectionsTool();
 

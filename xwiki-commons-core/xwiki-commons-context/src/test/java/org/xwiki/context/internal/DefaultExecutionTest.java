@@ -19,18 +19,19 @@
  */
 package org.xwiki.context.internal;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.test.AbstractTestCase;
+
+import junit.framework.Assert;
 
 /**
  * Unit tests for {@link DefaultExecution}.
- * 
+ *
  * @version $Id$
  */
-public class DefaultExecutionTest
+public class DefaultExecutionTest extends AbstractTestCase
 {
     @Test
     public void testSetContext() throws Exception
@@ -76,9 +77,9 @@ public class DefaultExecutionTest
 
     @Test
     public void testRemoveContext() throws Exception
-    {   
+    {
         Execution execution = new DefaultExecution();
-        
+
         execution.pushContext(new ExecutionContext());
         execution.pushContext(new ExecutionContext());
         execution.pushContext(new ExecutionContext());

@@ -24,6 +24,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.xwiki.observation.event.AbstractCancelableEvent;
 import org.xwiki.observation.event.CancelableEvent;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Tests {@link AbstractCancelableEvent}.
@@ -31,7 +32,7 @@ import org.xwiki.observation.event.CancelableEvent;
  * @version $Id$
  * @since 2.5M1
  */
-public class CancelableEventTest
+public class CancelableEventTest extends AbstractTestCase
 {
     /**
      * Tested event implementation.

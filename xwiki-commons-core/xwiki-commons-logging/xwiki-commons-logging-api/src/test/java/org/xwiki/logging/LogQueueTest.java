@@ -23,13 +23,14 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Test {@link LogQueue}.
  * 
  * @version $Id$
  */
-public class LogQueueTest
+public class LogQueueTest extends AbstractTestCase
 {
     @Test
     public void testError()

@@ -25,18 +25,15 @@ import java.net.URL;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
-import org.jmock.integration.junit4.JMock;
 import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link StandardEnvironment}.
@@ -44,19 +41,11 @@ import org.xwiki.environment.Environment;
  * @version $Id$
  * @since 3.5M1
  */
-@RunWith(JMock.class)
-public class StandardEnvironmentTest
+public class StandardEnvironmentTest extends AbstractTestCase
 {
     private static final File TMPDIR = new File(System.getProperty("java.io.tmpdir"), "xwiki-temp");
 
     private StandardEnvironment environment;
-
-    private Mockery mockery = new JUnit4Mockery();
-
-    public Mockery getMockery()
-    {
-        return this.mockery;
-    }
 
     @Before
     public void setUp() throws Exception

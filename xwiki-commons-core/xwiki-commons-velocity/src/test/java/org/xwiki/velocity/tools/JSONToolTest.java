@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link JSONTool}.
@@ -34,7 +35,7 @@ import org.junit.Test;
  * @version $Id$
  * @since 4.0M2
  */
-public class JSONToolTest
+public class JSONToolTest extends AbstractTestCase
 {
     public static class MockBean
     {

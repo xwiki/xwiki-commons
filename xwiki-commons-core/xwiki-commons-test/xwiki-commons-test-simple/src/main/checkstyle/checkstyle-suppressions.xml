@@ -28,4 +28,5 @@
   <!-- Checkstyle reports a "Throwing 'Throwable' is not allowed" error but we cannot do otherwise since throwing
        Throwable is part of the JUnit method signature that we implement! -->
   <suppress checks="IllegalThrows" files="LogRule.java" />
+  <suppress checks="IllegalThrows" files="LogbackRule.java" />
 </suppressions>

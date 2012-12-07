@@ -30,13 +30,14 @@ import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyMandatory;
 import org.xwiki.properties.annotation.PropertyName;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Validate {@link DefaultBeanDescriptor}.
  *
  * @version $Id$
  */
-public class DefaultBeanDescriptorTest
+public class DefaultBeanDescriptorTest extends AbstractTestCase
 {
     public static class BeanTest
     {

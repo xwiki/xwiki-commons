@@ -36,6 +36,15 @@
   <properties>
     <maven.version>3.0.4</maven.version>
   </properties>
+  <dependencies>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-component</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
   <modules>
     <module>xwiki-commons-extension-api</module>
     <module>xwiki-commons-extension-handlers</module>

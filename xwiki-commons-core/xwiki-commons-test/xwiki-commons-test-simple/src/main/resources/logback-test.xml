@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<!-- Logback Test configuration that only logs at error level -->
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- It's important that we log with the same default values as the ones used at runtime, so that tests see what
+       is really printed at runtime. Thus tests should capture their output to not print anything in the console
+       and assert what's printed using the LogRule class. -->
+
+  <logger name="org.xwiki" level="info"/>
+  <logger name="com.xpn.xwiki" level="warn"/>
+  <logger name="com.xpn.xwiki.store.migration" level="info"/>
+  <logger name="com.xpn.xwiki.render.XWikiRadeoxRenderEngine" level="warn"/>
+
+  <!-- Hibernate logging options -->
+
+  <!-- Global level for all Hibernate logs -->
+  <logger name="org.hibernate" level="warn"/>
+
+  <!-- Log HQL query parser activity -->
+  <logger name="org.hibernate.hql.ast.AST" level="warn"/>
+  <!-- Log just the SQL -->
+  <logger name="org.hibernate.SQL" level="warn"/>
+  <!-- Log JDBC bind parameters -->
+  <logger name="org.hibernate.type" level="warn"/>
+  <!-- Log schema export/update -->
+  <logger name="org.hibernate.tool.hbm2ddl" level="warn"/>
+  <!-- Log HQL parse trees -->
+  <logger name="org.hibernate.hql" level="warn"/>
+  <!-- Log cache activity -->
+  <logger name="org.hibernate.cache" level="warn"/>
+  <!-- Log transaction activity -->
+  <logger name="org.hibernate.transaction" level="warn"/>
+  <!-- Log JDBC resource acquisition -->
+  <logger name="org.hibernate.jdbc" level="warn"/>
+  <!-- Enable the following line if you want to track down connection leakages when using
+       DriverManagerConnectionProvider -->
+  <logger name="org.hibernate.connection.DriverManagerConnectionProvider" level="warn"/>
+  <!-- Log prepared statement cache activity -->
+  <logger name="org.hibernate.ps.PreparedStatementCache" level="warn"/>
+
+  <!-- Deactivate Struts warnings -->
+  <logger name="org.apache.struts.util.RequestUtils" level="error"/>
+
+  <!-- Deactive PDF Export CSS Applier warnings -->
+  <logger name="org.apache.fop.layoutmgr.inline.ContentLayoutManager" level="error"/>
+  <logger name="info.informatica.doc.style.css.dom" level="error"/>
+
+  <!-- Deactivate JGroups warnings -->
+  <logger name="org.jgroups" level="error"/>
+
+  <root level="warn">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

@@ -22,6 +22,7 @@ package org.xwiki.velocity.tools;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link EscapeTool}.
@@ -29,7 +30,7 @@ import org.junit.Test;
  * @version $Id$
  * @since 2.7RC1
  */
-public class EscapeToolTest
+public class EscapeToolTest extends AbstractTestCase
 {
     @Test
     public void testEscapeSimpleXML()

@@ -26,13 +26,14 @@ import junit.framework.Assert;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Test {@link LogEvent}.
  * 
  * @version $Id$
  */
-public class LogEventTest
+public class LogEventTest extends AbstractTestCase
 {
     @Test
     public void testGetMessageElements()
