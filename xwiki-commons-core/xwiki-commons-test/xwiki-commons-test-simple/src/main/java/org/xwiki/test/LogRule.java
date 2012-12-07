@@ -36,7 +36,7 @@ import ch.qos.logback.core.read.ListAppender;
 /**
  * Allow capturing Logs output in the Class under test during unit testing. This is useful for two reasons:
  * <ul>
- *   <li>it allows not outputting log messgaes in the console which is a bad practice. When a test run it should not
+ *   <li>it allows not outputting log messages in the console which is a bad practice. When a test run it should not
  *       output anything and if it needs to assert something, it has to be done in the test itself.</li>
  *   <li>it allows to assert the output log messages</li>
  * </ul>

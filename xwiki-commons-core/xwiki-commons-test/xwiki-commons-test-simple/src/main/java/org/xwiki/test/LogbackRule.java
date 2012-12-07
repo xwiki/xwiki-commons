@@ -17,15 +17,36 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.component.descriptor;
+package org.xwiki.test;
 
-import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
+import org.slf4j.LoggerFactory;
 
-public class DefaultComponentDependencyTest
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+
+/**
+ * Configures Logback logging.
+ *
+ * @version $Id$
+ * @since 4.4M1
+ */
+public class LogbackRule implements TestRule
 {
-    @Test
-    public void equals()
+    @Override
+    public Statement apply(final Statement base, Description description)
     {
-        
+        // Configure Logback to display WARN level logs by default for non xwiki logs and INFO level for XWiki logs
+        ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).setLevel(Level.WARN);
+        ((Logger) LoggerFactory.getLogger("org.xwiki")).setLevel(Level.INFO);
+
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                base.evaluate();
+            }
+        };
     }
 }

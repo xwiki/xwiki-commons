@@ -24,13 +24,14 @@ import java.lang.reflect.Type;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.observation.event.Event;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link ComponentDescriptorAddedEvent}.
  * 
  * @version $Id$
  */
-public class ComponentDescriptorAddedEventTest
+public class ComponentDescriptorAddedEventTest extends AbstractTestCase
 {
     /**
      * Used in tests below.

@@ -24,12 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
@@ -42,6 +38,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link EmbeddableComponentManager}.
@@ -49,16 +46,8 @@ import org.xwiki.component.phase.InitializationException;
  * @version $Id$
  * @since 2.0M1
  */
-@RunWith(JMock.class)
-public class EmbeddableComponentManagerTest
+public class EmbeddableComponentManagerTest extends AbstractTestCase
 {
-    private Mockery mockery = new JUnit4Mockery();
-
-    public Mockery getMockery()
-    {
-        return this.mockery;
-    }
-
     public static interface Role
     {
     }

@@ -60,6 +60,9 @@
     <!-- JUnit -->
     <junit.version>4.10</junit.version>
 
+    <!-- JMock -->
+    <jmock.version>2.6.0-RC2</jmock.version>
+
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>4.3</xwiki.clirr.previous.version>
 
@@ -366,24 +369,28 @@
       <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>
-        <version>2.5.1</version>
+        <version>${jmock.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock-junit4</artifactId>
-        <version>2.5.1</version>
+        <version>${jmock.version}</version>
         <exclusions>
           <!-- Exclude JUnit since JMock draws an oldish version of JUnit and we wish to use a newer one -->
           <exclusion>
             <groupId>junit</groupId>
             <artifactId>junit-dep</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock-legacy</artifactId>
-        <version>2.5.1</version>
+        <version>${jmock.version}</version>
       </dependency>
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>

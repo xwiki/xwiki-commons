@@ -33,6 +33,15 @@
   <name>XWiki Commons - Loggging</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Loggging</description>
+  <dependencies>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-component</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
   <modules>
     <module>xwiki-commons-logging-api</module>
     <module>xwiki-commons-logging-logback</module>

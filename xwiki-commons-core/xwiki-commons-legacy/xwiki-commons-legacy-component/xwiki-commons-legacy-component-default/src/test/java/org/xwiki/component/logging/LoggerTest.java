@@ -19,7 +19,8 @@
  */
 package org.xwiki.component.logging;
 
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Unit tests for {@link org.xwiki.component.logging.AbstractLogEnabled}.
@@ -29,11 +30,12 @@ import junit.framework.TestCase;
  * @deprecated starting with 3.1M2 use {@link javax.inject.Inject} annotation to get injected a SLF4J Logger instead
  */
 @Deprecated
-public class LoggerTest extends TestCase
+public class LoggerTest
 {
+    @Test
     public void testDefaultVoidLogger()
     {
         AbstractLogEnabled component = new AbstractLogEnabled() {};
-        assertEquals(VoidLogger.class.getName(), component.getLogger().getClass().getName());
+        Assert.assertEquals(VoidLogger.class.getName(), component.getLogger().getClass().getName());
     }
 }

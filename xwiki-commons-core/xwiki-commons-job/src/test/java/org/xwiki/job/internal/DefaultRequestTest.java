@@ -23,8 +23,9 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.xwiki.job.DefaultRequest;
+import org.xwiki.test.AbstractTestCase;
 
-public class DefaultRequestTest
+public class DefaultRequestTest extends AbstractTestCase
 {
     @Test
     public void createDefaultRequestWithPassedRequest()

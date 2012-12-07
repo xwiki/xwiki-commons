@@ -21,6 +21,7 @@ package org.xwiki.xml;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link org.xwiki.xml.XMLUtils}.
@@ -28,7 +29,7 @@ import org.junit.Test;
  * @version $Id$
  * @since 1.6M1
  */
-public class XMLUtilsTest
+public class XMLUtilsTest extends AbstractTestCase
 {
     @Test
     public void testEscapeXMLComment()

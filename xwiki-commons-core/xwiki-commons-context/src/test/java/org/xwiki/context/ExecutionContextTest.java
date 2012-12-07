@@ -21,15 +21,14 @@ package org.xwiki.context;
 
 import org.junit.Test;
 import org.junit.Assert;
-
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * @version $Id$ 
  * @since 4.3M1
  */
-public class ExecutionContextTest
+public class ExecutionContextTest extends AbstractTestCase
 {
-
     @Test
     public void inheritance()
     {

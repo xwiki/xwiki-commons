@@ -23,8 +23,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.observation.event.ActionExecutionEvent;
 import org.xwiki.observation.event.Event;
+import org.xwiki.test.AbstractTestCase;
 
-public class ActionExecutionEventTest
+public class ActionExecutionEventTest extends AbstractTestCase
 {
     @Test
     public void testActionExecutionEventEquals()

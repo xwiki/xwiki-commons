@@ -25,8 +25,6 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
@@ -35,6 +33,8 @@ import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
+import org.xwiki.test.AbstractTestCase;
+
 import static org.hamcrest.Matchers.*;
 
 /**
@@ -43,20 +43,13 @@ import static org.hamcrest.Matchers.*;
  * @version $Id$
  * @since 3.5M1
  */
-public class ServletEnvironmentTest
+public class ServletEnvironmentTest extends AbstractTestCase
 {
     private File servletTmpDir;
 
     private File systemTmpDir;
 
     private ServletEnvironment environment;
-
-    private Mockery mockery = new JUnit4Mockery();
-
-    public Mockery getMockery()
-    {
-        return this.mockery;
-    }
 
     @Before
     public void setUp() throws Exception

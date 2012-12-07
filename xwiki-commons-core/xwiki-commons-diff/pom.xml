@@ -33,6 +33,15 @@
   <name>XWiki Commons - Diff</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Diff</description>
+  <dependencies>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-component</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
   <modules>
     <module>xwiki-commons-diff-api</module>
     <module>xwiki-commons-diff-display</module>

@@ -24,12 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import junit.framework.Assert;
 
+import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextInitializer;
+import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link ExecutionContext}.
@@ -38,11 +40,12 @@ import org.xwiki.context.ExecutionContextInitializer;
  * @since 1.8RC3
  */
 @SuppressWarnings("unchecked")
-public class DefaultExecutionContextManagerTest extends TestCase
+public class DefaultExecutionContextManagerTest extends AbstractTestCase
 {
     /**
      * Verify we have different objects in the Execution Context after the clone.
      */
+    @Test
     public void testClone() throws Exception
     {
         Execution execution = new DefaultExecution();
@@ -65,11 +68,11 @@ public class DefaultExecutionContextManagerTest extends TestCase
         });
         
         ExecutionContext clonedContext = contextManager.clone(context);
-        
-        assertSame(context, execution.getContext());
-        assertEquals("value", ((List<String>) clonedContext.getProperty("key")).get(0));
-        assertNotSame(context.getProperty("key"), clonedContext.getProperty("key"));
-        assertSame(xwikicontext, clonedContext.getProperty("xwikicontext"));
-        assertNotSame(xwikicontext, clonedContext.getProperty("velocitycontext"));
+
+        Assert.assertSame(context, execution.getContext());
+        Assert.assertEquals("value", ((List<String>) clonedContext.getProperty("key")).get(0));
+        Assert.assertNotSame(context.getProperty("key"), clonedContext.getProperty("key"));
+        Assert.assertSame(xwikicontext, clonedContext.getProperty("xwikicontext"));
+        Assert.assertNotSame(xwikicontext, clonedContext.getProperty("velocitycontext"));
     }
 }

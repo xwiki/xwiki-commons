@@ -21,27 +21,14 @@ package org.xwiki.test;
 
 import java.lang.reflect.Type;
 
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.runner.RunWith;
-
 /**
- * Offers a JMock 2.x Mockery object.
- * 
+ * Offers ability to mock Components easily.
+ *
  * @version $Id$
  * @since 2.4RC1
  */
-@RunWith(JMock.class)
-public abstract class AbstractMockingTestCase
+public abstract class AbstractMockingTestCase extends AbstractTestCase
 {
-    private Mockery mockery = new JUnit4Mockery();
-
-    public Mockery getMockery()
-    {
-        return this.mockery;
-    }
-
     /**
      * @return a configured Component Manager (which uses the plexus.xml file in the test resources directory) which can
      *         then be put in the XWiki Context for testing.
