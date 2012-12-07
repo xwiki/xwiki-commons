@@ -40,7 +40,8 @@ import org.xwiki.diff.display.UnifiedDiffElement;
 import org.xwiki.test.AbstractComponentTestCase;
 
 /**
- * Unit tests for {@link ExtendedDiffDisplayer}.
+ * Tests how the unified and inline diff displayers can be mixed to generate a diff both at line (unified) and character
+ * (inline) level.
  * 
  * @version $Id$
  * @since 4.1M2
