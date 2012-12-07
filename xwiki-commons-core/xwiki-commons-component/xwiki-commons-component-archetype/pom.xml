@@ -36,7 +36,8 @@
     Make it easy to create a maven project for creating XWiki Components.
   </description>
   <dependencies>
-    <!-- These dependencies are required for our integration tests -->
+    <!-- These dependencies are required for our integration tests and we need them declared here so that Maven
+         builds them first -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-default</artifactId>
@@ -46,6 +47,12 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-script</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-component</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
