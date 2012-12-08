@@ -24,7 +24,6 @@ import java.io.File;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
-import org.jmock.Expectations;
 import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +34,7 @@ import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
 import org.xwiki.test.AbstractTestCase;
 
-import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link ServletEnvironment}.
@@ -69,7 +68,7 @@ public class ServletEnvironmentTest extends AbstractTestCase
     }
 
     @Test
-    public void testGetResourceWhenServletContextNotSet()
+    public void getResourceWhenServletContextNotSet()
     {
         try {
             this.environment.getResource("/whatever");
@@ -81,34 +80,28 @@ public class ServletEnvironmentTest extends AbstractTestCase
     }
     
     @Test
-    public void testGetResourceOk() throws Exception
+    public void getResourceOk() throws Exception
     {
-        final ServletContext servletContext = getMockery().mock(ServletContext.class);
-        getMockery().checking(new Expectations() {{
-            // This is the test!
-            oneOf(servletContext).getResource("/test");
-        }});
+        final ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
-
         this.environment.getResource("/test");
+
+        verify(servletContext).getResource("/test");
     }
 
     @Test
-    public void testGetResourceAsStreamOk() throws Exception
+    public void getResourceAsStreamOk() throws Exception
     {
-        final ServletContext servletContext = getMockery().mock(ServletContext.class);
-        getMockery().checking(new Expectations() {{
-            // This is the test!
-            oneOf(servletContext).getResourceAsStream("/test");
-        }});
+        final ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
-
         this.environment.getResourceAsStream("/test");
+
+        verify(servletContext).getResourceAsStream("/test");
     }
 
 
     @Test
-    public void testGetPermanentDirectoryWhenSetWithAPI() throws Exception
+    public void getPermanentDirectoryWhenSetWithAPI() throws Exception
     {
         File permanentDirectory = new File("/permanent");
         this.environment.setPermanentDirectory(permanentDirectory);
@@ -117,18 +110,13 @@ public class ServletEnvironmentTest extends AbstractTestCase
     }
 
     @Test
-    public void testGetPermanentDirectoryWhenSetWithSystemProperty() throws Exception
+    public void getPermanentDirectoryWhenSetWithSystemProperty() throws Exception
     {
         File expectedPermanentDirectory = new File(System.getProperty("java.io.tmpdir"), "permanent");
         System.setProperty("xwiki.data.dir", expectedPermanentDirectory.toString());
 
         try {
-            final ServletContext servletContext = getMockery().mock(ServletContext.class);
-            getMockery().checking(new Expectations() {{
-                oneOf(servletContext).getAttribute("javax.servlet.context.tempdir");
-                will(returnValue(servletTmpDir));
-            }});
-            this.environment.setServletContext(servletContext);
+            this.environment.setServletContext(mock(ServletContext.class));
 
             Assert.assertEquals(expectedPermanentDirectory.getCanonicalFile(),
                 this.environment.getPermanentDirectory().getCanonicalFile());
@@ -138,29 +126,25 @@ public class ServletEnvironmentTest extends AbstractTestCase
     }
 
     @Test
-    public void testGetPermanentDirectoryWhenNotSet() throws Exception
+    public void getPermanentDirectoryWhenNotSet() throws Exception
     {
-        final ServletContext servletContext = getMockery().mock(ServletContext.class);
-        getMockery().checking(new Expectations() {{
-            oneOf(servletContext).getAttribute("javax.servlet.context.tempdir");
-            will(returnValue(servletTmpDir));
-        }});
+        final ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getAttribute("javax.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
         this.environment.setServletContext(servletContext);
 
-        // Also verify that we log a warning!
-        final Logger logger = getMockery().mock(Logger.class);
-        getMockery().checking(new Expectations() {{
-            oneOf(logger).warn(with(startsWith("No permanent directory configured. Using temporary directory")),
-                with(any(String.class)));
-        }});
+        final Logger logger = mock(Logger.class);
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 
         Assert.assertEquals(this.servletTmpDir.getCanonicalFile(),
             this.environment.getPermanentDirectory().getCanonicalFile());
+
+        // Also verify that we log a warning!
+        verify(logger).warn("No permanent directory configured. Using temporary directory [{}].",
+            System.getProperty("java.io.tmpdir"));
     }
 
     @Test
-    public void testGetTemporaryDirectory() throws Exception
+    public void getTemporaryDirectory() throws Exception
     {
         File tmpDir = new File("tmpdir");
         this.environment.setTemporaryDirectory(tmpDir);
@@ -168,14 +152,10 @@ public class ServletEnvironmentTest extends AbstractTestCase
     }
 
     @Test
-    public void testGetTemporaryDirectoryWhenNotSet() throws Exception
+    public void getTemporaryDirectoryWhenNotSet() throws Exception
     {
-        final ServletContext servletContext = getMockery().mock(ServletContext.class);
-        getMockery().checking(new Expectations() {{
-            atLeast(1).of(servletContext).getAttribute("javax.servlet.context.tempdir");
-            will(returnValue(servletTmpDir));
-        }});
-
+        final ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getAttribute("javax.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
         this.environment.setServletContext(servletContext);
 
         final File tmpDir = this.environment.getTemporaryDirectory();
@@ -188,17 +168,16 @@ public class ServletEnvironmentTest extends AbstractTestCase
      * Verify we default to the system tmp dir if the Servlet tmp dir is not set.
      */
     @Test
-    public void testGetTemporaryDirectoryWhenServletTempDirNotSet() throws Exception
+    public void getTemporaryDirectoryWhenServletTempDirNotSet() throws Exception
     {
-        final ServletContext servletContext = getMockery().mock(ServletContext.class);
-        getMockery().checking(new Expectations() {{
-            allowing(servletContext).getAttribute("javax.servlet.context.tempdir");
-            will(returnValue(null));
-        }});
+        final ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
 
         Assert.assertEquals(this.systemTmpDir.getCanonicalFile(),
             this.environment.getTemporaryDirectory().getCanonicalFile());
-    }
 
+        // Verify that servletContext.getAttribute was called (and that we returned null - this happens because we
+        // didn't set any stubbing on servletContext and null is the default returned by Mockito).
+        verify(servletContext).getAttribute("javax.servlet.context.tempdir");
+    }
 }

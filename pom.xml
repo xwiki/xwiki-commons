@@ -60,8 +60,9 @@
     <!-- JUnit -->
     <junit.version>4.10</junit.version>
 
-    <!-- JMock -->
+    <!-- Mock libraries -->
     <jmock.version>2.6.0-RC2</jmock.version>
+    <mockito.version>1.9.5</mockito.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>4.3</xwiki.clirr.previous.version>
@@ -391,6 +392,11 @@
         <groupId>org.jmock</groupId>
         <artifactId>jmock-legacy</artifactId>
         <version>${jmock.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${mockito.version}</version>
       </dependency>
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
