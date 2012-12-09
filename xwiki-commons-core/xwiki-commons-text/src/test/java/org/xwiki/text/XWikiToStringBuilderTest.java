@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.xwiki.test.AbstractTestCase;
 
 import junit.framework.Assert;
 
@@ -35,7 +34,7 @@ import junit.framework.Assert;
  * @version $Id$
  * @since 4.0M2
  */
-public class XWikiToStringBuilderTest extends AbstractTestCase
+public class XWikiToStringBuilderTest
 {
     public class TestClass
     {

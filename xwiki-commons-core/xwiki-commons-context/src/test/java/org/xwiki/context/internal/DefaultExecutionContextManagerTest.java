@@ -31,7 +31,6 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextInitializer;
-import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link ExecutionContext}.
@@ -40,7 +39,7 @@ import org.xwiki.test.AbstractTestCase;
  * @since 1.8RC3
  */
 @SuppressWarnings("unchecked")
-public class DefaultExecutionContextManagerTest extends AbstractTestCase
+public class DefaultExecutionContextManagerTest
 {
     /**
      * Verify we have different objects in the Execution Context after the clone.

@@ -26,13 +26,12 @@ import java.util.Map;
 import java.lang.reflect.Field;
 
 import org.xwiki.context.internal.ExecutionContextProperty;
-import org.xwiki.test.AbstractTestCase;
 
 /**
  * @version $Id$ 
  * @since 4.3M1
  */
-public class ExecutionContextPropertyTest extends AbstractTestCase
+public class ExecutionContextPropertyTest
 {
 
     /**

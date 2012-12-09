@@ -22,7 +22,6 @@ package org.xwiki.context.internal;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.test.AbstractTestCase;
 
 import junit.framework.Assert;
 
@@ -31,7 +30,7 @@ import junit.framework.Assert;
  *
  * @version $Id$
  */
-public class DefaultExecutionTest extends AbstractTestCase
+public class DefaultExecutionTest
 {
     @Test
     public void testSetContext() throws Exception

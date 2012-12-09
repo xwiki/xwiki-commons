@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Role;
-import org.xwiki.test.AbstractTestCase;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -47,7 +46,7 @@ import static com.google.inject.matcher.Matchers.any;
  * @version $Id$
  * @since 3.1M1
  */
-public class GuiceCompatibilityTest extends AbstractTestCase
+public class GuiceCompatibilityTest
 {
     @Role
     public interface FieldRole

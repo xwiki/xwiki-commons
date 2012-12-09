@@ -29,6 +29,7 @@ import org.jmock.Expectations;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.ProviderTest;
@@ -39,7 +40,7 @@ import org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory;
 import org.xwiki.component.internal.multi.DefaultComponentManagerManager;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
-import org.xwiki.test.AbstractTestCase;
+import org.xwiki.test.jmock.JMockRule;
 
 /**
  * Unit tests for {@link ComponentAnnotationLoader}.
@@ -47,8 +48,11 @@ import org.xwiki.test.AbstractTestCase;
  * @version $Id$
  * @since 1.8.1
  */
-public class ComponentAnnotationLoaderTest extends AbstractTestCase
+public class ComponentAnnotationLoaderTest
 {
+    @Rule
+    public final JMockRule mockery = new JMockRule();
+
     @SuppressWarnings("deprecation")
     @ComponentRole
     public interface NotGenericRole<T>
@@ -162,13 +166,13 @@ public class ComponentAnnotationLoaderTest extends AbstractTestCase
     {
         // Note: we don't define any expectation on the Logger since we want to be sure that the tests below don't
         // generate any logging at all.
-        this.loader = new TestableComponentAnnotationLoader(getMockery().mock(Logger.class));
+        this.loader = new TestableComponentAnnotationLoader(this.mockery.mock(Logger.class));
     }
 
     @After
     public void tearDown() throws Exception
     {
-        getMockery().assertIsSatisfied();
+        this.mockery.assertIsSatisfied();
     }
 
     /**
@@ -179,7 +183,7 @@ public class ComponentAnnotationLoaderTest extends AbstractTestCase
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void testPriorities() throws Exception
     {
-        final ComponentManager mockManager = getMockery().mock(ComponentManager.class);
+        final ComponentManager mockManager = this.mockery.mock(ComponentManager.class);
 
         final ComponentDescriptor descriptor1 =
             this.loader.getComponentsDescriptors(DeprecatedOverrideRole.class).get(0);
@@ -204,7 +208,7 @@ public class ComponentAnnotationLoaderTest extends AbstractTestCase
 
         // This is the test, we verify that registerComponent() is called for each of the descriptor we're expecting
         // to be discovered through annotations by the call to initialize() below.
-        getMockery().checking(new Expectations()
+        this.mockery.checking(new Expectations()
         {
             {
                 oneOf(mockManager).registerComponent(descriptor1);

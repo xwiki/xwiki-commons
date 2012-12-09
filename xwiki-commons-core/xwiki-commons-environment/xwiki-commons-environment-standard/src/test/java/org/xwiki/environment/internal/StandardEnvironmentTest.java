@@ -28,12 +28,13 @@ import org.jmock.Expectations;
 import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
-import org.xwiki.test.AbstractTestCase;
+import org.xwiki.test.jmock.JMockRule;
 
 /**
  * Unit tests for {@link StandardEnvironment}.
@@ -41,10 +42,13 @@ import org.xwiki.test.AbstractTestCase;
  * @version $Id$
  * @since 3.5M1
  */
-public class StandardEnvironmentTest extends AbstractTestCase
+public class StandardEnvironmentTest
 {
     private static final File TMPDIR = new File(System.getProperty("java.io.tmpdir"), "xwiki-temp");
 
+    @Rule
+    public final JMockRule mockery = new JMockRule();
+    
     private StandardEnvironment environment;
 
     @Before
@@ -112,9 +116,9 @@ public class StandardEnvironmentTest extends AbstractTestCase
     private void setPersistentDir(final String dirPath)
     {
         final Provider<EnvironmentConfiguration> configurationProvider =
-            (Provider<EnvironmentConfiguration>) getMockery().mock(Provider.class);
-        final EnvironmentConfiguration config = getMockery().mock(EnvironmentConfiguration.class);
-        getMockery().checking(new Expectations() {{
+            (Provider<EnvironmentConfiguration>) this.mockery.mock(Provider.class);
+        final EnvironmentConfiguration config = this.mockery.mock(EnvironmentConfiguration.class);
+        this.mockery.checking(new Expectations() {{
             allowing(configurationProvider).get();
                 will(returnValue(config));
             allowing(config).getPermanentDirectoryPath();
@@ -138,8 +142,8 @@ public class StandardEnvironmentTest extends AbstractTestCase
     public void testGetPermanentDirectoryWhenNotSet()
     {
         // Also verify that we log a warning!
-        final Logger logger = getMockery().mock(Logger.class);
-        getMockery().checking(new Expectations() {{
+        final Logger logger = this.mockery.mock(Logger.class);
+        this.mockery.checking(new Expectations() {{
         oneOf(logger).warn("No permanent directory configured. Using temporary directory [{}].",
             System.getProperty("java.io.tmpdir"));
         }});
@@ -173,8 +177,8 @@ public class StandardEnvironmentTest extends AbstractTestCase
             TMPDIR.getAbsolutePath(),
             "not a directory"
         };
-        final Logger logger = getMockery().mock(Logger.class);
-        getMockery().checking(new Expectations() {{
+        final Logger logger = this.mockery.mock(Logger.class);
+        this.mockery.checking(new Expectations() {{
             oneOf(logger).error("Configured {} directory [{}] is {}.", params);
         }});
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
@@ -202,8 +206,8 @@ public class StandardEnvironmentTest extends AbstractTestCase
         };
         ReflectionUtils.setFieldValue(this.environment, "configurationProvider", prov);
 
-        final Logger logger = getMockery().mock(Logger.class);
-        getMockery().checking(new Expectations() {{
+        final Logger logger = this.mockery.mock(Logger.class);
+        this.mockery.checking(new Expectations() {{
             allowing(logger).error(with(any(String.class)), with(any(String[].class)));
         }});
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);

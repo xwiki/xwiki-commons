@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
-import org.xwiki.test.AbstractTestCase;
 
 import static org.hamcrest.Matchers.*;
 
@@ -43,7 +42,7 @@ import static org.hamcrest.Matchers.*;
  * @version $Id$
  * @since 3.5M1
  */
-public class ServletEnvironmentTest extends AbstractTestCase
+public class ServletEnvironmentTest
 {
     private File servletTmpDir;
 

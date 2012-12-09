@@ -21,14 +21,32 @@ package org.xwiki.test;
 
 import java.lang.reflect.Type;
 
+import org.jmock.Mockery;
+import org.junit.Rule;
+import org.xwiki.test.jmock.JMockRule;
+
 /**
  * Offers ability to mock Components easily.
  *
  * @version $Id$
  * @since 2.4RC1
  */
-public abstract class AbstractMockingTestCase extends AbstractTestCase
+public abstract class AbstractMockingTestCase
 {
+    /**
+     * Automatically verify JMock expectations.
+     */
+    @Rule
+    public final JMockRule mockery = new JMockRule();
+
+    /**
+     * @return the JMock Mockery objects to mock interfaces/classes and set expectations on
+     */
+    public Mockery getMockery()
+    {
+        return this.mockery;
+    }
+
     /**
      * @return a configured Component Manager (which uses the plexus.xml file in the test resources directory) which can
      *         then be put in the XWiki Context for testing.

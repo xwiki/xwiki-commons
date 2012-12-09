@@ -22,7 +22,6 @@ package org.xwiki.component.event;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.observation.event.Event;
-import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link ComponentDescriptorAddedEvent}.
@@ -30,7 +29,7 @@ import org.xwiki.test.AbstractTestCase;
  * @version $Id$
  * @since 2.6RC2
  */
-public class ComponentDescriptorAddedEventTest extends AbstractTestCase
+public class ComponentDescriptorAddedEventTest
 {
     /**
      * Used in tests below.
