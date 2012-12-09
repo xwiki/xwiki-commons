@@ -30,7 +30,9 @@ import org.xwiki.test.jmock.JMockRule;
  *
  * @version $Id$
  * @since 2.4RC1
+ * @deprecated  starting with 4.3.1 use {@link ComponentManagerRule} instead
  */
+@Deprecated
 public abstract class AbstractMockingTestCase
 {
     /**
