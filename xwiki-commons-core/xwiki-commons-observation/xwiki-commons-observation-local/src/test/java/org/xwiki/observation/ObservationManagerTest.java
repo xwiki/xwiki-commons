@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.*;
 import org.jmock.Expectations;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.util.ReflectionUtils;
@@ -32,15 +33,18 @@ import org.xwiki.observation.event.ActionExecutionEvent;
 import org.xwiki.observation.event.AllEvent;
 import org.xwiki.observation.event.Event;
 import org.xwiki.observation.internal.DefaultObservationManager;
-import org.xwiki.test.AbstractTestCase;
+import org.xwiki.test.jmock.JMockRule;
 
 /**
  * Unit tests for {@link ObservationManager}.
  * 
  * @version $Id$
  */
-public class ObservationManagerTest extends AbstractTestCase
+public class ObservationManagerTest
 {
+    @Rule
+    public final JMockRule mockery = new JMockRule();
+
     private ObservationManager manager;
 
     @Before
@@ -52,10 +56,10 @@ public class ObservationManagerTest extends AbstractTestCase
     @Test
     public void testNotifyWhenMatching()
     {
-        final EventListener listener = getMockery().mock(EventListener.class);
-        final Event event = getMockery().mock(Event.class);
+        final EventListener listener = this.mockery.mock(EventListener.class);
+        final Event event = this.mockery.mock(Event.class);
         
-        getMockery().checking(new Expectations() {{
+        this.mockery.checking(new Expectations() {{
             allowing(listener).getName(); will(returnValue("mylistener"));
             allowing(listener).getEvents(); will(returnValue(Arrays.asList(event)));
             oneOf(listener).onEvent(event, "some source", "some data");
@@ -70,10 +74,10 @@ public class ObservationManagerTest extends AbstractTestCase
     @Test
     public void testRemoveListener()
     {
-        final EventListener listener = getMockery().mock(EventListener.class);
-        final Event event = getMockery().mock(Event.class);
+        final EventListener listener = this.mockery.mock(EventListener.class);
+        final Event event = this.mockery.mock(Event.class);
         
-        getMockery().checking(new Expectations() {{
+        this.mockery.checking(new Expectations() {{
             allowing(listener).getName(); will(returnValue("mylistener"));
             allowing(listener).getEvents(); will(returnValue(Arrays.asList(event)));
             never(listener).onEvent(with(any(Event.class)), with(any(Object.class)), with(any(Object.class)));
@@ -87,12 +91,12 @@ public class ObservationManagerTest extends AbstractTestCase
     @Test
     public void testAddEvent() throws Exception
     {
-        final EventListener listener = getMockery().mock(EventListener.class);
-        final Event initialEvent = getMockery().mock(Event.class, "initial");
-        final Event afterEvent = getMockery().mock(Event.class, "after");
-        final Event notifyEvent = getMockery().mock(Event.class, "notify");
+        final EventListener listener = this.mockery.mock(EventListener.class);
+        final Event initialEvent = this.mockery.mock(Event.class, "initial");
+        final Event afterEvent = this.mockery.mock(Event.class, "after");
+        final Event notifyEvent = this.mockery.mock(Event.class, "notify");
 
-        getMockery().checking(new Expectations() {{
+        this.mockery.checking(new Expectations() {{
             allowing(listener).getName(); will(returnValue("mylistener"));
             allowing(listener).getEvents(); will(returnValue(Arrays.asList(initialEvent)));
             oneOf(listener).onEvent(with(any(Event.class)), with(nullValue()), with(nullValue()));
@@ -111,12 +115,12 @@ public class ObservationManagerTest extends AbstractTestCase
     @Test
     public void testRemoveEvent()
     {
-        final EventListener listener = getMockery().mock(EventListener.class);
-        final Event initialEvent = getMockery().mock(Event.class, "initial");
-        final Event afterEvent = getMockery().mock(Event.class, "after");
-        final Event notifyEvent = getMockery().mock(Event.class, "notify");
+        final EventListener listener = this.mockery.mock(EventListener.class);
+        final Event initialEvent = this.mockery.mock(Event.class, "initial");
+        final Event afterEvent = this.mockery.mock(Event.class, "after");
+        final Event notifyEvent = this.mockery.mock(Event.class, "notify");
 
-        getMockery().checking(new Expectations() {{
+        this.mockery.checking(new Expectations() {{
             allowing(listener).getName(); will(returnValue("mylistener"));
             allowing(listener).getEvents(); will(returnValue(Arrays.asList(initialEvent)));
             
@@ -141,12 +145,12 @@ public class ObservationManagerTest extends AbstractTestCase
     @Test
     public void testRegisterSeveralListenersForSameEvent()
     {
-        final EventListener listener1 = getMockery().mock(EventListener.class, "listener1");
-        final EventListener listener2 = getMockery().mock(EventListener.class, "listener2");
-        final Event event = getMockery().mock(Event.class, "event");
-        final Event notifyEvent = getMockery().mock(Event.class, "notify");
+        final EventListener listener1 = this.mockery.mock(EventListener.class, "listener1");
+        final EventListener listener2 = this.mockery.mock(EventListener.class, "listener2");
+        final Event event = this.mockery.mock(Event.class, "event");
+        final Event notifyEvent = this.mockery.mock(Event.class, "notify");
 
-        getMockery().checking(new Expectations() {{
+        this.mockery.checking(new Expectations() {{
             allowing(listener1).getName(); will(returnValue("listener 1"));
             allowing(listener2).getName(); will(returnValue("listener 2"));
             allowing(listener1).getEvents(); will(returnValue(Arrays.asList(event)));
@@ -168,10 +172,10 @@ public class ObservationManagerTest extends AbstractTestCase
     @Test
     public void testRegisterListenerForAllEvents()
     {
-        final EventListener listener = getMockery().mock(EventListener.class);
-        final Event event = getMockery().mock(Event.class);
+        final EventListener listener = this.mockery.mock(EventListener.class);
+        final Event event = this.mockery.mock(Event.class);
         
-        getMockery().checking(new Expectations() {{
+        this.mockery.checking(new Expectations() {{
             allowing(listener).getName(); will(returnValue("mylistener"));
             allowing(listener).getEvents(); will(returnValue(Arrays.asList(AllEvent.ALLEVENT)));
             oneOf(listener).onEvent(event, "some source", "some data");
@@ -188,12 +192,12 @@ public class ObservationManagerTest extends AbstractTestCase
     @Test
     public void testRegisterSameListenerSeveralTimes()
     {
-        final EventListener listener = getMockery().mock(EventListener.class);
-        final Logger logger = getMockery().mock(Logger.class);
+        final EventListener listener = this.mockery.mock(EventListener.class);
+        final Logger logger = this.mockery.mock(Logger.class);
 
         ReflectionUtils.setFieldValue(this.manager, "logger", logger);
 
-        getMockery().checking(new Expectations() {{
+        this.mockery.checking(new Expectations() {{
             allowing(listener).getName(); will(returnValue("mylistener"));
             allowing(listener).getEvents(); will(returnValue(Arrays.asList(AllEvent.ALLEVENT)));
             // The check is performed here, we verify that a warning is correctly logged
@@ -217,11 +221,11 @@ public class ObservationManagerTest extends AbstractTestCase
     @Test
     public void testRegisterListenerForTwoEventsOfSameType()
     {
-        final EventListener listener = getMockery().mock(EventListener.class);
+        final EventListener listener = this.mockery.mock(EventListener.class);
         final Event eventMatcher1 = new ActionExecutionEvent("action1");
         final Event eventMatcher2 = new ActionExecutionEvent("action2");
         
-        getMockery().checking(new Expectations() {{
+        this.mockery.checking(new Expectations() {{
             allowing(listener).getName(); will(returnValue("mylistener"));
             allowing(listener).getEvents(); will(returnValue(Arrays.asList(eventMatcher1, eventMatcher2)));
 

@@ -34,7 +34,6 @@ import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.util.DefaultParameterizedType;
-import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link ComponentDescriptorFactory}.
@@ -42,7 +41,7 @@ import org.xwiki.test.AbstractTestCase;
  * @version $Id$
  * @since 1.8.1
  */
-public class ComponentDescriptorFactoryTest extends AbstractTestCase
+public class ComponentDescriptorFactoryTest
 {
     @ComponentRole
     public interface NonGenericFieldRole<T>

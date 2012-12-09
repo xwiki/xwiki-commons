@@ -17,25 +17,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package ${package};
+package org.xwiki.test.jmock;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import ${package}.internal.DefaultHelloWorld;
-import ${package}.HelloWorld;
-import org.xwiki.test.AbstractMockingComponentTestCase;
-import org.xwiki.test.annotation.MockingRequirement;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.jmock.lib.concurrent.Synchroniser;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
 
 /**
- * Tests for the {@link HelloWorld} component.
+ * Extends the JMock Rule for setting up JMock and configures it for Thread safety.
+ *
+ * @version $Id$
+ * @since 4.3.1
  */
-@MockingRequirement(DefaultHelloWorld.class)
-public class HelloWorldTest extends AbstractMockingComponentTestCase<HelloWorld>
+public class JMockRule extends JUnitRuleMockery
 {
-    @Test
-    public void testSayHello() throws Exception
+    @Override
+    public Statement apply(Statement base, FrameworkMethod method, Object target)
     {
-        Assert.assertEquals("Hello", getMockedComponent().sayHello());
+        // Several of our tests run with several threads (for example there can be Finalizer threads) and when we mock
+        // an object that's accessed by different threads JMock will warn us about the issue since by default its
+        // mocks are not threadsafe. Thus we make them thread safe to be on the safe side.
+        setThreadingPolicy(new Synchroniser());
+
+        return super.apply(base, method, target);
     }
 }

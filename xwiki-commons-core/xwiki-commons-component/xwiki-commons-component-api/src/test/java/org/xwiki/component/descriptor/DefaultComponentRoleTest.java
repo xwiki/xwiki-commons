@@ -21,7 +21,6 @@ package org.xwiki.component.descriptor;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link DefaultComponentRole}.
@@ -29,7 +28,7 @@ import org.xwiki.test.AbstractTestCase;
  * @version $Id$
  * @since 3.3M1
  */
-public class DefaultComponentRoleTest extends AbstractTestCase
+public class DefaultComponentRoleTest
 {
     private interface Role
     {

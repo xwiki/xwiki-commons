@@ -25,7 +25,6 @@ import java.lang.reflect.Type;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.component.descriptor.ComponentRole;
-import org.xwiki.test.AbstractTestCase;
 
 /**
  * Unit tests for {@link ReflectionUtils}.
@@ -33,7 +32,7 @@ import org.xwiki.test.AbstractTestCase;
  * @version $Id$ 
  * @since 3.5M1
  */
-public class ReflectionUtilsTest extends AbstractTestCase
+public class ReflectionUtilsTest
 {
     private class AbstractTestFieldClass
     {

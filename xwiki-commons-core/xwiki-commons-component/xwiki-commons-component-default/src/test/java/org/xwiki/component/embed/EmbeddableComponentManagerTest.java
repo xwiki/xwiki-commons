@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.jmock.Expectations;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -38,7 +39,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.test.AbstractTestCase;
+import org.xwiki.test.jmock.JMockRule;
 
 /**
  * Unit tests for {@link EmbeddableComponentManager}.
@@ -46,8 +47,11 @@ import org.xwiki.test.AbstractTestCase;
  * @version $Id$
  * @since 2.0M1
  */
-public class EmbeddableComponentManagerTest extends AbstractTestCase
+public class EmbeddableComponentManagerTest
 {
+    @Rule
+    public final JMockRule mockery = new JMockRule();
+
     public static interface Role
     {
     }
@@ -403,10 +407,10 @@ public class EmbeddableComponentManagerTest extends AbstractTestCase
         Role roleImpl = new RoleImpl();
         ecm.registerComponent(cd, roleImpl);
 
-        final ComponentEventManager cem = getMockery().mock(ComponentEventManager.class);
+        final ComponentEventManager cem = this.mockery.mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        getMockery().checking(new Expectations()
+        this.mockery.checking(new Expectations()
         {
             {
                 // Verify that when we release a component an unregistration event is sent followed by a registration
@@ -449,10 +453,10 @@ public class EmbeddableComponentManagerTest extends AbstractTestCase
         cd.setRole(Role.class);
         cd.setImplementation(RoleImpl.class);
 
-        final ComponentEventManager cem = getMockery().mock(ComponentEventManager.class);
+        final ComponentEventManager cem = this.mockery.mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        getMockery().checking(new Expectations()
+        this.mockery.checking(new Expectations()
         {
             {
                 oneOf(cem).notifyComponentRegistered(cd, ecm);
@@ -472,10 +476,10 @@ public class EmbeddableComponentManagerTest extends AbstractTestCase
         cd.setImplementation(RoleImpl.class);
         ecm.registerComponent(cd);
 
-        final ComponentEventManager cem = getMockery().mock(ComponentEventManager.class);
+        final ComponentEventManager cem = this.mockery.mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        getMockery().checking(new Expectations()
+        this.mockery.checking(new Expectations()
         {
             {
                 oneOf(cem).notifyComponentUnregistered(cd, ecm);
@@ -499,10 +503,10 @@ public class EmbeddableComponentManagerTest extends AbstractTestCase
         cd2.setRole(Role.class);
         cd2.setImplementation(OtherRoleImpl.class);
 
-        final ComponentEventManager cem = getMockery().mock(ComponentEventManager.class);
+        final ComponentEventManager cem = this.mockery.mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        getMockery().checking(new Expectations()
+        this.mockery.checking(new Expectations()
         {
             {
                 oneOf(cem).notifyComponentUnregistered(cd1, ecm);

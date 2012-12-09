@@ -38,14 +38,13 @@ import org.xwiki.component.embed.EmbeddableComponentManagerTest.Role;
 import org.xwiki.component.embed.EmbeddableComponentManagerTest.RoleImpl;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentRepositoryException;
-import org.xwiki.test.AbstractTestCase;
 
 /**
  * Validate loading and injection of Providers in a real use case.
  * 
  * @version $Id$
  */
-public class ProviderTest extends AbstractTestCase
+public class ProviderTest
 {
     @ComponentRole
     public static interface TestComponentRole

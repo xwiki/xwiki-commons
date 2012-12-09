@@ -21,14 +21,13 @@ package org.xwiki.repository;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xwiki.test.AbstractTestCase;
 
 /**
  * Validate {@link UriBuilder}.
  * 
  * @version $Id$
  */
-public class UriBuilderTest extends AbstractTestCase
+public class UriBuilderTest
 {
     @Test
     public void testBuildWithTwoElements()
