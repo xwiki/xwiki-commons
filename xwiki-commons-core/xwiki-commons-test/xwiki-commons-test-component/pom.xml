@@ -84,6 +84,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
+          <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
           <excludes>
             org/xwiki/test/AbstractComponentTestCase.java,
             org/xwiki/test/AbstractMockingComponentTestCase.java,

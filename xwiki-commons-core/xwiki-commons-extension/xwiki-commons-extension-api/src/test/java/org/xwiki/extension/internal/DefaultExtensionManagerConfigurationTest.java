@@ -25,49 +25,60 @@ import java.util.Arrays;
 
 import junit.framework.Assert;
 
-import org.jmock.Expectations;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.logging.LoggerManager;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.logging.logback.internal.DefaultLoggerManager;
+import org.xwiki.observation.internal.DefaultObservationManager;
+import org.xwiki.test.annotation.BeforeComponent;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
-public class DefaultExtensionManagerConfigurationTest extends AbstractComponentTestCase
+@ComponentList({
+    DefaultExtensionManagerConfiguration.class,
+    DefaultLoggerManager.class,
+    DefaultObservationManager.class
+})
+public class DefaultExtensionManagerConfigurationTest
 {
+    @Rule
+    public final MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
+
     private ExtensionManagerConfiguration configuration;
 
-    @Override
+    private MemoryConfigurationSource source;
+
+    @BeforeComponent
+    public void registerComponents() throws Exception
+    {
+        // Register a Mocked Environment since we need to provide one.
+        this.componentManager.registerMockComponent(Environment.class);
+
+        // Register some in-memory Configuration Source for the test
+        this.source = this.componentManager.registerMemoryConfigurationSource();
+    }
+
+    @Before
     public void setUp() throws Exception
     {
-        super.setUp();
-
-        // Register a Mocked Environment since we need to provide one.
-        final Environment environment = registerMockComponent(Environment.class);
-
-        getMockery().checking(new Expectations()
-        {
-            {
-                allowing(environment).getPermanentDirectory();
-                will(returnValue(null));
-                allowing(environment).getResourceAsStream(with(any(String.class)));
-                will(returnValue(null));
-            }
-        });
-
-        this.configuration = getComponentManager().getInstance(ExtensionManagerConfiguration.class);
+        this.configuration = this.componentManager.getInstance(ExtensionManagerConfiguration.class);
     }
 
     @Test
     public void testGetRepositoriesWithInvalid() throws ComponentLookupException, Exception
     {
         // Expect warnings to be logged
-        LoggerManager logManager = getComponentManager().getInstance(LoggerManager.class);
+        LoggerManager logManager = this.componentManager.getInstance(LoggerManager.class);
         logManager.pushLogListener(null);
 
-        getConfigurationSource().setProperty("extension.repositories", Arrays.asList("id:type:http://url", "invalid"));
+        this.source.setProperty("extension.repositories", Arrays.asList("id:type:http://url", "invalid"));
 
         Assert.assertEquals(
             Arrays.asList(new DefaultExtensionRepositoryDescriptor("id", "type", new URI("http://url"))),

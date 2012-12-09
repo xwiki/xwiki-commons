@@ -32,7 +32,9 @@ import org.xwiki.component.util.ReflectionUtils;
  *
  * @version $Id$
  * @since 4.2M1
+ * @deprecated  starting with 4.3.1 use {@link org.xwiki.test.mockito.MockitoComponentManagerRule} instead
  */
+@Deprecated
 public class MockingComponentManager extends EmbeddableComponentManager
 {
     /**

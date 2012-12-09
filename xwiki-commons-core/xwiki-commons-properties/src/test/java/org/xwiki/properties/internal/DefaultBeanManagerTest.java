@@ -23,26 +23,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.PropertyException;
 import org.xwiki.properties.PropertyMandatoryException;
 import org.xwiki.properties.internal.DefaultBeanDescriptorTest.BeanTest;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.properties.internal.converter.ConvertUtilsConverter;
+import org.xwiki.properties.internal.converter.EnumConverter;
+import org.xwiki.test.ComponentManagerRule;
+import org.xwiki.test.annotation.ComponentList;
 
 /**
  * Validate {@link DefaultBeanManager}.
  * 
  * @version $Id$
  */
-public class DefaultBeanManagerTest extends AbstractComponentTestCase
+@ComponentList({
+    DefaultBeanManager.class,
+    DefaultConverterManager.class,
+    EnumConverter.class,
+    ConvertUtilsConverter.class
+})
+public class DefaultBeanManagerTest
 {
+    @Rule
+    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+
     private BeanManager defaultBeanManager;
 
-    @Override
-    protected void registerComponents() throws Exception
+    @Before
+    public void setUp() throws Exception
     {
-        this.defaultBeanManager = getComponentManager().getInstance(BeanManager.class);
+        this.defaultBeanManager = this.componentManager.getInstance(BeanManager.class);
     }
 
     @Test

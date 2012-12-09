@@ -17,36 +17,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test;
+package org.xwiki.test.annotation;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
-import org.slf4j.LoggerFactory;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Configures Logback logging.
+ * Calls methods annotated with this annotation before Component registration in
+ * {@link org.xwiki.test.ComponentManagerRule}.
  *
  * @version $Id$
- * @since 4.4M1
+ * @since 4.3.1
  */
-public class LogbackRule implements TestRule
+@Documented
+@Retention(RUNTIME)
+@Target({ METHOD })
+@Inherited
+public @interface BeforeComponent
 {
-    @Override
-    public Statement apply(final Statement base, Description description)
-    {
-        // Configure Logback to display WARN level logs by default for non xwiki logs and INFO level for XWiki logs
-        ((Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).setLevel(Level.WARN);
-        ((Logger) LoggerFactory.getLogger("org.xwiki")).setLevel(Level.INFO);
-
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                base.evaluate();
-            }
-        };
-    }
 }

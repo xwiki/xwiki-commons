@@ -27,13 +27,16 @@ import java.util.Map;
 import junit.framework.Assert;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.display.InlineDiffChunk;
 import org.xwiki.diff.display.InlineDiffChunk.Type;
 import org.xwiki.diff.display.InlineDiffDisplayer;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.diff.internal.DefaultDiffManager;
+import org.xwiki.test.ComponentManagerRule;
+import org.xwiki.test.annotation.ComponentList;
 
 /**
  * Unit tests for {@link DefaultInlineDiffDisplayer}.
@@ -41,8 +44,16 @@ import org.xwiki.test.AbstractComponentTestCase;
  * @version $Id$
  * @since 4.1M2
  */
-public class DefaultInlineDiffDisplayerTest extends AbstractComponentTestCase
+//@AllComponents
+@ComponentList({
+    DefaultDiffManager.class,
+    DefaultInlineDiffDisplayer.class
+})
+public class DefaultInlineDiffDisplayerTest
 {
+    @Rule
+    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+
     @Test
     public void testBothEmpty() throws Exception
     {
@@ -128,7 +139,7 @@ public class DefaultInlineDiffDisplayerTest extends AbstractComponentTestCase
         List<Character> previousChars = Arrays.asList(ArrayUtils.toObject(previous.toCharArray()));
         List<Character> nextChars = Arrays.asList(ArrayUtils.toObject(next.toCharArray()));
 
-        DiffManager diffManager = getComponentManager().getInstance(DiffManager.class);
+        DiffManager diffManager = this.componentManager.getInstance(DiffManager.class);
         DiffResult<Character> diffResult = diffManager.diff(previousChars, nextChars, null);
 
         Map<Type, String> separators = new HashMap<Type, String>();
@@ -137,7 +148,7 @@ public class DefaultInlineDiffDisplayerTest extends AbstractComponentTestCase
         separators.put(Type.UNMODIFIED, "");
 
         StringBuilder actual = new StringBuilder();
-        InlineDiffDisplayer inlineDiffDisplayer = getComponentManager().getInstance(InlineDiffDisplayer.class);
+        InlineDiffDisplayer inlineDiffDisplayer = this.componentManager.getInstance(InlineDiffDisplayer.class);
         for (InlineDiffChunk<Character> chunk : inlineDiffDisplayer.display(diffResult)) {
             String separator = separators.get(chunk.getType());
             actual.append(separator).append(chunk).append(separator);

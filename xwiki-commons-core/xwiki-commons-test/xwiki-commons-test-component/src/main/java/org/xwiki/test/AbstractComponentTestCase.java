@@ -35,7 +35,10 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
  * </p><p>
  * Consider using this class only for integration tests.
  * </p>
+ *
+ * @deprecated  starting with 4.3.1 use {@link ComponentManagerRule} instead
  */
+@Deprecated
 public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
 {
     private XWikiComponentInitializer initializer = new XWikiComponentInitializer();

@@ -25,21 +25,28 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.ComponentManagerRule;
+import org.xwiki.test.annotation.ComponentList;
 
-public class DefaultExtensionLicenseManagerTest extends AbstractComponentTestCase
+@ComponentList({
+    DefaultExtensionLicenseManager.class
+})
+public class DefaultExtensionLicenseManagerTest
 {
+    @Rule
+    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+
     private ExtensionLicenseManager licenseManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception
     {
-        super.setUp();
-
-        this.licenseManager = getComponentManager().getInstance(ExtensionLicenseManager.class);
+        this.licenseManager = this.componentManager.getInstance(ExtensionLicenseManager.class);
     }
 
     @Test
