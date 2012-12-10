@@ -27,7 +27,7 @@ import java.util.HashMap;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLUtils;

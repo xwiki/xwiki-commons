@@ -35,7 +35,7 @@ import org.xwiki.extension.internal.safe.CollectionScriptSafeProvider;
 import org.xwiki.extension.internal.safe.DefaultScriptSafeProvider;
 import org.xwiki.extension.internal.safe.MapScriptSafeProvider;
 import org.xwiki.extension.internal.safe.ScriptSafeProvider;
-import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.annotation.MockingRequirement;
 

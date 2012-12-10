@@ -48,7 +48,7 @@ import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.test.RepositoryUtil;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCase
 {

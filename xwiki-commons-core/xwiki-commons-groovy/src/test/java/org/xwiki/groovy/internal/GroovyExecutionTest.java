@@ -37,7 +37,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.groovy.GroovyConfiguration;
-import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 
 /**
@@ -64,19 +64,19 @@ public class GroovyExecutionTest extends AbstractMockingComponentTestCase<Script
 
         getMockery().checking(new Expectations()
         {{
-            oneOf(configuration).getCompilationCustomizers();
+                oneOf(configuration).getCompilationCustomizers();
                 will(returnValue(Arrays.asList(customizer)));
 
-            // Simulate a Compilation Customizer that throws an error. This would happend for example with a Secure
-            // Customizer that would prevent executing some statements for example.
-            oneOf(customizer).getPhase();
+                // Simulate a Compilation Customizer that throws an error. This would happend for example with a Secure
+                // Customizer that would prevent executing some statements for example.
+                oneOf(customizer).getPhase();
                 will(returnValue(CompilePhase.CANONICALIZATION));
-            oneOf(customizer).needSortedInput();
+                oneOf(customizer).needSortedInput();
                 will(returnValue(false));
-            oneOf(customizer).call(with(any(SourceUnit.class)), with(any(GeneratorContext.class)),
-                with(any(ClassNode.class)));
+                oneOf(customizer).call(with(any(SourceUnit.class)), with(any(GeneratorContext.class)),
+                        with(any(ClassNode.class)));
                 will(throwException(new SecurityException("test exception")));
-        }});
+            }});
 
         ScriptEngineManager manager = new ScriptEngineManager();
         manager.registerEngineName("groovy", getMockedComponent());

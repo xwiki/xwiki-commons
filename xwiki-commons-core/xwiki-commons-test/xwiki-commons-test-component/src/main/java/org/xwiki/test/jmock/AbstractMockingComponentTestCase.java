@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test;
+package org.xwiki.test.jmock;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ import org.xwiki.test.annotation.MockingRequirements;
 
 /**
  * Unit tests for Components should extend this class instead of the older
- * {@link org.xwiki.test.AbstractComponentTestCase} test class. To use this class, annotate your test class with
+ * {@link org.xwiki.test.jmock.AbstractComponentTestCase} test class. To use this class, annotate your test class with
  * with {@link org.xwiki.test.annotation.MockingRequirement}, passing the implementation class you're testing.
  * Then in your test code, do a lookup of your component under test and you'll get a component instance which has all
  * its injected dependencies mocked automatically.

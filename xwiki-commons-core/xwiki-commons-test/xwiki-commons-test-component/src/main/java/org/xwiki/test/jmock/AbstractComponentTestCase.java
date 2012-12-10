@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test;
+package org.xwiki.test.jmock;
 
 import java.util.List;
 
@@ -25,18 +25,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
+import org.xwiki.test.MockConfigurationSource;
 
 /**
  * Tests which needs to have XWiki Components set up should extend this class which makes the Component Manager
  * available. Use this class for JUnit 4.x tests.
  * <p>
- * XWiki 2.2M1 also introduced {@link org.xwiki.test.AbstractMockingComponentTestCase} which provides automatic mocking
+ * XWiki 2.2M1 also introduced {@link AbstractMockingComponentTestCase} which provides automatic mocking
  * for injected component dependencies and which is thus better when writing pure unit tests, isolated from the rest.
  * </p><p>
  * Consider using this class only for integration tests.
  * </p>
  *
- * @deprecated  starting with 4.3.1 use {@link ComponentManagerRule} instead
+ * @deprecated  starting with 4.3.1 use {@link org.xwiki.test.ComponentManagerRule} instead
  */
 @Deprecated
 public abstract class AbstractComponentTestCase extends AbstractMockingTestCase

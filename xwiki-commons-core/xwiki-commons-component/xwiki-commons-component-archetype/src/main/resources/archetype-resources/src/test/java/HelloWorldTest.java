@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ${package}.internal.DefaultHelloWorld;
 import ${package}.HelloWorld;
-import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 
 /**

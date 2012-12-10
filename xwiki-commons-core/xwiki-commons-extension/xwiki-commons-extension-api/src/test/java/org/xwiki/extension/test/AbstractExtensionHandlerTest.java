@@ -36,7 +36,7 @@ import org.xwiki.job.JobManager;
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 public abstract class AbstractExtensionHandlerTest extends AbstractComponentTestCase
 {
