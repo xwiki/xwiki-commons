@@ -50,6 +50,14 @@
       <groupId>net.sourceforge.htmlcleaner</groupId>
       <artifactId>htmlcleaner</artifactId>
       <version>2.2</version>
+      <!-- TODO: We don't need Ant drawn. Remove this when
+           https://sourceforge.net/tracker/?func=detail&aid=3594481&group_id=183053&atid=903696 is fixed -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
