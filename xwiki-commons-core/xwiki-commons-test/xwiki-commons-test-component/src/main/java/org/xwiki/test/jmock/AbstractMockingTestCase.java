@@ -29,7 +29,7 @@ import org.junit.Rule;
  *
  * @version $Id$
  * @since 2.4RC1
- * @deprecated  starting with 4.3.1 use {@link org.xwiki.test.ComponentManagerRule} instead
+ * @deprecated starting with 4.3.1 use {@link org.xwiki.test.ComponentManagerRule} instead
  */
 @Deprecated
 public abstract class AbstractMockingTestCase

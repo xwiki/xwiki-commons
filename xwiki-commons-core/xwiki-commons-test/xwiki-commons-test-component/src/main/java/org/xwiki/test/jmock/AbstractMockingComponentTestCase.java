@@ -76,7 +76,9 @@ import org.xwiki.test.annotation.MockingRequirements;
  *
  * @version $Id$
  * @since 2.2M1
+ * @deprecated starting with 4.3.1 use {@link org.xwiki.test.mockito.MockitoComponentMockingRule} instead
  */
+@Deprecated
 public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockingTestCase
 {
     private MockingComponentManager componentManager;
@@ -115,8 +117,6 @@ public abstract class AbstractMockingComponentTestCase<T> extends AbstractMockin
             }
             return logger;
         }
-
-
     }
 
     /**

@@ -32,7 +32,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @version $Id$
  * @since 2.4RC1
+ * @deprecated starting with 4.3.1 use {@link org.xwiki.test.mockito.MockitoComponentMockingRule} instead
  */
+@Deprecated
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)
