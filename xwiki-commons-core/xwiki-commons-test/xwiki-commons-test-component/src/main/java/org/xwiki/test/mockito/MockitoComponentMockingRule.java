@@ -132,7 +132,7 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
     /**
      * @param componentImplementationClass the component implementation for which we wish to have its injection mocked
      */
-    public MockitoComponentMockingRule(Class<T> componentImplementationClass)
+    public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass)
     {
         this.componentImplementationClass = componentImplementationClass;
     }
@@ -141,7 +141,7 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
      * @param componentImplementationClass the component implementation for which we wish to have its injection mocked
      * @param excludedComponentImplementationDependencies list of component dependencies class that we don't want mocked
      */
-    public MockitoComponentMockingRule(Class<T> componentImplementationClass,
+    public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass,
         List<Class<?>> excludedComponentImplementationDependencies)
     {
         this(componentImplementationClass);
@@ -154,7 +154,7 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
      * @param componentRoleType the role type of the component implementation (when it has several), for disambiguation
      * @param componentRoleHint the role hint of the component implementation (when it has several), for disambiguation
      */
-    public MockitoComponentMockingRule(Class<T> componentImplementationClass,
+    public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass,
         List<Class<?>> excludedComponentImplementationDependencies, Type componentRoleType,
         String componentRoleHint)
     {
@@ -168,7 +168,7 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
      * @param excludedComponentImplementationDependencies list of component dependencies class that we don't want mocked
      * @param componentRoleType the role type of the component implementation (when it has several), for disambiguation
      */
-    public MockitoComponentMockingRule(Class<T> componentImplementationClass,
+    public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass,
         List<Class<?>> excludedComponentImplementationDependencies, Type componentRoleType)
     {
         this(componentImplementationClass, excludedComponentImplementationDependencies, componentRoleType, null);
@@ -179,7 +179,7 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
      * @param componentRoleType the role type of the component implementation (when it has several), for disambiguation
      * @param componentRoleHint the role hint of the component implementation (when it has several), for disambiguation
      */
-    public MockitoComponentMockingRule(Class<T> componentImplementationClass, Type componentRoleType,
+    public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass, Type componentRoleType,
         String componentRoleHint)
     {
         this(componentImplementationClass);
@@ -191,7 +191,7 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
      * @param componentImplementationClass the component implementation for which we wish to have its injection mocked
      * @param componentRoleType the role type of the component implementation (when it has several), for disambiguation
      */
-    public MockitoComponentMockingRule(Class<T> componentImplementationClass, Type componentRoleType)
+    public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass, Type componentRoleType)
     {
         this(componentImplementationClass, componentRoleType, null);
     }
