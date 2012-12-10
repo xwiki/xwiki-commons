@@ -19,11 +19,13 @@
  */
 package org.xwiki.logging.logback.internal;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +35,8 @@ import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.event.LogQueueListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.internal.DefaultObservationManager;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.annotation.MockingRequirement;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
@@ -50,9 +51,12 @@ import ch.qos.logback.core.spi.FilterReply;
  * @since 3.2M3
  */
 @ComponentList({DefaultLoggerManager.class, DefaultObservationManager.class, LogbackEventGenerator.class})
-@MockingRequirement(value = DefaultLoggerManager.class, exceptions = ObservationManager.class)
-public class DefaultLoggerManagerTest extends AbstractMockingComponentTestCase
+public class DefaultLoggerManagerTest
 {
+    @Rule
+    public final MockitoComponentMockingRule<LoggerManager> mocker = new MockitoComponentMockingRule<LoggerManager>(
+        DefaultLoggerManager.class, Arrays.asList(ObservationManager.class));
+
     private LoggerManager loggerManager;
 
     private Logger logger;
@@ -60,7 +64,7 @@ public class DefaultLoggerManagerTest extends AbstractMockingComponentTestCase
     private ListAppender<ILoggingEvent> listAppender;
 
     @Before
-    public void configure() throws Exception
+    public void setUp() throws Exception
     {
         ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
 
@@ -89,7 +93,7 @@ public class DefaultLoggerManagerTest extends AbstractMockingComponentTestCase
         rootLogger.addAppender(this.listAppender);
 
         this.logger = LoggerFactory.getLogger(getClass());
-        this.loggerManager = getComponentManager().getInstance(LoggerManager.class);
+        this.loggerManager = this.mocker.getInstance(LoggerManager.class);
     }
 
     @Test
