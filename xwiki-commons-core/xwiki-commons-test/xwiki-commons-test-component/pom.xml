@@ -86,11 +86,11 @@
         <configuration>
           <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
           <excludes>
-            org/xwiki/test/AbstractComponentTestCase.java,
-            org/xwiki/test/AbstractMockingComponentTestCase.java,
-            org/xwiki/test/AbstractMockingTestCase.java,
+            org/xwiki/test/jmock/AbstractComponentTestCase.java,
+            org/xwiki/test/jmock/AbstractMockingComponentTestCase.java,
+            org/xwiki/test/jmock/AbstractMockingTestCase.java,
+            org/xwiki/test/jmock/XWikiComponentInitializer.java,
             org/xwiki/test/MockConfigurationSource.java,
-            org/xwiki/test/XWikiComponentInitializer.java,
             org/xwiki/test/annotation/MockingRequirement.java,
             org/xwiki/test/annotation/MockingRequirements.java
           </excludes>

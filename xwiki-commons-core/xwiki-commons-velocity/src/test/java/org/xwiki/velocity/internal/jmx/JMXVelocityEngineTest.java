@@ -22,7 +22,7 @@ package org.xwiki.velocity.internal.jmx;
 import org.apache.velocity.VelocityContext;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 import org.xwiki.velocity.VelocityEngine;
 
 import javax.management.openmbean.CompositeData;

@@ -24,7 +24,7 @@ import java.awt.Color;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link DefaultConverterManager}.

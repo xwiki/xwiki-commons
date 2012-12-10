@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 
 /**

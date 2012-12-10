@@ -48,7 +48,7 @@ import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
 import org.xwiki.extension.test.RepositoryUtil;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTestCase
 {

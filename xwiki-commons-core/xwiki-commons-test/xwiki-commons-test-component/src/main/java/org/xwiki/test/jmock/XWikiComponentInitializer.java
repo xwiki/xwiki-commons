@@ -17,19 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test;
+package org.xwiki.test.jmock;
 
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextManager;
+import org.xwiki.test.MockConfigurationSource;
 
 /**
  * Initialize a component manager used in unit tests.
  * 
  * @version $Id$
- * @deprecated  starting with 4.3.1 use {@link ComponentManagerRule} instead
+ * @deprecated  starting with 4.3.1 use {@link org.xwiki.test.ComponentManagerRule} instead
  */
 @Deprecated
 public class XWikiComponentInitializer

@@ -41,7 +41,7 @@ import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.repository.internal.local.ExtensionSerializer;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 public class DefaultExtensionSerializerTest extends AbstractComponentTestCase
 {

@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.converter.Converter;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link ColorConverter} component.

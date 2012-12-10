@@ -26,7 +26,7 @@ import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
 import org.xwiki.observation.ObservationManager;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 public class DefaultJobProgressTest extends AbstractComponentTestCase
 {

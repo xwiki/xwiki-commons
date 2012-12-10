@@ -17,20 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test;
+package org.xwiki.test.jmock;
 
 import java.lang.reflect.Type;
 
 import org.jmock.Mockery;
 import org.junit.Rule;
-import org.xwiki.test.jmock.JMockRule;
 
 /**
  * Offers ability to mock Components easily.
  *
  * @version $Id$
  * @since 2.4RC1
- * @deprecated  starting with 4.3.1 use {@link ComponentManagerRule} instead
+ * @deprecated  starting with 4.3.1 use {@link org.xwiki.test.ComponentManagerRule} instead
  */
 @Deprecated
 public abstract class AbstractMockingTestCase

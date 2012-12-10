@@ -39,7 +39,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.display.UnifiedDiffBlock;
 import org.xwiki.diff.display.UnifiedDiffDisplayer;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Unit tests for {@link DefaultUnifiedDiffDisplayer}.

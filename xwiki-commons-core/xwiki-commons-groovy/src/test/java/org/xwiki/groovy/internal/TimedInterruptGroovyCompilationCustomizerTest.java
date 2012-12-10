@@ -30,7 +30,7 @@ import javax.script.ScriptException;
 import org.jmock.Expectations;
 import org.junit.Test;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.test.AbstractComponentTestCase;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 import junit.framework.Assert;
 
