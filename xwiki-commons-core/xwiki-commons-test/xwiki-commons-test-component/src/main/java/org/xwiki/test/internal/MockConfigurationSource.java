@@ -17,25 +17,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package ${package};
+package org.xwiki.test.internal;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import ${package}.internal.DefaultHelloWorld;
-import ${package}.HelloWorld;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.component.descriptor.DefaultComponentDescriptor;
+import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.configuration.internal.MemoryConfigurationSource;
 
 /**
- * Tests for the {@link HelloWorld} component.
+ * Mock {@link ConfigurationSource} that returns an empty list of configuration sources.
+ * 
+ * @version $Id$
+ * @since 1.6M2
  */
-@MockingRequirement(DefaultHelloWorld.class)
-public class HelloWorldTest extends AbstractMockingComponentTestCase<HelloWorld>
+public class MockConfigurationSource extends MemoryConfigurationSource
 {
-    @Test
-    public void testSayHello() throws Exception
+    public static DefaultComponentDescriptor<ConfigurationSource> getDescriptor(String roleHint)
     {
-        Assert.assertEquals("Hello", getMockedComponent().sayHello());
+        DefaultComponentDescriptor<ConfigurationSource> descriptor =
+            new DefaultComponentDescriptor<ConfigurationSource>();
+        descriptor.setRoleType(ConfigurationSource.class);
+        if (roleHint != null) {
+            descriptor.setRoleHint(roleHint);
+        }
+        descriptor.setImplementation(MockConfigurationSource.class);
+
+        return descriptor;
     }
 }

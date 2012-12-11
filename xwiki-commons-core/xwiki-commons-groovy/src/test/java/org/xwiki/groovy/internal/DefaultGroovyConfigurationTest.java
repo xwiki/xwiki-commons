@@ -36,7 +36,7 @@ import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.groovy.GroovyCompilationCustomizer;
 import org.xwiki.groovy.GroovyConfiguration;
 import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.annotation.MockingRequirement;
+import org.xwiki.test.jmock.annotation.MockingRequirement;
 
 import junit.framework.Assert;
 
