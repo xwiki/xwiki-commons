@@ -211,8 +211,12 @@ public class DefaultLoggerManagerTest
         this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid", queue));
 
         this.logger.debug("[test] debug message 1");
-        Assert.assertEquals("Should have contained no message but got [" + queue.peek().getFormattedMessage()
-            + "] instead (last message, there might be more)", 0, queue.size());
+        // Provide information when the Assert fails
+        if (queue.size() > 0) {
+            Assert.fail("Should have contained no message but got [" + queue.peek().getFormattedMessage()
+                + "] instead (last message, there might be more)");
+        }
+        Assert.assertEquals(0, queue.size());
 
         this.loggerManager.setLoggerLevel(getClass().getName(), LogLevel.DEBUG);
 
