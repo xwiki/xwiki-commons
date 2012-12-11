@@ -66,6 +66,11 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     private ThreadLocal<Stack<EventListener>> listeners = new ThreadLocal<Stack<EventListener>>();
 
     /**
+     * Logback utilities.
+     */
+    private LogbackUtils utils = new LogbackUtils();
+
+    /**
      * Filter forbidden threads for {@link Appender}s.
      */
     private ForbiddenThreadsFilter forbiddenThreads = new ForbiddenThreadsFilter();
@@ -74,7 +79,7 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     public void initialize() throws InitializationException
     {
         // Register appender
-        ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
+        ch.qos.logback.classic.Logger rootLogger = getRootLogger();
 
         if (rootLogger != null) {
             Iterator<Appender<ILoggingEvent>> iterator = rootLogger.iteratorForAppenders();
@@ -164,24 +169,24 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     @Override
     public void setLoggerLevel(String loggerName, LogLevel logLevel)
     {
-        LoggerContext loggerContext = LogbackUtils.getLoggerContext();
+        LoggerContext loggerContext = this.utils.getLoggerContext();
 
         if (loggerContext != null) {
             ch.qos.logback.classic.Logger askedLogger = loggerContext.getLogger(loggerName);
-            askedLogger.setLevel(LogbackUtils.toLevel(logLevel));
+            askedLogger.setLevel(this.utils.toLevel(logLevel));
         }
     }
 
     @Override
     public LogLevel getLoggerLevel(String loggerName)
     {
-        LoggerContext loggerContext = LogbackUtils.getLoggerContext();
+        LoggerContext loggerContext = getLoggerContext();
 
         if (loggerContext != null) {
             ch.qos.logback.classic.Logger askedLogger = loggerContext.exists(loggerName);
 
             if (askedLogger != null) {
-                return LogbackUtils.toLogLevel(askedLogger.getLevel());
+                return this.utils.toLogLevel(askedLogger.getLevel());
             }
         }
 
@@ -191,6 +196,22 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     @Override
     public Collection<Logger> getLoggers()
     {
-        return (Collection) LogbackUtils.getLoggerContext().getLoggerList();
+        return (Collection) this.utils.getLoggerContext().getLoggerList();
+    }
+
+    /**
+     * @return the Logback root logger or null if Logback is not available
+     */
+    protected ch.qos.logback.classic.Logger getRootLogger()
+    {
+        return this.utils.getRootLogger();
+    }
+
+    /**
+     * @return the Logback Context or null if Logback is not available
+     */
+    protected LoggerContext getLoggerContext()
+    {
+        return this.utils.getLoggerContext();
     }
 }

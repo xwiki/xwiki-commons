@@ -33,22 +33,14 @@ import ch.qos.logback.classic.LoggerContext;
  * @version $Id$
  * @since 3.2M3
  */
-public final class LogbackUtils
+public class LogbackUtils
 {
-    /**
-     * Utility class.
-     */
-    private LogbackUtils()
-    {
-        // Voluntarily empty, this constructor is here to prevent anyone from instantiating this utility class.
-    }
-
     /**
      * @return the root {@link LoggerContext}.
      */
-    public static LoggerContext getLoggerContext()
+    public LoggerContext getLoggerContext()
     {
-        ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
+        ILoggerFactory loggerFactory = getLoggerFactory();
 
         return loggerFactory instanceof LoggerContext ? (LoggerContext) loggerFactory : null;
     }
@@ -56,7 +48,7 @@ public final class LogbackUtils
     /**
      * @return the Logback root logger
      */
-    public static ch.qos.logback.classic.Logger getRootLogger()
+    public ch.qos.logback.classic.Logger getRootLogger()
     {
         LoggerContext loggerContext = getLoggerContext();
 
@@ -67,7 +59,7 @@ public final class LogbackUtils
      * @param level the Logback log level
      * @return the XWiki log level
      */
-    public static LogLevel toLogLevel(Level level)
+    public LogLevel toLogLevel(Level level)
     {
         return level != null ? LogLevel.valueOf(level.toString()) : null;
     }
@@ -76,8 +68,16 @@ public final class LogbackUtils
      * @param logLevel the XWikilog level
      * @return the Logback log level
      */
-    public static Level toLevel(LogLevel logLevel)
+    public Level toLevel(LogLevel logLevel)
     {
         return logLevel != null ? Level.toLevel(logLevel.toString(), null) : null;
+    }
+
+    /**
+     * @return the SLF4J Logger Factory used for logging
+     */
+    protected ILoggerFactory getLoggerFactory()
+    {
+        return LoggerFactory.getILoggerFactory();
     }
 }

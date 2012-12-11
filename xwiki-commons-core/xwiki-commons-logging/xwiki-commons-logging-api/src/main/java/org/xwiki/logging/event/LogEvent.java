@@ -23,6 +23,8 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
 import org.xwiki.component.annotation.Component;
@@ -183,5 +185,39 @@ public class LogEvent implements Event
     public String toString()
     {
         return getLevel().toString() + ':' + getFormattedMessage();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(7, 11)
+            .append(getMarker())
+            .append(getLevel())
+            .append(getMessage())
+            .append(getArgumentArray())
+            .append(getThrowable())
+            .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if (object == null) {
+            return false;
+        }
+        if (object == this) {
+            return true;
+        }
+        if (object.getClass() != getClass()) {
+            return false;
+        }
+        LogEvent rhs = (LogEvent) object;
+        return new EqualsBuilder()
+            .append(getMarker(), rhs.getMarker())
+            .append(getLevel(), rhs.getLevel())
+            .append(getMessage(), rhs.getMessage())
+            .append(getArgumentArray(), rhs.getArgumentArray())
+            .append(getThrowable(), rhs.getThrowable())
+            .isEquals();
     }
 }

@@ -231,6 +231,20 @@ public class LogRule implements TestRule
     }
 
     /**
+     * @param position the message number in the list of captured logs
+     * @return the message at the specified position
+     */
+    public String getMessage(int position)
+    {
+        List<ILoggingEvent> list = this.listAppender.list;
+        if (list.size() >= position + 1) {
+            return list.get(position).getFormattedMessage();
+        } else {
+            throw new RuntimeException(String.format("There are only %s messages in the captured logs", list.size()));
+        }
+    }
+
+    /**
      * @return the number of log messages that have been captured
      */
     public int size()

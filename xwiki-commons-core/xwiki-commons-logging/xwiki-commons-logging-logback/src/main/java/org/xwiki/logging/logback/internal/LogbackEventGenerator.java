@@ -59,8 +59,8 @@ import ch.qos.logback.core.AppenderBase;
  * @since 3.2M1
  */
 @Component
-@Singleton
 @Named("LogbackEventGenerator")
+@Singleton
 public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implements EventListener, Initializable
 {
     /**
@@ -74,6 +74,11 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
      */
     @Inject
     private ComponentManager componentManager;
+
+    /**
+     * Logback utilities.
+     */
+    private LogbackUtils utils = new LogbackUtils();
 
     @Override
     public String getName()
@@ -93,7 +98,7 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
     public void initialize() throws InitializationException
     {
         // Register appender (see the class documentation above).
-        ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
+        ch.qos.logback.classic.Logger rootLogger = getRootLogger();
 
         if (rootLogger != null) {
             setContext(rootLogger.getLoggerContext());
@@ -131,7 +136,7 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
         }
 
         try {
-            LogLevel logLevel = LogbackUtils.toLogLevel(event.getLevel());
+            LogLevel logLevel = this.utils.toLogLevel(event.getLevel());
 
             LogEvent logevent =
                 new LogEvent(event.getMarker(), logLevel, event.getMessage(), event.getArgumentArray(), throwable);
@@ -142,5 +147,13 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
         } catch (ComponentLookupException e) {
             this.logger.error("Can't find any implementation of [{}]", ObservationManager.class.getName(), e);
         }
+    }
+
+    /**
+     * @return the Logback root logger or null if Logback is not available
+     */
+    protected ch.qos.logback.classic.Logger getRootLogger()
+    {
+        return this.utils.getRootLogger();
     }
 }

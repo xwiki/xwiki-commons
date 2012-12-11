@@ -21,7 +21,8 @@ package org.xwiki.logging.logback.internal;
 
 import java.util.Arrays;
 
-import org.jmock.Expectations;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,15 @@ import org.xwiki.logging.event.LogEvent;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.observation.internal.DefaultObservationManager;
+import org.xwiki.test.ComponentManagerRule;
+import org.xwiki.test.LogRule;
+import org.xwiki.test.annotation.ComponentList;
+
+import junit.framework.Assert;
+
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link LogbackEventGenerator}.
@@ -38,18 +47,26 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
  * @version $Id$
  * @since 3.2M3
  */
-public class LogbackEventGeneratorTest extends AbstractComponentTestCase
+@ComponentList({
+    DefaultObservationManager.class,
+    LogbackEventGenerator.class
+})
+public class LogbackEventGeneratorTest
 {
+    @Rule
+    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+
+    @Rule
+    public final LogRule logCapture = new LogRule();
+
     private Logger logger;
 
     private ObservationManager observationManager;
 
-    @Override
+    @Before
     public void setUp() throws Exception
     {
-        super.setUp();
-
-        this.observationManager = getComponentManager().getInstance(ObservationManager.class);
+        this.observationManager = this.componentManager.getInstance(ObservationManager.class);
 
         this.logger = LoggerFactory.getLogger(getClass());
     }
@@ -58,24 +75,38 @@ public class LogbackEventGeneratorTest extends AbstractComponentTestCase
      * Verify that logging an error will generate a Log Event.
      */
     @Test
-    public void test()
+    public void verifyThatLoggingGeneratesALogEvent()
     {
-        final EventListener listener = getMockery().mock(EventListener.class);
-        final Event event = new LogEvent(null, LogLevel.ERROR, "error message", null, null);
+        Event event = new LogEvent(null, LogLevel.INFO, "dummy", null, null);
 
-        getMockery().checking(new Expectations()
-        {
-            {
-                allowing(listener).getName();
-                will(returnValue("mylistener"));
-                allowing(listener).getEvents();
-                will(returnValue(Arrays.asList(event)));
-                oneOf(listener).onEvent(with(any(LogEvent.class)), with(anything()), with(anything()));
-            }
-        });
+        EventListener listener = mock(EventListener.class);
+        when(listener.getName()).thenReturn("mylistener");
+        when(listener.getEvents()).thenReturn(Arrays.asList(event));
 
         this.observationManager.addListener(listener);
 
         this.logger.error("error message");
+
+        Event expected = new LogEvent(null, LogLevel.ERROR, "error message", null, null);
+        verify(listener).onEvent(eq(expected), eq(getClass().getName()), eq(null));
+    }
+
+    @Test
+    public void initializeWhenNoLogback() throws Exception
+    {
+        // Simulate that the Logging implementation is not Logback
+        LogbackEventGenerator generator =
+            (LogbackEventGenerator) this.componentManager.getInstance(EventListener.class, "LogbackEventGenerator");
+        LogbackEventGenerator spyGenerator = spy(generator);
+        when(spyGenerator.getRootLogger()).thenReturn(null);
+
+        // Capture logs
+        this.logCapture.recordLoggingForType(LogbackEventGenerator.class);
+
+        spyGenerator.initialize();
+
+        Assert.assertEquals(1, this.logCapture.size());
+        Assert.assertEquals("Could not find any Logback root logger. The logging module won't be able to catch "
+            + "logs.", this.logCapture.getMessage(0));
     }
 }

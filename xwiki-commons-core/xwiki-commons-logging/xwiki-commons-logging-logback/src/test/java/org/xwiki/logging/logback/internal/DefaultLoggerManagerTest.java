@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
-import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.event.LogQueueListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.internal.DefaultObservationManager;
@@ -44,6 +43,11 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.FilterReply;
 
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for {@link DefaultLoggerManager}.
  * 
@@ -54,19 +58,22 @@ import ch.qos.logback.core.spi.FilterReply;
 public class DefaultLoggerManagerTest
 {
     @Rule
-    public final MockitoComponentMockingRule<LoggerManager> mocker = new MockitoComponentMockingRule<LoggerManager>(
-        DefaultLoggerManager.class, Arrays.asList(ObservationManager.class));
+    public final MockitoComponentMockingRule<DefaultLoggerManager> mocker =
+        new MockitoComponentMockingRule<DefaultLoggerManager>(
+            DefaultLoggerManager.class, Arrays.asList(ObservationManager.class));
 
-    private LoggerManager loggerManager;
+    private DefaultLoggerManager loggerManager;
 
     private Logger logger;
 
     private ListAppender<ILoggingEvent> listAppender;
 
+    private LogbackUtils utils = new LogbackUtils();
+
     @Before
     public void setUp() throws Exception
     {
-        ch.qos.logback.classic.Logger rootLogger = LogbackUtils.getRootLogger();
+        ch.qos.logback.classic.Logger rootLogger = this.utils.getRootLogger();
 
         // Disable all appenders to avoid unnecessary log
         Filter<ILoggingEvent> filter = new Filter<ILoggingEvent>()
@@ -93,7 +100,7 @@ public class DefaultLoggerManagerTest
         rootLogger.addAppender(this.listAppender);
 
         this.logger = LoggerFactory.getLogger(getClass());
-        this.loggerManager = this.mocker.getInstance(LoggerManager.class);
+        this.loggerManager = this.mocker.getMockedComponent();
     }
 
     @Test
@@ -217,5 +224,28 @@ public class DefaultLoggerManagerTest
     public void testGetLoggers()
     {
         this.loggerManager.getLoggers();
+    }
+
+    @Test
+    public void initializeWhenNoLogback() throws Exception
+    {
+        // Simulate that the Logging implementation is not Logback
+        DefaultLoggerManager spyLoggerManager = spy(this.loggerManager);
+        when(spyLoggerManager.getRootLogger()).thenReturn(null);
+
+        spyLoggerManager.initialize();
+
+        verify(this.mocker.getMockedLogger()).warn("Could not find any Logback root logger. All logging module "
+            + "advanced features will be disabled.");
+    }
+
+    @Test
+    public void getLoggerLevelWhenNoLogback() throws Exception
+    {
+        // Simulate that the Logging implementation is not Logback
+        DefaultLoggerManager spyLoggerManager = spy(this.loggerManager);
+        when(spyLoggerManager.getLoggerContext()).thenReturn(null);
+
+        Assert.assertNull(spyLoggerManager.getLoggerLevel("whatever"));
     }
 }
