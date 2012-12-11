@@ -43,7 +43,6 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.FilterReply;
 
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
