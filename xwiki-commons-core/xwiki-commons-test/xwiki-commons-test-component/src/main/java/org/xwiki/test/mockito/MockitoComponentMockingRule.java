@@ -39,7 +39,7 @@ import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.test.ComponentRegistrator;
+import org.xwiki.test.internal.ComponentRegistrator;
 
 import static org.mockito.Mockito.mock;
 

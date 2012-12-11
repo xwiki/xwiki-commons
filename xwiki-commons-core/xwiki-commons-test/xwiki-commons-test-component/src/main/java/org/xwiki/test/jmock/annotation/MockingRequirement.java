@@ -17,8 +17,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test.annotation;
+package org.xwiki.test.jmock.annotation;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -26,19 +28,37 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Used to be able to define several {@link MockingRequirement} annotations.
- * 
+ * Defines a component that needs to have its injected components mocked.
+ *
  * @version $Id$
- * @since 4.2M3
+ * @since 2.4RC1
  * @deprecated starting with 4.3.1 use {@link org.xwiki.test.mockito.MockitoComponentMockingRule} instead
  */
 @Deprecated
+@Documented
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface MockingRequirements
+@Inherited
+public @interface MockingRequirement
 {
     /**
-     * @return the list of annotations within the compound
+     * @return the Component implementation class
+     * @since 4.2M3
      */
-    MockingRequirement[] value();
+    Class< ? > value();
+
+    /**
+     * @return the role if the component implementation implements several roles
+     */
+    Class< ? > role() default Object.class;
+
+    /**
+     * @return the hint if the component implementation has several roles
+     */
+    String hint() default "";
+
+    /**
+     * @return a list of component roles for classes that shouldn't be mocked
+     */
+    Class< ? >[] exceptions() default { };
 }

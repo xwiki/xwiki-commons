@@ -33,7 +33,7 @@ import org.xwiki.context.internal.DefaultExecutionContextManager;
 import org.xwiki.job.JobManager;
 import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.annotation.MockingRequirement;
+import org.xwiki.test.jmock.annotation.MockingRequirement;
 
 /**
  * Unit tests for {@link DefaultJobManager}.

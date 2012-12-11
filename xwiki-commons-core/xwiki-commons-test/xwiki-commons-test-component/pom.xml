@@ -90,9 +90,9 @@
             org/xwiki/test/jmock/AbstractMockingComponentTestCase.java,
             org/xwiki/test/jmock/AbstractMockingTestCase.java,
             org/xwiki/test/jmock/XWikiComponentInitializer.java,
-            org/xwiki/test/MockConfigurationSource.java,
-            org/xwiki/test/annotation/MockingRequirement.java,
-            org/xwiki/test/annotation/MockingRequirements.java
+            org/xwiki/test/internal/MockConfigurationSource.java,
+            org/xwiki/test/jmock/annotation/MockingRequirement.java,
+            org/xwiki/test/jmock/annotation/MockingRequirements.java
           </excludes>
         </configuration>
       </plugin>

@@ -37,7 +37,7 @@ import org.xwiki.extension.internal.safe.MapScriptSafeProvider;
 import org.xwiki.extension.internal.safe.ScriptSafeProvider;
 import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.annotation.MockingRequirement;
+import org.xwiki.test.jmock.annotation.MockingRequirement;
 
 @MockingRequirement(value = DefaultScriptSafeProvider.class, exceptions = ComponentManager.class)
 @ComponentList({

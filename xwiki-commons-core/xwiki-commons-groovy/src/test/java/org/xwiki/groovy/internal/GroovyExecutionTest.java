@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.groovy.GroovyConfiguration;
 import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.annotation.MockingRequirement;
+import org.xwiki.test.jmock.annotation.MockingRequirement;
 
 /**
  * Test Groovy Execution with some Compilation Customizers. This test also tests the

@@ -28,6 +28,7 @@ import org.junit.runners.model.Statement;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.test.annotation.BeforeComponent;
+import org.xwiki.test.internal.ComponentRegistrator;
 
 /**
  * Initialize a Component Manager and uses the {@link org.xwiki.test.annotation.AllComponents} and

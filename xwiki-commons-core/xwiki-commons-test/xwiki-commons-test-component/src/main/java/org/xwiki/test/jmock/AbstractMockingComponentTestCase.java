@@ -42,13 +42,13 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.annotation.MockingRequirement;
-import org.xwiki.test.annotation.MockingRequirements;
+import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.test.jmock.annotation.MockingRequirements;
 
 /**
  * Unit tests for Components should extend this class instead of the older
  * {@link org.xwiki.test.jmock.AbstractComponentTestCase} test class. To use this class, annotate your test class with
- * with {@link org.xwiki.test.annotation.MockingRequirement}, passing the implementation class you're testing.
+ * with {@link org.xwiki.test.jmock.annotation.MockingRequirement}, passing the implementation class you're testing.
  * Then in your test code, do a lookup of your component under test and you'll get a component instance which has all
  * its injected dependencies mocked automatically.
  *

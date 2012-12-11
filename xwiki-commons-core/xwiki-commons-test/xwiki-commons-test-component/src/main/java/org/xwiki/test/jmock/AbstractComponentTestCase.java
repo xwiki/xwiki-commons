@@ -25,7 +25,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.test.MockConfigurationSource;
+import org.xwiki.test.internal.MockConfigurationSource;
 
 /**
  * Tests which needs to have XWiki Components set up should extend this class which makes the Component Manager

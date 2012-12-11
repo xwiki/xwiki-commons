@@ -17,30 +17,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.test;
+package org.xwiki.test.jmock.annotation;
 
-import org.xwiki.component.descriptor.DefaultComponentDescriptor;
-import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.configuration.internal.MemoryConfigurationSource;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Mock {@link ConfigurationSource} that returns an empty list of configuration sources.
+ * Used to be able to define several {@link MockingRequirement} annotations.
  * 
  * @version $Id$
- * @since 1.6M2
+ * @since 4.2M3
+ * @deprecated starting with 4.3.1 use {@link org.xwiki.test.mockito.MockitoComponentMockingRule} instead
  */
-public class MockConfigurationSource extends MemoryConfigurationSource
+@Deprecated
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface MockingRequirements
 {
-    public static DefaultComponentDescriptor<ConfigurationSource> getDescriptor(String roleHint)
-    {
-        DefaultComponentDescriptor<ConfigurationSource> descriptor =
-            new DefaultComponentDescriptor<ConfigurationSource>();
-        descriptor.setRoleType(ConfigurationSource.class);
-        if (roleHint != null) {
-            descriptor.setRoleHint(roleHint);
-        }
-        descriptor.setImplementation(MockConfigurationSource.class);
-
-        return descriptor;
-    }
+    /**
+     * @return the list of annotations within the compound
+     */
+    MockingRequirement[] value();
 }
