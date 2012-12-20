@@ -19,6 +19,10 @@
  */
 package org.xwiki.logging.logback.internal;
 
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -43,10 +47,6 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.FilterReply;
 
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 /**
  * Unit tests for {@link DefaultLoggerManager}.
  * 
@@ -58,8 +58,8 @@ public class DefaultLoggerManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<DefaultLoggerManager> mocker =
-        new MockitoComponentMockingRule<DefaultLoggerManager>(
-            DefaultLoggerManager.class, Arrays.asList(ObservationManager.class));
+        new MockitoComponentMockingRule<DefaultLoggerManager>(DefaultLoggerManager.class,
+            Arrays.asList(ObservationManager.class));
 
     private DefaultLoggerManager loggerManager;
 
@@ -210,6 +210,8 @@ public class DefaultLoggerManagerTest
 
         this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid", queue));
 
+        this.loggerManager.setLoggerLevel(getClass().getName(), LogLevel.WARN);
+
         this.logger.debug("[test] debug message 1");
         // Provide information when the Assert fails
         if (queue.size() > 0) {
@@ -239,8 +241,8 @@ public class DefaultLoggerManagerTest
 
         spyLoggerManager.initialize();
 
-        verify(this.mocker.getMockedLogger()).warn("Could not find any Logback root logger. All logging module "
-            + "advanced features will be disabled.");
+        verify(this.mocker.getMockedLogger()).warn(
+            "Could not find any Logback root logger. All logging module advanced features will be disabled.");
     }
 
     @Test
