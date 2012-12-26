@@ -28,7 +28,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>4.5-SNAPSHOT</version>
+  <version>4.4-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page for the module based on the passed id .
        It allows to have a single URL definition in this top level POM and still get valid website URLs for all
@@ -109,7 +109,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>xwiki-commons-4.4-milestone-1</tag>
+    <tag>stable-4.4.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
