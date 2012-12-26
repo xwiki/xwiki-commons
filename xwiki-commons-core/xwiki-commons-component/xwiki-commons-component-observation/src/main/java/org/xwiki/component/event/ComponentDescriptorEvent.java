@@ -40,7 +40,7 @@ public interface ComponentDescriptorEvent extends Event
 
     /**
      * @return the role type of the component
-     * @since 4.4M1
+     * @since 4.4RC1
      */
     Type getRoleType();
 

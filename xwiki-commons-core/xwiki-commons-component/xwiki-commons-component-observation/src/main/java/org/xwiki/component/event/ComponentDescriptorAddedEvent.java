@@ -39,7 +39,7 @@ public class ComponentDescriptorAddedEvent extends AbstractComponentDescriptorEv
 
     /**
      * @param role the component role to watch (all components matching this role will trigger this event)
-     * @deprecated since 4.4M1 use {@link #ComponentDescriptorAddedEvent(Type)} instead
+     * @deprecated since 4.4RC1 use {@link #ComponentDescriptorAddedEvent(Type)} instead
      */
     @Deprecated
     public ComponentDescriptorAddedEvent(Class< ? > role)
@@ -49,7 +49,7 @@ public class ComponentDescriptorAddedEvent extends AbstractComponentDescriptorEv
 
     /**
      * @param roleType the component role to watch (all components matching this role will trigger this event)
-     * @since 4.4M1
+     * @since 4.4RC1
      */
     public ComponentDescriptorAddedEvent(Type roleType)
     {
@@ -59,7 +59,7 @@ public class ComponentDescriptorAddedEvent extends AbstractComponentDescriptorEv
     /**
      * @param role the component role to watch
      * @param roleHint the component role hint to watch
-     * @deprecated since 4.4M1 use {@link #ComponentDescriptorAddedEvent(Type, String)} instead
+     * @deprecated since 4.4RC1 use {@link #ComponentDescriptorAddedEvent(Type, String)} instead
      */
     @Deprecated
     public ComponentDescriptorAddedEvent(Class< ? > role, String roleHint)
@@ -70,7 +70,7 @@ public class ComponentDescriptorAddedEvent extends AbstractComponentDescriptorEv
     /**
      * @param roleType the component role to watch
      * @param roleHint the component role hint to watch
-     * @since 4.4M1
+     * @since 4.4RC1
      */
     public ComponentDescriptorAddedEvent(Type roleType, String roleHint)
     {

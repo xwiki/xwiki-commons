@@ -53,7 +53,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
 
     /**
      * @param role the component role to watch (all components matching this role will trigger this event)
-     * @deprecated since 4.4M1 use {@link #AbstractComponentDescriptorEvent(Type)} instead
+     * @deprecated since 4.4RC1 use {@link #AbstractComponentDescriptorEvent(Type)} instead
      */
     @Deprecated
     public AbstractComponentDescriptorEvent(Class< ? > role)
@@ -63,7 +63,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
 
     /**
      * @param roleType the component role type to watch (all components matching this role will trigger this event)
-     * @since 4.4M1
+     * @since 4.4RC1
      */
     public AbstractComponentDescriptorEvent(Type roleType)
     {
@@ -73,7 +73,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
     /**
      * @param role the component role to watch
      * @param roleHint the component rolehint to watch
-     * @deprecated since 4.4M1 use {@link #AbstractComponentDescriptorEvent(Type, String)} instead
+     * @deprecated since 4.4RC1 use {@link #AbstractComponentDescriptorEvent(Type, String)} instead
      */
     @Deprecated
     public AbstractComponentDescriptorEvent(Class< ? > role, String roleHint)
@@ -84,7 +84,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
     /**
      * @param roleType the component role to watch
      * @param roleHint the component rolehint to watch
-     * @since 4.4M1
+     * @since 4.4RC1
      */
     public AbstractComponentDescriptorEvent(Type roleType, String roleHint)
     {

@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
  * Unit tests for {@link LogbackUtils}.
  *
  * @version $Id$
- * @since 4.4M1
+ * @since 4.4RC1
  */
 public class LogBackUtilsTest
 {
