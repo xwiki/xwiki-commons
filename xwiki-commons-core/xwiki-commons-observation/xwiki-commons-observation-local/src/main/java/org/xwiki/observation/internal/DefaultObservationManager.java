@@ -289,7 +289,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     private void onComponentEvent(ComponentDescriptorEvent componentEvent, ComponentManager componentManager,
         ComponentDescriptor<EventListener> descriptor)
     {
-        if (componentEvent.getRole() == EventListener.class) {
+        if (componentEvent.getRoleType() == EventListener.class) {
             if (componentEvent instanceof ComponentDescriptorAddedEvent) {
                 onEventListenerComponentAdded((ComponentDescriptorAddedEvent) componentEvent, componentManager,
                     descriptor);
