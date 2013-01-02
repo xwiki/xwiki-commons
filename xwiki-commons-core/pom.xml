@@ -138,12 +138,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
-            <difference>
-              <className>org/xwiki/component/event/ComponentDescriptorEvent</className>
-              <method>java.lang.reflect.Type getRoleType()</method>
-              <differenceType>7012</differenceType>
-              <justification>Was missing in a previous refactoring from Class to Type.</justification>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
