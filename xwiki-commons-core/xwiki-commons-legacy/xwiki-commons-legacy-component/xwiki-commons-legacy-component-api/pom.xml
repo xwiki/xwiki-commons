@@ -80,6 +80,16 @@
           </weaveDependencies>
         </configuration>
       </plugin>
+      <!-- Exclude AspectJ's builddef.lst file form the generated JAR since it's not useful there. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/builddef.lst</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
       <!-- Make sure we run the tests only with the aspectified JARs since otherwise components will be registered
            twice for example. -->
       <plugin>
