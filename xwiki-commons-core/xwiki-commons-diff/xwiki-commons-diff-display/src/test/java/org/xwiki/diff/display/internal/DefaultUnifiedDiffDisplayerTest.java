@@ -32,6 +32,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -39,7 +40,9 @@ import org.junit.runners.Parameterized.Parameters;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.display.UnifiedDiffBlock;
 import org.xwiki.diff.display.UnifiedDiffDisplayer;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.diff.internal.DefaultDiffManager;
+import org.xwiki.test.ComponentManagerRule;
+import org.xwiki.test.annotation.ComponentList;
 
 /**
  * Unit tests for {@link DefaultUnifiedDiffDisplayer}.
@@ -47,9 +50,17 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
  * @version $Id$
  * @since 4.1M2
  */
+@ComponentList({
+    DefaultDiffManager.class,
+    DefaultUnifiedDiffDisplayer.class,
+    DefaultInlineDiffDisplayer.class
+})
 @RunWith(Parameterized.class)
-public class DefaultUnifiedDiffDisplayerTest extends AbstractComponentTestCase
+public class DefaultUnifiedDiffDisplayerTest
 {
+    @Rule
+    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+
     /**
      * The previous version.
      */
@@ -85,8 +96,8 @@ public class DefaultUnifiedDiffDisplayerTest extends AbstractComponentTestCase
     @Test
     public void execute() throws Exception
     {
-        DiffManager diffManager = getComponentManager().getInstance(DiffManager.class);
-        UnifiedDiffDisplayer unifiedDiffDisplayer = getComponentManager().getInstance(UnifiedDiffDisplayer.class);
+        DiffManager diffManager = componentManager.getInstance(DiffManager.class);
+        UnifiedDiffDisplayer unifiedDiffDisplayer = componentManager.getInstance(UnifiedDiffDisplayer.class);
         List<UnifiedDiffBlock<String, Object>> blocks =
             unifiedDiffDisplayer.display(diffManager.diff(previous, next, null));
 

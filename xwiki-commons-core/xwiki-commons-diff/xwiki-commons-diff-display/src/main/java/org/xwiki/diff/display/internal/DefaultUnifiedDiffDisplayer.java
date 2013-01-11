@@ -211,10 +211,11 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     }
 
     /**
-     * Processes a change. In a unified diff the modified elements are either added or removed so we model a modified
-     * element with two elements: one removed (the previous version) and one added (the next version). If a splitter is
-     * provided through the given configuration object then we use it to split the changed element (if there is only
-     * one) in sub-elements and produce an in-line diff for the changes inside the modified element.
+     * Processes a change. In a unified diff the modified elements are either added or removed so we model a change by
+     * listing the removed elements (from the previous version) followed by the added elements (from the next version).
+     * If a splitter is provided through the given configuration object then we use it to split the changed elements (if
+     * the number of removed elements equals the number of added elements) in sub-elements and produce an in-line diff
+     * for the changes inside the modified elements.
      * 
      * @param delta the change
      * @param config the configuration used to access the splitter
@@ -230,9 +231,12 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         elements.addAll(this.<E, F> getElements(delta.getPrevious(), Type.DELETED));
         elements.addAll(this.<E, F> getElements(delta.getNext(), Type.ADDED));
 
-        // An element is modified when it is replaced by a single element.
-        if (config.getSplitter() != null && delta.getPrevious().size() == 1 && delta.getNext().size() == 1) {
-            displayInlineDiff(elements.get(0), elements.get(1), config);
+        // Compute the in-line diff if the number of removed elements equals the number of added elements.
+        if (config.getSplitter() != null && delta.getPrevious().size() == delta.getNext().size()) {
+            int changeSize = delta.getPrevious().size();
+            for (int i = 0; i < changeSize; i++) {
+                displayInlineDiff(elements.get(i), elements.get(changeSize + i), config);
+            }
         }
 
         return elements;

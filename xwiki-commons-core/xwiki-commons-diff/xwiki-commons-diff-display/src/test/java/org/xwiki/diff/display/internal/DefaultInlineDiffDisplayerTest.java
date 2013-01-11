@@ -44,7 +44,6 @@ import org.xwiki.test.annotation.ComponentList;
  * @version $Id$
  * @since 4.1M2
  */
-//@AllComponents
 @ComponentList({
     DefaultDiffManager.class,
     DefaultInlineDiffDisplayer.class

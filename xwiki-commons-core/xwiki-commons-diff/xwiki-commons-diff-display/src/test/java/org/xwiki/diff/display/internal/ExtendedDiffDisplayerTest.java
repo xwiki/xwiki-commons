@@ -26,6 +26,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.diff.DiffManager;
@@ -37,7 +38,9 @@ import org.xwiki.diff.display.UnifiedDiffBlock;
 import org.xwiki.diff.display.UnifiedDiffConfiguration;
 import org.xwiki.diff.display.UnifiedDiffDisplayer;
 import org.xwiki.diff.display.UnifiedDiffElement;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.diff.internal.DefaultDiffManager;
+import org.xwiki.test.ComponentManagerRule;
+import org.xwiki.test.annotation.ComponentList;
 
 /**
  * Tests how the unified and inline diff displayers can be mixed to generate a diff both at line (unified) and character
@@ -46,8 +49,18 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
  * @version $Id$
  * @since 4.1M2
  */
-public class ExtendedDiffDisplayerTest extends AbstractComponentTestCase
+@ComponentList({
+    LineSplitter.class,
+    CharSplitter.class,
+    DefaultDiffManager.class,
+    DefaultUnifiedDiffDisplayer.class,
+    DefaultInlineDiffDisplayer.class
+})
+public class ExtendedDiffDisplayerTest
 {
+    @Rule
+    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+
     @Test
     public void testLineAdded() throws Exception
     {
@@ -72,6 +85,15 @@ public class ExtendedDiffDisplayerTest extends AbstractComponentTestCase
         execute("one\ntwo\nthree", "one\ntWo\nextra\nthree", "@@ -1,3 +1,4 @@\n one\n-two\n+tWo\n+extra\n three\n");
     }
 
+    @Test
+    public void testLinesChanges() throws Exception
+    {
+        execute("one\ntwo\nthree\nfour", "one\ntWo\nthrEE\nfour",
+            "@@ -1,4 +1,4 @@\n one\n-t-w-o\n-thr-ee-\n+t+W+o\n+thr+EE+\n four\n");
+        execute("one\ntwoo\nthre\nfour", "one\ntwo\nthree\nfour",
+            "@@ -1,4 +1,4 @@\n one\n-two-o-\n-thre\n+two\n+thre+e+\n four\n");
+    }
+
     /**
      * Generates the extended diff between the given versions and asserts if it meets the expectation.
      * 
@@ -84,18 +106,18 @@ public class ExtendedDiffDisplayerTest extends AbstractComponentTestCase
     {
         ParameterizedType lineSplitterType =
             new DefaultParameterizedType(null, Splitter.class, String.class, String.class);
-        Splitter<String, String> lineSplitter = getComponentManager().getInstance(lineSplitterType, "line");
+        Splitter<String, String> lineSplitter = componentManager.getInstance(lineSplitterType, "line");
         List<String> previousLines = lineSplitter.split(previous);
         List<String> nextLines = lineSplitter.split(next);
 
-        DiffManager diffManager = getComponentManager().getInstance(DiffManager.class);
+        DiffManager diffManager = componentManager.getInstance(DiffManager.class);
         DiffResult<String> diffResult = diffManager.diff(previousLines, nextLines, null);
 
         ParameterizedType charSplitterType =
             new DefaultParameterizedType(null, Splitter.class, String.class, Character.class);
-        Splitter<String, Character> charSplitter = getComponentManager().getInstance(charSplitterType);
+        Splitter<String, Character> charSplitter = componentManager.getInstance(charSplitterType);
 
-        UnifiedDiffDisplayer unifiedDiffDisplayer = getComponentManager().getInstance(UnifiedDiffDisplayer.class);
+        UnifiedDiffDisplayer unifiedDiffDisplayer = componentManager.getInstance(UnifiedDiffDisplayer.class);
         UnifiedDiffConfiguration<String, Character> config = unifiedDiffDisplayer.getDefaultConfiguration();
         config.setSplitter(charSplitter);
 
