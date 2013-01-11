@@ -26,6 +26,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
@@ -57,11 +59,22 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
     public static final String JOBTYPE = "install";
 
     /**
+     * The key to use to access the context extension plan.
+     */
+    public static final String CONTEXTKEY_PLAN = "job.extension.plan";
+
+    /**
      * Used to generate the install plan.
      */
     @Inject
     @Named(InstallPlanJob.JOBTYPE)
     private Job installPlanJob;
+
+    /**
+     * Used to access the execution context.
+     */
+    @Inject
+    private Execution execution;
 
     @Override
     public String getType()
@@ -87,6 +100,8 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
     {
         notifyPushLevelProgress(3);
 
+        ExecutionContext context = this.execution.getContext();
+
         try {
             // Create the plan
 
@@ -104,6 +119,10 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
             }
 
             notifyStepPropress();
+
+            // Put the plan in context
+            // TODO: use a stack ?
+            context.setProperty(CONTEXTKEY_PLAN, plan);
 
             // Apply the plan
 
@@ -130,6 +149,9 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
             applyActions(actions);
         } finally {
             notifyPopLevelProgress();
+
+            // Clean context
+            context.removeProperty(CONTEXTKEY_PLAN);
         }
     }
 
