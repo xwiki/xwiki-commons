@@ -143,6 +143,12 @@
               <method>java.lang.reflect.Type getRoleType()</method>
               <differenceType>7012</differenceType>
               <justification>Was missing in a previous refactoring from Class to Type.</justification>
+            <difference>
+            </difference>
+              <className>org/xwiki/job/Request</className>
+              <method>java.lang.Object removeProperty(java.lang.String)</method>
+              <differenceType>7002</differenceType>
+              <justification>Request was not supposed to contain this method in the first place.</justification>
             </difference>
           </ignored>
           <excludes>
