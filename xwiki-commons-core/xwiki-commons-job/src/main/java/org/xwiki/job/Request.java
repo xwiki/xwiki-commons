@@ -85,12 +85,4 @@ public interface Request extends Serializable
      * @since 4.2M2
      */
     boolean containsProperty(String key);
-
-    /**
-     * @param key the name of the property
-     * @return the previous value associated to the passed key
-     * @param <T> the type of the value
-     * @since 4.2M2
-     */
-    <T> T removeProperty(String key);
 }

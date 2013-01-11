@@ -130,6 +130,17 @@ public abstract class AbstractRequest implements Request
         this.properties.put(key, value);
     }
 
+    /**
+     * @param key the name of the property
+     * @return the previous value associated to the passed key
+     * @param <T> the type of the value
+     * @since 4.2M2
+     */
+    public <T> T removeProperty(String key)
+    {
+        return (T) this.properties.remove(key);
+    }
+
     @Override
     public <T> T getProperty(String key)
     {
@@ -154,11 +165,5 @@ public abstract class AbstractRequest implements Request
     public boolean containsProperty(String key)
     {
         return this.properties.containsKey(key);
-    }
-
-    @Override
-    public <T> T removeProperty(String key)
-    {
-        return (T) this.properties.remove(key);
     }
 }
