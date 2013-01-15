@@ -26,6 +26,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
@@ -59,6 +61,12 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
     @Named(UninstallPlanJob.JOBTYPE)
     private Job uninstallPlanJob;
 
+    /**
+     * Used to access the execution context.
+     */
+    @Inject
+    private Execution execution;
+
     @Override
     public String getType()
     {
@@ -83,6 +91,8 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
     {
         notifyPushLevelProgress(2);
 
+        ExecutionContext context = this.execution.getContext();
+
         try {
             // Create the plan
 
@@ -101,6 +111,10 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
 
             notifyStepPropress();
 
+            // Put the plan in context
+            // TODO: use a stack ?
+            context.setProperty(CONTEXTKEY_PLAN, plan);
+
             // Apply the plan
 
             Collection<ExtensionPlanAction> actions = plan.getActions();
@@ -108,6 +122,9 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
             applyActions(actions);
         } finally {
             notifyPopLevelProgress();
+
+            // Clean context
+            context.removeProperty(CONTEXTKEY_PLAN);
         }
     }
 }

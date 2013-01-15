@@ -51,6 +51,11 @@ import org.xwiki.job.AbstractJob;
 public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends AbstractJob<R>
 {
     /**
+     * The key to use to access the context extension plan.
+     */
+    public static final String CONTEXTKEY_PLAN = "job.extension.plan";
+
+    /**
      * Used to manipulate local extension repository.
      */
     @Inject

@@ -233,10 +233,11 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
     private void uninstallExtension(InstalledExtension installedExtension, String namespace,
         Collection<ExtensionPlanNode> parentBranch) throws UninstallException
     {
-        if (namespace != null
-            && (installedExtension.getNamespaces() == null
-            || !installedExtension.getNamespaces().contains(namespace))) {
-            throw new UninstallException(String.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension, namespace));
+        if (namespace != null) {
+            if (installedExtension.getNamespaces() == null || !installedExtension.getNamespaces().contains(namespace)) {
+                throw new UninstallException(String.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension,
+                    namespace));
+            }
         }
 
         ExtensionHandler extensionHandler;
@@ -278,7 +279,8 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
             notifyStepPropress();
 
             DefaultExtensionPlanAction action =
-                new DefaultExtensionPlanAction(installedExtension, null, Action.UNINSTALL, namespace, false);
+                new DefaultExtensionPlanAction(installedExtension, installedExtension, Action.UNINSTALL, namespace,
+                    false);
             parentBranch.add(new DefaultExtensionPlanNode(action, children, null));
         } finally {
             notifyPopLevelProgress();

@@ -59,11 +59,6 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
     public static final String JOBTYPE = "install";
 
     /**
-     * The key to use to access the context extension plan.
-     */
-    public static final String CONTEXTKEY_PLAN = "job.extension.plan";
-
-    /**
      * Used to generate the install plan.
      */
     @Inject
