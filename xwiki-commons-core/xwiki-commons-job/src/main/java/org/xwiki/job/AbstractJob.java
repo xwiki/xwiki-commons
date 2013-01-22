@@ -165,18 +165,27 @@ public abstract class AbstractJob<R extends Request> implements Job
         this.lock.lock();
 
         try {
-            this.status.setState(JobStatus.State.FINISHED);
-            this.status.setEndDate(new Date());
-
-            this.finishedCondition.signalAll();
-
+            // Give a chance to any listener to do custom action associated to the job
+            // TODO: use a JobFinishingEvent instead ?
             this.observationManager.notify(new JobFinishedEvent(getRequest().getId(), getType(), this.request), this,
                 exception);
 
+            // Indicate when the job ended
+            this.status.setEndDate(new Date());
+
+            // Stop updating job status (progress, log, etc.)
             this.status.stopListening();
 
+            // Update job state
+            this.status.setState(JobStatus.State.FINISHED);
+
+            // Release threads waiting for job being done
+            this.finishedCondition.signalAll();
+
+            // Remove the job from the current jobs context
             this.jobContext.popCurrentJob();
 
+            // Store the job status
             try {
                 if (this.request.getId() != null) {
                     this.storage.store(this.status);
