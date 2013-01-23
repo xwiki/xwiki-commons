@@ -28,28 +28,24 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.logging.LoggerManager;
-import org.xwiki.logging.logback.internal.DefaultLoggerManager;
-import org.xwiki.observation.internal.DefaultObservationManager;
+import org.xwiki.test.LogRule;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
-@ComponentList({
-    DefaultExtensionManagerConfiguration.class,
-    DefaultLoggerManager.class,
-    DefaultObservationManager.class
-})
+@ComponentList({DefaultExtensionManagerConfiguration.class})
 public class DefaultExtensionManagerConfigurationTest
 {
     @Rule
     public final MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
+
+    @Rule
+    public final LogRule logCapture = new LogRule();
 
     private ExtensionManagerConfiguration configuration;
 
@@ -72,12 +68,8 @@ public class DefaultExtensionManagerConfigurationTest
     }
 
     @Test
-    public void testGetRepositoriesWithInvalid() throws ComponentLookupException, Exception
+    public void testGetRepositoriesWithInvalid() throws Exception
     {
-        // Expect warnings to be logged
-        LoggerManager logManager = this.componentManager.getInstance(LoggerManager.class);
-        logManager.pushLogListener(null);
-
         this.source.setProperty("extension.repositories", Arrays.asList("id:type:http://url", "invalid"));
 
         Assert.assertEquals(
