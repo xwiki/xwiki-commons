@@ -154,7 +154,12 @@ public abstract class AbstractJob<R extends Request> implements Job
 
         this.status.startListening();
 
-        this.logger.info("Starting job of type [{}] with identifier [{}]", getType(), getStatus().getRequest().getId());
+        if (getStatus().getRequest().getId() != null) {
+            this.logger.info("Starting job of type [{}] with identifier [{}]", getType(), getStatus().getRequest()
+                .getId());
+        } else {
+            this.logger.info("Starting job of type [{}]", getType());
+        }
     }
 
     /**
@@ -175,8 +180,12 @@ public abstract class AbstractJob<R extends Request> implements Job
             // Indicate when the job ended
             this.status.setEndDate(new Date());
 
-            this.logger.info("Finished job of type [{}] with identifier [{}]", getType(), getStatus().getRequest()
-                .getId());
+            if (getStatus().getRequest().getId() != null) {
+                this.logger.info("Finished job of type [{}] with identifier [{}]", getType(), getStatus().getRequest()
+                    .getId());
+            } else {
+                this.logger.info("Finished job of type [{}]", getType());
+            }
 
             // Stop updating job status (progress, log, etc.)
             this.status.stopListening();
