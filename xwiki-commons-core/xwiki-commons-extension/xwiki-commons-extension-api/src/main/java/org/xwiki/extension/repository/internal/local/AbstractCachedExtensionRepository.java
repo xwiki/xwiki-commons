@@ -71,13 +71,15 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
      */
     protected void addCachedExtension(E extension)
     {
-        // extensions
-        this.extensions.put(extension.getId(), extension);
+        if (!this.extensions.containsKey(extension.getId())) {
+            // extensions
+            this.extensions.put(extension.getId(), extension);
 
-        // versions
-        addCachedExtensionVersion(extension.getId().getId(), extension);
-        for (String feature : extension.getFeatures()) {
-            addCachedExtensionVersion(feature, extension);
+            // versions
+            addCachedExtensionVersion(extension.getId().getId(), extension);
+            for (String feature : extension.getFeatures()) {
+                addCachedExtensionVersion(feature, extension);
+            }
         }
     }
 
@@ -194,7 +196,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     {
         Pattern patternMatcher =
             StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
-                + pattern + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
+                + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
 
         Set<Extension> set = new HashSet<Extension>();
         List<Extension> result = new ArrayList<Extension>(this.extensionsVersions.size());
