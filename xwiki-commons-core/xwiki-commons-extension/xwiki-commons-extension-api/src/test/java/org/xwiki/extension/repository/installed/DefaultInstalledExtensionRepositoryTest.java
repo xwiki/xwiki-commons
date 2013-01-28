@@ -370,6 +370,12 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
         Assert.assertEquals(2, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(0, result.getOffset());
+        
+        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search("Extension", 0, -1);
+
+        Assert.assertEquals(2, result.getTotalHits());
+        Assert.assertEquals(2, result.getSize());
+        Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search("dependency", 0, -1);
 
