@@ -36,7 +36,6 @@
   <modules>
     <!-- Sorted Alphabetically -->
     <module>xwiki-commons-tool-xar-handlers</module>
-    <module>xwiki-commons-tool-xar-integration-tests</module>
     <module>xwiki-commons-tool-xar-plugin</module>
   </modules>
   <build>
@@ -56,4 +55,12 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <modules>
+        <module>xwiki-commons-tool-xar-integration-tests</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
