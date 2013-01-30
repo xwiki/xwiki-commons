@@ -43,7 +43,14 @@ import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluatio
  * this you would use:
  *
  * <code><pre>
- *
+ *   &lt;rules&gt;
+ *     &lt;validateDependencyVersion implementation="org.xwiki.tool.enforcer.ValidateDependencyVersion"&gt;
+ *       &lt;versionCheck&gt;
+ *         &lt;groupIdPrefix&gt;org.xwiki.commons&lt;/groupIdPrefix&gt;
+ *         &lt;allowedVersionRegex&gt;\$\{project.version\}|[^$].*&lt;/allowedVersionRegex&gt;
+ *       &lt;/versionCheck&gt;
+ *     &lt;/validateDependencyVersion&gt;
+ *   &lt;/rules&gt;
  * </pre></code>
  *
  * @version $Id$
