@@ -30,6 +30,7 @@ import org.apache.maven.enforcer.rule.api.EnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
@@ -86,7 +87,21 @@ public class ValidateDependencyVersion implements EnforcerRule
     {
         Model model = getModel(helper);
 
-        for (Object object : model.getDependencies()) {
+        validateDependencies(model.getDependencies());
+
+        DependencyManagement dependencyManagement = model.getDependencyManagement();
+        if (dependencyManagement != null) {
+            validateDependencies(dependencyManagement.getDependencies());
+        }
+    }
+
+    /**
+     * @param dependencies the list of dependencies to validate
+     * @throws EnforcerRuleException if a dependency doesn't validate
+     */
+    private void validateDependencies(List dependencies) throws EnforcerRuleException
+    {
+        for (Object object : dependencies) {
             Dependency dependency = (Dependency) object;
             for (VersionCheck versionCheck : this.checks) {
                 // Note: the version will be null if defined in a parent.
