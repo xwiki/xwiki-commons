@@ -29,10 +29,10 @@
     <artifactId>xwiki-commons-tools</artifactId>
     <version>4.5-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
-  <name>XWiki Commons - Tools - Banned Dependencies Enforcer</name>
-  <packaging>jar</packaging>
-  <description>XWiki Commons - Tools - Banned Dependencies Enforcer</description>
+  <artifactId>xwiki-commons-tool-enforcers</artifactId>
+  <name>XWiki Commons - Tools - Enforcers</name>
+  <packaging>pom</packaging>
+  <description>Rule enforcers to verify Maven project validity</description>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.enforcer</groupId>
@@ -63,4 +63,7 @@
       </plugin>
     </plugins>
   </build>
+  <modules>
+    <module>xwiki-commons-tool-enforcer-dependencies</module>
+  </modules>
 </project>

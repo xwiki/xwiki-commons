@@ -26,34 +26,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons</artifactId>
+    <artifactId>xwiki-commons-tool-enforcers</artifactId>
     <version>4.5-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-tools</artifactId>
-  <name>XWiki Commons - Tools - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Tools - Parent POM</description>
-  <modules>
-    <!-- Sorted Alphabetically -->
-    <module>xwiki-commons-tool-enforcers</module>
-    <module>xwiki-commons-tool-license-resources</module>
-    <module>xwiki-commons-tool-verification-resources</module>
-    <module>xwiki-commons-tool-xar</module>
-  </modules>
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <!-- Exclude Tools from being Clovered since 1) we don't really care getting TPC for our tools and
-               2) it's a bit involved to configure the various Maven poms using those plugins to have the Clover JAR
-               injected in the right places. -->
-          <groupId>com.atlassian.maven.plugins</groupId>
-          <artifactId>maven-clover2-plugin</artifactId>
-          <configuration>
-            <skip>true</skip>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+  <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
+  <name>XWiki Commons - Tools - Banned Dependencies Enforcer</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Tools - Banned Dependencies Enforcer</description>
 </project>
