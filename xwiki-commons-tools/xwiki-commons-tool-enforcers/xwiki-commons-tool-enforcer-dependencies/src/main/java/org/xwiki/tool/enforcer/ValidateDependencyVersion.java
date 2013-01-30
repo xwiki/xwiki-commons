@@ -82,7 +82,10 @@ public class ValidateDependencyVersion implements EnforcerRule
         for (Object object : model.getDependencies()) {
             Dependency dependency = (Dependency) object;
             for (VersionCheck versionCheck : this.checks) {
-                if (dependency.getGroupId().startsWith(versionCheck.getGroupIdPrefix())) {
+                // Note: the version will be null if defined in a parent.
+                if (dependency.getVersion() != null
+                    && dependency.getGroupId().startsWith(versionCheck.getGroupIdPrefix()))
+                {
                     Pattern pattern = Pattern.compile(versionCheck.getAllowedVersionRegex());
                     Matcher matcher = pattern.matcher(dependency.getVersion());
                     if (!matcher.matches()) {
