@@ -35,6 +35,7 @@
   <description>XWiki Commons - Properties</description>
   <properties>
     <xwiki.clover.targetPercentage>75.8%</xwiki.clover.targetPercentage>
+    <xwiki.jacoco.instructionRatio>70.64</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

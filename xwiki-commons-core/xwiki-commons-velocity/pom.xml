@@ -35,6 +35,7 @@
   <description>XWiki Commons - Velocity</description>
   <properties>
     <xwiki.clover.targetPercentage>58</xwiki.clover.targetPercentage>
+    <xwiki.jacoco.instructionRatio>61.45</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

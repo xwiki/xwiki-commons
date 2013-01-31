@@ -35,6 +35,7 @@
   <description>XWiki Commons - Environment - Standard</description>
   <properties>
     <xwiki.clover.targetPercentage>67.3%</xwiki.clover.targetPercentage>
+    <xwiki.jacoco.instructionRatio>63.97</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

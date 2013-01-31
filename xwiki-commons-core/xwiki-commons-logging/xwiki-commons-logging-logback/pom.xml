@@ -35,6 +35,7 @@
   <description>XWiki Commons - Logging - Logback</description>
   <properties>
     <xwiki.clover.targetPercentage>90.4%</xwiki.clover.targetPercentage>
+    <xwiki.jacoco.instructionRatio>90.57</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
