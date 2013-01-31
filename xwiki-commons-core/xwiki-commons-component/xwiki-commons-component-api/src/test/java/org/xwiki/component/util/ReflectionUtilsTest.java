@@ -136,7 +136,7 @@ public class ReflectionUtilsTest
     {
         Collection<Field> fields = ReflectionUtils.getAllFields(TestFieldClass.class);
 
-        Assert.assertEquals(3, fields.size());
+        Assert.assertEquals(2, fields.size());
     }
 
     @Test
