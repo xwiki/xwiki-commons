@@ -77,7 +77,7 @@ public final class ReflectionUtils
                 // only the field used in the class will be returned. Note that we need to do
                 // this check since the Field object doesn't implement the equals method using
                 // the field name.
-                if (!fields.containsKey(field.getName())) {
+                if (!field.isSynthetic() && !fields.containsKey(field.getName())) {
                     fields.put(field.getName(), field);
                 }
             }
