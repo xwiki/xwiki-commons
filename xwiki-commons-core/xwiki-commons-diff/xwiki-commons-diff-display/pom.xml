@@ -35,7 +35,7 @@
   <description>APIs that help you display diffs.</description>
   <properties>
     <xwiki.clover.targetPercentage>95%</xwiki.clover.targetPercentage>
-    <xwiki.jacoco.instructionRatio>95.16</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>95.21</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
