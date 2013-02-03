@@ -35,7 +35,7 @@
   <description>XWiki Commons - Component - Default Implementation</description>
   <properties>
     <xwiki.clover.targetPercentage>74.6%</xwiki.clover.targetPercentage>
-    <xwiki.jacoco.instructionRatio>71.80</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>71.00</xwiki.jacoco.instructionRatio>
     <!-- Skipping CLIRR since xwiki-commons-legacy-component-default wraps this module and runs CLIRR on it -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
