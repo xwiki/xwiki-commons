@@ -75,10 +75,6 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Default Clover TPC threshold for the Quality profile. We use 100% to force each module to define its
-         own threshold. Note that good values are above 70%. -->
-    <xwiki.clover.targetPercentage>100%</xwiki.clover.targetPercentage>
-
     <!-- Default Jacoco Instruction Ratio for the Quality profile. We use 100% to force each module to define its
          own ratio. Note that good values are above 70%. -->
     <xwiki.jacoco.instructionRatio>100</xwiki.jacoco.instructionRatio>
@@ -1136,32 +1132,6 @@ mmmm]]></license>
                 <instructionRatio>${xwiki.jacoco.instructionRatio}</instructionRatio>
               </check>}
             </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <!-- Alternate QA profiles that uses Clover (slower than Jacoco) to test if coverage is below a given value -->
-    <profile>
-      <id>quality-clover</id>
-      <build>
-        <plugins>
-          <!-- Fail the build if the test coverage is below a given value. -->
-          <plugin>
-            <groupId>com.atlassian.maven.plugins</groupId>
-            <artifactId>maven-clover2-plugin</artifactId>
-            <configuration>
-              <targetPercentage>${xwiki.clover.targetPercentage}</targetPercentage>
-            </configuration>
-            <executions>
-              <execution>
-                <id>clover-check</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>instrument-test</goal>
-                  <goal>check</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
         </plugins>
       </build>

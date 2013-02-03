@@ -36,7 +36,6 @@
   <properties>
     <!-- Skipping CLIRR since xwiki-commons-legacy-component-api wraps this module and runs CLIRR on it -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
-    <xwiki.clover.targetPercentage>22.7%</xwiki.clover.targetPercentage>
     <xwiki.jacoco.instructionRatio>27.01</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>

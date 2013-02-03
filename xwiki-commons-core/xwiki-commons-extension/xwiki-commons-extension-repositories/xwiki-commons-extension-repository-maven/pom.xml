@@ -34,7 +34,6 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Extension - Repository - Maven</description>
   <properties>
-    <xwiki.clover.targetPercentage>63.5%</xwiki.clover.targetPercentage>
     <xwiki.jacoco.instructionRatio>68.46</xwiki.jacoco.instructionRatio>
     <aether.version>1.13.1</aether.version>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->

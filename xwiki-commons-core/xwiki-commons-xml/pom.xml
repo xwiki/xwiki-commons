@@ -34,7 +34,6 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - XML</description>
   <properties>
-    <xwiki.clover.targetPercentage>56.8%</xwiki.clover.targetPercentage>
     <xwiki.jacoco.instructionRatio>61.10</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>

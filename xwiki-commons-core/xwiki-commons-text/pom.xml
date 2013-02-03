@@ -34,7 +34,6 @@
   <packaging>jar</packaging>
   <description>Offers text-related APIs</description>
   <properties>
-    <xwiki.clover.targetPercentage>93.5%</xwiki.clover.targetPercentage>
     <xwiki.jacoco.instructionRatio>94.07</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>

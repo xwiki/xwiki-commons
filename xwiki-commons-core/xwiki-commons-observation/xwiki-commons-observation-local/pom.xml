@@ -34,7 +34,6 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Observation - Local</description>
   <properties>
-    <xwiki.clover.targetPercentage>90.8%</xwiki.clover.targetPercentage>
     <xwiki.jacoco.instructionRatio>87.77</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>

@@ -34,7 +34,6 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Groovy</description>
   <properties>
-    <xwiki.clover.targetPercentage>90.6%</xwiki.clover.targetPercentage>
     <xwiki.jacoco.instructionRatio>94.57</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
