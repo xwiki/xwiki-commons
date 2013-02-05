@@ -99,7 +99,7 @@ public class DefaultLoggerManagerTest
         rootLogger.addAppender(this.listAppender);
 
         this.logger = LoggerFactory.getLogger(getClass());
-        this.loggerManager = this.mocker.getMockedComponent();
+        this.loggerManager = this.mocker.getComponentUnderTest();
     }
 
     @Test

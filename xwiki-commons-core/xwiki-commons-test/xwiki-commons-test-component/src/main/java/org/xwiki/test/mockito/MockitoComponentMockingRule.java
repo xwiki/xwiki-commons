@@ -61,7 +61,7 @@ import static org.mockito.Mockito.mock;
  *     &#64;Test
  *     public void someTest() throws Exception
  *     {
- *         MyComponent myComponent = mocker.getMockedComponent();
+ *         MyComponent myComponent = mocker.getComponentUnderTest();
  *     ...
  * }
  * </pre></code>
@@ -78,7 +78,7 @@ import static org.mockito.Mockito.mock;
  * and if you really really need to register all components (it takes time) then use
  * {@link org.xwiki.test.annotation.AllComponents}.
  *
- * @param <T> the component role type, used to provide a typed instance when calling {@link #getMockedComponent()}
+ * @param <T> the component role type, used to provide a typed instance when calling {@link #getComponentUnderTest()}
  * @version $Id$
  * @since 4.3.1
  */
@@ -234,7 +234,7 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
                 registerComponent(descriptor);
 
                 // Save the mocked component information so that the test can get an instance of this component
-                // easily by calling getMockedComponent(...)
+                // easily by calling getComponentUnderTest(...)
                 this.mockedComponentHint = new RoleHint<T>(descriptor.getRoleType(), descriptor.getRoleHint());
                 break;
             }
@@ -324,10 +324,10 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
     }
 
     /**
-     * @return the component mocked by the {@link MockitoComponentMockingRule} rule
+     * @return the component which is having its injections being mocked by the {@link MockitoComponentMockingRule} rule
      * @throws ComponentLookupException if the component under test has not been properly registered
      */
-    public T getMockedComponent() throws ComponentLookupException
+    public T getComponentUnderTest() throws ComponentLookupException
     {
         return getInstance(this.mockedComponentHint.getRoleType(), this.mockedComponentHint.getHint());
     }
