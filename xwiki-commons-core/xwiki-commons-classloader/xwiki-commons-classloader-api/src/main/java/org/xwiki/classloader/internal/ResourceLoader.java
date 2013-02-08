@@ -811,12 +811,14 @@ public class ResourceLoader
             this.idx = 0;
         }
 
+        @Override
         public boolean hasMoreElements()
         {
             fetchNext();
             return (this.next != null);
         }
 
+        @Override
         public T nextElement()
         {
             fetchNext();

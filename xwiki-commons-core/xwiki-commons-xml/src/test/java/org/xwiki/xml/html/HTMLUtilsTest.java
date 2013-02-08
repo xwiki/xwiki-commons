@@ -51,7 +51,7 @@ import org.xwiki.xml.internal.html.filter.ListItemFilter;
     BodyFilter.class,
     AttributeFilter.class
 })
-public class HTMLUtilsTest extends AbstractMockingComponentTestCase
+public class HTMLUtilsTest extends AbstractMockingComponentTestCase<HTMLCleaner>
 {
     private HTMLCleaner cleaner;
 

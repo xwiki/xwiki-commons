@@ -153,9 +153,8 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
     /**
      * @param action the action containing the extension to download
      * @throws LocalExtensionRepositoryException failed to store extension
-     * @throws InstallException unsupported action
      */
-    private void store(ExtensionPlanAction action) throws LocalExtensionRepositoryException, InstallException
+    private void store(ExtensionPlanAction action) throws LocalExtensionRepositoryException
     {
         if (action.getAction() == Action.INSTALL || action.getAction() == Action.UPGRADE
             || action.getAction() == Action.DOWNGRADE) {

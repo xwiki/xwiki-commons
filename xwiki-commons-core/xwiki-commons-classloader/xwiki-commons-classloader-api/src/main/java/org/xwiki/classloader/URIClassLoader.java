@@ -179,6 +179,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
         try {
             return AccessController.doPrivileged(new PrivilegedExceptionAction<Class< ? >>()
             {
+                @Override
                 public Class< ? > run() throws ClassNotFoundException
                 {
                     String path = name.replace('.', '/').concat(".class");
@@ -268,6 +269,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
     {
         return AccessController.doPrivileged(new PrivilegedAction<URL>()
         {
+            @Override
             public URL run()
             {
                 return URIClassLoader.this.finder.findResource(name);
@@ -287,6 +289,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
     {
         return AccessController.doPrivileged(new PrivilegedAction<Enumeration<URL>>()
         {
+            @Override
             public Enumeration<URL> run()
             {
                 return URIClassLoader.this.finder.findResources(name);
@@ -345,6 +348,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
     {
         return AccessController.doPrivileged(new PrivilegedAction<ResourceHandle>()
         {
+            @Override
             public ResourceHandle run()
             {
                 return URIClassLoader.this.finder.getResource(name);
@@ -390,6 +394,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
     {
         return AccessController.doPrivileged(new PrivilegedAction<Enumeration<ResourceHandle>>()
         {
+            @Override
             public Enumeration<ResourceHandle> run()
             {
                 return URIClassLoader.this.finder.getResources(name);
@@ -442,21 +447,25 @@ public class URIClassLoader extends ExtendedURLClassLoader
             return this.urls;
         }
 
+        @Override
         public ResourceHandle getResource(String name)
         {
             return this.loader.getResource(getUrls(), name);
         }
 
+        @Override
         public Enumeration<ResourceHandle> getResources(String name)
         {
             return this.loader.getResources(getUrls(), name);
         }
 
+        @Override
         public URL findResource(String name)
         {
             return this.loader.findResource(getUrls(), name);
         }
 
+        @Override
         public Enumeration<URL> findResources(String name)
         {
             return this.loader.findResources(getUrls(), name);

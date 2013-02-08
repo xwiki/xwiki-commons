@@ -76,34 +76,28 @@ public class ComponentDescriptorFactoryTest
     @Component
     public class RoleImpl implements ExtendedRole
     {
-        @SuppressWarnings("unused")
         @Inject
         private NonGenericFieldRole<String> fieldRole;
 
-        @SuppressWarnings("unused")
         @Inject
         @Named("special")
         private NonGenericFieldRole<String> specialFieldRole;
 
-        @SuppressWarnings("unused")
         @Inject
         private GenericFieldRole<String> genericFieldRole;
 
-        @SuppressWarnings("unused")
         @Inject
         private GenericFieldRole nonGenericFieldRole;
 
         /**
          * Inject all implementation of the FieldRole role.
          */
-        @SuppressWarnings("unused")
         @Inject
         private List<NonGenericFieldRole<String>> roles;
 
         /**
          * Inject all implementation of the FieldRole role.
          */
-        @SuppressWarnings("unused")
         @Inject
         private Map<String, NonGenericFieldRole<String>> mapRoles;
     }
@@ -111,7 +105,6 @@ public class ComponentDescriptorFactoryTest
     @Component
     public class SuperRoleImpl extends RoleImpl
     {
-        @SuppressWarnings("unused")
         @Inject
         @Named("other")
         private NonGenericFieldRole<String> fieldRole;

@@ -20,7 +20,6 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
@@ -108,11 +107,10 @@ public class UnXARMojo extends AbstractXARMojo
     /**
      * Unzip xar artifact and its dependencies.
      * 
-     * @throws ArchiverException error when unzip package.
-     * @throws IOException error when unzip package.
+     * @throws ArchiverException error when unzip package.O
      * @throws MojoExecutionException error when unzip package.
      */
-    private void performUnArchive() throws ArchiverException, IOException, MojoExecutionException
+    private void performUnArchive() throws ArchiverException, MojoExecutionException
     {
         Artifact artifact = findArtifact();
 

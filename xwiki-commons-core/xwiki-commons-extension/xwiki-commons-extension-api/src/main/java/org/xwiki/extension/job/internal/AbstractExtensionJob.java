@@ -38,7 +38,6 @@ import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
-import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.job.AbstractJob;
 
 /**
@@ -77,11 +76,10 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends A
      * @param actions the actions to apply
      * @throws InstallException failed to install extension
      * @throws UninstallException failed to uninstall extension
-     * @throws LocalExtensionRepositoryException failed to store extension
      * @throws ResolveException could not find extension in the local repository
      */
-    protected void applyActions(Collection<ExtensionPlanAction> actions) throws LocalExtensionRepositoryException,
-        InstallException, UninstallException, ResolveException
+    protected void applyActions(Collection<ExtensionPlanAction> actions) throws InstallException, UninstallException,
+        ResolveException
     {
         notifyPushLevelProgress(actions.size());
 
@@ -102,11 +100,10 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends A
      * @param action the action to perform
      * @throws InstallException failed to install extension
      * @throws UninstallException failed to uninstall extension
-     * @throws LocalExtensionRepositoryException failed to store extension
      * @throws ResolveException could not find extension in the local repository
      */
     protected void applyAction(ExtensionPlanAction action) throws InstallException, UninstallException,
-        LocalExtensionRepositoryException, ResolveException
+        ResolveException
     {
         Extension extension = action.getExtension();
         String namespace = action.getNamespace();

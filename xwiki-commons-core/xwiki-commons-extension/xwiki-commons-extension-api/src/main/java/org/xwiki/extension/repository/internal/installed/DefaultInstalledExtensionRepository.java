@@ -251,11 +251,9 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
      * 
      * @param installedExtension the extension to uninstall
      * @param namespace the namespace
-     * @throws UninstallException error when trying to uninstall extension
      * @see #uninstallExtension(LocalExtension, String)
      */
     private void removeInstalledExtension(DefaultInstalledExtension installedExtension, String namespace)
-        throws UninstallException
     {
         removeInstalledFeature(installedExtension.getId().getId(), namespace);
 
@@ -275,10 +273,9 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
      * 
      * @param feature the feature to uninstall
      * @param namespace the namespace
-     * @throws UninstallException error when trying to uninstall extension
      * @see #uninstallExtension(LocalExtension, String)
      */
-    private void removeInstalledFeature(String feature, String namespace) throws UninstallException
+    private void removeInstalledFeature(String feature, String namespace)
     {
         // Extensions namespaces by feature
 

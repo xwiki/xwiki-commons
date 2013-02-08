@@ -24,7 +24,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.TestResources;
-import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.extension.test.TestExtensionHandler;

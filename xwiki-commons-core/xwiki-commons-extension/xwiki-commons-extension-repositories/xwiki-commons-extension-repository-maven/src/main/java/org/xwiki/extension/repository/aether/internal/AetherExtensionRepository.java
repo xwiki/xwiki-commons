@@ -306,22 +306,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return commonVersions.get(commonVersions.size() - 1);
     }
 
-    private org.sonatype.aether.version.Version resolveVersion(Artifact artifact, RepositorySystemSession session)
-        throws ResolveException
-    {
-        try {
-            List<org.sonatype.aether.version.Version> versions = resolveVersions(artifact, session);
-
-            if (versions.isEmpty()) {
-                throw new ResolveException("No versions available for artifact [" + artifact + "]");
-            }
-
-            return versions.get(versions.size() - 1);
-        } catch (VersionRangeResolutionException e) {
-            throw new ResolveException("Failed to resolve version range", e);
-        }
-    }
-
     private List<org.sonatype.aether.version.Version> resolveVersionRange(String id, VersionRange versionRange,
         RepositorySystemSession session) throws ResolveException
     {

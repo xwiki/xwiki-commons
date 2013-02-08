@@ -43,6 +43,7 @@ public class SetExtensionPropertySerializer extends CollectionExtensionPropertyS
     /**
      * @return a new collection
      */
+    @Override
     protected Set createCollection()
     {
         return new HashSet();

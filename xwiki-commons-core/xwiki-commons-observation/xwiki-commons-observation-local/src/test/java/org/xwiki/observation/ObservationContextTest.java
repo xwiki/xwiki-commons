@@ -26,7 +26,6 @@ import org.jmock.Expectations;
 import org.junit.Test;
 import org.xwiki.observation.event.BeginEvent;
 import org.xwiki.observation.event.EndEvent;
-import org.xwiki.observation.internal.DefaultObservationContext;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**

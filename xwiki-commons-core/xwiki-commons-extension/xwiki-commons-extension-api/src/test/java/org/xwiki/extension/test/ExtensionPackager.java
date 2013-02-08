@@ -99,11 +99,14 @@ public class ExtensionPackager
         String descriptorFolderURL =
             descriptorUrlStr.substring(0, descriptorUrlStr.length() - PACKAGEFILE_DESCRIPTOR.length());
 
-        InputStream descriptorStream = descriptorUrl.openStream();
-
         Properties descriptorProperties = new Properties();
-        descriptorProperties.load(descriptorStream);
 
+        InputStream descriptorStream = descriptorUrl.openStream();
+        try {
+            descriptorProperties.load(descriptorStream);
+        } finally {
+            descriptorStream.close();
+        }
         String type = descriptorProperties.getProperty("type");
         if (type == null) {
             type = "zip";
