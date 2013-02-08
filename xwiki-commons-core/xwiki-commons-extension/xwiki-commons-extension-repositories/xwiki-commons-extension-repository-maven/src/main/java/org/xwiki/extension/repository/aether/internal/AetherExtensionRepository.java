@@ -98,10 +98,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
      */
     private static final GenericVersionScheme AETHERVERSIONSCHEME = new GenericVersionScheme();
 
-    private static Method loadPomMethod;
-
-    private static Method convertMethod;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AetherExtensionRepository.class);
 
     private transient PlexusComponentManager plexusComponentManager;
@@ -117,6 +113,10 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     private transient ExtensionLicenseManager licenseManager;
 
     private transient AetherExtensionRepositoryFactory repositoryFactory;
+
+    private transient Method loadPomMethod;
+
+    private transient Method convertMethod;
 
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         AetherExtensionRepositoryFactory repositoryFactory, PlexusComponentManager mavenComponentManager,
@@ -152,22 +152,20 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         try {
             this.mavenDescriptorReader = this.plexusComponentManager.getPlexus().lookup(ArtifactDescriptorReader.class);
 
-            if (loadPomMethod == null) {
-                // FIXME: not very nice
-                // * use a private method of a library we don't control is not the nicest thing. But it's a big and very
-                // uselfull method. A shame is not a bit more public.
-                // * having to parse the pom.xml since we are supposed to support anything supported by AETHER is not
-                // very clean either. But AETHER almost resolve nothing, not even the type of the artifact, we pretty
-                // much get only dependencies and licenses.
-                loadPomMethod =
-                    this.mavenDescriptorReader.getClass().getDeclaredMethod("loadPom", RepositorySystemSession.class,
-                        ArtifactDescriptorRequest.class, ArtifactDescriptorResult.class);
-                loadPomMethod.setAccessible(true);
-                convertMethod =
-                    this.mavenDescriptorReader.getClass().getDeclaredMethod("convert",
-                        org.apache.maven.model.Dependency.class, ArtifactTypeRegistry.class);
-                convertMethod.setAccessible(true);
-            }
+            // FIXME: not very nice
+            // * use a private method of a library we don't control is not the nicest thing. But it's a big and very
+            // uselfull method. A shame is not a bit more public.
+            // * having to parse the pom.xml since we are supposed to support anything supported by AETHER is not
+            // very clean either. But AETHER almost resolve nothing, not even the type of the artifact, we pretty
+            // much get only dependencies and licenses.
+            this.loadPomMethod =
+                this.mavenDescriptorReader.getClass().getDeclaredMethod("loadPom", RepositorySystemSession.class,
+                    ArtifactDescriptorRequest.class, ArtifactDescriptorResult.class);
+            this.loadPomMethod.setAccessible(true);
+            this.convertMethod =
+                this.mavenDescriptorReader.getClass().getDeclaredMethod("convert",
+                    org.apache.maven.model.Dependency.class, ArtifactTypeRegistry.class);
+            this.convertMethod.setAccessible(true);
         } catch (ComponentLookupException e) {
             // Maven handler not found
         }

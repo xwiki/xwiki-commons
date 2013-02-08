@@ -159,7 +159,7 @@ public class DefaultVersionConstraint implements VersionConstraint
                 newRanges.add(new DefaultVersionRangeCollection(range));
             } catch (InvalidVersionRangeException e) {
                 throw new InvalidVersionConstraintException(String.format(
-                    "Failed to parse version range [%s] in constraint [%s]", range, rawConstraint, e));
+                    "Failed to parse version range [%s] in constraint [%s]", range, rawConstraint), e);
             }
 
             constraint = constraint.substring(index + 1).trim();
