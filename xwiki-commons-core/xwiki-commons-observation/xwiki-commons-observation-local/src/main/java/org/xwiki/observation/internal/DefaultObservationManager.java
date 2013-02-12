@@ -198,6 +198,8 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         RegisteredListener listener = listeners.get(listenerName);
         if (listener != null) {
             listener.addEvent(event);
+        } else {
+            listeners.put(listenerName, new RegisteredListener(this.getListener(listenerName), event));
         }
     }
 
