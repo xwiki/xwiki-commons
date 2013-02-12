@@ -32,11 +32,13 @@
   <artifactId>xwiki-commons-extension-repository-xwiki</artifactId>
   <name>XWiki Commons - Extension - Repository - XWiki</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Extension - Repository - XWiki</description>
+  <description>Allows accessing extensions located in an XWiki instance</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0</xwiki.jacoco.instructionRatio>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-xwiki-handler,org.xwiki.commons:xwiki-commons-extension-repository-xwiki-handler</xwiki.extension.features>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Repository Module - XWiki support</xwiki.extension.name>
   </properties>
   <dependencies>
     <dependency>
