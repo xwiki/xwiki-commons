@@ -195,6 +195,10 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     public void addEvent(String listenerName, Event event)
     {
         Map<String, RegisteredListener> listeners = this.listenersByEvent.get(event.getClass());
+        if (listeners == null) {
+            listeners = new ConcurrentHashMap<String, RegisteredListener>();
+            this.listenersByEvent.put(event.getClass(), listeners);
+        }
         RegisteredListener listener = listeners.get(listenerName);
         if (listener != null) {
             listener.addEvent(event);

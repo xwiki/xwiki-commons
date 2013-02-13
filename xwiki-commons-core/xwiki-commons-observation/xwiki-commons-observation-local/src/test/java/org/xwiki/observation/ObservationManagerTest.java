@@ -20,6 +20,7 @@
 package org.xwiki.observation;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.*;
 import org.jmock.Expectations;
@@ -107,6 +108,29 @@ public class ObservationManagerTest
             oneOf(afterEvent).matches(with(same(notifyEvent))); will(returnValue(true));
         }});
         
+        this.manager.addListener(listener);
+        this.manager.addEvent("mylistener", afterEvent);
+        this.manager.notify(notifyEvent, null);
+    }
+
+    @Test
+    public void testAddEventWithNoInitialEvent() throws Exception
+    {
+        final EventListener listener = this.mockery.mock(EventListener.class);
+        final Event afterEvent = this.mockery.mock(Event.class, "after");
+        final Event notifyEvent = this.mockery.mock(Event.class, "notify");
+
+        this.mockery.checking(new Expectations() {{
+            allowing(listener).getName();
+            will(returnValue("mylistener"));
+            allowing(listener).getEvents();
+            will(returnValue(Collections.emptyList()));
+            oneOf(listener).onEvent(with(any(Event.class)), with(nullValue()), with(nullValue()));
+
+            oneOf(afterEvent).matches(with(same(notifyEvent)));
+            will(returnValue(true));
+        }});
+
         this.manager.addListener(listener);
         this.manager.addEvent("mylistener", afterEvent);
         this.manager.notify(notifyEvent, null);
