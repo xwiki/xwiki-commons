@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -59,14 +60,19 @@ public class ExtensionPackager
 
     private File workingDirectory;
 
-    private File defaultDirectory;
+    private Map<String, File> repositories;
 
     private Map<ExtensionId, File> extensionsFiles = new HashMap<ExtensionId, File>();
 
-    public ExtensionPackager(File workingDirectory, File defaultDirectory)
+    public ExtensionPackager(File workingDirectory, File repository)
+    {
+        this(workingDirectory, Collections.<String, File> singletonMap(null, repository));
+    }
+
+    public ExtensionPackager(File workingDirectory, Map<String, File> repositories)
     {
         this.workingDirectory = workingDirectory;
-        this.defaultDirectory = defaultDirectory;
+        this.repositories = repositories;
     }
 
     public File getExtensionFile(ExtensionId extensionId)
@@ -123,12 +129,14 @@ public class ExtensionPackager
         File packageFile;
         String directory = descriptorProperties.getProperty("directory");
         String fileName = descriptorProperties.getProperty("fileName");
+        String repositoryName = descriptorProperties.getProperty("repository");
         if (directory == null) {
             if (fileName == null) {
                 packageFile =
-                    new File(this.defaultDirectory, URLEncoder.encode(id + '-' + version + '.' + type, "UTF-8"));
+                    new File(this.repositories.get(repositoryName), URLEncoder.encode(id + '-' + version + '.' + type,
+                        "UTF-8"));
             } else {
-                packageFile = new File(this.defaultDirectory, fileName);
+                packageFile = new File(this.repositories.get(repositoryName), fileName);
             }
         } else {
             if (fileName == null) {

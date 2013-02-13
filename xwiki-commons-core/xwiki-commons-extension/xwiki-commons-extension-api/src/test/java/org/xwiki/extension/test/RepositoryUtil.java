@@ -25,7 +25,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -97,7 +99,13 @@ public class RepositoryUtil
         this.mavenRepositoryRoot = new File(testDirectory, "maven/");
         this.remoteRepositoryRoot = new File(testDirectory, "remote/");
 
-        this.extensionPackager = new ExtensionPackager(this.permanentDirectory, this.remoteRepositoryRoot);
+        Map<String, File> repositories = new HashMap<String, File>();
+        repositories.put(null, getRemoteRepository());
+        repositories.put("remote", getRemoteRepository());
+        repositories.put("local", getLocalRepository());
+        // TODO: add support for maven
+
+        this.extensionPackager = new ExtensionPackager(this.permanentDirectory, repositories);
     }
 
     public File getPermanentDirectory()
@@ -159,7 +167,7 @@ public class RepositoryUtil
             DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
             dcd.setRoleType(Environment.class);
             this.componentManager.registerComponent(dcd, environment);
-            
+
             // Disable default repositories
             ConfigurationSource configuration = this.componentManager.getInstance(ConfigurationSource.class);
             if (configuration instanceof MockConfigurationSource) {
