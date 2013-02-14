@@ -224,6 +224,6 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     public String getUserAgent()
     {
         // TODO: add version (need a way to get platform version first)
-        return this.configuration.get().getProperty(CK_PEFIX + ".userAgent", DEFAULT_USERAGENT);
+        return this.configuration.get().getProperty(CK_PEFIX + "userAgent", DEFAULT_USERAGENT);
     }
 }
