@@ -30,7 +30,6 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.InstallException;
-import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
@@ -169,7 +168,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest>
      */
     private void storeExtension(Extension extension) throws LocalExtensionRepositoryException
     {
-        if (!(extension instanceof LocalExtension)) {
+        if (!this.localExtensionRepository.exists(extension.getId())) {
             this.logger.info("Downloading [{}]", extension.getId());
             this.localExtensionRepository.storeExtension(extension);
         }
