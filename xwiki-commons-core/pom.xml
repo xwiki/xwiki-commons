@@ -127,9 +127,9 @@
           <!-- List of specific CLIRR excludes. Example:
 
                <difference>
+                 <differenceType>7012</differenceType>
                  <className>org/xwiki/ircbot/IRCBot</className>
                  <method>void initialize(java.lang.String)</method>
-                 <differenceType>7012</differenceType>
                  <justification>IRCBot is still a young API. Added a new initialize() method to support installing the
                  IRC Bot application in a subwiki</justification>
                </difference>
@@ -138,6 +138,11 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+               <differenceType>8001</differenceType>
+               <className>org/xwiki/job/AbstractJob</className>
+               <justification>YOUNG API. Made public by mistake</justification>
+             </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

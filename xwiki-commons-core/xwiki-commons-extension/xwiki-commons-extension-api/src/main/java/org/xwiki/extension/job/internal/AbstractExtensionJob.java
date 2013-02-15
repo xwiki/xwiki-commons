@@ -38,7 +38,7 @@ import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
-import org.xwiki.job.AbstractJob;
+import org.xwiki.job.internal.AbstractJob;
 import org.xwiki.job.internal.AbstractJobStatus;
 
 /**
