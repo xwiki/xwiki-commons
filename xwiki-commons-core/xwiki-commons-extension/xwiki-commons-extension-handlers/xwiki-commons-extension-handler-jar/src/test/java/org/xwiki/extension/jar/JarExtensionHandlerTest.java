@@ -376,7 +376,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension", "test");
 
         // actual install test
-        InstalledExtension installedExtension = install(extensionId, null);
+        InstalledExtension installedExtension = install(extensionId);
 
         checkInstallStatus(installedExtension);
 
@@ -388,7 +388,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         // try to install again
         try {
-            install(extensionId, null);
+            install(extensionId);
             Assert.fail("installExtension should have failed");
         } catch (InstallException expected) {
             // expected
@@ -402,7 +402,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkJarExtensionUnavailability(TestComponent.TYPE_STRING);
 
         // actual reinstall test
-        installedExtension = install(extensionId, null);
+        installedExtension = install(extensionId);
 
         checkInstallStatus(installedExtension);
 
@@ -448,7 +448,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
 
         // actual install test
-        InstalledExtension installedExtension = install(extensionId, null);
+        InstalledExtension installedExtension = install(extensionId);
 
         checkInstallStatus(installedExtension);
 
@@ -469,7 +469,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         assertNotEquals(extensionDep1, extensionDep2);
 
         // actual reinstall test
-        installedExtension = install(extensionId, null);
+        installedExtension = install(extensionId);
 
         checkInstallStatus(installedExtension);
 
@@ -513,7 +513,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
 
         // actual install test
-        InstalledExtension installedExtension = install(extensionId, null);
+        InstalledExtension installedExtension = install(extensionId);
 
         checkInstallStatus(installedExtension);
 
@@ -533,7 +533,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkJarExtensionUnavailability(TestComponentWithDeps.class);
 
         // actual reinstall test
-        installedExtension = install(extensionId, null);
+        installedExtension = install(extensionId);
 
         checkInstallStatus(installedExtension);
 
@@ -579,7 +579,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         final String namespace = "namespace";
 
         // actual install test
-        InstalledExtension installedExtension = install(dependencyId, null);
+        InstalledExtension installedExtension = install(dependencyId);
 
         checkInstallStatus(installedExtension);
         Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
@@ -627,7 +627,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         final String namespace = "namespace";
 
         // actual install test
-        InstalledExtension installedExtension = install(dependencyId, null);
+        InstalledExtension installedExtension = install(dependencyId);
 
         checkInstallStatus(installedExtension);
         Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
@@ -719,7 +719,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(extensionDep2, extensionDep4);
 
         // actual uninstall test
-     // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
+        // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
         localExtension = uninstall(extensionId, namespace2, LogLevel.ERROR);
 
         ckeckUninstallStatus(localExtension);
@@ -885,7 +885,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         final String namespace2 = "namespace2";
 
         // install global deps
-        InstalledExtension installedExtension = install(dependencyId, null);
+        InstalledExtension installedExtension = install(dependencyId);
 
         checkInstallStatus(installedExtension);
 
@@ -951,7 +951,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         final String namespace2 = "namespace2";
 
         // install global deps
-        InstalledExtension installedExtension = install(dependencyId, null);
+        InstalledExtension installedExtension = install(dependencyId);
 
         checkInstallStatus(installedExtension);
 

@@ -54,7 +54,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testInstallPlanWithSimpleRemoteExtensionOnRoot() throws Throwable
     {
-        ExtensionPlan plan = installPlan(TestResources.REMOTE_SIMPLE_ID, null);
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_SIMPLE_ID);
 
         // Tree
 
@@ -80,7 +80,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testInstallPlanWithRemoteDependencyOnRoot() throws Throwable
     {
-        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHRDEPENDENCY_ID, null);
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHRDEPENDENCY_ID);
 
         Assert.assertEquals(1, plan.getTree().size());
 
@@ -104,7 +104,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testInstallPlanWithCoreDependencyOnRoot() throws Throwable
     {
-        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHCDEPENDENCY_ID, null);
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHCDEPENDENCY_ID);
 
         Assert.assertEquals(1, plan.getTree().size());
 
@@ -128,7 +128,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testInstallPlanWithInstalledDependencyOnRoot() throws Throwable
     {
-        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHLDEPENDENCY_ID, null);
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHLDEPENDENCY_ID);
 
         Assert.assertEquals(1, plan.getTree().size());
 
@@ -152,12 +152,12 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testInstallPlanWithUpgradeOnRoot() throws Throwable
     {
-        install(TestResources.REMOTE_UPGRADE10_ID, null);
+        install(TestResources.REMOTE_UPGRADE10_ID);
 
         // //////////////////
         // Test upgrade
 
-        ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE20_ID, null);
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE20_ID);
 
         Assert.assertEquals(1, plan.getTree().size());
 
@@ -175,12 +175,12 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testInstallPlanWithDowngradeOnRoot() throws Throwable
     {
-        install(TestResources.REMOTE_UPGRADE20_ID, null);
+        install(TestResources.REMOTE_UPGRADE20_ID);
 
         // //////////////////
         // Test downgrade
 
-        ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE10_ID, null);
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE10_ID);
 
         Assert.assertEquals(1, plan.getTree().size());
 
@@ -200,7 +200,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     @Test(expected = InstallException.class)
     public void testInstallPlanWithUnsupportedType() throws Throwable
     {
-        installPlan(TestResources.REMOTE_UNSUPPORTED_ID, null);
+        installPlan(TestResources.REMOTE_UNSUPPORTED_ID);
     }
 
     @Test(expected = InstallException.class)
@@ -208,7 +208,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     {
         this.coreRepository.addExtensions(TestResources.REMOTE_SIMPLE_ID.getId(), new DefaultVersion("version"));
 
-        installPlan(TestResources.REMOTE_SIMPLE_ID, null);
+        installPlan(TestResources.REMOTE_SIMPLE_ID);
     }
 
     @Test(expected = InstallException.class)
@@ -216,7 +216,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     {
         this.coreRepository.addExtensions("rsimple-feature", new DefaultVersion("version"));
 
-        installPlan(TestResources.REMOTE_SIMPLE_ID, null);
+        installPlan(TestResources.REMOTE_SIMPLE_ID);
     }
 
     @Test(expected = InstallException.class)
@@ -225,7 +225,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
             Arrays.asList("rsimple-feature"));
 
-        installPlan(TestResources.REMOTE_SIMPLE_ID, null);
+        installPlan(TestResources.REMOTE_SIMPLE_ID);
     }
 
     @Test(expected = InstallException.class)
@@ -234,6 +234,6 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
             Arrays.asList(TestResources.REMOTE_SIMPLE_ID.getId()));
 
-        installPlan(TestResources.REMOTE_SIMPLE_ID, null);
+        installPlan(TestResources.REMOTE_SIMPLE_ID);
     }
 }

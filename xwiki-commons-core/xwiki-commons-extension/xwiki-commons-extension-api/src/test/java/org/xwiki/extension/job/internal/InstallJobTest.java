@@ -45,7 +45,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testInstallOnRoot() throws Throwable
     {
-        install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, null);
+        install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID);
 
         // Is extension installed
         LocalExtension installedExtension =
@@ -66,7 +66,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnNamespace() throws Throwable
+    public void testInstallRemoteOnNamespace() throws Throwable
     {
         install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, "namespace");
 
@@ -84,15 +84,39 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    public void testInstallRemoteOnNamespaces() throws Throwable
+    {
+        install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, new String[] {"namespace1", "namespace2"});
+
+        LocalExtension installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(
+                TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(), "namespace1");
+        Assert.assertNotNull(installedExtension);
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID.getId(), "namespace2"));
+        Assert.assertTrue(this.handler.getExtensions().get("namespace1").contains(installedExtension));
+        Assert.assertTrue(this.handler.getExtensions().get("namespace2").contains(installedExtension));
+
+        installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(),
+                "namespace1");
+        Assert.assertNotNull(installedExtension);
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_SIMPLE_ID.getId(), "namespace2"));
+        Assert.assertTrue(this.handler.getExtensions().get("namespace1").contains(installedExtension));
+        Assert.assertTrue(this.handler.getExtensions().get("namespace2").contains(installedExtension));
+    }
+
+    @Test
     public void testUpgradeFirstOnRoot() throws Throwable
     {
-        install(TestResources.REMOTE_UPGRADE10_ID, null);
+        install(TestResources.REMOTE_UPGRADE10_ID);
 
         LocalExtension installedExtension;
 
         // Test upgrade
 
-        install(TestResources.REMOTE_UPGRADE20_ID, null);
+        install(TestResources.REMOTE_UPGRADE20_ID);
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), null);
@@ -103,7 +127,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         // Test downgrade
 
-        install(TestResources.REMOTE_UPGRADE10_ID, null);
+        install(TestResources.REMOTE_UPGRADE10_ID);
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), null);
@@ -116,14 +140,14 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testDowngradeFirstOnRoot() throws Throwable
     {
-        install(TestResources.REMOTE_UPGRADE20_ID, null);
+        install(TestResources.REMOTE_UPGRADE20_ID);
 
         LocalExtension installedExtension;
 
         // //////////////////
         // Test downgrade
 
-        install(TestResources.REMOTE_UPGRADE10_ID, null);
+        install(TestResources.REMOTE_UPGRADE10_ID);
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), null);
@@ -134,7 +158,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         // Test upgrade
 
-        install(TestResources.REMOTE_UPGRADE20_ID, null);
+        install(TestResources.REMOTE_UPGRADE20_ID);
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), null);

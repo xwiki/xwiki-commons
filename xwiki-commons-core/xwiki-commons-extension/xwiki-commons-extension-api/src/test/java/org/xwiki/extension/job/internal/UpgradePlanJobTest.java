@@ -35,7 +35,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
     public void testUpgradePlanOnRoot() throws Throwable
     {
         // install first version
-        install(TestResources.REMOTE_UPGRADE10_ID, null);
+        install(TestResources.REMOTE_UPGRADE10_ID);
 
         // check upgrade
 
