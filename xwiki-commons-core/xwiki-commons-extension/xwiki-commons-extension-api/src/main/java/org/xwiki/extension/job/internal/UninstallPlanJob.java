@@ -51,7 +51,7 @@ import org.xwiki.job.Request;
  */
 @Component
 @Named(UninstallPlanJob.JOBTYPE)
-public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest>
+public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest, DefaultExtensionPlan<UninstallRequest>>
 {
     /**
      * The id of the job.

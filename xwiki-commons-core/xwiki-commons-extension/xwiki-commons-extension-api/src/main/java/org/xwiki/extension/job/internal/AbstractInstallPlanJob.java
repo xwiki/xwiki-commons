@@ -57,7 +57,8 @@ import org.xwiki.extension.version.VersionConstraint;
  * @version $Id$
  * @since 4.1M1
  */
-public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends AbstractExtensionJob<R>
+public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
+    AbstractExtensionJob<R, DefaultExtensionPlan<R>>
 {
     protected static class ModifableExtensionPlanTree extends DefaultExtensionPlanTree implements Cloneable
     {

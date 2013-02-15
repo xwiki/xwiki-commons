@@ -34,6 +34,7 @@ import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.job.Job;
 import org.xwiki.job.Request;
+import org.xwiki.job.internal.DefaultJobStatus;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 
@@ -47,7 +48,7 @@ import org.xwiki.logging.event.LogEvent;
  */
 @Component
 @Named(UninstallJob.JOBTYPE)
-public class UninstallJob extends AbstractExtensionJob<UninstallRequest>
+public class UninstallJob extends AbstractExtensionJob<UninstallRequest, DefaultJobStatus<UninstallRequest>>
 {
     /**
      * The id of the job.

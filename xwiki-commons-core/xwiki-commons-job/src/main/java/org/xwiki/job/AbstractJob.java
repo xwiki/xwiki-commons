@@ -51,7 +51,7 @@ import org.xwiki.observation.ObservationManager;
  * @since 4.0M1
  */
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public abstract class AbstractJob<R extends Request> implements Job
+public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus<R>> implements Job
 {
     /**
      * Component manager.
@@ -97,7 +97,7 @@ public abstract class AbstractJob<R extends Request> implements Job
     /**
      * @see #getStatus()
      */
-    protected AbstractJobStatus<R> status;
+    protected S status;
 
     /**
      * Main lock guarding all access.
@@ -116,7 +116,7 @@ public abstract class AbstractJob<R extends Request> implements Job
     }
 
     @Override
-    public JobStatus getStatus()
+    public S getStatus()
     {
         return this.status;
     }
@@ -228,9 +228,9 @@ public abstract class AbstractJob<R extends Request> implements Job
      * @param request contains information related to the job to execute
      * @return the status of the job
      */
-    protected AbstractJobStatus<R> createNewStatus(R request)
+    protected S createNewStatus(R request)
     {
-        return new DefaultJobStatus<R>(request, this.observationManager, this.loggerManager,
+        return (S) new DefaultJobStatus<R>(request, this.observationManager, this.loggerManager,
             this.jobContext.getCurrentJob() != null);
     }
 

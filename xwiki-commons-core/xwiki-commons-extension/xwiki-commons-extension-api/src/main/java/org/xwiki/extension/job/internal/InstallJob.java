@@ -38,6 +38,7 @@ import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.job.Job;
 import org.xwiki.job.Request;
+import org.xwiki.job.internal.DefaultJobStatus;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 
@@ -51,7 +52,7 @@ import org.xwiki.logging.event.LogEvent;
  */
 @Component
 @Named(InstallJob.JOBTYPE)
-public class InstallJob extends AbstractExtensionJob<InstallRequest>
+public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobStatus<InstallRequest>>
 {
     /**
      * The id of the job.

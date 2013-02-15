@@ -39,15 +39,18 @@ import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.job.AbstractJob;
+import org.xwiki.job.internal.AbstractJobStatus;
 
 /**
  * Base class for any Job dealing with extensions.
  * 
  * @param <R> the type of the request
+ * @param <S> the type of the {@link org.xwiki.job.event.status.JobStatus}
  * @version $Id$
  * @since 4.0M1
  */
-public abstract class AbstractExtensionJob<R extends ExtensionRequest> extends AbstractJob<R>
+public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends AbstractJobStatus<R>> extends
+    AbstractJob<R, S>
 {
     /**
      * The key to use to access the context extension plan.
