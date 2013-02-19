@@ -48,10 +48,10 @@ import org.xwiki.observation.ObservationManager;
  * 
  * @param <R> the request type associated to the job
  * @version $Id$
- * @since 4.0M1
+ * @since 5.0M1
  */
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus<R>> implements Job
+public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus<? super R>> implements Job
 {
     /**
      * Component manager.
