@@ -50,8 +50,16 @@
     <dependency>
       <artifactId>jaxen</artifactId>
       <groupId>jaxen</groupId>
-      <version>1.1.1</version>
+      <version>1.1.4</version>
       <scope>runtime</scope>
+    </dependency>
+    <!-- This dependency is drawn by XOM which draws it from Jaxen. However, Jaxen 1.1.4 draws XOM 1.0 which draws
+         ICU4J 2.6 which has the problem (see http://jira.xwiki.org/browse/XCOMMONS-354). The problem is fixed in
+         ICU4J 2.8+ and we've chosen to use the latest version of ICU4J available. -->
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <version>50.1.1</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
