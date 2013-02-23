@@ -91,7 +91,13 @@
     <module name="ClassDataAbstractionCoupling"/>
     -->
 
-    <module name="ClassFanOutComplexity"/>
+    <!-- Commented out and replaced by a XWiki version since the following reported bugs/enhancements are still not
+         fixed:
+         - https://sourceforge.net/p/checkstyle/feature-requests/607/
+         - https://sourceforge.net/p/checkstyle/bugs/684/
+    -->
+    <!--module name="ClassFanOutComplexity"/-->
+    <module name="org.xwiki.tool.checkstyle.XWikiClassFanOutComplexityCheck"/>
 
     <module name="ConstantName"/>
 

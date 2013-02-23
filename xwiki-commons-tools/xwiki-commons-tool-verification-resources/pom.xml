@@ -34,38 +34,20 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Tools - Verification Resources (Checkstyle files, etc)</description>
   <properties>
-    <!-- Don't run CLIRR since we don't have java code in this module -->
+    <!-- Don't run CLIRR since we don't care to break backward compatibility here -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
-  <profiles>
-    <!-- Override default check for javadoc JAR since this module doesn't contain any Java file and this doesn't
-         make the Maven Central Repository check fail (they must check for Java files in the main JAR before deciding
-         that the Javadoc JAR is missing or not). -->
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>enforce-javadoc-exists</id>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <evaluateBeanshell>
-                      <condition>true</condition>
-                    </evaluateBeanshell>
-                  </rules>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+  <dependencies>
+    <dependency>
+      <groupId>com.puppycrawl.tools</groupId>
+      <artifactId>checkstyle</artifactId>
+      <version>5.6</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
 </project>
