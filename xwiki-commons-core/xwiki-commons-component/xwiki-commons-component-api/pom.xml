@@ -39,6 +39,14 @@
     <xwiki.jacoco.instructionRatio>27.01</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
+    <!-- Even though this module may not use the stability API, we declare a dependency here since this module is
+         used by almost all other modules and this allows these other modules to not have to explicitely declare a
+         dependency on the stability API -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-stability</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-text</artifactId>
