@@ -947,7 +947,7 @@ mmmm]]></license>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.6.1.201212231917</version>
+          <version>0.6.2.201302030002</version>
         </plugin>
       </plugins>
     </pluginManagement>
