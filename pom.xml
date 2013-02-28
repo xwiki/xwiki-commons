@@ -52,7 +52,7 @@
     <restlet.version>2.0.14</restlet.version>
 
     <!-- Selenium -->
-    <selenium.version>2.30.0</selenium.version>
+    <selenium.version>2.31.0</selenium.version>
 
     <!-- SLF4J -->
     <slf4j.version>1.7.2</slf4j.version>
@@ -270,7 +270,7 @@
         <version>1.4.01</version>
       </dependency>
 
-      <!-- Used in both commons and platform -->
+      <!-- Used in commons, redenering and/or platform -->
       <dependency>
         <groupId>net.sf.json-lib</groupId>
         <artifactId>json-lib</artifactId>
@@ -283,6 +283,16 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.cssparser</groupId>
+        <artifactId>cssparser</artifactId>
+        <version>0.9.9</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>4.3.0.Final</version>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
@@ -338,7 +348,7 @@
         <version>${slf4j.version}</version>
       </dependency>
 
-      <!-- Triggerd by several Maven related projects (Dexis, Maven, Aether) as transitive dependency -->
+      <!-- Triggered by several Maven related projects (Dexis, Maven, Aether) as transitive dependency -->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
@@ -535,6 +545,17 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
                     <exclude>commons-lang:commons-lang</exclude>
                   </excludes>
                 </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-requireUpperBoundDeps</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireUpperBoundDeps/>
               </rules>
             </configuration>
           </execution>
