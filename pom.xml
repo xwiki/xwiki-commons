@@ -30,7 +30,7 @@
   <packaging>pom</packaging>
   <version>5.0-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
-  <!-- This special URL automatically finds the correct documentation page for the module based on the passed id .
+  <!-- This special URL automatically finds the correct documentation page for the module based on the passed id.
        It allows to have a single URL definition in this top level POM and still get valid website URLs for all
        modules.
        Note that we're ending the URL with ":::" for the following reasons:
