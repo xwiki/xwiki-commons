@@ -39,6 +39,7 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
@@ -47,6 +48,7 @@ import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
 import org.xwiki.extension.test.RepositoryUtil;
+import org.xwiki.extension.test.TestExtensionHandler;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
@@ -62,6 +64,8 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
 
     private TestResources resources;
 
+    private TestExtensionHandler handler;
+
     @Override
     public void setUp() throws Exception
     {
@@ -75,6 +79,7 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
         this.installedExtensionRepository = getComponentManager().getInstance(InstalledExtensionRepository.class);
         this.localExtensionRepository = getComponentManager().getInstance(LocalExtensionRepository.class);
         this.repositoryManager = getComponentManager().getInstance(ExtensionRepositoryManager.class);
+        this.handler = getComponentManager().getInstance(ExtensionHandler.class, "test");
 
         // resources
 
@@ -100,6 +105,13 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
             this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ONNAMESPACE_ID.getId(),
                 "namespace");
         Assert.assertTrue(extension.isValid("namespace"));
+
+        // installedextension
+        extension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(), "namespace");
+
+        Assert.assertTrue(this.handler.getExtensions().get(null).contains(extension));
+        Assert.assertFalse(this.handler.getExtensions().get("namespace").contains(extension));
     }
 
     @Test
@@ -370,7 +382,7 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
         Assert.assertEquals(2, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(0, result.getOffset());
-        
+
         result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search("Extension", 0, -1);
 
         Assert.assertEquals(2, result.getTotalHits());
