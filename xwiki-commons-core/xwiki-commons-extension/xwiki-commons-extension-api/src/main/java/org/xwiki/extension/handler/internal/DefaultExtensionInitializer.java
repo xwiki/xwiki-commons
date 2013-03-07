@@ -143,6 +143,7 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
     private void initializeExtensionInNamespace(InstalledExtension installedExtension, String namespace,
         Map<String, Set<InstalledExtension>> initializedExtensions) throws ExtensionException
     {
+        // Check if the extension can be available from this namespace
         if (!installedExtension.isValid(namespace)) {
             return;
         }
@@ -155,17 +156,26 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
         }
 
         if (!initializedExtensionsInNamespace.contains(installedExtension)) {
-            for (ExtensionDependency dependency : installedExtension.getDependencies()) {
-                if (!this.coreExtensionRepository.exists(dependency.getId())) {
-                    InstalledExtension dependencyExtension =
-                        this.installedExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
-                    initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
+            if (namespace != null && installedExtension.getNamespaces() == null) {
+                // This extension is supposed to be installed on root namespace only so redirecting to null namespace
+                // initialization
+                initializeExtensionInNamespace(installedExtension, null, initializedExtensions);
+            } else {
+                // Initialize dependencies
+                for (ExtensionDependency dependency : installedExtension.getDependencies()) {
+                    if (!this.coreExtensionRepository.exists(dependency.getId())) {
+                        InstalledExtension dependencyExtension =
+                            this.installedExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
+                        initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
+                    }
                 }
+
+                // Initialize the extension
+                this.extensionHandlerManager.initialize(installedExtension, namespace);
+
+                // Cache the extension to not initialize several times
+                initializedExtensionsInNamespace.add(installedExtension);
             }
-
-            this.extensionHandlerManager.initialize(installedExtension, namespace);
-
-            initializedExtensionsInNamespace.add(installedExtension);
         }
     }
 }
