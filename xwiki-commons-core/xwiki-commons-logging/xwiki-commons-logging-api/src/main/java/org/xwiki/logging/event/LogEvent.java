@@ -21,14 +21,12 @@ package org.xwiki.logging.event;
 
 import java.util.List;
 
-import javax.inject.Singleton;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
-import org.xwiki.component.annotation.Component;
 import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.TranslationMarker;
 import org.xwiki.logging.internal.helpers.ExtendedMessageFormatter;
 import org.xwiki.observation.event.Event;
 
@@ -38,8 +36,6 @@ import org.xwiki.observation.event.Event;
  * @version $Id$
  * @since 3.2M1
  */
-@Component
-@Singleton
 public class LogEvent implements Event
 {
     /**
@@ -106,12 +102,6 @@ public class LogEvent implements Event
         this.message = message;
         this.argumentArray = argumentArray;
         this.throwable = throwable;
-    }
-
-    @Override
-    public boolean matches(Object otherEvent)
-    {
-        return true;
     }
 
     /**
@@ -181,6 +171,29 @@ public class LogEvent implements Event
         return ExtendedMessageFormatter.parseMessage(getMessage(), getArgumentArray());
     }
 
+    /**
+     * @return the translation key associated to the log
+     * @since 5.0M2
+     */
+    public String getTranslationKey()
+    {
+        if (getMarker() instanceof TranslationMarker) {
+            return ((TranslationMarker) getMarker()).getTranslationKey();
+        }
+
+        return null;
+    }
+
+    // Event
+
+    @Override
+    public boolean matches(Object otherEvent)
+    {
+        return true;
+    }
+
+    // Object
+
     @Override
     public String toString()
     {
@@ -190,13 +203,8 @@ public class LogEvent implements Event
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder(7, 11)
-            .append(getMarker())
-            .append(getLevel())
-            .append(getMessage())
-            .append(getArgumentArray())
-            .append(getThrowable())
-            .toHashCode();
+        return new HashCodeBuilder(7, 11).append(getMarker()).append(getLevel()).append(getMessage())
+            .append(getArgumentArray()).append(getThrowable()).toHashCode();
     }
 
     @Override
@@ -212,12 +220,8 @@ public class LogEvent implements Event
             return false;
         }
         LogEvent rhs = (LogEvent) object;
-        return new EqualsBuilder()
-            .append(getMarker(), rhs.getMarker())
-            .append(getLevel(), rhs.getLevel())
-            .append(getMessage(), rhs.getMessage())
-            .append(getArgumentArray(), rhs.getArgumentArray())
-            .append(getThrowable(), rhs.getThrowable())
-            .isEquals();
+        return new EqualsBuilder().append(getMarker(), rhs.getMarker()).append(getLevel(), rhs.getLevel())
+            .append(getMessage(), rhs.getMessage()).append(getArgumentArray(), rhs.getArgumentArray())
+            .append(getThrowable(), rhs.getThrowable()).isEquals();
     }
 }
