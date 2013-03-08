@@ -36,6 +36,9 @@ public class TestResources
 
     public static final ExtensionId INSTALLED_ONNAMESPACE_ID = new ExtensionId("installedonnamespace", "version");
 
+    public static final ExtensionId INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID = new ExtensionId(
+        "installedonnemspacewithrootdependency", "version");
+
     public static final ExtensionId INSTALLED_WITHFEATUREONNAMESPACE_ID = new ExtensionId(
         "installedwithfeatureonnamespace", "version");
 

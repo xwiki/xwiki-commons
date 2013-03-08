@@ -181,6 +181,14 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
         // Actually validate
 
+        if (namespace != null && DefaultInstalledExtension.getNamespaces(localExtension) == null) {
+            // This extension is supposed to be installed on root namespace only so redirecting to null namespace
+            // initialization
+            validateExtension(localExtension, null);
+
+            return;
+        }
+
         if (!DefaultInstalledExtension.isInstalled(localExtension, namespace)) {
             throw new InvalidExtensionException("Extension [" + localExtension + "] is not installed");
         }
