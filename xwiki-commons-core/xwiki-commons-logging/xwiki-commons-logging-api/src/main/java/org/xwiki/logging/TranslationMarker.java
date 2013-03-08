@@ -40,7 +40,7 @@ public class TranslationMarker implements Marker
     /**
      * The marker name.
      */
-    private String name;
+    private static final String NAME = TranslationMarker.class.getName();
 
     /**
      * @see #getTranslationKey()
@@ -68,7 +68,7 @@ public class TranslationMarker implements Marker
     @Override
     public String getName()
     {
-        return this.name;
+        return NAME;
     }
 
     @Override
@@ -108,7 +108,7 @@ public class TranslationMarker implements Marker
     @Override
     public boolean contains(Marker other)
     {
-        if (this.equals(other)) {
+        if (equals(other)) {
             return true;
         }
 
@@ -119,7 +119,7 @@ public class TranslationMarker implements Marker
     @Override
     public boolean contains(String name)
     {
-        if (this.name.equals(name)) {
+        if (NAME.equals(name)) {
             return true;
         }
 
@@ -128,7 +128,7 @@ public class TranslationMarker implements Marker
     }
 
     // Object
-    
+
     @Override
     public int hashCode()
     {
@@ -142,6 +142,7 @@ public class TranslationMarker implements Marker
             return true;
         }
 
-        return other instanceof Marker && this.translationKey.equals(((TranslationMarker) other).getTranslationKey());
+        return other instanceof TranslationMarker
+            && this.translationKey.equals(((TranslationMarker) other).getTranslationKey());
     }
 }

@@ -38,22 +38,28 @@ public class LogQueueTest
         LogEvent logEvent;
 
         queue.error("message");
-        Assert.assertEquals(queue.poll().getFormattedMessage(), "message");
+        Assert.assertEquals("message", queue.poll().getFormattedMessage());
 
         queue.error("message {}", "param");
-        Assert.assertEquals(queue.poll().getFormattedMessage(), "message param");
+        Assert.assertEquals("message param", queue.poll().getFormattedMessage());
 
         queue.error("message {} {}", "param1", "param2");
-        Assert.assertEquals(queue.poll().getFormattedMessage(), "message param1 param2");
+        Assert.assertEquals("message param1 param2", queue.poll().getFormattedMessage());
 
         queue.error("message {}", "param1", new Exception());
         logEvent = queue.poll();
-        Assert.assertEquals(logEvent.getFormattedMessage(), "message param1");
+        Assert.assertEquals("message param1", logEvent.getFormattedMessage());
         Assert.assertNotNull(logEvent.getThrowable());
+        Assert.assertNull(logEvent.getTranslationKey());
 
         queue.error("message {}", new Object[] {"param1", new Exception()});
         logEvent = queue.poll();
-        Assert.assertEquals(logEvent.getFormattedMessage(), "message param1");
+        Assert.assertEquals("message param1", logEvent.getFormattedMessage());
         Assert.assertNotNull(logEvent.getThrowable());
+        Assert.assertNull(logEvent.getTranslationKey());
+
+        queue.error(new TranslationMarker("translation.key"), "message");
+        logEvent = queue.poll();
+        Assert.assertEquals("translation.key", logEvent.getTranslationKey());
     }
 }

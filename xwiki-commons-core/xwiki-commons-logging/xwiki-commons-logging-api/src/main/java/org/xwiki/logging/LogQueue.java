@@ -74,7 +74,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
             throwable = null;
         }
 
-        return addLogEvent(level, format, actualArray, throwable);
+        return addLogEvent(marker, level, format, actualArray, throwable);
     }
 
     /**
@@ -350,19 +350,19 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void info(Marker marker, String msg)
     {
-        info(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
+        info(marker, msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
     }
 
     @Override
     public void info(Marker marker, String format, Object arg)
     {
-        info(format, new Object[] {arg});
+        info(marker, format, new Object[] {arg});
     }
 
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2)
     {
-        info(format, new Object[] {arg1, arg2});
+        info(marker, format, new Object[] {arg1, arg2});
     }
 
     @Override
@@ -424,19 +424,19 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void warn(Marker marker, String msg)
     {
-        warn(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
+        warn(marker, msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg)
     {
-        warn(format, new Object[] {arg});
+        warn(marker, format, new Object[] {arg});
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2)
     {
-        warn(format, new Object[] {arg1, arg2});
+        warn(marker, format, new Object[] {arg1, arg2});
     }
 
     @Override
@@ -498,19 +498,19 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void error(Marker marker, String msg)
     {
-        error(msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
+        error(marker, msg, ArrayUtils.EMPTY_OBJECT_ARRAY);
     }
 
     @Override
     public void error(Marker marker, String format, Object arg)
     {
-        error(format, new Object[] {arg});
+        error(marker, format, new Object[] {arg});
     }
 
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2)
     {
-        error(format, new Object[] {arg1, arg2});
+        error(marker, format, new Object[] {arg1, arg2});
     }
 
     @Override
