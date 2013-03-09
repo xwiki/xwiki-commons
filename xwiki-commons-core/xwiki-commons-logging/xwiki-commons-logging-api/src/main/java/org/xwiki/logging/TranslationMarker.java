@@ -25,7 +25,7 @@ import java.util.Iterator;
 import org.slf4j.Marker;
 
 /**
- * Allow associate a log to a translation key.
+ * Allows associating a translation key to a log.
  * 
  * @version $Id$
  * @since 5.0M2
