@@ -62,7 +62,7 @@ public class DefaultObservationManager implements ObservationManager
     /**
      * @see #getListenersByName()
      */
-    private Map<String, EventListener> listenersByName;
+    private volatile Map<String, EventListener> listenersByName;
 
     /**
      * Used to find all components implementing {@link EventListener} to register them automatically.
