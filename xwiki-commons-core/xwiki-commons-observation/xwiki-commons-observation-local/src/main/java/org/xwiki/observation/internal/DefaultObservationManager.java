@@ -36,8 +36,6 @@ import org.xwiki.component.event.ComponentDescriptorEvent;
 import org.xwiki.component.event.ComponentDescriptorRemovedEvent;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.AllEvent;
@@ -54,22 +52,17 @@ import org.xwiki.observation.event.Event;
  */
 @Component
 @Singleton
-public class DefaultObservationManager implements ObservationManager, Initializable
+public class DefaultObservationManager implements ObservationManager
 {
     /**
-     * Registered listeners indexed on Event classes so that it's fast to find all the listeners registered for a given
-     * event, so that {@link #notify} calls execute fast and in a fixed amount a time.
-     * 
-     * @todo Should we allow event inheritance?
+     * @see #getListenersByEvent()
      */
-    private Map<Class< ? extends Event>, Map<String, RegisteredListener>> listenersByEvent =
-        new ConcurrentHashMap<Class< ? extends Event>, Map<String, RegisteredListener>>();
+    private volatile Map<Class< ? extends Event>, Map<String, RegisteredListener>> listenersByEvent;
 
     /**
-     * Registered listeners index by listener name. It makes it fast to perform operations on already registered
-     * listeners.
+     * @see #getListenersByName()
      */
-    private Map<String, EventListener> listenersByName = new ConcurrentHashMap<String, EventListener>();
+    private Map<String, EventListener> listenersByName;
 
     /**
      * Used to find all components implementing {@link EventListener} to register them automatically.
@@ -128,15 +121,54 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         }
     }
 
-    @Override
-    public void initialize() throws InitializationException
+    /**
+     * @return the registered listeners indexed on Event classes so that it's fast to find all the listeners registered
+     *         for a given event, so that {@link #notify} calls execute fast and in a fixed amount a time.
+     */
+    private Map<Class< ? extends Event>, Map<String, RegisteredListener>> getListenersByEvent()
     {
-        try {
-            for (EventListener listener : this.componentManager.<EventListener>getInstanceList(EventListener.class)) {
-                addListener(listener);
+        if (this.listenersByEvent == null) {
+            initializeListeners();
+        }
+
+        return this.listenersByEvent;
+    }
+
+    /**
+     * @return the registered listeners index by listener name. It makes it fast to perform operations on already
+     *         registered listeners.
+     */
+    private Map<String, EventListener> getListenersByName()
+    {
+        if (this.listenersByName == null) {
+            initializeListeners();
+        }
+
+        return this.listenersByName;
+    }
+
+    /**
+     * Lazily initialized to allow @Inject {@link ObservationManager} in a listener.
+     * 
+     * @todo Should we allow event inheritance ?
+     */
+    private synchronized void initializeListeners()
+    {
+        if (this.listenersByName == null) {
+            this.listenersByEvent = new ConcurrentHashMap<Class< ? extends Event>, Map<String, RegisteredListener>>();
+            this.listenersByName = new ConcurrentHashMap<String, EventListener>();
+
+            // Can be null in unit tests
+            if (this.componentManager != null) {
+                try {
+                    for (EventListener listener : this.componentManager
+                        .<EventListener> getInstanceList(EventListener.class)) {
+                        addListener(listener);
+                    }
+                } catch (ComponentLookupException e) {
+                    this.logger.error("Failed to lookup listeners", e);
+                }
             }
-        } catch (ComponentLookupException e) {
-            throw new InitializationException("Failed to lookup Event Listeners", e);
         }
     }
 
@@ -144,7 +176,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     public void addListener(EventListener eventListener)
     {
         // Register the listener by name. If already registered, override it.
-        EventListener previousListener = this.listenersByName.put(eventListener.getName(), eventListener);
+        EventListener previousListener = getListenersByName().put(eventListener.getName(), eventListener);
 
         // If the passed event listener name is already registered, log a warning
         if (previousListener != null) {
@@ -181,7 +213,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     @Override
     public void removeListener(String listenerName)
     {
-        this.listenersByName.remove(listenerName);
+        getListenersByName().remove(listenerName);
         for (Map.Entry<Class< ? extends Event>, Map<String, RegisteredListener>> entry : this.listenersByEvent
             .entrySet()) {
             entry.getValue().remove(listenerName);
@@ -194,7 +226,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     @Override
     public void addEvent(String listenerName, Event event)
     {
-        Map<String, RegisteredListener> listeners = this.listenersByEvent.get(event.getClass());
+        Map<String, RegisteredListener> listeners = getListenersByEvent().get(event.getClass());
         if (listeners == null) {
             listeners = new ConcurrentHashMap<String, RegisteredListener>();
             this.listenersByEvent.put(event.getClass(), listeners);
@@ -210,7 +242,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     @Override
     public void removeEvent(String listenerName, Event event)
     {
-        Map<String, RegisteredListener> listeners = this.listenersByEvent.get(event.getClass());
+        Map<String, RegisteredListener> listeners = getListenersByEvent().get(event.getClass());
         RegisteredListener listener = listeners.get(listenerName);
         if (listener != null) {
             listener.removeEvent(event);
@@ -220,14 +252,14 @@ public class DefaultObservationManager implements ObservationManager, Initializa
     @Override
     public EventListener getListener(String listenerName)
     {
-        return this.listenersByName.get(listenerName);
+        return getListenersByName().get(listenerName);
     }
 
     @Override
     public void notify(Event event, Object source, Object data)
     {
         // Find all listeners for this event
-        Map<String, RegisteredListener> regListeners = this.listenersByEvent.get(event.getClass());
+        Map<String, RegisteredListener> regListeners = getListenersByEvent().get(event.getClass());
         if (regListeners != null) {
             notify(regListeners.values(), event, source, data);
         }
@@ -345,7 +377,7 @@ public class DefaultObservationManager implements ObservationManager, Initializa
         ComponentManager componentManager, ComponentDescriptor< ? > descriptor)
     {
         EventListener removedEventListener = null;
-        for (EventListener eventListener : this.listenersByName.values()) {
+        for (EventListener eventListener : getListenersByName().values()) {
             if (eventListener.getClass() == descriptor.getImplementation()) {
                 removedEventListener = eventListener;
             }
