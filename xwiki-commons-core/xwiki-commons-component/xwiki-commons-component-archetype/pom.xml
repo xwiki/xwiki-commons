@@ -63,6 +63,16 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
+        <includes>
+          <include>**/pom.xml</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/pom.xml</exclude>
+        </excludes>
       </resource>
     </resources>
     <extensions>
