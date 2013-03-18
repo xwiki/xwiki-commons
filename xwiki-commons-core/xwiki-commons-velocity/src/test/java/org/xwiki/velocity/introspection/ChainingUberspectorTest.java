@@ -258,6 +258,7 @@ public class ChainingUberspectorTest
         VelocityContext context = new org.apache.velocity.VelocityContext();
         Date d = new Date();
         context.put("date", d);
+        context.put("dobject", new DeprecatedObject());
 
         // Define expectations on the Logger
         this.loggingVerification.become("on");
@@ -265,13 +266,14 @@ public class ChainingUberspectorTest
         {{
             oneOf(mockLogger).warn("Deprecated usage of method [java.util.Date.getYear] in mytemplate@1,19");
             oneOf(mockLogger).warn("Deprecated usage of getter [java.util.Date.getMonth] in mytemplate@1,40");
+            oneOf(mockLogger).warn("Deprecated usage of method [org.xwiki.velocity.introspection.DeprecatedObject.foo] in mytemplate@1,55");
         }});
 
         this.engine.evaluate(context, writer, "mytemplate",
-                new StringReader("#set($foo = $date.getYear())$foo $date.month"));
+                new StringReader("#set($foo = $date.getYear())$foo $date.month $dobject.foo()"));
 
-        Assert.assertEquals(d.getYear() + " " + d.getMonth(), writer.toString());
-        Assert.assertEquals(1, TestingUberspector.methodCalls);
+        Assert.assertEquals(d.getYear() + " " + d.getMonth() + " foo", writer.toString());
+        Assert.assertEquals(2, TestingUberspector.methodCalls);
         Assert.assertEquals(1, TestingUberspector.getterCalls);
     }
 }

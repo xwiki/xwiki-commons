@@ -46,6 +46,7 @@ import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.internal.xstream.SafeArrayConverter;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 /**
  * Default implementation of {@link JobStatusStorage}.
@@ -102,7 +103,22 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     @Override
     public void initialize() throws InitializationException
     {
-        this.xstream = new XStream();
+        this.xstream = new XStream()
+        {
+            @Override
+            protected MapperWrapper wrapMapper(MapperWrapper next)
+            {
+                return new MapperWrapper(next)
+                {
+                    @Override
+                    public boolean shouldSerializeMember(Class definedIn, String fieldName)
+                    {
+                        // Make XStream a bit stronger (we don't care if some field is missing)
+                        return definedIn != Object.class ? super.shouldSerializeMember(definedIn, fieldName) : false;
+                    }
+                };
+            }
+        };
 
         // Make unserialization of LogEvent as strong as possible
         this.xstream.registerConverter(new SafeArrayConverter(this.xstream.getMapper(), this.logger));
@@ -253,7 +269,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
         // On store Serializable job status on file system
         if (status instanceof Serializable) {
             try {
-                saveJobStatus(status);
+                //saveJobStatus(status);
             } catch (Exception e) {
                 this.logger.warn("Failed to save job status [{}]", status, e);
             }

@@ -56,10 +56,13 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
         VelMethod method = super.getMethod(obj, methodName, args, i);
         if (method != null) {
             Method m = introspector.getMethod(obj.getClass(), method.getMethodName(), args);
-            if (m != null && m.isAnnotationPresent(Deprecated.class)) {
+            if (m != null
+                && (m.isAnnotationPresent(Deprecated.class) || m.getDeclaringClass().isAnnotationPresent(
+                    Deprecated.class))) {
                 logWarning("method", obj, method.getMethodName(), i);
             }
         }
+
         return method;
     }
 
@@ -68,28 +71,31 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
     {
         VelPropertyGet method = super.getPropertyGet(obj, identifier, i);
         if (method != null) {
-            Method m =
-                introspector.getMethod(obj.getClass(), method.getMethodName(), new Object[] {});
-            if (m != null && m.isAnnotationPresent(Deprecated.class)) {
+            Method m = introspector.getMethod(obj.getClass(), method.getMethodName(), new Object[] {});
+            if (m != null
+                && (m.isAnnotationPresent(Deprecated.class) || m.getDeclaringClass().isAnnotationPresent(
+                    Deprecated.class))) {
                 logWarning("getter", obj, method.getMethodName(), i);
             }
         }
+
         return method;
     }
 
     @Override
-    public VelPropertySet getPropertySet(Object obj, String identifier, Object arg, Info i)
-        throws Exception
+    public VelPropertySet getPropertySet(Object obj, String identifier, Object arg, Info i) throws Exception
     {
         // TODO Auto-generated method stub
         VelPropertySet method = super.getPropertySet(obj, identifier, arg, i);
         if (method != null) {
-            Method m =
-                introspector.getMethod(obj.getClass(), method.getMethodName(), new Object[] {arg});
-            if (m != null && m.isAnnotationPresent(Deprecated.class)) {
+            Method m = introspector.getMethod(obj.getClass(), method.getMethodName(), new Object[] {arg});
+            if (m != null
+                && (m.isAnnotationPresent(Deprecated.class) || m.getDeclaringClass().isAnnotationPresent(
+                    Deprecated.class))) {
                 logWarning("setter", obj, method.getMethodName(), i);
             }
         }
+
         return method;
     }
 
