@@ -57,6 +57,9 @@
     <!-- SLF4J -->
     <slf4j.version>1.7.4</slf4j.version>
 
+    <!-- Hamcrest -->
+    <hamcrest.version>1.3</hamcrest.version>
+
     <!-- JUnit -->
     <junit.version>4.11</junit.version>
 
@@ -346,31 +349,20 @@
       </dependency>
 
       <!-- Everybody tests -->
-      <!-- Note: We're using junit-dep and not junit because the junit artifact bundles the Hamcrest jar, leading to
-           JAR Classloader hell with incompatible versions between the Hamcrest version bundled in JUnit and the
-           version used by JMock. See http://jira.xwiki.org/jira/browse/XPOM-5 -->
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit-dep</artifactId>
-        <version>${junit.version}</version>
-        <!-- Unfortunately junit-dep has a dependency on Hamcrest so we need to exclude it in order to use another
-             version -->
-        <exclusions>
-          <exclusion>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-core</artifactId>
-        <version>1.2.1</version>
+        <version>${hamcrest.version}</version>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-library</artifactId>
-        <version>1.2.1</version>
+        <version>${hamcrest.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
@@ -381,17 +373,6 @@
         <groupId>org.jmock</groupId>
         <artifactId>jmock-junit4</artifactId>
         <version>${jmock.version}</version>
-        <exclusions>
-          <!-- Exclude JUnit since JMock draws an oldish version of JUnit and we wish to use a newer one -->
-          <exclusion>
-            <groupId>junit</groupId>
-            <artifactId>junit-dep</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
@@ -418,10 +399,6 @@
           <exclusion>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -473,26 +450,6 @@
                   <banRelease>false</banRelease>
                   <banSnapshots>false</banSnapshots>
                 </requirePluginVersions>
-              </rules>
-            </configuration>
-          </execution>
-          <!-- Check that we're using the junit-dep and not the junit dependency -->
-          <execution>
-            <id>enforce-correct-junit-dependency</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <bannedDependencies>
-                  <message>
-Use the junit-dep artifact instead of the junit one which wrongly bundles hamcrest
-(see http://jira.xwiki.org/jira/browse/XPOM-5)
-                  </message>
-                  <excludes>
-                    <exclude>junit:junit</exclude>
-                  </excludes>
-                </bannedDependencies>
               </rules>
             </configuration>
           </execution>
