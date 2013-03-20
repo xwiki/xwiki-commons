@@ -55,7 +55,7 @@
     <selenium.version>2.31.0</selenium.version>
 
     <!-- SLF4J -->
-    <slf4j.version>1.7.2</slf4j.version>
+    <slf4j.version>1.7.4</slf4j.version>
 
     <!-- JUnit -->
     <junit.version>4.11</junit.version>
@@ -323,7 +323,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.0.9</version>
+        <version>1.0.10</version>
       </dependency>
       <!-- External libraries using Commons Logging will delegate to SLF4J -->
       <dependency>
