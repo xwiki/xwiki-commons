@@ -71,6 +71,9 @@ public class XWikiComponentInitializer
         Execution execution = getComponentManager().getInstance(Execution.class);
         execution.removeContext();
 
+        // Clean possible resources some components might hold
+        this.componentManager.dispose();
+
         // Make sure we mark the component manager for garbage collection as otherwise each JUnit test will
         // have an instance of the Component Manager (will all the components it's holding), leading to
         // out of memory errors when there are lots of tests...

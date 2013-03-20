@@ -54,7 +54,7 @@ import org.xwiki.component.util.ReflectionUtils;
  * @version $Id$
  * @since 2.0M1
  */
-public class EmbeddableComponentManager implements ComponentManager
+public class EmbeddableComponentManager implements ComponentManager, Disposable
 {
     private ComponentEventManager eventManager;
 
@@ -525,6 +525,17 @@ public class EmbeddableComponentManager implements ComponentManager
             removeComponent(roleHint);
         } catch (Exception e) {
             logger.warn("Instance released but disposal failed. Some resources may not have been released.", e);
+        }
+    }
+
+    @Override
+    public void dispose() throws ComponentLifecycleException
+    {
+        for (ComponentEntry< ? > entry : this.componentEntries.values()) {
+            Object instance = entry.instance;
+            if (instance != null && instance != this && instance instanceof Disposable) {
+                ((Disposable) instance).dispose();
+            }
         }
     }
 
