@@ -135,7 +135,7 @@ public final class HTMLUtils
          */
         private String escapeAmpersand(String text)
         {
-            StringBuffer buffer = new StringBuffer(text);
+            StringBuilder buffer = new StringBuilder(text);
             // find all occurrences of &
             int pos = buffer.indexOf(AMPERSAND);
             while (pos > -1 && pos < buffer.length()) {
