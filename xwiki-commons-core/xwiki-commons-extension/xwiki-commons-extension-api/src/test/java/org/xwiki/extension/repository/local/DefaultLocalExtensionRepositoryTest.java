@@ -21,8 +21,7 @@ package org.xwiki.extension.repository.local;
 
 import java.util.Collections;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
@@ -197,7 +196,7 @@ public class DefaultLocalExtensionRepositoryTest extends AbstractComponentTestCa
     }
 
     @Test
-    public void testRemove() throws ResolveException
+    public void testRemove() throws ResolveException, SearchException
     {
         LocalExtension localExtension = this.localExtensionRepository.resolve(TestResources.INSTALLED_ID);
 
@@ -213,5 +212,7 @@ public class DefaultLocalExtensionRepositoryTest extends AbstractComponentTestCa
 
         Assert.assertEquals(Collections.EMPTY_LIST,
             this.localExtensionRepository.getLocalExtensionVersions(TestResources.INSTALLED_ID.getId()));
+        Assert.assertEquals(Collections.EMPTY_LIST,
+            this.localExtensionRepository.getLocalExtensionVersions(TestResources.INSTALLED_ID.getId() + "-feature"));
     }
 }
