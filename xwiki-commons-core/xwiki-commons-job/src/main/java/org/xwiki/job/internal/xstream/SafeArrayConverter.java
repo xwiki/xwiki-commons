@@ -20,10 +20,13 @@
 package org.xwiki.job.internal.xstream;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.collections.ArrayConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
@@ -37,17 +40,14 @@ public class SafeArrayConverter extends ArrayConverter
     /**
      * The logger.
      */
-    private Logger logger;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SafeArrayConverter.class);
 
     /**
      * @param mapper the XStream mapper
-     * @param logger the logger
      */
-    public SafeArrayConverter(Mapper mapper, Logger logger)
+    public SafeArrayConverter(Mapper mapper)
     {
         super(mapper);
-
-        this.logger = logger;
     }
 
     @Override
@@ -62,12 +62,22 @@ public class SafeArrayConverter extends ArrayConverter
         Object value;
         try {
             value = super.readItem(reader, context, current);
-        } catch (Exception e) {
-            this.logger.debug("Failed to read field", e);
+        } catch (Throwable e) {
+            LOGGER.debug("Failed to read field", e);
 
             value = null;
         }
 
         return value;
+    }
+
+    @Override
+    protected void writeItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer)
+    {
+        try {
+            super.writeItem(item, context, writer);
+        } catch (Throwable e) {
+            LOGGER.debug("Failed to write field", e);
+        }
     }
 }

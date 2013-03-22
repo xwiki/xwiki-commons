@@ -19,62 +19,63 @@
  */
 package org.xwiki.job.internal;
 
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.Assert;
-
-import org.jmock.Expectations;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 /**
  * Unit tests for {@link DefaultJobStatusStorage}.
  * 
  * @version $Id$
  */
-@MockingRequirement(DefaultJobStatusStorage.class)
-public class DefaultJobStatusStorageTest extends AbstractMockingComponentTestCase<JobStatusStorage>
+public class DefaultJobStatusStorageTest
 {
+    @Rule
+    public final MockitoComponentMockingRule<DefaultJobStatusStorage> componentManager =
+        new MockitoComponentMockingRule<DefaultJobStatusStorage>(DefaultJobStatusStorage.class);
+
     @Before
     public void configure() throws Exception
     {
         final JobManagerConfiguration jobManagerConfiguration =
-            getComponentManager().getInstance(JobManagerConfiguration.class);
+            this.componentManager.getInstance(JobManagerConfiguration.class);
 
-        getMockery().checking(new Expectations()
-        {
-            {
-                oneOf(jobManagerConfiguration).getStorage();
-                will(returnValue(new File("src/test/resources/jobs")));
-            }
-        });
+        when(jobManagerConfiguration.getStorage()).thenReturn(new File("src/test/resources/jobs"));
     }
 
     @Test
-    public void testGetJobStatusForUnexistingJob() throws Exception
+    public void testInit() throws Exception
     {
-        JobStatus jobStatus = getMockedComponent().getJobStatus((List<String>) null);
+        JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus((List<String>) null);
 
         Assert.assertNotNull(jobStatus);
         Assert.assertNull(jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        jobStatus = getMockedComponent().getJobStatus(Arrays.asList("id1", "id2"));
+        jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2"));
 
         Assert.assertNotNull(jobStatus);
         Assert.assertEquals(Arrays.asList("id1", "id2"), jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
 
-        jobStatus = getMockedComponent().getJobStatus(Arrays.asList("id1", "id2", "id3"));
+        jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2", "id3"));
 
         Assert.assertNotNull(jobStatus);
         Assert.assertEquals(Arrays.asList("id1", "id2", "id3"), jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
+
+        jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("invalidlogargument"));
+
+        Assert.assertEquals(3, jobStatus.getLog().size());
     }
 }

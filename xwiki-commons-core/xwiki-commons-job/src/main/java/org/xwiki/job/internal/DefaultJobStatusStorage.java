@@ -44,8 +44,14 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.internal.xstream.SafeArrayConverter;
+import org.xwiki.job.internal.xstream.SafeTreeUnmarshaller;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.ConverterLookup;
+import com.thoughtworks.xstream.core.TreeMarshallingStrategy;
+import com.thoughtworks.xstream.core.TreeUnmarshaller;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.mapper.Mapper;
 import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 /**
@@ -120,8 +126,19 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
             }
         };
 
-        // Make unserialization of LogEvent as strong as possible
-        this.xstream.registerConverter(new SafeArrayConverter(this.xstream.getMapper(), this.logger));
+        // Bulletproofing array elements unserialization
+        this.xstream.registerConverter(new SafeArrayConverter(this.xstream.getMapper()));
+
+        // If anything goes wrong with an element, replace it with null
+        this.xstream.setMarshallingStrategy(new TreeMarshallingStrategy()
+        {
+            @Override
+            protected TreeUnmarshaller createUnmarshallingContext(Object root, HierarchicalStreamReader reader,
+                ConverterLookup converterLookup, Mapper mapper)
+            {
+                return new SafeTreeUnmarshaller(root, reader, converterLookup, mapper);
+            }
+        });
 
         try {
             load();
@@ -195,7 +212,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
 
                 List<String> id = status.getRequest().getId();
                 this.jobs.put(id != null ? id : Collections.<String> emptyList(), status);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 this.logger.error("Failed to load job status from file [{}]", statusFile, e);
             }
         }
