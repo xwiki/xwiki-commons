@@ -119,10 +119,27 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     {
         // Remove the extension from the memory.
         this.extensions.remove(extension.getId());
-        List<E> localExtensionVersions = this.extensionsVersions.get(extension.getId().getId());
+
+        // versions
+        removeCachedExtensionVersion(extension.getId().getId(), extension);
+        for (String feature : extension.getFeatures()) {
+            removeCachedExtensionVersion(feature, extension);
+        }
+    }
+
+    /**
+     * Remove passed extension associated to passed feature from the cache.
+     * 
+     * @param feature the feature associated to the extension
+     * @param extension the extension
+     */
+    protected void removeCachedExtensionVersion(String feature, E extension)
+    {
+        // versions
+        List<E> localExtensionVersions = this.extensionsVersions.get(feature);
         localExtensionVersions.remove(extension);
         if (localExtensionVersions.isEmpty()) {
-            this.extensionsVersions.remove(extension.getId().getId());
+            this.extensionsVersions.remove(feature);
         }
     }
 
