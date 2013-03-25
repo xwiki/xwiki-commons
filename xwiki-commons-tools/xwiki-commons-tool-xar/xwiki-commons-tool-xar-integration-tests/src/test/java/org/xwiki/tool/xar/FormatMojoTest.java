@@ -23,10 +23,8 @@ import java.io.File;
 
 import org.apache.maven.it.Verifier;
 import org.apache.maven.it.util.FileUtils;
-import org.apache.maven.it.util.ResourceExtractor;
+import org.junit.Assert;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 /**
  * Integration tests for the Format Mojo.
@@ -39,7 +37,7 @@ public class FormatMojoTest
     @Test
     public void formatWhenNoStyle() throws Exception
     {
-        File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/format");
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/format");
 
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
@@ -61,8 +59,8 @@ public class FormatMojoTest
     @Test
     public void formatWhenPrettyPrinting() throws Exception
     {
-        File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/format");
-
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/format");
+        
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
         verifier.addCliOption("-Dforce=true");

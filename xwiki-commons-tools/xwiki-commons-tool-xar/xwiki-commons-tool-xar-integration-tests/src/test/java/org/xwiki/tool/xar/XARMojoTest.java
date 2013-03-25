@@ -25,18 +25,17 @@ import java.util.Collection;
 import java.util.Enumeration;
 
 import org.apache.maven.it.Verifier;
-import org.apache.maven.it.util.ResourceExtractor;
+import org.codehaus.plexus.archiver.zip.ZipEntry;
 import org.codehaus.plexus.archiver.zip.ZipFile;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
+import org.junit.Assert;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 /**
  * Integration tests for the XAR Mojo.
- *
+ * 
  * @version $Id$
  * @since 4.2M1
  */
@@ -45,7 +44,7 @@ public class XARMojoTest
     @Test
     public void invalidPackageXmlThrowsException() throws Exception
     {
-        File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/invalidPackageFile");
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/invalidPackageFile");
 
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
@@ -63,7 +62,7 @@ public class XARMojoTest
     @Test
     public void validPackageXml() throws Exception
     {
-        File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/validXml");
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/validXml");
 
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
@@ -81,7 +80,7 @@ public class XARMojoTest
         unarchiver.extract();
 
         ZipFile zip = new ZipFile(xarFile);
-        Enumeration entries = zip.getEntries();
+        Enumeration<ZipEntry> entries = zip.getEntries();
         Assert.assertTrue(entries.hasMoreElements());
         Assert.assertEquals(entries.nextElement().toString(), XARMojo.PACKAGE_XML);
 
@@ -107,7 +106,7 @@ public class XARMojoTest
     @Test
     public void noPackageXml() throws Exception
     {
-        File testDir = ResourceExtractor.simpleExtractResources(getClass(), "/noPackageXml");
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/noPackageXml");
 
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
@@ -131,7 +130,7 @@ public class XARMojoTest
         File classesDir = new File(testDir, "target/classes");
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
         int countEntries = 0;
-        Enumeration entries = zip.getEntries();
+        Enumeration<ZipEntry> entries = zip.getEntries();
         while (entries.hasMoreElements()) {
             String entryName = entries.nextElement().toString();
             if (!entryName.equals(XARMojo.PACKAGE_XML)) {
