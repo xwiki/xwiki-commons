@@ -36,6 +36,7 @@ import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -110,7 +111,7 @@ public class EmbeddableComponentManagerTest
     public void testLookupThisComponentManager() throws ComponentLookupException
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
-        
+
         Assert.assertSame(ecm.getInstance(ComponentManager.class), ecm);
     }
 
@@ -183,7 +184,6 @@ public class EmbeddableComponentManagerTest
         Assert.assertEquals(2, descriptors.size());
     }
 
-    
     @Test
     public void testRegisterComponentOverExistingOne() throws Exception
     {
@@ -375,6 +375,9 @@ public class EmbeddableComponentManagerTest
 
         ecm.registerComponent(cd);
         DisposableRoleImpl instance = (DisposableRoleImpl) ecm.getInstance(Role.class);
+
+        Assert.assertFalse(instance.isFinalized());
+
         ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
 
         Assert.assertTrue(instance.isFinalized());
@@ -391,6 +394,9 @@ public class EmbeddableComponentManagerTest
 
         DisposableRoleImpl instance = new DisposableRoleImpl();
         ecm.registerComponent(cd, instance);
+
+        Assert.assertFalse(instance.isFinalized());
+
         ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
 
         Assert.assertTrue(instance.isFinalized());
@@ -439,6 +445,9 @@ public class EmbeddableComponentManagerTest
 
         ecm.registerComponent(cd);
         DisposableRoleImpl instance = (DisposableRoleImpl) ecm.getInstance(Role.class);
+
+        Assert.assertFalse(instance.isFinalized());
+
         ecm.release(instance);
 
         Assert.assertTrue(instance.isFinalized());
@@ -515,5 +524,27 @@ public class EmbeddableComponentManagerTest
         });
 
         ecm.registerComponent(cd2);
+    }
+
+    @Test
+    public void testDispose() throws ComponentRepositoryException, ComponentLookupException,
+        ComponentLifecycleException
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
+        cd.setRole(Role.class);
+        cd.setImplementation(DisposableRoleImpl.class);
+        cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
+
+        ecm.registerComponent(cd);
+
+        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.getInstance(Role.class);
+
+        Assert.assertFalse(instance.isFinalized());
+
+        ecm.dispose();
+
+        Assert.assertTrue(instance.isFinalized());
     }
 }
