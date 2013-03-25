@@ -529,12 +529,17 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     }
 
     @Override
-    public void dispose() throws ComponentLifecycleException
+    public void dispose()
     {
         for (ComponentEntry< ? > entry : this.componentEntries.values()) {
             Object instance = entry.instance;
             if (instance != null && instance != this && instance instanceof Disposable) {
-                ((Disposable) instance).dispose();
+                try {
+                    ((Disposable) instance).dispose();
+                } catch (ComponentLifecycleException e) {
+                    this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
+                        entry.descriptor.getRoleType(), entry.descriptor.getRoleHint(), e);
+                }
             }
         }
     }
