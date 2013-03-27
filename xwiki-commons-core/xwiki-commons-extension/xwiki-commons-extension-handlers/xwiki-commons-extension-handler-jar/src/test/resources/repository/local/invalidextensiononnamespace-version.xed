@@ -34,7 +34,7 @@
   </dependencies>
   <properties>
     <installed.namespaces type="set">
-      <installed.namespaces>namespace</installed.namespaces>
+      <installed.namespaces>namespaceofinvalidextension</installed.namespaces>
     </installed.namespaces>
     <installed.installed type="boolean">true</installed.installed>
   </properties>

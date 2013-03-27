@@ -1000,7 +1000,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     {
         ExtensionId extensionId = new ExtensionId("invalidextensiononnamespace", "1.0");
 
-        uninstall(extensionId, "namespace");
+        uninstall(extensionId, "namespaceofinvalidextension");
     }
 
     @Test
