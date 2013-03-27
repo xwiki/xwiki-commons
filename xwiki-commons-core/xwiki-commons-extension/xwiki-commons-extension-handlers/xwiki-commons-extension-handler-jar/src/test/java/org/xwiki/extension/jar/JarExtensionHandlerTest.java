@@ -24,8 +24,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
@@ -44,6 +44,7 @@ import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtensi
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.observation.ObservationManager;
+import org.xwiki.test.LogRule;
 
 import packagefile.jarextension.DefaultTestComponent;
 import packagefile.jarextension.TestComponent;
@@ -61,6 +62,9 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     private Execution execution;
 
     private static final String NAMESPACE = "namespace";
+
+    @Rule
+    public LogRule logRule = new LogRule();
 
     @Override
     protected void registerComponents() throws Exception
@@ -989,5 +993,21 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         checkJarExtensionUnavailability(TestComponent.TYPE_STRING);
         checkJarExtensionUnavailability(TestComponentWithDeps.class, namespace1);
         checkJarExtensionUnavailability(TestComponentWithDeps.class, namespace2);
+    }
+
+    @Test
+    public void testUninstallInvalidExtensionFromNamespace() throws Throwable
+    {
+        ExtensionId extensionId = new ExtensionId("invalidextensiononnamespace", "1.0");
+
+        uninstall(extensionId, "namespace");
+    }
+
+    @Test
+    public void testUninstallInvalidExtensionFromRoot() throws Throwable
+    {
+        ExtensionId extensionId = new ExtensionId("invalidextensiononroot", "1.0");
+
+        uninstall(extensionId, null);
     }
 }

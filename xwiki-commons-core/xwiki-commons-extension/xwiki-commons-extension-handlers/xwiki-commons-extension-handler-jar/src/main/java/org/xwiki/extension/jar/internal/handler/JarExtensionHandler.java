@@ -42,6 +42,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.InstallException;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.LocalExtensionFile;
 import org.xwiki.extension.UninstallException;
@@ -103,14 +104,16 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     @Override
     public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
     {
-        NamespaceURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, false);
+        if (localExtension instanceof InstalledExtension && ((InstalledExtension) localExtension).isValid(namespace)) {
+            NamespaceURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, false);
 
-        if (namespace == null || classLoader.getNamespace().equals(namespace)) {
-            // unregister components
-            unloadComponents(localExtension.getFile(), classLoader, namespace);
+            if (namespace == null || classLoader.getNamespace().equals(namespace)) {
+                // unregister components
+                unloadComponents(localExtension.getFile(), classLoader, namespace);
 
-            // The ClassLoader(s) will be replaced and reloaded at the end of the job
-            // @see org.xwiki.extension.jar.internal.handler.JarExtensionJobFinishedListener
+                // The ClassLoader(s) will be replaced and reloaded at the end of the job
+                // @see org.xwiki.extension.jar.internal.handler.JarExtensionJobFinishedListener
+            }
         }
     }
 
