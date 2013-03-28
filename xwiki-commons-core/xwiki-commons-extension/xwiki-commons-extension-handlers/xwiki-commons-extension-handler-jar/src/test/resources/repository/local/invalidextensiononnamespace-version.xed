@@ -24,7 +24,7 @@
 
 <extension>
   <id>invalidextensiononnamespace</id>
-  <version>1.0</version>
+  <version>version</version>
   <type>jar</type>
   <dependencies>
     <dependency>

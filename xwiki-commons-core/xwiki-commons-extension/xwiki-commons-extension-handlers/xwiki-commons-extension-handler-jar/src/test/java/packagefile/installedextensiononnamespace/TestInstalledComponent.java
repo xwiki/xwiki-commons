@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,20 +16,16 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package packagefile.installedextensiononnamespace;
 
-<extension>
-  <id>invalidextensiononroot</id>
-  <version>version</version>
-  <type>jar</type>
-  <dependencies>
-    <dependency>
-      <id>unexistingextension</id>
-      <version>version</version>
-    </dependency>
-  </dependencies>
-  <properties>
-    <installed.installed type="boolean">true</installed.installed>
-  </properties>
-</extension>
+import java.lang.reflect.ParameterizedType;
+
+import org.xwiki.component.annotation.Role;
+import org.xwiki.component.util.DefaultParameterizedType;
+
+@Role
+public interface TestInstalledComponent<T>
+{
+    ParameterizedType TYPE_STRING = new DefaultParameterizedType(null, TestInstalledComponent.class, String.class);
+}

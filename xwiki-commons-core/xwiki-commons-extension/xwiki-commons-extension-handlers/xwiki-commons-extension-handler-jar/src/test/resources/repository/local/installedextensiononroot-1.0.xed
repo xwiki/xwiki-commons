@@ -23,15 +23,9 @@
 -->
 
 <extension>
-  <id>invalidextensiononroot</id>
-  <version>version</version>
+  <id>installedextensiononroot</id>
+  <version>1.0</version>
   <type>jar</type>
-  <dependencies>
-    <dependency>
-      <id>unexistingextension</id>
-      <version>version</version>
-    </dependency>
-  </dependencies>
   <properties>
     <installed.installed type="boolean">true</installed.installed>
   </properties>

@@ -22,10 +22,8 @@ package org.xwiki.extension.jar;
 import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
@@ -34,8 +32,6 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContextInitializer;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
@@ -43,8 +39,8 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
-import org.xwiki.test.LogRule;
 
 import packagefile.jarextension.DefaultTestComponent;
 import packagefile.jarextension.TestComponent;
@@ -59,12 +55,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
     private ClassLoaderManager jarExtensionClassLoader;
 
-    private Execution execution;
-
     private static final String NAMESPACE = "namespace";
-
-    @Rule
-    public LogRule logRule = new LogRule();
 
     @Override
     protected void registerComponents() throws Exception
@@ -75,7 +66,13 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         // (which already contains the extensions)
         registerComponent(TestJarExtensionClassLoader.class);
 
-        TestExecutionContextInitializer.currentNamespace = NAMESPACE;
+        // Make sure to fully enable ObservationManager to test EventListener live registration
+        StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
+        componentEventManager.shouldStack(false);
+        getComponentManager().setComponentEventManager(componentEventManager);
+
+        // Ignore warning log during setup
+        ((LoggerManager) getComponentManager().getInstance(LoggerManager.class)).pushLogListener(null);
     }
 
     @Override
@@ -88,14 +85,14 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         // lookup
         this.componentManagerManager = getComponentManager().getInstance(ComponentManagerManager.class);
         this.jarExtensionClassLoader = getComponentManager().getInstance(ClassLoaderManager.class);
-        this.execution = getComponentManager().getInstance(Execution.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration
+        StackingComponentEventManager componentEventManager =
+            (StackingComponentEventManager) getComponentManager().getComponentEventManager();
         ObservationManager manager = getComponentManager().getInstance(ObservationManager.class);
-        StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
-        componentEventManager.shouldStack(false);
         componentEventManager.setObservationManager(manager);
-        getComponentManager().setComponentEventManager(componentEventManager);
+
+        ((LoggerManager) getComponentManager().getInstance(LoggerManager.class)).popLogListener();
     }
 
     private void assertNotEquals(Type type1, Type type2)
@@ -103,14 +100,6 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         if (type1.equals(type2)) {
             Assert.fail("expected not equals");
         }
-    }
-
-    /**
-     * @return the root extension class loader
-     */
-    private ClassLoader getExtensionClassloader()
-    {
-        return getExtensionClassloader(null);
     }
 
     /**
@@ -327,53 +316,6 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         }
     }
 
-    /**
-     * Execute the jar handler ExecutionContextInitializer and check it set the given extension class loader.
-     * 
-     * @param extensionLoader the extension class loader expected to be set in the thread context
-     * @throws Throwable on error
-     */
-    private void checkJarHandlerContextInitializer(ClassLoader extensionLoader) throws Throwable
-    {
-        checkJarHandlerContextInitializer(extensionLoader, null);
-    }
-
-    /**
-     * Execute the jar handler ExecutionContextInitializer and check it set the given extension class loader.
-     * 
-     * @param extensionLoader the extension class loader expected to be set in the thread context
-     * @param namespace the namespace that should be installed in the simulated context
-     * @throws Throwable on error
-     */
-    private void checkJarHandlerContextInitializer(ClassLoader extensionLoader, String namespace) throws Throwable
-    {
-        // reset to application class loader since initializer is normally used on startup
-        Thread.currentThread().setContextClassLoader(this.testApplicationClassloader);
-
-        // execute initializer in context
-        if (namespace != null) {
-            // Simulate the context for the initializer
-            this.execution.getContext().setProperty("xwikicontext", new HashMap<String, Object>());
-            getComponentManager().<ExecutionContextInitializer> getInstance(ExecutionContextInitializer.class,
-                "jarextension").initialize(null);
-            // Drop simulated context
-            this.execution.getContext().removeProperty("xwikicontext");
-        } else {
-            getComponentManager().<ExecutionContextInitializer> getInstance(ExecutionContextInitializer.class,
-                "jarextension").initialize(null);
-        }
-
-        // check switch has been properly done
-        if (extensionLoader != null) {
-            Assert.assertSame(extensionLoader, Thread.currentThread().getContextClassLoader());
-            Assert.assertNotSame(this.testApplicationClassloader, Thread.currentThread().getContextClassLoader());
-        } else {
-            Assert.assertSame(this.testApplicationClassloader, Thread.currentThread().getContextClassLoader());
-        }
-
-        Thread.currentThread().setContextClassLoader(this.testApplicationClassloader);
-    }
-
     @Test
     public void testInstallAndUninstallExtension() throws Throwable
     {
@@ -387,8 +329,6 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
 
         Type extensionRole1 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
-
-        checkJarHandlerContextInitializer(getExtensionClassloader());
 
         // try to install again
         try {
@@ -428,8 +368,6 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Assert.assertNull(this.installedExtensionRepository.getInstalledExtension("feature", null));
 
         checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, NAMESPACE);
-
-        checkJarHandlerContextInitializer(getExtensionClassloader(NAMESPACE), NAMESPACE);
 
         try {
             install(extensionId, NAMESPACE);
@@ -488,7 +426,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     public void testInstallAndUninstallExtensionWithDependencyOnANamespace() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
-        final String namespace = "namespace";
+        final String namespace = NAMESPACE;
 
         // actual install test
         InstalledExtension installExtension = install(extensionId, namespace);
@@ -553,7 +491,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
-        final String namespace = "namespace";
+        final String namespace = NAMESPACE;
 
         // actual install test
         InstalledExtension installedExtension = install(extensionId, namespace);
@@ -580,7 +518,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
-        final String namespace = "namespace";
+        final String namespace = NAMESPACE;
 
         // actual install test
         InstalledExtension installedExtension = install(dependencyId);
@@ -628,7 +566,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
         final ExtensionId dependencyId = new ExtensionId("org.xwiki.test:test-extension", "test");
-        final String namespace = "namespace";
+        final String namespace = NAMESPACE;
 
         // actual install test
         InstalledExtension installedExtension = install(dependencyId);
@@ -998,7 +936,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     @Test
     public void testUninstallInvalidExtensionFromNamespace() throws Throwable
     {
-        ExtensionId extensionId = new ExtensionId("invalidextensiononnamespace", "1.0");
+        ExtensionId extensionId = new ExtensionId("invalidextensiononnamespace", "version");
 
         uninstall(extensionId, "namespaceofinvalidextension");
     }
@@ -1006,7 +944,39 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     @Test
     public void testUninstallInvalidExtensionFromRoot() throws Throwable
     {
-        ExtensionId extensionId = new ExtensionId("invalidextensiononroot", "1.0");
+        ExtensionId extensionId = new ExtensionId("invalidextensiononroot", "version");
+
+        uninstall(extensionId, null);
+    }
+
+    @Test
+    public void testExtensionInstalledOnNamespaceAtInit() throws Throwable
+    {
+        ExtensionId extensionId = new ExtensionId("installedextensiononnamespace", "1.0");
+
+        InstalledExtension installedExtension = this.installedExtensionRepository.resolve(extensionId);
+
+        checkInstallStatus(installedExtension, NAMESPACE);
+
+        Type extensionRole1 =
+            checkJarExtensionAvailability(packagefile.installedextensiononnamespace.TestInstalledComponent.TYPE_STRING,
+                packagefile.installedextensiononnamespace.DefaultTestInstalledComponent.class, NAMESPACE);
+
+        uninstall(extensionId, NAMESPACE);
+    }
+
+    @Test
+    public void testExtensionInstalledOnRootAtInit() throws Throwable
+    {
+        ExtensionId extensionId = new ExtensionId("installedextensiononroot", "1.0");
+
+        InstalledExtension installedExtension = this.installedExtensionRepository.resolve(extensionId);
+
+        checkInstallStatus(installedExtension, null);
+
+        Type extensionRole1 =
+            checkJarExtensionAvailability(packagefile.installedextensiononroot.TestInstalledComponent.TYPE_STRING,
+                packagefile.installedextensiononroot.DefaultTestInstalledComponent.class, null);
 
         uninstall(extensionId, null);
     }
