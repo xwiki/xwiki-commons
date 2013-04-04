@@ -27,16 +27,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.protocol.BasicHttpContext;
 import org.restlet.data.MediaType;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
@@ -81,6 +87,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
     private final transient UriBuilder searchUriBuider;
 
+    private BasicHttpContext localContext;
+
     public XWikiExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,
         ExtensionManagerConfiguration configuration) throws Exception
@@ -98,6 +106,20 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         this.extensionVersionFileUriBuider = createUriBuilder(Resources.EXTENSION_VERSION_FILE);
         this.extensionVersionsUriBuider = createUriBuilder(Resources.EXTENSION_VERSIONS);
         this.searchUriBuider = createUriBuilder(Resources.SEARCH);
+
+        // Setup preemptive authentication
+        if (getDescriptor().getProperty("auth.user") != null) {
+            // Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+            // Generate BASIC scheme object and add it to the local
+            // auth cache
+            BasicScheme basicAuth = new BasicScheme();
+            authCache.put(new HttpHost(getDescriptor().getURI().getHost(), getDescriptor().getURI().getPort(),
+                getDescriptor().getURI().getScheme()), basicAuth);
+            // Add AuthCache to the execution context
+            this.localContext = new BasicHttpContext();
+            this.localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+        }
     }
 
     protected UriBuilder getExtensionFileUriBuider()
@@ -120,7 +142,11 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         getMethod.addHeader("Accept", MediaType.APPLICATION_XML.toString());
         HttpResponse response;
         try {
-            response = httpClient.execute(getMethod);
+            if (this.localContext != null) {
+                response = httpClient.execute(getMethod, this.localContext);
+            } else {
+                response = httpClient.execute(getMethod);
+            }
         } catch (Exception e) {
             throw new IOException("Failed to request [" + getMethod.getURI() + "]", e);
         }
