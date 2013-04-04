@@ -36,11 +36,6 @@ import org.xwiki.test.internal.ComponentRegistrator;
  *
  * Also offers helper APIs to register components and in-memory configuration sources.
  *
- * <p>
- * Note: We need to implement the deprecated {@link MethodRule} for the time being for the following reason:
- * https://github.com/KentBeck/junit/issues/351
- * </p>
- *
  * @version $Id$
  * @since 4.3.1
  */
