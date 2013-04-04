@@ -20,11 +20,12 @@
 package org.xwiki.extension.internal;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -81,5 +82,25 @@ public class DefaultExtensionManagerConfigurationTest
     public void testGetExtensionRepositoryDescriptorsEmpty()
     {
         Assert.assertEquals(null, this.configuration.getExtensionRepositoryDescriptors());
+    }
+
+    @Test
+    public void testGetExtensionRepositoryDescriptorsWithProperties() throws URISyntaxException
+    {
+        this.source.setProperty("extension.repositories", Arrays.asList("id:type:http://url"));
+        this.source.setProperty("extension.repositories.id.property", "value");
+        this.source.setProperty("extension.repositories.id.property.with.dots", "other value");
+
+        Collection<ExtensionRepositoryDescriptor> descriptors = this.configuration.getExtensionRepositoryDescriptors();
+
+        Assert.assertFalse(descriptors.isEmpty());
+
+        ExtensionRepositoryDescriptor descriptor = descriptors.iterator().next();
+
+        Assert.assertEquals("id", descriptor.getId());
+        Assert.assertEquals("type", descriptor.getType());
+        Assert.assertEquals(new URI("http://url"), descriptor.getURI());
+        Assert.assertEquals("value", descriptor.getProperty("property"));
+        Assert.assertEquals("other value", descriptor.getProperty("property.with.dots"));
     }
 }
