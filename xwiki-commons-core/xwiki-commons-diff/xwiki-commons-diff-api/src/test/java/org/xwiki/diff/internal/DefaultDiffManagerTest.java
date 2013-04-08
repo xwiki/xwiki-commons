@@ -41,7 +41,7 @@ public class DefaultDiffManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<DiffManager> mocker =
-        new MockitoComponentMockingRule(DefaultDiffManager.class);
+        new MockitoComponentMockingRule<DiffManager>(DefaultDiffManager.class);
 
     /**
      * @param str the single line text
