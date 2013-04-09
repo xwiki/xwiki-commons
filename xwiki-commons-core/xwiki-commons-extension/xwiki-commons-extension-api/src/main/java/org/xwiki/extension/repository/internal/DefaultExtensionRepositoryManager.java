@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
@@ -103,6 +105,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     }
 
     @Override
+    @Deprecated
     public ExtensionRepository addRepository(ExtensionRepositoryId repositoryId) throws ExtensionRepositoryException
     {
         return addRepository((ExtensionRepositoryDescriptor) repositoryId);
@@ -195,15 +198,25 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
     {
+        SortedSet<Version> versionSet = new TreeSet<Version>();
+
         for (ExtensionRepository repository : this.repositories.values()) {
             try {
-                return repository.resolveVersions(id, offset, nb);
+                IterableResult<Version> versions = repository.resolveVersions(id, 0, -1);
+
+                for (Version version : versions) {
+                    versionSet.add(version);
+                }
             } catch (ResolveException e) {
                 this.logger.debug("Could not find versions for extension with id [{}]", id, e);
             }
         }
 
-        throw new ResolveException(MessageFormat.format("Could not find versions for extension with id [{0}]", id));
+        if (versionSet.isEmpty()) {
+            throw new ResolveException(MessageFormat.format("Could not find versions for extension with id [{0}]", id));
+        }
+
+        return RepositoryUtils.getIterableResult(offset, nb, versionSet);
     }
 
     @Override

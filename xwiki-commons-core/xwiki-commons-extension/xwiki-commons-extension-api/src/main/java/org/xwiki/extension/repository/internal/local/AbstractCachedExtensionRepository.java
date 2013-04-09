@@ -228,6 +228,6 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
             }
         }
 
-        return RepositoryUtils.searchInCollection(offset, nb, result);
+        return RepositoryUtils.getIterableResult(offset, nb, result);
     }
 }
