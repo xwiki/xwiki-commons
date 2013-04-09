@@ -92,16 +92,35 @@ public final class RepositoryUtils
     /**
      * @param offset the offset where to start returning elements
      * @param nb the number of maximum element to return
-     * @param extensions the extension collection to search in
-     * @return the search result
+     * @param elements the element collection to search in
+     * @return the result to limit
+     * @param <T> the type of element in the {@link Collection}
      */
-    public static CollectionIterableResult<Extension> searchInCollection(int offset, int nb, List<Extension> extensions)
+    public static <T> CollectionIterableResult<T> getIterableResult(int offset, int nb, Collection<T> elements)
     {
-        if (nb == 0 || offset >= extensions.size()) {
-            return new CollectionIterableResult<Extension>(extensions.size(), offset,
-                Collections.<Extension> emptyList());
+        if (nb == 0 || offset >= elements.size()) {
+            return new CollectionIterableResult<T>(elements.size(), offset, Collections.<T> emptyList());
         }
 
+        List<T> list;
+        if (elements instanceof List) {
+            list = (List<T>) elements;
+        } else {
+            list = new ArrayList<T>(elements);
+        }
+
+        return getIterableResultFromList(offset, nb, list);
+    }
+
+    /**
+     * @param offset the offset where to start returning elements
+     * @param nb the number of maximum element to return
+     * @param elements the element collection to search in
+     * @return the result to limit
+     * @param <T> the type of element in the {@link List}
+     */
+    private static <T> CollectionIterableResult<T> getIterableResultFromList(int offset, int nb, List<T> elements)
+    {
         int fromIndex = offset;
         if (fromIndex < 0) {
             fromIndex = 0;
@@ -110,15 +129,14 @@ public final class RepositoryUtils
         int toIndex;
         if (nb > 0) {
             toIndex = nb + fromIndex;
-            if (toIndex > extensions.size()) {
-                toIndex = extensions.size();
+            if (toIndex > elements.size()) {
+                toIndex = elements.size();
             }
         } else {
-            toIndex = extensions.size();
+            toIndex = elements.size();
         }
 
-        return new CollectionIterableResult<Extension>(extensions.size(), offset,
-            extensions.subList(fromIndex, toIndex));
+        return new CollectionIterableResult<T>(elements.size(), offset, elements.subList(fromIndex, toIndex));
     }
 
     /**
