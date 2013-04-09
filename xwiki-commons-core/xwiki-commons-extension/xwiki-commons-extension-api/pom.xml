@@ -113,7 +113,7 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-component</artifactId>
+      <artifactId>xwiki-commons-logging-logback</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
