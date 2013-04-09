@@ -27,6 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -49,6 +50,12 @@ public class DefaultScriptSafeProvider implements ScriptSafeProvider
      */
     @Inject
     private ComponentManager component;
+
+    /**
+     * The logger.
+     */
+    @Inject
+    private Logger logger;
 
     @Override
     public Object get(Object unsafe)
@@ -99,21 +106,29 @@ public class DefaultScriptSafeProvider implements ScriptSafeProvider
      */
     private Object get(Object unsafe, Type type)
     {
-        try {
-            ScriptSafeProvider<Object> provider =
-                this.component.getInstance(new DefaultParameterizedType(null, ScriptSafeProvider.class, type));
+        Type completeRole = new DefaultParameterizedType(null, ScriptSafeProvider.class, type);
 
-            return provider.get(unsafe);
-        } catch (ComponentLookupException e) {
-            // Try with raw type
-            if (type instanceof ParameterizedType) {
+        if (this.component.hasComponent(completeRole)) {
+            try {
+                ScriptSafeProvider<Object> provider = this.component.getInstance(completeRole);
+
+                return provider.get(unsafe);
+            } catch (ComponentLookupException e) {
+                this.logger.error("Failed to load safe provider for complete type [{}]", type, e);
+            }
+        } else if (type instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) type).getRawType();
+            Type rawRole = new DefaultParameterizedType(null, ScriptSafeProvider.class, rawType);
+
+            this.logger.debug("Could not find any safe provider for type [{}]. Trying with [{}]", type, rawType);
+
+            if (this.component.hasComponent(rawRole)) {
                 try {
-                    ScriptSafeProvider<Object> provider =
-                        this.component.getInstance(((ParameterizedType) type).getRawType());
+                    ScriptSafeProvider<Object> provider = this.component.getInstance(rawRole);
 
                     return provider.get(unsafe);
-                } catch (ComponentLookupException e1) {
-                    // Could really not find any provider
+                } catch (ComponentLookupException e) {
+                    this.logger.error("Failed to load safe provider for raw type [{}]", rawType, e);
                 }
             }
         }
