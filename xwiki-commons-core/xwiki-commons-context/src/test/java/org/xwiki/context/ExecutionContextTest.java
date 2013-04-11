@@ -19,8 +19,11 @@
  */
 package org.xwiki.context;
 
+import java.util.Map;
+
 import org.junit.Test;
-import org.junit.Assert;
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.hasEntry;
 
 /**
  * @version $Id$ 
@@ -42,8 +45,8 @@ public class ExecutionContextTest
 
         context.inheritFrom(parent);
 
-        Assert.assertTrue(context.getProperty("inherited").equals("test"));
-        Assert.assertTrue(context.getProperty("shadowed").equals("shadowed"));
+        assertTrue(context.getProperty("inherited").equals("test"));
+        assertTrue(context.getProperty("shadowed").equals("shadowed"));
     }
 
     @Test(expected=IllegalStateException.class)
@@ -56,5 +59,15 @@ public class ExecutionContextTest
         context.newProperty("inherited").inherited().initial("test").makeFinal().declare();
 
         context.inheritFrom(parent);
+    }
+
+    @Test
+    public void getProperties()
+    {
+        ExecutionContext context = new ExecutionContext();
+        context.setProperty("key", "value");
+        Map<String, Object> properties = context.getProperties();
+        assertEquals(1, properties.size());
+        assertThat(properties, hasEntry("key", (Object) "value"));
     }
 }
