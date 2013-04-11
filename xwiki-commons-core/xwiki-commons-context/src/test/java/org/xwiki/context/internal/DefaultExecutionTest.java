@@ -32,7 +32,7 @@ import org.xwiki.context.ExecutionContext;
 public class DefaultExecutionTest
 {
     @Test
-    public void testSetContext() throws Exception
+    public void setContext() throws Exception
     {
         Execution execution = new DefaultExecution();
 
@@ -74,7 +74,7 @@ public class DefaultExecutionTest
     }
 
     @Test
-    public void testRemoveContext() throws Exception
+    public void removeContext() throws Exception
     {
         Execution execution = new DefaultExecution();
 

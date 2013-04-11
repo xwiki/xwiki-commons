@@ -23,7 +23,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Contains the property value and metadata that governs the maintainance of the property.
+ * Contains the property value and metadata that governs the maintenance of the property.
  *
  * This class may require ReflectPermission suppressAccessChecks to clone the object value.
  *
@@ -56,10 +56,12 @@ public class ExecutionContextProperty implements Cloneable
     /** Indicate that the value may not be {@code null}. */
     private final boolean nonNull;
 
-    /** The type of the value. */
+    /**
+     * @see #getType()
+     */
     private final Class<?> type;
 
-    /** @see isClonedFrom(ExecutionContextProperty property). */
+    /** @see #isClonedFrom(ExecutionContextProperty) */
     private WeakReference<ExecutionContextProperty> clonedFrom;
 
     /**
@@ -93,13 +95,13 @@ public class ExecutionContextProperty implements Cloneable
      */
     private void checkValue(Object value)
     {
-        if (nonNull && value == null) {
-            throw new IllegalArgumentException(String.format("The property [%s] may not be null!", key));
+        if (this.nonNull && value == null) {
+            throw new IllegalArgumentException(String.format("The property [%s] may not be null!", getKey()));
         }
-        if (type != null && value != null && !type.isAssignableFrom(value.getClass())) {
+        if (getType() != null && value != null && !getType().isAssignableFrom(value.getClass())) {
             throw new IllegalArgumentException(
                 String.format("The value of property [%s] must be of type [%s], but was [%s]",
-                              key, type, value.getClass()));
+                    getKey(), getType(), value.getClass()));
         }
     }
 
@@ -138,6 +140,14 @@ public class ExecutionContextProperty implements Cloneable
         return this.inherited;
     }
 
+    /**
+     * @return the type of the value
+     */
+    private Class<?> getType()
+    {
+        return this.type;
+    }
+
     @Override
     public ExecutionContextProperty clone()
     {
@@ -145,26 +155,27 @@ public class ExecutionContextProperty implements Cloneable
 
         Object clonedValue;
 
-        if (cloneValue) {
+        if (this.cloneValue) {
             try {
-                clonedValue = value.getClass().getMethod("clone").invoke(value);
+                clonedValue = getValue().getClass().getMethod("clone").invoke(getValue());
             } catch (NoSuchMethodException e) {
                 throw new IllegalStateException(String.format(
                      "cloneValue attribute was set on property [%s], "
-                     + "but the value had class [%s] which has no public clone method", key,
-                     value.getClass().getName()));
+                     + "but the value had class [%s] which has no public clone method", getKey(),
+                     getValue().getClass().getName()));
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            clonedValue = value;
+            clonedValue = getValue();
         }
 
-        clone = new ExecutionContextProperty(key, clonedValue, cloneValue, isFinal, inherited, nonNull, type);
+        clone = new ExecutionContextProperty(getKey(), clonedValue, this.cloneValue, isFinal(), isInherited(),
+            this.nonNull, getType());
 
-        if (isFinal && inherited) {
+        if (isFinal() && isInherited()) {
             // We make this a weak reference, because we are only interested in it as long
             // as it is references by the current execution co
             clone.clonedFrom = new WeakReference<ExecutionContextProperty>(this);
@@ -185,7 +196,7 @@ public class ExecutionContextProperty implements Cloneable
      */
     public boolean isClonedFrom(ExecutionContextProperty property)
     {
-        return clonedFrom != null && clonedFrom.get() == property;
+        return this.clonedFrom != null && this.clonedFrom.get() == property;
     }
     
 }

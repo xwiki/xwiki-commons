@@ -44,7 +44,7 @@ public class DefaultExecutionContextManagerTest
      * Verify we have different objects in the Execution Context after the clone.
      */
     @Test
-    public void testClone() throws Exception
+    public void cloneExecutionContext() throws Exception
     {
         Execution execution = new DefaultExecution();
         ExecutionContext context = new ExecutionContext();
