@@ -24,8 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -53,7 +52,6 @@ public class DefaultExecutionContextManagerTest
 
         Map xwikicontext = new HashMap();
         context.newProperty("xwikicontext").initial(xwikicontext).inherited().declare();
-        Map velocitycontext = new HashMap();
         context.newProperty("velocitycontext").initial(xwikicontext)
             .inherited().makeFinal().cloneValue().declare();
 

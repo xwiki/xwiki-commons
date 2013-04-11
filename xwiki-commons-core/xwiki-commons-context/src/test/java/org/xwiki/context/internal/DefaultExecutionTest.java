@@ -19,11 +19,10 @@
  */
 package org.xwiki.context.internal;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-
-import junit.framework.Assert;
 
 /**
  * Unit tests for {@link DefaultExecution}.
