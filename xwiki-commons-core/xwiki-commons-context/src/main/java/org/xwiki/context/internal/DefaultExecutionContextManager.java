@@ -84,8 +84,6 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
     @Override
     public ExecutionContext clone(ExecutionContext context) throws ExecutionContextException
     {
-        ExecutionContext currentContext = this.execution.getContext();
-
         ExecutionContext clonedContext = new ExecutionContext();
 
         // Ideally we would like to do a deep cloning here. However it's just too hard since we don't control
