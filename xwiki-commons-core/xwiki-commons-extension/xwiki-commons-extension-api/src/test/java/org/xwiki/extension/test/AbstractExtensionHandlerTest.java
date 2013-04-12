@@ -44,7 +44,7 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
 
     protected InstalledExtensionRepository installedExtensionRepository;
 
-    protected RepositoryUtil repositoryUtil;
+    protected RepositoryUtils repositoryUtil;
 
     protected JobManager jobManager;
 
@@ -56,7 +56,7 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
 
         beforeRepositoryUtil();
 
-        this.repositoryUtil = new RepositoryUtil(getComponentManager(), getMockery());
+        this.repositoryUtil = new RepositoryUtils(getComponentManager(), getMockery());
         this.repositoryUtil.setup();
 
         // lookup

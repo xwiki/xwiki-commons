@@ -33,7 +33,7 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
-import org.xwiki.extension.test.RepositoryUtil;
+import org.xwiki.extension.test.RepositoryUtils;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
@@ -41,14 +41,14 @@ public class DefaultLocalExtensionRepositoryTest extends AbstractComponentTestCa
 {
     private LocalExtensionRepository localExtensionRepository;
 
-    private RepositoryUtil repositoryUtil;
+    private RepositoryUtils repositoryUtil;
 
     @Override
     public void setUp() throws Exception
     {
         super.setUp();
 
-        this.repositoryUtil = new RepositoryUtil(getComponentManager(), getMockery());
+        this.repositoryUtil = new RepositoryUtils(getComponentManager(), getMockery());
         this.repositoryUtil.setup();
 
         // lookup

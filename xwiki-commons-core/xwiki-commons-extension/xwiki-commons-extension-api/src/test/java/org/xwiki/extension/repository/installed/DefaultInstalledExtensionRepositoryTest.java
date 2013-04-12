@@ -47,7 +47,7 @@ import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
-import org.xwiki.extension.test.RepositoryUtil;
+import org.xwiki.extension.test.RepositoryUtils;
 import org.xwiki.extension.test.TestExtensionHandler;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
@@ -58,7 +58,7 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
 
     private LocalExtensionRepository localExtensionRepository;
 
-    private RepositoryUtil repositoryUtil;
+    private RepositoryUtils repositoryUtil;
 
     private ExtensionRepositoryManager repositoryManager;
 
@@ -71,7 +71,7 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
     {
         super.setUp();
 
-        this.repositoryUtil = new RepositoryUtil(getComponentManager(), getMockery());
+        this.repositoryUtil = new RepositoryUtils(getComponentManager(), getMockery());
         this.repositoryUtil.setup();
 
         // lookup

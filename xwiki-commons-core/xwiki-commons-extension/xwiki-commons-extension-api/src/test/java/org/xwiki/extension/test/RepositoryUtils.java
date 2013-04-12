@@ -52,7 +52,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.test.internal.MockConfigurationSource;
 
-public class RepositoryUtil
+public class RepositoryUtils
 {
     private static final String MAVENREPOSITORY_ID = "test-maven";
 
@@ -78,12 +78,12 @@ public class RepositoryUtil
 
     private ComponentAnnotationLoader componentLoader;
 
-    public RepositoryUtil()
+    public RepositoryUtils()
     {
         this(null, null);
     }
 
-    public RepositoryUtil(ComponentManager componentManager, Mockery mockery)
+    public RepositoryUtils(ComponentManager componentManager, Mockery mockery)
     {
         this.componentManager = componentManager;
         this.mockery = mockery;

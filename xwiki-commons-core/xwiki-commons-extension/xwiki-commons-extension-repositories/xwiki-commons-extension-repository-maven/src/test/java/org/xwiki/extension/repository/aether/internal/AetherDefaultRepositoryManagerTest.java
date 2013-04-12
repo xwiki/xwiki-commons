@@ -45,7 +45,7 @@ import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.result.IterableResult;
-import org.xwiki.extension.test.RepositoryUtil;
+import org.xwiki.extension.test.RepositoryUtils;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
@@ -78,7 +78,7 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
 
     private ExtensionId sextensionDependencyId;
 
-    private RepositoryUtil repositoryUtil;
+    private RepositoryUtils repositoryUtil;
 
     @Override
     @Before
@@ -86,7 +86,7 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
     {
         super.setUp();
 
-        this.repositoryUtil = new RepositoryUtil(getComponentManager(), getMockery());
+        this.repositoryUtil = new RepositoryUtils(getComponentManager(), getMockery());
         this.repositoryUtil.setup();
 
         this.extensionId = new ExtensionId(GROUPID + ':' + ARTIfACTID, "version");
