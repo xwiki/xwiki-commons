@@ -154,7 +154,14 @@ public class ComponentAnnotationLoader
             Map<RoleHint< ? >, Integer> priorityMap = new HashMap<RoleHint< ? >, Integer>();
 
             for (ComponentDeclaration componentDeclaration : componentDeclarations) {
-                Class< ? > componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
+                Class< ? > componentClass;
+                try {
+                     componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
+                } catch (Throwable e) {
+                    throw new RuntimeException(
+                        String.format("Failed to load component class [%s] for annotation parsing",
+                        componentDeclaration.getImplementationClassName()), e);
+                }
 
                 // Look for ComponentRole annotations and register one component per ComponentRole found
                 for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
