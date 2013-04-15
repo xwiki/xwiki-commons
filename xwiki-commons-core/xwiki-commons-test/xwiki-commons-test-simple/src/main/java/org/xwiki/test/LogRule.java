@@ -20,7 +20,9 @@
 package org.xwiki.test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -29,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 
@@ -66,6 +67,17 @@ public class LogRule implements TestRule
      * The log level below which we do the capture. By default we capture everything.
      */
     private LogLevel level = LogLevel.TRACE;
+
+    /**
+     * Saved logging levels for existing Loggers. We save them so that we can restore them at the end of the
+     * test. This is important so that changes are not carried over from one unit test to another...
+     */
+    private Map<Class<?>, Level> savedLevels = new HashMap<Class<?>, Level>();
+
+    /**
+     * Saved logger's additivities so that we can restore them at the end of the test.
+     */
+    private Map<Class<?>, Boolean> savedAdditivities = new HashMap<Class<?>, Boolean>();
 
     /**
      * The Logger classes for which to capture logs.
@@ -135,12 +147,6 @@ public class LogRule implements TestRule
         private final Statement statement;
 
         /**
-         * The Logback logging context that we use to prevent any logs from being output (apart from the logs we
-         * capture ourselves).
-         */
-        private final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-
-        /**
          * @param statement the wrapping statement that we save so that we can execute it (the statement represents
          *        the test to execute).
          */
@@ -155,11 +161,13 @@ public class LogRule implements TestRule
             // Setup Logback to catch log calls
             before();
 
-            // Run the test
-            this.statement.evaluate();
-
-            // Remove Logback setup
-            after();
+            try {
+                // Run the test
+                this.statement.evaluate();
+            } finally {
+                // Remove Logback setup
+                after();
+            }
         }
 
         /**
@@ -167,10 +175,6 @@ public class LogRule implements TestRule
          */
         private void before()
         {
-            resetLoggingContext();
-            for (Class logSource : loggingSources) {
-                addAppenderToType(logSource);
-            }
             listAppender.start();
         }
 
@@ -180,15 +184,9 @@ public class LogRule implements TestRule
         private void after()
         {
             listAppender.stop();
-            resetLoggingContext();
-        }
-
-        /**
-         * Prevent normal logs to be output.
-         */
-        private void resetLoggingContext()
-        {
-            lc.reset();
+            for (Class logSource : loggingSources) {
+                uninitializeLogger(logSource);
+            }
         }
     }
 
@@ -212,7 +210,7 @@ public class LogRule implements TestRule
     public void recordLoggingForType(Class<?> type)
     {
         this.loggingSources.add(type);
-        addAppenderToType(type);
+        initializeLogger(type);
     }
 
     /**
@@ -253,12 +251,29 @@ public class LogRule implements TestRule
     }
 
     /**
-     * @param type the logging class to add to the capturing list
+     * @param type the logging class to add to the capturing list appender and for which to set the asked logging level
      */
-    private void addAppenderToType(Class<?> type)
+    private void initializeLogger(Class<?> type)
     {
         Logger logger = (Logger) LoggerFactory.getLogger(type);
         logger.addAppender(this.listAppender);
+        this.savedLevels.put(type, logger.getLevel());
+        this.savedAdditivities.put(type, logger.isAdditive());
         logger.setLevel(this.level.getLevel());
+        // Make sure only our new appender is used (and parent's appenders are not used) so that we don't generate logs
+        // elsewhere (console, file, etc).
+        logger.setAdditive(false);
+    }
+
+    /**
+     * @param type the logging class from which to remove the capturing list appender and for which to put back the
+     *        logging level as before
+     */
+    private void uninitializeLogger(Class<?> type)
+    {
+        Logger logger = (Logger) LoggerFactory.getLogger(type);
+        logger.detachAppender(this.listAppender);
+        logger.setLevel(this.savedLevels.get(type));
+        logger.setAdditive(this.savedAdditivities.get(type));
     }
 }
