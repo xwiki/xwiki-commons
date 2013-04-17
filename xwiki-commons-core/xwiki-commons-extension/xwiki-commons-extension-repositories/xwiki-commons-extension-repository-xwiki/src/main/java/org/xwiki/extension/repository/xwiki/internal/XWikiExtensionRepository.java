@@ -252,7 +252,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
         try {
             return (ExtensionVersions) this.repositoryFactory.getUnmarshaller().unmarshal(
-                getRESTResourceAsStream(builder));
+                getRESTResourceAsStream(builder, id));
         } catch (Exception e) {
             throw new ResolveException("Failed to find version for extension id [" + id + "]", e);
         }
