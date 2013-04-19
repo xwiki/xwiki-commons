@@ -385,6 +385,27 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    public void testInstallAndUninstallExtensionWithoutComponents() throws Throwable
+    {
+        final ExtensionId extensionId = new ExtensionId("simplejar", "test");
+
+        // actual install test
+        InstalledExtension installedExtension = install(extensionId);
+
+        checkInstallStatus(installedExtension);
+
+        // actual uninstall test
+        LocalExtension localExtension = uninstall(extensionId, null);
+
+        ckeckUninstallStatus(localExtension);
+
+        // actual reinstall test
+        installedExtension = install(extensionId);
+
+        checkInstallStatus(installedExtension);
+    }
+    
+    @Test
     public void testInstallAndUninstallExtensionWithDependency() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension-with-deps", "test");
