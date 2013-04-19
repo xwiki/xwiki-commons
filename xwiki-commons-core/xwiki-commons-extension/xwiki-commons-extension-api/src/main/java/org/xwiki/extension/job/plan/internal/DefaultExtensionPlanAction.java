@@ -19,6 +19,10 @@
  */
 package org.xwiki.extension.job.plan.internal;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.Extension;
@@ -41,7 +45,7 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
     /**
      * @see #getPreviousExtension()
      */
-    private InstalledExtension previousExtension;
+    private Collection<InstalledExtension> previousExtensions;
 
     /**
      * @see Action
@@ -60,16 +64,18 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
 
     /**
      * @param extension the extension on which to perform the action
-     * @param previousExtension the currently installed extension. Used when upgrading
+     * @param previousExtensions the currently installed extensions. Used when upgrading
      * @param action the action to perform
      * @param namespace the namespace in which the action should be executed
      * @param dependency indicate indicate if the extension is a dependency of another one only in the plan
      */
-    public DefaultExtensionPlanAction(Extension extension, InstalledExtension previousExtension, Action action,
-        String namespace, boolean dependency)
+    public DefaultExtensionPlanAction(Extension extension, Collection<InstalledExtension> previousExtensions,
+        Action action, String namespace, boolean dependency)
     {
         this.extension = extension;
-        this.previousExtension = previousExtension;
+        this.previousExtensions =
+            previousExtensions != null ? new LinkedHashSet<InstalledExtension>(previousExtensions) : Collections
+                .<InstalledExtension> emptyList();
         this.action = action;
         this.namespace = namespace;
         this.dependency = dependency;
@@ -82,9 +88,16 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
     }
 
     @Override
+    @Deprecated
     public InstalledExtension getPreviousExtension()
     {
-        return this.previousExtension;
+        return this.previousExtensions.isEmpty() ? null : this.previousExtensions.iterator().next();
+    }
+
+    @Override
+    public Collection<InstalledExtension> getPreviousExtensions()
+    {
+        return this.previousExtensions;
     }
 
     @Override

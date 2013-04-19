@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.handler;
 
+import java.util.Collection;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionException;
@@ -54,8 +56,20 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws UninstallException error when trying to uninstall the extension
+     * @deprecated since 5.ORC1 use {@link #uninstall(InstalledLocalExtension, String, Request)} instead
      */
+    @Deprecated
     void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException;
+
+    /**
+     * Uninstall the provided local extension.
+     * 
+     * @param localExtension the extension to uninstall
+     * @param namespace the namespace from where to uninstall the extension
+     * @param request extra parameters
+     * @throws UninstallException error when trying to uninstall the extension
+     */
+    void uninstall(InstalledExtension localExtension, String namespace, Request request) throws UninstallException;
 
     /**
      * Upgrade the provided local extension.
@@ -65,9 +79,23 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws InstallException error when trying to upgrade the extension
+     * @deprecated since 5.0RC1 use {@link #upgrade(LocalExtension, LocalExtension, String, Request)} instead
      */
+    @Deprecated
     void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
         Request request) throws InstallException;
+
+    /**
+     * Upgrade the provided local extension.
+     * 
+     * @param previousLocalExtensions the previous installed versions of the extension
+     * @param newLocalExtension the extension to install
+     * @param namespace the namespace from where to uninstall the extension
+     * @param request extra parameters
+     * @throws InstallException error when trying to upgrade the extension
+     */
+    void upgrade(Collection<InstalledExtension> previousLocalExtensions, LocalExtension newLocalExtension,
+        String namespace, Request request) throws InstallException;
 
     /**
      * Initialize the provided local extension (during application startup, re-initialization...).

@@ -29,6 +29,7 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.InstallException;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.internal.AbstractExtensionHandler;
@@ -61,9 +62,10 @@ public class TestExtensionHandler extends AbstractExtensionHandler
     }
 
     @Override
-    public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
+    public void uninstall(InstalledExtension installedExtension, String namespace, Request request)
+        throws UninstallException
     {
-        this.extensions.get(namespace).remove(localExtension);
+        this.extensions.get(namespace).remove(installedExtension);
     }
 
     @Override

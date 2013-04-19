@@ -19,6 +19,10 @@
  */
 package org.xwiki.extension.handler.internal;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -27,6 +31,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.InstallException;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
@@ -84,21 +89,29 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
     }
 
     @Override
+    @Deprecated
     public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
+    {
+        uninstall((InstalledExtension) localExtension, namespace, request);
+    }
+
+    @Override
+    public void uninstall(InstalledExtension installedExtension, String namespace, Request request)
+        throws UninstallException
     {
         ExtensionHandler extensionHandler;
         try {
-            extensionHandler = getExtensionHandler(localExtension);
+            extensionHandler = getExtensionHandler(installedExtension);
         } catch (ComponentLookupException e) {
-            throw new UninstallException(LOOKUPERROR + '[' + localExtension + ']', e);
+            throw new UninstallException(LOOKUPERROR + '[' + installedExtension + ']', e);
         }
 
         try {
-            extensionHandler.uninstall(localExtension, namespace, request);
+            extensionHandler.uninstall(installedExtension, namespace, request);
         } catch (UninstallException e) {
             throw e;
         } catch (Exception e) {
-            throw new UninstallException("Failed to uninstall extension [" + localExtension.getId() + "]", e);
+            throw new UninstallException("Failed to uninstall extension [" + installedExtension.getId() + "]", e);
         }
     }
 
@@ -106,19 +119,27 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
     public void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
         Request request) throws InstallException
     {
+        upgrade(previousLocalExtension != null ? Arrays.asList(previousLocalExtension) : Collections.EMPTY_LIST,
+            newLocalExtension, namespace, request);
+    }
+
+    @Override
+    public void upgrade(Collection<InstalledExtension> previousLocalExtensions, LocalExtension newLocalExtension,
+        String namespace, Request request) throws InstallException
+    {
         ExtensionHandler extensionHandler;
         try {
-            extensionHandler = getExtensionHandler(previousLocalExtension);
+            extensionHandler = getExtensionHandler(newLocalExtension);
         } catch (ComponentLookupException e) {
-            throw new InstallException(LOOKUPERROR + '[' + previousLocalExtension + ']', e);
+            throw new InstallException(LOOKUPERROR + '[' + newLocalExtension + ']', e);
         }
 
         try {
-            extensionHandler.upgrade(previousLocalExtension, newLocalExtension, namespace, request);
+            extensionHandler.upgrade(previousLocalExtensions, newLocalExtension, namespace, request);
         } catch (InstallException e) {
             throw e;
         } catch (Exception e) {
-            throw new InstallException("Failed to upgrade from extension [" + previousLocalExtension
+            throw new InstallException("Failed to upgrade from extension [" + previousLocalExtensions
                 + "] to extension [" + newLocalExtension.getId() + "]", e);
         }
     }

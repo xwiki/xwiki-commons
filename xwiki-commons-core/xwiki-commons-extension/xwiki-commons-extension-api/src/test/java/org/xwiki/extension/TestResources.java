@@ -29,10 +29,9 @@ public class TestResources
 
     // Installed
 
-    public static final ExtensionId INSTALLED_ID = new ExtensionId("installedextension", "version");
+    public static final ExtensionId INSTALLED_ID = new ExtensionId("installedextension", "1.0");
 
-    public static final ExtensionId INSTALLED_DEPENDENCY_ID =
-        new ExtensionId("installedextensiondependency", "version");
+    public static final ExtensionId INSTALLED_DEPENDENCY_ID = new ExtensionId("installedextensiondependency", "1.0");
 
     public static final ExtensionId INSTALLED_ONNAMESPACE_ID = new ExtensionId("installedonnamespace", "version");
 
@@ -64,6 +63,11 @@ public class TestResources
     public static final ExtensionId REMOTE_UPGRADE20_ID = new ExtensionId("upgrade", "2.0");
 
     public static final ExtensionId REMOTE_UNSUPPORTED_ID = new ExtensionId("unsupported", "version");
+
+    public static final ExtensionId REMOTE_NOTINSTALLED_ID = new ExtensionId("notinstalledextension", "2.0");
+
+    public static final ExtensionId REMOTE_NOTINSTALLED_DEPENDENCY_ID = new ExtensionId("notinstalledextensiondependency",
+        "2.0");
 
     // Methods
 

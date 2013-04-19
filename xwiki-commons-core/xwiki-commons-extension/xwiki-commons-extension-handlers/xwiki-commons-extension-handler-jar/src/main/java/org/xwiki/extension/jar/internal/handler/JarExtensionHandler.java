@@ -102,14 +102,14 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     }
 
     @Override
-    public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
+    public void uninstall(InstalledExtension installedExtension, String namespace, Request request) throws UninstallException
     {
-        if (localExtension instanceof InstalledExtension && ((InstalledExtension) localExtension).isValid(namespace)) {
+        if (installedExtension.isValid(namespace)) {
             NamespaceURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, false);
 
             if (namespace == null || classLoader.getNamespace().equals(namespace)) {
                 // unregister components
-                unloadComponents(localExtension.getFile(), classLoader, namespace);
+                unloadComponents(installedExtension.getFile(), classLoader, namespace);
 
                 // The ClassLoader(s) will be replaced and reloaded at the end of the job
                 // @see org.xwiki.extension.jar.internal.handler.JarExtensionJobFinishedListener

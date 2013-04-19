@@ -135,7 +135,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 notifyStepPropress();
 
                 // Install
-                installExtension(localExtension, action.getPreviousExtension(), namespace, action.isDependency());
+                installExtension(localExtension, action.getPreviousExtensions(), namespace, action.isDependency());
             }
 
             if (namespace != null) {
@@ -169,15 +169,15 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
 
     /**
      * @param extension the extension
-     * @param previousExtension the previous extension when upgrading
+     * @param previousExtensions the previous extensions when upgrading
      * @param namespace the namespace in which to perform the action
      * @param dependency indicate if the extension has been installed as dependency
      * @throws InstallException failed to install extension
      */
-    private void installExtension(LocalExtension extension, InstalledExtension previousExtension, String namespace,
-        boolean dependency) throws InstallException
+    private void installExtension(LocalExtension extension, Collection<InstalledExtension> previousExtensions,
+        String namespace, boolean dependency) throws InstallException
     {
-        if (previousExtension == null) {
+        if (previousExtensions.isEmpty()) {
             this.extensionHandlerManager.install(extension, namespace, getRequest());
 
             InstalledExtension installedExtension =
@@ -186,19 +186,21 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             this.observationManager.notify(new ExtensionInstalledEvent(extension.getId(), namespace),
                 installedExtension);
         } else {
-            this.extensionHandlerManager.upgrade(previousExtension, extension, namespace, getRequest());
+            this.extensionHandlerManager.upgrade(previousExtensions, extension, namespace, getRequest());
 
-            try {
-                this.installedExtensionRepository.uninstallExtension(previousExtension, namespace);
-            } catch (UninstallException e) {
-                this.logger.error("Failed to uninstall extension [" + previousExtension.getId() + "]", e);
+            for (InstalledExtension previousExtension : previousExtensions) {
+                try {
+                    this.installedExtensionRepository.uninstallExtension(previousExtension, namespace);
+                } catch (UninstallException e) {
+                    this.logger.error("Failed to uninstall extension [" + previousExtension.getId() + "]", e);
+                }
             }
 
             InstalledExtension installedExtension =
                 this.installedExtensionRepository.installExtension(extension, namespace, dependency);
 
             this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace),
-                installedExtension, previousExtension);
+                installedExtension, previousExtensions);
         }
     }
 }
