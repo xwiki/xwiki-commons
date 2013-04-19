@@ -19,8 +19,7 @@
  */
 package org.xwiki.extension.job.internal;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.job.plan.ExtensionPlan;

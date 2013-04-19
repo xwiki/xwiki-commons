@@ -19,6 +19,10 @@
  */
 package org.xwiki.extension.handler.internal;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
 
@@ -56,13 +60,31 @@ public abstract class AbstractExtensionHandler implements ExtensionHandler
     // ExtensionHandler
 
     @Override
+    @Deprecated
+    public void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException
+    {
+        uninstall((InstalledExtension) localExtension, namespace, request);
+    }
+
+    @Override
+    @Deprecated
     public void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
         Request request) throws InstallException
     {
-        try {
-            uninstall(previousLocalExtension, namespace, request);
-        } catch (UninstallException e) {
-            throw new InstallException("Failed to uninstall previous extension [" + previousLocalExtension + "]", e);
+        upgrade(previousLocalExtension != null ? Arrays.asList(previousLocalExtension) : Collections.EMPTY_LIST,
+            newLocalExtension, namespace, request);
+    }
+
+    @Override
+    public void upgrade(Collection<InstalledExtension> previousInstalledExtensions, LocalExtension newLocalExtension,
+        String namespace, Request request) throws InstallException
+    {
+        for (InstalledExtension previousExtension : previousInstalledExtensions) {
+            try {
+                uninstall(previousExtension, namespace, request);
+            } catch (UninstallException e) {
+                throw new InstallException("Failed to uninstall previous extension [" + previousExtension + "]", e);
+            }
         }
         install(newLocalExtension, namespace, null);
     }

@@ -19,8 +19,7 @@
  */
 package org.xwiki.extension.job.internal;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.TestResources;
@@ -124,6 +123,9 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
         Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
             TestResources.REMOTE_UPGRADE20_ID.getId(), "namespace"));
+
+        Assert.assertNull(installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
 
         // Test downgrade
 

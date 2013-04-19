@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.job.plan;
 
+import java.util.Collection;
+
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.InstalledExtension;
 
@@ -69,9 +71,16 @@ public interface ExtensionPlanAction
     Extension getExtension();
 
     /**
-     * @return the currently installed extension. Used when upgrading
+     * @return the currently installed extension. Used when upgrading.
+     * @deprecated since 5.0RC1 used {@link #getPreviousExtensions()} instead
      */
+    @Deprecated
     InstalledExtension getPreviousExtension();
+
+    /**
+     * @return the currently installed extensions. Used when upgrading.
+     */
+    Collection<InstalledExtension> getPreviousExtensions();
 
     /**
      * @return the action to perform

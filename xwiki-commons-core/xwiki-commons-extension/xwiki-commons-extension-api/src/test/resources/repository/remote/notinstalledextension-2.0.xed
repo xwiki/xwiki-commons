@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>notinstalledextension</id>
+  <version>2.0</version>
+  <type>test</type>
+  <features>
+    <feature>installedextension</feature>
+  </features>
+  <dependencies>
+    <dependency>
+      <id>notinstalledextensiondependency</id>
+      <version>2.0</version>
+    </dependency>
+  </dependencies>
+</extension>

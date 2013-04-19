@@ -21,6 +21,7 @@ package org.xwiki.extension.job.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -279,8 +280,8 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest, Def
             notifyStepPropress();
 
             DefaultExtensionPlanAction action =
-                new DefaultExtensionPlanAction(installedExtension, installedExtension, Action.UNINSTALL, namespace,
-                    false);
+                new DefaultExtensionPlanAction(installedExtension, Collections.singleton(installedExtension),
+                    Action.UNINSTALL, namespace, false);
             parentBranch.add(new DefaultExtensionPlanNode(action, children, null));
         } finally {
             notifyPopLevelProgress();
