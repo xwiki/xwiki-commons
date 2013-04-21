@@ -56,7 +56,7 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws UninstallException error when trying to uninstall the extension
-     * @deprecated since 5.ORC1 use {@link #uninstall(InstalledExtension, String, Request)} instead
+     * @deprecated starting with 5.ORC1 use {@link #uninstall(InstalledExtension, String, Request)} instead
      */
     @Deprecated
     void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException;
@@ -68,6 +68,7 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws UninstallException error when trying to uninstall the extension
+     * @since 5.0RC1
      */
     void uninstall(InstalledExtension localExtension, String namespace, Request request) throws UninstallException;
 
@@ -79,7 +80,7 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws InstallException error when trying to upgrade the extension
-     * @deprecated since 5.0RC1 use {@link #upgrade(LocalExtension, LocalExtension, String, Request)} instead
+     * @deprecated starting with 5.0RC1 use {@link #upgrade(Collection, LocalExtension, String, Request)}
      */
     @Deprecated
     void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
@@ -93,6 +94,7 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws InstallException error when trying to upgrade the extension
+     * @since 5.0RC1
      */
     void upgrade(Collection<InstalledExtension> previousLocalExtensions, LocalExtension newLocalExtension,
         String namespace, Request request) throws InstallException;
