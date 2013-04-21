@@ -56,7 +56,7 @@ public interface ExtensionHandler
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
      * @throws UninstallException error when trying to uninstall the extension
-     * @deprecated since 5.ORC1 use {@link #uninstall(InstalledLocalExtension, String, Request)} instead
+     * @deprecated since 5.ORC1 use {@link #uninstall(InstalledExtension, String, Request)} instead
      */
     @Deprecated
     void uninstall(LocalExtension localExtension, String namespace, Request request) throws UninstallException;
