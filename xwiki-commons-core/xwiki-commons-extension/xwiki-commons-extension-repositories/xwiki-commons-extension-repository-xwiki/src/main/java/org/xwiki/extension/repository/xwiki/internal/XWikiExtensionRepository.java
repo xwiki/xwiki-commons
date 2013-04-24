@@ -43,7 +43,6 @@ import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.BasicHttpContext;
-import org.restlet.data.MediaType;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
@@ -139,7 +138,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         HttpClient httpClient = createClient();
 
         HttpGet getMethod = new HttpGet(url);
-        getMethod.addHeader("Accept", MediaType.APPLICATION_XML.toString());
+        getMethod.addHeader("Accept", "application/xml");
         HttpResponse response;
         try {
             if (this.localContext != null) {
