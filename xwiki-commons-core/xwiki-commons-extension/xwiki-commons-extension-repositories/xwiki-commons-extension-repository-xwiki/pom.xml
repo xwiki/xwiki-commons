@@ -52,24 +52,10 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.restlet.jse</groupId>
-      <artifactId>org.restlet.ext.jaxrs</artifactId>
-      <version>${restlet.version}</version>
-      <scope>provided</scope>
-      <exclusions>
-        <!-- Included in Java6 -->
-      	<exclusion>
-          <artifactId>jaxb-api</artifactId>
-      	  <groupId>javax.xml.bind</groupId>
-      	</exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
     </dependency>
   </dependencies>
-  
   <build>
     <plugins>
       <plugin>
