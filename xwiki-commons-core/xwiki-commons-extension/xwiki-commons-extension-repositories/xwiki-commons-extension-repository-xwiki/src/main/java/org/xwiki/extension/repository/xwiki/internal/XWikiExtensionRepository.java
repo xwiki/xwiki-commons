@@ -21,7 +21,6 @@ package org.xwiki.extension.repository.xwiki.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ProxySelector;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,24 +29,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.BasicHttpContext;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicenseManager;
-import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
@@ -56,6 +48,7 @@ import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.repository.search.Searchable;
+import org.xwiki.extension.repository.xwiki.internal.httpclient.HttpClientFactory;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersionSummary;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersions;
@@ -76,7 +69,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
     private final transient ExtensionLicenseManager licenseManager;
 
-    private final transient ExtensionManagerConfiguration configuration;
+    private final transient HttpClientFactory httpClientFactory;
 
     private final transient UriBuilder extensionVersionUriBuider;
 
@@ -90,7 +83,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
     public XWikiExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,
-        ExtensionManagerConfiguration configuration) throws Exception
+        HttpClientFactory httpClientFactory) throws Exception
     {
         super(repositoryDescriptor.getURI().getPath().endsWith("/") ? new DefaultExtensionRepositoryDescriptor(
             repositoryDescriptor.getId(), repositoryDescriptor.getType(), new URI(StringUtils.chop(repositoryDescriptor
@@ -98,7 +91,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
         this.repositoryFactory = repositoryFactory;
         this.licenseManager = licenseManager;
-        this.configuration = configuration;
+        this.httpClientFactory = httpClientFactory;
 
         // Uri builders
         this.extensionVersionUriBuider = createUriBuilder(Resources.EXTENSION_VERSION);
@@ -135,7 +128,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
             throw new IOException("Failed to build REST URL", e);
         }
 
-        HttpClient httpClient = createClient();
+        HttpClient httpClient = this.httpClientFactory.createClient(
+            getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password"));
 
         HttpGet getMethod = new HttpGet(url);
         getMethod.addHeader("Accept", "application/xml");
@@ -161,30 +155,6 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
     protected InputStream getRESTResourceAsStream(UriBuilder builder, Object... values) throws IOException
     {
         return getRESTResource(builder, values).getEntity().getContent();
-    }
-
-    private HttpClient createClient()
-    {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-
-        httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, this.configuration.getUserAgent());
-        httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 60000);
-        httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
-
-        // Setup proxy
-        ProxySelectorRoutePlanner routePlanner =
-            new ProxySelectorRoutePlanner(httpClient.getConnectionManager().getSchemeRegistry(),
-                ProxySelector.getDefault());
-        httpClient.setRoutePlanner(routePlanner);
-
-        // Setup authentication
-        String user = getDescriptor().getProperty("auth.user");
-        if (user != null) {
-            httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
-                new UsernamePasswordCredentials(user, getDescriptor().getProperty("auth.password")));
-        }
-
-        return httpClient;
     }
 
     private UriBuilder createUriBuilder(String path)

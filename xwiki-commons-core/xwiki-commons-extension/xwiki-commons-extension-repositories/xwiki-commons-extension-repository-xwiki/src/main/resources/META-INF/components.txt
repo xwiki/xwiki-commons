@@ -1,2 +1,3 @@
 org.xwiki.extension.repository.xwiki.internal.XWikiExtensionRepositoryFactory
 org.xwiki.extension.repository.xwiki.internal.XWikiExtensionRepositorySource
+org.xwiki.extension.repository.xwiki.internal.httpclient.DefaultHttpClientFactory

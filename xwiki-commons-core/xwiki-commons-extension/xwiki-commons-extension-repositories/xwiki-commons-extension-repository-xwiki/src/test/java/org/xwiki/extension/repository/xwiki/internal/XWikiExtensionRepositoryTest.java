@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -31,12 +32,18 @@ import java.util.List;
 
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.extension.ExtensionLicenseManager;
-import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.xwiki.internal.httpclient.HttpClientFactory;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersionSummary;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersions;
 import org.xwiki.extension.version.Version;
@@ -67,9 +74,21 @@ public class XWikiExtensionRepositoryTest
         XWikiExtensionRepositoryFactory repositoryFactory = mock(XWikiExtensionRepositoryFactory.class);
         when(repositoryFactory.getUnmarshaller()).thenReturn(unmarshaller);
 
-        repository =
-            new XWikiExtensionRepository(repositoryDescriptor, repositoryFactory, mock(ExtensionLicenseManager.class),
-                mock(ExtensionManagerConfiguration.class));
+        // Simulate a call to the remote URL through HttpClient and a valid answer
+        HttpEntity httpEntity = mock(HttpEntity.class);
+        when(httpEntity.getContent()).thenReturn(new ByteArrayInputStream("any content".getBytes()));
+        StatusLine statusLine = mock(StatusLine.class);
+        when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
+        HttpResponse response = mock(HttpResponse.class);
+        when(response.getStatusLine()).thenReturn(statusLine);
+        when(response.getEntity()).thenReturn(httpEntity);
+        HttpClient httpClient = mock(HttpClient.class);
+        when(httpClient.execute(any(HttpGet.class))).thenReturn(response);
+        HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
+        when(httpClientFactory.createClient(null, null)).thenReturn(httpClient);
+
+        repository = new XWikiExtensionRepository(repositoryDescriptor, repositoryFactory,
+            mock(ExtensionLicenseManager.class), httpClientFactory);
     }
 
     @Test

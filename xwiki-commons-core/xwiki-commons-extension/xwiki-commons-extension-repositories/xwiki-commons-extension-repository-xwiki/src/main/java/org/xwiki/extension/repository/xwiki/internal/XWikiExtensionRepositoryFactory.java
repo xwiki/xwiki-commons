@@ -35,6 +35,7 @@ import org.xwiki.extension.repository.AbstractExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
+import org.xwiki.extension.repository.xwiki.internal.httpclient.HttpClientFactory;
 
 /**
  * @version $Id$
@@ -49,7 +50,7 @@ public class XWikiExtensionRepositoryFactory extends AbstractExtensionRepository
     private ExtensionLicenseManager licenseManager;
 
     @Inject
-    private ExtensionManagerConfiguration configuration;
+    private HttpClientFactory httpClientFactory;
 
     private Marshaller marshaller;
 
@@ -84,7 +85,8 @@ public class XWikiExtensionRepositoryFactory extends AbstractExtensionRepository
         throws ExtensionRepositoryException
     {
         try {
-            return new XWikiExtensionRepository(repositoryDescriptor, this, this.licenseManager, this.configuration);
+            return new XWikiExtensionRepository(repositoryDescriptor, this, this.licenseManager,
+                this.httpClientFactory);
         } catch (Exception e) {
             throw new ExtensionRepositoryException("Failed to create repository [" + repositoryDescriptor + "]", e);
         }
