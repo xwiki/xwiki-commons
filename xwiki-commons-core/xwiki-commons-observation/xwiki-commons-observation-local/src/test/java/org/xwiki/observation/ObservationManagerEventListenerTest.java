@@ -21,7 +21,7 @@ package org.xwiki.observation;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jmock.Expectations;
 import org.junit.Before;

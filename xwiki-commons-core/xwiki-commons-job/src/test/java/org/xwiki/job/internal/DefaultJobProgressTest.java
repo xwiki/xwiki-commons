@@ -19,7 +19,7 @@
  */
 package org.xwiki.job.internal;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.xwiki.job.event.status.PopLevelProgressEvent;
@@ -47,33 +47,33 @@ public class DefaultJobProgressTest extends AbstractComponentTestCase
     @Test
     public void testProgressSteps()
     {
-        Assert.assertEquals(0D, this.progress.getOffset());
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(0D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new PushLevelProgressEvent(4), null, null);
 
-        Assert.assertEquals(0D, this.progress.getOffset());
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(0D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new StepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.25D, this.progress.getOffset());
-        Assert.assertEquals(0.25D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(0.25D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(0.25D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new PushLevelProgressEvent(2), null, null);
 
-        Assert.assertEquals(0.25D, this.progress.getOffset());
-        Assert.assertEquals(0.0D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(0.25D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(0.0D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new StepProgressEvent(), null, null);
 
-        Assert.assertEquals(0.375D, this.progress.getOffset());
-        Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(0.375D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(0.5D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(0.5D, this.progress.getOffset());
-        Assert.assertEquals(0.5D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(0.5D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(0.5D, this.progress.getCurrentLevelOffset()));
     }
 
     /**
@@ -82,14 +82,14 @@ public class DefaultJobProgressTest extends AbstractComponentTestCase
     @Test
     public void testProgressDone()
     {
-        Assert.assertEquals(0D, this.progress.getOffset());
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(0D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new PushLevelProgressEvent(1), null, null);
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset());
-        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(1D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(1D, this.progress.getCurrentLevelOffset()));
     }
 
     /**
@@ -98,8 +98,8 @@ public class DefaultJobProgressTest extends AbstractComponentTestCase
     @Test
     public void testIgnoreNextStepAfterPopLevel()
     {
-        Assert.assertEquals(0D, this.progress.getOffset());
-        Assert.assertEquals(0D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(0D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(0D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new PushLevelProgressEvent(2), null, null);
 
@@ -107,22 +107,22 @@ public class DefaultJobProgressTest extends AbstractComponentTestCase
         this.observation.notify(new StepProgressEvent(), null, null);
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(.5D, this.progress.getOffset());
-        Assert.assertEquals(.5D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(.5D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(.5D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new StepProgressEvent(), null, null);
 
-        Assert.assertEquals(.5D, this.progress.getOffset());
-        Assert.assertEquals(.5D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(.5D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(.5D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new StepProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset());
-        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(1D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(1D, this.progress.getCurrentLevelOffset()));
 
         this.observation.notify(new PopLevelProgressEvent(), null, null);
 
-        Assert.assertEquals(1D, this.progress.getOffset());
-        Assert.assertEquals(1D, this.progress.getCurrentLevelOffset());
+        Assert.assertEquals(0, Double.compare(1D, this.progress.getOffset()));
+        Assert.assertEquals(0, Double.compare(1D, this.progress.getCurrentLevelOffset()));
     }
 }

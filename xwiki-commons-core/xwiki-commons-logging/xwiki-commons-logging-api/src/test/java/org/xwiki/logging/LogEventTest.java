@@ -21,7 +21,7 @@ package org.xwiki.logging;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;

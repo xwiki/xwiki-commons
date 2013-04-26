@@ -36,7 +36,7 @@ import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.LogRule;
 import org.xwiki.test.annotation.ComponentList;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;

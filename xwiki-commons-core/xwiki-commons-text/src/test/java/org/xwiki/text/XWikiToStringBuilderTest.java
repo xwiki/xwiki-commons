@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Unit tests for {@link XWikiToStringBuilder}.

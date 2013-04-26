@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jmock.Expectations;
 import org.junit.Before;

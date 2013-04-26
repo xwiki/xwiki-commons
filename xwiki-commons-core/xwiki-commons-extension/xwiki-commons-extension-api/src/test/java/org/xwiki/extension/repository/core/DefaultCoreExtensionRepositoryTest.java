@@ -19,7 +19,7 @@
  */
 package org.xwiki.extension.repository.core;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jmock.Expectations;
 import org.junit.Test;

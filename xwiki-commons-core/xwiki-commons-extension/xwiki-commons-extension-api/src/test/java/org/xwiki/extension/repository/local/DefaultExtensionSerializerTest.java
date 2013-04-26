@@ -30,7 +30,7 @@ import java.util.HashSet;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.xwiki.extension.DefaultExtensionAuthor;

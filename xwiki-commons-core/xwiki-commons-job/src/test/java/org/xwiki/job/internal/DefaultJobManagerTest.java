@@ -22,7 +22,7 @@ package org.xwiki.job.internal;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.jmock.Expectations;
 import org.junit.Test;

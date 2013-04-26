@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Unit tests for {@link TimedInterruptGroovyCompilationCustomizer}.

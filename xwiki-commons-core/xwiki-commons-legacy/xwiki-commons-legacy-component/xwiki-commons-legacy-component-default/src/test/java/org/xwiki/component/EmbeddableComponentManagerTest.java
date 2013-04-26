@@ -24,7 +24,7 @@ import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.manager.ComponentManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Unit test to prove that we keep backward compatibility for the {@link EmbeddableComponentManager} class.

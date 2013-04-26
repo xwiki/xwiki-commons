@@ -19,7 +19,7 @@
  */
 package org.xwiki.observation;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.hamcrest.core.IsNot;
 import org.jmock.Expectations;

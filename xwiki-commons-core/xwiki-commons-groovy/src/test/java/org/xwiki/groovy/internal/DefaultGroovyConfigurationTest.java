@@ -38,7 +38,7 @@ import org.xwiki.groovy.GroovyConfiguration;
 import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.jmock.annotation.MockingRequirement;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 /**
  * Unit tests for {@link DefaultGroovyConfiguration}.
