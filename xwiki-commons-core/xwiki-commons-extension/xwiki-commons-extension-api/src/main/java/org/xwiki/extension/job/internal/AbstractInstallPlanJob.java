@@ -21,7 +21,6 @@ package org.xwiki.extension.job.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -773,9 +772,11 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         }
 
         // Find all previous version of the extension
-        Set<InstalledExtension> previousExtensions;
+        Set<InstalledExtension> previousExtensions = new LinkedHashSet<InstalledExtension>();
+        if (previousExtension != null) {
+            previousExtensions.add(previousExtension);
+        }
         if (!extension.getFeatures().isEmpty()) {
-            previousExtensions = new LinkedHashSet<InstalledExtension>();
             for (String feature : extension.getFeatures()) {
                 InstalledExtension installedExtension =
                     checkAlreadyInstalledExtension(feature, extension.getId().getVersion(), namespace);
@@ -783,10 +784,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     previousExtensions.add(installedExtension);
                 }
             }
-        } else if (previousExtension != null) {
-            previousExtensions = Collections.singleton(previousExtension);
-        } else {
-            previousExtensions = Collections.emptySet();
         }
 
         ExtensionHandler extensionHandler;
