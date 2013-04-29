@@ -171,7 +171,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
             List<LocalExtension> dependencyVersions = new ArrayList<LocalExtension>(dependencyVersionsCollection);
             Collections.reverse(dependencyVersions);
             for (LocalExtension dependencyVersion : dependencyVersions) {
-                if (isCompatible(dependencyVersion.getId().getVersion(), dependency.getVersionConstraint())) {
+                if (DefaultInstalledExtension.isInstalled(dependencyVersion, namespace)
+                    && isCompatible(dependencyVersion.getId().getVersion(), dependency.getVersionConstraint())) {
                     return dependencyVersion;
                 }
             }
@@ -360,7 +361,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                     this.logger.warn("Extension [{}] is not installed", installedExtension.getId());
                 } else if (!installedFeature.backwardDependencies.remove(installedExtension)) {
                     // That should never happen so lets log it
-                    this.logger.warn("Extension [{}] was not regisistered as backward dependency of [{}]",
+                    this.logger.warn("Extension [{}] was not registered as backward dependency of [{}]",
                         installedExtension.getId(), installedFeature.extension.getId());
                 }
             }
