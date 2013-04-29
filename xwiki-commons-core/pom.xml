@@ -139,44 +139,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
-            <difference>
-               <differenceType>8001</differenceType>
-               <className>org/xwiki/job/AbstractJob</className>
-               <justification>YOUNG API. Made public by mistake</justification>
-            </difference>
-
-            <!-- We uninstall an InstalledExtension... -->
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/extension/handler/ExtensionHandler</className>
-              <method>void uninstall(org.xwiki.extension.InstalledExtension, java.lang.String, org.xwiki.job.Request)</method>
-              <justification>We uninstall an InstalledExtension...</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/extension/handler/ExtensionHandlerManager</className>
-              <method>void uninstall(org.xwiki.extension.InstalledExtension, java.lang.String, org.xwiki.job.Request)</method>
-              <justification>We uninstall an InstalledExtension...</justification>
-            </difference>
-            <!-- With features an upgraded extension can have several previous extensions. All handlers are supposed to exectend AbstractExtensionHandler so that should not be an issue. -->
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/extension/handler/ExtensionHandler</className>
-              <method>void upgrade(java.util.Collection, org.xwiki.extension.LocalExtension, java.lang.String, org.xwiki.job.Request)</method>
-              <justification>With features an upgraded extension can have several previous extensions.</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/extension/handler/ExtensionHandlerManager</className>
-              <method>void upgrade(java.util.Collection, org.xwiki.extension.LocalExtension, java.lang.String, org.xwiki.job.Request)</method>
-              <justification>With features an upgraded extension can have several previous extensions.</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/extension/job/plan/ExtensionPlanAction</className>
-              <method>java.util.Collection getPreviousExtensions()</method>
-              <justification>With features an upgraded extension can have several previous extensions.</justification>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
