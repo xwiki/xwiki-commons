@@ -589,6 +589,8 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <version>2.13</version>
           <!-- XWiki rule is to put test in *Test classes -->
           <configuration>
+            <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
+            <trimStackTrace>false</trimStackTrace>
             <includes>
               <include>**/*Test.class</include>
             </includes>
