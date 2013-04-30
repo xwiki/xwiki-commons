@@ -145,7 +145,11 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
             try {
                 validateExtension(localExtension, null);
             } catch (InvalidExtensionException e) {
-                this.logger.error("Invalid extension [{}]", localExtension.getId(), e);
+                if (this.logger.isDebugEnabled()) {
+                    this.logger.warn("Invalid extension [{}]", localExtension.getId(), e);
+                } else {
+                    this.logger.warn("Invalid extension [{}]", localExtension.getId());
+                }
 
                 addInstalledExtension(localExtension, null, false);
             }
@@ -154,7 +158,12 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                 try {
                     validateExtension(localExtension, namespace);
                 } catch (InvalidExtensionException e) {
-                    this.logger.error("Invalid extension [{}] on namespace [{}]", localExtension.getId(), namespace, e);
+                    if (this.logger.isDebugEnabled()) {
+                        this.logger.warn("Invalid extension [{}] on namespace [{}]", localExtension.getId(), namespace,
+                            e);
+                    } else {
+                        this.logger.warn("Invalid extension [{}] on namespace [{}]", localExtension.getId(), namespace);
+                    }
 
                     addInstalledExtension(localExtension, namespace, false);
                 }
