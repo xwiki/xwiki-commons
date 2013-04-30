@@ -154,8 +154,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                 try {
                     validateExtension(localExtension, namespace);
                 } catch (InvalidExtensionException e) {
-                    this.logger.error("Invalid extension [{}] on namespace []", new Object[] {localExtension.getId(),
-                    namespace, e});
+                    this.logger.error("Invalid extension [{}] on namespace [{}]", localExtension.getId(), namespace, e);
 
                     addInstalledExtension(localExtension, namespace, false);
                 }
