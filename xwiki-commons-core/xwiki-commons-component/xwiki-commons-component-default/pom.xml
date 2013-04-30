@@ -34,7 +34,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Component - Default Implementation</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>70.98</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>70.67</xwiki.jacoco.instructionRatio>
     <!-- Skipping CLIRR since xwiki-commons-legacy-component-default wraps this module and runs CLIRR on it -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>

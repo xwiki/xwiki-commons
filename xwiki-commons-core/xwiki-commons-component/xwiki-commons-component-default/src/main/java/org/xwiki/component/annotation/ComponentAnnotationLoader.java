@@ -284,7 +284,7 @@ public class ComponentAnnotationLoader
             types.addAll(Arrays.asList(component.roles()));
         } else {
             // Look in both superclass and interfaces for @ComponentRole or javax.inject.Provider
-            for (Type interfaceType : componentClass.getGenericInterfaces()) {
+            for (Type interfaceType : getGenericInterfaces(componentClass)) {
                 Class< ? > interfaceClass;
                 Type[] interfaceParameters;
 
@@ -346,6 +346,26 @@ public class ComponentAnnotationLoader
         }
 
         return types;
+    }
+
+    /**
+     * Helper method that generate a {@link RuntimeException} in case of a reflection error.
+     *
+     * @param componentClass the component for which to return the interface types
+     * @return the Types representing the interfaces directly implemented by the class or interface represented by this
+     *         object
+     * @throws RuntimeException in case of a reflection error such as
+     *         {@link java.lang.reflect.MalformedParameterizedTypeException}
+     */
+    private Type[] getGenericInterfaces(Class<?> componentClass)
+    {
+        Type[] interfaceTypes;
+        try {
+            interfaceTypes = componentClass.getGenericInterfaces();
+        } catch (Throwable e) {
+            throw new RuntimeException(String.format("Failed to get interface for [%s]", componentClass.getName()), e);
+        }
+        return interfaceTypes;
     }
 
     /**
