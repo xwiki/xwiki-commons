@@ -191,14 +191,17 @@ public abstract class AbstractExtensionHandlerTest extends AbstractComponentTest
         return executeJob(jobId, uninstallRequest, failFrom);
     }
 
-    protected ExtensionPlan upgradePlan() throws Throwable
+    protected ExtensionPlan upgradePlan(String namespace) throws Throwable
     {
-        return upgradePlan(LogLevel.WARN);
+        return upgradePlan(namespace, LogLevel.WARN);
     }
 
-    protected ExtensionPlan upgradePlan(LogLevel failFrom) throws Throwable
+    protected ExtensionPlan upgradePlan(String namespace, LogLevel failFrom) throws Throwable
     {
         InstallRequest installRequest = new InstallRequest();
+        if (namespace != null) {
+            installRequest.addNamespace(namespace);
+        }
 
         return (ExtensionPlan) executeJob("upgradeplan", installRequest, failFrom).getStatus();
     }

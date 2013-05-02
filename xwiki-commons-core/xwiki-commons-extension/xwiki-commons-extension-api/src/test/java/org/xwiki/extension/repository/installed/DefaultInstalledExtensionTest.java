@@ -19,8 +19,7 @@
  */
 package org.xwiki.extension.repository.installed;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.extension.ExtensionId;
@@ -75,7 +74,7 @@ public class DefaultInstalledExtensionTest
         this.installedExtension.setDependency(true, null);
 
         Assert.assertTrue(this.installedExtension.isDependency());
-        Assert.assertFalse(this.installedExtension.isDependency("namespace"));
+        Assert.assertTrue(this.installedExtension.isDependency("namespace"));
 
         this.installedExtension.setInstalled(true, "namespace");
 
@@ -89,5 +88,9 @@ public class DefaultInstalledExtensionTest
 
         Assert.assertFalse(this.installedExtension.isDependency("namespace"));
 
+        this.installedExtension.setDependency(false, null);
+        this.installedExtension.setDependency(true, "namespace");
+
+        Assert.assertTrue(this.installedExtension.isDependency("namespace"));
     }
 }

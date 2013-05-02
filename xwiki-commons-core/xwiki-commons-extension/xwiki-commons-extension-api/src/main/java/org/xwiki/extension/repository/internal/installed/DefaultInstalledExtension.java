@@ -312,7 +312,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
 
             isDependency =
                 installedNamespace != null ? (installedNamespace.get(PKEY_NAMESPACES_DEPENDENCY) == Boolean.TRUE)
-                    : false;
+                    : isDependency(null);
         }
 
         return isDependency;

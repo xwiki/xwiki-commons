@@ -337,13 +337,15 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
      * 
      * @param localExtension the extension to install
      * @param namespace the namespace
+     * @param dependency indicate if the extension is stored as a dependency of another one
      * @throws InstallException error when trying to uninstall extension
      * @see #installExtension(LocalExtension, String)
      */
-    private void applyInstallExtension(DefaultInstalledExtension installedExtension, String namespace)
-        throws InstallException
+    private void applyInstallExtension(DefaultInstalledExtension installedExtension, String namespace,
+        boolean dependency) throws InstallException
     {
         installedExtension.setInstalled(true, namespace);
+        installedExtension.setDependency(dependency, namespace);
 
         try {
             this.localRepository.setProperties(installedExtension.getLocalExtension(),
@@ -564,11 +566,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                 installedExtension = new DefaultInstalledExtension(localExtension, this);
             }
 
-            if (dependency || installedExtension.getProperty(InstalledExtension.PKEY_DEPENDENCY) == null) {
-                installedExtension.setDependency(dependency, namespace);
-            }
-
-            applyInstallExtension(installedExtension, namespace);
+            applyInstallExtension(installedExtension, namespace, dependency);
         }
 
         return installedExtension;
