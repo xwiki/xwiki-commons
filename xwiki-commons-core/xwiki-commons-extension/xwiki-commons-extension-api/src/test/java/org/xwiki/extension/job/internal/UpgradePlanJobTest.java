@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.job.internal;
 
+import java.util.Iterator;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.extension.TestResources;
@@ -38,7 +40,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         // check upgrade
 
-        ExtensionPlan plan = upgradePlan();
+        ExtensionPlan plan = upgradePlan(null);
 
         // Tree
 
@@ -59,5 +61,105 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(1, plan.getActions().size());
 
         Assert.assertSame(action, plan.getActions().iterator().next());
+    }
+
+    @Test
+    public void testUpgradePlanWithDependencyOnRoot() throws Throwable
+    {
+        // install first version
+        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID);
+
+        // check upgrade
+
+        ExtensionPlan plan = upgradePlan(null);
+
+        // Tree
+        // ////////
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        Iterator<ExtensionPlanNode> iterator = plan.getTree().iterator();
+
+        // First node
+        ExtensionPlanNode node = iterator.next();
+
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UPGRADE, action.getAction());
+        Assert.assertNull(action.getNamespace());
+
+        Assert.assertEquals(1, node.getChildren().size());
+
+        ExtensionPlanNode childNode = node.getChildren().iterator().next();
+
+        ExtensionPlanAction childAction = childNode.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, childAction.getExtension().getId());
+        Assert.assertEquals(Action.UPGRADE, childAction.getAction());
+        Assert.assertNull(childAction.getNamespace());
+
+        // Second node
+        Assert.assertFalse(iterator.hasNext());
+
+        // Actions
+        // ////////
+
+        Assert.assertEquals(2, plan.getActions().size());
+
+        Iterator<ExtensionPlanAction> actionIterator = plan.getActions().iterator();
+
+        Assert.assertSame(childAction, actionIterator.next());
+        Assert.assertSame(action, actionIterator.next());
+    }
+    
+    @Test
+    public void testUpgradePlanWithDependencyOnNamespace() throws Throwable
+    {
+        // install first version
+        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID, "namespace");
+
+        // check upgrade
+
+        ExtensionPlan plan = upgradePlan("namespace");
+
+        // Tree
+        // ////////
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        Iterator<ExtensionPlanNode> iterator = plan.getTree().iterator();
+
+        // First node
+        ExtensionPlanNode node = iterator.next();
+
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UPGRADE, action.getAction());
+        Assert.assertEquals("namespace", action.getNamespace());
+
+        Assert.assertEquals(1, node.getChildren().size());
+
+        ExtensionPlanNode childNode = node.getChildren().iterator().next();
+
+        ExtensionPlanAction childAction = childNode.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, childAction.getExtension().getId());
+        Assert.assertEquals(Action.UPGRADE, childAction.getAction());
+        Assert.assertEquals("namespace", childAction.getNamespace());
+
+        // Second node
+        Assert.assertFalse(iterator.hasNext());
+
+        // Actions
+        // ////////
+
+        Assert.assertEquals(2, plan.getActions().size());
+
+        Iterator<ExtensionPlanAction> actionIterator = plan.getActions().iterator();
+
+        Assert.assertSame(childAction, actionIterator.next());
+        Assert.assertSame(action, actionIterator.next());
     }
 }

@@ -31,40 +31,40 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.junit.Assert;
-
+import org.junit.Rule;
 import org.junit.Test;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.InvalidExtensionException;
+import org.xwiki.extension.internal.DefaultExtensionLicenseManager;
+import org.xwiki.extension.repository.internal.local.DefaultExtensionSerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.repository.internal.local.ExtensionSerializer;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-public class DefaultExtensionSerializerTest extends AbstractComponentTestCase
+@ComponentList(DefaultExtensionLicenseManager.class)
+public class DefaultExtensionSerializerTest
 {
-    private ExtensionSerializer serializer;
-
-    @Override
-    public void setUp() throws Exception
-    {
-        super.setUp();
-
-        this.serializer = getComponentManager().getInstance(ExtensionSerializer.class);
-    }
+    @Rule
+    public final MockitoComponentMockingRule<ExtensionSerializer> componentManager =
+        new MockitoComponentMockingRule<ExtensionSerializer>(DefaultExtensionSerializer.class);
 
     private DefaultLocalExtension serializeAndUnserialize(DefaultLocalExtension extension)
-        throws ParserConfigurationException, TransformerException, InvalidExtensionException
+        throws ParserConfigurationException, TransformerException, InvalidExtensionException, ComponentLookupException
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        this.serializer.saveDescriptor(extension, os);
+        this.componentManager.getComponentUnderTest().saveDescriptor(extension, os);
 
         ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
 
-        DefaultLocalExtension unserializedExtension = this.serializer.loadDescriptor(null, is);
+        DefaultLocalExtension unserializedExtension =
+            this.componentManager.getComponentUnderTest().loadDescriptor(null, is);
 
         Assert.assertEquals(extension, unserializedExtension);
         Assert.assertEquals(extension.getDescription(), unserializedExtension.getDescription());
@@ -89,7 +89,7 @@ public class DefaultExtensionSerializerTest extends AbstractComponentTestCase
 
     @Test
     public void testSerialize() throws ParserConfigurationException, TransformerException, InvalidExtensionException,
-        MalformedURLException
+        MalformedURLException, ComponentLookupException
     {
         DefaultLocalExtension extension =
             new DefaultLocalExtension(null, new ExtensionId("extensionid", "extensionversion"), "type");
