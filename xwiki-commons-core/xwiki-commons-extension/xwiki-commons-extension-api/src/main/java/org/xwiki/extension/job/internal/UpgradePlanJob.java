@@ -131,8 +131,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
 
             return true;
         } catch (InstallException e) {
-            this.logger.debug("Can't install extension [{}] on namespace [{}].",
-                new Object[] {extensionId, namespace, e});
+            this.logger.debug("Can't install extension [{}] on namespace [{}].", extensionId, namespace, e);
         }
 
         return false;
@@ -142,27 +141,60 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
     protected void start() throws Exception
     {
         Collection<String> namespaces = getRequest().getNamespaces();
+
         if (namespaces == null) {
             Collection<InstalledExtension> installedExtensions =
                 this.installedExtensionRepository.getInstalledExtensions();
 
-            for (InstalledExtension installedExtension : installedExtensions) {
-                if (installedExtension.getNamespaces() == null) {
-                    upgradeExtension(installedExtension, null);
-                } else {
-                    for (String namespace : installedExtension.getNamespaces()) {
-                        upgradeExtension(installedExtension, namespace);
+            notifyPushLevelProgress(installedExtensions.size());
+
+            try {
+                for (InstalledExtension installedExtension : installedExtensions) {
+                    if (installedExtension.getNamespaces() == null) {
+                        upgradeExtension(installedExtension, null);
+                    } else {
+                        notifyPushLevelProgress(installedExtension.getNamespaces().size());
+
+                        try {
+                            for (String namespace : installedExtension.getNamespaces()) {
+                                upgradeExtension(installedExtension, namespace);
+
+                                notifyStepPropress();
+                            }
+                        } finally {
+                            notifyPopLevelProgress();
+                        }
                     }
+
+                    notifyStepPropress();
                 }
+            } finally {
+                notifyPopLevelProgress();
             }
         } else {
-            for (String namespace : namespaces) {
-                Collection<InstalledExtension> installedExtensions =
-                    this.installedExtensionRepository.getInstalledExtensions(namespace);
+            notifyPushLevelProgress(namespaces.size());
 
-                for (InstalledExtension installedExtension : installedExtensions) {
-                    upgradeExtension(installedExtension, namespace);
+            try {
+                for (String namespace : namespaces) {
+                    Collection<InstalledExtension> installedExtensions =
+                        this.installedExtensionRepository.getInstalledExtensions(namespace);
+
+                    notifyPushLevelProgress(installedExtensions.size());
+
+                    try {
+                        for (InstalledExtension installedExtension : installedExtensions) {
+                            upgradeExtension(installedExtension, namespace);
+
+                            notifyStepPropress();
+                        }
+                    } finally {
+                        notifyPopLevelProgress();
+                    }
+
+                    notifyStepPropress();
                 }
+            } finally {
+                notifyPopLevelProgress();
             }
         }
     }
