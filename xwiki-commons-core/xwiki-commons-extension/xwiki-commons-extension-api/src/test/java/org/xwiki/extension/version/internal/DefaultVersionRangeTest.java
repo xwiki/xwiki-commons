@@ -89,4 +89,16 @@ public class DefaultVersionRangeTest
 
         Assert.assertNotEquals(new DefaultVersionRange("[1.0,2.0)"), new DefaultVersionRange("[1.0.2.0]"));
     }
+
+    @Test
+    public void testContainsVersion() throws InvalidVersionRangeException
+    {
+        Assert.assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new DefaultVersion("1.0")));
+        Assert.assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new DefaultVersion("2.0")));
+
+        Assert.assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new DefaultVersion("1.0")));
+        Assert.assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new DefaultVersion("3.0")));
+        Assert.assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("1.0")));
+        Assert.assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("2.0")));
+    }
 }
