@@ -176,10 +176,11 @@
         <artifactId>commons-net</artifactId>
         <version>3.2</version>
       </dependency>
+      <!-- Apache HttpComponents -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.2.3</version>
+        <version>4.2.5</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -188,6 +189,17 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.2.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpmime</artifactId>
+        <version>4.2.5</version>
+      </dependency>
+      <!-- Old httpclient -->
       <dependency>
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
@@ -213,7 +225,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.7</version>
+        <version>1.8</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -242,7 +254,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.4.1</version>
+        <version>1.5</version>
       </dependency>
 
       <!-- XML processing -->
@@ -326,7 +338,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.0.12</version>
+        <version>1.0.13</version>
       </dependency>
       <!-- External libraries using Commons Logging will delegate to SLF4J -->
       <dependency>
