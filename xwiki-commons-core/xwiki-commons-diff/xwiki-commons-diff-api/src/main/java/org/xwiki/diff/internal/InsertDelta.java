@@ -45,7 +45,7 @@ public class InsertDelta<E> extends AbstractDelta<E>
      * @param original the chunk before the modification
      * @param revised the chunk after the modification
      */
-    public InsertDelta(difflib.Chunk original, difflib.Chunk revised)
+    public InsertDelta(difflib.Chunk<E> original, difflib.Chunk<E> revised)
     {
         super(original, revised, Type.INSERT);
     }

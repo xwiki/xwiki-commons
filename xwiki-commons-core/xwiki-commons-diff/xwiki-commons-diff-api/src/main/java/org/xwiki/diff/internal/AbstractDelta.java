@@ -64,7 +64,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
      * @param revised the chunk after the modification
      * @param type the type of modification applied to the list
      */
-    public AbstractDelta(difflib.Chunk original, difflib.Chunk revised, Type type)
+    public AbstractDelta(difflib.Chunk<E> original, difflib.Chunk<E> revised, Type type)
     {
         this.type = type;
         this.previous = new DefaultChunk<E>(original);

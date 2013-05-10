@@ -46,7 +46,7 @@ public class ChangeDelta<E> extends AbstractDelta<E>
      * @param original the chunk before the modification
      * @param revised the chunk after the modification
      */
-    public ChangeDelta(difflib.Chunk original, difflib.Chunk revised)
+    public ChangeDelta(difflib.Chunk<E> original, difflib.Chunk<E> revised)
     {
         super(original, revised, Type.CHANGE);
     }

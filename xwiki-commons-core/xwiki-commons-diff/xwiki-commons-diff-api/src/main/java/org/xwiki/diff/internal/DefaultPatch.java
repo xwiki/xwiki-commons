@@ -54,9 +54,9 @@ public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
      * @param patch the {@link difflib.Patch} to convert
      * @throws DiffException error when converting the patch
      */
-    public DefaultPatch(difflib.Patch patch) throws DiffException
+    public DefaultPatch(difflib.Patch<E> patch) throws DiffException
     {
-        for (difflib.Delta delta : patch.getDeltas()) {
+        for (difflib.Delta<E> delta : patch.getDeltas()) {
             add(toDelta(delta));
         }
     }
@@ -68,7 +68,7 @@ public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
      * @return the {@link Delta}
      * @throws DiffException error when converting the delta
      */
-    private Delta<E> toDelta(difflib.Delta delta) throws DiffException
+    private Delta<E> toDelta(difflib.Delta<E> delta) throws DiffException
     {
         Delta<E> newDelta;
 
