@@ -45,10 +45,13 @@ import org.xwiki.test.internal.ComponentRegistrator;
 
 /**
  * Unit tests for Components should extend this class instead of using {@link MockitoComponentManagerRule} or
- * {@link org.xwiki.test.ComponentManagerRule} which should only be used for integration tests. To use this class,
- * define a JUnit {@code @Rule} and pass the component implementation class that you wish to have mocked for you. Then
- * in your test code, do a lookup of your component under test and you'll get a component instance which has all its
- * injected dependencies mocked automatically. For example: <code><pre>
+ * {@link org.xwiki.test.ComponentManagerRule} which should only be used for integration tests.
+ * <p>
+ * To use this class, define a JUnit {@code @Rule} and pass the component implementation class that you wish to have
+ * mocked for you. Then in your test code, do a lookup of your component under test and you'll get a component instance
+ * which has all its injected dependencies mocked automatically.
+ * <p>
+ * For example: <code><pre>
  * public class MyComponentTest
  * {
  *     &#64;Rule
@@ -61,13 +64,16 @@ import org.xwiki.test.internal.ComponentRegistrator;
  *         MyComponent myComponent = mocker.getComponentUnderTest();
  *     ...
  * }
- * </pre></code> Note that by default there are no component registered against the component manager except those
- * mocked automatically by the Rule. This has 2 advantages:
+ * </pre></code>
+ * <p>
+ * Note that by default there are no component registered against the component manager except those mocked
+ * automatically by the Rule. This has 2 advantages:
  * <ul>
  * <li>This is the spirit of this Rule since it's for unit testing and this testing your component in isolation from the
  * rest</li>
  * <li>It makes the tests up to 10 times faster</li>
  * </ul>
+ * <p>
  * If you really need to register some components, use the {@link org.xwiki.test.annotation.ComponentList} annotation
  * and if you really really need to register all components (it takes time) then use
  * {@link org.xwiki.test.annotation.AllComponents}.

@@ -32,8 +32,9 @@ import org.xwiki.test.internal.ComponentRegistrator;
 
 /**
  * Initialize a Component Manager and uses the {@link org.xwiki.test.annotation.AllComponents} and
- * {@link org.xwiki.test.annotation.ComponentList} annotations to decide what components to discover and register. Also
- * offers helper APIs to register components and in-memory configuration sources.
+ * {@link org.xwiki.test.annotation.ComponentList} annotations to decide what components to discover and register.
+ * <p>
+ * Also offers helper APIs to register components and in-memory configuration sources.
  * 
  * @version $Id$
  * @since 4.3.1
