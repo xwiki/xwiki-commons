@@ -106,8 +106,6 @@ public class ComponentManagerRule extends EmbeddableComponentManager implements 
      * @param base The {@link Statement} to be modified
      * @param method The method to be run
      * @param target The object on with the method will be run.
-     * @return a new statement, which may be the same as {@code base}, a wrapper around {@code base}, or a completely
-     *         new Statement.
      * @throws Throwable if anything goes wrong
      * @since 5.1M1
      */
@@ -131,8 +129,6 @@ public class ComponentManagerRule extends EmbeddableComponentManager implements 
      * @param base The {@link Statement} to be modified
      * @param method The method to be run
      * @param target The object on with the method will be run.
-     * @return a new statement, which may be the same as {@code base}, a wrapper around {@code base}, or a completely
-     *         new Statement.
      * @throws Throwable if anything goes wrong
      * @since 5.1M1
      */
