@@ -39,15 +39,12 @@ import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.InvalidExtensionException;
-import org.xwiki.extension.internal.DefaultExtensionLicenseManager;
 import org.xwiki.extension.repository.internal.local.DefaultExtensionSerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.repository.internal.local.ExtensionSerializer;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
-import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-@ComponentList(DefaultExtensionLicenseManager.class)
 public class DefaultExtensionSerializerTest
 {
     @Rule
