@@ -32,10 +32,9 @@ import org.xwiki.test.internal.ComponentRegistrator;
 
 /**
  * Initialize a Component Manager and uses the {@link org.xwiki.test.annotation.AllComponents} and
- * {@link org.xwiki.test.annotation.ComponentList} annotations to decide what components to discover and register.
- *
- * Also offers helper APIs to register components and in-memory configuration sources.
- *
+ * {@link org.xwiki.test.annotation.ComponentList} annotations to decide what components to discover and register. Also
+ * offers helper APIs to register components and in-memory configuration sources.
+ * 
  * @version $Id$
  * @since 4.3.1
  */
@@ -48,7 +47,7 @@ public class ComponentManagerRule extends EmbeddableComponentManager implements 
 
     /**
      * Register in-memory data source for the default and "xwikiproperties" configuration sources.
-     *
+     * 
      * @return the in-memory configuration source used for both default and "xwikiproperties" component hints
      * @throws Exception in case the registration fails
      */
@@ -59,7 +58,7 @@ public class ComponentManagerRule extends EmbeddableComponentManager implements 
 
     /**
      * Registers a component.
-     *
+     * 
      * @param roleType the type of the component role to register
      * @param roleHint the role hint of the component to register
      * @param instance the instance to register
@@ -72,7 +71,7 @@ public class ComponentManagerRule extends EmbeddableComponentManager implements 
 
     /**
      * Registers a component (with a default role hint).
-     *
+     * 
      * @param roleType the type of the component role to register
      * @param instance the instance to register
      * @throws Exception in case of an error during registration
@@ -90,18 +89,55 @@ public class ComponentManagerRule extends EmbeddableComponentManager implements 
             @Override
             public void evaluate() throws Throwable
             {
-                // If there are methods annotation with the BeforeComponent annotation then call them. This gives an
-                // opportunity for the test to register some components *before* we register the other components below.
-                Class<?> testClass = target.getClass();
-                for (Method method : testClass.getDeclaredMethods()) {
-                    if (method.isAnnotationPresent(BeforeComponent.class)) {
-                        method.invoke(target);
-                    }
+                before(base, method, target);
+                try {
+                    base.evaluate();
+                } finally {
+                    after(base, method, target);
                 }
-
-                componentRegistrator.registerComponents(testClass, ComponentManagerRule.this);
-                base.evaluate();
             }
         };
+    }
+
+    /**
+     * Called before the test.
+     * 
+     * @param base The {@link Statement} to be modified
+     * @param method The method to be run
+     * @param target The object on with the method will be run.
+     * @return a new statement, which may be the same as {@code base}, a wrapper around {@code base}, or a completely
+     *         new Statement.
+     * @throws Throwable if anything goes wrong
+     * @since 5.1M1
+     */
+    protected void before(final Statement base, final FrameworkMethod method, final Object target) throws Throwable
+    {
+        // If there are methods annotation with the BeforeComponent annotation then call them. This gives an
+        // opportunity for the test to register some components *before* we register the other components below.
+        Class< ? > testClass = target.getClass();
+        for (Method declaredMethod : testClass.getDeclaredMethods()) {
+            if (declaredMethod.isAnnotationPresent(BeforeComponent.class)) {
+                declaredMethod.invoke(target);
+            }
+        }
+
+        this.componentRegistrator.registerComponents(testClass, ComponentManagerRule.this);
+    }
+
+    /**
+     * Called before the test.
+     * 
+     * @param base The {@link Statement} to be modified
+     * @param method The method to be run
+     * @param target The object on with the method will be run.
+     * @return a new statement, which may be the same as {@code base}, a wrapper around {@code base}, or a completely
+     *         new Statement.
+     * @throws Throwable if anything goes wrong
+     * @since 5.1M1
+     */
+    protected void after(final Statement base, final FrameworkMethod method, final Object target) throws Throwable
+    {
+        // Make sure to dispose all Disposable components in case they have resources/static to free
+        dispose();
     }
 }
