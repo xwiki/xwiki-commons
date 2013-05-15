@@ -117,7 +117,7 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
     /**
      * The list of component Roles that shouldn't be mocked.
      */
-    private List<Class< ? >> excludedComponentImplementationDependencies = new ArrayList<Class< ? >>();
+    private List<Class< ? >> excludedComponentRoleDependencies = new ArrayList<Class< ? >>();
 
     /**
      * The role Type if the component implementation implements several roles.
@@ -139,25 +139,25 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
 
     /**
      * @param componentImplementationClass the component implementation for which we wish to have its injection mocked
-     * @param excludedComponentImplementationDependencies list of component dependencies class that we don't want mocked
+     * @param excludedComponentRoleDependencies list of component dependency role classes that we don't want mocked
      */
     public MockitoComponentMockingRule(Class< ? extends T> componentImplementationClass,
-        List< ? extends Class< ? >> excludedComponentImplementationDependencies)
+        List< ? extends Class< ? >> excludedComponentRoleDependencies)
     {
         this(componentImplementationClass);
-        this.excludedComponentImplementationDependencies.addAll(excludedComponentImplementationDependencies);
+        this.excludedComponentRoleDependencies.addAll(excludedComponentRoleDependencies);
     }
 
     /**
      * @param componentImplementationClass the component implementation for which we wish to have its injection mocked
      * @param componentRoleType the role type of the component implementation (when it has several), for disambiguation
      * @param componentRoleHint the role hint of the component implementation (when it has several), for disambiguation
-     * @param excludedComponentImplementationDependencies list of component dependencies class that we don't want mocked
+     * @param excludedComponentRoleDependencies list of component dependency role classes that we don't want mocked
      */
     public MockitoComponentMockingRule(Class< ? extends T> componentImplementationClass, Type componentRoleType,
-        String componentRoleHint, List< ? extends Class< ? >> excludedComponentImplementationDependencies)
+        String componentRoleHint, List< ? extends Class< ? >> excludedComponentRoleDependencies)
     {
-        this(componentImplementationClass, excludedComponentImplementationDependencies);
+        this(componentImplementationClass, excludedComponentRoleDependencies);
         this.componentRoleType = componentRoleType;
         this.componentRoleHint = componentRoleHint;
     }
@@ -165,12 +165,12 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
     /**
      * @param componentImplementationClass the component implementation for which we wish to have its injection mocked
      * @param componentRoleType the role type of the component implementation (when it has several), for disambiguation
-     * @param excludedComponentImplementationDependencies list of component dependencies class that we don't want mocked
+     * @param excludedComponentRoleDependencies list of component dependency role classes that we don't want mocked
      */
     public MockitoComponentMockingRule(Class< ? extends T> componentImplementationClass, Type componentRoleType,
-        List< ? extends Class< ? >> excludedComponentImplementationDependencies)
+        List< ? extends Class< ? >> excludedComponentRoleDependencies)
     {
-        this(componentImplementationClass, componentRoleType, null, excludedComponentImplementationDependencies);
+        this(componentImplementationClass, componentRoleType, null, excludedComponentRoleDependencies);
     }
 
     /**
@@ -284,8 +284,9 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
     {
         Object logger;
 
-        if (!this.excludedComponentImplementationDependencies.contains(Logger.class)
-            && this.componentImplementationClass == instanceClass) {
+        if (!this.excludedComponentRoleDependencies.contains(Logger.class)
+            && this.componentImplementationClass == instanceClass)
+        {
             logger = mock(Logger.class, instanceClass.getName());
             mockLogger = (Logger) logger;
         } else {
@@ -312,7 +313,7 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
             // filled by the component manager with available components. Developers can register mocked components
             // in an override of #setupDependencies().
             // TODO: Handle multiple roles/hints.
-            if (!this.excludedComponentImplementationDependencies.contains(roleTypeClass)
+            if (!this.excludedComponentRoleDependencies.contains(roleTypeClass)
                 && Logger.class != roleTypeClass && !roleTypeClass.isAssignableFrom(List.class)
                 && !roleTypeClass.isAssignableFrom(Map.class)) {
                 DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
