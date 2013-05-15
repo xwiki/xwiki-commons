@@ -25,14 +25,16 @@ import java.util.List;
 
 import org.xwiki.job.Request;
 import org.xwiki.observation.event.EndEvent;
+import org.xwiki.stability.Unstable;
 
 /**
  * Job finished event launched when a job is finished. Additional data may contains an exception if the job has not been
  * finished with success.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
+@Unstable
 public class JobFinishedEvent extends AbstractJobEvent implements EndEvent
 {
     /**
