@@ -25,13 +25,15 @@ import java.util.List;
 
 import org.xwiki.job.Request;
 import org.xwiki.observation.event.Event;
+import org.xwiki.stability.Unstable;
 
 /**
  * Common interface for job events.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
+@Unstable
 public interface JobEvent extends Event, Serializable
 {
     /**
