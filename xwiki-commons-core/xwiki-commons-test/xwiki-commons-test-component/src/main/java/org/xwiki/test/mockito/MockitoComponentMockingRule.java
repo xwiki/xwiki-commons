@@ -40,6 +40,7 @@ import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.internal.ComponentRegistrator;
 
@@ -309,13 +310,14 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
             // Only register a mock if it isn't:
             // - An explicit exception specified by the user
             // - A logger
+            // - A ComponentManager
             // - A collection of components, we want to keep them as Java collections. Those collections are later
             // filled by the component manager with available components. Developers can register mocked components
             // in an override of #setupDependencies().
             // TODO: Handle multiple roles/hints.
             if (!this.excludedComponentRoleDependencies.contains(roleTypeClass)
-                && Logger.class != roleTypeClass && !roleTypeClass.isAssignableFrom(List.class)
-                && !roleTypeClass.isAssignableFrom(Map.class)) {
+                && Logger.class != roleTypeClass && ComponentManager.class != roleTypeClass
+                && isCollectionInjection(roleTypeClass)) {
                 DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
                 cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
@@ -325,6 +327,15 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
                         dependencyDescriptor.getName()));
             }
         }
+    }
+
+    /**
+     * @param roleTypeClass the raw class extracted from the field type
+     * @return true if the class represents a collection of components
+     */
+    private boolean isCollectionInjection(Class< ? > roleTypeClass)
+    {
+        return !roleTypeClass.isAssignableFrom(List.class) && !roleTypeClass.isAssignableFrom(Map.class);
     }
 
     /**
