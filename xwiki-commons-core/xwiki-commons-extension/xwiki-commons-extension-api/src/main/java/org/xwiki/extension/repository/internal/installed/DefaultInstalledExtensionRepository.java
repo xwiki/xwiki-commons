@@ -396,10 +396,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                 if (installedFeature == null) {
                     // That should never happen so lets log it
                     this.logger.warn("Extension [{}] is not installed", installedExtension.getId());
-                } else if (!installedFeature.backwardDependencies.remove(installedExtension)) {
-                    // That should never happen so lets log it
-                    this.logger.warn("Extension [{}] was not registered as backward dependency of [{}]",
-                        installedExtension.getId(), installedFeature.extension.getId());
+                } else {
+                    installedFeature.backwardDependencies.remove(installedExtension);
                 }
             }
         }
