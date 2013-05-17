@@ -19,15 +19,12 @@
  */
 package org.xwiki.job;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Default implementation of {@link Request}.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
-@Unstable
 public class DefaultRequest extends AbstractRequest
 {
     /**

@@ -20,16 +20,14 @@
 package org.xwiki.job;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Allow to access current Job.
- *
+ * 
  * @version $Id$
  * @since 4.0M2
  */
 @Role
-@Unstable
 public interface JobContext
 {
     /**
