@@ -228,7 +228,7 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
     /**
      * Verify that passing a fully-formed XHTML header works fine.
      */
-    @Ignore("Ignoring till http://tinyurl.com/3d2w5c8 is fixed")
+    @Ignore("Ignoring till http://tinyurl.com/3d2w5c8 is really fixed")
     @Test
     public void fullXHTMLHeader()
     {
