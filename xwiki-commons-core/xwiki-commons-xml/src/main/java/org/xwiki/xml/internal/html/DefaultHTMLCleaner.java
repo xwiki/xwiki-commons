@@ -131,7 +131,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         CleanerProperties cleanerProperties = getDefaultCleanerProperties(configuration);
         HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
 
-        cleaner.setTransformations(getDefaultCleanerTransformations(configuration));
         TagNode cleanedNode;
         try {
             cleanedNode = cleaner.clean(originalHtmlContent);
@@ -206,10 +205,16 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         // Wrap script and style content in CDATA blocks
         defaultProperties.setUseCdataForScriptAndStyle(true);
 
+        // We need this for example to ignore CDATA sections not inside script or style elements.
+        defaultProperties.setIgnoreQuestAndExclam(true);
+
         // If the caller has defined NAMESPACE_AWARE configuration property then use it, otherwise use our default.
         String param = configuration.getParameters().get(HTMLCleanerConfiguration.NAMESPACES_AWARE);
         boolean namespacesAware = (param != null) ? Boolean.parseBoolean(param) : true;
         defaultProperties.setNamespacesAware(namespacesAware);
+
+        // Set Cleaner transformations
+        defaultProperties.setCleanerTransformations(getDefaultCleanerTransformations(configuration));
 
         return defaultProperties;
     }

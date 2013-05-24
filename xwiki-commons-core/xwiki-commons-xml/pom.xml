@@ -53,7 +53,7 @@
     <dependency>
       <groupId>net.sourceforge.htmlcleaner</groupId>
       <artifactId>htmlcleaner</artifactId>
-      <version>2.2</version>
+      <version>2.5</version>
       <!-- TODO: We don't need Ant drawn. Remove this when
            https://sourceforge.net/tracker/?func=detail&aid=3594481&group_id=183053&atid=903696 is fixed -->
       <exclusions>
@@ -74,12 +74,6 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <!--dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-default</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency-->
   </dependencies>
   <build>
     <plugins>

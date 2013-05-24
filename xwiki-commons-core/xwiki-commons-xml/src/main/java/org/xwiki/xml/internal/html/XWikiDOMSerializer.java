@@ -92,7 +92,7 @@ public class XWikiDOMSerializer
         Element rootElement = document.createElement(rootNode.getName());
         document.appendChild(rootElement);
 
-        createSubnodes(document, rootElement, rootNode.getChildren());
+        createSubnodes(document, rootElement, rootNode.getAllChildren());
 
         return document;
     }
@@ -109,9 +109,7 @@ public class XWikiDOMSerializer
     {
         if (bufferedContent.length() > 0 && !(item instanceof ContentNode)) {
             // Flush the buffered content
-            String nodeName = element.getNodeName();
-            boolean specialCase = this.props.isUseCdataForScriptAndStyle()
-                && ("script".equalsIgnoreCase(nodeName) || "style".equalsIgnoreCase(nodeName));
+            boolean specialCase = this.props.isUseCdataForScriptAndStyle() && isScriptOrStyle(element);
             String content = bufferedContent.toString();
 
             if (this.escapeXml && !specialCase) {
@@ -160,6 +158,16 @@ public class XWikiDOMSerializer
     }
 
     /**
+     * @param element the element to check
+     * @return true if the passed element is a script or style element
+     */
+    protected boolean isScriptOrStyle(Element element)
+    {
+        String tagName = element.getNodeName();
+        return "script".equalsIgnoreCase(tagName) || "style".equalsIgnoreCase(tagName);
+    }
+
+    /**
      * Serialize a given SF HTML Cleaner node.
      * 
      * @param document the W3C Document to use for creating new DOM elements
@@ -194,7 +202,7 @@ public class XWikiDOMSerializer
 
                 if (item instanceof CommentNode) {
                     CommentNode commentToken = (CommentNode) item;
-                    Comment comment = document.createComment(commentToken.getContent().toString());
+                    Comment comment = document.createComment(commentToken.getContent());
                     element.appendChild(comment);
                 } else if (item instanceof ContentNode) {
                     ContentNode contentToken = (ContentNode) item;
@@ -214,7 +222,7 @@ public class XWikiDOMSerializer
                     }
 
                     // recursively create subnodes
-                    createSubnodes(document, subelement, subTagNode.getChildren());
+                    createSubnodes(document, subelement, subTagNode.getAllChildren());
 
                     element.appendChild(subelement);
                 } else if (item instanceof List< ? >) {
