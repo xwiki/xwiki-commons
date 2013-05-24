@@ -23,12 +23,11 @@ import java.io.StringReader;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Document;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
+import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
-import org.xwiki.xml.html.filter.HTMLFilter;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
@@ -43,22 +42,25 @@ import org.xwiki.xml.internal.html.filter.ListItemFilter;
  * @version $Id$
  * @since 1.8.3
  */
-@MockingRequirement(value = DefaultHTMLCleaner.class, exceptions = {HTMLFilter.class})
 @ComponentList({
     ListFilter.class,
     ListItemFilter.class,
     FontFilter.class,
     BodyFilter.class,
-    AttributeFilter.class
+    AttributeFilter.class,
+    DefaultHTMLCleaner.class
 })
-public class HTMLUtilsTest extends AbstractMockingComponentTestCase<HTMLCleaner>
+public class HTMLUtilsTest
 {
     private HTMLCleaner cleaner;
 
+    @Rule
+    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+
     @Before
-    public void configure() throws Exception
+    public void setUp() throws Exception
     {
-        this.cleaner = getComponentManager().getInstance(HTMLCleaner.class);
+        this.cleaner = this.componentManager.getInstance(HTMLCleaner.class);
     }
 
     @Test

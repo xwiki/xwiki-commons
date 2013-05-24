@@ -25,13 +25,21 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.ComponentManagerRule;
+import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLUtils;
 import org.xwiki.xml.html.filter.HTMLFilter;
+import org.xwiki.xml.internal.html.filter.AttributeFilter;
+import org.xwiki.xml.internal.html.filter.BodyFilter;
+import org.xwiki.xml.internal.html.filter.FontFilter;
+import org.xwiki.xml.internal.html.filter.ListFilter;
+import org.xwiki.xml.internal.html.filter.ListItemFilter;
 
 /**
  * Unit tests for {@link org.xwiki.xml.internal.html.DefaultHTMLCleaner}.
@@ -39,7 +47,15 @@ import org.xwiki.xml.html.filter.HTMLFilter;
  * @version $Id$
  * @since 1.6M1
  */
-public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
+@ComponentList({
+    ListFilter.class,
+    ListItemFilter.class,
+    FontFilter.class,
+    BodyFilter.class,
+    AttributeFilter.class,
+    DefaultHTMLCleaner.class
+})
+public class DefaultHTMLCleanerTest
 {
     public static final String HEADER =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
@@ -51,10 +67,13 @@ public class DefaultHTMLCleanerTest extends AbstractComponentTestCase
 
     private HTMLCleaner cleaner;
 
-    @Override
-    protected void registerComponents() throws Exception
+    @Rule
+    public final ComponentManagerRule componentManager = new ComponentManagerRule();
+
+    @Before
+    public void setUp() throws Exception
     {
-        this.cleaner = getComponentManager().getInstance(HTMLCleaner.class, "default");
+        this.cleaner = this.componentManager.getInstance(HTMLCleaner.class);
     }
 
     @Test
