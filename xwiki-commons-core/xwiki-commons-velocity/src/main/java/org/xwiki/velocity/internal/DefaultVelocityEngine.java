@@ -280,7 +280,7 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
             count = count - 1;
             if (count <= 0) {
                 this.namespaceUsageCount.remove(namespace);
-                this.clearMacroNamespace(namespace);
+                clearMacroNamespace(namespace);
             } else {
                 this.namespaceUsageCount.put(namespace, count);
             }

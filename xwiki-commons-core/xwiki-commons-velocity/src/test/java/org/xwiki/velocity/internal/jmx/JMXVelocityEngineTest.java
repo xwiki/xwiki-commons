@@ -21,9 +21,15 @@ package org.xwiki.velocity.internal.jmx;
 
 import org.apache.velocity.VelocityContext;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.mockito.MockitoComponentManagerRule;
+import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityEngine;
+import org.xwiki.velocity.internal.DefaultVelocityContextFactory;
+import org.xwiki.velocity.internal.DefaultVelocityEngine;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
@@ -33,18 +39,37 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.mockito.Mockito.*;
+
 /**
  * Unit tests for {@link JMXVelocityEngine}.
  * 
  * @version $Id$
  * @since 2.4M2
  */
-public class JMXVelocityEngineTest extends AbstractComponentTestCase
+@ComponentList({
+    DefaultVelocityEngine.class,
+    DefaultVelocityContextFactory.class
+})
+public class JMXVelocityEngineTest
 {
+    @Rule
+    public MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
+
+    @Before
+    public void setUp() throws Exception
+    {
+        VelocityConfiguration vc = this.componentManager.registerMockComponent(VelocityConfiguration.class);
+        Properties props = new Properties();
+        props.setProperty("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
+        when(vc.getProperties()).thenReturn(props);
+        when(vc.getTools()).thenReturn(new Properties());
+    }
+
     @Test
     public void testGetTemplates() throws Exception
     {
-        VelocityEngine engine = getComponentManager().getInstance(VelocityEngine.class);
+        VelocityEngine engine = this.componentManager.getInstance(VelocityEngine.class);
         engine.initialize(new Properties());
         JMXVelocityEngine jmxBean = new JMXVelocityEngine(engine);
 

@@ -26,51 +26,45 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.velocity.context.Context;
+import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.introspection.SecureUberspector;
-import org.jmock.Expectations;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 
+import static org.mockito.Mockito.*;
+
 /**
  * Unit tests for {@link DefaultVelocityEngine}.
  */
-@MockingRequirement(DefaultVelocityEngine.class)
-public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
+public class DefaultVelocityEngineTest
 {
-    private VelocityEngine engine;
+    @Rule
+    public MockitoComponentMockingRule<DefaultVelocityEngine> mocker =
+        new MockitoComponentMockingRule<DefaultVelocityEngine>(DefaultVelocityEngine.class);
+
+    private DefaultVelocityEngine engine;
 
     @Before
-    public void configure() throws Exception
+    public void setUp() throws Exception
     {
-        final Properties properties = new Properties();
+        Properties properties = new Properties();
         properties.put("runtime.introspector.uberspect", ChainingUberspector.class.getName());
         properties.put("runtime.introspector.uberspect.chainClasses",
             SecureUberspector.class.getName() + ","  + DeprecatedCheckUberspector.class.getName());
         properties.put("directive.set.null.allowed", Boolean.TRUE.toString());
         properties.put("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
 
-        final VelocityConfiguration configuration = getComponentManager().getInstance(VelocityConfiguration.class);
+        VelocityConfiguration configuration = this.mocker.getInstance(VelocityConfiguration.class);
+        when(configuration.getProperties()).thenReturn(properties);
 
-        getMockery().checking(new Expectations() {{
-            oneOf(configuration).getProperties();
-            will(returnValue(properties));
-
-            // Ignore all calls to debug() and enable all logs so that we can assert info(), warn() and error()
-            // calls.
-            ignoring(any(Logger.class)).method("trace");
-            ignoring(any(Logger.class)).method("debug");
-            allowing(any(Logger.class)).method("is.*Enabled"); will(returnValue(true));
-        }});
-
-        this.engine = getComponentManager().getInstance(VelocityEngine.class);
+        this.engine = this.mocker.getComponentUnderTest();
     }
 
     @Test
@@ -102,17 +96,14 @@ public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
 
-        // Verify that we log a warning and verify the message.
-        final Logger logger = getMockLogger();
-        getMockery().checking(new Expectations() {{
-            oneOf(logger).warn("Cannot retrieve method forName from object of class java.lang.Class due to security "
-                + "restrictions.");
-        }});
-
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             "#set($foo = 'test')#set($object = $foo.class.forName('java.util.ArrayList')"
                 + ".newInstance())$object.size()");
         Assert.assertEquals("$object.size()", writer.toString());
+
+        // Verify that we log a warning and verify the message.
+        verify(this.mocker.getMockedLogger()).warn("Cannot retrieve method forName from object of class "
+            + "java.lang.Class due to security restrictions.");
     }
 
     /**
@@ -173,5 +164,21 @@ public class DefaultVelocityEngineTest extends AbstractMockingComponentTestCase
         StringWriter writer = new StringWriter();
         this.engine.evaluate(context, writer, "template2", "#mymacro");
         Assert.assertEquals("test", writer.toString());
+    }
+
+    /**
+     * Verify {@link VelocityEngine#clearMacroNamespace(String)} is called.
+     */
+    @Test
+    public void macroNamespaceCleanup() throws Exception
+    {
+        this.engine.initialize(new Properties());
+        RuntimeServices rs = mock(RuntimeServices.class);
+        this.engine.init(rs);
+
+        this.engine.startedUsingMacroNamespace("namespace");
+        this.engine.stoppedUsingMacroNamespace("namespace");
+
+        verify(rs).dumpVMNamespace("namespace");
     }
 }

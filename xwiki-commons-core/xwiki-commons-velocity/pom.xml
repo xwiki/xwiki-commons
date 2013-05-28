@@ -34,7 +34,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Velocity</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>61.45</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>63</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
