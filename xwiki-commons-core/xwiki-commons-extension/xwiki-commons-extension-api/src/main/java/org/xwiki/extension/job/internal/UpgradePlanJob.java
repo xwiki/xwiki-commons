@@ -138,7 +138,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
     }
 
     @Override
-    protected void start() throws Exception
+    protected void runInternal() throws Exception
     {
         Collection<String> namespaces = getRequest().getNamespaces();
 

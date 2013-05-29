@@ -101,7 +101,7 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest, Def
     }
 
     @Override
-    protected void start() throws Exception
+    protected void runInternal() throws Exception
     {
         Collection<ExtensionId> extensions = getRequest().getExtensions();
 

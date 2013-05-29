@@ -27,13 +27,13 @@ import org.xwiki.stability.Unstable;
 
 /**
  * A Job produced from a {@link Request} and exposing a {@link JobStatus}.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
 @Role
 @Unstable
-public interface Job
+public interface Job extends Runnable
 {
     /**
      * @return the type of the job
@@ -52,12 +52,19 @@ public interface Job
 
     /**
      * @param request start the job with provided request
+     * @deprecated since 5.1M2 use {@link #initialize(Request)} then {@link #run()} instead
      */
+    @Deprecated
     void start(Request request);
 
     /**
+     * @param request configure the job
+     */
+    void initialize(Request request);
+
+    /**
      * Causes the current thread to wait until this job has FINSHED state.
-     *
+     * 
      * @throws InterruptedException if any thread has interrupted the current thread. The <i>interrupted status</i> of
      *             the current thread is cleared when this exception is thrown.
      */
@@ -65,7 +72,7 @@ public interface Job
 
     /**
      * Causes the current thread to wait until this job has FINSHED state.
-     *
+     * 
      * @param time the maximum time to wait
      * @param unit the time unit of the {@code time} argument
      * @return {@code false} if the waiting time detectably elapsed before return from the method, else {@code true}

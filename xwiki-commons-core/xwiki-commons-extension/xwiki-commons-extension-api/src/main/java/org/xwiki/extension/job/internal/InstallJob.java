@@ -91,7 +91,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
     }
 
     @Override
-    protected void start() throws Exception
+    protected void runInternal() throws Exception
     {
         notifyPushLevelProgress(3);
 

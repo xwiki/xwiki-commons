@@ -65,7 +65,7 @@ public class InstallPlanJob extends AbstractInstallPlanJob<InstallRequest>
     }
 
     @Override
-    protected void start() throws Exception
+    protected void runInternal() throws Exception
     {
         Map<ExtensionId, Collection<String>> extensionsByNamespace =
             new LinkedHashMap<ExtensionId, Collection<String>>();

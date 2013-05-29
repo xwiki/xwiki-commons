@@ -51,7 +51,7 @@ import org.xwiki.observation.ObservationManager;
  * @since 5.0M1
  */
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus<? super R>> implements Job
+public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus< ? super R>> implements Job
 {
     /**
      * Component manager.
@@ -122,22 +122,34 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
     }
 
     @Override
-    public void start(Request request)
+    public void initialize(Request request)
     {
         this.request = castRequest(request);
         this.status = createNewStatus(this.request);
+    }
 
+    @Override
+    public void run()
+    {
         jobStarting();
 
         Throwable error = null;
         try {
-            start();
+            runInternal();
         } catch (Throwable t) {
             this.logger.error("Exception thrown during job execution", t);
             error = t;
         } finally {
             jobFinished(error);
         }
+    }
+
+    @Override
+    @Deprecated
+    public void start(Request request)
+    {
+        initialize(request);
+        run();
     }
 
     /**
@@ -265,7 +277,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
      * 
      * @throws Exception errors during job execution
      */
-    protected abstract void start() throws Exception;
+    protected abstract void runInternal() throws Exception;
 
     @Override
     public void join() throws InterruptedException

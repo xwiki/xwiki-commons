@@ -54,34 +54,6 @@ import org.xwiki.job.event.status.JobStatus;
 public class DefaultJobManager implements JobManager, Runnable, Initializable
 {
     /**
-     * A job to execute.
-     * 
-     * @version $Id$
-     */
-    private static class JobElement
-    {
-        /**
-         * The job to execute.
-         */
-        public Job job;
-
-        /**
-         * The request to use to control the job.
-         */
-        public Request request;
-
-        /**
-         * @param job the job to execute
-         * @param request the request to use to control the job
-         */
-        public JobElement(Job job, Request request)
-        {
-            this.job = job;
-            this.request = request;
-        }
-    }
-
-    /**
      * Used to lookup {@link Job} implementations.
      */
     @Inject
@@ -113,7 +85,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     /**
      * The queue of jobs to execute.
      */
-    private BlockingQueue<JobElement> jobQueue = new LinkedBlockingQueue<JobElement>();
+    private BlockingQueue<Job> jobQueue = new LinkedBlockingQueue<Job>();
 
     /**
      * The thread on which the job manager is running.
@@ -146,13 +118,13 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
         try {
             while (!this.thread.isInterrupted()) {
                 try {
-                    JobElement element = this.jobQueue.take();
+                    Job job = this.jobQueue.take();
 
-                    this.currentJob = element.job;
+                    this.currentJob = job;
 
                     // Wait in case synchronous job is running
                     synchronized (this) {
-                        this.currentJob.start(element.request);
+                        this.currentJob.run();
                     }
                 } catch (InterruptedException e) {
                     // Thread has been stopped
@@ -207,7 +179,9 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     {
         Job job = createJob(jobType);
 
-        this.jobQueue.add(new JobElement(job, request));
+        job.initialize(request);
+
+        this.jobQueue.offer(job);
 
         return job;
     }
@@ -221,10 +195,19 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     @Override
     public JobStatus getJobStatus(List<String> id)
     {
+        // Is it the current job
         if (this.currentJob != null && ObjectUtils.equals(id, this.currentJob.getRequest().getId())) {
             return this.currentJob.getStatus();
         }
 
+        // Is it in queue
+        for (Job job : this.jobQueue) {
+            if (ObjectUtils.equals(id, job.getRequest().getId())) {
+                return job.getStatus();
+            }
+        }
+
+        // Is it stored
         return this.storage.getJobStatus(id);
     }
 }

@@ -88,7 +88,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest, Default
     }
 
     @Override
-    protected void start() throws Exception
+    protected void runInternal() throws Exception
     {
         notifyPushLevelProgress(2);
 

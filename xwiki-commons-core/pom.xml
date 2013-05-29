@@ -127,18 +127,24 @@
         <configuration>
           <!-- List of specific CLIRR excludes. Example:
 
-               <difference>
-                 <differenceType>7012</differenceType>
-                 <className>org/xwiki/ircbot/IRCBot</className>
-                 <method>void initialize(java.lang.String)</method>
-                 <justification>IRCBot is still a young API. Added a new initialize() method to support installing the
-                 IRC Bot application in a subwiki</justification>
-               </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/ircbot/IRCBot</className>
+              <method>void initialize(java.lang.String)</method>
+              <justification>IRCBot is still a young API. Added a new initialize() method to support installing the
+              IRC Bot application in a subwiki</justification>
+            </difference>
                
-               See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
+            See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/job/Job</className>
+              <method>void initialize(org.xwiki.job.Request)</method>
+              <justification>[YOUNG API] new method to separate job setup from job start to put real jobs in queue</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
