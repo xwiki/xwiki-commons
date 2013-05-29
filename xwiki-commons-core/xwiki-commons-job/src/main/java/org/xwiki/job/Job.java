@@ -59,6 +59,7 @@ public interface Job extends Runnable
 
     /**
      * @param request configure the job
+     * @since 5.1M1
      */
     void initialize(Request request);
 
