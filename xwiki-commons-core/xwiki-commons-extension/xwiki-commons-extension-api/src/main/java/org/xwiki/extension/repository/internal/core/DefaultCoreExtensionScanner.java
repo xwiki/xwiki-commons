@@ -370,12 +370,16 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         for (String descriptor : descriptors) {
             URL descriptorUrl = getClass().getClassLoader().getResource(descriptor);
 
-            try {
-                DefaultCoreExtension coreExtension = parseMavenPom(descriptorUrl, repository);
+            if (descriptorUrl != null) {
+                try {
+                    DefaultCoreExtension coreExtension = parseMavenPom(descriptorUrl, repository);
 
-                extensions.put(coreExtension.getId().getId(), coreExtension);
-            } catch (Exception e) {
-                this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorUrl, descriptor, e);
+                    extensions.put(coreExtension.getId().getId(), coreExtension);
+                } catch (Exception e) {
+                    this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorUrl, descriptor, e);
+                }
+            } else {
+                this.logger.error("Could not find resource URL for descriptor [{}]", descriptor);
             }
         }
 
