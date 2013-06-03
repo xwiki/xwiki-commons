@@ -375,7 +375,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
                 extensions.put(coreExtension.getId().getId(), coreExtension);
             } catch (Exception e) {
-                this.logger.warn("Failed to pase extension descriptor [{}]", descriptorUrl, e);
+                this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorUrl, descriptor, e);
             }
         }
 
