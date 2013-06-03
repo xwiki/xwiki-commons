@@ -101,4 +101,28 @@ public class DefaultVersionRangeTest
         Assert.assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("1.0")));
         Assert.assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("2.0")));
     }
+
+    @Test(expected = InvalidVersionRangeException.class)
+    public void testInvalidVersionRangeWithSingleVersionWithLowerBoundInclusive() throws InvalidVersionRangeException
+    {
+        new DefaultVersionRange("]1.0]");
+    }
+
+    @Test(expected = InvalidVersionRangeException.class)
+    public void testInvalidVersionRangeWithSingleVersionWithUpperBoundInclusive() throws InvalidVersionRangeException
+    {
+        new DefaultVersionRange("[1.0[");
+    }
+
+    @Test(expected = InvalidVersionRangeException.class)
+    public void testInvalidVersionRangeWithRangeMoreThanTwoBound() throws InvalidVersionRangeException
+    {
+        new DefaultVersionRange("[1.0,2.0,3.0]");
+    }
+
+    @Test(expected = InvalidVersionRangeException.class)
+    public void testInvalidVersionRangeWithLowerBoundGreaterThanUpperBound() throws InvalidVersionRangeException
+    {
+        new DefaultVersionRange("[2.0,1.0]");
+    }
 }
