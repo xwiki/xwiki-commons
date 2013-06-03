@@ -122,7 +122,7 @@ public class XWikiDocument
 
     /**
      * Read an element from the XML.
-     *
+     * 
      * @param rootElement the root XML element under which to find the element
      * @param elementName the name of the element to read
      * @return null or the element value as a String
@@ -270,7 +270,17 @@ public class XWikiDocument
      */
     public String getFullName()
     {
-        return this.space == null ? this.name : this.space + "." + this.name;
+        return this.space == null ? this.name : escapeSpaceOrPageName(this.space) + '.'
+            + escapeSpaceOrPageName(this.name);
+    }
+
+    /**
+     * @param name the name to escape
+     * @return the escaped name
+     */
+    private String escapeSpaceOrPageName(String name)
+    {
+        return name != null ? name.replaceAll("[\\\\\\.]", "\\\\$0") : null;
     }
 
     /**
