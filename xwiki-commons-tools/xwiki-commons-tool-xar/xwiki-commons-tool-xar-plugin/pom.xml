@@ -35,6 +35,7 @@
   <description>XWiki Commons - Tools - XAR Tools - XAR Plugin</description>
   <properties>
     <mavenVersion>3.0.4</mavenVersion>
+    <xwiki.jacoco.instructionRatio>2.07</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
