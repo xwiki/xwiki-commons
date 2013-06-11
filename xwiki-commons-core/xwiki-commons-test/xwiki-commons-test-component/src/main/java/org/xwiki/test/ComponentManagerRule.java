@@ -44,7 +44,7 @@ public class ComponentManagerRule extends EmbeddableComponentManager implements 
     /**
      * Used to register components.
      */
-    private ComponentRegistrator componentRegistrator = new ComponentRegistrator();
+    protected ComponentRegistrator componentRegistrator = new ComponentRegistrator();
 
     /**
      * Register in-memory data source for the default and "xwikiproperties" configuration sources.

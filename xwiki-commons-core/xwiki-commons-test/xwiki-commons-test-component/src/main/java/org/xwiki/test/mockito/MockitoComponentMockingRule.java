@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
@@ -37,11 +36,9 @@ import org.xwiki.component.annotation.ComponentDescriptorFactory;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
-import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.test.internal.ComponentRegistrator;
 
 /**
  * Unit tests for Components should extend this class instead of using {@link MockitoComponentManagerRule} or
@@ -82,13 +79,8 @@ import org.xwiki.test.internal.ComponentRegistrator;
  * @version $Id$
  * @since 4.3.1
  */
-public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager implements MethodRule
+public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
 {
-    /**
-     * Used to register components.
-     */
-    private ComponentRegistrator componentRegistrator = new ComponentRegistrator();
-
     /**
      * Used to discover and register components using annotations.
      */
@@ -225,21 +217,6 @@ public class MockitoComponentMockingRule<T> extends EmbeddableComponentManager i
     protected void before(final Statement base, final FrameworkMethod method, final Object target) throws Throwable
     {
         mockComponent(target);
-    }
-
-    /**
-     * Called before the test.
-     * 
-     * @param base The {@link Statement} to be modified
-     * @param method The method to be run
-     * @param target The object on with the method will be run.
-     * @throws Throwable if anything goes wrong
-     * @since 5.1M1
-     */
-    protected void after(final Statement base, final FrameworkMethod method, final Object target) throws Throwable
-    {
-        // Make sure to dispose all Disposable components in case they have resources/static to free
-        dispose();
     }
 
     /**
