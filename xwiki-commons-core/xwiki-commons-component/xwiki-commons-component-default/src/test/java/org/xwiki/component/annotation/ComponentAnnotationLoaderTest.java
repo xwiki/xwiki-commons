@@ -205,6 +205,10 @@ public class ComponentAnnotationLoaderTest
             this.loader.getComponentsDescriptors(ProviderTest.TestProvider2.class).get(0);
         final ComponentDescriptor descriptor10 =
             this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviders.class).get(0);
+        final ComponentDescriptor descriptor11 =
+            this.loader.getComponentsDescriptors(ProviderTest.TestProviderWithExceptionInInitialize.class).get(0);
+        final ComponentDescriptor descriptor12 =
+            this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviderInException.class).get(0);
 
         // This is the test, we verify that registerComponent() is called for each of the descriptor we're expecting
         // to be discovered through annotations by the call to initialize() below.
@@ -221,6 +225,8 @@ public class ComponentAnnotationLoaderTest
                 oneOf(mockManager).registerComponent(descriptor8);
                 oneOf(mockManager).registerComponent(descriptor9);
                 oneOf(mockManager).registerComponent(descriptor10);
+                oneOf(mockManager).registerComponent(descriptor11);
+                oneOf(mockManager).registerComponent(descriptor12);
             }
         });
 

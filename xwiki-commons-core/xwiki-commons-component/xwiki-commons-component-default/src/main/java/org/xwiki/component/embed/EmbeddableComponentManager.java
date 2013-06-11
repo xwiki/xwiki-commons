@@ -300,13 +300,13 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
             } else if (dependencyRoleClass.isAssignableFrom(Map.class)) {
                 fieldValue = getInstanceMap(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
             } else if (dependencyRoleClass.isAssignableFrom(Provider.class)) {
-                try {
+                // Check if there's a Provider registered for the type
+                if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
                     fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
-                } catch (ComponentLookupException e) {
-                    fieldValue =
-                        new GenericProvider<Object>(this, new RoleHint<Object>(
-                            ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()),
-                            dependency.getRoleHint()));
+                } else {
+                    fieldValue = new GenericProvider<Object>(this, new RoleHint<Object>(
+                        ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()),
+                        dependency.getRoleHint()));
                 }
             } else {
                 fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());

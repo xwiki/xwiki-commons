@@ -38,6 +38,8 @@ import org.xwiki.component.embed.EmbeddableComponentManagerTest.Role;
 import org.xwiki.component.embed.EmbeddableComponentManagerTest.RoleImpl;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentRepositoryException;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 
 /**
  * Validate loading and injection of Providers in a real use case.
@@ -100,8 +102,33 @@ public class ProviderTest
         }
     }
 
+    @Component
+    @Named("exception")
+    public static class TestComponentWithProviderInException implements TestComponentRole
+    {
+        @Inject
+        @Named("exception")
+        public Provider<String> providerWithExceptionInInitialize;
+    }
+
+    @Named("exception")
+    public static class TestProviderWithExceptionInInitialize implements Provider<String>, Initializable
+    {
+        @Override
+        public void initialize() throws InitializationException
+        {
+            throw new InitializationException("Some error in init");
+        }
+
+        @Override
+        public String get()
+        {
+            throw new RuntimeException("should not be called!");
+        }
+    }
+
     @Test
-    public void testLoadAndInjectProviders() throws ComponentLookupException, ComponentRepositoryException
+    public void loadAndInjectProviders() throws ComponentLookupException, ComponentRepositoryException
     {
         EmbeddableComponentManager cm = new EmbeddableComponentManager();
 
@@ -120,7 +147,7 @@ public class ProviderTest
         // Initialize
         cm.initialize(getClass().getClassLoader());
 
-        TestComponentWithProviders component = (TestComponentWithProviders) cm.getInstance(TestComponentRole.class);
+        TestComponentWithProviders component = cm.getInstance(TestComponentRole.class);
 
         Assert.assertEquals("value", component.provider1.get());
         Assert.assertEquals("another value", component.provider12.get());
@@ -128,5 +155,30 @@ public class ProviderTest
 
         Assert.assertEquals(2, component.providerList.get().size());
         Assert.assertEquals(2, component.providerMap.get().size());
+    }
+
+    /**
+     * Verify that an exception is raised when a Provider implementing {@link Initializable} fails to initialize.
+     */
+    @Test
+    public void loadAndInjectProviderWhenExceptionInInitialize() throws Exception
+    {
+        EmbeddableComponentManager cm = new EmbeddableComponentManager();
+        cm.initialize(getClass().getClassLoader());
+
+        try {
+            cm.getInstance(TestComponentRole.class, "exception");
+            Assert.fail("Should have thrown an exception");
+        } catch (ComponentLookupException expected) {
+            Assert.assertEquals("Failed to lookup component "
+                + "[org.xwiki.component.ProviderTest$TestComponentWithProviderInException] identifier by "
+                + "[role = [interface org.xwiki.component.ProviderTest$TestComponentRole] hint = [exception]]",
+                expected.getMessage());
+            Assert.assertEquals("Failed to lookup component "
+                + "[org.xwiki.component.ProviderTest$TestProviderWithExceptionInInitialize] identifier by "
+                + "[role = [javax.inject.Provider<java.lang.String>] hint = [exception]]",
+                expected.getCause().getMessage());
+            Assert.assertEquals("Some error in init", expected.getCause().getCause().getMessage());
+        }
     }
 }

@@ -7,3 +7,5 @@ org.xwiki.component.ProviderTest$TestComponentWithProviders
 org.xwiki.component.ProviderTest$TestProvider1
 org.xwiki.component.ProviderTest$TestProvider12
 org.xwiki.component.ProviderTest$TestProvider2
+org.xwiki.component.ProviderTest$TestComponentWithProviderInException
+org.xwiki.component.ProviderTest$TestProviderWithExceptionInInitialize
