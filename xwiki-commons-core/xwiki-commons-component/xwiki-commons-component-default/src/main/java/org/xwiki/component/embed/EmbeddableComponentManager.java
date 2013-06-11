@@ -345,7 +345,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
             try {
                 instance = getComponentInstance(componentEntry);
             } catch (Throwable e) {
-                throw new ComponentLookupException(String.format("Failed to lookup component [%s] identifier by [%s]",
+                throw new ComponentLookupException(String.format("Failed to lookup component [%s] identified by [%s]",
                     componentEntry.descriptor.getImplementation().getName(), roleHint.toString()), e);
             }
         } else {
