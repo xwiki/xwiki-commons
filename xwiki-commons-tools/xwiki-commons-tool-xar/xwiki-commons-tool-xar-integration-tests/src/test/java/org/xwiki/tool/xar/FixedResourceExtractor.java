@@ -36,7 +36,7 @@ public class FixedResourceExtractor extends ResourceExtractor
     /**
      * Proper version of {@link ResourceExtractor}.
      */
-    public static File simpleExtractResources(Class< ? > cl, String resourcePath) throws IOException
+    public static File simpleExtractResources(Class cl, String resourcePath) throws IOException
     {
         String tempDirPath = System.getProperty("maven.test.tmpdir", System.getProperty("java.io.tmpdir"));
         File tempDir = new File(tempDirPath);
