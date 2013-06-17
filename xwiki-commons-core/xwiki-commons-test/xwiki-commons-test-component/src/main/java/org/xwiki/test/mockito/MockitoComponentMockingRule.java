@@ -214,8 +214,11 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
      * @throws Throwable if anything goes wrong
      * @since 5.1M1
      */
+    @Override
     protected void before(final Statement base, final FrameworkMethod method, final Object target) throws Throwable
     {
+        super.before(base, method, target);
+
         mockComponent(target);
     }
 
@@ -227,11 +230,6 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
      */
     private void mockComponent(final Object testInstance) throws Exception
     {
-        // Step 1: Register the components that are needed by the tests.
-        this.componentRegistrator.registerComponents(testInstance.getClass(), this);
-
-        // Step 2: Get the injected components and register mocks of them
-
         // Handle component fields
         for (ComponentDescriptor<T> descriptor : this.factory.createComponentDescriptors(
             this.componentImplementationClass, findComponentRoleType())) {
