@@ -106,30 +106,31 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     @Override
     public void run()
     {
-        // Create a clean Execution Context
-        ExecutionContext context = new ExecutionContext();
-
-        try {
-            this.executionContextManager.initialize(context);
-        } catch (ExecutionContextException e) {
-            throw new RuntimeException("Failed to initialize IRC Bot's execution context", e);
+        while (!this.thread.isInterrupted()) {
+            runJob();
         }
+    }
 
+    /**
+     * Execute one job.
+     */
+    public void runJob()
+    {
         try {
-            while (!this.thread.isInterrupted()) {
-                try {
-                    Job job = this.jobQueue.take();
+            this.currentJob = this.jobQueue.take();
 
-                    this.currentJob = job;
+            // Create a clean Execution Context
+            ExecutionContext context = new ExecutionContext();
 
-                    // Wait in case synchronous job is running
-                    synchronized (this) {
-                        this.currentJob.run();
-                    }
-                } catch (InterruptedException e) {
-                    // Thread has been stopped
-                }
+            try {
+                this.executionContextManager.initialize(context);
+            } catch (ExecutionContextException e) {
+                throw new RuntimeException("Failed to initialize Job " + this.currentJob + " execution context", e);
             }
+
+            this.currentJob.run();
+        } catch (InterruptedException e) {
+            // Thread has been stopped
         } finally {
             this.execution.removeContext();
         }
