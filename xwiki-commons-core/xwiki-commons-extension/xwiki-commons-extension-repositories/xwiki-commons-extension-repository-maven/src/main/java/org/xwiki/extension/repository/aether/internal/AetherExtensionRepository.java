@@ -89,8 +89,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     public static final String MPNAME_WEBSITE = "website";
 
-    public static final String MPNAME_DESCRIPTION = "description";
-
     public static final String MPNAME_FEATURES = "features";
 
     /**
