@@ -19,18 +19,28 @@
  */
 package org.xwiki.context;
 
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Rule;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.hasEntry;
+import org.xwiki.test.LogRule;
 
 /**
- * @version $Id$ 
+ * @version $Id$
  * @since 4.3M1
  */
 public class ExecutionContextTest
 {
+    @Rule
+    public LogRule logrule = new LogRule();
+
     @Test
     public void inheritance()
     {
@@ -49,7 +59,7 @@ public class ExecutionContextTest
         assertTrue(context.getProperty("shadowed").equals("shadowed"));
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void illegalInheritance()
     {
         ExecutionContext context = new ExecutionContext();
@@ -69,5 +79,45 @@ public class ExecutionContextTest
         Map<String, Object> properties = context.getProperties();
         assertEquals(1, properties.size());
         assertThat(properties, hasEntry("key", (Object) "value"));
+    }
+
+    @Test
+    public void setProperties()
+    {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("key1", "value1");
+        properties.put("key2", "value2");
+
+        ExecutionContext context = new ExecutionContext();
+        context.setProperties(properties);
+
+        assertEquals("value1", context.getProperty("key1"));
+        assertEquals("value2", context.getProperty("key2"));
+    }
+
+    @Test
+    public void removeProperty()
+    {
+        ExecutionContext context = new ExecutionContext();
+        context.setProperty("key", "value");
+
+        assertEquals("value", context.getProperty("key"));
+
+        context.removeProperty("key");
+
+        assertNull(context.getProperty("key"));
+    }
+
+    @Test
+    public void removeUnexistingProperty()
+    {
+        ExecutionContext context = new ExecutionContext();
+
+        this.logrule.recordLoggingForType(ExecutionContext.class);
+
+        context.removeProperty("doesnotexist");
+
+        assertTrue(this.logrule
+            .contains("Tried to remove non-existing property [doesnotexist] from execution context."));
     }
 }
