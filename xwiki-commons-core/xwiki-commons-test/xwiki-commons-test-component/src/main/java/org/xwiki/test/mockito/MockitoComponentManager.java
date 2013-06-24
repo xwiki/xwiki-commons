@@ -22,17 +22,17 @@ package org.xwiki.test.mockito;
 import java.lang.reflect.Type;
 
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.test.ComponentManagerRule;
+import org.xwiki.test.TestComponentManager;
 
 import static org.mockito.Mockito.mock;
 
 /**
- * JUnit {@link org.junit.rules.MethodRule} to make it extra simple to register Mock Components using Mockito.
+ * Helper class to make it extra simple to register Mock Components using Mockito.
  *
  * @version $Id$
- * @since 4.3.1
+ * @since 5.1RC1
  */
-public class MockitoComponentManagerRule extends ComponentManagerRule
+public class MockitoComponentManager extends TestComponentManager
 {
     /**
      * Registers a Mock component.
