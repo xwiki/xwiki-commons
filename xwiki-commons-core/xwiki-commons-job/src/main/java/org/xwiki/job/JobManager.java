@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Proxy used to simplify execution of jobs.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -42,7 +42,7 @@ public interface JobManager
 
     /**
      * Return job status corresponding to the provided id from the current executed job or stored history.
-     *
+     * 
      * @param id the id of the job
      * @return the job status corresponding to the provided job id, null if none can be found
      */
@@ -50,7 +50,7 @@ public interface JobManager
 
     /**
      * Return job status corresponding to the provided id from the current executed job or stored history.
-     *
+     * 
      * @param id the id of the job
      * @return the job status corresponding to the provided job id, null if none can be found
      * @since 4.1M2
@@ -59,7 +59,7 @@ public interface JobManager
 
     /**
      * Start a new job with the provided identifier and wait until its finished.
-     *
+     * 
      * @param jobType the role hint of the job component
      * @param request the request
      * @return the created job
@@ -69,11 +69,18 @@ public interface JobManager
 
     /**
      * Add a new job in the queue of jobs to execute.
-     *
+     * 
      * @param jobType the role hint of the job component
      * @param request the request
      * @return the created job
      * @throws JobException error when creating the job
      */
     Job addJob(String jobType, Request request) throws JobException;
+
+    /**
+     * Add a new job in the queue of jobs to execute.
+     * 
+     * @param job the job to execute
+     */
+    void addJob(Job job);
 }

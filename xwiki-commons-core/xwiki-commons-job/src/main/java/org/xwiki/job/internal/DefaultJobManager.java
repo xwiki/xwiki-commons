@@ -188,6 +188,12 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     }
 
     @Override
+    public void addJob(Job job)
+    {
+        this.jobQueue.offer(job);
+    }
+
+    @Override
     public JobStatus getJobStatus(String id)
     {
         return getJobStatus(Arrays.asList(id));
