@@ -210,8 +210,12 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
             try {
                 JobStatus status = loadJobStatus(statusFile);
 
-                List<String> id = status.getRequest().getId();
-                this.jobs.put(id != null ? id : Collections.<String> emptyList(), status);
+                if (status != null) {
+                    List<String> id = status.getRequest().getId();
+                    this.jobs.put(id != null ? id : Collections.<String> emptyList(), status);
+                } else {
+                    this.logger.error("Invalid job status file [{}]", statusFile);
+                }
             } catch (Throwable e) {
                 this.logger.error("Failed to load job status from file [{}]", statusFile, e);
             }
