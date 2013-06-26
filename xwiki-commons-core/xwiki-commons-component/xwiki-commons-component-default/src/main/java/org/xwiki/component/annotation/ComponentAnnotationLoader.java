@@ -78,14 +78,14 @@ public class ComponentAnnotationLoader
     private static final String COMPONENT_LIST_ENCODING = "UTF-8";
 
     /**
-     * Factory to create a Component Descriptor from an annotated class.
-     */
-    private ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
-
-    /**
      * Logger to use for logging...
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ComponentAnnotationLoader.class);
+
+    /**
+     * Factory to create a Component Descriptor from an annotated class.
+     */
+    private ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
 
     /**
      * Loads all components defined using annotations.
@@ -156,11 +156,11 @@ public class ComponentAnnotationLoader
             for (ComponentDeclaration componentDeclaration : componentDeclarations) {
                 Class< ? > componentClass;
                 try {
-                     componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
+                    componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
                 } catch (Throwable e) {
                     throw new RuntimeException(
                         String.format("Failed to load component class [%s] for annotation parsing",
-                        componentDeclaration.getImplementationClassName()), e);
+                            componentDeclaration.getImplementationClassName()), e);
                 }
 
                 // Look for ComponentRole annotations and register one component per ComponentRole found
@@ -208,14 +208,14 @@ public class ComponentAnnotationLoader
                             + "[{}]. However, no action was taken since both components have the same priority "
                             + "level of [{}].",
                         new Object[] {componentDeclaration.getImplementationClassName(), roleHint,
-                        descriptorMap.get(roleHint).getImplementation().getName(), currentPriority});
+                            descriptorMap.get(roleHint).getImplementation().getName(), currentPriority});
                 }
             } else {
                 getLogger().debug(
                     "Ignored component [{}] since its priority level of [{}] is lower "
                         + "than the currently registered component [{}] which has a priority of [{}]",
                     new Object[] {componentDeclaration.getImplementationClassName(),
-                    componentDeclaration.getPriority(), currentPriority});
+                        componentDeclaration.getPriority(), currentPriority});
             }
         } else {
             descriptorMap.put(roleHint, componentDescriptor);
@@ -280,10 +280,13 @@ public class ComponentAnnotationLoader
         Set<Type> types = new LinkedHashSet<Type>();
 
         Component component = componentClass.getAnnotation(Component.class);
+
+        // If the roles are specified by the user then don't auto-discover roles!
         if (component != null && component.roles().length > 0) {
             types.addAll(Arrays.asList(component.roles()));
         } else {
-            // Look in both superclass and interfaces for @ComponentRole or javax.inject.Provider
+            // Auto-discover roles by looking for a @ComponentRole annotation or a @Provider one in both the superclass
+            // and implemented interfaces.
             for (Type interfaceType : getGenericInterfaces(componentClass)) {
                 Class< ? > interfaceClass;
                 Type[] interfaceParameters;
