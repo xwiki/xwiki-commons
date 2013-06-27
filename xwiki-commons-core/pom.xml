@@ -119,6 +119,26 @@
               </rules>
             </configuration>
           </execution>
+          <!-- Verify that all org.xwiki.commons dependencies in Commons have a version specified either as:
+               - ${project.version}
+               - a value not starting with $ (we want to allow supporting ranges)
+          -->
+          <execution>
+            <id>check-dependency-version</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <validateDependencyVersion implementation="org.xwiki.tool.enforcer.ValidateDependencyVersion">
+                  <versionCheck>
+                    <groupIdPrefix>org.xwiki.commons</groupIdPrefix>
+                    <allowedVersionRegex>\$\{project.version\}|[^$].*</allowedVersionRegex>
+                  </versionCheck>
+                </validateDependencyVersion>
+              </rules>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -146,39 +166,6 @@
             <!-- Remove the following excludes after we release the current version as final -->
           </excludes>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.xwiki.commons</groupId>
-            <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
-            <version>${commons.version}</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <!-- Verify that all org.xwiki.commons dependencies in Commons have a version specified either as:
-               - ${project.version}
-               - a value not starting with $ (we want to allow supporting ranges)
-          -->
-          <execution>
-            <id>check-dependency-version</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <validateDependencyVersion implementation="org.xwiki.tool.enforcer.ValidateDependencyVersion">
-                  <versionCheck>
-                    <groupIdPrefix>org.xwiki.commons</groupIdPrefix>
-                    <allowedVersionRegex>\$\{project.version\}|[^$].*</allowedVersionRegex>
-                  </versionCheck>
-                </validateDependencyVersion>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
