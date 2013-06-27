@@ -68,7 +68,7 @@
     <mockito.version>1.9.5</mockito.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>5.0.3</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>5.1-rc-1</xwiki.clirr.previous.version>
 
     <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>

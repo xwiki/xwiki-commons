@@ -139,18 +139,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/job/Job</className>
-              <method>void initialize(org.xwiki.job.Request)</method>
-              <justification>[YOUNG API] new method to separate job setup from job start to put real jobs in queue</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/job/JobManager</className>
-              <method>void addJob(org.xwiki.job.Job)</method>
-              <justification>[YOUNG API] new method to add a custom Job to the queue</justification>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
