@@ -34,7 +34,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Environment - Standard</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>63.97</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.63</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

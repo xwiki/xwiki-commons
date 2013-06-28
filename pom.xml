@@ -67,6 +67,9 @@
     <jmock.version>2.6.0</jmock.version>
     <mockito.version>1.9.5</mockito.version>
 
+    <!-- AspectJ -->
+    <aspectj.version>1.7.3</aspectj.version>
+
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>5.1-rc-1</xwiki.clirr.previous.version>
 
@@ -444,7 +447,7 @@
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
-        <version>1.6.11</version>
+        <version>${aspectj.version}</version>
       </dependency>
 
     </dependencies>
@@ -691,6 +694,14 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             <source>1.6</source>
             <target>1.6</target>
           </configuration>
+          <!-- Override so that we can use the AspectJ version we wish -->
+          <dependencies>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>aspectjtools</artifactId>
+              <version>${aspectj.version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -932,7 +943,7 @@ mmmm]]></license>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.6.2.201302030002</version>
+          <version>0.6.3.201306030806</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1123,9 +1134,16 @@ mmmm]]></license>
               </execution>
             </executions>
             <configuration>
-              <check>
-                <instructionRatio>${xwiki.jacoco.instructionRatio}</instructionRatio>
-              </check>}
+              <rules>
+                <rule>
+                  <limits>
+                    <limit>
+                      <counter>INSTRUCTION</counter>
+                      <minimum>${xwiki.jacoco.instructionRatio}</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
             </configuration>
           </plugin>
         </plugins>
