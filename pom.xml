@@ -82,7 +82,10 @@
          because we want to be to able to execute mvn sonar:sonar without passing a profile -->
     <!-- Tells Sonar to use jacoco for coverage results -->
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-    <xwiki.jacoco.itDestFile>${session.executionRootDirectory}/target/xwiki-jacoco-it.exec</xwiki.jacoco.itDestFile>
+    <!-- The system property xwiki.jacoco.itDestFile needs to be passed on the command line.
+         Example:
+            mvn clean install -Pcoverage -Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec
+    -->
     <!-- Tells Sonar where the Jacoco coverage result file is located for IT tests so that Sonar can display coverage
          for ITs -->
     <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
