@@ -85,6 +85,11 @@
     <!-- The system property xwiki.jacoco.itDestFile needs to be passed on the command line.
          Example:
             mvn clean install -Pcoverage -Dxwiki.jacoco.itDestFile=`pwd`/target/jacoco-it.exec
+         Note that unfortunately using the following does not work because of
+         http://jira.codehaus.org/browse/SONAR-3427:
+            <xwiki.jacoco.itDestFile>
+              ${session.executionRootDirectory}/target/xwiki-jacoco-it.exec
+            </xwiki.jacoco.itDestFile>
     -->
     <!-- Tells Sonar where the Jacoco coverage result file is located for IT tests so that Sonar can display coverage
          for ITs -->
