@@ -78,9 +78,15 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Default Jacoco Instruction Ratio for the Quality profile. We use 100% to force each module to define its
-         own ratio. Note that good values are above 70%. -->
-    <xwiki.jacoco.instructionRatio>100</xwiki.jacoco.instructionRatio>
+    <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
+         because we want to be to able to execute mvn sonar:sonar without passing a profile -->
+    <!-- Tells Sonar to use jacoco for coverage results -->
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <xwiki.jacoco.itDestFile>${session.executionRootDirectory}/target/xwiki-jacoco-it.exec</xwiki.jacoco.itDestFile>
+    <!-- Tells Sonar where the Jacoco coverage result file is located for IT tests so that Sonar can display coverage
+         for ITs -->
+    <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
+
   </properties>
   <prerequisites>
     <maven>3.0</maven>
@@ -1083,6 +1089,11 @@ mmmm]]></license>
     <!-- Profile for QA verifications that takes time -->
     <profile>
       <id>quality</id>
+      <properties>
+        <!-- Default Jacoco Instruction Ratio. We use 100% to force each module to define its
+             own ratio. Note that good values are above 70%. -->
+        <xwiki.jacoco.instructionRatio>100</xwiki.jacoco.instructionRatio>
+      </properties>
       <build>
         <plugins>
           <!-- Fail the build if the test coverage is below a given value. -->
@@ -1107,6 +1118,31 @@ mmmm]]></license>
               <check>
                 <instructionRatio>${xwiki.jacoco.instructionRatio}</instructionRatio>
               </check>}
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- Run full coverage for all modules in the current maven reactor build by generating the Jacoco result file
+           in one common location and appending data to it. -->
+      <id>coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jacoco-prepare</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <destFile>${xwiki.jacoco.itDestFile}</destFile>
+              <append>true</append>
             </configuration>
           </plugin>
         </plugins>
