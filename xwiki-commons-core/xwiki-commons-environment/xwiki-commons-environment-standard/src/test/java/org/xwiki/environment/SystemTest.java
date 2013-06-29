@@ -29,14 +29,13 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Unit tests for {@link org.xwiki.environment.System}.
- *
+ * 
  * @version $Id$
  * @since 3.5M1
  */
 public class SystemTest
 {
-    private static final File TMPDIR =
-        new File(java.lang.System.getProperty("java.io.tmpdir"), "xwiki-temp");
+    private static final File TMPDIR = new File(java.lang.System.getProperty("java.io.tmpdir"), "xwiki-temp");
 
     @Test
     public void testInitializeWithNoParameter() throws Exception
@@ -54,7 +53,7 @@ public class SystemTest
 
         // Verify that the Permanent directory is java.io.tmpdir
         Assert.assertEquals(new File(java.lang.System.getProperty("java.io.tmpdir")),
-                            environment.getPermanentDirectory());
+            environment.getPermanentDirectory());
     }
 
     @Test
@@ -64,8 +63,8 @@ public class SystemTest
         File temporaryDirectory = new File("/temporary");
         File resourceDirectory = new File("/resource");
 
-        ComponentManager componentManager = System.initialize(permanentDirectory, resourceDirectory,
-            temporaryDirectory);
+        ComponentManager componentManager =
+            System.initialize(permanentDirectory, resourceDirectory, temporaryDirectory);
         Assert.assertNotNull(componentManager);
 
         Environment environment = componentManager.getInstance(Environment.class);
@@ -75,5 +74,19 @@ public class SystemTest
 
         // Verify the Permanent directory
         Assert.assertEquals(permanentDirectory, environment.getPermanentDirectory());
+    }
+
+    @Test
+    public void testDispose() throws Exception
+    {
+        ComponentManager componentManager = System.initialize();
+
+        TestComponent testComponent = componentManager.getInstance(TestRole.class);
+
+        Assert.assertFalse(testComponent.isDisposed());
+
+        System.dispose(componentManager);
+
+        Assert.assertTrue(testComponent.isDisposed());
     }
 }
