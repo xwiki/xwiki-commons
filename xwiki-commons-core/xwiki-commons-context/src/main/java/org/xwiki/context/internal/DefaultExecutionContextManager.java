@@ -42,16 +42,6 @@ import org.xwiki.context.ExecutionContextManager;
 public class DefaultExecutionContextManager implements ExecutionContextManager
 {
     /**
-     * The name of the key associated to the old XWiki context in the {@link ExecutionContext}.
-     */
-    private static final String XWIKICONTEXT_KEY = "xwikicontext";
-
-    /**
-     * The name of the key associated to the Velocity context in the {@link ExecutionContext}.
-     */
-    private static final String VELOCITY_KEY = "velocityContext";
-
-    /**
      * Used to set the {@link ExecutionContext}.
      */
     @Inject
