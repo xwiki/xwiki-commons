@@ -19,8 +19,10 @@
  */
 package org.xwiki.velocity.introspection;
 
+import java.util.ArrayList;
+
 @Deprecated
-public class DeprecatedObject
+public class DeprecatedObject extends ArrayList<String>
 {
     public String foo()
     {

@@ -267,13 +267,14 @@ public class ChainingUberspectorTest
             oneOf(mockLogger).warn("Deprecated usage of method [java.util.Date.getYear] in mytemplate@1,19");
             oneOf(mockLogger).warn("Deprecated usage of getter [java.util.Date.getMonth] in mytemplate@1,40");
             oneOf(mockLogger).warn("Deprecated usage of method [org.xwiki.velocity.introspection.DeprecatedObject.foo] in mytemplate@1,55");
+            oneOf(mockLogger).warn("Deprecated usage of method [org.xwiki.velocity.introspection.DeprecatedObject.size] in mytemplate@1,70");
         }});
 
         this.engine.evaluate(context, writer, "mytemplate",
-                new StringReader("#set($foo = $date.getYear())$foo $date.month $dobject.foo()"));
+                new StringReader("#set($foo = $date.getYear())$foo $date.month $dobject.foo() $dobject.size()"));
 
-        Assert.assertEquals(d.getYear() + " " + d.getMonth() + " foo", writer.toString());
-        Assert.assertEquals(2, TestingUberspector.methodCalls);
+        Assert.assertEquals(d.getYear() + " " + d.getMonth() + " foo 0", writer.toString());
+        Assert.assertEquals(3, TestingUberspector.methodCalls);
         Assert.assertEquals(1, TestingUberspector.getterCalls);
     }
 }
