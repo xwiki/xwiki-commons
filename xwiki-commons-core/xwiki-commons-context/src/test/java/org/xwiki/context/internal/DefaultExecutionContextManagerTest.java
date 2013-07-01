@@ -51,8 +51,8 @@ public class DefaultExecutionContextManagerTest
         execution.setContext(context);
 
         Map xwikicontext = new HashMap();
-        context.newProperty("xwikicontext").initial(xwikicontext).inherited().declare();
-        context.newProperty("velocitycontext").initial(xwikicontext)
+        context.newProperty("property1").initial(xwikicontext).inherited().declare();
+        context.newProperty("property2").initial(xwikicontext)
             .inherited().makeFinal().cloneValue().declare();
 
         DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager(execution);
@@ -69,7 +69,7 @@ public class DefaultExecutionContextManagerTest
         Assert.assertSame(context, execution.getContext());
         Assert.assertEquals("value", ((List<String>) clonedContext.getProperty("key")).get(0));
         Assert.assertNotSame(context.getProperty("key"), clonedContext.getProperty("key"));
-        Assert.assertSame(xwikicontext, clonedContext.getProperty("xwikicontext"));
-        Assert.assertNotSame(xwikicontext, clonedContext.getProperty("velocitycontext"));
+        Assert.assertSame(xwikicontext, clonedContext.getProperty("property1"));
+        Assert.assertNotSame(xwikicontext, clonedContext.getProperty("property2"));
     }
 }
