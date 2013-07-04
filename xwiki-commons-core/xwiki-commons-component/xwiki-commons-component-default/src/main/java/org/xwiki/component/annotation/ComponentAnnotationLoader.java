@@ -437,6 +437,8 @@ public class ComponentAnnotationLoader
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
 
+            LOGGER.debug("Loading declared component definitions from [{}]", url);
+
             InputStream componentListStream = url.openStream();
 
             try {
@@ -472,11 +474,15 @@ public class ComponentAnnotationLoader
             if (inputLine.trim().length() > 0) {
                 try {
                     String[] chunks = inputLine.split(":");
+                    ComponentDeclaration componentDeclaration;
                     if (chunks.length > 1) {
-                        annotatedClassNames.add(new ComponentDeclaration(chunks[1], Integer.parseInt(chunks[0])));
+                        componentDeclaration = new ComponentDeclaration(chunks[1], Integer.parseInt(chunks[0]));
                     } else {
-                        annotatedClassNames.add(new ComponentDeclaration(chunks[0]));
+                        componentDeclaration = new ComponentDeclaration(chunks[0]);
                     }
+                    LOGGER.debug("  - Adding component definition [{}] with priority [{}]",
+                        componentDeclaration.getImplementationClassName(), componentDeclaration.getPriority());
+                    annotatedClassNames.add(componentDeclaration);
                 } catch (Exception e) {
                     getLogger().error("Failed to parse component declaration from [{}]", inputLine, e);
                 }
