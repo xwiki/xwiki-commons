@@ -178,7 +178,7 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed field. For example {@code private List&lt;A, B&gt; field} would
+     * Extract the last generic type from the passed field. For example {@code private List<A, B> field} would
      * return the {@code B} class.
      * 
      * @param field the field from which to extract the generic type
@@ -190,8 +190,8 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed field. For example {@code private List&lt;A, B&gt; field} would
-     * return the {@code B} class.
+     * Extract the last generic type from the passed field. For example {@code private List<A, B> field} would return
+     * the {@code B} class.
      * 
      * @param field the field from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
@@ -203,8 +203,8 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed Type. For example {@code private List&lt;A, B&gt; field} would
-     * return the {@code B} class.
+     * Extract the last generic type from the passed Type. For example {@code private List<A, B> field} would return the
+     * {@code B} class.
      * 
      * @param type the type from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
@@ -225,7 +225,7 @@ public final class ReflectionUtils
 
     /**
      * Extract the last generic type from the passed class. For example
-     * {@code public Class MyClass implements FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;} will return {@code B}.
+     * {@code public Class MyClass implements FilterClass<A, B>, SomeOtherClass<C>} will return {@code B}.
      * 
      * @param clazz the class to extract from
      * @param filterClass the class of the generic type we're looking for
@@ -250,8 +250,8 @@ public final class ReflectionUtils
 
     /**
      * Extract the real Type from the passed class. For example
-     * {@code public Class MyClass implements FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;} will return
-     * {@code FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;}.
+     * {@code public Class MyClass implements FilterClas<A, B>, SomeOtherClass<C>} will return
+     * {@code FilterClass<A, B>, SomeOtherClass<C>}.
      * 
      * @param clazz the class to extract from
      * @param filterClass the class of the generic type we're looking for
@@ -420,7 +420,7 @@ public final class ReflectionUtils
 
     /**
      * Retrieve a {@link Type} object from it's serialized form.
-     *
+     * 
      * @param serializedType the serialized form of the {@link Type} to retrieve
      * @param classLoader the {@link ClassLoader} to look into to find the given {@link Type}
      * @return the type built from the given {@link String}
@@ -470,8 +470,9 @@ public final class ReflectionUtils
                 }
             }
 
-            type = new DefaultParameterizedType(null, Class.forName(rawType, false, classLoader),
-                argumentTypes.toArray(new Type[1]));
+            type =
+                new DefaultParameterizedType(null, Class.forName(rawType, false, classLoader),
+                    argumentTypes.toArray(new Type[1]));
         } else {
             // This was a simple type, no type arguments were found.
             type = Class.forName(sType, false, classLoader);
