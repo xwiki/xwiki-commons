@@ -84,7 +84,7 @@ Find below all the recent news from the site blog and from the list of pages tha
       &lt;ul&gt;
         #foreach ($item in $list)
           #set($troubi ="non")
-          #if ($xwiki.hasAccessLevel("view", $context.user, "${context.database}:${item}"))
+          #if ($xwiki.hasAccessLevel("view", $xcontext.user, "${context.database}:${item}"))
             #set($bentrydoc = $xwiki.getDocument($item))
             #set($cclass = $xwiki.getDocument("XWiki.XWikiComments").getxWikiClass())
             #set($comment = $cclass.newObject())
