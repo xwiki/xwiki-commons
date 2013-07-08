@@ -190,8 +190,8 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed field. For example <tt>private List&lt;A, B&gt; field</tt> would return
-     * the {@code B} class.
+     * Extract the last generic type from the passed field. For example <tt>private List&lt;A, B&gt; field</tt> would
+     * return the {@code B} class.
      * 
      * @param field the field from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
@@ -203,8 +203,8 @@ public final class ReflectionUtils
     }
 
     /**
-     * Extract the last generic type from the passed Type. For example <tt>private List&lt;A, B&gt; field</tt> would return the
-     * {@code B} class.
+     * Extract the last generic type from the passed Type. For example <tt>private List&lt;A, B&gt; field</tt> would
+     * return the {@code B} class.
      * 
      * @param type the type from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
