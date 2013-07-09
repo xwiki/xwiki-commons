@@ -32,6 +32,9 @@
   <artifactId>xwiki-commons-script</artifactId>
   <name>XWiki Commons - Script</name>
   <description>XWiki Commons - Script</description>
+  <properties>
+    <xwiki.jacoco.instructionRatio>1</xwiki.jacoco.instructionRatio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
