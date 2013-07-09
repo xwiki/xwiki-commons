@@ -1111,8 +1111,7 @@ mmmm]]></license>
       <properties>
         <!-- Default Jacoco Instruction Ratio. We use 100% to force each module to define its
              own ratio. Note that good values are above 70%. -->
-        <!-- TODO: Use 0.99999 till https://github.com/jacoco/jacoco/issues/115 is fixed -->
-        <xwiki.jacoco.instructionRatio>0.99999</xwiki.jacoco.instructionRatio>
+        <xwiki.jacoco.instructionRatio>1.00</xwiki.jacoco.instructionRatio>
       </properties>
       <build>
         <plugins>
