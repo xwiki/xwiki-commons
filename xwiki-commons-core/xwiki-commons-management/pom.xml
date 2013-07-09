@@ -33,9 +33,6 @@
   <name>XWiki Commons - Management</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Management</description>
-  <properties>
-    <xwiki.jacoco.instructionRatio>1</xwiki.jacoco.instructionRatio>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

@@ -33,9 +33,6 @@
   <name>XWiki Commons - Test Framework - Component</name>
   <packaging>jar</packaging>
   <description>For testing XWiki Components</description>
-  <properties>
-    <xwiki.jacoco.instructionRatio>1</xwiki.jacoco.instructionRatio>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

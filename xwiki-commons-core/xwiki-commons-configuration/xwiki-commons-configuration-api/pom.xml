@@ -33,9 +33,6 @@
   <name>XWiki Commons - Configuration - API</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Configuration - API</description>
-  <properties>
-    <xwiki.jacoco.instructionRatio>1</xwiki.jacoco.instructionRatio>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

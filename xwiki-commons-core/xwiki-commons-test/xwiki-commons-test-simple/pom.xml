@@ -33,9 +33,6 @@
   <name>XWiki Commons - Test Framework - Simple</name>
   <packaging>jar</packaging>
   <description>For tests not requiring notion of Components</description>
-  <properties>
-    <xwiki.jacoco.instructionRatio>1</xwiki.jacoco.instructionRatio>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
