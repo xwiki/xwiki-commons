@@ -26,13 +26,15 @@ import org.xwiki.component.annotation.Role;
 /**
  * Converter provided value in the provided target type.
  * <p>
- * The role of this component is supposed to be the supported target types. For example:
+ * The type supported by the converted is indicated in its role.
+ * <p>
+ * For example:
  * <p>
  * <blockquote>
  * 
  * <pre>
- * &#064;Component(&quot;java.lang.Integer&quot;)
- * public class IntegerConverter implements Converter
+ * &#064;Component
+ * public class IntegerConverter implements Converter&lt;java.lang.Integer&gt;
  * </pre>
  * 
  * </blockquote>
