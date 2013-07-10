@@ -24,6 +24,7 @@ import java.awt.Color;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.properties.ConverterManager;
+import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
@@ -62,5 +63,11 @@ public class DefaultConverterManagerTest extends AbstractComponentTestCase
     public void testConvertColor()
     {
         Assert.assertEquals(Color.WHITE, this.defaultConverterManager.convert(Color.class, "#ffffff"));
+    }
+
+    @Test(expected = ConversionException.class)
+    public void testConvertUnsupportedType()
+    {
+        this.defaultConverterManager.convert(DefaultConverterManagerTest.class, "#ffffff");
     }
 }

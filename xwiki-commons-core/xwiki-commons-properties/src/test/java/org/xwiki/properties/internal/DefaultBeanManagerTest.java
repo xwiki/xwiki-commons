@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.PropertyException;
 import org.xwiki.properties.PropertyMandatoryException;
+import org.xwiki.properties.RawProperties;
 import org.xwiki.properties.internal.DefaultBeanDescriptorTest.BeanTest;
 import org.xwiki.properties.internal.converter.ConvertUtilsConverter;
 import org.xwiki.properties.internal.converter.EnumConverter;
@@ -40,14 +41,19 @@ import org.xwiki.test.annotation.ComponentList;
  * 
  * @version $Id$
  */
-@ComponentList({
-    DefaultBeanManager.class,
-    DefaultConverterManager.class,
-    EnumConverter.class,
-    ConvertUtilsConverter.class
-})
+@ComponentList({DefaultBeanManager.class, DefaultConverterManager.class, EnumConverter.class,
+ConvertUtilsConverter.class})
 public class DefaultBeanManagerTest
 {
+    public static class RawPropertiesTest extends HashMap<String, Object> implements RawProperties
+    {
+        @Override
+        public void set(String propertyName, Object value)
+        {
+            put(propertyName, value);
+        }
+    }
+
     @Rule
     public final ComponentManagerRule componentManager = new ComponentManagerRule();
 
@@ -87,5 +93,20 @@ public class DefaultBeanManagerTest
     public void testPopulateWhenMissingMandatoryProperty() throws PropertyException
     {
         this.defaultBeanManager.populate(new BeanTest(), new HashMap<String, String>());
+    }
+
+    @Test
+    public void testPopulateRawProperties() throws PropertyException
+    {
+        Map<String, Object> values = new HashMap<String, Object>();
+
+        values.put("pro1", "value1");
+        values.put("prop2", 2);
+
+        RawPropertiesTest bean = new RawPropertiesTest();
+
+        this.defaultBeanManager.populate(bean, values);
+
+        Assert.assertEquals(values, bean);
     }
 }
