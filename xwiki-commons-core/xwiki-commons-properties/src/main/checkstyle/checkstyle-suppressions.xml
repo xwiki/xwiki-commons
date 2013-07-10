@@ -1,4 +1,6 @@
-/*
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,22 +18,13 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-package org.xwiki.properties.internal.converter;
+-->
 
-import java.util.List;
+<!DOCTYPE suppressions PUBLIC
+     "-//Puppy Crawl//DTD Suppressions 1.0//EN"
+     "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
-
-/**
- * @version $Id$
- * @since 5.2M1
- */
-@Component
-@Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
-{
-}
+<suppressions>
+  <!-- This method is supposed to return HashSet, that the type it's handling... -->
+  <suppress checks="IllegalType" files="HashSetConverter.java" />
+</suppressions>

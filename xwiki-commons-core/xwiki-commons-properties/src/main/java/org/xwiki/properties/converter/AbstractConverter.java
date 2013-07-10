@@ -28,28 +28,29 @@ import java.lang.reflect.Type;
  * Commonly a new component is supposed to implements {@link AbstractConverter#convertToString(Object)} and
  * {@link AbstractConverter#convertToType(Class, Object)}.
  * 
+ * @param <T> the type in which the provided value has to be converted
  * @version $Id$
  * @since 2.0M2
  */
-public abstract class AbstractConverter implements Converter
+public abstract class AbstractConverter<T> implements Converter<T>
 {
     @Override
-    public <T> T convert(Type targetType, Object sourceValue)
+    public <G> G convert(Type targetType, Object sourceValue)
     {
         Class< ? > sourceType = sourceValue == null ? null : sourceValue.getClass();
 
-        T result;
+        G result;
         if (targetType.equals(String.class)) {
             // Convert --> String
-            result = (T) ((Class) targetType).cast(convertToString(sourceValue));
+            result = (G) ((Class) targetType).cast(convertToString((T) sourceValue));
         } else if (targetType.equals(sourceType)) {
             // No conversion necessary
-            result = (T) sourceValue;
+            result = (G) sourceValue;
         } else {
             // Convert --> Type
-            result = (T) convertToType(targetType, sourceValue);
+            result = (G) convertToType(targetType, sourceValue);
         }
-        
+
         return result;
     }
 
@@ -62,7 +63,7 @@ public abstract class AbstractConverter implements Converter
      * @param value The input value to be converted.
      * @return the converted String value.
      */
-    protected String convertToString(Object value)
+    protected String convertToString(T value)
     {
         return value.toString();
     }
@@ -72,15 +73,15 @@ public abstract class AbstractConverter implements Converter
      * <p>
      * Typical implementations will provide a minimum of <code>String --> type</code> conversion.
      * 
-     * @param <T> the type in which the provided value has o be converted
+     * @param <G> the type in which the provided value has o be converted
      * @param targetType Data type to which this value should be converted.
      * @param value The input value to be converted.
      * @return The converted value.
      * @since 3.0M1
      */
-    protected <T> T convertToType(Type targetType, Object value)
+    protected <G extends T> G convertToType(Type targetType, Object value)
     {
-        Class<T> clazz;
+        Class<G> clazz;
         if (targetType instanceof Class) {
             clazz = (Class) targetType;
         } else if (targetType instanceof ParameterizedType) {
@@ -98,15 +99,15 @@ public abstract class AbstractConverter implements Converter
      * <p>
      * Typical implementations will provide a minimum of <code>String --> type</code> conversion.
      * 
-     * @param <T> the type in which the provided value has o be converted
+     * @param <G> the type in which the provided value has o be converted
      * @param type Data type to which this value should be converted.
      * @param value The input value to be converted.
      * @return The converted value.
      * @deprecated since 3.0M1 overwrite {@link #convertToType(Type, Object)} instead
      */
     @Deprecated
-    protected <T> T convertToType(Class<T> type, Object value)
+    protected <G extends T> G convertToType(Class<G> type, Object value)
     {
-        throw new ConversionException("Not implemented.");
+        return convertToType((Type) type, value);
     }
 }

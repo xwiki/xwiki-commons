@@ -19,19 +19,38 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.util.List;
+import java.lang.reflect.Type;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
+import org.xwiki.properties.converter.AbstractConverter;
+import org.xwiki.properties.converter.Converter;
 
 /**
+ * Converter that converts a value into an enumeration class value.
+ * 
  * @version $Id$
- * @since 5.2M1
+ * @since 2.0M2
+ * @deprecated since 5.2M1 use {@link EnumConverter} instead
  */
 @Component
+@Named("enum")
 @Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
+@Deprecated
+public class DeprecatedEnumConverter extends AbstractConverter
 {
+    /**
+     * The actual converter.
+     */
+    @Inject
+    private Converter<Enum> converter;
+
+    @Override
+    public Object convert(Type targetType, Object sourceValue)
+    {
+        return this.converter.convert(targetType, sourceValue);
+    }
 }

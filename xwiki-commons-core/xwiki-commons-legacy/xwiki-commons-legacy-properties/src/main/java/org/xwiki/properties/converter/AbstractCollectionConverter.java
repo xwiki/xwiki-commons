@@ -38,6 +38,7 @@ import org.xwiki.properties.ConverterManager;
  * @version $Id$
  * @since 3.0M1
  */
+@Deprecated
 public abstract class AbstractCollectionConverter extends AbstractConverter
 {
     /**
@@ -90,14 +91,14 @@ public abstract class AbstractCollectionConverter extends AbstractConverter
     }
 
     @Override
-    protected <T> T convertToType(Type targetType, Object value)
+    protected Object convertToType(Type targetType, Object value)
     {
         Type genericType = null;
         if (targetType instanceof ParameterizedType) {
             genericType = ((ParameterizedType) targetType).getActualTypeArguments()[0];
         }
 
-        return (T) parseElements(value.toString(), genericType);
+        return parseElements(value.toString(), genericType);
     }
 
     /**

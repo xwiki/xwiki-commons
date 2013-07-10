@@ -19,19 +19,26 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
+import org.xwiki.properties.converter.AbstractCollectionConverter;
 
 /**
  * @version $Id$
- * @since 5.2M1
+ * @deprecated since 5.2M1 use {@link SetConverter} instead
  */
-@Component
+@Component(hints = {"java.util.Set", "java.util.LinkedHashSet", "java.util.HashSet" })
 @Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
+@Deprecated
+public class DeprecatedSetConverter extends AbstractCollectionConverter
 {
+    @Override
+    protected Collection newCollection()
+    {
+        return new LinkedHashSet();
+    }
 }

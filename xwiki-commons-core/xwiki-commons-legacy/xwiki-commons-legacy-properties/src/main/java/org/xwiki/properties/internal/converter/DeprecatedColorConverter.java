@@ -19,19 +19,38 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.util.List;
+import java.awt.Color;
+import java.lang.reflect.Type;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
+import org.xwiki.properties.converter.Converter;
 
 /**
+ * Converter that converts a value into an {@link Color} object.
+ * 
  * @version $Id$
- * @since 5.2M1
+ * @since 2.0M2
+ * @deprecated since 5.2M use {@link ColorConverter} instead
  */
 @Component
+@Named("java.awt.Color")
 @Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
+@Deprecated
+public class DeprecatedColorConverter implements Converter
 {
+    /**
+     * The actual converter.
+     */
+    @Inject
+    private Converter<Color> converter;
+
+    @Override
+    public Object convert(Type targetType, Object sourceValue)
+    {
+        return this.converter.convert(targetType, sourceValue);
+    }
 }

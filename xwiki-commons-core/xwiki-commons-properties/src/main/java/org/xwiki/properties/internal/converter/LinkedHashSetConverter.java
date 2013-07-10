@@ -19,12 +19,12 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
+import org.xwiki.properties.converter.collection.AbstractSetConverter;
 
 /**
  * @version $Id$
@@ -32,6 +32,6 @@ import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
  */
 @Component
 @Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
+public class LinkedHashSetConverter extends AbstractSetConverter<LinkedHashSet>
 {
 }

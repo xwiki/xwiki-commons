@@ -21,7 +21,6 @@ package org.xwiki.properties.internal.converter;
 
 import java.lang.reflect.Type;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -29,26 +28,26 @@ import org.xwiki.properties.converter.AbstractConverter;
 import org.xwiki.properties.converter.ConversionException;
 
 /**
- * Bean Utils converter that converts a value into an enumeration class value.
+ * Converter that converts a value into an enumeration class value.
  * 
  * @version $Id$
- * @since 2.0M2
+ * @since 5.2M1
  */
 @Component
-@Named("enum")
 @Singleton
-public class EnumConverter extends AbstractConverter
+public class EnumConverter extends AbstractConverter<Enum>
 {
     @Override
-    protected <T> T convertToType(Type type, Object value)
+    protected <E extends Enum> E convertToType(Type type, Object value)
     {
         if (value != null) {
-            Object[] enumValues = ((Class<T>) type).getEnumConstants();
+            Object[] enumValues = ((Class< ? >) type).getEnumConstants();
 
             String testValue = value.toString();
             for (Object enumValue : enumValues) {
+                // Conversion is case insensitive
                 if (enumValue.toString().equalsIgnoreCase(testValue)) {
-                    return (T) enumValue;
+                    return (E) enumValue;
                 }
             }
 

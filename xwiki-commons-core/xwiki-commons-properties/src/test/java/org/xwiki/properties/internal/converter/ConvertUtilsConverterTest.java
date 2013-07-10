@@ -22,8 +22,8 @@ package org.xwiki.properties.internal.converter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
-import org.xwiki.properties.converter.Converter;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
@@ -33,7 +33,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
  */
 public class ConvertUtilsConverterTest extends AbstractComponentTestCase
 {
-    private Converter convertUtilsConverter;
+    private ConverterManager converterManager;
 
     public Integer[] field;
 
@@ -43,25 +43,24 @@ public class ConvertUtilsConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.convertUtilsConverter = getComponentManager().getInstance(Converter.class);
+        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
     }
 
     @Test
     public void testConvert() throws SecurityException
     {
-        Assert.assertEquals(Integer.valueOf(42), this.convertUtilsConverter.convert(Integer.class, "42"));
+        Assert.assertEquals(Integer.valueOf(42), this.converterManager.convert(Integer.class, "42"));
     }
 
     @Test
     public void testConvertArrays() throws SecurityException, NoSuchFieldException
     {
-        Assert.assertArrayEquals(new int[] {1, 2, 3},
-            this.convertUtilsConverter.<int[]> convert(int[].class, "1, 2, 3"));
+        Assert.assertArrayEquals(new int[] {1, 2, 3}, this.converterManager.<int[]> convert(int[].class, "1, 2, 3"));
 
         Assert.assertArrayEquals(new Integer[] {1, 2, 3},
-            this.convertUtilsConverter.<Integer[]> convert(Integer[].class, "1, 2, 3"));
+            this.converterManager.<Integer[]> convert(Integer[].class, "1, 2, 3"));
 
-        Assert.assertArrayEquals(new Integer[] {1, 2, 3}, this.convertUtilsConverter.<Integer[]> convert(
+        Assert.assertArrayEquals(new Integer[] {1, 2, 3}, this.converterManager.<Integer[]> convert(
             ConvertUtilsConverterTest.class.getField("field").getGenericType(), "1, 2, 3"));
     }
 
@@ -69,11 +68,11 @@ public class ConvertUtilsConverterTest extends AbstractComponentTestCase
     public void convertWhenNoConverterAvailable()
     {
         try {
-            this.convertUtilsConverter.convert(ConvertUtilsConverter.class, "");
+            this.converterManager.convert(ConvertUtilsConverter.class, "");
             Assert.fail("Should have thrown an exception here");
         } catch (ConversionException expected) {
-            Assert.assertEquals("Failed to find a Converter to convert from [java.lang.String] to "
-                + "[" + ConvertUtilsConverter.class.getName() + "]", expected.getMessage());
+            Assert.assertEquals("Failed to find a Converter to convert from [java.lang.String] to " + "["
+                + ConvertUtilsConverter.class.getName() + "]", expected.getMessage());
         }
     }
 }

@@ -26,41 +26,30 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-legacy</artifactId>
     <version>5.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-legacy</artifactId>
-  <name>XWiki Commons - Legacy</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Legacy</description>
-  <modules>
-    <module>xwiki-commons-legacy-component</module>
-    <module>xwiki-commons-legacy-configuration</module>
-    <module>xwiki-commons-legacy-properties</module>
-  </modules>
+  <artifactId>xwiki-commons-legacy-properties</artifactId>
+  <name>XWiki Commons - Properties</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Properties</description>
+  <properties>
+    <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
+  </properties>
   <dependencies>
-    <!-- Needed for backward compatibility Aspects -->
     <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-properties</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Tests dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-test-component</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-no-legacy-dependencies</id>
-            <configuration>
-              <!-- Skip Enforcer check on legacy dependencies since we allow legacy modules to depend on other legacy
-                   modules -->
-              <skip>true</skip>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
+       

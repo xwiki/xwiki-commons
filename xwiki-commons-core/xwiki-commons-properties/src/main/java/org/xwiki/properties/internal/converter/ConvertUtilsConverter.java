@@ -79,21 +79,21 @@ public class ConvertUtilsConverter implements Converter, Initializable
         // that the returned value is compatible with the expected type and raise a ConversionException if not.
         if (!TypeUtils.isAssignable(targetType, result.getClass())) {
             throw new org.xwiki.properties.converter.ConversionException(String.format(
-                "Failed to find a Converter to convert from [%s] to [%s]",
-                sourceValue.getClass().getName(), targetType.getName()));
+                "Failed to find a Converter to convert from [%s] to [%s]", sourceValue.getClass().getName(),
+                targetType.getName()));
         }
 
         return result;
     }
 
     @Override
-    public <T> T convert(Type targetType, Object sourceValue)
+    public Object convert(Type targetType, Object sourceValue)
     {
-        Class<T> clazz;
+        Class< ? > clazz;
         if (targetType instanceof Class) {
-            clazz = (Class<T>) targetType;
+            clazz = (Class< ? >) targetType;
         } else if (targetType instanceof ParameterizedType) {
-            clazz = (Class<T>) ((ParameterizedType) targetType).getRawType();
+            clazz = (Class< ? >) ((ParameterizedType) targetType).getRawType();
         } else {
             throw new org.xwiki.properties.converter.ConversionException("Unknown type [" + targetType + "]");
         }

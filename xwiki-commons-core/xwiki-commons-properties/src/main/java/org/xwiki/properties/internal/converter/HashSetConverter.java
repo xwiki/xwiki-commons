@@ -19,12 +19,13 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.util.List;
+import java.lang.reflect.Type;
+import java.util.HashSet;
 
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
+import org.xwiki.properties.converter.collection.AbstractSetConverter;
 
 /**
  * @version $Id$
@@ -32,6 +33,11 @@ import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
  */
 @Component
 @Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
+public class HashSetConverter extends AbstractSetConverter<HashSet>
 {
+    @Override
+    protected HashSet newCollection(Type targetType)
+    {
+        return new HashSet();
+    }
 }

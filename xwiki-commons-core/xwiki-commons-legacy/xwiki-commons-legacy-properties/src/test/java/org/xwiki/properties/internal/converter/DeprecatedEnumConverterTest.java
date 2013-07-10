@@ -19,23 +19,27 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.awt.Color;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
+import org.xwiki.properties.converter.Converter;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
- * Validate {@link ColorConverter} component.
+ * Validate {@link EnumConverter} component.
  * 
  * @version $Id$
  */
-public class ColorConverterTest extends AbstractComponentTestCase
+public class DeprecatedEnumConverterTest extends AbstractComponentTestCase
 {
-    private ConverterManager converterManager;
+    public Converter enumConverter;
+
+    public enum EnumTest
+    {
+        VALUE1,
+        Value2
+    }
 
     @Before
     @Override
@@ -43,25 +47,35 @@ public class ColorConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.enumConverter = getComponentManager().getInstance(Converter.class, "enum");
     }
 
     @Test
-    public void testConvertRGB()
+    public void testConvertValid()
     {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "255 , 255 , 255"));
+        Assert.assertEquals(EnumTest.VALUE1, this.enumConverter.convert(EnumTest.class, "VALUE1"));
     }
 
     @Test
-    public void testConvertHTML()
+    public void testConvertIgnireCase()
     {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#ffffff"));
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#FFFFFF"));
+        Assert.assertEquals(EnumTest.VALUE1, this.enumConverter.convert(EnumTest.class, "value1"));
     }
 
-    @Test(expected = ConversionException.class)
+    @Test
     public void testConvertInvalid()
     {
-        this.converterManager.convert(Color.class, "wrongformat");
+        try {
+            Assert.assertEquals(null, this.enumConverter.convert(EnumTest.class, "notexistingvalue"));
+            Assert.fail("Should have thrown a ConversionException exception");
+        } catch (ConversionException expected) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testConvertNull()
+    {
+        Assert.assertEquals(null, this.enumConverter.convert(EnumTest.class, null));
     }
 }

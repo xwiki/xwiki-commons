@@ -19,7 +19,7 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.inject.Singleton;
 
@@ -32,6 +32,6 @@ import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
  */
 @Component
 @Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
+public class ArrayListConverter extends AbstractCollectionConverter<ArrayList>
 {
 }

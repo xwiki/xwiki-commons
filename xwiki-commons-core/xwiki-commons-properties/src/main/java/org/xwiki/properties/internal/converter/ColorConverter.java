@@ -20,28 +20,36 @@
 package org.xwiki.properties.internal.converter;
 
 import java.awt.Color;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.StringTokenizer;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.converter.AbstractConverter;
 import org.xwiki.properties.converter.ConversionException;
+import org.xwiki.properties.converter.Converter;
 
 /**
- * Bean Utils converter that converts a value into an {@link Color} object.
+ * Converter that converts a value into an {@link Color} object.
  * 
  * @version $Id$
- * @since 2.0M2
+ * @since 5.2M1
  */
 @Component
-@Named("java.awt.Color")
 @Singleton
-public class ColorConverter extends AbstractConverter
+public class ColorConverter extends AbstractConverter<Color>
 {
+    /**
+     * Type instance for Provider<XWikiContext>.
+     * 
+     * @since 5.2M1
+     */
+    public static final ParameterizedType TYPE = new DefaultParameterizedType(null, Converter.class, Color.class);
+
     /**
      * The String input supported by this {@link org.apache.commons.beanutils.Converter}.
      */
@@ -59,7 +67,7 @@ public class ColorConverter extends AbstractConverter
     }
 
     @Override
-    protected String convertToString(Object value)
+    protected String convertToString(Color value)
     {
         Color colorValue = (Color) value;
 

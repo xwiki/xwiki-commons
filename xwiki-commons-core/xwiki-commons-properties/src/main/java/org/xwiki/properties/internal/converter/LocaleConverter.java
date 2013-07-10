@@ -22,7 +22,6 @@ package org.xwiki.properties.internal.converter;
 import java.lang.reflect.Type;
 import java.util.Locale;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.LocaleUtils;
@@ -30,15 +29,14 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.properties.converter.AbstractConverter;
 
 /**
- * Bean Utils converter that converts a value into an {@link Locale} object.
+ * Converter that converts a value into an {@link Locale} object.
  * 
  * @version $Id$
- * @since 4.3M2
+ * @since 5.2M1
  */
 @Component
-@Named("java.util.Locale")
 @Singleton
-public class LocaleConverter extends AbstractConverter
+public class LocaleConverter extends AbstractConverter<Locale>
 {
     @Override
     protected Locale convertToType(Type type, Object value)

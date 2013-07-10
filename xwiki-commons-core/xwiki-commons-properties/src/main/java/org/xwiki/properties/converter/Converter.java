@@ -39,18 +39,19 @@ import org.xwiki.component.annotation.Role;
  * <p>
  * When something goes wrong a Converter can throw a {@link ConversionException}.
  * 
+ * @param <T> the type in which the provided value has to be converted
  * @version $Id$
  * @since 2.0M2
  */
 @Role
-public interface Converter
+public interface Converter<T>
 {
     /**
-     * @param <T> the type in which the provided value has to be converted
+     * @param <G> the type in which the provided value has to be converted
      * @param targetType the type in which the provided value has to be converted
      * @param sourceValue the value to convert
      * @return the converted value
      * @since 3.0M1
      */
-    <T> T convert(Type targetType, Object sourceValue);
+    <G> G convert(Type targetType, Object sourceValue);
 }

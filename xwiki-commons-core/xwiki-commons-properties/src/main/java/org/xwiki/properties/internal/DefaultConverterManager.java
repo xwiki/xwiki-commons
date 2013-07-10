@@ -23,13 +23,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.properties.converter.Converter;
@@ -62,8 +63,7 @@ public class DefaultConverterManager implements ConverterManager
      * {@link Enum}.
      */
     @Inject
-    @Named("enum")
-    private Converter enumConverter;
+    private Converter<Enum> enumConverter;
 
     /**
      * Used when no direct {@link Converter} can be found for provided target type.
@@ -81,10 +81,10 @@ public class DefaultConverterManager implements ConverterManager
     public <T> T convert(Type targetType, Object value)
     {
         // Convert
-        Converter converter = lookupConverter(targetType);
+        Converter<T> converter = lookupConverter(targetType);
 
         if (converter != null) {
-            return (T) converter.convert(targetType, value);
+            return converter.convert(targetType, value);
         } else {
             throw new ConversionException("Cannot find Converter to convert value [" + value + "] to type ["
                 + targetType + "] ");
@@ -94,45 +94,60 @@ public class DefaultConverterManager implements ConverterManager
     /**
      * Find the right {@link Converter} for the provided {@link Class}.
      * 
+     * @param <T> the type in which the provided value has to be converted
      * @param targetType the type to convert to
      * @return the {@link Converter} corresponding to the class
      */
-    private Converter lookupConverter(Type targetType)
+    private <T> Converter<T> lookupConverter(Type targetType)
     {
-        Converter converter = null;
+        // Try with complete type
+        Converter<T> converter = getConverter(targetType);
 
-        String typeGenericName = getTypeGenericName(targetType);
-
-        if (this.componentManager.hasComponent(Converter.class, typeGenericName)) {
-            try {
-                converter = this.componentManager.getInstance(Converter.class, typeGenericName);
-            } catch (ComponentLookupException e) {
-                this.logger.error("Failed to find a specific Converter for type [" + typeGenericName + "]", e);
-            }
-        }
-
+        // Try with simple class
         if (converter == null && targetType instanceof ParameterizedType) {
-            String typeName = getTypeName(targetType);
-            if (this.componentManager.hasComponent(Converter.class, typeName)) {
-                try {
-                    converter = this.componentManager.getInstance(Converter.class, typeName);
-                } catch (ComponentLookupException e) {
-                    this.logger.error("Failed to find a specific Converter for class [" + typeName + "]", e);
-                }
-            }
+            Class< ? > targetClass = ReflectionUtils.getTypeClass(targetType);
+            converter = getConverter(targetClass);
         }
 
         if (converter == null) {
             if (targetType instanceof Class && Enum.class.isAssignableFrom((Class< ? >) targetType)) {
-                converter = this.enumConverter;
+                // It's an Enum
+                converter = (Converter<T>) this.enumConverter;
             } else {
-                this.logger.debug("Using the default Converter for type [{}]", typeGenericName);
+                // Fallback on default converter
+
+                this.logger.debug("Using the default Converter for type [{}]", targetType);
 
                 converter = this.defaultConverter;
             }
         }
 
         return converter;
+    }
+
+    /**
+     * @param <T> the type in which the provided value has to be converted
+     * @param targetType the type for which the converter has been registered
+     * @return the converter associated to the provided type
+     */
+    private <T> Converter<T> getConverter(Type targetType)
+    {
+        try {
+            ParameterizedType converterType = new DefaultParameterizedType(null, Converter.class, targetType);
+            if (this.componentManager.hasComponent(converterType)) {
+                return this.componentManager.getInstance(converterType);
+            }
+
+            // Old way of registering converters
+            String typeGenericName = getTypeGenericName(targetType);
+            if (this.componentManager.hasComponent(Converter.class, typeGenericName)) {
+                return this.componentManager.getInstance(Converter.class, typeGenericName);
+            }
+        } catch (ComponentLookupException e) {
+            throw new ConversionException("Failed to initialize converter for target type [" + targetType + "]", e);
+        }
+
+        return null;
     }
 
     /**
@@ -145,9 +160,9 @@ public class DefaultConverterManager implements ConverterManager
     {
         String name;
         if (type instanceof Class) {
-            name = ((Class) type).getName();
+            name = ((Class< ? >) type).getName();
         } else if (type instanceof ParameterizedType) {
-            name = ((Class) ((ParameterizedType) type).getRawType()).getName();
+            name = ((Class< ? >) ((ParameterizedType) type).getRawType()).getName();
         } else {
             name = type.toString();
         }

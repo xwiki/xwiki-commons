@@ -22,8 +22,8 @@ package org.xwiki.properties.internal.converter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
-import org.xwiki.properties.converter.Converter;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
@@ -33,7 +33,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
  */
 public class EnumConverterTest extends AbstractComponentTestCase
 {
-    public Converter enumConverter;
+    private ConverterManager converterManager;
 
     public enum EnumTest
     {
@@ -47,35 +47,30 @@ public class EnumConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.enumConverter = getComponentManager().getInstance(Converter.class, "enum");
+        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
     }
 
     @Test
     public void testConvertValid()
     {
-        Assert.assertEquals(EnumTest.VALUE1, this.enumConverter.convert(EnumTest.class, "VALUE1"));
+        Assert.assertEquals(EnumTest.VALUE1, this.converterManager.convert(EnumTest.class, "VALUE1"));
     }
 
     @Test
     public void testConvertIgnireCase()
     {
-        Assert.assertEquals(EnumTest.VALUE1, this.enumConverter.convert(EnumTest.class, "value1"));
+        Assert.assertEquals(EnumTest.VALUE1, this.converterManager.convert(EnumTest.class, "value1"));
     }
 
-    @Test
+    @Test(expected = ConversionException.class)
     public void testConvertInvalid()
     {
-        try {
-            Assert.assertEquals(null, this.enumConverter.convert(EnumTest.class, "notexistingvalue"));
-            Assert.fail("Should have thrown a ConversionException exception");
-        } catch (ConversionException expected) {
-            // expected
-        }
+        this.converterManager.convert(EnumTest.class, "notexistingvalue");
     }
 
     @Test
     public void testConvertNull()
     {
-        Assert.assertEquals(null, this.enumConverter.convert(EnumTest.class, null));
+        Assert.assertNull(this.converterManager.convert(EnumTest.class, null));
     }
 }

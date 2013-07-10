@@ -24,8 +24,8 @@ import java.awt.Color;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
+import org.xwiki.properties.converter.Converter;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
@@ -33,9 +33,9 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
  * 
  * @version $Id$
  */
-public class ColorConverterTest extends AbstractComponentTestCase
+public class DeprecatedColorConverterTest extends AbstractComponentTestCase
 {
-    private ConverterManager converterManager;
+    private Converter colorConverter;
 
     @Before
     @Override
@@ -43,25 +43,30 @@ public class ColorConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.colorConverter = getComponentManager().getInstance(Converter.class, Color.class.getName());
     }
 
     @Test
     public void testConvertRGB()
     {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "255 , 255 , 255"));
+        Assert.assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "255 , 255 , 255"));
     }
 
     @Test
     public void testConvertHTML()
     {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#ffffff"));
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#FFFFFF"));
+        Assert.assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "#ffffff"));
+        Assert.assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "#FFFFFF"));
     }
 
-    @Test(expected = ConversionException.class)
+    @Test
     public void testConvertInvalid()
     {
-        this.converterManager.convert(Color.class, "wrongformat");
+        try {
+            Assert.assertEquals(Color.WHITE, this.colorConverter.convert(Color.class, "wrongformat"));
+            Assert.fail("Should have thrown a ConversionException exception");
+        } catch (ConversionException expected) {
+            // expected
+        }
     }
 }

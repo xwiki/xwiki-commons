@@ -19,19 +19,37 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.util.List;
+import java.lang.reflect.Type;
+import java.util.Locale;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
+import org.xwiki.properties.converter.AbstractConverter;
+import org.xwiki.properties.converter.Converter;
 
 /**
+ * Converter that converts a value into an {@link Locale} object.
+ * 
  * @version $Id$
- * @since 5.2M1
+ * @since 4.3M2
  */
 @Component
+@Named("java.util.Locale")
 @Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
+public class DeprecatedLocaleConverter extends AbstractConverter
 {
+    /**
+     * The actual converter.
+     */
+    @Inject
+    private Converter<Locale> converter;
+
+    @Override
+    public Object convert(Type targetType, Object sourceValue)
+    {
+        return this.converter.convert(targetType, sourceValue);
+    }
 }

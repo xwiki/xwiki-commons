@@ -19,13 +19,14 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.properties.ConverterManager;
+import org.xwiki.properties.converter.Converter;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
@@ -33,9 +34,9 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
  * 
  * @version $Id$
  */
-public class ListConverterTest extends AbstractComponentTestCase
+public class DeprecatedListConverterTest extends AbstractComponentTestCase
 {
-    private ConverterManager converterManager;
+    private Converter listConverter;
 
     public List<Integer> field1;
 
@@ -47,23 +48,26 @@ public class ListConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
+        this.listConverter = getComponentManager().getInstance(Converter.class, List.class.getName());
     }
 
     @Test
     public void testConvert() throws SecurityException, NoSuchFieldException
     {
-        Assert.assertEquals(Arrays.asList("1", "2", "3"), this.converterManager.convert(List.class, "1, 2, 3"));
+        Assert.assertEquals(new ArrayList<String>(Arrays.asList("1", "2", "3")),
+            this.listConverter.convert(List.class, "1, 2, 3"));
 
-        Assert.assertEquals(Arrays.asList("1", "\n", "2", "\n", "3"),
-            this.converterManager.convert(List.class, "1,\n 2,\n 3"));
+        Assert.assertEquals(new ArrayList<String>(Arrays.asList("1", "\n", "2", "\n", "3")),
+            this.listConverter.convert(List.class, "1,\n 2,\n 3"));
 
-        Assert.assertEquals(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)),
-            this.converterManager.convert(ListConverterTest.class.getField("field1").getGenericType(), "1, 2, 3"));
+        Assert.assertEquals(
+            new ArrayList<Integer>(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))),
+            this.listConverter.convert(DeprecatedListConverterTest.class.getField("field1").getGenericType(), "1, 2, 3"));
 
-        Assert.assertEquals(Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6)), this.converterManager
-            .convert(ListConverterTest.class.getField("field2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
+        Assert.assertEquals(new ArrayList(Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6))),
+            this.listConverter.convert(DeprecatedListConverterTest.class.getField("field2").getGenericType(),
+                "'\\'1\\', 2, 3', \"4, 5, 6\""));
 
-        Assert.assertEquals(Arrays.asList("1:2"), this.converterManager.convert(List.class, "1:2"));
+        Assert.assertEquals(new ArrayList<String>(Arrays.asList("1:2")), this.listConverter.convert(List.class, "1:2"));
     }
 }

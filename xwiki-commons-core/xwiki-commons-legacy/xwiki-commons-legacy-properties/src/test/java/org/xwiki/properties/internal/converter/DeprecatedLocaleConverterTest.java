@@ -19,19 +19,41 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.util.List;
+import java.util.Locale;
 
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.xwiki.properties.converter.Converter;
+import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
+ * Validate {@link LocaleConverter} component.
+ * 
  * @version $Id$
- * @since 5.2M1
  */
-@Component
-@Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
+public class DeprecatedLocaleConverterTest extends AbstractComponentTestCase
 {
+    private Converter localeConverter;
+
+    @Before
+    @Override
+    public void setUp() throws Exception
+    {
+        super.setUp();
+
+        this.localeConverter = getComponentManager().getInstance(Converter.class, Locale.class.getName());
+    }
+
+    @Test
+    public void testConvertToLocale()
+    {
+        Assert.assertEquals(Locale.US, this.localeConverter.convert(Locale.class, Locale.US.toString()));
+    }
+
+    @Test
+    public void testConvertToString()
+    {
+        Assert.assertEquals(Locale.US.toString(), this.localeConverter.convert(String.class, Locale.US));
+    }
 }

@@ -17,21 +17,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.properties.internal.converter;
+package org.xwiki.properties.converter.collection;
 
-import java.util.List;
+import java.lang.reflect.Type;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
+import org.xwiki.component.util.ReflectionUtils;
 
 /**
+ * Base class for all {@link java.util.Set} converters.
+ * 
+ * @param <S> the type in which the provided value has to be converted
  * @version $Id$
  * @since 5.2M1
  */
-@Component
-@Singleton
-public class ListConverter extends AbstractCollectionConverter<List>
+public abstract class AbstractSetConverter<S extends Set> extends AbstractCollectionConverter<S>
 {
+    @Override
+    protected <G extends S> S newCollection(Type targetType)
+    {
+        Class<G> targetClass = ReflectionUtils.getTypeClass(targetType);
+        if (targetClass.isAssignableFrom(LinkedHashSet.class)) {
+            return (G) new LinkedHashSet();
+        } else {
+            return super.newCollection(targetType);
+        }
+    }
 }

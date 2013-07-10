@@ -24,6 +24,7 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.Converter;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
@@ -34,7 +35,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
  */
 public class LocaleConverterTest extends AbstractComponentTestCase
 {
-    private Converter localeConverter;
+    private ConverterManager converterManager;
 
     @Before
     @Override
@@ -42,18 +43,18 @@ public class LocaleConverterTest extends AbstractComponentTestCase
     {
         super.setUp();
 
-        this.localeConverter = getComponentManager().getInstance(Converter.class, Locale.class.getName());
+        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
     }
 
     @Test
     public void testConvertToLocale()
     {
-        Assert.assertEquals(Locale.US, this.localeConverter.convert(Locale.class, Locale.US.toString()));
+        Assert.assertEquals(Locale.US, this.converterManager.convert(Locale.class, Locale.US.toString()));
     }
 
     @Test
     public void testConvertToString()
     {
-        Assert.assertEquals(Locale.US.toString(), this.localeConverter.convert(String.class, Locale.US));
+        Assert.assertEquals(Locale.US.toString(), this.converterManager.convert(String.class, Locale.US));
     }
 }
