@@ -20,7 +20,6 @@
 package org.xwiki.properties.internal.converter;
 
 import java.awt.Color;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.StringTokenizer;
@@ -28,10 +27,8 @@ import java.util.StringTokenizer;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.converter.AbstractConverter;
 import org.xwiki.properties.converter.ConversionException;
-import org.xwiki.properties.converter.Converter;
 
 /**
  * Converter that converts a value into an {@link Color} object.
