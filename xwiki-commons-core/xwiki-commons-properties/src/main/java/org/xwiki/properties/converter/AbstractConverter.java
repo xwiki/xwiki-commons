@@ -22,6 +22,8 @@ package org.xwiki.properties.converter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.xwiki.component.util.ReflectionUtils;
+
 /**
  * Helper base class for a {@link Converter} component.
  * <p>
@@ -81,14 +83,7 @@ public abstract class AbstractConverter<T> implements Converter<T>
      */
     protected <G extends T> G convertToType(Type targetType, Object value)
     {
-        Class<G> clazz;
-        if (targetType instanceof Class) {
-            clazz = (Class) targetType;
-        } else if (targetType instanceof ParameterizedType) {
-            clazz = (Class) ((ParameterizedType) targetType).getRawType();
-        } else {
-            throw new ConversionException("Unknown type [" + targetType + "]");
-        }
+        Class<G> clazz = ReflectionUtils.getTypeClass(targetType);
 
         // Call #convertToType(Class<T> type, Object value) for retro-compatibility
         return convertToType(clazz, value);
