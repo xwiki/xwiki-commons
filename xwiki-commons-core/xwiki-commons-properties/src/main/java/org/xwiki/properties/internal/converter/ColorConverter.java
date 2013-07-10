@@ -44,13 +44,6 @@ import org.xwiki.properties.converter.Converter;
 public class ColorConverter extends AbstractConverter<Color>
 {
     /**
-     * Type instance for Provider<XWikiContext>.
-     * 
-     * @since 5.2M1
-     */
-    public static final ParameterizedType TYPE = new DefaultParameterizedType(null, Converter.class, Color.class);
-
-    /**
      * The String input supported by this {@link org.apache.commons.beanutils.Converter}.
      */
     private static final String USAGE = "Color value should be in the form of '#xxxxxx' or 'r,g,b'";
