@@ -19,7 +19,6 @@
  */
 package org.xwiki.properties.converter;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import org.xwiki.component.util.ReflectionUtils;
