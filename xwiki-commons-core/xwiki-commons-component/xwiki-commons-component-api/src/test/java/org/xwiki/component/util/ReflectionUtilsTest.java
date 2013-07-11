@@ -22,6 +22,7 @@ package org.xwiki.component.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,6 +36,31 @@ import org.xwiki.component.descriptor.ComponentRole;
  */
 public class ReflectionUtilsTest
 {
+    private static interface TestInterface<A, B>
+    {
+
+    }
+
+    private static interface TestInterface2<A, B> extends TestInterface<A, B>
+    {
+
+    }
+
+    private static class TestClass<A, B> implements TestInterface2<A, B>
+    {
+
+    }
+
+    private static class TestClass2<A> extends TestClass<A, Integer>
+    {
+
+    }
+
+    private static class TestClass3 extends TestClass2<List<String>>
+    {
+
+    }
+
     private class AbstractTestFieldClass
     {
         @SuppressWarnings("unused")
@@ -147,5 +173,13 @@ public class ReflectionUtilsTest
             .assertSame(TestFieldClass.class, ReflectionUtils.getTypeClass(new DefaultParameterizedType(
                 ReflectionUtilsTest.class, TestFieldClass.class)));
         // TODO: Missing test on GenericArrayType
+    }
+
+    @Test
+    public void testResolveType()
+    {
+        Assert.assertEquals(new DefaultParameterizedType(ReflectionUtilsTest.class, TestInterface.class,
+            new DefaultParameterizedType(null, List.class, String.class), Integer.class), ReflectionUtils.resolveType(
+            TestInterface.class, TestClass3.class));
     }
 }

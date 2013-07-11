@@ -260,7 +260,6 @@ public final class ReflectionUtils
      */
     public static Type getGenericClassType(Class clazz, Class filterClass)
     {
-        // Get all interfaces implemented and find the one that's a Provider with a Generic type
         for (Type type : clazz.getGenericInterfaces()) {
             if (type == filterClass) {
                 return type;
@@ -385,37 +384,97 @@ public final class ReflectionUtils
     }
 
     /**
-     * @param type the type for which to resolve the parameters
-     * @param childType an extending class as Type
+     * Find and replace the generic parameters with the real types.
+     * 
+     * @param targetType the type for which to resolve the parameters
+     * @param rootType an extending class as Type
      * @return the Type with resolved parameters
      */
-    public static Type resolveType(Type type, Type childType)
+    public static Type resolveType(Type targetType, Type rootType)
     {
-        Type resolvedType = type;
+        Type resolvedType;
 
-        if (type instanceof ParameterizedType) {
-            if (childType instanceof ParameterizedType) {
-                ParameterizedType parameterizedType = (ParameterizedType) type;
+        if (rootType instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) targetType;
 
-                Class< ? > parameterizedTypeClass = (Class) parameterizedType.getRawType();
-                Type[] parameterizedTypeArguments = parameterizedType.getActualTypeArguments();
-
-                Type[] resolvedParameters =
-                    ReflectionUtils.resolveSuperArguments(parameterizedTypeArguments, childType);
-
-                if (resolvedParameters == null) {
-                    resolvedType = parameterizedTypeClass;
-                } else if (resolvedParameters != parameterizedTypeArguments) {
-                    resolvedType =
-                        new DefaultParameterizedType(parameterizedType.getOwnerType(), parameterizedTypeClass,
-                            resolvedParameters);
-                }
-            } else {
-                resolvedType = getTypeClass(type);
-            }
+            resolvedType =
+                resolveType((Class< ? >) parameterizedType.getRawType(), parameterizedType.getActualTypeArguments(),
+                    getTypeClass(rootType));
+        } else {
+            resolvedType = resolveType(getTypeClass(rootType), null, getTypeClass(targetType));
         }
 
         return resolvedType;
+    }
+
+    /**
+     * Find the real generic parameters of the passed target class from the extending/implementing root class and create
+     * a Type from it.
+     * 
+     * @param rootClass the root class from which to start searching
+     * @param parameters the parameters of the root class
+     * @param targetClass the class from which to resolve the generic parameters
+     * @return a {@link ParameterizedType} version of the passed target class with resolved parameters
+     */
+    private static Type resolveType(Class< ? > rootClass, Type[] parameters, Class< ? > targetClass)
+    {
+        // Look at super interfaces
+        for (Type interfaceType : rootClass.getGenericInterfaces()) {
+            Type type = resolveType(interfaceType, rootClass, parameters, targetClass);
+            if (type != null) {
+                return type;
+            }
+        }
+
+        Type superType = rootClass.getGenericSuperclass();
+        if (superType != null) {
+            return resolveType(superType, rootClass, parameters, targetClass);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param superType the type implemented/extended by the root class
+     * @param rootClass the class containing the parameters
+     * @param parameters the generic parameters
+     * @param targetClass the target class
+     * @return the passed type with the real parameters
+     */
+    private static Type resolveType(Type superType, Class< ? > rootClass, Type[] parameters, Class< ? > targetClass)
+    {
+        Type newType = superType;
+
+        Class< ? > interfaceClass;
+        Type[] interfaceParameters;
+
+        if (newType instanceof ParameterizedType) {
+            ParameterizedType interfaceParameterizedType = (ParameterizedType) newType;
+
+            interfaceClass = ReflectionUtils.getTypeClass(newType);
+            Type[] variableParameters = interfaceParameterizedType.getActualTypeArguments();
+
+            interfaceParameters = ReflectionUtils.resolveSuperArguments(variableParameters, rootClass, parameters);
+
+            if (interfaceParameters == null) {
+                newType = interfaceClass;
+            } else if (interfaceParameters != variableParameters) {
+                newType =
+                    new DefaultParameterizedType(interfaceParameterizedType.getOwnerType(), interfaceClass,
+                        interfaceParameters);
+            }
+        } else if (newType instanceof Class) {
+            interfaceClass = (Class< ? >) newType;
+            interfaceParameters = null;
+        } else {
+            return null;
+        }
+
+        if (interfaceClass == targetClass) {
+            return newType;
+        }
+
+        return resolveType(interfaceClass, interfaceParameters, targetClass);
     }
 
     /**
