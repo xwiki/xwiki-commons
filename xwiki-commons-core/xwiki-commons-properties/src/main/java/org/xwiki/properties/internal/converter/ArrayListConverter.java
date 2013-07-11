@@ -19,6 +19,7 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import javax.inject.Singleton;
@@ -34,4 +35,13 @@ import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
 @Singleton
 public class ArrayListConverter extends AbstractCollectionConverter<ArrayList>
 {
+    @Override
+    protected <G extends ArrayList> G convertToType(Type targetType, Object value)
+    {
+        if (value instanceof ArrayList) {
+            return (G) value;
+        }
+
+        return super.convertToType(targetType, value);
+    }
 }

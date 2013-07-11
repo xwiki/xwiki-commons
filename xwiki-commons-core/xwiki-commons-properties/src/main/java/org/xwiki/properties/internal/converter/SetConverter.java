@@ -19,6 +19,7 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import java.lang.reflect.Type;
 import java.util.Set;
 
 import javax.inject.Singleton;
@@ -34,4 +35,13 @@ import org.xwiki.properties.converter.collection.AbstractSetConverter;
 @Singleton
 public class SetConverter extends AbstractSetConverter<Set>
 {
+    @Override
+    protected <G extends Set> G convertToType(Type targetType, Object value)
+    {
+        if (value instanceof Set) {
+            return (G) value;
+        }
+
+        return super.convertToType(targetType, value);
+    }
 }

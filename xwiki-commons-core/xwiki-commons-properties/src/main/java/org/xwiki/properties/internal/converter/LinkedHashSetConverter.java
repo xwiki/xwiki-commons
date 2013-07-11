@@ -19,6 +19,7 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import java.lang.reflect.Type;
 import java.util.LinkedHashSet;
 
 import javax.inject.Singleton;
@@ -34,4 +35,13 @@ import org.xwiki.properties.converter.collection.AbstractSetConverter;
 @Singleton
 public class LinkedHashSetConverter extends AbstractSetConverter<LinkedHashSet>
 {
+    @Override
+    protected <G extends LinkedHashSet> G convertToType(Type targetType, Object value)
+    {
+        if (value instanceof LinkedHashSet) {
+            return (G) value;
+        }
+
+        return super.convertToType(targetType, value);
+    }
 }

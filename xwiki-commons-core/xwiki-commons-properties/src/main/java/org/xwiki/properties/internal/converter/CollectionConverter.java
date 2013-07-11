@@ -19,6 +19,7 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 
 import javax.inject.Singleton;
@@ -34,4 +35,13 @@ import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
 @Singleton
 public class CollectionConverter extends AbstractCollectionConverter<Collection>
 {
+    @Override
+    protected <G extends Collection> G convertToType(Type targetType, Object value)
+    {
+        if (value instanceof Collection) {
+            return (G) value;
+        }
+
+        return super.convertToType(targetType, value);
+    }
 }
