@@ -28,30 +28,30 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
-
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.internal.safe.CollectionScriptSafeProvider;
 import org.xwiki.extension.internal.safe.DefaultScriptSafeProvider;
 import org.xwiki.extension.internal.safe.MapScriptSafeProvider;
 import org.xwiki.extension.internal.safe.ScriptSafeProvider;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-@MockingRequirement(value = DefaultScriptSafeProvider.class, exceptions = ComponentManager.class)
-@ComponentList({
-    CollectionScriptSafeProvider.class,
-    MapScriptSafeProvider.class
-})
-public class DefaultScriptSafeProviderTest extends AbstractMockingComponentTestCase<ScriptSafeProvider>
+@ComponentList({CollectionScriptSafeProvider.class, MapScriptSafeProvider.class})
+public class DefaultScriptSafeProviderTest
 {
+    @Rule
+    public MockitoComponentMockingRule<ScriptSafeProvider> mocker =
+        new MockitoComponentMockingRule<ScriptSafeProvider>(DefaultScriptSafeProvider.class,
+            Arrays.asList(ComponentManager.class));
+
     @Test
     public void testGetWithNoProvider() throws Exception
     {
         Object safe = new String();
 
-        Assert.assertSame(safe, getMockedComponent().get(safe));
+        Assert.assertSame(safe, this.mocker.getComponentUnderTest().get(safe));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -61,7 +61,7 @@ public class DefaultScriptSafeProviderTest extends AbstractMockingComponentTestC
         // List
 
         Collection unsafe = Arrays.asList("1", "2");
-        Collection safe = (Collection) getMockedComponent().get(unsafe);
+        Collection safe = (Collection) this.mocker.getComponentUnderTest().get(unsafe);
 
         Assert.assertNotSame(unsafe, safe);
         Assert.assertTrue(safe instanceof List);
@@ -70,7 +70,7 @@ public class DefaultScriptSafeProviderTest extends AbstractMockingComponentTestC
         // Set
 
         unsafe = new LinkedHashSet(Arrays.asList("1", "2", "3", "4", "5"));
-        safe = (Collection) getMockedComponent().get(unsafe);
+        safe = (Collection) this.mocker.getComponentUnderTest().get(unsafe);
 
         Assert.assertNotSame(unsafe, safe);
         Assert.assertTrue(safe instanceof Set);
@@ -89,7 +89,7 @@ public class DefaultScriptSafeProviderTest extends AbstractMockingComponentTestC
         unsafe.put("3", "3");
         unsafe.put("4", "4");
         unsafe.put("5", "5");
-        Map safe = (Map) getMockedComponent().get(unsafe);
+        Map safe = (Map) this.mocker.getComponentUnderTest().get(unsafe);
 
         Assert.assertNotSame(unsafe, safe);
         Assert.assertTrue(safe instanceof Map);
