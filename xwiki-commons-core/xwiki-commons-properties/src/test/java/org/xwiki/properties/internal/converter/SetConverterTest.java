@@ -20,7 +20,9 @@
 package org.xwiki.properties.internal.converter;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,17 +31,17 @@ import org.xwiki.properties.ConverterManager;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
- * Validate {@link ListConverter} component.
+ * Validate {@link HashSetConverter} component.
  * 
  * @version $Id$
  */
-public class ListConverterTest extends AbstractComponentTestCase
+public class SetConverterTest extends AbstractComponentTestCase
 {
     private ConverterManager converterManager;
 
-    public List<Integer> listField1;
+    public Set<Integer> setField1;
 
-    public List<List<Integer>> listField2;
+    public Set<Set<Integer>> setField2;
 
     @Before
     @Override
@@ -53,25 +55,21 @@ public class ListConverterTest extends AbstractComponentTestCase
     @Test
     public void testConvert() throws SecurityException, NoSuchFieldException
     {
-        Assert.assertEquals(Arrays.asList("1", "2", "3"), this.converterManager.convert(List.class, "1, 2, 3"));
+        Assert.assertEquals(new LinkedHashSet<String>(Arrays.asList("1", "2", "3")),
+            this.converterManager.convert(Set.class, "1, 2, 3"));
 
-        Assert.assertEquals(Arrays.asList("1", "\n", "2", "\n", "3"),
-            this.converterManager.convert(List.class, "1,\n 2,\n 3"));
+        Assert.assertEquals(new LinkedHashSet<String>(Arrays.asList("1", "\n", "2", "\n", "3")),
+            this.converterManager.convert(Set.class, "1,\n 2,\n 3"));
 
-        Assert.assertEquals(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)),
-            this.converterManager.convert(ListConverterTest.class.getField("listField1").getGenericType(), "1, 2, 3"));
+        Assert.assertEquals(
+            new LinkedHashSet<Integer>(Arrays.asList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))),
+            this.converterManager.convert(SetConverterTest.class.getField("setField1").getGenericType(), "1, 2, 3"));
 
-        Assert.assertEquals(Arrays.asList(Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6)), this.converterManager
-            .convert(ListConverterTest.class.getField("listField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
+        Assert.assertEquals(
+            new LinkedHashSet<Set<Integer>>(Arrays.asList(new LinkedHashSet<Integer>(Arrays.asList(1, 2, 3)),
+                new LinkedHashSet<Integer>(Arrays.asList(4, 5, 6)))), this.converterManager.convert(
+                SetConverterTest.class.getField("setField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
 
-        Assert.assertEquals(Arrays.asList("1:2"), this.converterManager.convert(List.class, "1:2"));
-    }
-
-    @Test
-    public void testConvertFromList()
-    {
-        List<String> expect = Arrays.asList("1", "2", "3");
-
-        Assert.assertSame(expect, this.converterManager.convert(List.class, expect));
+        Assert.assertEquals(new HashSet<String>(Arrays.asList("1:2")), this.converterManager.convert(Set.class, "1:2"));
     }
 }

@@ -61,7 +61,7 @@ public class ColorConverter extends AbstractConverter<Color>
     {
         Color colorValue = (Color) value;
 
-        return MessageFormat.format("{0},{1},{2}", colorValue.getRed(), colorValue.getGreen(), colorValue.getBlue());
+        return MessageFormat.format("{0}, {1}, {2}", colorValue.getRed(), colorValue.getGreen(), colorValue.getBlue());
     }
 
     /**

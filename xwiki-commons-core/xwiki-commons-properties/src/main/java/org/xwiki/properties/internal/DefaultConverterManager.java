@@ -80,8 +80,14 @@ public class DefaultConverterManager implements ConverterManager
     @Override
     public <T> T convert(Type targetType, Object value)
     {
+        // Converter type
+        Type converterType = targetType;
+        if (converterType == String.class && value != null) {
+            converterType = value.getClass();
+        }
+
         // Convert
-        Converter<T> converter = lookupConverter(targetType);
+        Converter<T> converter = lookupConverter(converterType);
 
         if (converter != null) {
             return converter.convert(targetType, value);

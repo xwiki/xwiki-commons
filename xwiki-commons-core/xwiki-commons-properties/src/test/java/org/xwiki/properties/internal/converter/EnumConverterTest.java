@@ -19,6 +19,8 @@
  */
 package org.xwiki.properties.internal.converter;
 
+import java.awt.Color;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +62,12 @@ public class EnumConverterTest extends AbstractComponentTestCase
     public void testConvertIgnireCase()
     {
         Assert.assertEquals(EnumTest.VALUE1, this.converterManager.convert(EnumTest.class, "value1"));
+    }
+
+    @Test
+    public void testConvertToString()
+    {
+        Assert.assertEquals("VALUE1", this.converterManager.convert(String.class, EnumTest.VALUE1));
     }
 
     @Test(expected = ConversionException.class)

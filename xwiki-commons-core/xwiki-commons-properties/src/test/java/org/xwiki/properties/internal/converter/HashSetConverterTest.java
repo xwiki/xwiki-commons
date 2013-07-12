@@ -19,21 +19,22 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.awt.Color;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
- * Validate {@link ColorConverter} component.
+ * Validate {@link HashSetConverter} component.
  * 
  * @version $Id$
  */
-public class ColorConverterTest extends AbstractComponentTestCase
+public class HashSetConverterTest extends AbstractComponentTestCase
 {
     private ConverterManager converterManager;
 
@@ -47,27 +48,10 @@ public class ColorConverterTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testConvertRGB()
+    public void testConvertFromHashSet()
     {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "255 , 255 , 255"));
-    }
+        HashSet<String> expect = new LinkedHashSet<String>(Arrays.asList("1", "2", "3"));
 
-    @Test
-    public void testConvertHTML()
-    {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#ffffff"));
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#FFFFFF"));
-    }
-
-    @Test
-    public void testConvertToString()
-    {
-        Assert.assertEquals("255, 255, 255", this.converterManager.convert(String.class, Color.WHITE));
-    }
-
-    @Test(expected = ConversionException.class)
-    public void testConvertInvalid()
-    {
-        this.converterManager.convert(Color.class, "wrongformat");
+        Assert.assertSame(expect, this.converterManager.convert(HashSet.class, expect));
     }
 }

@@ -19,21 +19,21 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
- * Validate {@link ColorConverter} component.
+ * Validate {@link ArrayListConverter} component.
  * 
  * @version $Id$
  */
-public class ColorConverterTest extends AbstractComponentTestCase
+public class ArrayListConverterTest extends AbstractComponentTestCase
 {
     private ConverterManager converterManager;
 
@@ -47,27 +47,17 @@ public class ColorConverterTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testConvertRGB()
-    {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "255 , 255 , 255"));
-    }
-
-    @Test
-    public void testConvertHTML()
-    {
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#ffffff"));
-        Assert.assertEquals(Color.WHITE, this.converterManager.convert(Color.class, "#FFFFFF"));
-    }
-
-    @Test
     public void testConvertToString()
     {
-        Assert.assertEquals("255, 255, 255", this.converterManager.convert(String.class, Color.WHITE));
+        Assert.assertEquals("1, 2, 3",
+            this.converterManager.convert(String.class, new ArrayList<String>(Arrays.asList("1", "2", "3"))));
     }
 
-    @Test(expected = ConversionException.class)
-    public void testConvertInvalid()
+    @Test
+    public void testConvertFromArrayList()
     {
-        this.converterManager.convert(Color.class, "wrongformat");
+        ArrayList<String> expect = new ArrayList<String>(Arrays.asList("1", "2", "3"));
+
+        Assert.assertSame(expect, this.converterManager.convert(ArrayList.class, expect));
     }
 }
