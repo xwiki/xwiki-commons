@@ -19,7 +19,6 @@
  */
 package org.xwiki.filter.xml.internal.parser;
 
-import javanet.staxutils.ContentHandlerToXMLEventWriter;
 import javanet.staxutils.StAXResult;
 import javanet.staxutils.XMLEventStreamWriter;
 import javanet.staxutils.XMLStreamUtils;
@@ -128,6 +127,6 @@ public class DefaultXMLParserFactory implements XMLParserFactory
     @Override
     public ContentHandler createContentHandler(Object filter, XMLConfiguration configuration)
     {
-        return new ContentHandlerToXMLEventWriter(createXMLEventWriter(filter, configuration));
+        return createParser(filter, configuration);
     }
 }

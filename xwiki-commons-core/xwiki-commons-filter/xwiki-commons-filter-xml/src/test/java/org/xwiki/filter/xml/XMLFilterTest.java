@@ -22,12 +22,20 @@ package org.xwiki.filter.xml;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.filter.test.TestFilter;
 import org.xwiki.filter.xml.parser.XMLParserFactory;
 import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
@@ -40,21 +48,48 @@ public class XMLFilterTest
     @Rule
     public MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
 
-    private void assertParseAndSerialize(String inputexpect) throws Exception
+    private TestFilter createFilter(StringWriter stringWriter) throws ComponentLookupException, XMLStreamException,
+        FactoryConfigurationError
     {
-        assertXML(inputexpect, inputexpect);
+        XMLSerializerFactory serializerFactory = this.componentManager.getInstance(XMLSerializerFactory.class);
+        return serializerFactory.createSerializer(TestFilter.class, new StreamResult(stringWriter), null);
     }
 
-    private void assertXML(String expect, String input) throws Exception
+    private void assertParseAndSerialize(String inputexpect) throws Exception
+    {
+        assertParseAndSerialize(inputexpect, inputexpect);
+    }
+
+    private void assertParseAndSerialize(String expect, String input) throws Exception
     {
         StringWriter stringWriter = new StringWriter();
 
-        XMLSerializerFactory serializerFactory = this.componentManager.getInstance(XMLSerializerFactory.class);
-        TestFilter testFilter =
-            serializerFactory.createSerializer(TestFilter.class, new StreamResult(stringWriter), null);
+        TestFilter testFilter = createFilter(stringWriter);
 
         XMLParserFactory parserFactory = this.componentManager.getInstance(XMLParserFactory.class);
         parserFactory.parse(new StreamSource(new StringReader(input)), testFilter, null);
+
+        Assert.assertEquals(expect, stringWriter.toString());
+    }
+
+    private void assertParseAndSerializeFromSAX(String inputexpect) throws Exception
+    {
+        assertParseAndSerializeFromSAX(inputexpect, inputexpect);
+    }
+
+    private void assertParseAndSerializeFromSAX(String expect, String input) throws Exception
+    {
+        StringWriter stringWriter = new StringWriter();
+
+        TestFilter testFilter = createFilter(stringWriter);
+
+        XMLParserFactory parserFactory = this.componentManager.getInstance(XMLParserFactory.class);
+        ContentHandler parser = parserFactory.createContentHandler(testFilter, null);
+
+        SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+        XMLReader xmlReader = saxParser.getXMLReader();
+        xmlReader.setContentHandler(parser);
+        xmlReader.parse(new InputSource(new StringReader(input)));
 
         Assert.assertEquals(expect, stringWriter.toString());
     }
@@ -89,5 +124,14 @@ public class XMLFilterTest
     public void testContainerWithMap() throws Exception
     {
         assertParseAndSerialize("<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>");
+        assertParseAndSerialize(
+            "<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>",
+            "<containerWithMap><p><p0><entry><string>key</string><int>1</int></entry></p0></p></containerWithMap>");
+    }
+
+    @Test
+    public void testFromSAX() throws Exception
+    {
+        assertParseAndSerializeFromSAX("<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>");
     }
 }
