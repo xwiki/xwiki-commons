@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javanet.staxutils.XMLEventStreamWriter;
+
 import javax.inject.Singleton;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
@@ -73,16 +75,25 @@ public class DefaultXMLSerializer implements InvocationHandler
         ConverterManager converter, XMLConfiguration configuration) throws XMLStreamException,
         FactoryConfigurationError
     {
-        // SAXResult is not supported by the standard XMLOutputFactory
-        if (xmlResult instanceof SAXResult) {
-            xmlResult = new StAXResult(new SAXEventWriter(((SAXResult) xmlResult).getHandler()));
-        }
-
-        this.xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(xmlResult);
         this.parameterManager = parameterManager;
         this.descriptor = descriptor;
         this.converter = converter;
         this.configuration = configuration != null ? configuration : new XMLConfiguration();
+
+        if (xmlResult instanceof SAXResult) {
+            // SAXResult is not supported by the standard XMLOutputFactory
+            this.xmlStreamWriter = new XMLEventStreamWriter(new SAXEventWriter(((SAXResult) xmlResult).getHandler()));
+        } else if (xmlResult instanceof StAXResult) {
+            // XMLEventWriter is not supported as result of XMLOutputFactory#createXMLStreamWriter
+            StAXResult staxResult = (StAXResult) xmlResult;
+            if (staxResult.getXMLStreamWriter() != null) {
+                this.xmlStreamWriter = staxResult.getXMLStreamWriter();
+            } else {
+                this.xmlStreamWriter = new XMLEventStreamWriter(staxResult.getXMLEventWriter());
+            }
+        } else {
+            this.xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(xmlResult);
+        }
     }
 
     private boolean isValidBlockElementName(String blockName)
