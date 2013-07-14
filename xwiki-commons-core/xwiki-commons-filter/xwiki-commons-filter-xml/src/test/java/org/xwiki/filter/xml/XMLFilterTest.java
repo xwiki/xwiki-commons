@@ -36,6 +36,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.filter.test.ExtendedTestData;
 import org.xwiki.filter.test.TestFilter;
 import org.xwiki.filter.xml.parser.XMLParserFactory;
 import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
@@ -48,11 +49,14 @@ public class XMLFilterTest
     @Rule
     public MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
 
-    private TestFilter createFilter(StringWriter stringWriter) throws ComponentLookupException, XMLStreamException,
-        FactoryConfigurationError
+    private StringWriter stringWriter;
+
+    private TestFilter createFilter() throws ComponentLookupException, XMLStreamException, FactoryConfigurationError
     {
+        this.stringWriter = new StringWriter();
+
         XMLSerializerFactory serializerFactory = this.componentManager.getInstance(XMLSerializerFactory.class);
-        return serializerFactory.createSerializer(TestFilter.class, new StreamResult(stringWriter), null);
+        return serializerFactory.createSerializer(TestFilter.class, new StreamResult(this.stringWriter), null);
     }
 
     private void assertParseAndSerialize(String inputexpect) throws Exception
@@ -62,14 +66,12 @@ public class XMLFilterTest
 
     private void assertParseAndSerialize(String expect, String input) throws Exception
     {
-        StringWriter stringWriter = new StringWriter();
-
-        TestFilter testFilter = createFilter(stringWriter);
+        TestFilter testFilter = createFilter();
 
         XMLParserFactory parserFactory = this.componentManager.getInstance(XMLParserFactory.class);
         parserFactory.parse(new StreamSource(new StringReader(input)), testFilter, null);
 
-        Assert.assertEquals(expect, stringWriter.toString());
+        assertSerialized(expect);
     }
 
     private void assertParseAndSerializeFromSAX(String inputexpect) throws Exception
@@ -79,9 +81,7 @@ public class XMLFilterTest
 
     private void assertParseAndSerializeFromSAX(String expect, String input) throws Exception
     {
-        StringWriter stringWriter = new StringWriter();
-
-        TestFilter testFilter = createFilter(stringWriter);
+        TestFilter testFilter = createFilter();
 
         XMLParserFactory parserFactory = this.componentManager.getInstance(XMLParserFactory.class);
         ContentHandler parser = parserFactory.createContentHandler(testFilter, null);
@@ -91,7 +91,12 @@ public class XMLFilterTest
         xmlReader.setContentHandler(parser);
         xmlReader.parse(new InputSource(new StringReader(input)));
 
-        Assert.assertEquals(expect, stringWriter.toString());
+        assertSerialized(expect);
+    }
+
+    private void assertSerialized(String expect)
+    {
+        Assert.assertEquals(expect, this.stringWriter.toString());
     }
 
     // Tests
@@ -130,8 +135,31 @@ public class XMLFilterTest
     }
 
     @Test
+    public void testCustomData() throws Exception
+    {
+        assertParseAndSerializeFromSAX("<customData><p><custom><field1>5</field1></custom></p></customData>");
+        assertParseAndSerializeFromSAX("<customData></customData>");
+    }
+
+    @Test
     public void testFromSAX() throws Exception
     {
-        assertParseAndSerializeFromSAX("<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>");
+        assertParseAndSerializeFromSAX("<containerWithNamedParameters namedParam=\"value0\" p1=\"1\"></containerWithNamedParameters>");
+    }
+
+    // Serialize
+
+    @Test
+    public void testSerializeExtendedTestData() throws ComponentLookupException, XMLStreamException,
+        FactoryConfigurationError
+    {
+        TestFilter testFilter = createFilter();
+
+        ExtendedTestData extendedTestData = new ExtendedTestData();
+
+        testFilter.beginCustomData(extendedTestData);
+        testFilter.endCustomData(extendedTestData);
+
+        assertSerialized("<customData><p><custom><field1>1</field1></custom></p></customData>");
     }
 }

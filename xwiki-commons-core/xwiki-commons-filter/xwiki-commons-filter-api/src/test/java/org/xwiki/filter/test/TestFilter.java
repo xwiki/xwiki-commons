@@ -47,6 +47,10 @@ public interface TestFilter
 
     void endContainerWithMap(@Name("map") Map<String, Integer> map);
 
+    void beginCustomData(@Name("custom") TestData data);
+
+    void endCustomData(@Name("custom") TestData data);
+
     void beginBlock(@Name("blockName") String blockName);
 
     void endBlock(@Name("blockName") String blockName);

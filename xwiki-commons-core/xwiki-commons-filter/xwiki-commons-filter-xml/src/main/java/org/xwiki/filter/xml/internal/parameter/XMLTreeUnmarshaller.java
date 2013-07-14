@@ -53,7 +53,7 @@ public class XMLTreeUnmarshaller extends TreeUnmarshaller
     @Override
     public Object start(DataHolder dataHolder)
     {
-        Type type = (Type) dataHolder.get("type");
+        Type type = (Type) dataHolder.get(XStreamParameterManager.DDEFAULTTYPE_NAME);
 
         Class< ? > typeClass;
         if (type != null) {

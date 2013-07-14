@@ -53,7 +53,7 @@ public class XMLTreeMarshaller extends TreeMarshaller
     @Override
     public void start(Object item, DataHolder dataHolder)
     {
-        Type type = (Type) dataHolder.get("type");
+        Type type = (Type) dataHolder.get(XStreamParameterManager.DDEFAULTTYPE_NAME);
         if (item != null) {
             Converter converter = getConverter(type);
 

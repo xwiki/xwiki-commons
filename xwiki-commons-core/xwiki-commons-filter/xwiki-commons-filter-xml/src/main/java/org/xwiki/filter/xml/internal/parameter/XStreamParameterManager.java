@@ -51,9 +51,9 @@ import com.thoughtworks.xstream.io.xml.StaxWriter;
 public class XStreamParameterManager implements ParameterManager, Initializable
 {
     /**
-     * The name of the type field.
+     * The name of the type field containing the default type of the parameter.
      */
-    private static final String TYPE_NAME = "type";
+    public static final String DDEFAULTTYPE_NAME = "defaultType";
 
     /**
      * The logger.
@@ -103,7 +103,7 @@ public class XStreamParameterManager implements ParameterManager, Initializable
         }
 
         DataHolder dataHolder = new MapBackedDataHolder();
-        dataHolder.put(TYPE_NAME, type);
+        dataHolder.put(DDEFAULTTYPE_NAME, type);
 
         this.xstream.marshal(object, staxWriter, dataHolder);
     }
@@ -120,7 +120,7 @@ public class XStreamParameterManager implements ParameterManager, Initializable
 
         DataHolder dataHolder = new MapBackedDataHolder();
 
-        dataHolder.put(TYPE_NAME, type);
+        dataHolder.put(DDEFAULTTYPE_NAME, type);
 
         return this.xstream.unmarshal(new DomReader(rootElement), null, dataHolder);
     }
