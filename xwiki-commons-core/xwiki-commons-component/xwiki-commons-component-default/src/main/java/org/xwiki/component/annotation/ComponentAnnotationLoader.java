@@ -234,9 +234,19 @@ public class ComponentAnnotationLoader
         List<ComponentDeclaration> componentDeclarations)
     {
         for (ComponentDeclaration componentDeclaration : componentDeclarations) {
+            Class< ? > componentClass = null;
             try {
-                for (ComponentDescriptor< ? > componentDescriptor : getComponentsDescriptors(classLoader
-                    .loadClass(componentDeclaration.getImplementationClassName()))) {
+                componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
+            } catch (ClassNotFoundException e) {
+                getLogger().warn("Can't find any existing component with class [{}]. Ignoring it.",
+                    componentDeclaration.getImplementationClassName());
+            } catch (Throwable e) {
+                getLogger().warn("Fail to load component implementation class [{}]. Ignoring it.",
+                    componentDeclaration.getImplementationClassName(), e);
+            }
+
+            if (componentClass != null) {
+                for (ComponentDescriptor< ? > componentDescriptor : getComponentsDescriptors(componentClass)) {
                     manager.unregisterComponent(componentDescriptor);
 
                     if (componentDescriptor.getRoleType() instanceof ParameterizedType) {
@@ -248,11 +258,7 @@ public class ComponentAnnotationLoader
 
                         manager.unregisterComponent(classComponentDescriptor);
                     }
-
                 }
-            } catch (ClassNotFoundException e) {
-                getLogger().warn("Can't find any existing component with class [{}]. Ignoring it.",
-                    componentDeclaration.getImplementationClassName());
             }
         }
     }
