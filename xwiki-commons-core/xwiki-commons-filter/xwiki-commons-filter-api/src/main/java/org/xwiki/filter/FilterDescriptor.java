@@ -22,12 +22,15 @@ package org.xwiki.filter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * List all event found in a filter.
  * 
  * @version $Id$
  * @since 5.2M1
  */
+@Unstable
 public class FilterDescriptor
 {
     /**

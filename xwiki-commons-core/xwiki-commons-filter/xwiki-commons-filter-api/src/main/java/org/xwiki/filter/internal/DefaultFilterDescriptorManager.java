@@ -34,6 +34,7 @@ import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterElement;
 import org.xwiki.filter.FilterElementParameter;
 import org.xwiki.filter.annotation.Name;
+import org.xwiki.stability.Unstable;
 
 /**
  * Default implementation of {@link FilterDescriptorManager}.
@@ -42,6 +43,7 @@ import org.xwiki.filter.annotation.Name;
  * @since 5.2M1
  */
 @Component
+@Unstable
 public class DefaultFilterDescriptorManager implements FilterDescriptorManager
 {
     /**
