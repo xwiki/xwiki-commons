@@ -33,6 +33,7 @@ import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterElement;
 import org.xwiki.filter.FilterElementParameter;
 import org.xwiki.filter.test.TestFilter;
+import org.xwiki.filter.test.TestFilterImplementation;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 public class FilterDescriptorManagerTest
@@ -79,6 +80,25 @@ public class FilterDescriptorManagerTest
     public void testContainerWithNamedParameters()
     {
         FilterElement filterElement = this.filterDescriptor.getElements().get("containerwithnamedparameters");
+
+        Assert.assertNotNull(filterElement);
+
+        FilterElementParameter parameter0 = filterElement.getParameters()[0];
+        parameter0 = filterElement.getParameter("namedParam");
+
+        Assert.assertNotNull(parameter0);
+
+        Assert.assertEquals("namedParam", parameter0.getName());
+        Assert.assertEquals(0, parameter0.getIndex());
+        Assert.assertEquals(String.class, parameter0.getType());
+    }
+
+    @Test
+    public void testNameInheritance() throws ComponentLookupException
+    {
+        FilterElement filterElement =
+            this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class).getElements()
+                .get("containerwithnamedparameters");
 
         Assert.assertNotNull(filterElement);
 

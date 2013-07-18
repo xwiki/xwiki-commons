@@ -19,16 +19,14 @@
  */
 package org.xwiki.filter.internal;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.util.ReflectionMethodUtils;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterElement;
@@ -84,25 +82,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      */
     private Method[] getMethods(Class< ? > clazz)
     {
-        if (Proxy.isProxyClass(clazz)) {
-            // In case of a proxy we can't count of Class#getMethods() since we would loose method parameters
-            // annotations
-            Class< ? >[] ifaces = clazz.getInterfaces();
-            if (ifaces.length > 1) {
-                Set<Method> methods = new LinkedHashSet<Method>();
-                for (Class< ? > iface : clazz.getInterfaces()) {
-                    for (Method method : iface.getMethods()) {
-                        methods.add(method);
-                    }
-                }
-
-                return methods.toArray(new Method[0]);
-            } else {
-                return ifaces[0].getMethods();
-            }
-        } else {
-            return clazz.getMethods();
-        }
+        return clazz.getMethods();
     }
 
     /**
@@ -155,19 +135,17 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
         if (element == null || methodTypes.length > element.getParameters().length) {
             FilterElementParameter[] parameters = new FilterElementParameter[methodTypes.length];
 
-            Annotation[][] parametersAnnotations = method.getParameterAnnotations();
-
             for (int i = 0; i < methodTypes.length; ++i) {
-                Annotation[] annotations = parametersAnnotations[i];
-
                 Type type = methodTypes[i];
-                String name = null;
 
-                for (Annotation annotation : annotations) {
-                    if (annotation instanceof Name) {
-                        name = ((Name) annotation).value();
-                        break;
-                    }
+                List<Name> annotations =
+                    ReflectionMethodUtils.getMethodParameterAnnotations(method, i, Name.class, true);
+
+                String name;
+                if (!annotations.isEmpty()) {
+                    name = annotations.get(0).value();
+                } else {
+                    name = null;
                 }
 
                 parameters[i] = new FilterElementParameter(i, name, type);

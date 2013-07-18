@@ -32,7 +32,6 @@ import org.xwiki.component.descriptor.ComponentRole;
  * Unit tests for {@link ReflectionUtils}.
  * 
  * @version $Id$
- * @since 3.5M1
  */
 public class ReflectionUtilsTest
 {
