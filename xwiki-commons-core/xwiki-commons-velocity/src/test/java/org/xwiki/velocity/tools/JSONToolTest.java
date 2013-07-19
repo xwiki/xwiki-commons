@@ -28,6 +28,10 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONNull;
+import net.sf.json.JSONObject;
+
 /**
  * Unit tests for {@link JSONTool}.
  * 
@@ -141,5 +145,59 @@ public class JSONToolTest
         Assert.assertTrue(json.contains("\"items\":[\"one\"]"));
         Assert.assertTrue(json.contains("\"name\":\"XWiki\""));
         Assert.assertTrue(json.contains("\"parameters\":{\"foo\":\"bar\"}"));
+    }
+
+    @Test
+    public void testParseArray()
+    {
+        JSON json = this.tool.parse("[1,2,3]");
+        Assert.assertTrue(json.isArray());
+        Assert.assertEquals(3, json.size());
+    }
+
+    @Test
+    public void testParseEmptyArray()
+    {
+        JSON json = this.tool.parse("[]");
+        Assert.assertTrue(json.isArray());
+        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.size());
+    }
+
+    @Test
+    public void testParseMap()
+    {
+        JSONObject json = (JSONObject) this.tool.parse("{\"a\" : 1, \"b\": [1], \"c\": true}");
+        Assert.assertFalse(json.isArray());
+        Assert.assertFalse(json.isEmpty());
+        Assert.assertEquals(3, json.size());
+        Assert.assertTrue(json.getBoolean("c"));
+    }
+
+    @Test
+    public void testParseEmptyMap()
+    {
+        JSONObject json = (JSONObject) this.tool.parse("{}");
+        Assert.assertFalse(json.isArray());
+        Assert.assertTrue(json.isEmpty());
+        Assert.assertEquals(0, json.size());
+    }
+
+    @Test
+    public void testParseNull()
+    {
+        Assert.assertTrue(this.tool.parse(null) instanceof JSONNull);
+    }
+
+    @Test
+    public void testParseEmptyString()
+    {
+        Assert.assertNull(this.tool.parse(""));
+    }
+
+    @Test
+    public void testParseInvalidJSON()
+    {
+        Assert.assertNull(this.tool.parse("This is not the JSON you are looking for..."));
     }
 }

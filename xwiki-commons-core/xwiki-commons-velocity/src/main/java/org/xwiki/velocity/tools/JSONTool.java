@@ -19,10 +19,16 @@
  */
 package org.xwiki.velocity.tools;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONUtils;
 
 /**
@@ -33,6 +39,9 @@ import net.sf.json.util.JSONUtils;
  */
 public final class JSONTool
 {
+    /** Logging helper object. */
+    private Logger logger = LoggerFactory.getLogger(JSONTool.class);
+
     /**
      * Serialize a Java object to the JSON format.
      * <p>
@@ -66,5 +75,25 @@ public final class JSONTool
         }
 
         return json.toString();
+    }
+
+    /**
+     * Parse a serialized JSON into a real JSON object. Only valid JSON strings can be parsed, and doesn't support
+     * JSONP. If the argument is not valid JSON, then {@code null} is returned.
+     * 
+     * @param json the string to parse, must be valid JSON
+     * @return the parsed JSON, either a {@link net.sf.json.JSONObject} or a {@link net.sf.json.JSONArray}, or
+     *         {@code null} if the argument is not a valid JSON
+     * @since 5.2M1
+     */
+    public JSON parse(String json)
+    {
+        try {
+            return JSONSerializer.toJSON(json);
+        } catch (JSONException ex) {
+            System.out.println(String.format("Tried to parse invalid JSON: [%s], exception was: %s",
+                StringUtils.abbreviate(json, 32), ex.getMessage()));
+            return null;
+        }
     }
 }
