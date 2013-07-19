@@ -31,7 +31,7 @@ import net.sf.json.util.JSONUtils;
  * @version $Id$
  * @since 4.0M2
  */
-public class JSONTool
+public final class JSONTool
 {
     /**
      * Serialize a Java object to the JSON format.

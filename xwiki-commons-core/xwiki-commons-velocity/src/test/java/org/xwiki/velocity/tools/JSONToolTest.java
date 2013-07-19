@@ -75,6 +75,12 @@ public class JSONToolTest
     private JSONTool tool = new JSONTool();
 
     @Test
+    public void testSerializeNull()
+    {
+        Assert.assertEquals("null", this.tool.serialize(null));
+    }
+
+    @Test
     public void testSerializeMap()
     {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -86,7 +92,7 @@ public class JSONToolTest
         map.put("list", Arrays.asList("one", "two"));
         map.put("map", Collections.singletonMap("level2", true));
 
-        String json = tool.serialize(map);
+        String json = this.tool.serialize(map);
         // We can't predict the order in the map.
         Assert.assertTrue(json.contains("\"bool\":false"));
         Assert.assertTrue(json.contains("\"int\":13"));
@@ -100,34 +106,34 @@ public class JSONToolTest
     @Test
     public void testSerializeList()
     {
-        Assert.assertEquals("[1,2]", tool.serialize(Arrays.asList(1, 2)));
-        Assert.assertEquals("[1.3,2.4]", tool.serialize(new double[] {1.3, 2.4}));
+        Assert.assertEquals("[1,2]", this.tool.serialize(Arrays.asList(1, 2)));
+        Assert.assertEquals("[1.3,2.4]", this.tool.serialize(new double[] {1.3, 2.4}));
     }
 
     @Test
     public void testSerializeNumber()
     {
-        Assert.assertEquals("27", tool.serialize(27));
-        Assert.assertEquals("2.7", tool.serialize(2.7));
+        Assert.assertEquals("27", this.tool.serialize(27));
+        Assert.assertEquals("2.7", this.tool.serialize(2.7));
     }
 
     @Test
     public void testSerializeBoolean()
     {
-        Assert.assertEquals("false", tool.serialize(false));
-        Assert.assertEquals("true", tool.serialize(true));
+        Assert.assertEquals("false", this.tool.serialize(false));
+        Assert.assertEquals("true", this.tool.serialize(true));
     }
 
     @Test
     public void testSerializeString()
     {
-        Assert.assertEquals("\"\\\"te'st\\\"\"", tool.serialize("\"te'st\""));
+        Assert.assertEquals("\"\\\"te'st\\\"\"", this.tool.serialize("\"te'st\""));
     }
 
     @Test
     public void testSerializeBean()
     {
-        String json = tool.serialize(new MockBean());
+        String json = this.tool.serialize(new MockBean());
         // We can't predict the order in the map.
         Assert.assertTrue(json.contains("\"age\":28"));
         Assert.assertTrue(json.contains("\"enabled\":true"));
