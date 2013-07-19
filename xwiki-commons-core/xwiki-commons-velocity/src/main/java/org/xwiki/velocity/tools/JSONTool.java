@@ -91,8 +91,8 @@ public final class JSONTool
         try {
             return JSONSerializer.toJSON(json);
         } catch (JSONException ex) {
-            System.out.println(String.format("Tried to parse invalid JSON: [%s], exception was: %s",
-                StringUtils.abbreviate(json, 32), ex.getMessage()));
+            this.logger.info("Tried to parse invalid JSON: [{}], exception was: {}", StringUtils.abbreviate(json, 32),
+                ex.getMessage());
             return null;
         }
     }
