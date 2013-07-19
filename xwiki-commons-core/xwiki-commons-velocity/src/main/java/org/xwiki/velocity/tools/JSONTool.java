@@ -37,7 +37,7 @@ import net.sf.json.util.JSONUtils;
  * @version $Id$
  * @since 4.0M2
  */
-public final class JSONTool
+public class JSONTool
 {
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(JSONTool.class);
