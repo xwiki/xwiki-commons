@@ -19,12 +19,12 @@
  */
 package ${package};
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * Interface (aka Role) of the Component
  */
-@ComponentRole
+@Role
 public interface HelloWorld
 {
     /**

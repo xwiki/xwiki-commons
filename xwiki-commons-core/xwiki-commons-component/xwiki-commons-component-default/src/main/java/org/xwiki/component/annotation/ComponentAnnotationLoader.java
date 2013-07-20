@@ -291,7 +291,7 @@ public class ComponentAnnotationLoader
         if (component != null && component.roles().length > 0) {
             types.addAll(Arrays.asList(component.roles()));
         } else {
-            // Auto-discover roles by looking for a @ComponentRole annotation or a @Provider one in both the superclass
+            // Auto-discover roles by looking for a @Role annotation or a @Provider one in both the superclass
             // and implemented interfaces.
             for (Type interfaceType : getGenericInterfaces(componentClass)) {
                 Class< ? > interfaceClass;
@@ -340,7 +340,7 @@ public class ComponentAnnotationLoader
             }
 
             // Note that we need to look into the superclass since the super class can itself implements an interface
-            // that has the @ComponentRole annotation.
+            // that has the @Role annotation.
             Type superType = componentClass.getGenericSuperclass();
             if (superType != null && superType != Object.class) {
                 if (superType instanceof ParameterizedType) {
@@ -397,7 +397,7 @@ public class ComponentAnnotationLoader
         if (component != null && component.roles().length > 0) {
             classes.addAll(Arrays.asList(component.roles()));
         } else {
-            // Look in both superclass and interfaces for @ComponentRole or javax.inject.Provider
+            // Look in both superclass and interfaces for @Role or javax.inject.Provider
             for (Class< ? > interfaceClass : componentClass.getInterfaces()) {
                 // Handle superclass of interfaces
                 classes.addAll(findComponentRoleClasses(interfaceClass));
@@ -416,7 +416,7 @@ public class ComponentAnnotationLoader
             }
 
             // Note that we need to look into the superclass since the super class can itself implements an interface
-            // that has the @ComponentRole annotation.
+            // that has the @Role annotation.
             Class< ? > superClass = componentClass.getSuperclass();
             if (superClass != null && superClass != Object.class) {
                 classes.addAll(findComponentRoleClasses(superClass));
