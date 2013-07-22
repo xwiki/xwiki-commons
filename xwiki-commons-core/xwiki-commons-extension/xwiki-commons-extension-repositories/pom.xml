@@ -34,6 +34,7 @@
   <packaging>pom</packaging>
   <description>XWiki Commons - Extension - Repository - Parent POM</description>
   <modules>
+    <module>xwiki-commons-extension-repository-http</module>
     <module>xwiki-commons-extension-repository-maven</module>
     <module>xwiki-commons-extension-repository-xwiki</module>
   </modules>
