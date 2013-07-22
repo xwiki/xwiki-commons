@@ -30,12 +30,11 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.ExtensionLicenseManager;
-import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
-import org.xwiki.extension.repository.xwiki.internal.httpclient.HttpClientFactory;
+import org.xwiki.extension.repository.http.internal.HttpClientFactory;
 
 /**
  * @version $Id$

@@ -19,9 +19,10 @@
  */
 package org.xwiki.extension.repository.xwiki.internal;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -42,8 +43,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.extension.repository.http.internal.HttpClientFactory;
 import org.xwiki.extension.repository.result.IterableResult;
-import org.xwiki.extension.repository.xwiki.internal.httpclient.HttpClientFactory;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersionSummary;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersions;
 import org.xwiki.extension.version.Version;

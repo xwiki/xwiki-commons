@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.xwiki.internal.httpclient;
+package org.xwiki.extension.repository.http.internal;
 
 import java.io.IOException;
 
@@ -38,6 +38,7 @@ import org.apache.http.protocol.HttpContext;
  * Used to force preemptive authentication.
  * 
  * @version $Id$
+ * @since 5.2M1
  */
 public class PreemptiveAuth implements HttpRequestInterceptor
 {

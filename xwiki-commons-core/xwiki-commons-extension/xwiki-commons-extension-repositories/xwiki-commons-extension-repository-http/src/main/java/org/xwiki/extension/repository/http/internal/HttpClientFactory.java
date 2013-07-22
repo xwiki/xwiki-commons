@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.xwiki.internal.httpclient;
+package org.xwiki.extension.repository.http.internal;
 
 import org.apache.http.client.HttpClient;
 import org.xwiki.component.annotation.Role;
@@ -26,7 +26,7 @@ import org.xwiki.component.annotation.Role;
  * Constructs {@link HttpClient} objects that can be used to perform request on HTTP-based Extension Repositories.
  *
  * @version $Id$
- * @since 5.1M1
+ * @since 5.2M1
  */
 @Role
 public interface HttpClientFactory
