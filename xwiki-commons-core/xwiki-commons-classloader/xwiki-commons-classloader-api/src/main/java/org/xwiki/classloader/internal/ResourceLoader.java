@@ -386,23 +386,23 @@ public class ResourceLoader
 
     private static class JarInfo
     {
-        final ResourceLoader loader;
+        private ResourceLoader loader;
 
-        final URL source; // "real" jar file path
+        private URL source; // "real" jar file path
 
-        final URL base; // "jar:{base}!/"
+        private URL base; // "jar:{base}!/"
 
-        JarFile jar;
+        private JarFile jar;
 
-        boolean resolved;
+        private boolean resolved;
 
-        Permission perm;
+        private Permission perm;
 
-        URL[] classPath;
+        private URL[] classPath;
 
-        String[] index;
+        private String[] index;
 
-        Map<String, URL[]> package2url;
+        private Map<String, URL[]> package2url;
 
         JarInfo(ResourceLoader loader, URL source) throws MalformedURLException
         {
