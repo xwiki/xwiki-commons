@@ -89,9 +89,9 @@ public class ResourceLoader
 {
     private static final String JAR_INDEX_ENTRY_NAME = "META-INF/INDEX.LIST";
 
-    final URLStreamHandler jarHandler;
+    private URLStreamHandler jarHandler;
 
-    final Map<String, JarInfo> url2jarInfo = new HashMap<String, JarInfo>();
+    private Map<String, JarInfo> url2jarInfo = new HashMap<String, JarInfo>();
 
     /**
      * Constructs new ResourceLoader with specified JAR file handler which can implement custom JAR caching policy.
