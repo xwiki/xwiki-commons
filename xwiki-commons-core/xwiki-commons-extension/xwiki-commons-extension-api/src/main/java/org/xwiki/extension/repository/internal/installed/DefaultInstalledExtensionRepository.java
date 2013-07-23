@@ -196,8 +196,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
         if (coreExtension != null) {
             if (!isCompatible(coreExtension.getId().getVersion(), dependency.getVersionConstraint())) {
-                throw new InvalidExtensionException("Dependency [" + dependency
-                    + "] is incompatible with the core extension [" + coreExtension + "]");
+                throw new InvalidExtensionException(String.format(
+                    "Dependency [%s] is incompatible with the core extension [%s]", dependency, coreExtension));
             }
         } else {
             LocalExtension dependencyExtension =
@@ -205,16 +205,16 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                     dependency.getId(), namespace);
 
             if (dependencyExtension == null) {
-                throw new InvalidExtensionException("No compatible extension is installed for dependency ["
-                    + dependency + "]");
+                throw new InvalidExtensionException(String.format(
+                    "No compatible extension is installed for dependency [%s]", dependency));
             } else {
                 try {
                     DefaultInstalledExtension installedExtension =
                         validateExtension(dependencyExtension, namespace, register);
 
                     if (!installedExtension.isValid(namespace)) {
-                        throw new InvalidExtensionException("Extension depenency [" + installedExtension.getId()
-                            + "] is invalid");
+                        throw new InvalidExtensionException(String.format(
+                            "Extension dependency [%s] is invalid", installedExtension.getId()));
                     }
                 } catch (InvalidExtensionException e) {
                     if (register) {
@@ -252,11 +252,12 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
         }
 
         if (!DefaultInstalledExtension.isInstalled(localExtension, namespace)) {
-            throw new InvalidExtensionException("Extension [" + localExtension + "] is not installed");
+            throw new InvalidExtensionException(String.format("Extension [%s] is not installed", localExtension));
         }
 
         if (this.coreExtensionRepository.exists(localExtension.getId().getId())) {
-            throw new InvalidExtensionException("Extension [" + localExtension + "] already exists as a core extension");
+            throw new InvalidExtensionException(String.format(
+                "Extension [%s] already exists as a core extension", localExtension));
         }
 
         // Validate dependencies
@@ -567,8 +568,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
         if (installedExtension != null && installedExtension.isInstalled(namespace)) {
             if (installedExtension.isDependency() == dependency) {
-                throw new InstallException("The extension [" + installedExtension
-                    + "] is already installed on namespace [" + namespace + "]");
+                throw new InstallException(String.format(
+                    "The extension [%s] is already installed on namespace [%s]", installedExtension, namespace));
             }
 
             installedExtension.setDependency(dependency, namespace);
@@ -584,7 +585,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
             if (localExtension == null) {
                 // Should be a very rare use case since we explicitly ask for a LocalExtension
-                throw new InstallException("The extension [" + extension + "] need to be stored first");
+                throw new InstallException(String.format("The extension [%s] need to be stored first", extension));
             }
 
             if (installedExtension == null) {
@@ -630,7 +631,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
         throws ResolveException
     {
         if (getInstalledExtension(feature, namespace) == null) {
-            throw new ResolveException("Extension [" + feature + "] is not installed on namespace [" + namespace + "]");
+            throw new ResolveException(String.format(
+                "Extension [%s] is not installed on namespace [%s]", feature, namespace));
         }
 
         Map<String, InstalledFeature> installedExtensionsByFeature = this.extensionNamespaceByFeature.get(feature);
