@@ -1,0 +1,2 @@
+org.xwiki.filter.json.internal.parser.DefaultJSONParserFactory
+org.xwiki.filter.json.internal.serializer.DefaultJSONSerializerFactory

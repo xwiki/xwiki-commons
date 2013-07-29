@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
- *
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,25 +16,31 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
--->
+ */
+package org.xwiki.filter.json.serializer;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
-    <version>5.2-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-filter</artifactId>
-  <name>XWiki Commons - Filter - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Filter - Parent POM</description>
-  <modules>
-    <module>xwiki-commons-filter-api</module>
-    <module>xwiki-commons-filter-xml</module>
-    <module>xwiki-commons-filter-json</module>
-  </modules>
-</project>
-       
+import java.io.IOException;
+import java.io.Writer;
+
+import org.xwiki.component.annotation.Role;
+import org.xwiki.filter.json.JSONConfiguration;
+
+/**
+ * Create JSON serializers as listeners.
+ * 
+ * @version $Id$
+ * @since 5.2M1
+ */
+@Role
+public interface JSONSerializerFactory
+{
+    /**
+     * @param filterInterface the interface of the filter that will receive the events
+     * @param writer the writer
+     * @param configuration the configuration of the serializer
+     * @return the listener to send events to
+     * @param <T> the type of the event listener
+     * @throws IOException if failing to create the serializer
+     */
+    <T> T createSerializer(Class<T> filterInterface, Writer writer, JSONConfiguration configuration) throws IOException;
+}
