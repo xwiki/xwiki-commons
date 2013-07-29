@@ -55,12 +55,7 @@ public class XMLTreeUnmarshaller extends TreeUnmarshaller
     {
         Type type = (Type) dataHolder.get(XStreamParameterManager.DDEFAULTTYPE_NAME);
 
-        Class< ? > typeClass;
-        if (type != null) {
-            typeClass = ReflectionUtils.getTypeClass(type);
-        } else {
-            typeClass = null;
-        }
+        Class< ? > typeClass = ReflectionUtils.getTypeClass(type);
 
         if (typeClass != null) {
             return convertAnother(null, typeClass);

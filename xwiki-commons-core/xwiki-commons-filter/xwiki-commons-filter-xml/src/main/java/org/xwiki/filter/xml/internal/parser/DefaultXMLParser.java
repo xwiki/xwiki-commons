@@ -400,9 +400,12 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                     NodeList parameterNodes = rootElement.getChildNodes();
                     for (int i = 0; i < parameterNodes.getLength(); ++i) {
                         Node parameterNode = parameterNodes.item(i);
-                        String nodeName = parameterNode.getLocalName();
 
-                        setParameter(currentBlock, nodeName, parameterNode, true);
+                        if (parameterNode.getNodeType() == Node.ELEMENT_NODE) {
+                            String nodeName = parameterNode.getLocalName();
+
+                            setParameter(currentBlock, nodeName, parameterNode, true);
+                        }
                     }
                 }
 
