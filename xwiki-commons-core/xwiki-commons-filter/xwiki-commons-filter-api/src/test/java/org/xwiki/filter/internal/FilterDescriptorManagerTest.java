@@ -73,7 +73,7 @@ public class FilterDescriptorManagerTest
     @Test
     public void testContainerWithParameters()
     {
-        FilterElement filterElement = this.filterDescriptor.getElements().get("containerwithparameters");
+        FilterElement filterElement = this.filterDescriptor.getElement("containerwithparameters");
 
         Assert.assertNotNull(filterElement);
 
@@ -87,7 +87,7 @@ public class FilterDescriptorManagerTest
     @Test
     public void testContainerWithNamedParameters()
     {
-        FilterElement filterElement = this.filterDescriptor.getElements().get("containerwithnamedparameters");
+        FilterElement filterElement = this.filterDescriptor.getElement("containerwithnamedparameters");
 
         Assert.assertNotNull(filterElement);
 
@@ -105,8 +105,8 @@ public class FilterDescriptorManagerTest
     public void testNameInheritance() throws ComponentLookupException
     {
         FilterElement filterElement =
-            this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class).getElements()
-                .get("containerwithnamedparameters");
+            this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class)
+                .getElement("containerwithnamedparameters");
 
         Assert.assertNotNull(filterElement);
 
@@ -133,8 +133,8 @@ public class FilterDescriptorManagerTest
                 "")).thenThrow(ConversionException.class);
 
         FilterElement filterElement =
-            this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class).getElements()
-                .get("childwithdefaultvalue");
+            this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class)
+                .getElement("childwithdefaultvalue");
 
         Assert.assertNotNull(filterElement);
 

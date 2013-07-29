@@ -34,7 +34,7 @@ public interface FilterDescriptorManager
 {
     /**
      * @param type the filter class
-     * @return the listener descriptor
+     * @return the filter descriptor
      */
     FilterDescriptor getFilterDescriptor(Class< ? > type);
 }

@@ -118,8 +118,8 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
         public void setParameter(int index, Object value)
         {
-            while (this.parameters.size() <= index) {
-                this.parameters.add(null);
+            for (int i = this.parameters.size(); i <= index; ++i) {
+                this.parameters.add(this.filterElement.getParameters()[i].getDefaultValue());
             }
 
             this.parameters.set(index, value);
@@ -128,7 +128,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
         public List<Object> getParametersList()
         {
-            return parameters;
+            return this.parameters;
         }
 
         public Object[] getParametersTable()
@@ -273,7 +273,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
             if (block.filterElement != null) {
                 if (block.filterElement.getParameters().length > parameterIndex) {
-                    FilterElementParameter filterParameter = block.filterElement.getParameters()[parameterIndex];
+                    FilterElementParameter< ? > filterParameter = block.filterElement.getParameters()[parameterIndex];
 
                     setParameter(block, filterParameter, value);
                 } else {
@@ -281,7 +281,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 }
             }
         } else if (!attribute || !isReservedBlockAttribute(name)) {
-            FilterElementParameter filterParameter = block.filterElement.getParameter(name);
+            FilterElementParameter< ? > filterParameter = block.filterElement.getParameter(name);
 
             if (filterParameter != null) {
                 setParameter(block, filterParameter, value);
@@ -291,7 +291,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         }
     }
 
-    private void setParameter(Block block, FilterElementParameter filterParameter, Object value)
+    private void setParameter(Block block, FilterElementParameter< ? > filterParameter, Object value)
     {
         Type type = filterParameter.getType();
 
@@ -378,12 +378,18 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                     block.fireEndEvent(this.filter, block.getParametersTable());
                 } else {
                     if (block.getParametersList().size() == 0
-                        && this.filterDescriptor.getElements().get(qName.toLowerCase()).getParameters().length == 1) {
-                        block.setParameter(
-                            0,
-                            this.stringConverter.convert(this.filterDescriptor.getElements().get(qName.toLowerCase())
-                                .getParameters()[0].getType(), this.content.toString()));
-                        this.content = null;
+                        && this.filterDescriptor.getElement(qName).getParameters().length == 1) {
+                        if (this.content != null && this.content.length() > 0) {
+                            block.setParameter(
+                                0,
+                                this.stringConverter.convert(
+                                    this.filterDescriptor.getElement(qName).getParameters()[0].getType(),
+                                    this.content.toString()));
+                            this.content = null;
+                        } else {
+                            block.setParameter(0,
+                                this.filterDescriptor.getElement(qName).getParameters()[0].getDefaultValue());
+                        }
                     }
 
                     block.fireOnEvent(this.filter, block.getParametersTable());
@@ -449,7 +455,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             blockName = qName;
         }
 
-        FilterElement element = this.filterDescriptor.getElements().get(blockName.toLowerCase());
+        FilterElement element = this.filterDescriptor.getElement(blockName);
 
         if (element == null) {
             LOGGER.warn("Uknown filter element [{}]", blockName);

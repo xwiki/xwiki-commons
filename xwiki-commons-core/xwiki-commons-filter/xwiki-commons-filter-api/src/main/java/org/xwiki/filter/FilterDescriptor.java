@@ -39,10 +39,19 @@ public class FilterDescriptor
     private Map<String, FilterElement> elements = new HashMap<String, FilterElement>();
 
     /**
-     * @return the listener elements
+     * @return the filter elements
      */
     public Map<String, FilterElement> getElements()
     {
         return this.elements;
+    }
+
+    /**
+     * @param name the name of the filter element
+     * @return the filter element
+     */
+    public FilterElement getElement(String name)
+    {
+        return this.elements.get(name.toLowerCase());
     }
 }

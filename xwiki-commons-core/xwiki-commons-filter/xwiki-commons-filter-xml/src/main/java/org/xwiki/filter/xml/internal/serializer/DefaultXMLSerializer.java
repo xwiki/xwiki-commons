@@ -169,7 +169,7 @@ public class DefaultXMLSerializer implements InvocationHandler
         }
 
         if (parameters != null) {
-            FilterElement element = this.descriptor.getElements().get(blockName.toLowerCase());
+            FilterElement element = this.descriptor.getElement(blockName);
 
             writeInlineParameters(parameters, element);
         }
@@ -192,7 +192,7 @@ public class DefaultXMLSerializer implements InvocationHandler
     {
         String blockName = getBlockName(eventName, "begin");
 
-        FilterElement element = this.descriptor.getElements().get(blockName.toLowerCase());
+        FilterElement element = this.descriptor.getElement(blockName);
 
         List<Object> elementParameters = parameters != null ? Arrays.asList(parameters) : null;
 
@@ -226,7 +226,7 @@ public class DefaultXMLSerializer implements InvocationHandler
     {
         String blockName = getBlockName(eventName, "on");
 
-        FilterElement element = this.descriptor.getElements().get(blockName.toLowerCase());
+        FilterElement element = this.descriptor.getElement(blockName);
 
         List<Object> elementParameters = parameters != null ? Arrays.asList(parameters) : null;
 
@@ -251,8 +251,11 @@ public class DefaultXMLSerializer implements InvocationHandler
 
         // Write complex parameters
         if (parameters != null && parameters.length == 1 && XMLUtils.isSimpleType(element.getParameters()[0].getType())) {
-            String value = parameters[0].toString();
-            this.xmlStreamWriter.writeCharacters(value);
+            Object parameter = parameters[0];
+            if (parameter != null && !ObjectUtils.equals(element.getParameters()[0].getDefaultValue(), parameter)) {
+                String value = parameter.toString();
+                this.xmlStreamWriter.writeCharacters(value);
+            }
         } else {
             writeParameters(elementParameters, element, false);
         }
