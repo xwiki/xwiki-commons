@@ -104,6 +104,7 @@
           <excludes>
             org/xwiki/xml/stax/SAXEventConsumer.java
           </excludes>
+          <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
         </configuration>
       </plugin>
     </plugins>

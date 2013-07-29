@@ -19,18 +19,23 @@
  */
 package org.xwiki.xml;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -427,5 +432,29 @@ public final class XMLUtils
             }
         }
         return null;
+    }
+
+    /**
+     * Parse and pretty pint a XML content.
+     * 
+     * @param content the XML content to format
+     * @return the formated version of the passed XML content
+     * @throws TransformerFactoryConfigurationError when failing to create a
+     *             {@link TransformerFactoryConfigurationError}
+     * @throws TransformerException when failing to transform the content
+     * @since 5.2M1
+     */
+    public static String formatXMLContent(String content) throws TransformerFactoryConfigurationError,
+        TransformerException
+    {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+        StreamResult result = new StreamResult(new StringWriter());
+        StreamSource source = new StreamSource(new StringReader(content));
+        transformer.transform(source, result);
+
+        return result.getWriter().toString();
     }
 }
