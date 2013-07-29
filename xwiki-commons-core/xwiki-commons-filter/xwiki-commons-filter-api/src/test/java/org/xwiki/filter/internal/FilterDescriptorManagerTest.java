@@ -19,21 +19,29 @@
  */
 package org.xwiki.filter.internal;
 
+import java.awt.Color;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterElement;
 import org.xwiki.filter.FilterElementParameter;
 import org.xwiki.filter.test.TestFilter;
 import org.xwiki.filter.test.TestFilterImplementation;
+import org.xwiki.properties.ConverterManager;
+import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 public class FilterDescriptorManagerTest
@@ -110,5 +118,40 @@ public class FilterDescriptorManagerTest
         Assert.assertEquals("namedParam", parameter0.getName());
         Assert.assertEquals(0, parameter0.getIndex());
         Assert.assertEquals(String.class, parameter0.getType());
+    }
+
+    @Test
+    public void testWithDefaultValue() throws ComponentLookupException
+    {
+        ConverterManager converter = mocker.getInstance(ConverterManager.class);
+
+        Mockito.when(converter.convert(int.class, "42")).thenReturn(42);
+        Mockito.when(converter.convert(String.class, "default value")).thenReturn("default value");
+        Mockito.when(converter.convert(Color.class, "#ffffff")).thenReturn(Color.WHITE);
+        Mockito.when(
+            converter.convert(new DefaultParameterizedType(null, Map.class, new Type[] {String.class, String.class}),
+                "")).thenThrow(ConversionException.class);
+
+        FilterElement filterElement =
+            this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class).getElements()
+                .get("childwithdefaultvalue");
+
+        Assert.assertNotNull(filterElement);
+
+        FilterElementParameter<Integer> parameter0 = filterElement.getParameter("int");
+
+        Assert.assertEquals(Integer.valueOf(42), parameter0.getDefaultValue());
+
+        FilterElementParameter<String> parameter1 = filterElement.getParameter("string");
+
+        Assert.assertEquals("default value", parameter1.getDefaultValue());
+
+        FilterElementParameter<Color> parameter2 = filterElement.getParameter("color");
+
+        Assert.assertEquals(Color.WHITE, parameter2.getDefaultValue());
+
+        FilterElementParameter<Map<String, String>> parameter3 = filterElement.getParameter("map");
+
+        Assert.assertEquals(Collections.EMPTY_MAP, parameter3.getDefaultValue());
     }
 }

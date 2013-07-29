@@ -178,7 +178,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                     if (i < parameters.length) {
                         properParameters[i] = parameters[i];
                     } else {
-                        properParameters[i] = null;
+                        properParameters[i] = this.filterElement.getParameters()[i].getDefaultValue();
                     }
                 }
             }
@@ -191,7 +191,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                     Class< ? > methodParameter = methodParameters[i];
 
                     if (methodParameter.isPrimitive()) {
-                        properParameters[i] = XMLUtils.defaultValue(methodParameter);
+                        properParameters[i] = XMLUtils.emptyValue(methodParameter);
                     }
                 }
             }
@@ -303,7 +303,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             if (XMLUtils.isSimpleType(typeClass)) {
                 block.setParameter(filterParameter.getIndex(), this.stringConverter.convert(type, value));
             } else {
-                block.setParameter(filterParameter.getIndex(), XMLUtils.defaultValue(typeClass));
+                block.setParameter(filterParameter.getIndex(), XMLUtils.emptyValue(typeClass));
             }
         }
     }

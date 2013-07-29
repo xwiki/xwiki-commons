@@ -88,7 +88,7 @@ public class XStreamParameterManager implements ParameterManager, Initializable
     public void serialize(Type type, Object object, XMLStreamWriter xmlStreamWriter)
     {
         Class< ? > typeClass = ReflectionUtils.getTypeClass(type);
-        if (typeClass != null && ObjectUtils.equals(XMLUtils.defaultValue(typeClass), object)) {
+        if (typeClass != null && ObjectUtils.equals(XMLUtils.emptyValue(typeClass), object)) {
             return;
         }
 
@@ -112,7 +112,7 @@ public class XStreamParameterManager implements ParameterManager, Initializable
     public Object unSerialize(Type type, Element rootElement)
     {
         if (type != null && !rootElement.hasChildNodes()) {
-            Object value = XMLUtils.defaultValue(ReflectionUtils.getTypeClass(type));
+            Object value = XMLUtils.emptyValue(ReflectionUtils.getTypeClass(type));
             if (value != null) {
                 return value;
             }

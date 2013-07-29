@@ -19,8 +19,10 @@
  */
 package org.xwiki.filter.test;
 
+import java.awt.Color;
 import java.util.Map;
 
+import org.xwiki.filter.annotation.Default;
 import org.xwiki.filter.annotation.Name;
 
 public interface TestFilter
@@ -62,4 +64,8 @@ public interface TestFilter
     void endBlockParameters();
 
     void onBlockParameters();
+
+    void onChildWithDefaultValue(@Name("int") @Default("42") int integer,
+        @Name("string") @Default("default value") String string, @Name("color") @Default("#ffffff") Color color,
+        @Name("map") @Default("") Map<String, String> map);
 }

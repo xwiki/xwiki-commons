@@ -95,7 +95,7 @@ public final class XMLUtils
      * @param type the type
      * @return the default value of the provided type
      */
-    public static Object defaultValue(Class< ? > type)
+    public static Object emptyValue(Class< ? > type)
     {
         Object defaultValue = null;
 

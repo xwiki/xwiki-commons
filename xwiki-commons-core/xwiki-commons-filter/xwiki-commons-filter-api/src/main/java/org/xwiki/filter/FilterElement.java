@@ -40,7 +40,7 @@ public class FilterElement
     /**
      * Empty parameters.
      */
-    private static final FilterElementParameter[] EMPTY_PARAMETERS = new FilterElementParameter[0];
+    private static final FilterElementParameter< ? >[] EMPTY_PARAMETERS = new FilterElementParameter< ? >[0];
 
     /**
      * @see #getName()
@@ -50,7 +50,7 @@ public class FilterElement
     /**
      * @see #getParameters()
      */
-    private FilterElementParameter[] parameters;
+    private FilterElementParameter< ? >[] parameters;
 
     /**
      * Used to find parameter index by name.
@@ -84,11 +84,11 @@ public class FilterElement
      * @param name the name of the element
      * @param parameters the parameters
      */
-    public FilterElement(String name, FilterElementParameter[] parameters)
+    public FilterElement(String name, FilterElementParameter< ? >[] parameters)
     {
         this.name = name;
         this.parameters = parameters;
-        for (FilterElementParameter parameter : parameters) {
+        for (FilterElementParameter< ? > parameter : parameters) {
             if (parameter.getName() != null) {
                 this.parametersIndex.put(parameter.getName(), parameter.getIndex());
             }
@@ -106,20 +106,21 @@ public class FilterElement
     /**
      * @return the parameters of the element
      */
-    public FilterElementParameter[] getParameters()
+    public FilterElementParameter< ? >[] getParameters()
     {
         return this.parameters;
     }
 
     /**
+     * @param <T> the type of the parameter value
      * @param name the name of the parameter
      * @return the parameter associated to the passed name
      */
-    public FilterElementParameter getParameter(String name)
+    public <T> FilterElementParameter<T> getParameter(String name)
     {
         Integer index = this.parametersIndex.get(name);
 
-        return index != null ? this.parameters[index] : null;
+        return index != null ? (FilterElementParameter<T>) this.parameters[index] : null;
     }
 
     /**

@@ -21,18 +21,24 @@ package org.xwiki.filter.internal;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.ReflectionMethodUtils;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterElement;
 import org.xwiki.filter.FilterElementParameter;
+import org.xwiki.filter.annotation.Default;
 import org.xwiki.filter.annotation.Name;
-import org.xwiki.stability.Unstable;
+import org.xwiki.properties.ConverterManager;
+import org.xwiki.properties.converter.ConversionException;
 
 /**
  * Default implementation of {@link FilterDescriptorManager}.
@@ -41,7 +47,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.2M1
  */
 @Component
-@Unstable
 public class DefaultFilterDescriptorManager implements FilterDescriptorManager
 {
     /**
@@ -63,6 +68,12 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      * The descriptors.
      */
     private Map<Class< ? >, FilterDescriptor> descriptors = new ConcurrentHashMap<Class< ? >, FilterDescriptor>();
+
+    /**
+     * Used to convert default values from {@link String}.
+     */
+    @Inject
+    private ConverterManager converter;
 
     @Override
     public FilterDescriptor getFilterDescriptor(Class< ? > type)
@@ -133,22 +144,10 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
         Type[] methodTypes = method.getGenericParameterTypes();
         // TODO: add support for multiple methods
         if (element == null || methodTypes.length > element.getParameters().length) {
-            FilterElementParameter[] parameters = new FilterElementParameter[methodTypes.length];
+            FilterElementParameter< ? >[] parameters = new FilterElementParameter< ? >[methodTypes.length];
 
             for (int i = 0; i < methodTypes.length; ++i) {
-                Type type = methodTypes[i];
-
-                List<Name> annotations =
-                    ReflectionMethodUtils.getMethodParameterAnnotations(method, i, Name.class, true);
-
-                String name;
-                if (!annotations.isEmpty()) {
-                    name = annotations.get(0).value();
-                } else {
-                    name = null;
-                }
-
-                parameters[i] = new FilterElementParameter(i, name, type);
+                parameters[i] = createFilterElementParameter(method, i, methodTypes[i]);
             }
 
             element = new FilterElement(elementName, parameters);
@@ -157,6 +156,52 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
         }
 
         addMethod(element, method);
+    }
+
+    /**
+     * @param method the method associated to the element
+     * @param index the method parameter index
+     * @param type the method parameter type
+     * @return the associated {@link FilterElementParameter}
+     */
+    private FilterElementParameter< ? > createFilterElementParameter(Method method, int index, Type type)
+    {
+        // @Name
+        List<Name> nameAnnotations =
+            ReflectionMethodUtils.getMethodParameterAnnotations(method, index, Name.class, true);
+
+        String name;
+        if (!nameAnnotations.isEmpty()) {
+            name = nameAnnotations.get(0).value();
+        } else {
+            name = null;
+        }
+
+        // @Default
+        List<Default> defaultAnnotations =
+            ReflectionMethodUtils.getMethodParameterAnnotations(method, index, Default.class, true);
+
+        Object defaultValue;
+        if (!defaultAnnotations.isEmpty()) {
+            defaultValue = defaultAnnotations.get(0).value();
+
+            if (defaultValue != null) {
+                try {
+                    defaultValue = this.converter.convert(type, defaultValue);
+                } catch (ConversionException e) {
+                    // TODO: remove that hack when String -> Map support is added to xwiki-properties
+                    if (ReflectionUtils.getTypeClass(type) == Map.class && ((String) defaultValue).isEmpty()) {
+                        defaultValue = Collections.EMPTY_MAP;
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+        } else {
+            defaultValue = null;
+        }
+
+        return new FilterElementParameter<Object>(index, name, type, defaultValue);
     }
 
     /**

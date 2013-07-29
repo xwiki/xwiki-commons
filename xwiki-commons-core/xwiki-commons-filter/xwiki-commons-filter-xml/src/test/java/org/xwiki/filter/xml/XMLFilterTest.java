@@ -19,8 +19,10 @@
  */
 package org.xwiki.filter.xml;
 
+import java.awt.Color;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Collections;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -161,5 +163,16 @@ public class XMLFilterTest
         testFilter.endCustomData(extendedTestData);
 
         assertSerialized("<customData><p><custom><field1>1</field1></custom></p></customData>");
+    }
+
+    @Test
+    public void testSerializeWithDefaultValue() throws ComponentLookupException, XMLStreamException,
+        FactoryConfigurationError
+    {
+        TestFilter testFilter = createFilter();
+
+        testFilter.onChildWithDefaultValue(42, "default value", Color.WHITE, Collections.EMPTY_MAP);
+
+        assertSerialized("<childWithDefaultValue></childWithDefaultValue>");
     }
 }

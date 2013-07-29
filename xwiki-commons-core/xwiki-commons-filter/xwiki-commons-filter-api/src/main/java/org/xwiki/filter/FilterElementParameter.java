@@ -26,11 +26,12 @@ import org.xwiki.stability.Unstable;
 /**
  * A filter element parameter.
  * 
+ * @param <T> the type of the parameter
  * @version $Id$
  * @since 5.2M1
  */
 @Unstable
-public class FilterElementParameter
+public class FilterElementParameter<T>
 {
     /**
      * @see #getIndex()
@@ -48,16 +49,23 @@ public class FilterElementParameter
     private Type type;
 
     /**
+     * @see #getDefaultValue()
+     */
+    private T defaultValue;
+
+    /**
      * @param index the index of the parameter.
      * @param name the name of the parameter. {@code null} if no {@link org.xwiki.filter.annotation.Name} annotation has
      *            been used.
      * @param type the type of the parameter.
+     * @param defaultValue the default value.
      */
-    public FilterElementParameter(int index, String name, Type type)
+    public FilterElementParameter(int index, String name, Type type, T defaultValue)
     {
         this.index = index;
         this.name = name;
         this.type = type;
+        this.defaultValue = defaultValue;
     }
 
     /**
@@ -83,5 +91,13 @@ public class FilterElementParameter
     public Type getType()
     {
         return this.type;
+    }
+
+    /**
+     * @return the default value.
+     */
+    public T getDefaultValue()
+    {
+        return this.defaultValue;
     }
 }

@@ -128,32 +128,34 @@ public class DefaultXMLSerializer implements InvocationHandler
             Object parameterValue = parameters.get(i);
 
             if (parameterValue != null) {
-                FilterElementParameter filterParameter = element.getParameters()[i];
+                FilterElementParameter< ? > filterParameter = element.getParameters()[i];
 
-                Class< ? > typeClass = ReflectionUtils.getTypeClass(filterParameter.getType());
+                if (!ObjectUtils.equals(filterParameter.getDefaultValue(), parameterValue)) {
+                    Class< ? > typeClass = ReflectionUtils.getTypeClass(filterParameter.getType());
 
-                String attributeName;
+                    String attributeName;
 
-                if (filterParameter.getName() != null) {
-                    if (isValidParameterAttributeName(filterParameter.getName())) {
-                        attributeName = filterParameter.getName();
+                    if (filterParameter.getName() != null) {
+                        if (isValidParameterAttributeName(filterParameter.getName())) {
+                            attributeName = filterParameter.getName();
+                        } else {
+                            attributeName = null;
+                        }
                     } else {
-                        attributeName = null;
+                        attributeName = this.configuration.getElementParameter() + filterParameter.getIndex();
                     }
-                } else {
-                    attributeName = this.configuration.getElementParameter() + filterParameter.getIndex();
-                }
 
-                if (attributeName != null) {
-                    if (XMLUtils.isSimpleType(typeClass)) {
-                        this.xmlStreamWriter.writeAttribute(attributeName,
-                            this.converter.<String> convert(String.class, parameterValue));
+                    if (attributeName != null) {
+                        if (XMLUtils.isSimpleType(typeClass)) {
+                            this.xmlStreamWriter.writeAttribute(attributeName,
+                                this.converter.<String> convert(String.class, parameterValue));
 
-                        parameters.set(filterParameter.getIndex(), null);
-                    } else if (ObjectUtils.equals(XMLUtils.defaultValue(typeClass), parameterValue)) {
-                        this.xmlStreamWriter.writeAttribute(attributeName, "");
+                            parameters.set(filterParameter.getIndex(), null);
+                        } else if (ObjectUtils.equals(XMLUtils.emptyValue(typeClass), parameterValue)) {
+                            this.xmlStreamWriter.writeAttribute(attributeName, "");
 
-                        parameters.set(filterParameter.getIndex(), null);
+                            parameters.set(filterParameter.getIndex(), null);
+                        }
                     }
                 }
             }
@@ -259,11 +261,11 @@ public class DefaultXMLSerializer implements InvocationHandler
         this.xmlStreamWriter.writeEndElement();
     }
 
-    private boolean shouldWriteParameter(Object value, FilterElementParameter filterParameter)
+    private boolean shouldWriteParameter(Object value, FilterElementParameter< ? > filterParameter)
     {
         boolean write;
 
-        if (value != null) {
+        if (value != null && !ObjectUtils.equals(filterParameter.getDefaultValue(), value)) {
             write = true;
 
             Type type = filterParameter.getType();
@@ -272,7 +274,7 @@ public class DefaultXMLSerializer implements InvocationHandler
                 Class< ? > typeClass = (Class< ? >) type;
                 try {
                     if (typeClass.isPrimitive()) {
-                        write = !XMLUtils.defaultValue(typeClass).equals(value);
+                        write = !XMLUtils.emptyValue(typeClass).equals(value);
                     }
                 } catch (Exception e) {
                     // Should never happen
@@ -307,7 +309,7 @@ public class DefaultXMLSerializer implements InvocationHandler
             for (int i = 0; i < parameters.size(); ++i) {
                 Object parameterValue = parameters.get(i);
 
-                FilterElementParameter filterParameter = descriptor.getParameters()[i];
+                FilterElementParameter< ? > filterParameter = descriptor.getParameters()[i];
 
                 if (shouldWriteParameter(parameterValue, filterParameter)) {
                     String elementName;

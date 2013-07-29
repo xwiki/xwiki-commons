@@ -19,6 +19,7 @@
  */
 package org.xwiki.filter.test;
 
+import java.awt.Color;
 import java.util.Map;
 
 public class TestFilterImplementation implements TestFilter
@@ -100,6 +101,14 @@ public class TestFilterImplementation implements TestFilter
     {
 
     }
+
+    @Override
+    public void onChildWithDefaultValue(int integer, String string, Color color, Map<String, String> map)
+    {
+
+    }
+
+    // Reserved names
 
     @Override
     public void beginBlock(String blockName)
