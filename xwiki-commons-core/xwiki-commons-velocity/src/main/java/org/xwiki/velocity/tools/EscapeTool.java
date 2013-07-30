@@ -19,6 +19,9 @@
  */
 package org.xwiki.velocity.tools;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.BCodec;
 import org.apache.commons.codec.net.QCodec;
@@ -41,6 +44,12 @@ import org.xwiki.xml.XMLUtils;
  */
 public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
 {
+    /** Equals sign. */
+    private static final String EQUALS = "=";
+    
+    /** And sign. */
+    private static final String AND = "&amp;";
+    
     /**
      * Escapes the XML special characters in a <code>String</code> using numerical XML entities.
      * 
@@ -111,5 +120,50 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
             }
         }
         return null;
+    }
+    
+    /**
+     * Properly escape a parameter map representing a query String, so that it can be safely used in an URL.
+     * 
+     * @param parametersMap Map representing the query string.
+     * @return the safe query string representing the passed parameters
+     */
+    public String url(Map<String, ?> parametersMap)
+    {
+        String safeQueryString = "";
+        for (String parameter : parametersMap.keySet()) {
+            String cleanParameter = this.url(parameter);
+            Object mapValues = parametersMap.get(parameter);
+            // If the value associated to the key is an array or a collection, let's iterate over it.
+            if (mapValues.getClass().isArray()) {
+                Object[] values = (Object[]) mapValues;
+                for (Object value : values) {
+                    String valueAsString = String.valueOf(value);
+                    String cleanValue = this.url(valueAsString);
+                    if (!safeQueryString.equals("")) {
+                        safeQueryString += AND;
+                    }
+                    safeQueryString += cleanParameter + EQUALS + cleanValue; 
+                }
+            } else if (Collection.class.isAssignableFrom(mapValues.getClass())) {
+                Collection<?> values = (Collection<?>) mapValues;
+                for (Object value : values) {
+                    String valueAsString = String.valueOf(value);
+                    String cleanValue = this.url(valueAsString);
+                    if (!safeQueryString.equals("")) {
+                        safeQueryString += AND;
+                    }
+                    safeQueryString += cleanParameter + EQUALS + cleanValue; 
+                }
+            } else {
+                String valueAsString = String.valueOf(mapValues);
+                String cleanValue = this.url(valueAsString);
+                if (!safeQueryString.equals("")) {
+                    safeQueryString += AND;
+                }
+                safeQueryString += cleanParameter + EQUALS + cleanValue; 
+            }
+        }
+        return safeQueryString;
     }
 }
