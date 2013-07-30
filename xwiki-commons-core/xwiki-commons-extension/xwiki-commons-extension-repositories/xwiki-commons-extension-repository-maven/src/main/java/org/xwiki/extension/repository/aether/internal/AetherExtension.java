@@ -20,9 +20,9 @@
 package org.xwiki.extension.repository.aether.internal;
 
 import org.apache.maven.model.Model;
-import org.sonatype.aether.artifact.Artifact;
+import org.codehaus.plexus.PlexusContainer;
+import org.eclipse.aether.artifact.Artifact;
 import org.xwiki.extension.AbstractExtension;
-import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 
 /**
  * Add support for repositories supported by AETHER (only Maven for now).
@@ -37,7 +37,7 @@ public class AetherExtension extends AbstractExtension
     public static final String PKEY_MAVEN_MODEL = "maven.Model";
 
     public AetherExtension(Artifact artifact, Model mavenModel, AetherExtensionRepository repository,
-        PlexusComponentManager plexusComponentManager)
+        PlexusContainer plexusComponentManager)
     {
         super(repository, AetherUtils.createExtensionId(artifact), artifact.getExtension());
 

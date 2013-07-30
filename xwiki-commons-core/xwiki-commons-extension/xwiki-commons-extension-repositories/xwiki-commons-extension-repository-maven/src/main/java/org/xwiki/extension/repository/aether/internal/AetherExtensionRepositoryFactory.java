@@ -21,16 +21,17 @@ package org.xwiki.extension.repository.aether.internal;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.maven.repository.internal.MavenRepositorySystemSession;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.sonatype.aether.ConfigurationProperties;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.repository.LocalRepository;
-import org.sonatype.aether.repository.LocalRepositoryManager;
-import org.sonatype.aether.repository.RepositoryPolicy;
+import org.eclipse.aether.ConfigurationProperties;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.LocalRepository;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -41,7 +42,7 @@ import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
 import org.xwiki.extension.repository.aether.internal.configuration.AetherConfiguration;
-import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
+import org.xwiki.extension.repository.aether.internal.util.DefaultJavaNetProxySelector;
 
 /**
  * @version $Id$
@@ -56,7 +57,7 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
     private ComponentManager componentManager;
 
     @Inject
-    private PlexusComponentManager plexusComponentManager;
+    private Provider<PlexusContainer> plexusProvider;
 
     @Inject
     private AetherConfiguration aetherConfiguration;
@@ -64,31 +65,31 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
     @Inject
     private ExtensionManagerConfiguration configuration;
 
-    private LocalRepositoryManager localRepositoryManager;
+    private RepositorySystem repositorySystem;
+
+    private LocalRepository localRepository;
 
     @Override
     public void initialize() throws InitializationException
     {
-        RepositorySystem repositorySystem;
         try {
-            repositorySystem = this.plexusComponentManager.getPlexus().lookup(RepositorySystem.class);
+            this.repositorySystem = this.plexusProvider.get().lookup(RepositorySystem.class);
         } catch (ComponentLookupException e) {
             throw new InitializationException("Failed to lookup RepositorySystem", e);
         }
-
-        LocalRepository localRepo = new LocalRepository(this.aetherConfiguration.getLocalRepository());
-        this.localRepositoryManager = repositorySystem.newLocalRepositoryManager(localRepo);
+        this.localRepository = new LocalRepository(this.aetherConfiguration.getLocalRepository());
     }
 
     public RepositorySystemSession createRepositorySystemSession()
     {
-        MavenRepositorySystemSession session = new MavenRepositorySystemSession();
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
-        session.setLocalRepositoryManager(this.localRepositoryManager);
-        session.setIgnoreMissingArtifactDescriptor(false);
-        session.setIgnoreInvalidArtifactDescriptor(false);
-        session.setUpdatePolicy(RepositoryPolicy.UPDATE_POLICY_ALWAYS);
+        session.setLocalRepositoryManager(this.repositorySystem
+            .newLocalRepositoryManager(session, this.localRepository));
+        // session.setIgnoreMissingArtifactDescriptor(false);
+        // session.setIgnoreInvalidArtifactDescriptor(false);
         session.setConfigProperty(ConfigurationProperties.USER_AGENT, this.configuration.getUserAgent());
+        session.setProxySelector(new DefaultJavaNetProxySelector());
 
         // Remove all system properties that could disrupt effective pom resolution
         session.setSystemProperty("version", null);
@@ -102,7 +103,7 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         throws ExtensionRepositoryException
     {
         try {
-            return new AetherExtensionRepository(repositoryDescriptor, this, this.plexusComponentManager,
+            return new AetherExtensionRepository(repositoryDescriptor, this, this.plexusProvider.get(),
                 this.componentManager);
         } catch (Exception e) {
             throw new ExtensionRepositoryException("Failed to create repository [" + repositoryDescriptor + "]", e);

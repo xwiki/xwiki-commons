@@ -21,41 +21,42 @@ package org.xwiki.extension.repository.aether.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.ProxySelector;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Developer;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.codehaus.plexus.PlexusContainer;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.ArtifactProperties;
+import org.eclipse.aether.artifact.ArtifactType;
+import org.eclipse.aether.artifact.ArtifactTypeRegistry;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.artifact.DefaultArtifactType;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.Exclusion;
+import org.eclipse.aether.impl.ArtifactDescriptorReader;
+import org.eclipse.aether.impl.VersionRangeResolver;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
+import org.eclipse.aether.resolution.ArtifactDescriptorResult;
+import org.eclipse.aether.resolution.VersionRangeRequest;
+import org.eclipse.aether.resolution.VersionRangeResolutionException;
+import org.eclipse.aether.resolution.VersionRangeResult;
+import org.eclipse.aether.util.repository.AuthenticationBuilder;
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.artifact.ArtifactTypeRegistry;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.impl.ArtifactDescriptorReader;
-import org.sonatype.aether.impl.VersionRangeResolver;
-import org.sonatype.aether.repository.Authentication;
-import org.sonatype.aether.repository.Proxy;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactDescriptorRequest;
-import org.sonatype.aether.resolution.ArtifactDescriptorResult;
-import org.sonatype.aether.resolution.VersionRangeRequest;
-import org.sonatype.aether.resolution.VersionRangeResolutionException;
-import org.sonatype.aether.resolution.VersionRangeResult;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.version.GenericVersionScheme;
-import org.sonatype.aether.version.InvalidVersionSpecificationException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.Extension;
@@ -66,7 +67,7 @@ import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
+import org.xwiki.extension.repository.aether.internal.util.DefaultJavaNetProxySelector;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
@@ -98,7 +99,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AetherExtensionRepository.class);
 
-    private transient PlexusComponentManager plexusComponentManager;
+    private transient PlexusContainer plexusContainer;
 
     private transient RemoteRepository remoteRepository;
 
@@ -114,97 +115,54 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private transient Method loadPomMethod;
 
-    private transient Method convertMethod;
-
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
-        AetherExtensionRepositoryFactory repositoryFactory, PlexusComponentManager mavenComponentManager,
+        AetherExtensionRepositoryFactory repositoryFactory, PlexusContainer plexusContainer,
         ComponentManager componentManager) throws Exception
     {
         super(repositoryDescriptor);
 
         this.repositoryFactory = repositoryFactory;
-        this.plexusComponentManager = mavenComponentManager;
+        this.plexusContainer = plexusContainer;
 
-        this.remoteRepository =
-            new RemoteRepository(repositoryDescriptor.getId(), "default", repositoryDescriptor.getURI().toString());
+        RemoteRepository.Builder repositoryBuilder =
+            new RemoteRepository.Builder(repositoryDescriptor.getId(), "default", repositoryDescriptor.getURI()
+                .toString());
 
         // Authentication
-        String user = getDescriptor().getProperty("auth.user");
-        if (user != null) {
-            this.remoteRepository.setAuthentication(new Authentication(user, getDescriptor().getProperty(
-                "auth.password")));
+        String username = getDescriptor().getProperty("auth.user");
+        if (username != null) {
+            AuthenticationBuilder authenticationBuilder = new AuthenticationBuilder();
+            authenticationBuilder.addUsername(username);
+            authenticationBuilder.addPassword(getDescriptor().getProperty("auth.password"));
+            repositoryBuilder.setAuthentication(authenticationBuilder.build());
         }
 
         // Proxy
         try {
-            this.remoteRepository.setProxy(determineProxy(repositoryDescriptor.getURI()));
+            repositoryBuilder.setProxy(DefaultJavaNetProxySelector.determineProxy(repositoryDescriptor.getURI()));
         } catch (Exception e) {
             LOGGER.warn("Unexpected exception when trying to find a proxy for [{}]", repositoryDescriptor.getURI());
         }
 
+        this.remoteRepository = repositoryBuilder.build();
+
         this.converter = componentManager.getInstance(ConverterManager.class);
         this.licenseManager = componentManager.getInstance(ExtensionLicenseManager.class);
 
-        this.versionRangeResolver = this.plexusComponentManager.getPlexus().lookup(VersionRangeResolver.class);
+        this.versionRangeResolver = this.plexusContainer.lookup(VersionRangeResolver.class);
 
-        try {
-            this.mavenDescriptorReader = this.plexusComponentManager.getPlexus().lookup(ArtifactDescriptorReader.class);
+        this.mavenDescriptorReader = this.plexusContainer.lookup(ArtifactDescriptorReader.class);
 
-            // FIXME: not very nice
-            // * use a private method of a library we don't control is not the nicest thing. But it's a big and very
-            // uselfull method. A shame is not a bit more public.
-            // * having to parse the pom.xml since we are supposed to support anything supported by AETHER is not
-            // very clean either. But AETHER almost resolve nothing, not even the type of the artifact, we pretty
-            // much get only dependencies and licenses.
-            this.loadPomMethod =
-                this.mavenDescriptorReader.getClass().getDeclaredMethod("loadPom", RepositorySystemSession.class,
-                    ArtifactDescriptorRequest.class, ArtifactDescriptorResult.class);
-            this.loadPomMethod.setAccessible(true);
-            this.convertMethod =
-                this.mavenDescriptorReader.getClass().getDeclaredMethod("convert",
-                    org.apache.maven.model.Dependency.class, ArtifactTypeRegistry.class);
-            this.convertMethod.setAccessible(true);
-        } catch (ComponentLookupException e) {
-            // Maven handler not found
-        }
-    }
-
-    private Proxy determineProxy(URI targetURI)
-    {
-        // There is obviously no proxy need to filesystem repository
-        if (targetURI.getScheme().equals("file")) {
-            return null;
-        }
-
-        // the proxy selector can be 'unset', so we better deal with null here
-        ProxySelector psel = ProxySelector.getDefault();
-
-        if (psel == null) {
-            return null;
-        }
-
-        List<java.net.Proxy> proxies = psel.select(targetURI);
-
-        if (proxies == null || proxies.isEmpty()) {
-            return null;
-        }
-
-        java.net.Proxy javaProxy = proxies.get(0);
-
-        Proxy result = null;
-        if (javaProxy.type() == java.net.Proxy.Type.HTTP) {
-            // convert the socket address to an HttpHost
-            if (javaProxy.address() instanceof InetSocketAddress) {
-                final InetSocketAddress isa = (InetSocketAddress) javaProxy.address();
-
-                // TODO: Where to get the user/password ?
-                result = new Proxy(targetURI.getScheme(), isa.getHostName(), isa.getPort(), null);
-            } else {
-                LOGGER.warn("Unsupported proxy {}", javaProxy);
-            }
-        }
-
-        return result;
+        // FIXME: not very nice
+        // * use a private method of a library we don't control is not the nicest thing. But it's a big and very
+        // usefull method. A shame its not a bit more public.
+        // * having to parse the pom.xml since we are supposed to support anything supported by AETHER is not
+        // very clean either. But AETHER almost resolve nothing, not even the type of the artifact, we pretty
+        // much get only dependencies and licenses.
+        this.loadPomMethod =
+            this.mavenDescriptorReader.getClass().getDeclaredMethod("loadPom", RepositorySystemSession.class,
+                ArtifactDescriptorRequest.class, ArtifactDescriptorResult.class);
+        this.loadPomMethod.setAccessible(true);
     }
 
     protected RepositorySystemSession createRepositorySystemSession()
@@ -239,7 +197,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     {
         Artifact artifact = AetherUtils.createArtifact(id, "(,)");
 
-        List<org.sonatype.aether.version.Version> versions;
+        List<org.eclipse.aether.version.Version> versions;
         try {
             versions = resolveVersions(artifact, createRepositorySystemSession());
 
@@ -265,8 +223,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return new CollectionIterableResult<Version>(versions.size(), offset, result);
     }
 
-    private org.sonatype.aether.version.Version resolveVersionConstraint(String id,
-        VersionConstraint versionConstraint, RepositorySystemSession session) throws ResolveException
+    private org.eclipse.aether.version.Version resolveVersionConstraint(String id, VersionConstraint versionConstraint,
+        RepositorySystemSession session) throws ResolveException
     {
         if (versionConstraint.getVersion() != null) {
             try {
@@ -276,19 +234,19 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
         }
 
-        List<org.sonatype.aether.version.Version> commonVersions = null;
+        List<org.eclipse.aether.version.Version> commonVersions = null;
 
         for (VersionRange range : versionConstraint.getRanges()) {
-            List<org.sonatype.aether.version.Version> versions = resolveVersionRange(id, range, session);
+            List<org.eclipse.aether.version.Version> versions = resolveVersionRange(id, range, session);
 
             if (commonVersions == null) {
                 commonVersions =
-                    versionConstraint.getRanges().size() > 1 ? new ArrayList<org.sonatype.aether.version.Version>(
+                    versionConstraint.getRanges().size() > 1 ? new ArrayList<org.eclipse.aether.version.Version>(
                         versions) : versions;
             } else {
                 // Find commons versions between all the ranges of the constraint
-                for (Iterator<org.sonatype.aether.version.Version> it = commonVersions.iterator(); it.hasNext();) {
-                    org.sonatype.aether.version.Version version = it.next();
+                for (Iterator<org.eclipse.aether.version.Version> it = commonVersions.iterator(); it.hasNext();) {
+                    org.eclipse.aether.version.Version version = it.next();
                     if (!versions.contains(version)) {
                         it.remove();
                     }
@@ -304,13 +262,13 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return commonVersions.get(commonVersions.size() - 1);
     }
 
-    private List<org.sonatype.aether.version.Version> resolveVersionRange(String id, VersionRange versionRange,
+    private List<org.eclipse.aether.version.Version> resolveVersionRange(String id, VersionRange versionRange,
         RepositorySystemSession session) throws ResolveException
     {
         Artifact artifact = AetherUtils.createArtifact(id, versionRange.getValue());
 
         try {
-            List<org.sonatype.aether.version.Version> versions = resolveVersions(artifact, session);
+            List<org.eclipse.aether.version.Version> versions = resolveVersions(artifact, session);
 
             if (versions.isEmpty()) {
                 throw new ResolveException("No versions available for id [" + id + "] and version range ["
@@ -323,7 +281,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
     }
 
-    private List<org.sonatype.aether.version.Version> resolveVersions(Artifact artifact, RepositorySystemSession session)
+    private List<org.eclipse.aether.version.Version> resolveVersions(Artifact artifact, RepositorySystemSession session)
         throws VersionRangeResolutionException
     {
         VersionRangeRequest rangeRequest = new VersionRangeRequest();
@@ -401,7 +359,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
                 artifactExtension, artifact.getVersion());
 
-        AetherExtension extension = new AetherExtension(artifact, model, this, this.plexusComponentManager);
+        AetherExtension extension = new AetherExtension(artifact, model, this, this.plexusContainer);
 
         extension.setName(getPropertyString(model, MPNAME_NAME, model.getName()));
         extension.setSummary(getPropertyString(model, MPNAME_SUMMARY, model.getDescription()));
@@ -453,9 +411,36 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     }
 
     private Dependency convertToAether(org.apache.maven.model.Dependency dependency, ArtifactTypeRegistry stereotypes)
-        throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
     {
-        return (Dependency) convertMethod.invoke(this.mavenDescriptorReader, dependency, stereotypes);
+        ArtifactType stereotype = stereotypes.get(dependency.getType());
+        if (stereotype == null) {
+            stereotype = new DefaultArtifactType(dependency.getType());
+        }
+
+        boolean system = dependency.getSystemPath() != null && dependency.getSystemPath().length() > 0;
+
+        Map<String, String> props = null;
+        if (system) {
+            props = Collections.singletonMap(ArtifactProperties.LOCAL_PATH, dependency.getSystemPath());
+        }
+
+        Artifact artifact =
+            new DefaultArtifact(dependency.getGroupId(), dependency.getArtifactId(), dependency.getClassifier(), null,
+                dependency.getVersion(), props, stereotype);
+
+        List<Exclusion> exclusions = new ArrayList<Exclusion>(dependency.getExclusions().size());
+        for (org.apache.maven.model.Exclusion exclusion : dependency.getExclusions()) {
+            exclusions.add(convert(exclusion));
+        }
+
+        Dependency result = new Dependency(artifact, dependency.getScope(), dependency.isOptional(), exclusions);
+
+        return result;
+    }
+
+    private Exclusion convert(org.apache.maven.model.Exclusion exclusion)
+    {
+        return new Exclusion(exclusion.getGroupId(), exclusion.getArtifactId(), "*", "*");
     }
 
     // TODO: download custom licenses content
@@ -485,7 +470,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         ArtifactDescriptorResult artifactDescriptorResult = new ArtifactDescriptorResult(artifactDescriptorRequest);
 
-        return (Model) loadPomMethod.invoke(this.mavenDescriptorReader, session, artifactDescriptorRequest,
+        return (Model) this.loadPomMethod.invoke(this.mavenDescriptorReader, session, artifactDescriptorRequest,
             artifactDescriptorResult);
     }
 

@@ -26,14 +26,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.Assert;
-
 import org.apache.commons.io.IOUtils;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.graph.Dependency;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;

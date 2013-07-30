@@ -19,7 +19,7 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
-import org.sonatype.aether.graph.Dependency;
+import org.eclipse.aether.graph.Dependency;
 import org.xwiki.extension.AbstractExtensionDependency;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 

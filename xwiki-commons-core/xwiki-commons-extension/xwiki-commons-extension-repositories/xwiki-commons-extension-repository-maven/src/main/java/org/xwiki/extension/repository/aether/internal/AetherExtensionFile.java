@@ -27,19 +27,19 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.impl.RemoteRepositoryManager;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
-import org.sonatype.aether.resolution.ArtifactResult;
-import org.sonatype.aether.spi.connector.ArtifactDownload;
-import org.sonatype.aether.spi.connector.RepositoryConnector;
-import org.sonatype.aether.transfer.NoRepositoryConnectorException;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.impl.RepositoryConnectorProvider;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.spi.connector.ArtifactDownload;
+import org.eclipse.aether.spi.connector.RepositoryConnector;
+import org.eclipse.aether.transfer.NoRepositoryConnectorException;
 import org.xwiki.extension.ExtensionFile;
-import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentManager;
 
 /**
  * @version $Id$
@@ -47,7 +47,7 @@ import org.xwiki.extension.repository.aether.internal.plexus.PlexusComponentMana
  */
 public class AetherExtensionFile implements ExtensionFile
 {
-    private PlexusComponentManager plexusComponentManager;
+    private PlexusContainer plexusContainer;
 
     private Artifact artifact;
 
@@ -74,11 +74,10 @@ public class AetherExtensionFile implements ExtensionFile
         }
     }
 
-    public AetherExtensionFile(Artifact artifact, AetherExtensionRepository repository,
-        PlexusComponentManager plexusComponentManager)
+    public AetherExtensionFile(Artifact artifact, AetherExtensionRepository repository, PlexusContainer plexusContainer)
     {
         this.repository = repository;
-        this.plexusComponentManager = plexusComponentManager;
+        this.plexusContainer = plexusContainer;
         this.artifact = artifact;
     }
 
@@ -93,10 +92,10 @@ public class AetherExtensionFile implements ExtensionFile
     public InputStream openStream() throws IOException
     {
         RepositorySystem repositorySystem;
-        RemoteRepositoryManager remoteRepositoryManager;
+        RepositoryConnectorProvider repositoryConnectorProvider;
         try {
-            repositorySystem = this.plexusComponentManager.getPlexus().lookup(RepositorySystem.class);
-            remoteRepositoryManager = this.plexusComponentManager.getPlexus().lookup(RemoteRepositoryManager.class);
+            repositorySystem = this.plexusContainer.lookup(RepositorySystem.class);
+            repositoryConnectorProvider = this.plexusContainer.lookup(RepositoryConnectorProvider.class);
         } catch (ComponentLookupException e) {
             throw new IOException("Failed to get org.sonatype.aether.RepositorySystem component", e);
         }
@@ -105,7 +104,8 @@ public class AetherExtensionFile implements ExtensionFile
 
         RepositoryConnector connector;
         try {
-            connector = remoteRepositoryManager.getRepositoryConnector(session, this.repository.getRemoteRepository());
+            connector =
+                repositoryConnectorProvider.newRepositoryConnector(session, this.repository.getRemoteRepository());
         } catch (NoRepositoryConnectorException e) {
             throw new IOException("Failed to download artifact [" + this.artifact + "]", e);
         }
@@ -117,18 +117,17 @@ public class AetherExtensionFile implements ExtensionFile
         try {
             connector.get(Arrays.asList(download), null);
         } finally {
-            connector.close();    
+            connector.close();
         }
 
-        ///////////////////////////////////////////////////////////////////////////////:
-        
+        // /////////////////////////////////////////////////////////////////////////////:
+
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.addRepository(this.repository.getRemoteRepository());
         artifactRequest.setArtifact(this.artifact);
 
         ArtifactResult artifactResult;
         try {
-
             artifactResult = repositorySystem.resolveArtifact(session, artifactRequest);
         } catch (ArtifactResolutionException e) {
             throw new IOException("Failed to resolve artifact", e);
