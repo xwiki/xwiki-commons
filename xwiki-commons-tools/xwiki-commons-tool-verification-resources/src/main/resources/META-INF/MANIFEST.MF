@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Require-Bundle: net.sf.eclipsecs.checkstyle,
+ net.sf.eclipsecs.core
+Eclipse-LazyStart: true
+Bundle-Vendor: XWiki
+Bundle-License: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+Import-Package: com.google.common.collect,
+ com.puppycrawl.tools.checkstyle.api,
+ com.puppycrawl.tools.checkstyle.checks
