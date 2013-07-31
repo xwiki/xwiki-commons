@@ -138,18 +138,15 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
             if (mapValues.getClass().isArray()) {
                 Object[] values = (Object[]) mapValues;
                 for (Object value : values) {
-                    String valueAsString = String.valueOf(value);
-                    addQueryStringPair(cleanKey, valueAsString, queryStringBuilder);
+                    addQueryStringPair(cleanKey, value, queryStringBuilder);
                 }
             } else if (Collection.class.isAssignableFrom(mapValues.getClass())) {
                 Collection<?> values = (Collection<?>) mapValues;
                 for (Object value : values) {
-                    String valueAsString = String.valueOf(value);
-                    addQueryStringPair(cleanKey, valueAsString, queryStringBuilder);
+                    addQueryStringPair(cleanKey, value, queryStringBuilder);
                 }
             } else {
-                String valueAsString = String.valueOf(mapValues);
-                addQueryStringPair(cleanKey, valueAsString, queryStringBuilder);
+                addQueryStringPair(cleanKey, mapValues, queryStringBuilder);
             }
         }
         return queryStringBuilder.toString();
@@ -162,12 +159,13 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
      * @param rawValue Raw value associated to the key
      * @param queryStringBuilder String Builder containing the current query string
      */
-    private void addQueryStringPair(String cleanKey, String rawValue, StringBuilder queryStringBuilder)
+    private void addQueryStringPair(String cleanKey, Object rawValue, StringBuilder queryStringBuilder)
     {
-        String cleanValue = this.url(rawValue);
+        String valueAsString = String.valueOf(rawValue);
+        String cleanValue = this.url(valueAsString);
         if (queryStringBuilder.length() != 0) {
             queryStringBuilder.append(AND);
         }
-        queryStringBuilder.append(cleanKey + EQUALS + cleanValue);
+        queryStringBuilder.append(cleanKey).append(EQUALS).append(cleanValue);
     }
 }
