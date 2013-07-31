@@ -94,6 +94,14 @@
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-aether-provider</artifactId>
       <version>${maven.version}</version>
+      <exclusions>
+        <!-- This version of asm is not compatible with the version used is
+         others XWiki modules and we don't really need it anyway -->
+        <exclusion>
+          <artifactId>asm</artifactId>
+          <groupId>asm</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Test dependencies -->
