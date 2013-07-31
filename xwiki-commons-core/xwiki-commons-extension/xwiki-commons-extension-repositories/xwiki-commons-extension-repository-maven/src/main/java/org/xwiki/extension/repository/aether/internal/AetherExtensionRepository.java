@@ -348,11 +348,18 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor", e);
         }
 
+        if (model == null) {
+            throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor");
+        }
+
         // Set type
 
         if (artifactExtension == null) {
-            // See bundle as jar packages since bundle are actually store as jar files
-            artifactExtension = model.getPackaging().equals("bundle") ? "jar" : model.getPackaging();
+            // Resolve extension from the pom packaging
+            ArtifactType artifactType = session.getArtifactTypeRegistry().get(model.getId());
+            if (artifactType != null) {
+                artifactExtension = artifactType.getExtension();
+            }
         }
 
         artifact =

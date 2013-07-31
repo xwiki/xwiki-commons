@@ -31,7 +31,11 @@ import org.eclipse.aether.ConfigurationProperties;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.ArtifactTypeRegistry;
+import org.eclipse.aether.artifact.DefaultArtifactType;
 import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
+import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -94,6 +98,18 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         // Remove all system properties that could disrupt effective pom resolution
         session.setSystemProperty("version", null);
         session.setSystemProperty("groupId", null);
+
+        // Add various type descriptors
+        ArtifactTypeRegistry artifactTypeRegistry = session.getArtifactTypeRegistry();
+        if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
+            DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
+                (DefaultArtifactTypeRegistry) artifactTypeRegistry;
+            defaultArtifactTypeRegistry.add(new DefaultArtifactType("bundle", "jar", "", "java"));
+            defaultArtifactTypeRegistry.add(new DefaultArtifactType("eclipse-plugin", "jar", "", "java"));
+        }
+
+        // Fail when the pom is missing or invalid
+        session.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
 
         return session;
     }
