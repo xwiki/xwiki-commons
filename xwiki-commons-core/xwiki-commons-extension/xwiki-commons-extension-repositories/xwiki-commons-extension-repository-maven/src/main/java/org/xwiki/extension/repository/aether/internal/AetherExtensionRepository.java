@@ -356,9 +356,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         if (artifactExtension == null) {
             // Resolve extension from the pom packaging
-            ArtifactType artifactType = session.getArtifactTypeRegistry().get(model.getId());
+            ArtifactType artifactType = session.getArtifactTypeRegistry().get(model.getPackaging());
             if (artifactType != null) {
                 artifactExtension = artifactType.getExtension();
+            } else {
+                artifactExtension = model.getPackaging();
             }
         }
 
