@@ -48,7 +48,7 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     private static final String EQUALS = "=";
     
     /** And sign. */
-    private static final String AND = "&amp;";
+    private static final String AND = "&";
     
     /**
      * Escapes the XML special characters in a <code>String</code> using numerical XML entities.
@@ -130,40 +130,44 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
      */
     public String url(Map<String, ?> parametersMap)
     {
-        String safeQueryString = "";
-        for (String parameter : parametersMap.keySet()) {
-            String cleanParameter = this.url(parameter);
-            Object mapValues = parametersMap.get(parameter);
+        StringBuilder queryStringBuilder = new StringBuilder();
+        for (Map.Entry<String, ?> entry : parametersMap.entrySet()) {
+            String cleanKey = this.url(entry.getKey());
+            Object mapValues = entry.getValue();
             // If the value associated to the key is an array or a collection, let's iterate over it.
             if (mapValues.getClass().isArray()) {
                 Object[] values = (Object[]) mapValues;
                 for (Object value : values) {
                     String valueAsString = String.valueOf(value);
-                    String cleanValue = this.url(valueAsString);
-                    if (!safeQueryString.equals("")) {
-                        safeQueryString += AND;
-                    }
-                    safeQueryString += cleanParameter + EQUALS + cleanValue; 
+                    addQueryStringPair(cleanKey, valueAsString, queryStringBuilder);
                 }
             } else if (Collection.class.isAssignableFrom(mapValues.getClass())) {
                 Collection<?> values = (Collection<?>) mapValues;
                 for (Object value : values) {
                     String valueAsString = String.valueOf(value);
-                    String cleanValue = this.url(valueAsString);
-                    if (!safeQueryString.equals("")) {
-                        safeQueryString += AND;
-                    }
-                    safeQueryString += cleanParameter + EQUALS + cleanValue; 
+                    addQueryStringPair(cleanKey, valueAsString, queryStringBuilder);
                 }
             } else {
                 String valueAsString = String.valueOf(mapValues);
-                String cleanValue = this.url(valueAsString);
-                if (!safeQueryString.equals("")) {
-                    safeQueryString += AND;
-                }
-                safeQueryString += cleanParameter + EQUALS + cleanValue; 
+                addQueryStringPair(cleanKey, valueAsString, queryStringBuilder);
             }
         }
-        return safeQueryString;
+        return queryStringBuilder.toString();
+    }
+    
+    /**
+     * Method to add an key / value pair to a query String.
+     * 
+     * @param cleanKey Already escaped key
+     * @param rawValue Raw value associated to the key
+     * @param queryStringBuilder String Builder containing the current query string
+     */
+    private void addQueryStringPair(String cleanKey, String rawValue, StringBuilder queryStringBuilder)
+    {
+        String cleanValue = this.url(rawValue);
+        if (queryStringBuilder.length() != 0) {
+            queryStringBuilder.append(AND);
+        }
+        queryStringBuilder.append(cleanKey + EQUALS + cleanValue);
     }
 }

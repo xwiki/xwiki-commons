@@ -163,7 +163,7 @@ public class EscapeToolTest
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("hello", "world");
         map.put("B&B", "yes");
-        Assert.assertEquals("hello=world&amp;B%26B=yes", tool.url(map));
+        Assert.assertEquals("hello=world&B%26B=yes", tool.url(map));
     }
     
     @Test
@@ -173,7 +173,7 @@ public class EscapeToolTest
         HashMap<String, Double> map = new HashMap<String, Double>();
         map.put("A&A", 1.5);
         map.put("B&B", 1.2);
-        Assert.assertEquals("B%26B=1.2&amp;A%26A=1.5", tool.url(map));
+        Assert.assertEquals("B%26B=1.2&A%26A=1.5", tool.url(map));
     }
     
     @Test
@@ -183,7 +183,7 @@ public class EscapeToolTest
         HashMap<String, String[]> map = new HashMap<String, String[]>();
         String[] array = {"M&M", "Astronomy&Astrophysics"};
         map.put("couple", array);
-        Assert.assertEquals("couple=M%26M&amp;couple=Astronomy%26Astrophysics", tool.url(map));
+        Assert.assertEquals("couple=M%26M&couple=Astronomy%26Astrophysics", tool.url(map));
     }
     
     @Test
@@ -198,6 +198,6 @@ public class EscapeToolTest
         collection2.add("t&t");
         collection2.add("R&D");
         map.put("bob", collection2);
-        Assert.assertEquals("bob=t%26t&amp;bob=R%26D&amp;alice=test", tool.url(map));
+        Assert.assertEquals("bob=t%26t&bob=R%26D&alice=test", tool.url(map));
     }
 }
