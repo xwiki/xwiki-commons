@@ -46,10 +46,10 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
 {
     /** Equals sign. */
     private static final String EQUALS = "=";
-    
+
     /** And sign. */
     private static final String AND = "&";
-    
+
     /**
      * Escapes the XML special characters in a <code>String</code> using numerical XML entities.
      * 
@@ -121,12 +121,13 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
         }
         return null;
     }
-    
+
     /**
      * Properly escape a parameter map representing a query String, so that it can be safely used in an URL.
      * 
      * @param parametersMap Map representing the query string.
      * @return the safe query string representing the passed parameters
+     * @since 5.2M1
      */
     public String url(Map<String, ?> parametersMap)
     {
@@ -151,7 +152,7 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
         }
         return queryStringBuilder.toString();
     }
-    
+
     /**
      * Method to add an key / value pair to a query String.
      * 
