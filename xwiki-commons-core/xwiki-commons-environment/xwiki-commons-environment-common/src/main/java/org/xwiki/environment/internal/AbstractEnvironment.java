@@ -47,9 +47,6 @@ public abstract class AbstractEnvironment implements Environment
      */
     private static final String TEMP_NAME = "xwiki-temp";
 
-    /**
-     * The logger to log.
-     */
     @Inject
     protected Logger logger;
 
@@ -232,13 +229,6 @@ public abstract class AbstractEnvironment implements Environment
         return null;
     }
 
-    /**
-     * Initialize temporary or permanent directory for use.
-     * 
-     * @param directory the directory to initialize.
-     * @param isTemp true if it is a temporary directory.
-     * @return the newly initialized directory.
-     */
     private File initDir(final File directory, final boolean isTemp)
     {
         if (isTemp) {

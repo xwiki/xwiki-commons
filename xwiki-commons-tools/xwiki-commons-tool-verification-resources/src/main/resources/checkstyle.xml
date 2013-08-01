@@ -187,18 +187,19 @@
     <!--module name="InterfaceIsType"/-->
 
     <module name="JavadocMethod">
-      <property name="scope" value="private"/>
+      <property name="scope" value="public"/>
       <property name="allowUndeclaredRTE" value="true"/>
     </module>
 
     <module name="JavadocStyle"/>
 
     <module name="JavadocType">
+      <property name="scope" value="public"/>
       <property name="versionFormat" value="\$Id.*\$"/>
     </module>
 
     <module name="JavadocVariable">
-      <property name="scope" value="private"/>
+      <property name="scope" value="public"/>
     </module>
 
     <module name="JavaNCSS"/>
