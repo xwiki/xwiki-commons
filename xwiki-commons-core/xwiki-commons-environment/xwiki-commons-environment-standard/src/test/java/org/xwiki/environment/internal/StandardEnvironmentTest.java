@@ -145,7 +145,7 @@ public class StandardEnvironmentTest
         final Logger logger = this.mockery.mock(Logger.class);
         this.mockery.checking(new Expectations() {{
         oneOf(logger).warn("No permanent directory configured. Using temporary directory [{}].",
-            System.getProperty("java.io.tmpdir"));
+            new File(System.getProperty("java.io.tmpdir")));
         }});
 
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
