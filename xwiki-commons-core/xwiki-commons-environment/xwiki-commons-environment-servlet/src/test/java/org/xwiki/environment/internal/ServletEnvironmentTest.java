@@ -139,7 +139,7 @@ public class ServletEnvironmentTest
 
         // Also verify that we log a warning!
         verify(logger).warn("No permanent directory configured. Using temporary directory [{}].",
-            System.getProperty("java.io.tmpdir"));
+            this.servletTmpDir.getCanonicalFile());
     }
 
     @Test
