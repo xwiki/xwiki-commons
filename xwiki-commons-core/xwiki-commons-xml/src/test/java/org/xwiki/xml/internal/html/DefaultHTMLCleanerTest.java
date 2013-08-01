@@ -20,9 +20,11 @@
 package org.xwiki.xml.internal.html;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,6 +42,7 @@ import org.xwiki.xml.internal.html.filter.BodyFilter;
 import org.xwiki.xml.internal.html.filter.FontFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
 import org.xwiki.xml.internal.html.filter.ListItemFilter;
+import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
 
 /**
  * Unit tests for {@link org.xwiki.xml.internal.html.DefaultHTMLCleaner}.
@@ -53,6 +56,7 @@ import org.xwiki.xml.internal.html.filter.ListItemFilter;
     FontFilter.class,
     BodyFilter.class,
     AttributeFilter.class,
+    UniqueIdFilter.class,
     DefaultHTMLCleaner.class
 })
 public class DefaultHTMLCleanerTest
@@ -252,6 +256,22 @@ public class DefaultHTMLCleanerTest
     public void fullXHTMLHeader()
     {
         assertHTML("<p>test</p>", HEADER_FULL + "<p>test</p>" + FOOTER);
+    }
+
+    /**
+     * Test {@link UniqueIdFilter}.
+     */
+    @Test
+    public void duplicateIds() throws Exception
+    {
+        String actual = "<p id=\"x\">1</p><p id=\"xy\">2</p><p id=\"x\">3</p>";
+        String expected = "<p id=\"x\">1</p><p id=\"xy\">2</p><p id=\"x0\">3</p>";
+        HTMLCleanerConfiguration config = this.cleaner.getDefaultConfiguration();
+        List<HTMLFilter> filters = new ArrayList<HTMLFilter>(config.getFilters());
+        filters.add(this.componentManager.<HTMLFilter> getInstance(HTMLFilter.class, "uniqueId"));
+        config.setFilters(filters);
+        Assert.assertEquals(HEADER_FULL + expected + FOOTER,
+            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual), config)));
     }
 
     private void assertHTML(String expected, String actual)

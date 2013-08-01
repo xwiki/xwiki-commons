@@ -301,10 +301,15 @@ public interface HTMLConstants
     String TAG_DL = "dl";
 
     /**
+     * HTML id attribute name.
+     */
+    String ATTRIBUTE_ID = "id";
+
+    /**
      * HTML name attribute name.
      */
     String ATTRIBUTE_NAME = "name";
-    
+
     /**
      * HTML src attribute name.
      */
