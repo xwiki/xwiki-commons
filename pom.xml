@@ -467,6 +467,13 @@
         <version>${aspectj.version}</version>
       </dependency>
 
+      <!-- CSS parsing -->
+      <dependency>
+        <groupId>net.sourceforge.cssparser</groupId>
+        <artifactId>cssparser</artifactId>
+        <version>0.9.9</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
   <build>
