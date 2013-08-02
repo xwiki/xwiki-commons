@@ -32,6 +32,7 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
@@ -44,16 +45,23 @@ import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.result.IterableResult;
-import org.xwiki.extension.test.RepositoryUtils;
+import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
-public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCase
+@AllComponents
+public class AetherDefaultRepositoryManagerTest
 {
     private static final String GROUPID = "groupid";
 
     private static final String ARTIfACTID = "artifactid";
+
+    private MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
+
+    @Rule
+    public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule(this.mocker);
 
     private ExtensionRepositoryManager repositoryManager;
 
@@ -77,17 +85,9 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
 
     private ExtensionId sextensionDependencyId;
 
-    private RepositoryUtils repositoryUtil;
-
-    @Override
     @Before
     public void setUp() throws Exception
     {
-        super.setUp();
-
-        this.repositoryUtil = new RepositoryUtils(getComponentManager(), getMockery());
-        this.repositoryUtil.setup();
-
         this.extensionId = new ExtensionId(GROUPID + ':' + ARTIfACTID, "version");
         this.snapshotExtensionId = new ExtensionId(GROUPID + ':' + ARTIfACTID, "1.0-SNAPSHOT");
         this.extensionDependencyId = new ExtensionId("dgroupid:dartifactid", "dversion");
@@ -107,8 +107,8 @@ public class AetherDefaultRepositoryManagerTest extends AbstractComponentTestCas
 
         // lookup
 
-        this.repositoryManager = getComponentManager().getInstance(ExtensionRepositoryManager.class);
-        this.extensionLicenseManager = getComponentManager().getInstance(ExtensionLicenseManager.class);
+        this.repositoryManager = this.mocker.getInstance(ExtensionRepositoryManager.class);
+        this.extensionLicenseManager = this.mocker.getInstance(ExtensionLicenseManager.class);
     }
 
     // Tests

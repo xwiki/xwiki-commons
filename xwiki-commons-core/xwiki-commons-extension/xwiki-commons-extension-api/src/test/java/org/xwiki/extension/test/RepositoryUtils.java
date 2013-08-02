@@ -23,71 +23,42 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
-import org.xwiki.component.annotation.ComponentAnnotationLoader;
-import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.component.descriptor.DefaultComponentDescriptor;
-import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.environment.Environment;
-import org.xwiki.extension.handler.ExtensionInitializer;
-import org.xwiki.extension.repository.CoreExtensionRepository;
-import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
-import org.xwiki.extension.repository.ExtensionRepositoryManager;
-import org.xwiki.extension.version.internal.DefaultVersion;
-import org.xwiki.test.internal.MockConfigurationSource;
 
+/**
+ * @version $Id$
+ */
 public class RepositoryUtils
 {
-    private static final String MAVENREPOSITORY_ID = "test-maven";
+    protected static final String MAVENREPOSITORY_ID = "test-maven";
 
-    private final File permanentDirectory;
+    protected final File permanentDirectory;
 
-    private final File temporaryDirectory;
+    protected final File temporaryDirectory;
 
-    private final File extensionDirectory;
+    protected final File extensionDirectory;
 
-    private final File localRepositoryRoot;
+    protected final File localRepositoryRoot;
 
-    private final File mavenRepositoryRoot;
+    protected final File mavenRepositoryRoot;
 
-    private final File remoteRepositoryRoot;
+    protected final File remoteRepositoryRoot;
 
-    private final ComponentManager componentManager;
-
-    private final Mockery mockery;
-
-    private final ExtensionPackager extensionPackager;
-
-    private FileExtensionRepository remoteRepository;
-
-    private ComponentAnnotationLoader componentLoader;
+    protected final ExtensionPackager extensionPackager;
 
     public RepositoryUtils()
     {
-        this(null, null);
-    }
-
-    public RepositoryUtils(ComponentManager componentManager, Mockery mockery)
-    {
-        this.componentManager = componentManager;
-        this.mockery = mockery;
-
         File testDirectory = new File("target/test-" + new Date().getTime());
 
         this.temporaryDirectory = new File(testDirectory, "temporary-dir");
@@ -150,96 +121,19 @@ public class RepositoryUtils
 
     public void setup() throws Exception
     {
-        // Mock Environment
-        if (this.componentManager != null) {
-            final Environment environment = this.mockery.mock(Environment.class);
-            this.mockery.checking(new Expectations()
-            {
-                {
-                    allowing(environment).getPermanentDirectory();
-                    will(returnValue(getPermanentDirectory()));
-                    allowing(environment).getTemporaryDirectory();
-                    will(returnValue(getTemporaryDirectory()));
-                    allowing(environment).getResourceAsStream(with(any(String.class)));
-                    will(returnValue(null));
-                }
-            });
-            DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
-            dcd.setRoleType(Environment.class);
-            this.componentManager.registerComponent(dcd, environment);
-
-            // Disable default repositories
-            ConfigurationSource configuration = this.componentManager.getInstance(ConfigurationSource.class);
-            if (configuration instanceof MockConfigurationSource) {
-                ((MockConfigurationSource) configuration).setProperty("extension.repositories", Arrays.asList(""));
-            }
-
-            // add default test core extension
-            registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
-            ((ConfigurableDefaultCoreExtensionRepository) this.componentManager
-                .getInstance(CoreExtensionRepository.class)).addExtensions("coreextension", new DefaultVersion(
-                "version"));
-        }
-
         // copy
 
         copyResourceFolder(getLocalRepository(), "repository.local");
-        boolean mavenRepository = copyResourceFolder(getMavenRepository(), "repository.maven") > 0;
-
-        // register repositories
-        if (this.componentManager != null) {
-            ExtensionRepositoryManager repositoryManager =
-                this.componentManager.getInstance(ExtensionRepositoryManager.class);
-
-            // light remote repository
-
-            if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
-                this.remoteRepository = new FileExtensionRepository(getRemoteRepository(), this.componentManager);
-                repositoryManager.addRepository(this.remoteRepository);
-            }
-
-            // maven repository
-
-            if (mavenRepository) {
-                repositoryManager.addRepository(new DefaultExtensionRepositoryDescriptor(MAVENREPOSITORY_ID, "maven",
-                    getMavenRepository().toURI()));
-            }
-        }
+        copyResourceFolder(getMavenRepository(), "repository.maven");
 
         // generated extensions
 
         this.extensionPackager.generateExtensions();
-
-        // init
-
-        if (this.componentManager != null) {
-            this.componentManager.<ExtensionInitializer> getInstance(ExtensionInitializer.class).initialize();
-        }
-    }
-
-    public ComponentAnnotationLoader getComponentLoader()
-    {
-        if (this.componentLoader == null) {
-            this.componentLoader = new ComponentAnnotationLoader();
-        }
-
-        return this.componentLoader;
-    }
-
-    private void registerComponent(Class< ? > componentClass) throws Exception
-    {
-        List<ComponentDescriptor> descriptors = getComponentLoader().getComponentsDescriptors(componentClass);
-
-        for (ComponentDescriptor< ? > descriptor : descriptors) {
-            this.componentManager.registerComponent(descriptor);
-        }
     }
 
     public int copyResourceFolder(File targetFolder, String resourcePackage) throws IOException
     {
         int nb = 0;
-
-        targetFolder.mkdirs();
 
         Set<URL> urls = ClasspathHelper.forPackage(resourcePackage);
 
@@ -249,6 +143,8 @@ public class RepositoryUtils
                     .filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(resourcePackage))));
 
             for (String resource : reflections.getResources(Pattern.compile(".*"))) {
+                targetFolder.mkdirs();
+
                 File targetFile = new File(targetFolder, resource.substring(resourcePackage.length() + 1));
 
                 InputStream resourceStream = getClass().getResourceAsStream("/" + resource);

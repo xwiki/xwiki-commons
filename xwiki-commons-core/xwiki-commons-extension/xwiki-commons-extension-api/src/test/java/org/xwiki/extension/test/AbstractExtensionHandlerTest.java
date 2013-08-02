@@ -22,6 +22,7 @@ package org.xwiki.extension.test;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
@@ -36,47 +37,29 @@ import org.xwiki.job.JobManager;
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
-public abstract class AbstractExtensionHandlerTest extends AbstractComponentTestCase
+@AllComponents
+public abstract class AbstractExtensionHandlerTest
 {
+    protected MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
+
+    @Rule
+    public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule(this.mocker);
+
     protected LocalExtensionRepository localExtensionRepository;
 
     protected InstalledExtensionRepository installedExtensionRepository;
 
-    protected RepositoryUtils repositoryUtil;
-
     protected JobManager jobManager;
 
     @Before
-    @Override
     public void setUp() throws Exception
     {
-        super.setUp();
-
-        beforeRepositoryUtil();
-
-        this.repositoryUtil = new RepositoryUtils(getComponentManager(), getMockery());
-        this.repositoryUtil.setup();
-
-        // lookup
-
-        this.jobManager = getComponentManager().getInstance(JobManager.class);
-        this.localExtensionRepository = getComponentManager().getInstance(LocalExtensionRepository.class);
-        this.installedExtensionRepository = getComponentManager().getInstance(InstalledExtensionRepository.class);
-    }
-
-    protected void beforeRepositoryUtil() throws Exception
-    {
-
-    }
-
-    @Override
-    protected void registerComponents() throws Exception
-    {
-        super.registerComponents();
-
-        registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
+        this.jobManager = this.mocker.getInstance(JobManager.class);
+        this.localExtensionRepository = this.mocker.getInstance(LocalExtensionRepository.class);
+        this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
     }
 
     protected Job executeJob(String jobId, Request request, LogLevel failFrom) throws Throwable

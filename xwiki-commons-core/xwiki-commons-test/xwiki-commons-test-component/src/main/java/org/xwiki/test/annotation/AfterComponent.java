@@ -28,16 +28,16 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Calls methods annotated with this annotation before Component registration in
- * {@link org.xwiki.test.ComponentManagerRule}.
- *
+ * Calls methods annotated with this annotation right after configured components are registered by
+ * {@link org.xwiki.test.TestComponentManager}.
+ * 
  * @version $Id$
- * @since 4.3.1
+ * @since 5.2M1
  */
 @Documented
 @Retention(RUNTIME)
-@Target({METHOD })
+@Target({ METHOD })
 @Inherited
-public @interface BeforeComponent
+public @interface AfterComponent
 {
 }

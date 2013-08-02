@@ -41,6 +41,7 @@ import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
+import org.xwiki.test.annotation.AfterComponent;
 
 import packagefile.jarextension.DefaultTestComponent;
 import packagefile.jarextension.TestComponent;
@@ -57,22 +58,20 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
     private static final String NAMESPACE = "namespace";
 
-    @Override
-    protected void registerComponents() throws Exception
+    @AfterComponent
+    public void registerComponents() throws Exception
     {
-        super.registerComponents();
-
         // Override the system ClassLoader to isolate class loading of extensions from the current ClassLoader
         // (which already contains the extensions)
-        registerComponent(TestJarExtensionClassLoader.class);
+        this.mocker.registerComponent(TestJarExtensionClassLoader.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration
         StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
         componentEventManager.shouldStack(false);
-        getComponentManager().setComponentEventManager(componentEventManager);
+        this.mocker.setComponentEventManager(componentEventManager);
 
         // Ignore warning log during setup
-        ((LoggerManager) getComponentManager().getInstance(LoggerManager.class)).pushLogListener(null);
+        ((LoggerManager) this.mocker.getInstance(LoggerManager.class)).pushLogListener(null);
     }
 
     @Override
@@ -83,16 +82,16 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         this.testApplicationClassloader = Thread.currentThread().getContextClassLoader();
 
         // lookup
-        this.componentManagerManager = getComponentManager().getInstance(ComponentManagerManager.class);
-        this.jarExtensionClassLoader = getComponentManager().getInstance(ClassLoaderManager.class);
+        this.componentManagerManager = this.mocker.getInstance(ComponentManagerManager.class);
+        this.jarExtensionClassLoader = this.mocker.getInstance(ClassLoaderManager.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration
         StackingComponentEventManager componentEventManager =
-            (StackingComponentEventManager) getComponentManager().getComponentEventManager();
-        ObservationManager manager = getComponentManager().getInstance(ObservationManager.class);
+            (StackingComponentEventManager) this.mocker.getComponentEventManager();
+        ObservationManager manager = this.mocker.getInstance(ObservationManager.class);
         componentEventManager.setObservationManager(manager);
 
-        ((LoggerManager) getComponentManager().getInstance(LoggerManager.class)).popLogListener();
+        ((LoggerManager) this.mocker.getInstance(LoggerManager.class)).popLogListener();
     }
 
     private void assertNotEquals(Type type1, Type type2)
@@ -125,7 +124,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         ComponentManager extensionComponentManager = this.componentManagerManager.getComponentManager(namespace, false);
         if (extensionComponentManager == null) {
             try {
-                extensionComponentManager = getComponentManager().getInstance(ComponentManager.class);
+                extensionComponentManager = this.mocker.getInstance(ComponentManager.class);
             } catch (Exception e) {
                 // Should never happen
             }
@@ -237,13 +236,13 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             componentInstanceClass = getExtensionComponentManager(namespace).getInstance(loadedRole).getClass();
 
             try {
-                getComponentManager().getInstance(loadedRole);
+                this.mocker.getInstance(loadedRole);
                 Assert.fail("the component should not be in the root component manager");
             } catch (ComponentLookupException expected) {
                 // expected
             }
         } else {
-            componentInstanceClass = getComponentManager().getInstance(loadedRole).getClass();
+            componentInstanceClass = this.mocker.getInstance(loadedRole).getClass();
         }
         Assert.assertEquals(implementation.getName(), componentInstanceClass.getName());
         Assert.assertNotSame(implementation, componentInstanceClass);
@@ -307,7 +306,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             Type loadedRole = getLoadedType(role, extensionLoader);
 
             // check components managers
-            getComponentManager().getInstance(loadedRole);
+            this.mocker.getInstance(loadedRole);
             Assert.fail("the extension has not been uninstalled, component found!");
         } catch (ComponentLookupException unexpected) {
             Assert.fail("the extension has not been uninstalled, role found!");
@@ -404,7 +403,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension);
     }
-    
+
     @Test
     public void testInstallAndUninstallExtensionWithDependency() throws Throwable
     {

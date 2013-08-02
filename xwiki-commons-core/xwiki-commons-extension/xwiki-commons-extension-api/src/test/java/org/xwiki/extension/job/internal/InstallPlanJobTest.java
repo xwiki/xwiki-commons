@@ -47,7 +47,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     {
         super.setUp();
 
-        this.coreRepository = getComponentManager().getInstance(CoreExtensionRepository.class);
+        this.coreRepository = this.mocker.getInstance(CoreExtensionRepository.class);
     }
 
     @Test

@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Assert;
-
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
@@ -46,19 +47,23 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
-import org.xwiki.extension.test.RepositoryUtils;
+import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
 import org.xwiki.extension.test.TestExtensionHandler;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
-public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTestCase
+@AllComponents
+public class DefaultInstalledExtensionRepositoryTest
 {
+    private MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
+
+    @Rule
+    public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule(this.mocker);
+
     private InstalledExtensionRepository installedExtensionRepository;
 
     private LocalExtensionRepository localExtensionRepository;
-
-    private RepositoryUtils repositoryUtil;
 
     private ExtensionRepositoryManager repositoryManager;
 
@@ -66,33 +71,20 @@ public class DefaultInstalledExtensionRepositoryTest extends AbstractComponentTe
 
     private TestExtensionHandler handler;
 
-    @Override
+    @Before
     public void setUp() throws Exception
     {
-        super.setUp();
-
-        this.repositoryUtil = new RepositoryUtils(getComponentManager(), getMockery());
-        this.repositoryUtil.setup();
-
         // lookup
 
-        this.installedExtensionRepository = getComponentManager().getInstance(InstalledExtensionRepository.class);
-        this.localExtensionRepository = getComponentManager().getInstance(LocalExtensionRepository.class);
-        this.repositoryManager = getComponentManager().getInstance(ExtensionRepositoryManager.class);
-        this.handler = getComponentManager().getInstance(ExtensionHandler.class, "test");
+        this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
+        this.localExtensionRepository = this.mocker.getInstance(LocalExtensionRepository.class);
+        this.repositoryManager = this.mocker.getInstance(ExtensionRepositoryManager.class);
+        this.handler = this.mocker.getInstance(ExtensionHandler.class, "test");
 
         // resources
 
         this.resources = new TestResources();
         this.resources.init(this.installedExtensionRepository);
-    }
-
-    @Override
-    protected void registerComponents() throws Exception
-    {
-        super.registerComponents();
-
-        registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
     }
 
     @Test

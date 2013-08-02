@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
+import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.internal.ComponentRegistrator;
 
@@ -45,7 +46,7 @@ public class TestComponentManager extends EmbeddableComponentManager
 
     /**
      * Register in-memory data source for the default and "xwikiproperties" configuration sources.
-     *
+     * 
      * @return the in-memory configuration source used for both default and "xwikiproperties" component hints
      * @throws Exception in case the registration fails
      */
@@ -56,7 +57,7 @@ public class TestComponentManager extends EmbeddableComponentManager
 
     /**
      * Registers a component.
-     *
+     * 
      * @param roleType the type of the component role to register
      * @param roleHint the role hint of the component to register
      * @param instance the instance to register
@@ -69,7 +70,7 @@ public class TestComponentManager extends EmbeddableComponentManager
 
     /**
      * Registers a component (with a default role hint).
-     *
+     * 
      * @param roleType the type of the component role to register
      * @param instance the instance to register
      * @throws Exception in case of an error during registration
@@ -80,18 +81,31 @@ public class TestComponentManager extends EmbeddableComponentManager
     }
 
     /**
+     * Register components associated to the provided class.
+     * 
+     * @param testClass the class containing the annotations
+     * @throws Exception in case of an error during registration
+     * @since 5.2M1
+     */
+    public void registerComponent(Class< ? > testClass) throws Exception
+    {
+        this.componentRegistrator.registerComponent(testClass, this);
+    }
+
+    /**
      * Initialize the test component manager by registering components based on the presence of
      * {@link org.xwiki.test.annotation.AllComponents} and {@link org.xwiki.test.annotation.ComponentList} annotations.
      * Also calls methods annotated with {@link BeforeComponent}.
-     *
+     * 
      * @param testClassInstance the test instance on which the annotations are present
      * @throws Exception if an error happens during initialization
      */
     public void initializeTest(Object testClassInstance) throws Exception
     {
+        Class< ? > testClass = testClassInstance.getClass();
+
         // If there are methods annotation with the BeforeComponent annotation then call them. This gives an
         // opportunity for the test to register some components *before* we register the other components below.
-        Class< ? > testClass = testClassInstance.getClass();
         for (Method declaredMethod : testClass.getDeclaredMethods()) {
             if (declaredMethod.isAnnotationPresent(BeforeComponent.class)) {
                 declaredMethod.invoke(testClassInstance);
@@ -99,11 +113,19 @@ public class TestComponentManager extends EmbeddableComponentManager
         }
 
         this.componentRegistrator.registerComponents(testClass, this);
+
+        // If there are methods annotation with the AfterComponent annotation then call them. This gives an
+        // opportunity for the override or modify some components *before* they are actually used.
+        for (Method declaredMethod : testClass.getDeclaredMethods()) {
+            if (declaredMethod.isAnnotationPresent(AfterComponent.class)) {
+                declaredMethod.invoke(testClassInstance);
+            }
+        }
     }
 
     /**
      * Cleans up the test component manager by disposing components registered in it.
-     *
+     * 
      * @throws Exception if an error happens during clean up
      */
     public void shutdownTest() throws Exception
