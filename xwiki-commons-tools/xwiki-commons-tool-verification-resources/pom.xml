@@ -60,15 +60,30 @@
             <archive>
               <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
               <manifestEntries>
-                <Bundle-Version>${project.version}</Bundle-Version>
                 <Bundle-SymbolicName>${project.groupId}.${project.artifactId};singleton:=true</Bundle-SymbolicName>
-                <Bundle-Name>${project.name}</Bundle-Name>
-                <Bundle-Description>${project.description}</Bundle-Description>
+                <Require-Bundle>net.sf.eclipsecs.checkstyle,net.sf.eclipsecs.core</Require-Bundle>
+                <Eclipse-LazyStart>true</Eclipse-LazyStart>
               </manifestEntries>
             </archive>
           </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <!-- Generate OSGi Manifest information to all JARs -->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 </project>
