@@ -80,7 +80,7 @@ Find below all the recent news from the site blog and from the list of pages tha
         #set($nb = 30)
       #end
       #set($formatDate = "yyyy MMMM dd, HH:mm")
-      #set ($list = $xwiki.searchDocuments($sql , $nb , 0))
+      #set ($list = $services.query.hql($sql).setLimit($nb).execute())
       &lt;ul&gt;
         #foreach ($item in $list)
           #set($troubi ="non")

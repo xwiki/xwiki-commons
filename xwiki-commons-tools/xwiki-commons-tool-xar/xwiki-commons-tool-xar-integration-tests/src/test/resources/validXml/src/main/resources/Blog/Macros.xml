@@ -67,7 +67,7 @@
 #set($cdate = "")
 #set($inbitems = $util.parseInt($nbitems))
 #set($inbstart = $util.parseInt($nbstart))
-#foreach ($item in $xwiki.searchDocuments($sql, $inbitems, $inbstart))
+#foreach ($item in $services.query.hql($sql).setLimit($inbitems).setOffset($inbstart).execute())
 #set($bentrydoc = $xwiki.getDocument($item))
 #if($bentrydoc.fullName == $item)
 #set($bentryobj = $bentrydoc.getObject("XWiki.ArticleClass"))
@@ -102,7 +102,7 @@ Posted by &lt;address class="author vcard"&gt;#userfn($bentrydoc.creator)&lt;/ad
 ##
 ## prev/next links
 #if (!$velocityCount)
-## if $velocityCount has not been initialized (e.g. $xwiki.searchDocuments has returned an empty list)
+## if $velocityCount has not been initialized (e.g. search has returned an empty list)
 #set($velocityCount = -1)
 #end
 #if(($inbstart != 0) || ($velocityCount==$inbitems))

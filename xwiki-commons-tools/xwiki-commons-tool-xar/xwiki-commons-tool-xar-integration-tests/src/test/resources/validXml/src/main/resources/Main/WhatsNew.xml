@@ -60,6 +60,6 @@ Keeps you and your users informed of changes to this site:
 * An [RSS Feed&gt;Main.WebRss?xpage=rdf] provides these recent changes to RSS readers.
 
 #set ($sql = "where 1=1 order by doc.date desc")
-#set ($list = $xwiki.searchDocuments($sql , 30 , 0))
+#set ($list = $services.query.hql($sql).setLimit(30).execute())
 #includeInContext("XWiki.Results")
 </content></xwikidoc>
