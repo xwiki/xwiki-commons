@@ -25,7 +25,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.properties.converter.Converter;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**

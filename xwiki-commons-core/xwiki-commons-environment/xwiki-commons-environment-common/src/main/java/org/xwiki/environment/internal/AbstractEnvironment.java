@@ -212,10 +212,8 @@ public abstract class AbstractEnvironment implements Environment
             }
 
             // Not a directory or can't write to it, lets log an error here.
-            final String[] params =
-                new String[] {tempOrPermanent, dir.getAbsolutePath(),
-                    (dir.isDirectory()) ? "not writable" : "not a directory"};
-            this.logger.error("Configured {} directory [{}] is {}.", params);
+            this.logger.error("Configured {} directory [{}] is {}.", tempOrPermanent, dir.getAbsolutePath(),
+                (dir.isDirectory()) ? "not writable" : "not a directory");
 
             return null;
 

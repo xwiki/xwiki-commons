@@ -172,14 +172,11 @@ public class StandardEnvironmentTest
     {
         FileUtils.write(TMPDIR, "test");
 
-        final String[] params = new String[] {
-            "temporary",
-            TMPDIR.getAbsolutePath(),
-            "not a directory"
-        };
         final Logger logger = this.mockery.mock(Logger.class);
         this.mockery.checking(new Expectations() {{
-            oneOf(logger).error("Configured {} directory [{}] is {}.", params);
+            oneOf(logger).error("Configured {} directory [{}] is {}.", "temporary",
+                TMPDIR.getAbsolutePath(),
+                "not a directory");
         }});
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 
@@ -208,7 +205,7 @@ public class StandardEnvironmentTest
 
         final Logger logger = this.mockery.mock(Logger.class);
         this.mockery.checking(new Expectations() {{
-            allowing(logger).error(with(any(String.class)), with(any(String[].class)));
+            allowing(logger).error(with(any(String.class)), with(any(Object[].class)));
         }});
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 

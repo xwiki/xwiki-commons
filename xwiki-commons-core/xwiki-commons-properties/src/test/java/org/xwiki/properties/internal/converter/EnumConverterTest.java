@@ -19,8 +19,6 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.awt.Color;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

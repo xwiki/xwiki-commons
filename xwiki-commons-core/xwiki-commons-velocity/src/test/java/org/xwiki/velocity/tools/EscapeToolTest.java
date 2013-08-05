@@ -21,7 +21,6 @@
 package org.xwiki.velocity.tools;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 import org.junit.Assert;
