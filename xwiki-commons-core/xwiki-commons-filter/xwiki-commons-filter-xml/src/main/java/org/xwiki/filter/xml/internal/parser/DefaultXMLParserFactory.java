@@ -19,7 +19,6 @@
  */
 package org.xwiki.filter.xml.internal.parser;
 
-import javanet.staxutils.StAXResult;
 import javanet.staxutils.XMLEventStreamWriter;
 import javanet.staxutils.XMLStreamUtils;
 
@@ -30,6 +29,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.util.XMLEventConsumer;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.stax.StAXResult;
 import javax.xml.transform.stax.StAXSource;
 
 import org.xml.sax.ContentHandler;
