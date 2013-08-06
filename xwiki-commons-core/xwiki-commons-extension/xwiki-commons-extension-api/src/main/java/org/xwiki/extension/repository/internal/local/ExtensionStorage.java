@@ -58,7 +58,7 @@ public class ExtensionStorage
     /**
      * The extension of the descriptor files prefixed with dot.
      */
-    private static final String DESCRIPTOR_SUFFIX = "." + DESCRIPTOR_EXT;
+    private static final String DESCRIPTOR_SUFFIX = '.' + DESCRIPTOR_EXT;
 
     /**
      * The repository.
@@ -246,7 +246,7 @@ public class ExtensionStorage
     {
         String encoded;
         try {
-            encoded = URLEncoder.encode(name, "UTF-8");
+            encoded = URLEncoder.encode(name, "UTF-8").replace(".", "%2E").replace("*", "%2A");
         } catch (UnsupportedEncodingException e) {
             // Should never happen
 
