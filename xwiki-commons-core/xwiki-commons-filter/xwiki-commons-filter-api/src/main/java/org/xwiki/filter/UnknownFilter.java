@@ -19,33 +19,40 @@
  */
 package org.xwiki.filter;
 
-import org.xwiki.component.annotation.Role;
+import java.util.Map;
+
+import org.xwiki.filter.annotation.Name;
 import org.xwiki.stability.Unstable;
 
 /**
- * Manager {@link FilterDescriptor} related to classes.
+ * Unknown elements related events.
  * 
  * @version $Id$
  * @since 5.2M1
  */
-@Role
 @Unstable
-public interface FilterDescriptorManager
+public interface UnknownFilter
 {
     /**
-     * @param type the filter class
-     * @return the filter descriptor
+     * The identifier of the unknown events.
      */
-    FilterDescriptor getFilterDescriptor(Class< ? > type);
+    String FILTER_ELEMENT_ID = "unknown";
 
     /**
-     * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter}
-     * or simply ignores it when the filter does not support it.
-     * 
-     * @param <F> the class of the filter
-     * @param filterClass the class of the filter
-     * @param targetFilter the actual filter to send events to
-     * @return the filter proxy
+     * @param id the id of the event
+     * @param properties the data of the event
      */
-    <F> F createFilterProxy(Class<F> filterClass, Object targetFilter);
+    void beginUnknwon(@Name("id") String id, @Name("properties") Map<String, Object> properties);
+
+    /**
+     * @param id the id of the event
+     * @param properties the data of the event
+     */
+    void endUnknwon(@Name("id") String id, @Name("properties") Map<String, Object> properties);
+
+    /**
+     * @param id the id of the event
+     * @param properties the data of the event
+     */
+    void onUnknwon(@Name("id") String id, @Name("properties") Map<String, Object> properties);
 }

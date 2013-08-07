@@ -26,16 +26,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javanet.staxutils.XMLEventStreamWriter;
-
 import javax.inject.Singleton;
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stax.StAXResult;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.component.annotation.Component;
@@ -47,7 +42,7 @@ import org.xwiki.filter.xml.XMLConfiguration;
 import org.xwiki.filter.xml.internal.XMLUtils;
 import org.xwiki.filter.xml.internal.parameter.ParameterManager;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.xml.stax.SAXEventWriter;
+import org.xwiki.xml.stax.StAXUtils;
 
 /**
  * Proxy called as an event filter to produce SAX events.
@@ -71,7 +66,7 @@ public class DefaultXMLSerializer implements InvocationHandler
 
     private final XMLConfiguration configuration;
 
-    public DefaultXMLSerializer(Result xmlResult, ParameterManager parameterManager, FilterDescriptor descriptor,
+    public DefaultXMLSerializer(Result result, ParameterManager parameterManager, FilterDescriptor descriptor,
         ConverterManager converter, XMLConfiguration configuration) throws XMLStreamException,
         FactoryConfigurationError
     {
@@ -80,20 +75,7 @@ public class DefaultXMLSerializer implements InvocationHandler
         this.converter = converter;
         this.configuration = configuration != null ? configuration : new XMLConfiguration();
 
-        if (xmlResult instanceof SAXResult) {
-            // SAXResult is not supported by the standard XMLOutputFactory
-            this.xmlStreamWriter = new XMLEventStreamWriter(new SAXEventWriter(((SAXResult) xmlResult).getHandler()));
-        } else if (xmlResult instanceof StAXResult) {
-            // XMLEventWriter is not supported as result of XMLOutputFactory#createXMLStreamWriter
-            StAXResult staxResult = (StAXResult) xmlResult;
-            if (staxResult.getXMLStreamWriter() != null) {
-                this.xmlStreamWriter = staxResult.getXMLStreamWriter();
-            } else {
-                this.xmlStreamWriter = new XMLEventStreamWriter(staxResult.getXMLEventWriter());
-            }
-        } else {
-            this.xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(xmlResult);
-        }
+        this.xmlStreamWriter = StAXUtils.getXMLStreamWriter(result);
     }
 
     private boolean isValidBlockElementName(String blockName)

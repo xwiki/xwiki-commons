@@ -49,6 +49,7 @@ import org.xwiki.filter.xml.XMLConfiguration;
 import org.xwiki.filter.xml.internal.XMLUtils;
 import org.xwiki.filter.xml.internal.parameter.ParameterManager;
 import org.xwiki.properties.ConverterManager;
+import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.xml.Sax2Dom;
 
 /**
@@ -297,14 +298,26 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
         if (value instanceof Element) {
             block.setParameter(filterParameter.getIndex(), this.parameterManager.unSerialize(type, (Element) value));
-        } else {
+        } else if (value instanceof String) {
+            String stringValue = (String) value;
+
             Class< ? > typeClass = ReflectionUtils.getTypeClass(type);
 
-            if (XMLUtils.isSimpleType(typeClass)) {
-                block.setParameter(filterParameter.getIndex(), this.stringConverter.convert(type, value));
+            if (typeClass == String.class) {
+                block.setParameter(filterParameter.getIndex(), stringValue);
             } else {
-                block.setParameter(filterParameter.getIndex(), XMLUtils.emptyValue(typeClass));
+                try {
+                    block.setParameter(filterParameter.getIndex(), this.stringConverter.convert(type, value));
+                } catch (ConversionException e) {
+                    if (stringValue.isEmpty()) {
+                        block.setParameter(filterParameter.getIndex(), XMLUtils.emptyValue(typeClass));
+                    }
+
+                    LOGGER.warn("Unsuported conversion to type [{}] for value [{}]", type, value);
+                }
             }
+        } else {
+            LOGGER.warn("Unsuported type [{}] for value [{}]", value.getClass(), value);
         }
     }
 

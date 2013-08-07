@@ -20,6 +20,7 @@
 package org.xwiki.filter.internal;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
@@ -52,17 +53,17 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     /**
      * The prefix of the begin events.
      */
-    private static final String PREFIX_BEGIN = "begin";
+    public static final String PREFIX_BEGIN = "begin";
 
     /**
      * The prefix of the end events.
      */
-    private static final String PREFIX_END = "end";
+    public static final String PREFIX_END = "end";
 
     /**
      * The prefix of the on events.
      */
-    private static final String PREFIX_ON = "on";
+    public static final String PREFIX_ON = "on";
 
     /**
      * The descriptors.
@@ -97,34 +98,43 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     }
 
     /**
+     * @param methodName the method name
+     * @return the corresponding element name
+     */
+    public static String getElementName(String methodName)
+    {
+        String elementName;
+        if (methodName.startsWith(PREFIX_BEGIN)) {
+            elementName = methodName.substring(PREFIX_BEGIN.length(), methodName.length());
+        } else if (methodName.startsWith(PREFIX_END)) {
+            elementName = methodName.substring(PREFIX_END.length(), methodName.length());
+        } else if (methodName.startsWith(PREFIX_ON)) {
+            elementName = methodName.substring(PREFIX_ON.length(), methodName.length());
+        } else {
+            elementName = null;
+        }
+
+        if (elementName != null) {
+            elementName = Character.toLowerCase(elementName.charAt(0)) + elementName.substring(1, elementName.length());
+        }
+
+        return elementName;
+    }
+
+    /**
      * @param type the class of the filter
      * @return the descriptor of the filter
      */
-    public FilterDescriptor createDescriptor(Class< ? > type)
+    private FilterDescriptor createDescriptor(Class< ? > type)
     {
         FilterDescriptor descriptor = new FilterDescriptor();
 
         for (Method method : getMethods(type)) {
-            String methodName = method.getName();
-
-            String elementName;
-            if (methodName.startsWith(PREFIX_BEGIN)) {
-                elementName = methodName.substring(PREFIX_BEGIN.length(), methodName.length());
-            } else if (methodName.startsWith(PREFIX_END)) {
-                elementName = methodName.substring(PREFIX_END.length(), methodName.length());
-            } else if (methodName.startsWith(PREFIX_ON)) {
-                elementName = methodName.substring(PREFIX_ON.length(), methodName.length());
-            } else {
-                elementName = null;
-            }
+            String elementName = getElementName(method.getName());
 
             if (elementName != null) {
-                elementName =
-                    Character.toLowerCase(elementName.charAt(0)) + elementName.substring(1, elementName.length());
-
                 addElement(elementName, descriptor, method);
             }
-
         }
 
         return descriptor;
@@ -229,5 +239,12 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
                 element.setOnMethod(method);
             }
         }
+    }
+
+    @Override
+    public <F> F createFilterProxy(Class<F> filterClass, Object targetFilter)
+    {
+        return (F) Proxy.newProxyInstance(filterClass.getClassLoader(), new Class[] {filterClass}, new FilterProxy(
+            targetFilter, getFilterDescriptor(filterClass)));
     }
 }
