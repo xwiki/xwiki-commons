@@ -75,11 +75,15 @@ public class ServletEnvironment extends AbstractEnvironment
     @Override
     public URL getResource(String resourceName)
     {
+        URL url;
         try {
-            return getServletContext().getResource(resourceName);
+            url = getServletContext().getResource(resourceName);
         } catch (MalformedURLException e) {
-            throw new RuntimeException(String.format("Failed to access resource [%s]", resourceName), e);
+            url = null;
+            this.logger.warn("Error getting resource [{}] because of invalid path format. Reason: [{}]",
+                resourceName, e.getMessage());
         }
+        return url;
     }
 
     @Override

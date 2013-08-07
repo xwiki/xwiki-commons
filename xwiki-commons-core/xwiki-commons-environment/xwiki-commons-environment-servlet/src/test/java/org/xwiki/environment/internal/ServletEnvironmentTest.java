@@ -20,18 +20,17 @@
 package org.xwiki.environment.internal;
 
 import java.io.File;
+import java.net.MalformedURLException;
 
 import javax.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
+import org.xwiki.test.LogRule;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -49,6 +48,15 @@ public class ServletEnvironmentTest
     private File systemTmpDir;
 
     private ServletEnvironment environment;
+
+    /**
+     * Capture logs.
+     */
+    @Rule
+    public LogRule logRule = new LogRule() {{
+        record(LogLevel.WARN);
+        recordLoggingForType(ServletEnvironment.class);
+    }};
 
     @Before
     public void setUp() throws Exception
@@ -97,6 +105,25 @@ public class ServletEnvironmentTest
         this.environment.getResourceAsStream("/test");
 
         verify(servletContext).getResourceAsStream("/test");
+    }
+
+    @Test
+    public void getResourceNotExisting() throws Exception
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        this.environment.setServletContext(servletContext);
+        assertNull(this.environment.getResource("unknown resource"));
+    }
+
+    @Test
+    public void getResourceWhenMalformedURLException() throws Exception
+    {
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getResource("bad resource")).thenThrow(new MalformedURLException("invalid url"));
+        this.environment.setServletContext(servletContext);
+        assertNull(this.environment.getResource("bad resource"));
+        assertEquals("Error getting resource [bad resource] because of invalid path format. Reason: [invalid url]",
+            this.logRule.getMessage(0));
     }
 
     @Test

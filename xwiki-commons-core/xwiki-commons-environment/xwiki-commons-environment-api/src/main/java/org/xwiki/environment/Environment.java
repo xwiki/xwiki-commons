@@ -53,7 +53,7 @@ public interface Environment
 
     /**
      * @param resourceName the full name of the resource to access (eg "/somefile.properties")
-     * @return the resource location as a {@link URL}
+     * @return the resource location as a {@link URL} or null if not found
      */
     URL getResource(String resourceName);
 
