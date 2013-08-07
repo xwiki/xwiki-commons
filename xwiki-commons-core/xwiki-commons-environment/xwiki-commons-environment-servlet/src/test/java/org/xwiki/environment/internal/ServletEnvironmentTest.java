@@ -81,7 +81,7 @@ public class ServletEnvironmentTest
     @Test
     public void getResourceOk() throws Exception
     {
-        final ServletContext servletContext = mock(ServletContext.class);
+        ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
         this.environment.getResource("/test");
 
@@ -91,13 +91,12 @@ public class ServletEnvironmentTest
     @Test
     public void getResourceAsStreamOk() throws Exception
     {
-        final ServletContext servletContext = mock(ServletContext.class);
+        ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
         this.environment.getResourceAsStream("/test");
 
         verify(servletContext).getResourceAsStream("/test");
     }
-
 
     @Test
     public void getPermanentDirectoryWhenSetWithAPI() throws Exception
@@ -127,11 +126,11 @@ public class ServletEnvironmentTest
     @Test
     public void getPermanentDirectoryWhenNotSet() throws Exception
     {
-        final ServletContext servletContext = mock(ServletContext.class);
+        ServletContext servletContext = mock(ServletContext.class);
         when(servletContext.getAttribute("javax.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
         this.environment.setServletContext(servletContext);
 
-        final Logger logger = mock(Logger.class);
+        Logger logger = mock(Logger.class);
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 
         Assert.assertEquals(this.servletTmpDir.getCanonicalFile(),
@@ -153,11 +152,11 @@ public class ServletEnvironmentTest
     @Test
     public void getTemporaryDirectoryWhenNotSet() throws Exception
     {
-        final ServletContext servletContext = mock(ServletContext.class);
+        ServletContext servletContext = mock(ServletContext.class);
         when(servletContext.getAttribute("javax.servlet.context.tempdir")).thenReturn(this.servletTmpDir);
         this.environment.setServletContext(servletContext);
 
-        final File tmpDir = this.environment.getTemporaryDirectory();
+        File tmpDir = this.environment.getTemporaryDirectory();
 
         // Make sure it is the "xwiki-temp" dir which is under the main temp dir.
         Assert.assertEquals(this.servletTmpDir.listFiles()[0].getCanonicalFile(), tmpDir.getCanonicalFile());
@@ -169,7 +168,7 @@ public class ServletEnvironmentTest
     @Test
     public void getTemporaryDirectoryWhenServletTempDirNotSet() throws Exception
     {
-        final ServletContext servletContext = mock(ServletContext.class);
+        ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
 
         Assert.assertEquals(this.systemTmpDir.getCanonicalFile(),
