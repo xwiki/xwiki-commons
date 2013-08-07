@@ -334,7 +334,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
                             return coreExtension;
                         } catch (Exception e) {
-                            this.logger.warn("Failed to pase extension descriptor [{}]", descriptorUrl, e);
+                            this.logger.warn("Failed to parse extension descriptor [{}]", descriptorUrl, e);
                         }
                     } else {
                         this.logger.warn("Can't find resource file [{}] which contains distribution informations.",
