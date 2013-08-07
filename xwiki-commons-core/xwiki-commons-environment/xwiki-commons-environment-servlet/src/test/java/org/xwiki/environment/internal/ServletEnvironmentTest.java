@@ -33,6 +33,7 @@ import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -71,9 +72,9 @@ public class ServletEnvironmentTest
     {
         try {
             this.environment.getResource("/whatever");
-            Assert.fail();
+            fail();
         } catch (RuntimeException expected) {
-            Assert.assertEquals("The Servlet Environment has not been properly initialized "
+            assertEquals("The Servlet Environment has not been properly initialized "
                 + "(The Servlet Context is not set)", expected.getMessage());
         }
     }
@@ -103,7 +104,7 @@ public class ServletEnvironmentTest
     {
         File permanentDirectory = new File("/permanent");
         this.environment.setPermanentDirectory(permanentDirectory);
-        Assert.assertEquals(permanentDirectory.getCanonicalFile(),
+        assertEquals(permanentDirectory.getCanonicalFile(),
             this.environment.getPermanentDirectory().getCanonicalFile());
     }
 
@@ -116,7 +117,7 @@ public class ServletEnvironmentTest
         try {
             this.environment.setServletContext(mock(ServletContext.class));
 
-            Assert.assertEquals(expectedPermanentDirectory.getCanonicalFile(),
+            assertEquals(expectedPermanentDirectory.getCanonicalFile(),
                 this.environment.getPermanentDirectory().getCanonicalFile());
         } finally {
             System.clearProperty("xwiki.data.dir");
@@ -133,7 +134,7 @@ public class ServletEnvironmentTest
         Logger logger = mock(Logger.class);
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
 
-        Assert.assertEquals(this.servletTmpDir.getCanonicalFile(),
+        assertEquals(this.servletTmpDir.getCanonicalFile(),
             this.environment.getPermanentDirectory().getCanonicalFile());
 
         // Also verify that we log a warning!
@@ -146,7 +147,7 @@ public class ServletEnvironmentTest
     {
         File tmpDir = new File("tmpdir");
         this.environment.setTemporaryDirectory(tmpDir);
-        Assert.assertEquals(tmpDir.getCanonicalFile(), this.environment.getTemporaryDirectory().getCanonicalFile());
+        assertEquals(tmpDir.getCanonicalFile(), this.environment.getTemporaryDirectory().getCanonicalFile());
     }
 
     @Test
@@ -159,7 +160,7 @@ public class ServletEnvironmentTest
         File tmpDir = this.environment.getTemporaryDirectory();
 
         // Make sure it is the "xwiki-temp" dir which is under the main temp dir.
-        Assert.assertEquals(this.servletTmpDir.listFiles()[0].getCanonicalFile(), tmpDir.getCanonicalFile());
+        assertEquals(this.servletTmpDir.listFiles()[0].getCanonicalFile(), tmpDir.getCanonicalFile());
     }
 
     /**
@@ -171,7 +172,7 @@ public class ServletEnvironmentTest
         ServletContext servletContext = mock(ServletContext.class);
         this.environment.setServletContext(servletContext);
 
-        Assert.assertEquals(this.systemTmpDir.getCanonicalFile(),
+        assertEquals(this.systemTmpDir.getCanonicalFile(),
             this.environment.getTemporaryDirectory().getCanonicalFile());
 
         // Verify that servletContext.getAttribute was called (and that we returned null - this happens because we
