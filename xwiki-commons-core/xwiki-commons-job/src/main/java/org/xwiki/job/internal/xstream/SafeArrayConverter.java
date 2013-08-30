@@ -19,8 +19,12 @@
  */
 package org.xwiki.job.internal.xstream;
 
+import java.util.List;
+
+import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.component.annotation.Role;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -75,9 +79,28 @@ public class SafeArrayConverter extends ArrayConverter
     protected void writeItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer)
     {
         try {
-            super.writeItem(item, context, writer);
+            super.writeItem(isComponent(item) ? item.toString() : item, context, writer);
         } catch (Throwable e) {
             LOGGER.debug("Failed to write field", e);
         }
+    }
+
+    /**
+     * @param item the item to serialize
+     * @return true of the item looks like a component
+     */
+    private boolean isComponent(Object item)
+    {
+        if (item != null) {
+            List<Class< ? >> interfaces = ClassUtils.getAllInterfaces(item.getClass());
+
+            for (Class< ? > iface : interfaces) {
+                if (iface.isAnnotationPresent(Role.class)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

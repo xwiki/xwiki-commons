@@ -20,9 +20,7 @@
 package org.xwiki.job.internal;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -36,23 +34,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.job.internal.xstream.SafeArrayConverter;
-import org.xwiki.job.internal.xstream.SafeTreeUnmarshaller;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.ConverterLookup;
-import com.thoughtworks.xstream.core.TreeMarshallingStrategy;
-import com.thoughtworks.xstream.core.TreeUnmarshaller;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.mapper.Mapper;
-import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 /**
  * Default implementation of {@link JobStatusStorage}.
@@ -97,49 +84,17 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     private Logger logger;
 
     /**
-     * Used to serialize and unserialize status.
-     */
-    private XStream xstream;
-
-    /**
      * A cache of stored job statuses.
      */
     private Map<List<String>, JobStatus> jobs = new ConcurrentHashMap<List<String>, JobStatus>();
 
+    private JobStatusSerializer serializer;
+    
     @Override
     public void initialize() throws InitializationException
     {
-        this.xstream = new XStream()
-        {
-            @Override
-            protected MapperWrapper wrapMapper(MapperWrapper next)
-            {
-                return new MapperWrapper(next)
-                {
-                    @Override
-                    public boolean shouldSerializeMember(Class definedIn, String fieldName)
-                    {
-                        // Make XStream a bit stronger (we don't care if some field is missing)
-                        return definedIn != Object.class ? super.shouldSerializeMember(definedIn, fieldName) : false;
-                    }
-                };
-            }
-        };
-
-        // Bulletproofing array elements unserialization
-        this.xstream.registerConverter(new SafeArrayConverter(this.xstream.getMapper()));
-
-        // If anything goes wrong with an element, replace it with null
-        this.xstream.setMarshallingStrategy(new TreeMarshallingStrategy()
-        {
-            @Override
-            protected TreeUnmarshaller createUnmarshallingContext(Object root, HierarchicalStreamReader reader,
-                ConverterLookup converterLookup, Mapper mapper)
-            {
-                return new SafeTreeUnmarshaller(root, reader, converterLookup, mapper);
-            }
-        });
-
+        this.serializer = new JobStatusSerializer();
+        
         try {
             load();
         } catch (Exception e) {
@@ -229,7 +184,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
      */
     private JobStatus loadJobStatus(File statusFile) throws Exception
     {
-        return (JobStatus) this.xstream.fromXML(statusFile);
+        return (JobStatus) this.serializer.read(statusFile);
     }
 
     // JobStatusStorage
@@ -258,16 +213,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
         File statusFile = getJobFolder(status.getRequest().getId());
         statusFile = new File(statusFile, FILENAME_STATUS);
 
-        FileOutputStream stream = FileUtils.openOutputStream(statusFile);
-
-        try {
-            OutputStreamWriter writer = new OutputStreamWriter(stream, DEFAULT_ENCODING);
-            writer.write("<?xml version=\"1.0\" encoding=\"" + DEFAULT_ENCODING + "\"?>\n");
-            this.xstream.toXML(status, writer);
-            writer.flush();
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
+        this.serializer.write(status, statusFile);
     }
 
     @Override
