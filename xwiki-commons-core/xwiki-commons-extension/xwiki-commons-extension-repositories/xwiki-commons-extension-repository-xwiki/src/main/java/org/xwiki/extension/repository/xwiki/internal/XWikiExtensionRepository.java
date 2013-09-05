@@ -141,12 +141,12 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
                 response = httpClient.execute(getMethod);
             }
         } catch (Exception e) {
-            throw new IOException("Failed to request [" + getMethod.getURI() + "]", e);
+            throw new IOException(String.format("Failed to request [%s]", getMethod.getURI()), e);
         }
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new IOException("Invalid answer (" + response.getStatusLine().getStatusCode()
-                + ") fo the server when requesting");
+            throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
+                response.getStatusLine().getStatusCode(), getMethod.getURI()));
         }
 
         return response;

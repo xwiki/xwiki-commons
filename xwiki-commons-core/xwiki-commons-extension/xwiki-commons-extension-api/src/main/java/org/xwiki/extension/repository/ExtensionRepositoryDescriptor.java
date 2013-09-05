@@ -41,7 +41,7 @@ public interface ExtensionRepositoryDescriptor
     String getType();
 
     /**
-     * @return the repository adress
+     * @return the repository address
      */
     URI getURI();
 
