@@ -36,8 +36,8 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
-import org.xwiki.filter.FilterElement;
-import org.xwiki.filter.FilterElementParameter;
+import org.xwiki.filter.FilterElementDescriptor;
+import org.xwiki.filter.FilterElementParameterDescriptor;
 import org.xwiki.filter.test.TestFilter;
 import org.xwiki.filter.test.TestFilterImplementation;
 import org.xwiki.properties.ConverterManager;
@@ -73,11 +73,11 @@ public class FilterDescriptorManagerTest
     @Test
     public void testContainerWithParameters()
     {
-        FilterElement filterElement = this.filterDescriptor.getElement("containerwithparameters");
+        FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithparameters");
 
         Assert.assertNotNull(filterElement);
 
-        FilterElementParameter parameter0 = filterElement.getParameters()[0];
+        FilterElementParameterDescriptor parameter0 = filterElement.getParameters()[0];
 
         Assert.assertNull(parameter0.getName());
         Assert.assertEquals(0, parameter0.getIndex());
@@ -87,11 +87,11 @@ public class FilterDescriptorManagerTest
     @Test
     public void testContainerWithNamedParameters()
     {
-        FilterElement filterElement = this.filterDescriptor.getElement("containerwithnamedparameters");
+        FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithnamedparameters");
 
         Assert.assertNotNull(filterElement);
 
-        FilterElementParameter parameter0 = filterElement.getParameters()[0];
+        FilterElementParameterDescriptor parameter0 = filterElement.getParameters()[0];
         parameter0 = filterElement.getParameter("namedParam");
 
         Assert.assertNotNull(parameter0);
@@ -104,13 +104,13 @@ public class FilterDescriptorManagerTest
     @Test
     public void testNameInheritance() throws ComponentLookupException
     {
-        FilterElement filterElement =
+        FilterElementDescriptor filterElement =
             this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class)
                 .getElement("containerwithnamedparameters");
 
         Assert.assertNotNull(filterElement);
 
-        FilterElementParameter parameter0 = filterElement.getParameters()[0];
+        FilterElementParameterDescriptor parameter0 = filterElement.getParameters()[0];
         parameter0 = filterElement.getParameter("namedParam");
 
         Assert.assertNotNull(parameter0);
@@ -132,25 +132,25 @@ public class FilterDescriptorManagerTest
             converter.convert(new DefaultParameterizedType(null, Map.class, new Type[] {String.class, String.class}),
                 "")).thenThrow(ConversionException.class);
 
-        FilterElement filterElement =
+        FilterElementDescriptor filterElement =
             this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class)
                 .getElement("childwithdefaultvalue");
 
         Assert.assertNotNull(filterElement);
 
-        FilterElementParameter<Integer> parameter0 = filterElement.getParameter("int");
+        FilterElementParameterDescriptor<Integer> parameter0 = filterElement.getParameter("int");
 
         Assert.assertEquals(Integer.valueOf(42), parameter0.getDefaultValue());
 
-        FilterElementParameter<String> parameter1 = filterElement.getParameter("string");
+        FilterElementParameterDescriptor<String> parameter1 = filterElement.getParameter("string");
 
         Assert.assertEquals("default value", parameter1.getDefaultValue());
 
-        FilterElementParameter<Color> parameter2 = filterElement.getParameter("color");
+        FilterElementParameterDescriptor<Color> parameter2 = filterElement.getParameter("color");
 
         Assert.assertEquals(Color.WHITE, parameter2.getDefaultValue());
 
-        FilterElementParameter<Map<String, String>> parameter3 = filterElement.getParameter("map");
+        FilterElementParameterDescriptor<Map<String, String>> parameter3 = filterElement.getParameter("map");
 
         Assert.assertEquals(Collections.EMPTY_MAP, parameter3.getDefaultValue());
     }

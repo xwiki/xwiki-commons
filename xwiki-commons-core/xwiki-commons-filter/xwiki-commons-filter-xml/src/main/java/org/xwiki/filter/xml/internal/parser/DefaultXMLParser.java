@@ -43,8 +43,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptor;
-import org.xwiki.filter.FilterElement;
-import org.xwiki.filter.FilterElementParameter;
+import org.xwiki.filter.FilterElementDescriptor;
+import org.xwiki.filter.FilterElementParameterDescriptor;
 import org.xwiki.filter.xml.XMLConfiguration;
 import org.xwiki.filter.xml.internal.XMLUtils;
 import org.xwiki.filter.xml.internal.parameter.ParameterManager;
@@ -86,7 +86,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     {
         public String name;
 
-        public FilterElement filterElement;
+        public FilterElementDescriptor filterElement;
 
         public boolean beginSent = false;
 
@@ -100,7 +100,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
         private Object[] parametersTable;
 
-        public Block(String name, FilterElement listenerElement, int elementDepth)
+        public Block(String name, FilterElementDescriptor listenerElement, int elementDepth)
         {
             this.name = name;
             this.filterElement = listenerElement;
@@ -274,7 +274,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
             if (block.filterElement != null) {
                 if (block.filterElement.getParameters().length > parameterIndex) {
-                    FilterElementParameter< ? > filterParameter = block.filterElement.getParameters()[parameterIndex];
+                    FilterElementParameterDescriptor< ? > filterParameter = block.filterElement.getParameters()[parameterIndex];
 
                     setParameter(block, filterParameter, value);
                 } else {
@@ -282,7 +282,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 }
             }
         } else if (!attribute || !isReservedBlockAttribute(name)) {
-            FilterElementParameter< ? > filterParameter = block.filterElement.getParameter(name);
+            FilterElementParameterDescriptor< ? > filterParameter = block.filterElement.getParameter(name);
 
             if (filterParameter != null) {
                 setParameter(block, filterParameter, value);
@@ -292,7 +292,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         }
     }
 
-    private void setParameter(Block block, FilterElementParameter< ? > filterParameter, Object value)
+    private void setParameter(Block block, FilterElementParameterDescriptor< ? > filterParameter, Object value)
     {
         Type type = filterParameter.getType();
 
@@ -468,7 +468,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             blockName = qName;
         }
 
-        FilterElement element = this.filterDescriptor.getElement(blockName);
+        FilterElementDescriptor element = this.filterDescriptor.getElement(blockName);
 
         if (element == null) {
             LOGGER.warn("Uknown filter element [{}]", blockName);

@@ -21,12 +21,11 @@ package org.xwiki.filter.internal;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.xwiki.filter.FilterDescriptor;
-import org.xwiki.filter.FilterElement;
-import org.xwiki.filter.FilterElementParameter;
+import org.xwiki.filter.FilterElementDescriptor;
+import org.xwiki.filter.FilterElementParameterDescriptor;
+import org.xwiki.filter.FilterEventParameters;
 import org.xwiki.filter.UnknownFilter;
 import org.xwiki.stability.Unstable;
 
@@ -68,12 +67,12 @@ public final class FilterProxy implements InvocationHandler
             String id = DefaultFilterDescriptorManager.getElementName(methodName);
 
             if (id != null) {
-                FilterElement element = this.descriptor.getElement(id);
+                FilterElementDescriptor element = this.descriptor.getElement(id);
 
                 if (element != null) {
-                    Map<String, Object> metadata = new HashMap<String, Object>();
+                    FilterEventParameters metadata = new FilterEventParameters();
 
-                    for (FilterElementParameter< ? > parameter : element.getParameters()) {
+                    for (FilterElementParameterDescriptor< ? > parameter : element.getParameters()) {
                         metadata.put(
                             parameter.getName() != null ? parameter.getName() : String.valueOf(parameter.getIndex()),
                             args[parameter.getIndex()]);

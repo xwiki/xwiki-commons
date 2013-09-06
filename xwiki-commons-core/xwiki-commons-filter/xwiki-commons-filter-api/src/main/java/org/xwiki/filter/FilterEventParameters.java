@@ -20,38 +20,27 @@
 package org.xwiki.filter;
 
 import java.util.HashMap;
-import java.util.Map;
-
-import org.xwiki.stability.Unstable;
 
 /**
- * List all event found in a filter.
+ * Custom parameters passed to a filter event.
  * 
  * @version $Id$
- * @since 5.2M1
+ * @since 5.2M2
  */
-@Unstable
-public class FilterDescriptor
+public class FilterEventParameters extends HashMap<String, Object>
 {
     /**
-     * @see #getElements()
+     * The name of the parameter containing the custom parameters.
      */
-    private Map<String, FilterElementDescriptor> elements = new HashMap<String, FilterElementDescriptor>();
+    public static final String NAME = "parameters";
 
     /**
-     * @return the filter elements
+     * The default value of a {@link FilterEventParameters} as {@link String}.
      */
-    public Map<String, FilterElementDescriptor> getElements()
-    {
-        return this.elements;
-    }
+    public static final String DEFAULT = "";
 
     /**
-     * @param name the name of the filter element
-     * @return the filter element
+     * Empty instance.
      */
-    public FilterElementDescriptor getElement(String name)
-    {
-        return this.elements.get(name.toLowerCase());
-    }
+    public static final FilterEventParameters EMPTY = new FilterEventParameters();
 }

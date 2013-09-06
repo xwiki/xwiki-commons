@@ -33,10 +33,10 @@ import org.xwiki.stability.Unstable;
 public interface FilterDescriptorManager
 {
     /**
-     * @param type the filter class
+     * @param filterClass the filter class
      * @return the filter descriptor
      */
-    FilterDescriptor getFilterDescriptor(Class< ? > type);
+    FilterDescriptor getFilterDescriptor(Class< ? > filterClass);
 
     /**
      * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter}

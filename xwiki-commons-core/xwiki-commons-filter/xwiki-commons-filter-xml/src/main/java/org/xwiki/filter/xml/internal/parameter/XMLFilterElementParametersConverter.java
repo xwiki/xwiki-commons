@@ -17,41 +17,38 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter;
+package org.xwiki.filter.xml.internal.parameter;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.xwiki.filter.FilterEventParameters;
 
-import org.xwiki.stability.Unstable;
+import com.thoughtworks.xstream.converters.collections.MapConverter;
+import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
- * List all event found in a filter.
+ * XML converter for {@link FilterEventParameters}.
  * 
  * @version $Id$
- * @since 5.2M1
+ * @since 5.2M2
  */
-@Unstable
-public class FilterDescriptor
+public class XMLFilterElementParametersConverter extends MapConverter
 {
     /**
-     * @see #getElements()
+     * @param mapper the mapper
      */
-    private Map<String, FilterElementDescriptor> elements = new HashMap<String, FilterElementDescriptor>();
-
-    /**
-     * @return the filter elements
-     */
-    public Map<String, FilterElementDescriptor> getElements()
+    public XMLFilterElementParametersConverter(Mapper mapper)
     {
-        return this.elements;
+        super(mapper);
     }
 
-    /**
-     * @param name the name of the filter element
-     * @return the filter element
-     */
-    public FilterElementDescriptor getElement(String name)
+    @Override
+    public boolean canConvert(Class type)
     {
-        return this.elements.get(name.toLowerCase());
+        return type.equals(FilterEventParameters.class);
+    }
+
+    @Override
+    protected Object createCollection(Class type)
+    {
+        return new FilterEventParameters();
     }
 }

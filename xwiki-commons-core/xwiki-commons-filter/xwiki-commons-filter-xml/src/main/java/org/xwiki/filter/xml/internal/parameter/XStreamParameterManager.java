@@ -20,6 +20,7 @@
 package org.xwiki.filter.xml.internal.parameter;
 
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 
 import javax.inject.Inject;
 import javax.xml.stream.XMLStreamException;
@@ -32,6 +33,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.filter.FilterEventParameters;
 import org.xwiki.filter.xml.internal.XMLUtils;
 
 import com.thoughtworks.xstream.XStream;
@@ -80,6 +82,10 @@ public class XStreamParameterManager implements ParameterManager, Initializable
 
         this.xstream.registerConverter(new XMLCollectionConverter(this.xstream.getMapper()));
         this.xstream.registerConverter(new XMLMapConverter(this.xstream.getMapper()));
+        this.xstream.registerConverter(new XMLFilterElementParametersConverter(this.xstream.getMapper()));
+
+        this.xstream.alias("parameters", FilterEventParameters.class);
+        this.xstream.alias("map", LinkedHashMap.class);
 
         this.staxDriver = new StaxDriver();
     }

@@ -19,8 +19,7 @@
  */
 package org.xwiki.filter;
 
-import java.util.Map;
-
+import org.xwiki.filter.annotation.Default;
 import org.xwiki.filter.annotation.Name;
 import org.xwiki.stability.Unstable;
 
@@ -40,19 +39,25 @@ public interface UnknownFilter
 
     /**
      * @param id the id of the event
-     * @param properties the data of the event
+     * @param parameters the data of the event
      */
-    void beginUnknwon(@Name("id") String id, @Name("properties") Map<String, Object> properties);
+    void beginUnknwon(@Name("id") String id,
+        @Default(FilterEventParameters.DEFAULT)
+        @Name(FilterEventParameters.NAME) FilterEventParameters parameters);
 
     /**
      * @param id the id of the event
-     * @param properties the data of the event
+     * @param parameters the data of the event
      */
-    void endUnknwon(@Name("id") String id, @Name("properties") Map<String, Object> properties);
+    void endUnknwon(@Name("id") String id,
+        @Default(FilterEventParameters.DEFAULT)
+        @Name(FilterEventParameters.NAME) FilterEventParameters parameters);
 
     /**
      * @param id the id of the event
-     * @param properties the data of the event
+     * @param parameters the data of the event
      */
-    void onUnknwon(@Name("id") String id, @Name("properties") Map<String, Object> properties);
+    void onUnknwon(@Name("id") String id,
+        @Default(FilterEventParameters.DEFAULT)
+        @Name(FilterEventParameters.NAME) FilterEventParameters parameters);
 }

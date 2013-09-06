@@ -34,8 +34,8 @@ import org.xwiki.component.util.ReflectionMethodUtils;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
-import org.xwiki.filter.FilterElement;
-import org.xwiki.filter.FilterElementParameter;
+import org.xwiki.filter.FilterElementDescriptor;
+import org.xwiki.filter.FilterElementParameterDescriptor;
 import org.xwiki.filter.annotation.Default;
 import org.xwiki.filter.annotation.Name;
 import org.xwiki.properties.ConverterManager;
@@ -77,12 +77,12 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     private ConverterManager converter;
 
     @Override
-    public FilterDescriptor getFilterDescriptor(Class< ? > type)
+    public FilterDescriptor getFilterDescriptor(Class< ? > filterClass)
     {
-        FilterDescriptor descriptor = this.descriptors.get(type);
+        FilterDescriptor descriptor = this.descriptors.get(filterClass);
         if (descriptor == null) {
-            descriptor = createDescriptor(type);
-            this.descriptors.put(type, descriptor);
+            descriptor = createDescriptor(filterClass);
+            this.descriptors.put(filterClass, descriptor);
         }
 
         return descriptor;
@@ -149,18 +149,19 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     {
         String lowerElementName = elementName.toLowerCase();
 
-        FilterElement element = descriptor.getElements().get(lowerElementName);
+        FilterElementDescriptor element = descriptor.getElements().get(lowerElementName);
 
         Type[] methodTypes = method.getGenericParameterTypes();
         // TODO: add support for multiple methods
         if (element == null || methodTypes.length > element.getParameters().length) {
-            FilterElementParameter< ? >[] parameters = new FilterElementParameter< ? >[methodTypes.length];
+            FilterElementParameterDescriptor< ? >[] parameters =
+                new FilterElementParameterDescriptor< ? >[methodTypes.length];
 
             for (int i = 0; i < methodTypes.length; ++i) {
                 parameters[i] = createFilterElementParameter(method, i, methodTypes[i]);
             }
 
-            element = new FilterElement(elementName, parameters);
+            element = new FilterElementDescriptor(elementName, parameters);
 
             descriptor.getElements().put(lowerElementName, element);
         }
@@ -172,9 +173,9 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      * @param method the method associated to the element
      * @param index the method parameter index
      * @param type the method parameter type
-     * @return the associated {@link FilterElementParameter}
+     * @return the associated {@link FilterElementParameterDescriptor}
      */
-    private FilterElementParameter< ? > createFilterElementParameter(Method method, int index, Type type)
+    private FilterElementParameterDescriptor< ? > createFilterElementParameter(Method method, int index, Type type)
     {
         // @Name
         List<Name> nameAnnotations =
@@ -211,14 +212,14 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
             defaultValue = null;
         }
 
-        return new FilterElementParameter<Object>(index, name, type, defaultValue);
+        return new FilterElementParameterDescriptor<Object>(index, name, type, defaultValue);
     }
 
     /**
      * @param element the element
      * @param method the method to add to the element
      */
-    private void addMethod(FilterElement element, Method method)
+    private void addMethod(FilterElementDescriptor element, Method method)
     {
         String methodName = method.getName();
         Type[] methodTypes = method.getGenericParameterTypes();

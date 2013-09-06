@@ -36,8 +36,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptor;
-import org.xwiki.filter.FilterElement;
-import org.xwiki.filter.FilterElementParameter;
+import org.xwiki.filter.FilterElementDescriptor;
+import org.xwiki.filter.FilterElementParameterDescriptor;
 import org.xwiki.filter.xml.XMLConfiguration;
 import org.xwiki.filter.xml.internal.XMLUtils;
 import org.xwiki.filter.xml.internal.parameter.ParameterManager;
@@ -104,13 +104,13 @@ public class DefaultXMLSerializer implements InvocationHandler
         return blockName;
     }
 
-    private void writeInlineParameters(List<Object> parameters, FilterElement element) throws XMLStreamException
+    private void writeInlineParameters(List<Object> parameters, FilterElementDescriptor element) throws XMLStreamException
     {
         for (int i = 0; i < parameters.size(); ++i) {
             Object parameterValue = parameters.get(i);
 
             if (parameterValue != null) {
-                FilterElementParameter< ? > filterParameter = element.getParameters()[i];
+                FilterElementParameterDescriptor< ? > filterParameter = element.getParameters()[i];
 
                 if (!ObjectUtils.equals(filterParameter.getDefaultValue(), parameterValue)) {
                     Class< ? > typeClass = ReflectionUtils.getTypeClass(filterParameter.getType());
@@ -151,13 +151,13 @@ public class DefaultXMLSerializer implements InvocationHandler
         }
 
         if (parameters != null) {
-            FilterElement element = this.descriptor.getElement(blockName);
+            FilterElementDescriptor element = this.descriptor.getElement(blockName);
 
             writeInlineParameters(parameters, element);
         }
     }
 
-    private void removeDefaultParameters(List<Object> parameters, FilterElement descriptor)
+    private void removeDefaultParameters(List<Object> parameters, FilterElementDescriptor descriptor)
     {
         if (parameters != null) {
             for (int i = 0; i < parameters.size(); ++i) {
@@ -174,7 +174,7 @@ public class DefaultXMLSerializer implements InvocationHandler
     {
         String blockName = getBlockName(eventName, "begin");
 
-        FilterElement element = this.descriptor.getElement(blockName);
+        FilterElementDescriptor element = this.descriptor.getElement(blockName);
 
         List<Object> elementParameters = parameters != null ? Arrays.asList(parameters) : null;
 
@@ -208,7 +208,7 @@ public class DefaultXMLSerializer implements InvocationHandler
     {
         String blockName = getBlockName(eventName, "on");
 
-        FilterElement element = this.descriptor.getElement(blockName);
+        FilterElementDescriptor element = this.descriptor.getElement(blockName);
 
         List<Object> elementParameters = parameters != null ? Arrays.asList(parameters) : null;
 
@@ -246,7 +246,7 @@ public class DefaultXMLSerializer implements InvocationHandler
         this.xmlStreamWriter.writeEndElement();
     }
 
-    private boolean shouldWriteParameter(Object value, FilterElementParameter< ? > filterParameter)
+    private boolean shouldWriteParameter(Object value, FilterElementParameterDescriptor< ? > filterParameter)
     {
         boolean write;
 
@@ -272,7 +272,7 @@ public class DefaultXMLSerializer implements InvocationHandler
         return write;
     }
 
-    private void writeParameters(List<Object> parameters, FilterElement descriptor, boolean container)
+    private void writeParameters(List<Object> parameters, FilterElementDescriptor descriptor, boolean container)
         throws XMLStreamException
     {
         if (parameters != null && !parameters.isEmpty()) {
@@ -294,7 +294,7 @@ public class DefaultXMLSerializer implements InvocationHandler
             for (int i = 0; i < parameters.size(); ++i) {
                 Object parameterValue = parameters.get(i);
 
-                FilterElementParameter< ? > filterParameter = descriptor.getParameters()[i];
+                FilterElementParameterDescriptor< ? > filterParameter = descriptor.getParameters()[i];
 
                 if (shouldWriteParameter(parameterValue, filterParameter)) {
                     String elementName;
