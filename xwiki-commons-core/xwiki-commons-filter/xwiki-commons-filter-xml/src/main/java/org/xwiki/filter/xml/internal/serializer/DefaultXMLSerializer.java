@@ -104,7 +104,8 @@ public class DefaultXMLSerializer implements InvocationHandler
         return blockName;
     }
 
-    private void writeInlineParameters(List<Object> parameters, FilterElementDescriptor element) throws XMLStreamException
+    private void writeInlineParameters(List<Object> parameters, FilterElementDescriptor element)
+        throws XMLStreamException
     {
         for (int i = 0; i < parameters.size(); ++i) {
             Object parameterValue = parameters.get(i);
