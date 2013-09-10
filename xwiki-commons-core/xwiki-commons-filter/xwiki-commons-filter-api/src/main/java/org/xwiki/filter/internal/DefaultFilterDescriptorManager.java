@@ -245,7 +245,11 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     @Override
     public <F> F createFilterProxy(Class<F> filterClass, Object targetFilter)
     {
-        return (F) Proxy.newProxyInstance(filterClass.getClassLoader(), new Class[] {filterClass}, new FilterProxy(
-            targetFilter, getFilterDescriptor(filterClass)));
+        if (filterClass.isAssignableFrom(targetFilter.getClass())) {
+            return filterClass.cast(targetFilter);
+        } else {
+            return (F) Proxy.newProxyInstance(filterClass.getClassLoader(), new Class[] {filterClass}, new FilterProxy(
+                targetFilter, getFilterDescriptor(filterClass)));
+        }
     }
 }
