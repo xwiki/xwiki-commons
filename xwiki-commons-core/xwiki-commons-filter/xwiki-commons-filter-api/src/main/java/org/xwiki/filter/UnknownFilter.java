@@ -40,24 +40,27 @@ public interface UnknownFilter
     /**
      * @param id the id of the event
      * @param parameters the data of the event
+     * @exception FilterException when an error occurs after sending the event
      */
     void beginUnknwon(@Name("id") String id,
-        @Default(FilterEventParameters.DEFAULT)
-        @Name(FilterEventParameters.NAME) FilterEventParameters parameters);
+        @Default(FilterEventParameters.DEFAULT) @Name(FilterEventParameters.NAME) FilterEventParameters parameters)
+        throws FilterException;
 
     /**
      * @param id the id of the event
      * @param parameters the data of the event
+     * @exception FilterException when an error occurs after sending the event
      */
     void endUnknwon(@Name("id") String id,
-        @Default(FilterEventParameters.DEFAULT)
-        @Name(FilterEventParameters.NAME) FilterEventParameters parameters);
+        @Default(FilterEventParameters.DEFAULT) @Name(FilterEventParameters.NAME) FilterEventParameters parameters)
+        throws FilterException;
 
     /**
      * @param id the id of the event
      * @param parameters the data of the event
+     * @exception FilterException when an error occurs after sending the event
      */
     void onUnknwon(@Name("id") String id,
-        @Default(FilterEventParameters.DEFAULT)
-        @Name(FilterEventParameters.NAME) FilterEventParameters parameters);
+        @Default(FilterEventParameters.DEFAULT) @Name(FilterEventParameters.NAME) FilterEventParameters parameters)
+        throws FilterException;
 }
