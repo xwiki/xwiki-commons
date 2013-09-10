@@ -149,8 +149,8 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
                         }
                         repositoriesMap.put(extensionRepositoryId.getId(), extensionRepositoryId);
                     } catch (Exception e) {
-                        this.logger.warn(String.format("Ignoring invalid repository configuration [%s]. "
-                            + "Root cause [%s]", repositoryString, ExceptionUtils.getRootCauseMessage(e)));
+                        this.logger.warn("Ignoring invalid repository configuration [{}]. "
+                            + "Root cause [{}]", repositoryString, ExceptionUtils.getRootCauseMessage(e));
                     }
                 } else {
                     this.logger.debug("Empty repository id found in the configuration");
