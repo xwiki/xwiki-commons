@@ -232,7 +232,7 @@ public class XARMojo extends AbstractXARMojo
         infoElement.add(el);
 
         el = new DOMElement("backupPack");
-        el.addText("true");
+        el.addText("false");
         infoElement.add(el);
     }
 
