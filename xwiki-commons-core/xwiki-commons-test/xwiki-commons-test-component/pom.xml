@@ -27,7 +27,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-test</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.2-milestone-2</version>
   </parent>
   <artifactId>xwiki-commons-test-component</artifactId>
   <name>XWiki Commons - Test Framework - Component</name>
