@@ -274,7 +274,8 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
             if (block.filterElement != null) {
                 if (block.filterElement.getParameters().length > parameterIndex) {
-                    FilterElementParameterDescriptor< ? > filterParameter = block.filterElement.getParameters()[parameterIndex];
+                    FilterElementParameterDescriptor< ? > filterParameter =
+                        block.filterElement.getParameters()[parameterIndex];
 
                     setParameter(block, filterParameter, value);
                 } else {
@@ -339,7 +340,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
             currentBlock = this.blockStack.push(block);
 
-            if (!block.isContainer() && block.filterElement != null && block.filterElement.getParameters().length == 1
+            if (!block.isContainer() && block.filterElement != null && block.filterElement.getParameters().length > 0
                 && XMLUtils.isSimpleType(block.filterElement.getParameters()[0].getType())) {
                 this.content = new StringBuilder();
             }
@@ -391,7 +392,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                     block.fireEndEvent(this.filter, block.getParametersTable());
                 } else {
                     if (block.getParametersList().size() == 0
-                        && this.filterDescriptor.getElement(qName).getParameters().length == 1) {
+                        && this.filterDescriptor.getElement(qName).getParameters().length > 0) {
                         if (this.content != null && this.content.length() > 0) {
                             block.setParameter(
                                 0,
@@ -399,9 +400,6 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                                     this.filterDescriptor.getElement(qName).getParameters()[0].getType(),
                                     this.content.toString()));
                             this.content = null;
-                        } else {
-                            block.setParameter(0,
-                                this.filterDescriptor.getElement(qName).getParameters()[0].getDefaultValue());
                         }
                     }
 

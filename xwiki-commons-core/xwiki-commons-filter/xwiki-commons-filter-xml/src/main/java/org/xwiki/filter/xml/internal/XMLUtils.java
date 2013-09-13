@@ -63,7 +63,7 @@ public final class XMLUtils
      * The classes of object that can easily be converted to simple String.
      */
     private static final Set<Class< ? >> SIMPLECLASSES = new HashSet<Class< ? >>(Arrays.<Class< ? >> asList(
-        String.class, Character.class, Boolean.class));
+        String.class, Character.class, Boolean.class, byte[].class));
 
     /**
      * Utility class.
