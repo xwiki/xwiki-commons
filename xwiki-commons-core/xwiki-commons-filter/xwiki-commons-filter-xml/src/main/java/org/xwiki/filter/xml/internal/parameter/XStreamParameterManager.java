@@ -19,6 +19,7 @@
  */
 package org.xwiki.filter.xml.internal.parameter;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 
@@ -76,18 +77,19 @@ public class XStreamParameterManager implements ParameterManager, Initializable
     @Override
     public void initialize() throws InitializationException
     {
-        this.xstream = new XStream();
+        this.staxDriver = new StaxDriver();
+        this.xstream = new XStream(this.staxDriver);
 
         this.xstream.setMarshallingStrategy(new XMLTreeMarshallingStrategy());
 
         this.xstream.registerConverter(new XMLCollectionConverter(this.xstream.getMapper()));
         this.xstream.registerConverter(new XMLMapConverter(this.xstream.getMapper()));
         this.xstream.registerConverter(new XMLFilterElementParametersConverter(this.xstream.getMapper()));
+        this.xstream.registerConverter(new InputStreamConverter());
 
         this.xstream.alias("parameters", FilterEventParameters.class);
         this.xstream.alias("map", LinkedHashMap.class);
-
-        this.staxDriver = new StaxDriver();
+        this.xstream.alias("input-stream", InputStream.class);
     }
 
     @Override

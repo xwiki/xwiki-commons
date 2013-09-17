@@ -55,6 +55,7 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
+
     <!-- Tests dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -67,6 +68,10 @@
       <artifactId>hibernate-validator</artifactId>
       <version>4.3.0.Final</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
     </dependency>
   </dependencies>
   <build>

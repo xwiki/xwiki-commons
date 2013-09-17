@@ -340,8 +340,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
             currentBlock = this.blockStack.push(block);
 
-            if (!block.isContainer() && block.filterElement != null && block.filterElement.getParameters().length > 0
-                && XMLUtils.isSimpleType(block.filterElement.getParameters()[0].getType())) {
+            if (!block.isContainer() && block.filterElement != null && block.filterElement.getParameters().length > 0) {
                 this.content = new StringBuilder();
             }
 
