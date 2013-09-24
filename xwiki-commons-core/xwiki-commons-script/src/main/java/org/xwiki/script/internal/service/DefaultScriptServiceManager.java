@@ -58,14 +58,16 @@ public class DefaultScriptServiceManager implements ScriptServiceManager
     @Override
     public ScriptService get(String serviceName)
     {
-        ScriptService scriptService;
+        ScriptService scriptService = null;
 
-        try {
-            scriptService = this.componentManager.get().getInstance(ScriptService.class, serviceName);
-        } catch (Exception e) {
-            this.logger.debug("Failed to lookup script service for role hint [{}]", serviceName, e);
-
-            scriptService = null;
+        if (this.componentManager.get().hasComponent(ScriptService.class, serviceName)) {
+            try {
+                scriptService = this.componentManager.get().getInstance(ScriptService.class, serviceName);
+            } catch (Exception e) {
+                this.logger.error("Failed to lookup script service for role hint [{}]", serviceName, e);
+            }
+        } else {
+            this.logger.debug("No script service registred for role hint [{}]", serviceName);
         }
 
         return scriptService;
