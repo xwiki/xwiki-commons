@@ -30,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Various tools.
@@ -39,6 +40,11 @@ import java.util.Set;
  */
 public final class XMLUtils
 {
+    /**
+     * An index based parameter.
+     */
+    public static final Pattern INDEX_PATTERN = Pattern.compile("_(\\d+)");
+
     /**
      * The default mapping between interface and instance.
      */

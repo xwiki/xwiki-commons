@@ -22,9 +22,7 @@ package org.xwiki.filter.xml.internal.parser;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Matcher;
 
@@ -45,6 +43,7 @@ import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterElementDescriptor;
 import org.xwiki.filter.FilterElementParameterDescriptor;
+import org.xwiki.filter.FilterEventParameters;
 import org.xwiki.filter.xml.XMLConfiguration;
 import org.xwiki.filter.xml.internal.XMLUtils;
 import org.xwiki.filter.xml.internal.parameter.ParameterManager;
@@ -92,7 +91,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
         public List<Object> parameters = new ArrayList<Object>();
 
-        public Map<String, Object> namedParameters = new LinkedHashMap<String, Object>();
+        public FilterEventParameters namedParameters = new FilterEventParameters();
 
         public Sax2Dom parametersDOMBuilder;
 
@@ -255,7 +254,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
     private int extractParameterIndex(String elementName)
     {
-        Matcher matcher = this.configuration.getElementParameterPattern().matcher(elementName);
+        Matcher matcher = XMLUtils.INDEX_PATTERN.matcher(elementName);
         matcher.find();
 
         return Integer.valueOf(matcher.group(1));
@@ -269,7 +268,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
     private void setParameter(Block block, String name, Object value, boolean attribute)
     {
-        if (this.configuration.getElementParameterPattern().matcher(name).matches()) {
+        if (XMLUtils.INDEX_PATTERN.matcher(name).matches()) {
             int parameterIndex = extractParameterIndex(name);
 
             if (block.filterElement != null) {

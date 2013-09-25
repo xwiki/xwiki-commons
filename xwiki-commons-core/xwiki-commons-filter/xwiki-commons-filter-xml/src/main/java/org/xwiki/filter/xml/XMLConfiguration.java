@@ -19,8 +19,6 @@
  */
 package org.xwiki.filter.xml;
 
-import java.util.regex.Pattern;
-
 /**
  * Allow to customize the syntax.
  * 
@@ -65,11 +63,6 @@ public class XMLConfiguration
     private String elementParameters;
 
     /**
-     * @see #getElementParameter()
-     */
-    private String elementParameter;
-
-    /**
      * @see #getAttributeParameterName()
      */
     private String attributeParameterName;
@@ -80,17 +73,11 @@ public class XMLConfiguration
     private String attributeBlockName;
 
     /**
-     * @see #getElementParameterPattern()
-     */
-    private Pattern elementParameterPattern;
-
-    /**
      * Default constructor.
      */
     public XMLConfiguration()
     {
         setElementBlock(DEFAULT_ELEM_BLOCK);
-        setElementParameter(DEFAULT_ELEM_PARAMETER);
         setElementParameters(DEFAULT_ELEM_PARAMETERS);
         setAttributeBlockName(DEFAULT_ATT_BLOCK_NAME);
         setAttributeParameterName(DEFAULT_ATT_PARAMETER_NAME);
@@ -126,31 +113,6 @@ public class XMLConfiguration
     public void setElementParameters(String elementParameters)
     {
         this.elementParameters = elementParameters;
-    }
-
-    /**
-     * @return the name of the parameter element
-     */
-    public String getElementParameter()
-    {
-        return this.elementParameter;
-    }
-
-    /**
-     * @param elementParameter the name of the parameter element
-     */
-    public void setElementParameter(String elementParameter)
-    {
-        this.elementParameter = elementParameter;
-        this.elementParameterPattern = Pattern.compile(Pattern.quote(elementParameter) + "(\\d*)");
-    }
-
-    /**
-     * @return the pattern to use to parse the element parameter
-     */
-    public Pattern getElementParameterPattern()
-    {
-        return this.elementParameterPattern;
     }
 
     /**

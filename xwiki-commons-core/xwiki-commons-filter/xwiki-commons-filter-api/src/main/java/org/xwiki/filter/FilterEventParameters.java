@@ -19,7 +19,7 @@
  */
 package org.xwiki.filter;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Custom parameters passed to a filter event.
@@ -27,7 +27,7 @@ import java.util.HashMap;
  * @version $Id$
  * @since 5.2M2
  */
-public class FilterEventParameters extends HashMap<String, Object>
+public class FilterEventParameters extends LinkedHashMap<String, Object>
 {
     /**
      * The name of the parameter containing the custom parameters.

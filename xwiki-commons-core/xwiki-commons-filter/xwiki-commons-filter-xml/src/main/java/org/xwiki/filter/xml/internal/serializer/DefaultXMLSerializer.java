@@ -87,7 +87,7 @@ public class DefaultXMLSerializer implements InvocationHandler
     private boolean isValidParameterElementName(String parameterName)
     {
         return VALID_ELEMENTNAME.matcher(parameterName).matches()
-            && !this.configuration.getElementParameterPattern().matcher(parameterName).matches();
+            && !XMLUtils.INDEX_PATTERN.matcher(parameterName).matches();
     }
 
     private boolean isValidParameterAttributeName(String parameterName)
@@ -125,7 +125,7 @@ public class DefaultXMLSerializer implements InvocationHandler
                             attributeName = null;
                         }
                     } else {
-                        attributeName = this.configuration.getElementParameter() + filterParameter.getIndex();
+                        attributeName = "_" + filterParameter.getIndex();
                     }
 
                     if (attributeName != null) {
@@ -197,7 +197,7 @@ public class DefaultXMLSerializer implements InvocationHandler
         writeStartAttributes(blockName, elementParameters);
 
         // Write complex parameters
-        writeParameters(elementParameters, element, true);
+        writeParameters(elementParameters, element);
     }
 
     private void endEvent() throws XMLStreamException
@@ -240,7 +240,7 @@ public class DefaultXMLSerializer implements InvocationHandler
                 this.xmlStreamWriter.writeCharacters(value);
             }
         } else {
-            writeParameters(elementParameters, element, false);
+            writeParameters(elementParameters, element);
         }
 
         // Write end element
@@ -273,23 +273,20 @@ public class DefaultXMLSerializer implements InvocationHandler
         return write;
     }
 
-    private void writeParameters(List<Object> parameters, FilterElementDescriptor descriptor, boolean container)
-        throws XMLStreamException
+    private void writeParameters(List<Object> parameters, FilterElementDescriptor descriptor) throws XMLStreamException
     {
         if (parameters != null && !parameters.isEmpty()) {
             boolean writeContainer = false;
 
-            if (container) {
-                for (Object parameter : parameters) {
-                    if (parameter != null) {
-                        writeContainer = true;
-                        break;
-                    }
+            for (Object parameter : parameters) {
+                if (parameter != null) {
+                    writeContainer = true;
+                    break;
                 }
+            }
 
-                if (writeContainer) {
-                    this.xmlStreamWriter.writeStartElement(this.configuration.getElementParameters());
-                }
+            if (writeContainer) {
+                this.xmlStreamWriter.writeStartElement(this.configuration.getElementParameters());
             }
 
             for (int i = 0; i < parameters.size(); ++i) {
@@ -306,12 +303,12 @@ public class DefaultXMLSerializer implements InvocationHandler
                         if (isValidParameterElementName(filterParameter.getName())) {
                             elementName = filterParameter.getName();
                         } else {
-                            elementName = this.configuration.getElementParameter() + filterParameter.getIndex();
+                            elementName = "_" + filterParameter.getIndex();
                             attributeName = this.configuration.getAttributeParameterName();
                             attributeValue = filterParameter.getName();
                         }
                     } else {
-                        elementName = this.configuration.getElementParameter() + filterParameter.getIndex();
+                        elementName = "_" + filterParameter.getIndex();
                     }
 
                     this.xmlStreamWriter.writeStartElement(elementName);
