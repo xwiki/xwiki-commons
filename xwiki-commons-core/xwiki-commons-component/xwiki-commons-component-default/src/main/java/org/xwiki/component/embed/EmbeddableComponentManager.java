@@ -506,8 +506,12 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         if (componentEntry != null) {
             ComponentDescriptor< ? > oldDescriptor = componentEntry.descriptor;
 
-            // clean any resource associated to the component instance and descriptor
-            releaseComponentEntry(componentEntry);
+            // We don't want the component manager to dispose itself just because it's not registered as component*
+            // anymore
+            if (componentEntry.instance != this) {
+                // clean any resource associated to the component instance and descriptor
+                releaseComponentEntry(componentEntry);
+            }
 
             // Send event about component unregistration
             if (this.eventManager != null && oldDescriptor != null) {
