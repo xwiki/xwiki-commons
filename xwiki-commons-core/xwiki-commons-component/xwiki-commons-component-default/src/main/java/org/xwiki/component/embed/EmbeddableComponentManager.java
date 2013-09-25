@@ -304,9 +304,10 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
                 if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
                     fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
                 } else {
-                    fieldValue = new GenericProvider<Object>(this, new RoleHint<Object>(
-                        ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()),
-                        dependency.getRoleHint()));
+                    fieldValue =
+                        new GenericProvider<Object>(this, new RoleHint<Object>(
+                            ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()),
+                            dependency.getRoleHint()));
                 }
             } else {
                 fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
@@ -531,14 +532,24 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @Override
     public void dispose()
     {
-        for (ComponentEntry< ? > entry : this.componentEntries.values()) {
-            Object instance = entry.instance;
-            if (instance != null && instance != this && instance instanceof Disposable) {
-                try {
-                    ((Disposable) instance).dispose();
-                } catch (ComponentLifecycleException e) {
-                    this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
-                        entry.descriptor.getRoleType(), entry.descriptor.getRoleHint(), e);
+        // Dispose old components
+        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
+            ComponentEntry< ? > componentEntry = entry.getValue();
+
+            synchronized (componentEntry) {
+                Object instance = componentEntry.instance;
+
+                if (instance != this) {
+                    this.componentEntries.remove(entry.getKey());
+
+                    if (instance != this && instance instanceof Disposable) {
+                        try {
+                            ((Disposable) instance).dispose();
+                        } catch (ComponentLifecycleException e) {
+                            this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
+                                componentEntry.descriptor.getRoleType(), componentEntry.descriptor.getRoleHint(), e);
+                        }
+                    }
                 }
             }
         }
