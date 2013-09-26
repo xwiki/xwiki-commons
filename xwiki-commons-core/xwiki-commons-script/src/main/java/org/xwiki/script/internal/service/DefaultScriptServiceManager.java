@@ -67,7 +67,7 @@ public class DefaultScriptServiceManager implements ScriptServiceManager
                 this.logger.error("Failed to lookup script service for role hint [{}]", serviceName, e);
             }
         } else {
-            this.logger.debug("No script service registred for role hint [{}]", serviceName);
+            this.logger.debug("No script service registered for role hint [{}]", serviceName);
         }
 
         return scriptService;
