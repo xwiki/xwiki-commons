@@ -25,6 +25,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -57,7 +59,8 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
      * Used to lookup {@link Job} implementations.
      */
     @Inject
-    private ComponentManager componentManager;
+    @Named("context")
+    private Provider<ComponentManager> componentManager;
 
     /**
      * Used to store the results of the jobs execution.
@@ -153,7 +156,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     {
         Job job;
         try {
-            job = this.componentManager.getInstance(Job.class, jobType);
+            job = this.componentManager.get().getInstance(Job.class, jobType);
         } catch (ComponentLookupException e) {
             throw new JobException("Failed to lookup any Job for role hint [" + jobType + "]", e);
         }

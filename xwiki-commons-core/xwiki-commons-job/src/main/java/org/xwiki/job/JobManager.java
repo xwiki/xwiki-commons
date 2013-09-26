@@ -81,6 +81,7 @@ public interface JobManager
      * Add a new job in the queue of jobs to execute.
      * 
      * @param job the job to execute
+     * @since 5.1M2
      */
     void addJob(Job job);
 }
