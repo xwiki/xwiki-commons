@@ -28,8 +28,10 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.logging.LogLevel;
@@ -61,7 +63,8 @@ import ch.qos.logback.core.AppenderBase;
 @Component
 @Named("LogbackEventGenerator")
 @Singleton
-public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implements EventListener, Initializable
+public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implements EventListener, Initializable,
+    Disposable
 {
     /**
      * The logger to log.
@@ -155,5 +158,18 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
     protected ch.qos.logback.classic.Logger getRootLogger()
     {
         return this.utils.getRootLogger();
+    }
+
+    @Override
+    public void dispose() throws ComponentLifecycleException
+    {
+        stop();
+
+        // Unregister appender
+        ch.qos.logback.classic.Logger rootLogger = getRootLogger();
+
+        if (rootLogger != null) {
+            rootLogger.detachAppender(this);
+        }
     }
 }
