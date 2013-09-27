@@ -29,4 +29,5 @@
        Throwable is part of the JUnit method signature that we implement! -->
   <suppress checks="IllegalThrows" files="ComponentManagerRule.java" />
   <suppress checks="IllegalThrows" files="MockitoComponentMockingRule.java" />
+  <suppress checks="BooleanExpressionComplexity" files="MockitoComponentMockingRule.java" />
 </suppressions>

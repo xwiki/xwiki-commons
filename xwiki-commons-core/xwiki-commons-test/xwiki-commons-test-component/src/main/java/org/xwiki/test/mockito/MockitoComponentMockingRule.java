@@ -282,6 +282,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
         for (ComponentDependency< ? > dependencyDescriptor : dependencyDescriptors) {
             Class< ? > roleTypeClass = ReflectionUtils.getTypeClass(dependencyDescriptor.getRoleType());
             // Only register a mock if it isn't:
+            // - Already registered
             // - An explicit exception specified by the user
             // - A logger
             // - A collection of components, we want to keep them as Java collections. Those collections are later
@@ -290,7 +291,9 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
             // TODO: Handle multiple roles/hints.
             if (!this.excludedComponentRoleDependencies.contains(roleTypeClass)
                 && Logger.class != roleTypeClass && !roleTypeClass.isAssignableFrom(List.class)
-                && !roleTypeClass.isAssignableFrom(Map.class)) {
+                && !roleTypeClass.isAssignableFrom(Map.class)
+                && !hasComponent(dependencyDescriptor.getRoleType(),
+                    dependencyDescriptor.getRoleHint())) {
                 DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
                 cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
