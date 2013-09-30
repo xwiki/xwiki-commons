@@ -74,7 +74,7 @@ public final class FilterUtils
             event.invoke(filter, arguments);
         } catch (Exception e) {
             throw new FilterException(String.format("Failed to send event [%s] with parameters [%s] to filter [%s]",
-                event, parameters, filter));
+                event, parameters, filter), e);
         }
 
         return true;

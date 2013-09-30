@@ -77,15 +77,26 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     private ConverterManager converter;
 
     @Override
-    public FilterDescriptor getFilterDescriptor(Class< ? > filterClass)
+    public FilterDescriptor getFilterDescriptor(Class< ? >... interfaces)
     {
-        FilterDescriptor descriptor = this.descriptors.get(filterClass);
-        if (descriptor == null) {
-            descriptor = createDescriptor(filterClass);
-            this.descriptors.put(filterClass, descriptor);
+        FilterDescriptor totalDescriptor = null;
+
+        for (Class< ? > i : interfaces) {
+            FilterDescriptor descriptor = this.descriptors.get(i);
+
+            if (descriptor == null) {
+                descriptor = createDescriptor(i);
+                this.descriptors.put(i, descriptor);
+            }
+
+            if (totalDescriptor == null) {
+                totalDescriptor = descriptor;
+            } else {
+                totalDescriptor.add(descriptor);
+            }
         }
 
-        return descriptor;
+        return totalDescriptor;
     }
 
     /**
@@ -243,13 +254,15 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     }
 
     @Override
-    public <F> F createFilterProxy(Class<F> filterClass, Object targetFilter)
+    public <F> F createFilterProxy(Object targetFilter, Class< ? >... interfaces)
     {
-        if (filterClass.isAssignableFrom(targetFilter.getClass())) {
-            return filterClass.cast(targetFilter);
-        } else {
-            return (F) Proxy.newProxyInstance(filterClass.getClassLoader(), new Class[] {filterClass}, new FilterProxy(
-                targetFilter, getFilterDescriptor(filterClass)));
+        for (Class< ? > i : interfaces) {
+            if (!i.isInstance(targetFilter)) {
+                return (F) Proxy.newProxyInstance(targetFilter.getClass().getClassLoader(), interfaces,
+                    new FilterProxy(targetFilter, getFilterDescriptor(interfaces)));
+            }
         }
+
+        return (F) targetFilter;
     }
 }

@@ -33,19 +33,20 @@ import org.xwiki.stability.Unstable;
 public interface FilterDescriptorManager
 {
     /**
-     * @param filterClass the filter class
+     * @param interfaces the interfaces implemented by the filter
      * @return the filter descriptor
      */
-    FilterDescriptor getFilterDescriptor(Class< ? > filterClass);
+    FilterDescriptor getFilterDescriptor(Class< ? >... interfaces);
 
     /**
      * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter}
      * or simply ignores it when the filter does not support it.
      * 
      * @param <F> the class of the filter
-     * @param filterClass the class of the filter
+     * @param interfaces the interfaces implemented by the filter
      * @param targetFilter the actual filter to send events to
      * @return the filter proxy
+     * @since 5.2
      */
-    <F> F createFilterProxy(Class<F> filterClass, Object targetFilter);
+    <F> F createFilterProxy(Object targetFilter, Class< ? >... interfaces);
 }

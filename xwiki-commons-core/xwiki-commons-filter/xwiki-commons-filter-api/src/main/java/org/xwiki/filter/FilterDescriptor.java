@@ -54,4 +54,12 @@ public class FilterDescriptor
     {
         return this.elements.get(name.toLowerCase());
     }
+
+    /**
+     * @param descriptor the descriptor to merge with this descriptor
+     */
+    public void add(FilterDescriptor descriptor)
+    {
+        this.elements.putAll(descriptor.elements);
+    }
 }
