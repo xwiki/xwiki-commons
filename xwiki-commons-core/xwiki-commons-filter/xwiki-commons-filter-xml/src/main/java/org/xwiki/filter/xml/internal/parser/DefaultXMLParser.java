@@ -44,6 +44,7 @@ import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterElementDescriptor;
 import org.xwiki.filter.FilterElementParameterDescriptor;
 import org.xwiki.filter.FilterEventParameters;
+import org.xwiki.filter.UnknownFilter;
 import org.xwiki.filter.xml.XMLConfiguration;
 import org.xwiki.filter.xml.internal.XMLUtils;
 import org.xwiki.filter.xml.internal.parameter.ParameterManager;
@@ -108,7 +109,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
         public boolean isContainer()
         {
-            return this.filterElement != null && this.filterElement.getBeginMethod() != null;
+            return this.filterElement == null || this.filterElement.getBeginMethod() != null;
         }
 
         public void setParameter(String name, Object value)
@@ -148,6 +149,13 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         {
             if (this.filterElement != null) {
                 fireEvent(this.filterElement.getBeginMethod(), listener, parameters);
+            } else if (listener instanceof UnknownFilter) {
+                try {
+                    ((UnknownFilter) listener).beginUnknwon(this.name, this.namedParameters);
+                } catch (Exception e) {
+                    throw new SAXException("Failed to invoke unknown event with name [" + this.name
+                        + "] and parameters [" + this.namedParameters + "]", e);
+                }
             }
             this.beginSent = true;
         }
@@ -156,6 +164,13 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         {
             if (this.filterElement != null) {
                 fireEvent(this.filterElement.getEndMethod(), listener, parameters);
+            } else if (listener instanceof UnknownFilter) {
+                try {
+                    ((UnknownFilter) listener).endUnknwon(this.name, this.namedParameters);
+                } catch (Exception e) {
+                    throw new SAXException("Failed to invoke unknown event with name [" + this.name
+                        + "] and parameters [" + this.namedParameters + "]", e);
+                }
             }
         }
 
@@ -163,6 +178,13 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         {
             if (this.filterElement != null) {
                 fireEvent(this.filterElement.getOnMethod(), listener, parameters);
+            } else if (listener instanceof UnknownFilter) {
+                try {
+                    ((UnknownFilter) listener).onUnknwon(this.name, this.namedParameters);
+                } catch (Exception e) {
+                    throw new SAXException("Failed to invoke unknown event with name [" + this.name
+                        + "] and parameters [" + this.namedParameters + "]", e);
+                }
             }
         }
 
@@ -271,23 +293,26 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         if (XMLUtils.INDEX_PATTERN.matcher(name).matches()) {
             int parameterIndex = extractParameterIndex(name);
 
-            if (block.filterElement != null) {
-                if (block.filterElement.getParameters().length > parameterIndex) {
-                    FilterElementParameterDescriptor< ? > filterParameter =
-                        block.filterElement.getParameters()[parameterIndex];
+            if (block.filterElement != null && block.filterElement.getParameters().length > parameterIndex) {
+                FilterElementParameterDescriptor< ? > filterParameter =
+                    block.filterElement.getParameters()[parameterIndex];
 
-                    setParameter(block, filterParameter, value);
-                } else {
-                    LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}]", name, value, block.name);
-                }
+                setParameter(block, filterParameter, value);
+            } else {
+                LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}]", name, value, block.name);
+
+                block.setParameter(name, value);
             }
         } else if (!attribute || !isReservedBlockAttribute(name)) {
-            FilterElementParameterDescriptor< ? > filterParameter = block.filterElement.getParameter(name);
+            FilterElementParameterDescriptor< ? > filterParameter =
+                block.filterElement != null ? block.filterElement.getParameter(name) : null;
 
             if (filterParameter != null) {
                 setParameter(block, filterParameter, value);
             } else {
                 LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}]", name, value, block.name);
+
+                block.setParameter(name, value);
             }
         }
     }
@@ -380,47 +405,43 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         if (onBlockElement(qName)) {
             Block block = this.blockStack.pop();
 
-            if (block.filterElement != null) {
-                // Flush pending begin event and send end event or send on event
-                if (block.isContainer()) {
-                    if (!block.beginSent) {
-                        block.fireBeginEvent(this.filter, block.getParametersTable());
-                    }
-
-                    block.fireEndEvent(this.filter, block.getParametersTable());
-                } else {
-                    if (block.getParametersList().size() == 0
-                        && this.filterDescriptor.getElement(qName).getParameters().length > 0) {
-                        if (this.content != null && this.content.length() > 0) {
-                            block.setParameter(
-                                0,
-                                this.stringConverter.convert(
-                                    this.filterDescriptor.getElement(qName).getParameters()[0].getType(),
-                                    this.content.toString()));
-                            this.content = null;
-                        }
-                    }
-
-                    block.fireOnEvent(this.filter, block.getParametersTable());
+            // Flush pending begin event and send end event or send on event
+            if (block.isContainer()) {
+                if (!block.beginSent) {
+                    block.fireBeginEvent(this.filter, block.getParametersTable());
                 }
+
+                block.fireEndEvent(this.filter, block.getParametersTable());
+            } else {
+                if (block.getParametersList().size() == 0
+                    && this.filterDescriptor.getElement(qName).getParameters().length > 0) {
+                    if (this.content != null && this.content.length() > 0) {
+                        block.setParameter(
+                            0,
+                            this.stringConverter.convert(
+                                this.filterDescriptor.getElement(qName).getParameters()[0].getType(),
+                                this.content.toString()));
+                        this.content = null;
+                    }
+                }
+
+                block.fireOnEvent(this.filter, block.getParametersTable());
             }
         } else if (currentBlock.parametersDOMBuilder != null) {
             currentBlock.parametersDOMBuilder.endElement(uri, localName, qName);
 
             if (onParametersElement(qName)) {
-                if (currentBlock.filterElement != null) {
-                    currentBlock.parametersDOMBuilder.endDocument();
+                currentBlock.parametersDOMBuilder.endDocument();
 
-                    Element rootElement = currentBlock.parametersDOMBuilder.getRootElement();
-                    NodeList parameterNodes = rootElement.getChildNodes();
-                    for (int i = 0; i < parameterNodes.getLength(); ++i) {
-                        Node parameterNode = parameterNodes.item(i);
+                Element rootElement = currentBlock.parametersDOMBuilder.getRootElement();
+                NodeList parameterNodes = rootElement.getChildNodes();
+                for (int i = 0; i < parameterNodes.getLength(); ++i) {
+                    Node parameterNode = parameterNodes.item(i);
 
-                        if (parameterNode.getNodeType() == Node.ELEMENT_NODE) {
-                            String nodeName = parameterNode.getLocalName();
+                    if (parameterNode.getNodeType() == Node.ELEMENT_NODE) {
+                        String nodeName = parameterNode.getLocalName();
 
-                            setParameter(currentBlock, nodeName, parameterNode, true);
-                        }
+                        setParameter(currentBlock, nodeName, parameterNode, true);
                     }
                 }
 
