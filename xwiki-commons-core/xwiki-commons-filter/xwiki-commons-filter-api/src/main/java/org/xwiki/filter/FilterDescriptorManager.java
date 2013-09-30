@@ -50,4 +50,15 @@ public interface FilterDescriptorManager
      * @since 5.2
      */
     <F> F createFilterProxy(Object targetFilter, Class< ? >... interfaces);
+
+    /**
+     * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter}
+     * or simply ignores it when the filter does not support it.
+     * 
+     * @param <F> the class of the filter
+     * @param filters the actual filters to send events to
+     * @return the filter proxy
+     * @since 5.2
+     */
+    <F> F createCompositeFilter(Object... filters);
 }

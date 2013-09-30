@@ -23,12 +23,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.ReflectionMethodUtils;
 import org.xwiki.component.util.ReflectionUtils;
@@ -64,6 +67,8 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      * The prefix of the on events.
      */
     public static final String PREFIX_ON = "on";
+
+    private static final Class< ? >[] CLASS_ARRAY = new Class< ? >[0];
 
     /**
      * The descriptors.
@@ -264,5 +269,17 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
         }
 
         return (F) targetFilter;
+    }
+
+    @Override
+    public <F> F createCompositeFilter(Object... filters)
+    {
+        Set<Class< ? >> interfaces = new HashSet<Class< ? >>();
+        for (Object filter : filters) {
+            interfaces.addAll(ClassUtils.getAllInterfaces(filter.getClass()));
+        }
+
+        return (F) Proxy.newProxyInstance(getClass().getClassLoader(), interfaces.toArray(CLASS_ARRAY),
+            new CompositeFilter(this, filters));
     }
 }

@@ -20,12 +20,14 @@
 package org.xwiki.filter.internal;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterElementDescriptor;
 import org.xwiki.filter.FilterElementParameterDescriptor;
 import org.xwiki.filter.FilterEventParameters;
+import org.xwiki.filter.FilterException;
 import org.xwiki.filter.UnknownFilter;
 import org.xwiki.stability.Unstable;
 
@@ -57,39 +59,67 @@ public final class FilterProxy implements InvocationHandler
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+    public Object invoke(Object proxy, Method method, Object[] args) throws IllegalArgumentException,
+        IllegalAccessException, InvocationTargetException, FilterException
     {
-        if (method.getDeclaringClass().isAssignableFrom(this.targetFilter.getClass())) {
-            return method.invoke(this.targetFilter, args);
-        } else if (this.targetFilter instanceof UnknownFilter) {
-            String methodName = method.getName();
+        invoke(this.targetFilter, descriptor, method, args);
 
-            String id = DefaultFilterDescriptorManager.getElementName(methodName);
+        return null;
+    }
 
-            if (id != null) {
-                FilterElementDescriptor element = this.descriptor.getElement(id);
+    /**
+     * @param filter the filter to send event to
+     * @param descriptor the descriptor of the filter
+     * @param method the event method called
+     * @param args the arguments of the called method
+     * @exception IllegalAccessException if this <code>Method</code> object enforces Java language access control and
+     *                the underlying method is inaccessible.
+     * @exception IllegalArgumentException if the method is an instance method and the specified object argument is not
+     *                an instance of the class or interface declaring the underlying method (or of a subclass or
+     *                implementor thereof); if the number of actual and formal parameters differ; if an unwrapping
+     *                conversion for primitive arguments fails; or if, after possible unwrapping, a parameter value
+     *                cannot be converted to the corresponding formal parameter type by a method invocation conversion.
+     * @exception InvocationTargetException if the underlying method throws an exception.
+     * @throws FilterException if the execution of the event failed
+     */
+    public static void invoke(Object filter, FilterDescriptor descriptor, Method method, Object[] args)
+        throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, FilterException
+    {
+        if (method.getDeclaringClass().isInstance(filter)) {
+            method.invoke(filter, args);
+        } else if (filter instanceof UnknownFilter) {
+            invokeUnkown(filter, descriptor, method, args);
+        }
+    }
 
-                if (element != null) {
-                    FilterEventParameters metadata = new FilterEventParameters();
+    private static void invokeUnkown(Object filter, FilterDescriptor descriptor, Method method, Object[] args)
+        throws FilterException
+    {
+        String methodName = method.getName();
 
-                    for (FilterElementParameterDescriptor< ? > parameter : element.getParameters()) {
-                        metadata.put(
-                            parameter.getName() != null ? parameter.getName() : String.valueOf(parameter.getIndex()),
-                            args[parameter.getIndex()]);
-                    }
+        String id = DefaultFilterDescriptorManager.getElementName(methodName);
 
-                    UnknownFilter unknownFilter = (UnknownFilter) this.targetFilter;
-                    if (methodName.startsWith(DefaultFilterDescriptorManager.PREFIX_BEGIN)) {
-                        unknownFilter.beginUnknwon(id, metadata);
-                    } else if (methodName.startsWith(DefaultFilterDescriptorManager.PREFIX_END)) {
-                        unknownFilter.endUnknwon(id, metadata);
-                    } else if (methodName.startsWith(DefaultFilterDescriptorManager.PREFIX_ON)) {
-                        unknownFilter.onUnknwon(id, metadata);
-                    }
+        if (id != null) {
+            FilterElementDescriptor element = descriptor.getElement(id);
+
+            if (element != null) {
+                FilterEventParameters metadata = new FilterEventParameters();
+
+                for (FilterElementParameterDescriptor< ? > parameter : element.getParameters()) {
+                    metadata.put(
+                        parameter.getName() != null ? parameter.getName() : String.valueOf(parameter.getIndex()),
+                        args[parameter.getIndex()]);
+                }
+
+                UnknownFilter unknownFilter = (UnknownFilter) filter;
+                if (methodName.startsWith(DefaultFilterDescriptorManager.PREFIX_BEGIN)) {
+                    unknownFilter.beginUnknwon(id, metadata);
+                } else if (methodName.startsWith(DefaultFilterDescriptorManager.PREFIX_END)) {
+                    unknownFilter.endUnknwon(id, metadata);
+                } else if (methodName.startsWith(DefaultFilterDescriptorManager.PREFIX_ON)) {
+                    unknownFilter.onUnknwon(id, metadata);
                 }
             }
         }
-
-        return null;
     }
 }

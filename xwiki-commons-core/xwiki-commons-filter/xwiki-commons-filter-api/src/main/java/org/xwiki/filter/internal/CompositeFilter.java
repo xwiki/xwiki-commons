@@ -17,22 +17,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter;
+package org.xwiki.filter.internal;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xwiki.filter.internal.FilterUtils;
+import org.xwiki.filter.FilterDescriptor;
+import org.xwiki.filter.FilterDescriptorManager;
+import org.xwiki.filter.FilterException;
 import org.xwiki.stability.Unstable;
 
 /**
  * Support any event in input and pass them to a list of filters.
  * 
  * @version $Id$
- * @since 5.2RC1
+ * @since 5.2
  */
 @Unstable
-public class CompositeFilter implements UnknownFilter
+public class CompositeFilter implements InvocationHandler
 {
     private FilterDescriptorManager filterManager;
 
@@ -55,37 +60,24 @@ public class CompositeFilter implements UnknownFilter
      * @param filters the filters
      * @param filterManager the filter descriptor manager used to generate passed filter descriptors
      */
-    public CompositeFilter(List< ? > filters, FilterDescriptorManager filterManager)
+    public CompositeFilter(FilterDescriptorManager filterManager, Object... filters)
     {
         this.filterManager = filterManager;
 
-        this.filters = new ArrayList<SubFilter>(filters.size());
+        this.filters = new ArrayList<SubFilter>(filters.length);
         for (Object filter : filters) {
             this.filters.add(new SubFilter(filter, this.filterManager.getFilterDescriptor(filter.getClass())));
         }
     }
 
     @Override
-    public void beginUnknwon(String id, FilterEventParameters parameters) throws FilterException
+    public Object invoke(Object proxy, Method method, Object[] args) throws IllegalArgumentException,
+        IllegalAccessException, InvocationTargetException, FilterException
     {
         for (SubFilter filter : this.filters) {
-            FilterUtils.sendBeginEvent(filter.filter, filter.descriptor, id, parameters);
+            FilterProxy.invoke(filter.filter, filter.descriptor, method, args);
         }
-    }
 
-    @Override
-    public void endUnknwon(String id, FilterEventParameters parameters) throws FilterException
-    {
-        for (SubFilter filter : this.filters) {
-            FilterUtils.sendEndEvent(filter.filter, filter.descriptor, id, parameters);
-        }
-    }
-
-    @Override
-    public void onUnknwon(String id, FilterEventParameters parameters) throws FilterException
-    {
-        for (SubFilter filter : this.filters) {
-            FilterUtils.sendOnEvent(filter.filter, filter.descriptor, id, parameters);
-        }
+        return null;
     }
 }
