@@ -35,6 +35,7 @@ public interface FilterDescriptorManager
     /**
      * @param interfaces the interfaces implemented by the filter
      * @return the filter descriptor
+     * @since 5.2
      */
     FilterDescriptor getFilterDescriptor(Class< ? >... interfaces);
 
