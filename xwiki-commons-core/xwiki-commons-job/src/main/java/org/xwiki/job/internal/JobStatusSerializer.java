@@ -38,7 +38,6 @@ import com.thoughtworks.xstream.core.TreeMarshallingStrategy;
 import com.thoughtworks.xstream.core.TreeUnmarshaller;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.mapper.Mapper;
-import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 /**
  * Serialize/unserialize tool for job statuses.
@@ -63,22 +62,10 @@ public class JobStatusSerializer
      */
     public JobStatusSerializer()
     {
-        this.xstream = new XStream()
-        {
-            @Override
-            protected MapperWrapper wrapMapper(MapperWrapper next)
-            {
-                return new MapperWrapper(next)
-                {
-                    @Override
-                    public boolean shouldSerializeMember(Class definedIn, String fieldName)
-                    {
-                        // Make XStream a bit stronger (we don't care if some field is missing)
-                        return definedIn != Object.class ? super.shouldSerializeMember(definedIn, fieldName) : false;
-                    }
-                };
-            }
-        };
+        this.xstream = new XStream();
+
+        // We don't care if some field from the XML does not exist anymore
+        this.xstream.ignoreUnknownElements();
 
         // Bulletproofing array elements unserialization
         this.xstream.registerConverter(new SafeArrayConverter(this.xstream.getMapper()));
