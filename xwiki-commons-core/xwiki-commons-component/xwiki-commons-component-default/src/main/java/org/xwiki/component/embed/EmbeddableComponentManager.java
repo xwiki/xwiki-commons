@@ -546,7 +546,8 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
 
             int dependencyIndex = keys.indexOf(dependencyRole);
 
-            if (dependencyIndex < newIndex) {
+            
+            if (dependencyIndex != -1 && dependencyIndex < newIndex) {
                 dependencyIndex = sortEntry(keys, dependencyIndex);
 
                 newIndex = dependencyIndex;
