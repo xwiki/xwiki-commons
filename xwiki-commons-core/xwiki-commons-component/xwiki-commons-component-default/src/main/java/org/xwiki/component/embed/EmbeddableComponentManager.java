@@ -536,6 +536,8 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @Override
     public void dispose()
     {
+        List<RoleHint< ? >> keys = new ArrayList<RoleHint< ? >>(this.componentEntries.size());
+
         // Dispose old components
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
             ComponentEntry< ? > componentEntry = entry.getValue();
@@ -544,7 +546,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
                 Object instance = componentEntry.instance;
 
                 if (instance != this) {
-                    this.componentEntries.remove(entry.getKey());
+                    keys.add(entry.getKey());
 
                     if (instance != this && instance instanceof Disposable) {
                         try {
@@ -556,6 +558,13 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
                     }
                 }
             }
+        }
+
+        // Remove disposed components from the map. Doing it in two steps to give as many chances as possible to the
+        // components that have to use a component already disposed (usually because it dynamically requires it and
+        // there is no way for the ComponentManager to know that dependency).
+        for (RoleHint< ? > key : keys) {
+            this.componentEntries.remove(key);
         }
     }
 
