@@ -30,7 +30,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.internal.safe.CollectionScriptSafeProvider;
 import org.xwiki.extension.internal.safe.DefaultScriptSafeProvider;
 import org.xwiki.extension.internal.safe.MapScriptSafeProvider;
@@ -43,8 +42,7 @@ public class DefaultScriptSafeProviderTest
 {
     @Rule
     public MockitoComponentMockingRule<ScriptSafeProvider> mocker =
-        new MockitoComponentMockingRule<ScriptSafeProvider>(DefaultScriptSafeProvider.class,
-            Arrays.asList(ComponentManager.class));
+        new MockitoComponentMockingRule<ScriptSafeProvider>(DefaultScriptSafeProvider.class);
 
     @Test
     public void testGetWithNoProvider() throws Exception
