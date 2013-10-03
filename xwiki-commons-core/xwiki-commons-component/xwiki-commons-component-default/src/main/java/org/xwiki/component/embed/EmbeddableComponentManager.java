@@ -533,28 +533,64 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         }
     }
 
+    private int sortEntry(List<RoleHint< ? >> keys, int index)
+    {
+        int oldIndex = index;
+        int newIndex = index;
+
+        RoleHint< ? > key = keys.get(index);
+        ComponentEntry< ? > componentEntry = this.componentEntries.get(key);
+
+        for (ComponentDependency< ? > dependency : componentEntry.descriptor.getComponentDependencies()) {
+            RoleHint< ? > dependencyRole = new RoleHint<Object>(dependency.getRoleType(), dependency.getRoleHint());
+
+            int dependencyIndex = keys.indexOf(dependencyRole);
+
+            if (dependencyIndex < newIndex) {
+                dependencyIndex = sortEntry(keys, dependencyIndex);
+
+                newIndex = dependencyIndex;
+            }
+        }
+
+        if (newIndex != oldIndex) {
+            key = keys.remove(oldIndex);
+            keys.add(newIndex, key);
+        }
+
+        return newIndex;
+    }
+
     @Override
     public void dispose()
     {
-        List<RoleHint< ? >> keys = new ArrayList<RoleHint< ? >>(this.componentEntries.size());
+        List<RoleHint< ? >> keys = new ArrayList<RoleHint< ? >>(this.componentEntries.keySet());
+
+        // Exclude this component
+        RoleHint<ComponentManager> cmRoleHint = new RoleHint<ComponentManager>(ComponentManager.class);
+        ComponentEntry< ? > cmEntry = this.componentEntries.get(cmRoleHint);
+        if (cmEntry != null && cmEntry.instance == this) {
+            keys.remove(cmRoleHint);
+        }
+
+        // Order component based on dependencies relations
+        for (int i = 0; i < keys.size(); ++i) {
+            i = sortEntry(keys, i);
+        }
 
         // Dispose old components
-        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
-            ComponentEntry< ? > componentEntry = entry.getValue();
+        for (RoleHint< ? > key : keys) {
+            ComponentEntry< ? > componentEntry = this.componentEntries.get(key);
 
             synchronized (componentEntry) {
                 Object instance = componentEntry.instance;
 
-                if (instance != this) {
-                    keys.add(entry.getKey());
-
-                    if (instance != this && instance instanceof Disposable) {
-                        try {
-                            ((Disposable) instance).dispose();
-                        } catch (ComponentLifecycleException e) {
-                            this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
-                                componentEntry.descriptor.getRoleType(), componentEntry.descriptor.getRoleHint(), e);
-                        }
+                if (instance instanceof Disposable) {
+                    try {
+                        ((Disposable) instance).dispose();
+                    } catch (ComponentLifecycleException e) {
+                        this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
+                            componentEntry.descriptor.getRoleType(), componentEntry.descriptor.getRoleHint(), e);
                     }
                 }
             }
