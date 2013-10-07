@@ -28,7 +28,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>5.2-SNAPSHOT</version>
+  <version>5.2.1-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page for the module based on the passed id.
        It allows to have a single URL definition in this top level POM and still get valid website URLs for all
@@ -46,7 +46,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>5.2-SNAPSHOT</commons.version>
+    <commons.version>5.2.1-SNAPSHOT</commons.version>
 
     <!-- REST -->
     <restlet.version>2.0.14</restlet.version>
@@ -71,7 +71,7 @@
     <aspectj.version>1.7.3</aspectj.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>5.1</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>5.2</xwiki.clirr.previous.version>
 
     <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
