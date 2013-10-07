@@ -160,11 +160,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
-            <difference>
-              <differenceType>8001</differenceType>
-              <className>org/xwiki/properties/converter/AbstractCollectionConverter</className>
-              <justification>Moved to xwiki-commons-legacy-properties</justification>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
