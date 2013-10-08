@@ -200,7 +200,8 @@ abstract class AbstractXARMojo extends AbstractMojo
      * @param overwrite indicate if extracted files has to overwrite existing ones.
      * @throws MojoExecutionException error when unpacking the file.
      */
-    protected void unpack(File file, File location, String logName, boolean overwrite) throws MojoExecutionException
+    protected void unpack(File file, File location, String logName, boolean overwrite, String[] includes,
+        String[] excludes) throws MojoExecutionException
     {
         try {
             ZipUnArchiver unArchiver = new ZipUnArchiver();
@@ -212,8 +213,8 @@ abstract class AbstractXARMojo extends AbstractMojo
             FileSelector[] selectors;
 
             IncludeExcludeFileSelector fs = new IncludeExcludeFileSelector();
-            fs.setIncludes(getIncludes());
-            fs.setExcludes(getExcludes());
+            fs.setIncludes(includes);
+            fs.setExcludes(excludes);
 
             // Ensure that we don't overwrite XML document files present in this project since
             // we want those to be used and not the ones in the dependent XAR.
@@ -239,19 +240,21 @@ abstract class AbstractXARMojo extends AbstractMojo
 
     /**
      * Unpacks A XAR artifacts into the build output directory, along with the project's XAR files.
-     * 
+     *
      * @param artifact the XAR artifact to unpack.
      * @throws MojoExecutionException in case of unpack error
      */
-    protected void unpackXARToOutputDirectory(Artifact artifact) throws MojoExecutionException
+    protected void unpackXARToOutputDirectory(Artifact artifact, String[] includes, String[] excludes)
+        throws MojoExecutionException
     {
         if (!this.outputBuildDirectory.exists()) {
             this.outputBuildDirectory.mkdirs();
         }
 
         File file = artifact.getFile();
-        unpack(file, this.outputBuildDirectory, "XAR Plugin", false);
+        unpack(file, this.outputBuildDirectory, "XAR Plugin", false, includes, excludes);
     }
+
 
     /**
      * @return Returns the project.

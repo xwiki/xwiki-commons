@@ -33,6 +33,25 @@ public class Transformation
 
     private String file;
 
+    private String artifact;
+
+    /**
+     * @return the optional id (in the format {@code groupId:artifactId} of the dependent XAR artifact where the page
+     *         to be transformed is located. If not specified then the page is considered to be in the current project
+     */
+    public String getArtifact()
+    {
+        return this.artifact;
+    }
+
+    /**
+     * @param artifact see {@link #getArtifact()}
+     */
+    public void setArtifact(String artifact)
+    {
+        this.artifact = artifact;
+    }
+
     /**
      * @return the path relative to the {@code target/classes} directory of the XML file for which to apply a
      *         transformation

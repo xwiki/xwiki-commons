@@ -150,6 +150,9 @@ public class XARMojo extends AbstractXARMojo
             return;
         }
 
+        // Copy XML pages from dependent XAR if we modify them.
+        unpackTransformedXARs();
+
         SAXReader reader = new SAXReader();
 
         // For each defined file, perform the transformation asked
@@ -171,6 +174,27 @@ public class XARMojo extends AbstractXARMojo
         }
     }
 
+    private void unpackTransformedXARs() throws MojoExecutionException
+    {
+        for (Transformation transformation : this.transformations) {
+            Set<Artifact> artifacts = this.project.getArtifacts();
+            if (artifacts != null) {
+                for (Artifact artifact : artifacts) {
+                    if (!artifact.isOptional()) {
+                        if ("xar".equals(artifact.getType())) {
+                            String id = String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId());
+                            if (id.equals(transformation.getArtifact())) {
+                                unpackXARToOutputDirectory(artifact,
+                                    new String[] {transformation.getFile()}, new String[] {});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     /**
      * Unpack XAR dependencies before pack then into it.
      * 
@@ -183,7 +207,7 @@ public class XARMojo extends AbstractXARMojo
             for (Artifact artifact : artifacts) {
                 if (!artifact.isOptional()) {
                     if ("xar".equals(artifact.getType())) {
-                        unpackXARToOutputDirectory(artifact);
+                        unpackXARToOutputDirectory(artifact, getIncludes(), getExcludes());
                     }
                 }
             }
