@@ -30,8 +30,7 @@ import org.codehaus.plexus.archiver.zip.ZipFile;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.*;
 
 /**
  * Integration tests for the XAR Mojo.
@@ -146,5 +145,17 @@ public class XARMojoTest
         }
         Assert.assertEquals("The newly created xar archive doesn't contain the required documents",
             documentNames.size(), countEntries);
+    }
+
+    @Test
+    @Ignore("Could not make it work, for some reason the plugin configuration is not taken into account!")
+    public void transformXML() throws Exception
+    {
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/transformedXml");
+
+        Verifier verifier = new Verifier(testDir.getAbsolutePath());
+        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        verifier.executeGoals(Arrays.asList("clean", "package"));
+        verifier.verifyErrorFreeLog();
     }
 }

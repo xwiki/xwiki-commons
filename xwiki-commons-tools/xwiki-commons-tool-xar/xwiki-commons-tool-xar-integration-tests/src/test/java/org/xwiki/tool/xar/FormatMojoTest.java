@@ -22,7 +22,7 @@ package org.xwiki.tool.xar;
 import java.io.File;
 
 import org.apache.maven.it.Verifier;
-import org.apache.maven.it.util.FileUtils;
+import org.codehaus.plexus.util.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
