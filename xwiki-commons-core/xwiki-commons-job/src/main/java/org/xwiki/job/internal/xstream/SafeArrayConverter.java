@@ -21,16 +21,25 @@ package org.xwiki.job.internal.xstream;
 
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.xwiki.component.annotation.Role;
 
+import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.collections.ArrayConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.copy.HierarchicalStreamCopier;
+import com.thoughtworks.xstream.io.xml.DomReader;
+import com.thoughtworks.xstream.io.xml.DomWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
@@ -46,12 +55,27 @@ public class SafeArrayConverter extends ArrayConverter
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SafeArrayConverter.class);
 
+    private final DocumentBuilderFactory docFactory;
+
+    private final DocumentBuilder docBuilder;
+
+    private HierarchicalStreamCopier copier;
+
+    private XStream xstream;
+
     /**
      * @param mapper the XStream mapper
+     * @param xstream the {@link XStream} instance to use to isolate array element marshaling
+     * @throws ParserConfigurationException when failing to create a {@link DocumentBuilder}
      */
-    public SafeArrayConverter(Mapper mapper)
+    public SafeArrayConverter(Mapper mapper, XStream xstream) throws ParserConfigurationException
     {
         super(mapper);
+
+        this.docFactory = DocumentBuilderFactory.newInstance();
+        this.docBuilder = this.docFactory.newDocumentBuilder();
+        this.copier = new HierarchicalStreamCopier();
+        this.xstream = xstream;
     }
 
     @Override
@@ -78,10 +102,26 @@ public class SafeArrayConverter extends ArrayConverter
     @Override
     protected void writeItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer)
     {
-        try {
-            super.writeItem(isComponent(item) ? item.toString() : item, context, writer);
-        } catch (Throwable e) {
-            LOGGER.debug("Failed to write field", e);
+        if (item == null || item instanceof String || item instanceof Number) {
+            super.writeItem(item, context, writer);
+        } else if (isComponent(item)) {
+            super.writeItem(item.toString(), context, writer);
+        } else {
+            try {
+                Document doc = this.docBuilder.newDocument();
+
+                DomWriter domWriter = new DomWriter(doc);
+
+                this.xstream.marshal(item, domWriter);
+
+                DomReader domReader = new DomReader(doc);
+
+                this.copier.copy(domReader, writer);
+            } catch (Throwable e) {
+                LOGGER.debug("Failed to write field", e);
+
+                super.writeItem(item.toString(), context, writer);
+            }
         }
     }
 

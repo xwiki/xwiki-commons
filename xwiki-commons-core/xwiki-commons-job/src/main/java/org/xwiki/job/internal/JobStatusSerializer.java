@@ -26,6 +26,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.xwiki.job.event.status.JobStatus;
@@ -59,8 +61,9 @@ public class JobStatusSerializer
 
     /**
      * Default constructor.
+     * @throws ParserConfigurationException 
      */
-    public JobStatusSerializer()
+    public JobStatusSerializer() throws ParserConfigurationException
     {
         this.xstream = new XStream();
 
@@ -68,7 +71,7 @@ public class JobStatusSerializer
         this.xstream.ignoreUnknownElements();
 
         // Bulletproofing array elements unserialization
-        this.xstream.registerConverter(new SafeArrayConverter(this.xstream.getMapper()));
+        this.xstream.registerConverter(new SafeArrayConverter(this.xstream.getMapper(), this.xstream));
 
         // If anything goes wrong with an element, replace it with null
         this.xstream.setMarshallingStrategy(new TreeMarshallingStrategy()

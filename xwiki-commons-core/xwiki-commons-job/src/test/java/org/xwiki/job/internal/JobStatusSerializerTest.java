@@ -22,6 +22,8 @@ package org.xwiki.job.internal;
 import java.io.File;
 import java.io.IOException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,12 +38,28 @@ import org.xwiki.job.event.status.JobStatus;
  */
 public class JobStatusSerializerTest
 {
+    class RecursiveObject
+    {
+        RecursiveObject recurse;
+
+        public RecursiveObject()
+        {
+            this.recurse = this;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "recursive object";
+        }
+    }
+
     private JobStatusSerializer serializer;
 
     private File testFile = new File("target/test/status.xml");
 
     @Before
-    public void before()
+    public void before() throws ParserConfigurationException
     {
         this.serializer = new JobStatusSerializer();
     }
@@ -113,5 +131,18 @@ public class JobStatusSerializerTest
 
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
         Assert.assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
+    }
+
+    @Test
+    public void testLogWithRecursiveObject() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new RecursiveObject());
+
+        status = writeread(status);
+
+        Assert.assertEquals("error message", status.getLog().peek().getMessage());
+        Assert.assertEquals("recursive object", status.getLog().peek().getArgumentArray()[0]);
     }
 }

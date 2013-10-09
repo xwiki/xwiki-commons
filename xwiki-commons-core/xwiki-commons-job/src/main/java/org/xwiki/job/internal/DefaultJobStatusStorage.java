@@ -89,13 +89,13 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     private Map<List<String>, JobStatus> jobs = new ConcurrentHashMap<List<String>, JobStatus>();
 
     private JobStatusSerializer serializer;
-    
+
     @Override
     public void initialize() throws InitializationException
     {
-        this.serializer = new JobStatusSerializer();
-        
         try {
+            this.serializer = new JobStatusSerializer();
+
             load();
         } catch (Exception e) {
             this.logger.error("Failed to load jobs", e);
