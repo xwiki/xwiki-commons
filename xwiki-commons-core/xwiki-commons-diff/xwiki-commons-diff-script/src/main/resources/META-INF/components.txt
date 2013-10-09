@@ -1,2 +1,2 @@
-org.xwiki.diff.internal.script.DiffScriptService
-org.xwiki.diff.internal.script.DiffDisplayerScriptService
+org.xwiki.diff.script.script.DiffScriptService
+org.xwiki.diff.script.script.DiffDisplayerScriptService
