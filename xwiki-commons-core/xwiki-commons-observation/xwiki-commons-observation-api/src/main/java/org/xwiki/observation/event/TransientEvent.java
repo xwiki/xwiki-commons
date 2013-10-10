@@ -20,11 +20,11 @@
 package org.xwiki.observation.event;
 
 /**
- * Implemented by event indicating that it should be ignored.
+ * Implemented by event indicating that it transient.
  *
  * @version $Id$
  * @since 5.3M1
  */
-public interface HiddenEvent
+public interface TransientEvent
 {
 }
