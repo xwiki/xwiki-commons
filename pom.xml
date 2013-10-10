@@ -70,6 +70,9 @@
     <!-- AspectJ -->
     <aspectj.version>1.7.3</aspectj.version>
 
+    <!-- Clover -->
+    <clover.version>3.1.12</clover.version>
+
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>5.2</xwiki.clirr.previous.version>
 
@@ -818,13 +821,14 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>com.atlassian.maven.plugins</groupId>
           <artifactId>maven-clover2-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.6</version>
+          <version>${clover.version}</version>
           <configuration>
-            <license><![CDATA[mMrRvxjjbfhaCfMulFPnUUpeNQTJOMWcRiBJSAJDFtqBOB
-mi2K4jUCxeZ5N1tfFUViFQV32K7TEehr8rqeYLcnr>xtEQ
-rPNqtwqrmMMMmMroRMpXXRQnPPqRmRonQMsxtVvTWTuoON
-qmnmqmUUnpnpmtnommmmmUUnpnpmtnommmmmUUONfhfUUn
-mmmm]]></license>
+            <license><![CDATA[qrQMuLFrILhIeRILrqhGBqjUrQQEnImixnpoFreoubGuqOa
+mj2Kjoh2sXZcCMFBWOhe<dGh2L053ktz00HxawUp94OiFmK
+rmnrUtrrrnMPPpNRrOOwXoNPnRqQqRMmPOsWsSsvVtTPqQP
+rnmqmUUnptsnqpommmmmUUnptsnqpommmmmUUONfhfUUnmm
+mm
+]]></license>
             <!-- For some reason there's currently a problem in the Rendering Include Macro test execution when
                  IncludeMacroTest is clovered. Needs to be investigated. -->
             <includesTestSourceRoots>false</includesTestSourceRoots>
