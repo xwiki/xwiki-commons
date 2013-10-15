@@ -21,6 +21,7 @@ package org.xwiki.logging.event;
 
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
@@ -115,19 +116,19 @@ public class LogEvent implements Event
     {
         switch (level) {
             case TRACE:
-                targetLogger.trace(getMarker(), getMessage(), getArgumentArray());
+                targetLogger.trace(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
                 break;
             case DEBUG:
-                targetLogger.debug(getMarker(), getMessage(), getArgumentArray());
+                targetLogger.debug(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
                 break;
             case INFO:
-                targetLogger.info(getMarker(), getMessage(), getArgumentArray());
+                targetLogger.info(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
                 break;
             case WARN:
-                targetLogger.warn(getMarker(), getMessage(), getArgumentArray());
+                targetLogger.warn(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
                 break;
             case ERROR:
-                targetLogger.error(getMarker(), getMessage(), getArgumentArray());
+                targetLogger.error(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
                 break;
             default:
                 break;
