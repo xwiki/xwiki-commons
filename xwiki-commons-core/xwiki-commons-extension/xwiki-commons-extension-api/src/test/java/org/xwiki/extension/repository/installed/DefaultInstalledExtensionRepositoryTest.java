@@ -465,6 +465,37 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
+    public void testSearchInstalledExtensions() throws SearchException
+    {
+        // Root namespace
+        CollectionIterableResult<Extension> result =
+            (CollectionIterableResult<Extension>) this.installedExtensionRepository.searchInstalledExtensions(null,
+                null, 0, -1);
+
+        Assert.assertEquals(3, result.getTotalHits());
+        Assert.assertEquals(3, result.getSize());
+        Assert.assertEquals(0, result.getOffset());
+
+        // Namespace "namespace" + "root"
+        result =
+            (CollectionIterableResult<Extension>) this.installedExtensionRepository.searchInstalledExtensions(null,
+                "namespace", 0, -1);
+
+        Assert.assertEquals(6, result.getTotalHits());
+        Assert.assertEquals(6, result.getSize());
+        Assert.assertEquals(0, result.getOffset());
+
+        // This namespace does not exist so same as root
+        result =
+            (CollectionIterableResult<Extension>) this.installedExtensionRepository.searchInstalledExtensions(null,
+                "notnamespace", 0, -1);
+
+        Assert.assertEquals(3, result.getTotalHits());
+        Assert.assertEquals(3, result.getSize());
+        Assert.assertEquals(0, result.getOffset());
+    }
+
+    @Test
     public void testgetInstalledExtensionFeatureNamespace()
     {
         InstalledExtension extension;

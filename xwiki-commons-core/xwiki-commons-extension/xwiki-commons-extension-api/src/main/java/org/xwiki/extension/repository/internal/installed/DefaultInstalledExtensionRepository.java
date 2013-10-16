@@ -28,15 +28,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -49,7 +52,10 @@ import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.extension.repository.internal.RepositoryUtils;
 import org.xwiki.extension.repository.internal.local.AbstractCachedExtensionRepository;
+import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 
@@ -213,8 +219,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                         validateExtension(dependencyExtension, namespace, register);
 
                     if (!installedExtension.isValid(namespace)) {
-                        throw new InvalidExtensionException(String.format(
-                            "Extension dependency [%s] is invalid", installedExtension.getId()));
+                        throw new InvalidExtensionException(String.format("Extension dependency [%s] is invalid",
+                            installedExtension.getId()));
                     }
                 } catch (InvalidExtensionException e) {
                     if (register) {
@@ -256,8 +262,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
         }
 
         if (this.coreExtensionRepository.exists(localExtension.getId().getId())) {
-            throw new InvalidExtensionException(String.format(
-                "Extension [%s] already exists as a core extension", localExtension));
+            throw new InvalidExtensionException(String.format("Extension [%s] already exists as a core extension",
+                localExtension));
         }
 
         // Validate dependencies
@@ -568,8 +574,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
         if (installedExtension != null && installedExtension.isInstalled(namespace)) {
             if (installedExtension.isDependency() == dependency) {
-                throw new InstallException(String.format(
-                    "The extension [%s] is already installed on namespace [%s]", installedExtension, namespace));
+                throw new InstallException(String.format("The extension [%s] is already installed on namespace [%s]",
+                    installedExtension, namespace));
             }
 
             installedExtension.setDependency(dependency, namespace);
@@ -631,8 +637,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
         throws ResolveException
     {
         if (getInstalledExtension(feature, namespace) == null) {
-            throw new ResolveException(String.format(
-                "Extension [%s] is not installed on namespace [%s]", feature, namespace));
+            throw new ResolveException(String.format("Extension [%s] is not installed on namespace [%s]", feature,
+                namespace));
         }
 
         Map<String, InstalledFeature> installedExtensionsByFeature = this.extensionNamespaceByFeature.get(feature);
@@ -681,5 +687,31 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
         }
 
         return result;
+    }
+
+    // Search
+
+    @Override
+    public IterableResult<Extension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
+        throws SearchException
+    {
+        Pattern patternMatcher =
+            StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
+                + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
+
+        Set<Extension> set = new HashSet<Extension>();
+        List<Extension> result = new ArrayList<Extension>(this.extensionsVersions.size());
+
+        for (InstalledExtension installedExtension : this.extensions.values()) {
+            if (installedExtension.isInstalled(namespace)) {
+                if ((patternMatcher == null || RepositoryUtils.matches(patternMatcher, installedExtension))
+                    && !set.contains(installedExtension)) {
+                    result.add(installedExtension);
+                    set.add(installedExtension);
+                }
+            }
+        }
+
+        return RepositoryUtils.getIterableResult(offset, nb, result);
     }
 }
