@@ -43,6 +43,19 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     private static final long serialVersionUID = 1L;
 
     /**
+     * Copy the stored log into a passed {@link Logger}.
+     * 
+     * @param targetLogger the logger where to copy the stored log
+     * @since 5.3M1
+     */
+    public void log(Logger targetLogger)
+    {
+        for (LogEvent logEvent : this) {
+            logEvent.log(targetLogger);
+        }
+    }
+
+    /**
      * @param level the log level
      * @param format the log message
      * @param arguments the event arguments to insert in the message

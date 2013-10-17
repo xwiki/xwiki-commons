@@ -166,6 +166,12 @@
               <method>java.lang.Object createSerializer(java.lang.Class[], javax.xml.transform.Result, org.xwiki.filter.xml.XMLConfiguration)</method>
               <justification>Young API</justification>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/repository/InstalledExtensionRepository</className>
+              <method>org.xwiki.extension.repository.result.IterableResult searchInstalledExtensions(java.lang.String, java.lang.String, int, int)</method>
+              <justification>Needed to filter search by namespace. This interface is not really supposed to be implemented anyway</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

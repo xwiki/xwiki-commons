@@ -21,8 +21,10 @@ package org.xwiki.logging.event;
 
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
 import org.xwiki.logging.LogLevel;
@@ -102,6 +104,35 @@ public class LogEvent implements Event
         this.message = message;
         this.argumentArray = argumentArray;
         this.throwable = throwable;
+    }
+
+    /**
+     * Copy the stored log into a passed {@link Logger}.
+     * 
+     * @param targetLogger the logger where to copy the stored log
+     * @since 5.3M1
+     */
+    public void log(Logger targetLogger)
+    {
+        switch (level) {
+            case TRACE:
+                targetLogger.trace(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            case DEBUG:
+                targetLogger.debug(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            case INFO:
+                targetLogger.info(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            case WARN:
+                targetLogger.warn(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            case ERROR:
+                targetLogger.error(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            default:
+                break;
+        }
     }
 
     /**

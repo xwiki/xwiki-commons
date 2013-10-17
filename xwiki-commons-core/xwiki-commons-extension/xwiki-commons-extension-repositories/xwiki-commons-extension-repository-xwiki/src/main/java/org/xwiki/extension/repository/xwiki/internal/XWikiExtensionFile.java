@@ -22,14 +22,13 @@ package org.xwiki.extension.repository.xwiki.internal;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.ExtensionId;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -48,7 +47,7 @@ public class XWikiExtensionFile implements ExtensionFile
     @Override
     public long getLength()
     {
-        HttpResponse response;
+        CloseableHttpResponse response;
         try {
             response =
                 this.repository.getRESTResource(this.repository.getExtensionFileUriBuider(), this.id.getId(), this.id
@@ -59,15 +58,11 @@ public class XWikiExtensionFile implements ExtensionFile
 
         HttpEntity entity = response.getEntity();
 
-        long size = entity.getContentLength();
-
         try {
-            EntityUtils.consume(entity);
-        } catch (Exception e) {
-            // Ignore
+            return entity.getContentLength();
+        } finally {
+            IOUtils.closeQuietly(response);
         }
-
-        return size;
     }
 
     @Override

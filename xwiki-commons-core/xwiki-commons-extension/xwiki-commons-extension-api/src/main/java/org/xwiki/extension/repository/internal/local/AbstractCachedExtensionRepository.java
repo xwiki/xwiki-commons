@@ -208,12 +208,17 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
 
     // Searchable
 
+    protected Pattern createPatternMatcher(String pattern)
+    {
+        return StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
+            + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
+
+    }
+
     @Override
     public IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException
     {
-        Pattern patternMatcher =
-            StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
-                + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
+        Pattern patternMatcher = createPatternMatcher(pattern);
 
         Set<Extension> set = new HashSet<Extension>();
         List<Extension> result = new ArrayList<Extension>(this.extensionsVersions.size());

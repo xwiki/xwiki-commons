@@ -27,15 +27,14 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.AuthCache;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
@@ -79,7 +78,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
     private final transient UriBuilder searchUriBuider;
 
-    private BasicHttpContext localContext;
+    private HttpClientContext localContext;
 
     public XWikiExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,
@@ -108,9 +107,10 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
             BasicScheme basicAuth = new BasicScheme();
             authCache.put(new HttpHost(getDescriptor().getURI().getHost(), getDescriptor().getURI().getPort(),
                 getDescriptor().getURI().getScheme()), basicAuth);
+
             // Add AuthCache to the execution context
-            this.localContext = new BasicHttpContext();
-            this.localContext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+            this.localContext = HttpClientContext.create();
+            this.localContext.setAuthCache(authCache);
         }
     }
 
@@ -119,7 +119,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         return this.extensionVersionFileUriBuider;
     }
 
-    protected HttpResponse getRESTResource(UriBuilder builder, Object... values) throws IOException
+    protected CloseableHttpResponse getRESTResource(UriBuilder builder, Object... values) throws IOException
     {
         String url;
         try {
@@ -128,12 +128,12 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
             throw new IOException("Failed to build REST URL", e);
         }
 
-        HttpClient httpClient = this.httpClientFactory.createClient(
+        CloseableHttpClient httpClient = this.httpClientFactory.createClient(
             getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password"));
 
         HttpGet getMethod = new HttpGet(url);
         getMethod.addHeader("Accept", "application/xml");
-        HttpResponse response;
+        CloseableHttpResponse response;
         try {
             if (this.localContext != null) {
                 response = httpClient.execute(getMethod, this.localContext);

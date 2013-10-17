@@ -34,11 +34,11 @@ import java.util.List;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.extension.ExtensionLicenseManager;
@@ -80,16 +80,17 @@ public class XWikiExtensionRepositoryTest
         when(httpEntity.getContent()).thenReturn(new ByteArrayInputStream("any content".getBytes()));
         StatusLine statusLine = mock(StatusLine.class);
         when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
-        HttpResponse response = mock(HttpResponse.class);
+        CloseableHttpResponse response = mock(CloseableHttpResponse.class);
         when(response.getStatusLine()).thenReturn(statusLine);
         when(response.getEntity()).thenReturn(httpEntity);
-        HttpClient httpClient = mock(HttpClient.class);
+        CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         when(httpClient.execute(any(HttpGet.class))).thenReturn(response);
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
         when(httpClientFactory.createClient(null, null)).thenReturn(httpClient);
 
-        repository = new XWikiExtensionRepository(repositoryDescriptor, repositoryFactory,
-            mock(ExtensionLicenseManager.class), httpClientFactory);
+        this.repository =
+            new XWikiExtensionRepository(repositoryDescriptor, repositoryFactory, mock(ExtensionLicenseManager.class),
+                httpClientFactory);
     }
 
     @Test
