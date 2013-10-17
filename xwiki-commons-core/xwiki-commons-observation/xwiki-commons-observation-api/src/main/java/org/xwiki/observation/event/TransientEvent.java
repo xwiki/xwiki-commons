@@ -20,7 +20,8 @@
 package org.xwiki.observation.event;
 
 /**
- * Implemented by event indicating that it transient.
+ * Implemented by an event indicating that it is transient.
+ * A transient event should not be showed to the users, meanwhile the system can care about it.
  *
  * @version $Id$
  * @since 5.3M1
