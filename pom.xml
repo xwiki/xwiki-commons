@@ -483,6 +483,21 @@
         <artifactId>validation-api</artifactId>
         <version>1.1.0.Final</version>
       </dependency>
+
+      <!-- Mail -->
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>1.4.5</version>
+        <exclusions>
+          <!-- We exclude it since it draws version 1.1 and other dependencies we have draw version 1.1.1 -->
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
   <build>
@@ -554,6 +569,18 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
                     <exclude>commons-lang:commons-lang</exclude>
                   </excludes>
                 </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check dependency versions compatibility -->
+          <execution>
+            <id>enforce-upper-bounds</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireUpperBoundDeps/>
               </rules>
             </configuration>
           </execution>
