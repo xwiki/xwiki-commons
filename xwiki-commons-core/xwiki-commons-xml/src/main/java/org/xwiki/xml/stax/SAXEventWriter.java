@@ -19,84 +19,306 @@
  */
 package org.xwiki.xml.stax;
 
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLStreamException;
+import java.util.Iterator;
 
+import javanet.staxutils.BaseXMLEventWriter;
+import javanet.staxutils.DummyLocator;
+import javanet.staxutils.helpers.XMLFilterImplEx;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.Comment;
+import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.Namespace;
+import javax.xml.stream.events.ProcessingInstruction;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
+
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Receive and convert StAX events to SAX events.
  * <p>
- * Extends {@link SAXEventConsumer} with {@link XMLEventWriter} methods.
+ * Extends {@link SAXEventConsumer} with {@link javax.xml.stream.XMLEventWriter} methods.
  * 
  * @version $Id$
  * @since 5.2M1
  */
-public class SAXEventWriter extends SAXEventConsumer implements XMLEventWriter
+public class SAXEventWriter extends BaseXMLEventWriter
 {
+    /**
+     * The SAX filter.
+     */
+    private XMLFilterImplEx filter;
+
+    /**
+     * The depth of XML elements.
+     */
+    private int depth;
+
     /**
      * @param handler the content handler
      */
     public SAXEventWriter(ContentHandler handler)
     {
-        super(handler);
-    }
+        this.filter = new XMLFilterImplEx();
+        this.filter.setContentHandler(handler);
 
-    @Override
-    public void add(XMLEventReader reader) throws XMLStreamException
-    {
-        while (reader.hasNext()) {
-            add(reader.nextEvent());
+        if (handler instanceof LexicalHandler) {
+            this.filter.setLexicalHandler((LexicalHandler) handler);
+        }
+        if (handler instanceof ErrorHandler) {
+            this.filter.setErrorHandler((ErrorHandler) handler);
         }
     }
 
-    // Not supported by SAX
-
     @Override
-    public void flush() throws XMLStreamException
+    protected void sendEvent(XMLEvent event) throws XMLStreamException
     {
-        // Not supported by ContentHandler
+        convertEvent(event);
     }
 
-    @Override
-    public void close() throws XMLStreamException
+    /**
+     * @param event the XML event to convert
+     * @throws XMLStreamException
+     */
+    private void convertEvent(XMLEvent event) throws XMLStreamException
     {
-        // Not supported by ContentHandler
+        try {
+            if (event.isStartDocument()) {
+                this.handleStartDocument(event);
+            } else if (event.isEndDocument()) {
+                this.handleEndDocument();
+            } else {
+                // These are all of the events listed in the javadoc for
+                // XMLEvent.
+                // The spec only really describes 11 of them.
+                switch (event.getEventType()) {
+                    case XMLStreamConstants.START_ELEMENT:
+                        this.depth++;
+                        this.handleStartElement(event.asStartElement());
+                        break;
+                    case XMLStreamConstants.END_ELEMENT:
+                        this.handleEndElement(event.asEndElement());
+                        this.depth--;
+                        if (this.depth == 0) {
+                            break;
+                        }
+                        break;
+                    case XMLStreamConstants.CHARACTERS:
+                        this.handleCharacters(event.asCharacters());
+                        break;
+                    case XMLStreamConstants.PROCESSING_INSTRUCTION:
+                        this.handlePI((ProcessingInstruction) event);
+                        break;
+                    case XMLStreamConstants.COMMENT:
+                        this.handleComment((Comment) event);
+                        break;
+                    case XMLStreamConstants.CDATA:
+                        this.handleCDATA((Characters) event);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (SAXException e) {
+            throw new XMLStreamException(e);
+        }
     }
 
-    @Override
-    public String getPrefix(String uri) throws XMLStreamException
+    private void handleEndDocument() throws SAXException
     {
-        // Not supported by ContentHandler
-
-        return null;
+        this.filter.endDocument();
     }
 
-    @Override
-    public void setPrefix(String prefix, String uri) throws XMLStreamException
+    private void handleStartDocument(final XMLEvent event) throws SAXException
     {
-        // Not supported by ContentHandler
+        final Location location = event.getLocation();
+        if (location != null) {
+            this.filter.setDocumentLocator(new Locator()
+            {
+                public int getColumnNumber()
+                {
+                    return location.getColumnNumber();
+                }
+
+                public int getLineNumber()
+                {
+                    return location.getLineNumber();
+                }
+
+                public String getPublicId()
+                {
+                    return location.getPublicId();
+                }
+
+                public String getSystemId()
+                {
+                    return location.getSystemId();
+                }
+            });
+        } else {
+            this.filter.setDocumentLocator(new DummyLocator());
+        }
+        this.filter.startDocument();
     }
 
-    @Override
-    public void setDefaultNamespace(String uri) throws XMLStreamException
+    private void handlePI(ProcessingInstruction event) throws SAXException
     {
-        // Not supported by ContentHandler
+        this.filter.processingInstruction(event.getTarget(), event.getData());
     }
 
-    @Override
-    public void setNamespaceContext(NamespaceContext context) throws XMLStreamException
+    private void handleCharacters(Characters event) throws SAXException
     {
-        // Not supported by ContentHandler
+        this.filter.characters(event.getData().toCharArray(), 0, event.getData().length());
     }
 
-    @Override
-    public NamespaceContext getNamespaceContext()
+    private void handleEndElement(EndElement event) throws XMLStreamException
     {
-        // Not supported by ContentHandler
+        QName qName = event.getName();
 
-        return null;
+        try {
+            // fire endElement
+            String prefix = qName.getPrefix();
+            String rawname;
+            if (prefix == null || prefix.length() == 0) {
+                rawname = qName.getLocalPart();
+            } else {
+                rawname = prefix + ':' + qName.getLocalPart();
+            }
+
+            this.filter.endElement(qName.getNamespaceURI(), qName.getLocalPart(), rawname);
+
+            // end namespace bindings
+            for (Iterator i = event.getNamespaces(); i.hasNext();) {
+                String nsprefix = ((Namespace) i.next()).getPrefix();
+                // true for default namespace
+                if (nsprefix == null) {
+                    nsprefix = "";
+                }
+                this.filter.endPrefixMapping(nsprefix);
+            }
+        } catch (SAXException e) {
+            throw new XMLStreamException(e);
+        }
+    }
+
+    private void handleStartElement(StartElement event) throws XMLStreamException
+    {
+        try {
+            // start namespace bindings
+            for (Iterator i = event.getNamespaces(); i.hasNext();) {
+                String prefix = ((Namespace) i.next()).getPrefix();
+                // true for default namespace
+                if (prefix == null) {
+                    prefix = "";
+                }
+                this.filter.startPrefixMapping(prefix, event.getNamespaceURI(prefix));
+            }
+
+            // fire startElement
+            QName qName = event.getName();
+            String prefix = qName.getPrefix();
+            String rawname;
+            if (prefix == null || prefix.length() == 0) {
+                rawname = qName.getLocalPart();
+            } else {
+                rawname = prefix + ':' + qName.getLocalPart();
+            }
+            Attributes saxAttrs = this.getAttributes(event);
+            this.filter.startElement(qName.getNamespaceURI(), qName.getLocalPart(), rawname, saxAttrs);
+        } catch (SAXException e) {
+            throw new XMLStreamException(e);
+        }
+    }
+
+    /**
+     * Get the attributes associated with the given START_ELEMENT StAXevent.
+     * 
+     * @param event the StAX start element event
+     * @return the StAX attributes converted to an org.xml.sax.Attributes
+     */
+    private Attributes getAttributes(StartElement event)
+    {
+        AttributesImpl attrs = new AttributesImpl();
+
+        if (!event.isStartElement()) {
+            throw new InternalError("getAttributes() attempting to process: " + event);
+        }
+
+        // Add namspace declarations if required
+        if (this.filter.getNamespacePrefixes()) {
+            for (Iterator i = event.getNamespaces(); i.hasNext();) {
+                Namespace staxNamespace = (javax.xml.stream.events.Namespace) i.next();
+                String uri = staxNamespace.getNamespaceURI();
+                if (uri == null) {
+                    uri = "";
+                }
+
+                String prefix = staxNamespace.getPrefix();
+                if (prefix == null) {
+                    prefix = "";
+                }
+
+                String qName = "xmlns";
+                if (prefix.length() == 0) {
+                    prefix = qName;
+                } else {
+                    qName = qName + ':' + prefix;
+                }
+                attrs.addAttribute("http://www.w3.org/2000/xmlns/", prefix, qName, "CDATA", uri);
+            }
+        }
+
+        // gather non-namespace attrs
+        for (Iterator i = event.getAttributes(); i.hasNext();) {
+            Attribute staxAttr = (javax.xml.stream.events.Attribute) i.next();
+
+            String uri = staxAttr.getName().getNamespaceURI();
+            if (uri == null) {
+                uri = "";
+            }
+            String localName = staxAttr.getName().getLocalPart();
+            String prefix = staxAttr.getName().getPrefix();
+            String qName;
+            if (prefix == null || prefix.length() == 0) {
+                qName = localName;
+            } else {
+                qName = prefix + ':' + localName;
+            }
+            String type = staxAttr.getDTDType();
+            String value = staxAttr.getValue();
+
+            attrs.addAttribute(uri, localName, qName, type, value);
+        }
+
+        return attrs;
+    }
+
+    private void handleComment(Comment comment) throws XMLStreamException
+    {
+        try {
+            String text = comment.getText();
+            this.filter.comment(text.toCharArray(), 0, text.length());
+        } catch (SAXException e) {
+            throw new XMLStreamException(e);
+        }
+    }
+
+    private void handleCDATA(Characters event) throws SAXException
+    {
+        this.filter.startCDATA();
+        this.filter.characters(event.getData().toCharArray(), 0, event.getData().length());
+        this.filter.endCDATA();
     }
 }
