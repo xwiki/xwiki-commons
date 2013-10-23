@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.util.XMLEventConsumer;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stax.StAXResult;
@@ -39,7 +38,6 @@ import org.xwiki.filter.xml.XMLConfiguration;
 import org.xwiki.filter.xml.internal.parameter.ParameterManager;
 import org.xwiki.filter.xml.parser.XMLParserFactory;
 import org.xwiki.properties.ConverterManager;
-import org.xwiki.xml.stax.SAXEventConsumer;
 import org.xwiki.xml.stax.SAXEventWriter;
 
 /**
@@ -84,16 +82,6 @@ public class DefaultXMLParserFactory implements XMLParserFactory
     /**
      * @param filter the filter to send events to
      * @param configuration the configuration of the parser
-     * @return the parser as a {@link XMLEventConsumer}.
-     */
-    private XMLEventConsumer createXMLEventConsumer(Object filter, XMLConfiguration configuration)
-    {
-        return new SAXEventConsumer(createParser(filter, configuration));
-    }
-
-    /**
-     * @param filter the filter to send events to
-     * @param configuration the configuration of the parser
      * @return the parser as a {@link XMLEventWriter}.
      */
     private XMLEventWriter createXMLEventWriter(Object filter, XMLConfiguration configuration)
@@ -108,7 +96,7 @@ public class DefaultXMLParserFactory implements XMLParserFactory
             // StAXSource is not supported by standard XMLInputFactory
             StAXSource staxSource = (StAXSource) source;
             if (staxSource.getXMLEventReader() != null) {
-                XMLStreamUtils.copy(staxSource.getXMLEventReader(), createXMLEventConsumer(filter, configuration));
+                XMLStreamUtils.copy(staxSource.getXMLEventReader(), createXMLEventWriter(filter, configuration));
             } else {
                 XMLStreamUtils.copy(staxSource.getXMLStreamReader(),
                     new XMLEventStreamWriter(createXMLEventWriter(filter, configuration)));
