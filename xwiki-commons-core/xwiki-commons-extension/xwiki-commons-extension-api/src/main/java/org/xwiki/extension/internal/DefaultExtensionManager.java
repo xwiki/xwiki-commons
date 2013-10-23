@@ -128,7 +128,8 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
             InstalledExtension extension =
                 this.installedExtensionRepository.getInstalledExtension(extensionDependency.getId(), namespace);
 
-            if (extensionDependency.getVersionConstraint().containsVersion(extension.getId().getVersion())) {
+            if (extension != null
+                && extensionDependency.getVersionConstraint().containsVersion(extension.getId().getVersion())) {
                 return extension;
             }
 
