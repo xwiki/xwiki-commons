@@ -102,7 +102,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-            org/xwiki/xml/stax/SAXEventConsumer.java
+            org/xwiki/xml/stax/SAXEventWriter.java
           </excludes>
           <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
         </configuration>
