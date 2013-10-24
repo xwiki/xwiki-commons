@@ -20,12 +20,12 @@
 package org.xwiki.observation.event;
 
 /**
- * Implemented by an event indicating that it is transient.
- * A transient event should not be showed to the users, meanwhile the system can care about it.
+ * Implemented by event indicating the process which generates other events during its process is stopping. This should
+ * only be used when there is a corresponding {@link BeginFoldEvent}.
  *
  * @version $Id$
  * @since 5.3M1
  */
-public interface TransientEvent
+public interface EndFoldEvent extends EndEvent
 {
 }
