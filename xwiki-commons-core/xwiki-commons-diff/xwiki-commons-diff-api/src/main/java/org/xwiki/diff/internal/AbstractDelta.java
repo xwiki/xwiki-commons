@@ -133,4 +133,10 @@ public abstract class AbstractDelta<E> implements Delta<E>
 
         return false;
     }
+
+    @Override
+    public String toString()
+    {
+        return "[-" + getPrevious() + " +" + getNext() + "]";
+    }
 }
