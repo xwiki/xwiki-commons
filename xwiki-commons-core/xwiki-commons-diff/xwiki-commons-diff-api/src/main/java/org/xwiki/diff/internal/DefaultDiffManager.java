@@ -353,6 +353,6 @@ public class DefaultDiffManager implements DiffManager
 
     private <E> boolean isInPreviousDelta(Delta<E> delta, int index)
     {
-        return delta != null && delta.getPrevious().getIndex() <= index && delta.getPrevious().getIndex() >= index;
+        return delta != null && delta.getPrevious().getIndex() <= index && delta.getPrevious().getLastIndex() >= index;
     }
 }
