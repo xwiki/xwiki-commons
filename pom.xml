@@ -458,7 +458,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
       <!-- Most plugins depend on the servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -469,28 +468,24 @@
         <!-- It should always be provided, otherwise containers will complain about it. -->
         <scope>provided</scope>
       </dependency>
-
       <!-- Needed for Legacy modules. The version needs to be in sync with the one used by the AspectJ plugin -->
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
         <version>${aspectj.version}</version>
       </dependency>
-
       <!-- CSS parsing -->
       <dependency>
         <groupId>net.sourceforge.cssparser</groupId>
         <artifactId>cssparser</artifactId>
         <version>0.9.10</version>
       </dependency>
-
-      <!-- Bean validation -->     
+      <!-- Bean validation -->
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
         <version>1.0.0.GA</version>
       </dependency>
-
       <!-- Mail -->
       <dependency>
         <groupId>javax.mail</groupId>
@@ -504,7 +499,12 @@
           </exclusion>
         </exclusions>
       </dependency>
-
+      <!-- SmartGWT -->
+      <dependency>
+        <groupId>com.smartgwt</groupId>
+        <artifactId>smartgwt</artifactId>
+        <version>3.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
