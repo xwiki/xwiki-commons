@@ -117,8 +117,10 @@
     <url>http://jira.xwiki.org/jira/browse/XCOMMONS</url>
   </issueManagement>
   <developers>
-    <!-- Fake Developer to satisfy Maven Central requirements. We prefer to list developers and contributors on our
-         wiki at http://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame -->
+    <!-- Note that this information is read by XWiki's Extension Manager and the XWiki Repository Application to
+         mention who developers the various published XWiki extensions. We use a fake Developer that represents the
+         whole team because it's simpler to manage only one developer at this level and instead use the wiki at
+         http://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame to provide an up to date view of all XWiki devs. -->
     <developer>
       <id>devs</id>
       <name>XWiki Development Team</name>
