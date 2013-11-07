@@ -29,16 +29,17 @@
     <artifactId>xwiki-commons</artifactId>
     <version>5.3-SNAPSHOT</version>
   </parent>
-  <!-- Can be overridden in project's pom.xml if need be, for example if there are several artifacts, in order to
-       group them together. For example: org.xwiki.contrib.<someid> -->
-  <groupId>org.xwiki.contrib</groupId>
+  <!-- GroupId needs to be overridden in project's pom.xml to use org.xwiki.contrib or sub group id of the form
+       org.xwiki.contrib.<someid>
+       Example: <groupId>org.xwiki.contrib</groupId>
+  -->
   <!-- Need to be overridden in project's pom.xml -->
   <artifactId>xwiki-commons-contrib-pom</artifactId>
   <!-- Need to be overridden in project's pom.xml -->
   <name>XWiki Contrib - Parent POM</name>
   <!-- Need to be overridden in project's pom.xml -->
   <packaging>pom</packaging>
-  <!-- Version also needs to be overriden in project's pom.xml.
+  <!-- Version also needs to be overridden in project's pom.xml.
        Example: <version>1.0-SNAPSHOT</version> -->
   <!-- Need to be overridden in project's pom.xml -->
   <description>Extensions to XWiki provided by contributors. This description needs to be overridden in your project's POM.</description>
