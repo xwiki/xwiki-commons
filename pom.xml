@@ -1266,8 +1266,10 @@ mm
     </snapshotRepository>
   </distributionManagement>
   <modules>
-    <module>xwiki-commons-tools</module>
-    <module>xwiki-commons-pom</module>
+    <!-- Sorted Alphabetically -->
+    <module>xwiki-commons-contrib-pom</module>
     <module>xwiki-commons-core</module>
+    <module>xwiki-commons-pom</module>
+    <module>xwiki-commons-tools</module>
   </modules>
 </project>
