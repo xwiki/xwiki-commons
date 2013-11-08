@@ -160,17 +160,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
-            <difference>
-              <differenceType>8001</differenceType>
-              <className>org/xwiki/xml/stax/SAXEventConsumer</className>
-              <justification>Very young API. Never fully worked.</justification>
-            </difference>
-            <difference>
-              <differenceType>5001</differenceType>
-              <className>org/xwiki/xml/stax/SAXEventWriter</className>
-              <to>org/xwiki/xml/stax/SAXEventConsumer</to>
-              <justification>Very young API. Never fully worked.</justification>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
