@@ -79,16 +79,6 @@ public class DefaultXMLParserFactory implements XMLParserFactory
             this.converter, this.parameterManager, configuration);
     }
 
-    /**
-     * @param filter the filter to send events to
-     * @param configuration the configuration of the parser
-     * @return the parser as a {@link XMLEventWriter}.
-     */
-    private XMLEventWriter createXMLEventWriter(Object filter, XMLConfiguration configuration)
-    {
-        return new SAXEventWriter(createParser(filter, configuration));
-    }
-
     @Override
     public void parse(Source source, Object filter, XMLConfiguration configuration) throws XMLStreamException
     {
@@ -110,6 +100,12 @@ public class DefaultXMLParserFactory implements XMLParserFactory
     public Result createResult(Object filter, XMLConfiguration configuration)
     {
         return new StAXResult(createXMLEventWriter(filter, configuration));
+    }
+
+    @Override
+    public XMLEventWriter createXMLEventWriter(Object filter, XMLConfiguration configuration)
+    {
+        return new SAXEventWriter(createParser(filter, configuration));
     }
 
     @Override

@@ -19,6 +19,7 @@
  */
 package org.xwiki.filter.xml.parser;
 
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -50,6 +51,13 @@ public interface XMLParserFactory
      * @return the parser as a {@link Result}.
      */
     Result createResult(Object filter, XMLConfiguration configuration);
+
+    /**
+     * @param filter the filter to send events to
+     * @param configuration the configuration of the parser
+     * @return the parser as a {@link Result}.
+     */
+    XMLEventWriter createXMLEventWriter(Object filter, XMLConfiguration configuration);
 
     /**
      * @param filter the filter to send events to

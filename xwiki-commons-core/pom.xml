@@ -164,7 +164,13 @@
               <differenceType>7012</differenceType>
               <className>org/xwiki/filter/xml/serializer/XMLSerializerFactory</className>
               <method>java.lang.Object createSerializer(java.lang.Class[], javax.xml.transform.Result, org.xwiki.filter.xml.XMLConfiguration)</method>
-              <justification>Young API</justification>
+              <justification>Young API. Not supposed to be implemented from outside.</justification>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/filter/xml/serializer/XMLSerializerFactory</className>
+              <method>javax.xml.stream.XMLEventWriter createXMLEventWriter(java.lang.Object, org.xwiki.filter.xml.XMLConfiguration)</method>
+              <justification>Young API. Not supposed to be implemented from outside.</justification>
             </difference>
             <difference>
               <differenceType>7012</differenceType>
