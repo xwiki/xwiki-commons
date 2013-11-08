@@ -1267,7 +1267,6 @@ mm
   </distributionManagement>
   <modules>
     <!-- Sorted Alphabetically -->
-    <module>xwiki-commons-contrib-pom</module>
     <module>xwiki-commons-core</module>
     <module>xwiki-commons-pom</module>
     <module>xwiki-commons-tools</module>
