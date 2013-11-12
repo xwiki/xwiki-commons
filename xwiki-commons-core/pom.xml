@@ -168,7 +168,7 @@
             </difference>
             <difference>
               <differenceType>7012</differenceType>
-              <className>org/xwiki/filter/xml/serializer/XMLSerializerFactory</className>
+              <className>org/xwiki/filter/xml/parser/XMLParserFactory</className>
               <method>javax.xml.stream.XMLEventWriter createXMLEventWriter(java.lang.Object, org.xwiki.filter.xml.XMLConfiguration)</method>
               <justification>Young API. Not supposed to be implemented from outside.</justification>
             </difference>
