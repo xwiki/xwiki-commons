@@ -123,7 +123,10 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     }
 
     /**
-     * Properly escape a parameter map representing a query String, so that it can be safely used in an URL.
+     * Properly escape a parameter map representing a query string, so that it can be safely used in an URL. Parameters
+     * can have multiple values in which case the value in the map is either an array or a {@link Collection}. If the
+     * parameter name is {@code null} (the key is {@code null}) then the parameter is ignored. {@code null} values are
+     * serialized as an empty string.
      * 
      * @param parametersMap Map representing the query string.
      * @return the safe query string representing the passed parameters
@@ -132,17 +135,22 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     public String url(Map<String, ?> parametersMap)
     {
         StringBuilder queryStringBuilder = new StringBuilder();
-        for (Map.Entry<String, ?> entry : parametersMap.entrySet()) {
+        for (Map.Entry<String, ? > entry : parametersMap.entrySet()) {
+            if (entry.getKey() == null) {
+                // Skip the parameter if its name is null.
+                continue;
+            }
             String cleanKey = this.url(entry.getKey());
             Object mapValues = entry.getValue();
-            // If the value associated to the key is an array or a collection, let's iterate over it.
-            if (mapValues.getClass().isArray()) {
+            if (mapValues != null && mapValues.getClass().isArray()) {
+                // A parameter with multiple values.
                 Object[] values = (Object[]) mapValues;
                 for (Object value : values) {
                     addQueryStringPair(cleanKey, value, queryStringBuilder);
                 }
-            } else if (Collection.class.isAssignableFrom(mapValues.getClass())) {
-                Collection<?> values = (Collection<?>) mapValues;
+            } else if (mapValues != null && Collection.class.isAssignableFrom(mapValues.getClass())) {
+                // A parameter with multiple values.
+                Collection< ? > values = (Collection< ? >) mapValues;
                 for (Object value : values) {
                     addQueryStringPair(cleanKey, value, queryStringBuilder);
                 }
@@ -162,7 +170,8 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
      */
     private void addQueryStringPair(String cleanKey, Object rawValue, StringBuilder queryStringBuilder)
     {
-        String valueAsString = String.valueOf(rawValue);
+        // Serialize null values as an empty string.
+        String valueAsString = rawValue == null ? "" : String.valueOf(rawValue);
         String cleanValue = this.url(valueAsString);
         if (queryStringBuilder.length() != 0) {
             queryStringBuilder.append(AND);
