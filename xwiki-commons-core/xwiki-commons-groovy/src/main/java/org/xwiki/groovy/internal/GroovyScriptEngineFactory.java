@@ -56,10 +56,6 @@ public class GroovyScriptEngineFactory extends org.codehaus.groovy.jsr223.Groovy
     @Override
     public ScriptEngine getScriptEngine()
     {
-        // We configure the Groovy Script Engine with a custom GroovyClassLoader that we specifically configure with
-        // Compilation Configurations to protect for example against scripts taking too long to execute.
-        GroovyScriptEngineImpl engine = (GroovyScriptEngineImpl) super.getScriptEngine();
-
         // Add all the defined Customizers
         CompilerConfiguration config = new CompilerConfiguration();
 
@@ -70,8 +66,9 @@ public class GroovyScriptEngineFactory extends org.codehaus.groovy.jsr223.Groovy
 
         ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
         GroovyClassLoader loader = new GroovyClassLoader(parentClassLoader, config);
-        engine.setClassLoader(loader);
 
-        return engine;
+        // We configure the Groovy Script Engine with a custom GroovyClassLoader that we specifically configure with
+        // Compilation Configurations to protect for example against scripts taking too long to execute.
+        return new GroovyScriptEngineImpl(loader);
     }
 }
