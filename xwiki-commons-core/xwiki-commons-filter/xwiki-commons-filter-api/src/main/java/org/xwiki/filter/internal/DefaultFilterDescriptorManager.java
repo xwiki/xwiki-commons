@@ -261,9 +261,15 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     @Override
     public <F> F createFilterProxy(Object targetFilter, Class< ? >... interfaces)
     {
+        return createFilterProxy(targetFilter, Thread.currentThread().getContextClassLoader(), interfaces);
+    }
+
+    @Override
+    public <F> F createFilterProxy(Object targetFilter, ClassLoader loader, Class< ? >... interfaces)
+    {
         for (Class< ? > i : interfaces) {
             if (!i.isInstance(targetFilter)) {
-                return (F) Proxy.newProxyInstance(targetFilter.getClass().getClassLoader(), interfaces,
+                return (F) Proxy.newProxyInstance(loader, interfaces,
                     new FilterProxy(targetFilter, getFilterDescriptor(interfaces)));
             }
         }
@@ -274,12 +280,18 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     @Override
     public <F> F createCompositeFilter(Object... filters)
     {
+        return createCompositeFilter(Thread.currentThread().getContextClassLoader(), filters);
+    }
+
+    @Override
+    public <F> F createCompositeFilter(ClassLoader loader, Object... filters)
+    {
         Set<Class< ? >> interfaces = new HashSet<Class< ? >>();
         for (Object filter : filters) {
             interfaces.addAll(ClassUtils.getAllInterfaces(filter.getClass()));
         }
 
-        return (F) Proxy.newProxyInstance(getClass().getClassLoader(), interfaces.toArray(CLASS_ARRAY),
+        return (F) Proxy.newProxyInstance(loader, interfaces.toArray(CLASS_ARRAY),
             new CompositeFilter(this, filters));
     }
 }
