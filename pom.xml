@@ -1266,9 +1266,10 @@ mm
     </snapshotRepository>
   </distributionManagement>
   <modules>
-    <!-- Sorted Alphabetically -->
-    <module>xwiki-commons-core</module>
-    <module>xwiki-commons-pom</module>
+    <!-- TODO: Remove the need to have this exact module order (tools need to be built before everything else ATM
+         because of our remote resources plugin using the license plugin -->
     <module>xwiki-commons-tools</module>
+    <module>xwiki-commons-pom</module>
+    <module>xwiki-commons-core</module>
   </modules>
 </project>
