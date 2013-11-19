@@ -49,6 +49,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-remote-resources-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-tool-license-resources</artifactId>
+            <version>${commons.version}</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
             <id>xwiki-license-resources</id>
