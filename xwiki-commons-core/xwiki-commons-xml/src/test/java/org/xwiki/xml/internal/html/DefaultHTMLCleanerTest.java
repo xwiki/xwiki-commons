@@ -26,11 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.xml.html.HTMLCleaner;
@@ -251,7 +247,6 @@ public class DefaultHTMLCleanerTest
     /**
      * Verify that passing a fully-formed XHTML header works fine.
      */
-    @Ignore("Ignoring till http://tinyurl.com/3d2w5c8 is really fixed")
     @Test
     public void fullXHTMLHeader()
     {
@@ -272,6 +267,59 @@ public class DefaultHTMLCleanerTest
         config.setFilters(filters);
         Assert.assertEquals(HEADER_FULL + expected + FOOTER,
             HTMLUtils.toString(this.cleaner.clean(new StringReader(actual), config)));
+    }
+
+    /**
+     * Test that tags with a namespace are not considered as unknown tags by HTMLCleaner
+     * (see also <a href="http://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
+     */
+    @Test
+    public void cleanSVGTags() throws Exception
+    {
+        String input = "<p>before</p>\n"
+            + "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
+            +   "<circle cx=\"100\" cy=\"50\" fill=\"red\" r=\"40\" stroke=\"black\" stroke-width=\"2\"></circle>\n"
+            + "</svg>\n"
+            + "<p>after</p>\n";
+        assertHTML(input, HEADER_FULL + input + FOOTER);
+    }
+
+    /**
+     * Test that cleaning works when there's a TITLE element in the body (but with a namespace). The issue was that
+     * HTMLCleaner would consider it a duplicate of the TITLE element in the HEAD even though it's namespaced.
+     * (see also <a href="http://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
+     */
+    @Test
+    @Ignore("See http://jira.xwiki.org/browse/XWIKI-9753")
+    public void cleanTitleWithNamespace() throws Exception
+    {
+        // Test with TITLE in HEAD
+        String input = "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">\n"
+            + "  <head>\n"
+            + "    <title>Title test</title>\n"
+            + "  </head>\n"
+            + "  <body>\n"
+            + "    <p>before</p>\n"
+            + "    <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"300\" width=\"500\">\n"
+            + "      <g>\n"
+            + "        <title>SVG Title Demo example</title>\n"
+            + "        <rect height=\"50\" style=\"fill:none; stroke:blue; stroke-width:1px\" width=\"200\" x=\"10\" "
+            + "y=\"10\"></rect>\n"
+            + "      </g>\n"
+            + "    </svg>\n"
+            + "    <p>after</p>\n";
+        Assert.assertEquals(HEADER + input + FOOTER, HTMLUtils.toString(this.cleaner.clean(new StringReader(input))));
+    }
+
+    /**
+     * Test that cleaning an empty DIV works (it used to fail, see
+     * <a href="http://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
+     */
+    @Test
+    public void cleanEmptyDIV() throws Exception
+    {
+        String input = "<div id=\"y\"></div><div id=\"z\">something</div>";
+        assertHTML(input, HEADER_FULL + input + FOOTER);
     }
 
     private void assertHTML(String expected, String actual)

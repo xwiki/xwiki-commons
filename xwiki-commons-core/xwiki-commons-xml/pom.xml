@@ -53,15 +53,9 @@
     <dependency>
       <groupId>net.sourceforge.htmlcleaner</groupId>
       <artifactId>htmlcleaner</artifactId>
-      <version>2.5</version>
-      <!-- TODO: We don't need Ant drawn. Remove this when
-           https://sourceforge.net/tracker/?func=detail&aid=3594481&group_id=183053&atid=903696 is fixed -->
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.ant</groupId>
-          <artifactId>ant</artifactId>
-        </exclusion>
-      </exclusions>
+      <!-- TODO: This is temporary while we wait for an official 2.7 release which we'll need anyway before we can
+           release 5.4M1 since we need it to be on Maven Central. -->
+      <version>2.7-20131205-xwiki</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
