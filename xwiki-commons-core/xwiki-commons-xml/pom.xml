@@ -53,9 +53,7 @@
     <dependency>
       <groupId>net.sourceforge.htmlcleaner</groupId>
       <artifactId>htmlcleaner</artifactId>
-      <!-- TODO: This is temporary while we wait for an official 2.7 release which we'll need anyway before we can
-           release 5.4M1 since we need it to be on Maven Central. -->
-      <version>2.7-20131205-xwiki</version>
+      <version>2.7</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
