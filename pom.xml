@@ -74,7 +74,7 @@
     <clover.version>3.1.12</clover.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>5.2.2</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>5.3</xwiki.clirr.previous.version>
 
     <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>

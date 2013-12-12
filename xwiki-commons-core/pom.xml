@@ -160,42 +160,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/filter/xml/serializer/XMLSerializerFactory</className>
-              <method>java.lang.Object createSerializer(java.lang.Class[], javax.xml.transform.Result, org.xwiki.filter.xml.XMLConfiguration)</method>
-              <justification>Young API. Not supposed to be implemented from outside.</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/filter/xml/parser/XMLParserFactory</className>
-              <method>javax.xml.stream.XMLEventWriter createXMLEventWriter(java.lang.Object, org.xwiki.filter.xml.XMLConfiguration)</method>
-              <justification>Young API. Not supposed to be implemented from outside.</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/filter/FilterDescriptorManager</className>
-              <method>java.lang.Object createCompositeFilter(java.lang.ClassLoader, java.lang.Object[])</method>
-              <justification>Young API. Not supposed to be implemented from outside.</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/filter/FilterDescriptorManager</className>
-              <method>java.lang.Object createFilterProxy(java.lang.Object, java.lang.ClassLoader, java.lang.Class[])</method>
-              <justification>Young API. Not supposed to be implemented from outside.</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/extension/repository/InstalledExtensionRepository</className>
-              <method>org.xwiki.extension.repository.result.IterableResult searchInstalledExtensions(java.lang.String, java.lang.String, int, int)</method>
-              <justification>Needed to filter search by namespace. This interface is not really supposed to be implemented anyway</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/extension/ExtensionManager</className>
-              <method>org.xwiki.extension.Extension resolveExtension(org.xwiki.extension.ExtensionDependency, java.lang.String)</method>
-              <justification>Requesting a dependency without indicating the namespace does not really make sense. This interface is not really supposed to be implemented anyway</justification>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
