@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.htmlcleaner.BaseToken;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.CommentNode;
 import org.htmlcleaner.ContentNode;
@@ -174,7 +175,7 @@ public class XWikiDOMSerializer
      * @param element the W3C element to which we'll add the subnodes to
      * @param tagChildren the SF HTML Cleaner nodes to serialize for that node
      */
-    private void createSubnodes(Document document, Element element, List<Object> tagChildren)
+    private void createSubnodes(Document document, Element element, List<? extends BaseToken> tagChildren)
     {
         // We've modified the original implementation based in SF's HTML Cleaner to better handle CDATA.
         // More specifically we want to handle the following 3 use cases:
@@ -227,7 +228,7 @@ public class XWikiDOMSerializer
                     element.appendChild(subelement);
                 } else if (item instanceof List< ? >) {
                     @SuppressWarnings("unchecked")
-                    List<Object> sublist = (List<Object>) item;
+                    List<BaseToken> sublist = (List<BaseToken>) item;
                     createSubnodes(document, element, sublist);
                 }
             }

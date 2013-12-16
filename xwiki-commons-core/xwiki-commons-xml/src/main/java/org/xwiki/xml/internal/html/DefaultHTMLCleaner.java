@@ -208,6 +208,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         // We need this for example to ignore CDATA sections not inside script or style elements.
         defaultProperties.setIgnoreQuestAndExclam(true);
 
+        // Remove CDATA outside of script and style since according to the spec it has no effect there.
+        defaultProperties.setOmitCdataOutsideScriptAndStyle(true);
+
         // If the caller has defined NAMESPACE_AWARE configuration property then use it, otherwise use our default.
         String param = configuration.getParameters().get(HTMLCleanerConfiguration.NAMESPACES_AWARE);
         boolean namespacesAware = (param != null) ? Boolean.parseBoolean(param) : true;
