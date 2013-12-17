@@ -94,24 +94,60 @@ public class DefaultInstalledExtensionRepositoryTest
 
         // installedonnamespace
         InstalledExtension extension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ONNAMESPACE_ID);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_ONNAMESPACE_ID, extension.getId());
+
+        extension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ONNAMESPACE_ID.getId(),
                 "namespace");
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_ONNAMESPACE_ID, extension.getId());
         Assert.assertTrue(extension.isValid("namespace"));
 
         // installedextension
+        extension = this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_ID, extension.getId());
+
         extension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID.getId(), "namespace");
 
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_ID, extension.getId());
         Assert.assertTrue(this.handler.getExtensions().get(null).contains(extension));
         Assert.assertFalse(this.handler.getExtensions().get("namespace").contains(extension));
+        Assert.assertSame(extension,
+            this.installedExtensionRepository.getInstalledExtension("installedextension", "namespace"));
 
         // installedonnemspacewithrootdependency
         extension =
             this.installedExtensionRepository
                 .getInstalledExtension(TestResources.INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID);
 
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID, extension.getId());
+
+        extension =
+            this.installedExtensionRepository.getInstalledExtension(
+                TestResources.INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID.getId(), "namespace");
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID, extension.getId());
         Assert.assertFalse(this.handler.getExtensions().get(null).contains(extension));
         Assert.assertTrue(this.handler.getExtensions().get("namespace").contains(extension));
+
+        // invalidextension
+        extension = this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_INVALID_ID);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_INVALID_ID, extension.getId());
+        Assert.assertFalse(extension.isValid(null));
+        Assert.assertFalse(this.handler.getExtensions().get(null).contains(extension));
+        Assert.assertFalse(this.handler.getExtensions().get("namespace").contains(extension));
     }
 
     @Test
