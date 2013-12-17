@@ -400,10 +400,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
             if (this.coreExtensionRepository.getCoreExtension(dependency.getId()) == null) {
                 InstalledFeature installedFeature = getInstalledFeatureFromCache(dependency.getId(), namespace);
 
-                if (installedFeature == null) {
-                    // That should never happen so lets log it
-                    this.logger.warn("Extension [{}] is not installed", installedExtension.getId());
-                } else {
+                if (installedFeature != null) {
                     installedFeature.backwardDependencies.remove(installedExtension);
                 }
             }
