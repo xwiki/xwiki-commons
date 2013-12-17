@@ -140,6 +140,22 @@ public class DefaultInstalledExtensionRepositoryTest
         Assert.assertFalse(this.handler.getExtensions().get(null).contains(extension));
         Assert.assertTrue(this.handler.getExtensions().get("namespace").contains(extension));
 
+        // installewithfeatureasdependency
+        extension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_WITHFEATUREASDEPENDENCY_ID);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_WITHFEATUREASDEPENDENCY_ID, extension.getId());
+
+        extension =
+            this.installedExtensionRepository.getInstalledExtension(
+                TestResources.INSTALLED_WITHFEATUREASDEPENDENCY_ID.getId(), "namespace");
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(TestResources.INSTALLED_WITHFEATUREASDEPENDENCY_ID, extension.getId());
+        Assert.assertTrue(this.handler.getExtensions().get(null).contains(extension));
+        Assert.assertFalse(this.handler.getExtensions().get("namespace").contains(extension));
+
         // invalidextension
         extension = this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_INVALID_ID);
 

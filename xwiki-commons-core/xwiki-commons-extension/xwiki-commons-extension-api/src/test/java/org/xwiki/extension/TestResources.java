@@ -43,6 +43,9 @@ public class TestResources
     public static final ExtensionId INSTALLED_WITHFEATUREONNAMESPACE_ID = new ExtensionId(
         "installedwithfeatureonnamespace", "version");
 
+    public static final ExtensionId INSTALLED_WITHFEATUREASDEPENDENCY_ID = new ExtensionId(
+        "installewithfeatureasdependency", "version");
+
     public InstalledExtension installed;
 
     public InstalledExtension installedDependency;
