@@ -390,7 +390,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
         // Update caches
 
-        addInstalledExtension(installedExtension, namespace, true);
+        addInstalledExtension(installedExtension, namespace);
     }
 
     private void removeFromBackwardDependencies(DefaultInstalledExtension installedExtension, String namespace)
