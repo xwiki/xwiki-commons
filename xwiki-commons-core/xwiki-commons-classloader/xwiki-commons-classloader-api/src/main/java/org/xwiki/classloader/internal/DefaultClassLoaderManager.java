@@ -63,7 +63,7 @@ public class DefaultClassLoaderManager implements ClassLoaderManager
     @Override
     public NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create)
     {
-        if (this.rootClassLoader == null && create) {
+        if (this.rootClassLoader == null) {
             this.rootClassLoader = new NamespaceURLClassLoader(new URI[] {}, getSystemClassLoader(), null);
         }
 
