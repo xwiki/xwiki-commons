@@ -38,22 +38,6 @@ import org.xwiki.job.event.status.JobStatus;
  */
 public class JobStatusSerializerTest
 {
-    class RecursiveObject
-    {
-        RecursiveObject recurse;
-
-        public RecursiveObject()
-        {
-            this.recurse = this;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "recursive object";
-        }
-    }
-
     private JobStatusSerializer serializer;
 
     private File testFile = new File("target/test/status.xml");
@@ -90,6 +74,7 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
+        Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
     }
 
@@ -102,6 +87,7 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
+        Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
         Assert.assertEquals("exception message", status.getLog().peek().getThrowable().getMessage());
     }
@@ -115,6 +101,7 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
+        Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
         Assert.assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
         Assert.assertEquals("arg2", status.getLog().peek().getArgumentArray()[1]);
@@ -129,20 +116,8 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
+        Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
         Assert.assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
-    }
-
-    @Test
-    public void testLogWithRecursiveObject() throws IOException
-    {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
-
-        status.getLog().error("error message", new RecursiveObject());
-
-        status = writeread(status);
-
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals("recursive object", status.getLog().peek().getArgumentArray()[0]);
     }
 }

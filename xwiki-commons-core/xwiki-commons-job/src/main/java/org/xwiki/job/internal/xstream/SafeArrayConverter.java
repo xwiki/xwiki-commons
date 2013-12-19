@@ -40,10 +40,9 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.copy.HierarchicalStreamCopier;
 import com.thoughtworks.xstream.io.xml.DomReader;
 import com.thoughtworks.xstream.io.xml.DomWriter;
-import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
- * Make sure to unzerialize as much as possible from the job status without failing.
+ * A {@link ArrayConverter} which never fail whatever value is provided.
  * 
  * @version $Id$
  * @since 4.3M1
@@ -57,23 +56,26 @@ public class SafeArrayConverter extends ArrayConverter
 
     private final DocumentBuilderFactory docFactory;
 
-    private final DocumentBuilder docBuilder;
+    private DocumentBuilder docBuilder;
 
-    private HierarchicalStreamCopier copier;
+    private final HierarchicalStreamCopier copier;
 
     private XStream xstream;
 
     /**
-     * @param mapper the XStream mapper
      * @param xstream the {@link XStream} instance to use to isolate array element marshaling
-     * @throws ParserConfigurationException when failing to create a {@link DocumentBuilder}
      */
-    public SafeArrayConverter(Mapper mapper, XStream xstream) throws ParserConfigurationException
+    public SafeArrayConverter(XStream xstream)
     {
-        super(mapper);
+        super(xstream.getMapper());
 
         this.docFactory = DocumentBuilderFactory.newInstance();
-        this.docBuilder = this.docFactory.newDocumentBuilder();
+        try {
+            this.docBuilder = this.docFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            // Should never happen
+            LOGGER.error("Failed to create a DocumentBuilder");
+        }
         this.copier = new HierarchicalStreamCopier();
         this.xstream = xstream;
     }
@@ -102,7 +104,7 @@ public class SafeArrayConverter extends ArrayConverter
     @Override
     protected void writeItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer)
     {
-        if (item == null || item instanceof String || item instanceof Number) {
+        if (XStreamUtils.isSafeType(item) || this.docBuilder == null) {
             super.writeItem(item, context, writer);
         } else if (isComponent(item)) {
             super.writeItem(item.toString(), context, writer);
@@ -112,7 +114,7 @@ public class SafeArrayConverter extends ArrayConverter
 
                 DomWriter domWriter = new DomWriter(doc);
 
-                this.xstream.marshal(item, domWriter);
+                this.xstream.marshal(item, domWriter, new DataHolderWrapper(context));
 
                 DomReader domReader = new DomReader(doc);
 

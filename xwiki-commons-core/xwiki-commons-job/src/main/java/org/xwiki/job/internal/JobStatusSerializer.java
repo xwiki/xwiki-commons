@@ -31,15 +31,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.job.internal.xstream.SafeArrayConverter;
-import org.xwiki.job.internal.xstream.SafeTreeUnmarshaller;
+import org.xwiki.job.internal.xstream.SafeXStream;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.ConverterLookup;
-import com.thoughtworks.xstream.core.TreeMarshallingStrategy;
-import com.thoughtworks.xstream.core.TreeUnmarshaller;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * Serialize/unserialize tool for job statuses.
@@ -61,29 +55,12 @@ public class JobStatusSerializer
 
     /**
      * Default constructor.
-     * @throws ParserConfigurationException 
+     * 
+     * @throws ParserConfigurationException when failing to initialize
      */
     public JobStatusSerializer() throws ParserConfigurationException
     {
-        this.xstream = new XStream();
-
-        // We don't care if some field from the XML does not exist anymore
-        this.xstream.ignoreUnknownElements();
-
-        // Bulletproofing array elements unserialization
-        this.xstream.registerConverter(new SafeArrayConverter(this.xstream.getMapper(), this.xstream));
-
-        // If anything goes wrong with an element, replace it with null
-        this.xstream.setMarshallingStrategy(new TreeMarshallingStrategy()
-        {
-            @Override
-            protected TreeUnmarshaller createUnmarshallingContext(Object root, HierarchicalStreamReader reader,
-                ConverterLookup converterLookup, Mapper mapper)
-            {
-                return new SafeTreeUnmarshaller(root, reader, converterLookup, mapper);
-            }
-        });
-
+        this.xstream = new SafeXStream();
     }
 
     /**

@@ -96,7 +96,9 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-              **/AbstractJob.java
+              org/xwiki/job/internal/AbstractJob.java,
+              org/xwiki/job/internal/xstream/SafeReflectionConverter.java,
+              org/xwiki/job/internal/xstream/XStreamUtils.java
           </excludes>
         </configuration>
       </plugin>
