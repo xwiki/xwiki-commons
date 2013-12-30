@@ -43,6 +43,7 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
+import org.xwiki.extension.repository.internal.AbstractCachedExtensionRepository;
 
 /**
  * Default implementation of {@link LocalExtensionRepository}.

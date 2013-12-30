@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.repository.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +34,6 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
-import org.xwiki.extension.repository.internal.RepositoryUtils;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
@@ -47,27 +46,27 @@ import org.xwiki.extension.version.Version;
  * 
  * @param <E> the type of the extension
  * @version $Id$
- * @since 4.3
+ * @since 5.4M1
  */
 public abstract class AbstractCachedExtensionRepository<E extends Extension> extends AbstractExtensionRepository
     implements Searchable
 {
     /**
-     * The local extensions.
+     * The cached extensions.
      */
     protected transient Map<ExtensionId, E> extensions = new ConcurrentHashMap<ExtensionId, E>();
 
     /**
-     * The local extensions grouped by ids and ordered by version DESC.
+     * The cached extensions grouped by ids and ordered by version DESC.
      * <p>
      * <extension id, extensions>
      */
     protected Map<String, List<E>> extensionsVersions = new ConcurrentHashMap<String, List<E>>();
 
     /**
-     * Register a new local extension.
+     * Register a new extension.
      * 
-     * @param extension the new local extension
+     * @param extension the new extension
      */
     protected void addCachedExtension(E extension)
     {
@@ -136,9 +135,9 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     protected void removeCachedExtensionVersion(String feature, E extension)
     {
         // versions
-        List<E> localExtensionVersions = this.extensionsVersions.get(feature);
-        localExtensionVersions.remove(extension);
-        if (localExtensionVersions.isEmpty()) {
+        List<E> extensionVersions = this.extensionsVersions.get(feature);
+        extensionVersions.remove(extension);
+        if (extensionVersions.isEmpty()) {
             this.extensionsVersions.remove(feature);
         }
     }
@@ -148,13 +147,13 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     @Override
     public E resolve(ExtensionId extensionId) throws ResolveException
     {
-        E localExtension = this.extensions.get(extensionId);
+        E extension = this.extensions.get(extensionId);
 
-        if (localExtension == null) {
+        if (extension == null) {
             throw new ResolveException("Can't find extension [" + extensionId + "]");
         }
 
-        return localExtension;
+        return extension;
     }
 
     @Override
