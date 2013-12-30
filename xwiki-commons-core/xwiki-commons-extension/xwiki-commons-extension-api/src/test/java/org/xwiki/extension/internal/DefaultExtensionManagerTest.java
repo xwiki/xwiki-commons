@@ -117,4 +117,19 @@ public class DefaultExtensionManagerTest
 
         assertSame(extension, mocker.getComponentUnderTest().resolveExtension(extensionDependency, namespace));
     }
+
+    @Test
+    public void resolveInstalledExtensionId() throws Exception
+    {
+        ExtensionId extensionId = new ExtensionId("extension", "version");
+
+        doThrow(ResolveException.class).when(coreExtensionRepository).resolve(extensionId);
+
+        InstalledExtension extension = mock(InstalledExtension.class);
+        when(installedExtensionRepository.resolve(extensionId)).thenReturn(extension);
+
+        when(extension.getId()).thenReturn(extensionId);
+
+        assertSame(extension, mocker.getComponentUnderTest().resolveExtension(extensionId));
+    }
 }

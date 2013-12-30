@@ -96,6 +96,20 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
         try {
             return this.coreExtensionRepository.resolve(extensionId);
         } catch (ResolveException notACoreExtension) {
+            return resolveExtensionFromInstalled(extensionId);
+        }
+    }
+
+    /**
+     * @param extensionId the extension identifier
+     * @return the resolved extension
+     * @throws ResolveException error when trying to resolve extension
+     */
+    private Extension resolveExtensionFromInstalled(ExtensionId extensionId) throws ResolveException
+    {
+        try {
+            return this.installedExtensionRepository.resolve(extensionId);
+        } catch (ResolveException notAnInstalledExtension) {
             try {
                 return this.localExtensionRepository.resolve(extensionId);
             } catch (ResolveException notALocalExtension) {
