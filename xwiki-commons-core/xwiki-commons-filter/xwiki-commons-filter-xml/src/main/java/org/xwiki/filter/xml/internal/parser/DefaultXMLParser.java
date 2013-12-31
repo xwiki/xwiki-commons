@@ -288,7 +288,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             || this.configuration.getAttributeParameterName().equals(attributeName);
     }
 
-    private void setParameter(Block block, String name, Object value, boolean attribute)
+    private void setParameter(Block block, String name, Object value, boolean attribute) throws SAXException
     {
         if (XMLUtils.INDEX_PATTERN.matcher(name).matches()) {
             int parameterIndex = extractParameterIndex(name);
@@ -318,17 +318,22 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     }
 
     private void setParameter(Block block, FilterElementParameterDescriptor< ? > filterParameter, Object value)
+        throws SAXException
     {
         Type type = filterParameter.getType();
 
         if (value instanceof Element) {
-            block.setParameter(filterParameter.getIndex(), this.parameterManager.unSerialize(type, (Element) value));
+            try {
+                block.setParameter(filterParameter.getIndex(), unserializeParameter(type, (Element) value));
+            } catch (ClassNotFoundException e) {
+                throw new SAXException("Failed to parse property", e);
+            }
         } else if (value instanceof String) {
             String stringValue = (String) value;
 
             Class< ? > typeClass = ReflectionUtils.getTypeClass(type);
 
-            if (typeClass == String.class) {
+            if (typeClass == String.class || typeClass == Object.class) {
                 block.setParameter(filterParameter.getIndex(), stringValue);
             } else {
                 try {
@@ -344,6 +349,17 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         } else {
             LOGGER.warn("Unsuported type [{}] for value [{}]", value.getClass(), value);
         }
+    }
+
+    private Object unserializeParameter(Type type, Element element) throws ClassNotFoundException
+    {
+        if (element.hasAttribute(this.configuration.getAttributeParameterType())) {
+            String typeString = element.getAttribute(this.configuration.getAttributeParameterType());
+            return this.parameterManager.unSerialize(
+                Class.forName(typeString, true, Thread.currentThread().getContextClassLoader()), element);
+        }
+
+        return this.parameterManager.unSerialize(type, element);
     }
 
     @Override

@@ -111,13 +111,15 @@ public class XStreamParameterManager implements ParameterManager, Initializable
         }
 
         DataHolder dataHolder = new MapBackedDataHolder();
-        dataHolder.put(DDEFAULTTYPE_NAME, type);
+        if (type != Object.class) {
+            dataHolder.put(DDEFAULTTYPE_NAME, type);
+        }
 
         this.xstream.marshal(object, staxWriter, dataHolder);
     }
 
     @Override
-    public Object unSerialize(Type type, Element rootElement)
+    public Object unSerialize(Type type, Element rootElement) throws ClassNotFoundException
     {
         if (type != null && !rootElement.hasChildNodes()) {
             Object value = XMLUtils.emptyValue(ReflectionUtils.getTypeClass(type));
@@ -128,7 +130,11 @@ public class XStreamParameterManager implements ParameterManager, Initializable
 
         DataHolder dataHolder = new MapBackedDataHolder();
 
-        dataHolder.put(DDEFAULTTYPE_NAME, type);
+        if (type == Object.class) {
+            dataHolder.put(DDEFAULTTYPE_NAME, String.class);
+        } else {
+            dataHolder.put(DDEFAULTTYPE_NAME, type);
+        }
 
         return this.xstream.unmarshal(new DomReader(rootElement), null, dataHolder);
     }

@@ -38,9 +38,14 @@ public class XMLConfiguration
     public static final String DEFAULT_ATT_BLOCK_NAME = "n";
 
     /**
-     * The default name of the attribute containing the name of the block.
+     * The default name of the attribute containing the name of the parameter.
      */
     public static final String DEFAULT_ATT_PARAMETER_NAME = DEFAULT_ATT_BLOCK_NAME;
+
+    /**
+     * The default name of the attribute containing the type of the parameter.
+     */
+    public static final String DEFAULT_ATT_PARAMETER_TYPE = "t";
 
     /**
      * The default name of the parameter element.
@@ -68,6 +73,11 @@ public class XMLConfiguration
     private String attributeParameterName;
 
     /**
+     * @see #getAttributeParameterType()
+     */
+    private String attributeParameterType;
+
+    /**
      * @see #getAttributeBlockName()
      */
     private String attributeBlockName;
@@ -81,6 +91,7 @@ public class XMLConfiguration
         setElementParameters(DEFAULT_ELEM_PARAMETERS);
         setAttributeBlockName(DEFAULT_ATT_BLOCK_NAME);
         setAttributeParameterName(DEFAULT_ATT_PARAMETER_NAME);
+        setAttributeParameterType(DEFAULT_ATT_PARAMETER_TYPE);
     }
 
     /**
@@ -145,5 +156,21 @@ public class XMLConfiguration
     public void setAttributeParameterName(String attributeParameterName)
     {
         this.attributeParameterName = attributeParameterName;
+    }
+
+    /**
+     * @return the name of the attribute containing the type of the parameter
+     */
+    public String getAttributeParameterType()
+    {
+        return this.attributeParameterType;
+    }
+
+    /**
+     * @param attributeParameterType the name of the attribute containing the type of the parameter
+     */
+    public void setAttributeParameterType(String attributeParameterType)
+    {
+        this.attributeParameterType = attributeParameterType;
     }
 }
