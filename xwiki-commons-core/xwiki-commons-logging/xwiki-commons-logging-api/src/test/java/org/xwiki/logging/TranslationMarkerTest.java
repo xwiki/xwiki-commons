@@ -56,7 +56,7 @@ public class TranslationMarkerTest
     @Test
     public void add()
     {
-        this.marker.add(null);
+        this.marker.add(MarkerFactory.getMarker("marker"));
     }
 
     @Test

@@ -19,10 +19,7 @@
  */
 package org.xwiki.logging;
 
-import java.util.Collections;
-import java.util.Iterator;
-
-import org.slf4j.Marker;
+import org.xwiki.logging.marker.AbstractContainerMarker;
 
 /**
  * Allows associating a translation key to a log.
@@ -30,17 +27,12 @@ import org.slf4j.Marker;
  * @version $Id$
  * @since 5.0M2
  */
-public class TranslationMarker implements Marker
+public class TranslationMarker extends AbstractContainerMarker
 {
     /**
      * Serialization id.
      */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * The marker name.
-     */
-    private static final String NAME = TranslationMarker.class.getName();
 
     /**
      * @see #getTranslationKey()
@@ -52,6 +44,8 @@ public class TranslationMarker implements Marker
      */
     public TranslationMarker(String translationKey)
     {
+        super(TranslationMarker.class.getName());
+
         this.translationKey = translationKey;
     }
 
@@ -61,70 +55,6 @@ public class TranslationMarker implements Marker
     public String getTranslationKey()
     {
         return this.translationKey;
-    }
-
-    // Marker
-
-    @Override
-    public String getName()
-    {
-        return NAME;
-    }
-
-    @Override
-    public void add(Marker reference)
-    {
-        // Not supported
-    }
-
-    @Override
-    public boolean remove(Marker reference)
-    {
-        // Not supported
-        return false;
-    }
-
-    @Override
-    public boolean hasChildren()
-    {
-        // Not supported
-        return false;
-    }
-
-    @Override
-    public boolean hasReferences()
-    {
-        // Not supported
-        return false;
-    }
-
-    @Override
-    public Iterator iterator()
-    {
-        // Not supported
-        return Collections.EMPTY_LIST.iterator();
-    }
-
-    @Override
-    public boolean contains(Marker other)
-    {
-        if (equals(other)) {
-            return true;
-        }
-
-        // Not supported
-        return false;
-    }
-
-    @Override
-    public boolean contains(String name)
-    {
-        if (NAME.equals(name)) {
-            return true;
-        }
-
-        // Not supported
-        return false;
     }
 
     // Object
