@@ -25,10 +25,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -67,11 +64,6 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     private static final String FOLDER_NULL = "&null";
 
     /**
-     * The name of the folder containing a job status.
-     */
-    private static final String FOLDER_STATUS = "&status";
-
-    /**
      * Used to get the storage directory.
      */
     @Inject
@@ -83,11 +75,6 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     @Inject
     private Logger logger;
 
-    /**
-     * A cache of stored job statuses.
-     */
-    private Map<List<String>, JobStatus> jobs = new ConcurrentHashMap<List<String>, JobStatus>();
-
     private JobStatusSerializer serializer;
 
     @Override
@@ -96,7 +83,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
         try {
             this.serializer = new JobStatusSerializer();
 
-            load();
+            repair();
         } catch (Exception e) {
             this.logger.error("Failed to load jobs", e);
         }
@@ -128,53 +115,56 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     /**
      * Load jobs from directory.
      */
-    private void load()
+    private void repair()
     {
         File folder = this.configuration.getStorage();
 
         if (folder.exists()) {
-            loadFolder(folder);
+            repairFolder(folder);
         }
     }
 
     /**
      * @param folder the folder from where to load the jobs
      */
-    private void loadFolder(File folder)
+    private void repairFolder(File folder)
     {
         for (File file : folder.listFiles()) {
             if (file.isDirectory()) {
-                if (file.getName().equals(FOLDER_STATUS)) {
-                    loadStatus(file);
-                } else {
-                    loadFolder(file);
-                }
+                repairFolder(file);
             } else if (file.getName().equals(FILENAME_STATUS)) {
-                loadStatus(folder);
+                JobStatus status = loadStatus(folder);
+
+                File properFolder = getJobFolder(status.getRequest().getId());
+
+                if (!folder.equals(properFolder)) {
+                    // Move the status in its right place
+                    try {
+                        FileUtils.moveFileToDirectory(file, properFolder, true);
+                    } catch (IOException e) {
+                        this.logger.error("Failed to move job status file", e);
+                    }
+                }
             }
         }
+    }
+
+    private JobStatus loadStatus(List<String> id)
+    {
+        return loadStatus(getJobFolder(id));
     }
 
     /**
      * @param folder the folder from where to load the job status
      */
-    private void loadStatus(File folder)
+    private JobStatus loadStatus(File folder)
     {
         File statusFile = new File(folder, FILENAME_STATUS);
         if (statusFile.exists()) {
-            try {
-                JobStatus status = loadJobStatus(statusFile);
-
-                if (status != null) {
-                    List<String> id = status.getRequest().getId();
-                    this.jobs.put(id != null ? id : Collections.<String> emptyList(), status);
-                } else {
-                    this.logger.error("Invalid job status file [{}]", statusFile);
-                }
-            } catch (Throwable e) {
-                this.logger.error("Failed to load job status from file [{}]", statusFile, e);
-            }
+            return loadJobStatus(statusFile);
         }
+
+        return null;
     }
 
     /**
@@ -182,7 +172,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
      * @return the job status
      * @throws Exception when failing to load the job status from the file
      */
-    private JobStatus loadJobStatus(File statusFile) throws Exception
+    private JobStatus loadJobStatus(File statusFile)
     {
         return (JobStatus) this.serializer.read(statusFile);
     }
@@ -197,8 +187,10 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     {
         File folder = this.configuration.getStorage();
 
-        for (String idElement : id) {
-            folder = new File(folder, encode(idElement));
+        if (id != null) {
+            for (String idElement : id) {
+                folder = new File(folder, encode(idElement));
+            }
         }
 
         return folder;
@@ -225,14 +217,12 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     @Override
     public JobStatus getJobStatus(List<String> id)
     {
-        return this.jobs.get(id != null ? id : Collections.EMPTY_LIST);
+        return loadStatus(id);
     }
 
     @Override
     public void store(JobStatus status)
     {
-        this.jobs.put(status.getRequest().getId(), status);
-
         // On store Serializable job status on file system
         if (status instanceof Serializable) {
             try {
@@ -252,17 +242,20 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     @Override
     public JobStatus remove(List<String> id)
     {
-        JobStatus status = this.jobs.remove(id);
-
         File jobFolder = getJobFolder(id);
+
         if (jobFolder.exists()) {
+            JobStatus status = loadStatus(jobFolder);
+
             try {
                 FileUtils.deleteDirectory(jobFolder);
             } catch (IOException e) {
                 this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
             }
+
+            return status;
         }
 
-        return status;
+        return null;
     }
 }

@@ -94,7 +94,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
      * The thread on which the job manager is running.
      */
     private Thread thread;
-
+    
     @Override
     public void initialize() throws InitializationException
     {
