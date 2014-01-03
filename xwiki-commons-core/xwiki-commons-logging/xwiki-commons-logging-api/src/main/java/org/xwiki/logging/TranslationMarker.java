@@ -19,6 +19,7 @@
  */
 package org.xwiki.logging;
 
+import org.slf4j.Marker;
 import org.xwiki.logging.marker.AbstractContainerMarker;
 
 /**
@@ -50,6 +51,18 @@ public class TranslationMarker extends AbstractContainerMarker
     public TranslationMarker(String translationKey)
     {
         super(NAME);
+
+        this.translationKey = translationKey;
+    }
+
+    /**
+     * @param translationKey the translation key to associate to the log
+     * @param references the other associated markers
+     * @since 5.4M1
+     */
+    public TranslationMarker(String translationKey, Marker... references)
+    {
+        super(translationKey, references);
 
         this.translationKey = translationKey;
     }

@@ -51,14 +51,19 @@ public abstract class AbstractContainerMarker implements ContainerMarker
 
     /**
      * @param name the name of the {@link Marker}
+     * @param references the other associated markers
      */
-    public AbstractContainerMarker(String name)
+    public AbstractContainerMarker(String name, Marker... references)
     {
         if (name == null) {
             throw new IllegalArgumentException("A marker name cannot be null");
         }
 
         this.name = name;
+
+        for (Marker reference : references) {
+            add(reference);
+        }
     }
 
     @Override
@@ -100,17 +105,11 @@ public abstract class AbstractContainerMarker implements ContainerMarker
             throw new IllegalArgumentException("A null value cannot be added to a Marker as reference.");
         }
 
-        // no point in adding the reference multiple times
-        if (this.contains(reference)) {
-            return;
-        } else if (reference.contains(this)) {
-            // a potential reference should not its future "parent" as a reference
-            return;
-        } else {
-            // let's add the reference
+        if (!reference.contains(this)) {
             if (this.references == null) {
                 this.references = new LinkedHashSet<Marker>();
             }
+
             this.references.add(reference);
         }
 
