@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.slf4j.Logger;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.JobStatus;
@@ -83,14 +84,14 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     /**
      * Log sent during job execution.
      */
-    private final LogQueue logs = new LogQueue();
+    private LogQueue logs;
 
     /**
      * Log sent during job execution organized as a tree.
      * 
      * @since 5.4M1
      */
-    private final LogTree logTree = new LogTree();
+    private LogTree logTree;
 
     /**
      * General state of the job.
@@ -130,6 +131,9 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.observationManager = observationManager;
         this.loggerManager = loggerManager;
         this.subJob = subJob;
+
+        this.logTree = new LogTree();
+        this.logs = new LogQueue();
     }
 
     /**
@@ -198,6 +202,14 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      */
     public LogTree getLogTree()
     {
+        if (this.logTree == null) {
+            this.logTree = new LogTree();
+
+            if (this.logs != null) {
+                this.logs.log((Logger) this.logTree);
+            }
+        }
+
         return this.logTree;
     }
 
