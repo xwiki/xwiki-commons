@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.slf4j.Marker;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base class to use for custom {@link Marker}s which contains values (so which are a bit more than {@link Marker} as
@@ -33,7 +34,8 @@ import org.slf4j.Marker;
  * @version $Id$
  * @since 5.4M1
  */
-public abstract class AbstractContainerMarker implements Marker
+@Unstable
+public abstract class AbstractContainerMarker implements ContainerMarker
 {
     private static final long serialVersionUID = 1L;
 
@@ -62,7 +64,33 @@ public abstract class AbstractContainerMarker implements Marker
     @Override
     public String getName()
     {
-        return name;
+        return this.name;
+    }
+
+    @Override
+    public <M extends Marker> M get(String name)
+    {
+        if (this.name.equals(name)) {
+            return (M) this;
+        }
+
+        if (this.references != null) {
+            for (Marker marker : this.references) {
+                if (marker.getName().equals(name)) {
+                    return (M) marker;
+                }
+
+                if (marker instanceof ContainerMarker) {
+                    Marker targetMarker = ((ContainerMarker) marker).get(name);
+
+                    if (targetMarker != null) {
+                        return (M) targetMarker;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     @Override

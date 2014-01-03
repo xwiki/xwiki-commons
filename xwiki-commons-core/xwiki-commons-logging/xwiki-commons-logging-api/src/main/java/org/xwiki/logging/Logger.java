@@ -17,26 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.logging.event;
+package org.xwiki.logging;
 
-import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.event.LogEvent;
 
 /**
- * Fill the provided {@link LogQueue} with received {@link LogEvent}s.
+ * A {@link org.slf4j.Logger} with support for {@link LogEvent}.
  * 
  * @version $Id$
- * @since 3.2M3
- * @deprecated since 5.4M1, use {@link LoggerListener} instead
+ * @since 5.4M1
  */
-@Deprecated
-public class LogQueueListener extends LoggerListener
+public interface Logger extends org.slf4j.Logger
 {
     /**
-     * @param name the name of the listener
-     * @param queue the queue where to store received {@link LogEvent}s
+     * @param logEvent the log event
      */
-    public LogQueueListener(String name, LogQueue queue)
-    {
-        super(name, queue);
-    }
+    void log(LogEvent logEvent);
 }

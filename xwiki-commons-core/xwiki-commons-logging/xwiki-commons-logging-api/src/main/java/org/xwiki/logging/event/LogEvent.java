@@ -19,6 +19,7 @@
  */
 package org.xwiki.logging.event;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -26,10 +27,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.TranslationMarker;
 import org.xwiki.logging.internal.helpers.ExtendedMessageFormatter;
+import org.xwiki.logging.marker.ContainerMarker;
 import org.xwiki.observation.event.Event;
 
 /**
@@ -38,8 +41,23 @@ import org.xwiki.observation.event.Event;
  * @version $Id$
  * @since 3.2M1
  */
-public class LogEvent implements Event
+public class LogEvent implements Event, Serializable
 {
+    /**
+     * The marker to use to indicate that we start a group of logs.
+     */
+    public static final Marker MARKER_BEGIN = MarkerFactory.getMarker("xwiki.begin");
+
+    /**
+     * The marker to use to indicate that we stop a group of logs.
+     */
+    public static final Marker MARKER_END = MarkerFactory.getMarker("xwiki.end");
+
+    /**
+     * Serialization identifier.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * @see #getMarker()
      */
@@ -76,6 +94,16 @@ public class LogEvent implements Event
     public LogEvent()
     {
 
+    }
+
+    /**
+     * @param logEvent the log event to copy
+     * @since 5.4M1
+     */
+    public LogEvent(LogEvent logEvent)
+    {
+        this(logEvent.getMarker(), logEvent.getLevel(), logEvent.getMessage(), logEvent.getArgumentArray(), logEvent
+            .getThrowable());
     }
 
     /**
@@ -208,11 +236,33 @@ public class LogEvent implements Event
      */
     public String getTranslationKey()
     {
-        if (getMarker() instanceof TranslationMarker) {
-            return ((TranslationMarker) getMarker()).getTranslationKey();
+        if (getMarker() instanceof ContainerMarker) {
+            ContainerMarker containerMarker = (ContainerMarker) getMarker();
+
+            TranslationMarker translationMarker = containerMarker.get(TranslationMarker.NAME);
+
+            if (translationMarker != null) {
+                return ((TranslationMarker) getMarker()).getTranslationKey();
+            }
         }
 
         return null;
+    }
+
+    /**
+     * @return indicate if the log is the beginning of a log group
+     */
+    public boolean isBegin()
+    {
+        return getMarker() != null && getMarker().contains(LogEvent.MARKER_BEGIN);
+    }
+
+    /**
+     * @return indicate if the log is the end of a log group
+     */
+    public boolean isEnd()
+    {
+        return getMarker() != null && getMarker().contains(LogEvent.MARKER_END);
     }
 
     // Event

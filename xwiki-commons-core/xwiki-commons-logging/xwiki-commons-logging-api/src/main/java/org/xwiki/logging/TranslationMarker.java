@@ -30,6 +30,11 @@ import org.xwiki.logging.marker.AbstractContainerMarker;
 public class TranslationMarker extends AbstractContainerMarker
 {
     /**
+     * The marker name.
+     */
+    public static final String NAME = TranslationMarker.class.getName();
+
+    /**
      * Serialization id.
      */
     private static final long serialVersionUID = 1L;
@@ -44,7 +49,7 @@ public class TranslationMarker extends AbstractContainerMarker
      */
     public TranslationMarker(String translationKey)
     {
-        super(TranslationMarker.class.getName());
+        super(NAME);
 
         this.translationKey = translationKey;
     }

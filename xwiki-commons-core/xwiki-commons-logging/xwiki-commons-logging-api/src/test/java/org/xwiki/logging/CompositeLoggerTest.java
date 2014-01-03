@@ -17,26 +17,36 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.logging.event;
+package org.xwiki.logging;
 
-import org.xwiki.logging.LogQueue;
+import org.junit.Assert;
+import org.junit.Test;
+import org.xwiki.logging.test.Utils;
 
 /**
- * Fill the provided {@link LogQueue} with received {@link LogEvent}s.
+ * Test {@link CompositeLogger}.
  * 
  * @version $Id$
- * @since 3.2M3
- * @deprecated since 5.4M1, use {@link LoggerListener} instead
  */
-@Deprecated
-public class LogQueueListener extends LoggerListener
+public class CompositeLoggerTest
 {
-    /**
-     * @param name the name of the listener
-     * @param queue the queue where to store received {@link LogEvent}s
-     */
-    public LogQueueListener(String name, LogQueue queue)
+    @Test
+    public void test()
     {
-        super(name, queue);
+        LogTree logTree = new LogTree();
+        LogQueue logQueue = new LogQueue();
+
+        Logger logger = new CompositeLogger(logQueue, logTree);
+
+        Assert.assertTrue(logger.isTraceEnabled());
+        Assert.assertTrue(logger.isDebugEnabled());
+        Assert.assertTrue(logger.isInfoEnabled());
+        Assert.assertTrue(logger.isWarnEnabled());
+        Assert.assertTrue(logger.isErrorEnabled());
+
+        Utils.populateLogger(logger);
+
+        Utils.validateLogger(logQueue.iterator());
+        Utils.validateLogger(logTree.iterator(true));
     }
 }

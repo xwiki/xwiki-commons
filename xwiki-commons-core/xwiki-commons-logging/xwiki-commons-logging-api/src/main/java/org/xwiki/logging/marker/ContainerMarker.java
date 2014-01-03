@@ -17,26 +17,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.logging.event;
+package org.xwiki.logging.marker;
 
-import org.xwiki.logging.LogQueue;
+import org.slf4j.Marker;
+import org.xwiki.stability.Unstable;
 
 /**
- * Fill the provided {@link LogQueue} with received {@link LogEvent}s.
+ * Custom {@link Marker}s which contains values (so which are a bit more than {@link Marker} as defined by SLF4J).
  * 
  * @version $Id$
- * @since 3.2M3
- * @deprecated since 5.4M1, use {@link LoggerListener} instead
+ * @since 5.4M1
  */
-@Deprecated
-public class LogQueueListener extends LoggerListener
+@Unstable
+public interface ContainerMarker extends Marker
 {
     /**
-     * @param name the name of the listener
-     * @param queue the queue where to store received {@link LogEvent}s
+     * @param <M> the type of the marker
+     * @param name the name of the marker
+     * @return the marker of null if none could be found
      */
-    public LogQueueListener(String name, LogQueue queue)
-    {
-        super(name, queue);
-    }
+    <M extends Marker> M get(String name);
 }

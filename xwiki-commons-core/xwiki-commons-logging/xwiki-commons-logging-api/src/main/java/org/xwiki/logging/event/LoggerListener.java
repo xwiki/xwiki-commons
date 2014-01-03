@@ -19,24 +19,54 @@
  */
 package org.xwiki.logging.event;
 
-import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.Logger;
+import org.xwiki.observation.event.Event;
 
 /**
- * Fill the provided {@link LogQueue} with received {@link LogEvent}s.
+ * Redirect all received event to the provided {@link Logger}.
  * 
  * @version $Id$
- * @since 3.2M3
- * @deprecated since 5.4M1, use {@link LoggerListener} instead
+ * @since 5.4M1
  */
-@Deprecated
-public class LogQueueListener extends LoggerListener
+public class LoggerListener extends AbstractLogEventListener
 {
     /**
-     * @param name the name of the listener
-     * @param queue the queue where to store received {@link LogEvent}s
+     * The name of the listener.
      */
-    public LogQueueListener(String name, LogQueue queue)
+    private String name;
+
+    /**
+     * The logger where to send received events.
+     */
+    private Logger logger;
+
+    /**
+     * @param name the name of the listener
+     * @param logger the queue where to store received {@link LogEvent}s
+     */
+    public LoggerListener(String name, Logger logger)
     {
-        super(name, queue);
+        this.name = name;
+        this.logger = logger;
+    }
+
+    @Override
+    public String getName()
+    {
+        return this.name;
+    }
+
+    /**
+     * @return the logger
+     */
+    public Logger getLogger()
+    {
+        return this.logger;
+    }
+
+    @Override
+    public void onEvent(Event event, Object source, Object data)
+    {
+        this.logger.log((LogEvent) event);
     }
 }

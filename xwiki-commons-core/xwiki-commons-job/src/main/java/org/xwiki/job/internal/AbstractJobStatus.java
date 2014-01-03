@@ -27,11 +27,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.logging.CompositeLogger;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.LogTree;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.event.LogQueueListener;
+import org.xwiki.logging.event.LoggerListener;
 import org.xwiki.observation.ObservationManager;
 
 /**
@@ -54,31 +56,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private transient LoggerManager loggerManager;
 
     /**
-     * General state of the job.
-     */
-    private State state = State.NONE;
-
-    /**
-     * Request provided when starting the job.
-     */
-    private R request;
-
-    /**
-     * Log sent during job execution.
-     */
-    private LogQueue logs = new LogQueue();
-
-    /**
-     * @see #getStartDate()
-     */
-    private Date startDate;
-
-    /**
-     * @see #getEndDate()
-     */
-    private Date endDate;
-
-    /**
      * Used to lock #ask().
      */
     private final transient ReentrantLock askLock = new ReentrantLock();
@@ -99,14 +76,46 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private transient DefaultJobProgress progress;
 
     /**
+     * Used to listen to all the log produced during job execution.
+     */
+    private transient LoggerListener logListener;
+
+    /**
+     * Log sent during job execution.
+     */
+    private final LogQueue logs = new LogQueue();
+
+    /**
+     * Log sent during job execution organized as a tree.
+     * 
+     * @since 5.4M1
+     */
+    private final LogTree logTree = new LogTree();
+
+    /**
+     * General state of the job.
+     */
+    private State state = State.NONE;
+
+    /**
+     * Request provided when starting the job.
+     */
+    private R request;
+
+    /**
+     * @see #getStartDate()
+     */
+    private Date startDate;
+
+    /**
+     * @see #getEndDate()
+     */
+    private Date endDate;
+
+    /**
      * Indicate of the job has been started by another one.
      */
     private boolean subJob;
-
-    /**
-     * Used to listen to all the log produced during job execution.
-     */
-    private LogQueueListener logListener;
 
     /**
      * @param request the request provided when started the job
@@ -133,7 +142,9 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.observationManager.addListener(this.progress);
 
         // Isolate log for the job status
-        this.logListener = new LogQueueListener(LogQueueListener.class.getName() + '_' + hashCode(), this.logs);
+        this.logListener =
+            new LoggerListener(LoggerListener.class.getName() + '_' + hashCode(), new CompositeLogger(this.logs,
+                this.logTree));
         if (this.subJob) {
             this.observationManager.addListener(this.logListener);
         } else {
@@ -180,6 +191,14 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public LogQueue getLog()
     {
         return this.logs;
+    }
+
+    /**
+     * @return the log tree
+     */
+    public LogTree getLogTree()
+    {
+        return this.logTree;
     }
 
     @Override
