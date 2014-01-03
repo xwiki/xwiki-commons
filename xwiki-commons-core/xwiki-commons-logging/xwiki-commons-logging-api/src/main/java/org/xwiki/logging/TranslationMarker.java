@@ -19,78 +19,26 @@
  */
 package org.xwiki.logging;
 
-import org.slf4j.Marker;
-import org.xwiki.logging.marker.AbstractContainerMarker;
-
 /**
  * Allows associating a translation key to a log.
  * 
  * @version $Id$
  * @since 5.0M2
+ * @deprecated since 5.4M1, use {@link org.xwiki.logging.marker.TranslationMarker} instead
  */
-public class TranslationMarker extends AbstractContainerMarker
+@Deprecated
+public class TranslationMarker extends org.xwiki.logging.marker.TranslationMarker
 {
-    /**
-     * The marker name.
-     */
-    public static final String NAME = TranslationMarker.class.getName();
-
     /**
      * Serialization id.
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * @see #getTranslationKey()
-     */
-    private String translationKey;
-
-    /**
      * @param translationKey the translation key to associate to the log
      */
     public TranslationMarker(String translationKey)
     {
-        super(NAME);
-
-        this.translationKey = translationKey;
-    }
-
-    /**
-     * @param translationKey the translation key to associate to the log
-     * @param references the other associated markers
-     * @since 5.4M1
-     */
-    public TranslationMarker(String translationKey, Marker... references)
-    {
-        super(translationKey, references);
-
-        this.translationKey = translationKey;
-    }
-
-    /**
-     * @return the translation key associate to the log
-     */
-    public String getTranslationKey()
-    {
-        return this.translationKey;
-    }
-
-    // Object
-
-    @Override
-    public int hashCode()
-    {
-        return this.translationKey.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-        if (this == other) {
-            return true;
-        }
-
-        return other instanceof TranslationMarker
-            && this.translationKey.equals(((TranslationMarker) other).getTranslationKey());
+        super(translationKey);
     }
 }
