@@ -217,7 +217,13 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     @Override
     public JobStatus getJobStatus(List<String> id)
     {
-        return loadStatus(id);
+        try {
+            return loadStatus(id);
+        } catch (Exception e) {
+            this.logger.warn("Failed to load job status for id [{}]", id, e);
+
+            return null;
+        }
     }
 
     @Override
