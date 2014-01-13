@@ -37,11 +37,8 @@ import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
-import org.xwiki.extension.job.plan.ExtensionPlanTree;
-import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
-import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
 import org.xwiki.job.Request;
 
 /**
@@ -52,7 +49,8 @@ import org.xwiki.job.Request;
  */
 @Component
 @Named(UninstallPlanJob.JOBTYPE)
-public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest, DefaultExtensionPlan<UninstallRequest>>
+public class UninstallPlanJob extends
+    AbstractExtensionPlanJob<UninstallRequest>
 {
     /**
      * The id of the job.
@@ -69,22 +67,10 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest, Def
      */
     private static final String EXCEPTION_NOTINSTALLEDNAMESPACE = EXCEPTION_NOTINSTALLED + " on namespace [%s]";
 
-    /**
-     * The install plan.
-     */
-    private ExtensionPlanTree extensionTree = new DefaultExtensionPlanTree();
-
     @Override
     public String getType()
     {
         return JOBTYPE;
-    }
-
-    @Override
-    protected DefaultExtensionPlan<UninstallRequest> createNewStatus(UninstallRequest request)
-    {
-        return new DefaultExtensionPlan<UninstallRequest>(request, this.observationManager, this.loggerManager,
-            this.extensionTree, this.jobContext.getCurrentJob() != null);
     }
 
     @Override
@@ -254,10 +240,13 @@ public class UninstallPlanJob extends AbstractExtensionJob<UninstallRequest, Def
         extensionHandler.checkUninstall(installedExtension, namespace, getRequest());
 
         // Log progression
-        if (namespace != null) {
-            this.logger.info("Resolving extension [{}] from namespace [{}]", installedExtension.getId(), namespace);
-        } else {
-            this.logger.info("Resolving extension [{}]", installedExtension.getId());
+        if (this.request.isVerbose()) {
+            if (namespace != null) {
+                this.logger.info(LOG_RESOLVE_NAMESPACE, "Resolving extension [{}] from namespace [{}]",
+                    installedExtension.getId(), namespace);
+            } else {
+                this.logger.info(LOG_RESOLVE, "Resolving extension [{}]", installedExtension.getId());
+            }
         }
 
         notifyPushLevelProgress(2);

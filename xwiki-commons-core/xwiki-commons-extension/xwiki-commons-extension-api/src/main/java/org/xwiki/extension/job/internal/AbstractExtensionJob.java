@@ -41,6 +41,7 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.job.internal.AbstractJob;
 import org.xwiki.job.internal.AbstractJobStatus;
 import org.xwiki.logging.marker.BeginTranslationMarker;
+import org.xwiki.logging.marker.EndTranslationMarker;
 
 /**
  * Base class for any Job dealing with extensions.
@@ -59,22 +60,22 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     public static final String CONTEXTKEY_PLAN = "job.extension.plan";
 
     private static final BeginTranslationMarker LOG_APPLYACTION_BEGIN = new BeginTranslationMarker(
-        "extension.log.applyaction.begin");
+        "extension.log.job.applyaction.begin");
 
     private static final BeginTranslationMarker LOG_APPLYACTION_NAMESPACE_BEGIN = new BeginTranslationMarker(
-        "extension.log.applyaction.begin.namespace");
+        "extension.log.job.applyaction.begin.namespace");
 
-    private static final BeginTranslationMarker LOG_APPLYACTION_SUCCESS_END = new BeginTranslationMarker(
-        "extension.log.applyaction.success.end");
+    private static final EndTranslationMarker LOG_APPLYACTION_SUCCESS_END = new EndTranslationMarker(
+        "extension.log.job.applyaction.success.end");
 
-    private static final BeginTranslationMarker LOG_APPLYACTION_SUCCESS_END_NAMESPACE = new BeginTranslationMarker(
-        "extension.log.applyaction.success.end.namespace");
+    private static final EndTranslationMarker LOG_APPLYACTION_SUCCESS_END_NAMESPACE = new EndTranslationMarker(
+        "extension.log.job.applyaction.success.end.namespace");
 
-    private static final BeginTranslationMarker LOG_APPLYACTION_FAILURE_END = new BeginTranslationMarker(
-        "extension.log.applyaction.failure.end");
+    private static final EndTranslationMarker LOG_APPLYACTION_FAILURE_END = new EndTranslationMarker(
+        "extension.log.job.applyaction.failure.end");
 
-    private static final BeginTranslationMarker LOG_APPLYACTION_FAILURE_END_NAMESPACE = new BeginTranslationMarker(
-        "extension.log.applyaction.failure.end.namespace");
+    private static final EndTranslationMarker LOG_APPLYACTION_FAILURE_END_NAMESPACE = new EndTranslationMarker(
+        "extension.log.job.applyaction.failure.end.namespace");
 
     /**
      * Used to manipulate local extension repository.
