@@ -124,12 +124,14 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
         Extension extension = action.getExtension();
         String namespace = action.getNamespace();
 
-        if (namespace != null) {
-            this.logger.info(LOG_APPLYACTION_BEGIN, "Applying {} for extension [{}] on namespace [{}]",
-                action.getAction(), extension.getId(), namespace);
-        } else {
-            this.logger.info(LOG_APPLYACTION_NAMESPACE_BEGIN, "Applying {} for extension [{}] on all namespaces",
-                action.getAction(), extension.getId());
+        if (this.request.isVerbose()) {
+            if (namespace != null) {
+                this.logger.info(LOG_APPLYACTION_BEGIN, "Applying {} for extension [{}] on namespace [{}]",
+                    action.getAction(), extension.getId(), namespace);
+            } else {
+                this.logger.info(LOG_APPLYACTION_NAMESPACE_BEGIN, "Applying {} for extension [{}] on all namespaces",
+                    action.getAction(), extension.getId());
+            }
         }
 
         notifyPushLevelProgress(2);
@@ -152,25 +154,28 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 installExtension(localExtension, action.getPreviousExtensions(), namespace, action.isDependency());
             }
 
-            if (namespace != null) {
-                this.logger.info(LOG_APPLYACTION_SUCCESS_END,
-                    "Successfully applied {} for extension [{}] on namespace [{}]", action.getAction(),
-                    extension.getId(), namespace);
-            } else {
-                this.logger.info(LOG_APPLYACTION_SUCCESS_END_NAMESPACE,
-                    "Successfully applied {} for extension [{}] on all namespaces", action.getAction(),
-                    extension.getId());
+            if (this.request.isVerbose()) {
+                if (namespace != null) {
+                    this.logger.info(LOG_APPLYACTION_SUCCESS_END,
+                        "Successfully applied {} for extension [{}] on namespace [{}]", action.getAction(),
+                        extension.getId(), namespace);
+                } else {
+                    this.logger.info(LOG_APPLYACTION_SUCCESS_END_NAMESPACE,
+                        "Successfully applied {} for extension [{}] on all namespaces", action.getAction(),
+                        extension.getId());
+                }
             }
         } catch (ExtensionException e) {
-            if (namespace != null) {
-                this.logger.error(LOG_APPLYACTION_FAILURE_END,
-                    "Failed to apply {} for extension [{}] on namespace [{}]", action.getAction(), extension.getId(),
-                    namespace, e);
-            } else {
-                this.logger
-                    .error(LOG_APPLYACTION_FAILURE_END_NAMESPACE,
+            if (this.request.isVerbose()) {
+                if (namespace != null) {
+                    this.logger.error(LOG_APPLYACTION_FAILURE_END,
+                        "Failed to apply {} for extension [{}] on namespace [{}]", action.getAction(),
+                        extension.getId(), namespace, e);
+                } else {
+                    this.logger.error(LOG_APPLYACTION_FAILURE_END_NAMESPACE,
                         "Failed to apply {} for extension [{}] on all namespaces", action.getAction(),
                         extension.getId(), e);
+                }
             }
 
             throw e;

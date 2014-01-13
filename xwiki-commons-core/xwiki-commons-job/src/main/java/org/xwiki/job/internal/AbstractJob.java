@@ -41,6 +41,7 @@ import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.marker.BeginTranslationMarker;
 import org.xwiki.observation.ObservationManager;
 
 /**
@@ -53,6 +54,14 @@ import org.xwiki.observation.ObservationManager;
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus< ? super R>> implements Job
 {
+    private static final BeginTranslationMarker LOG_BEGIN = new BeginTranslationMarker("job.log.begin");
+
+    private static final BeginTranslationMarker LOG_BEGIN_ID = new BeginTranslationMarker("job.log.begin.id");
+
+    private static final BeginTranslationMarker LOG_END = new BeginTranslationMarker("job.log.end");
+
+    private static final BeginTranslationMarker LOG_END_ID = new BeginTranslationMarker("job.log.end.id");
+
     /**
      * Component manager.
      */
@@ -167,10 +176,10 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
         this.status.startListening();
 
         if (getStatus().getRequest().getId() != null) {
-            this.logger.info("Starting job of type [{}] with identifier [{}]", getType(), getStatus().getRequest()
-                .getId());
+            this.logger.info(LOG_BEGIN_ID, "Starting job of type [{}] with identifier [{}]", getType(), getStatus()
+                .getRequest().getId());
         } else {
-            this.logger.info("Starting job of type [{}]", getType());
+            this.logger.info(LOG_BEGIN, "Starting job of type [{}]", getType());
         }
     }
 
@@ -193,10 +202,10 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
             this.status.setEndDate(new Date());
 
             if (getStatus().getRequest().getId() != null) {
-                this.logger.info("Finished job of type [{}] with identifier [{}]", getType(), getStatus().getRequest()
-                    .getId());
+                this.logger.info(LOG_END_ID, "Finished job of type [{}] with identifier [{}]", getType(), getStatus()
+                    .getRequest().getId());
             } else {
-                this.logger.info("Finished job of type [{}]", getType());
+                this.logger.info(LOG_END, "Finished job of type [{}]", getType());
             }
 
             // Stop updating job status (progress, log, etc.)
