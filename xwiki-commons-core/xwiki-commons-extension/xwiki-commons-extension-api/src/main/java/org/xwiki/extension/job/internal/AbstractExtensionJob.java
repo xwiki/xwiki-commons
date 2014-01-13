@@ -125,7 +125,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
         Extension extension = action.getExtension();
         String namespace = action.getNamespace();
 
-        if (this.request.isVerbose()) {
+        if (getRequest().isVerbose()) {
             if (namespace != null) {
                 this.logger.info(LOG_APPLYACTION_BEGIN, "Applying {} for extension [{}] on namespace [{}]",
                     action.getAction(), extension.getId(), namespace);
@@ -155,7 +155,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 installExtension(localExtension, action.getPreviousExtensions(), namespace, action.isDependency());
             }
 
-            if (this.request.isVerbose()) {
+            if (getRequest().isVerbose()) {
                 if (namespace != null) {
                     this.logger.info(LOG_APPLYACTION_SUCCESS_END,
                         "Successfully applied {} for extension [{}] on namespace [{}]", action.getAction(),
@@ -167,7 +167,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 }
             }
         } catch (ExtensionException e) {
-            if (this.request.isVerbose()) {
+            if (getRequest().isVerbose()) {
                 if (namespace != null) {
                     this.logger.error(LOG_APPLYACTION_FAILURE_END,
                         "Failed to apply {} for extension [{}] on namespace [{}]", action.getAction(),

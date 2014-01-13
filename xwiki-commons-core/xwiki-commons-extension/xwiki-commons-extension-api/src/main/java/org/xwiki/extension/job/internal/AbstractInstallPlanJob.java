@@ -296,7 +296,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     {
         InstalledExtension installedExtension = this.installedExtensionRepository.getInstalledExtension(id, namespace);
         if (installedExtension != null) {
-            if (this.request.isVerbose()) {
+            if (getRequest().isVerbose()) {
                 this.logger.debug("Found already installed extension with id [{}]. Checking compatibility...", id);
             }
 
@@ -368,7 +368,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     protected void installExtension(ExtensionId extensionId, boolean dependency, String namespace,
         ModifableExtensionPlanTree parentBranch) throws InstallException, ResolveException
     {
-        if (this.request.isVerbose()) {
+        if (getRequest().isVerbose()) {
             if (namespace != null) {
                 this.logger.info(LOG_RESOLVE_NAMESPACE, "Resolving extension [{}] on namespace [{}]", extensionId,
                     namespace);
@@ -422,7 +422,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 throw new InstallException("Dependency [" + extensionDependency
                     + "] is not compatible with core extension [" + coreExtension + "]");
             } else {
-                if (this.request.isVerbose()) {
+                if (getRequest().isVerbose()) {
                     this.logger.debug("There is already a core extension [{}] covering extension dependency [{}]",
                         coreExtension.getId(), extensionDependency);
                 }
@@ -482,7 +482,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             // Check if already installed version is compatible
             if (installedExtension.isValid(namespace)
                 && versionConstraint.isCompatible(installedExtension.getId().getVersion())) {
-                if (this.request.isVerbose()) {
+                if (getRequest().isVerbose()) {
                     this.logger.debug("There is already an installed extension [{}] covering extension dependency [{}]",
                         installedExtension.getId(), extensionDependency);
                 }
@@ -547,7 +547,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private void installExtensionDependency(ExtensionDependency extensionDependency, String namespace,
         List<ModifableExtensionPlanNode> parentBranch) throws InstallException
     {
-        if (this.request.isVerbose()) {
+        if (getRequest().isVerbose()) {
             if (namespace != null) {
                 this.logger.info(LOG_RESOLVEDEPENDENCY_NAMESPACE,
                     "Resolving extension dependency [{}] on namespace [{}]", extensionDependency, namespace);

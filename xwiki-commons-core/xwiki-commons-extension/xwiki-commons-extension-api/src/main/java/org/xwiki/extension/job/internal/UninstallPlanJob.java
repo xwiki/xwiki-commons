@@ -240,7 +240,7 @@ public class UninstallPlanJob extends
         extensionHandler.checkUninstall(installedExtension, namespace, getRequest());
 
         // Log progression
-        if (this.request.isVerbose()) {
+        if (getRequest().isVerbose()) {
             if (namespace != null) {
                 this.logger.info(LOG_RESOLVE_NAMESPACE, "Resolving extension [{}] from namespace [{}]",
                     installedExtension.getId(), namespace);
