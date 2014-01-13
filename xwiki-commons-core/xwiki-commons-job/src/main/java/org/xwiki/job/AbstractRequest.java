@@ -30,7 +30,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link Request} implementations.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -51,6 +51,11 @@ public abstract class AbstractRequest implements Request
      * The properties.
      */
     private Map<String, Object> properties = new HashMap<String, Object>();
+
+    /**
+     * @see #isVerbose()
+     */
+    private boolean verbose = true;
 
     /**
      * Default constructor.
@@ -168,5 +173,20 @@ public abstract class AbstractRequest implements Request
     public boolean containsProperty(String key)
     {
         return this.properties.containsKey(key);
+    }
+
+    @Override
+    public boolean isVerbose()
+    {
+        return this.verbose;
+    }
+
+    /**
+     * @param verbose true if the job should log informations about what is going on.
+     * @since 5.4RC1
+     */
+    public void setVerbose(boolean verbose)
+    {
+        this.verbose = verbose;
     }
 }

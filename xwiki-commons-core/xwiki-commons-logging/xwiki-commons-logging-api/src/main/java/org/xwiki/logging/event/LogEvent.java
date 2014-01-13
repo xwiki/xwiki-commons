@@ -30,9 +30,9 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.TranslationMarker;
 import org.xwiki.logging.internal.helpers.ExtendedMessageFormatter;
 import org.xwiki.logging.marker.ContainerMarker;
+import org.xwiki.logging.marker.TranslationMarker;
 import org.xwiki.observation.event.Event;
 
 /**

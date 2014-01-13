@@ -160,6 +160,14 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/job/Request</className>
+              <method>boolean isVerbose()</method>
+              <justification>Make job verbosity a standard property. All Request are supposed to extends 
+                AbstractRequest with implement the new method and anyway jobs know the kind of request they 
+                are getting in input so they won't used isVerbose() if the request does not implement it.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

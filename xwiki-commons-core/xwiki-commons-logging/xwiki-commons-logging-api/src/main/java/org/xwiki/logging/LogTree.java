@@ -129,11 +129,19 @@ public class LogTree extends LogTreeNode implements Logger
             this.currentNode.push(node);
         } else if (logEvent.isEnd()) {
             this.currentNode.peek().add(logEvent);
-            if (this.currentNode.peek() != this) {
-                this.currentNode.pop();
-            }
+            pop();
         } else {
             this.currentNode.peek().add(logEvent);
+        }
+    }
+
+    /**
+     * Make log tree caret go the parent next sibling.
+     */
+    public void pop()
+    {
+        if (this.currentNode.peek() != this) {
+            this.currentNode.pop();
         }
     }
 

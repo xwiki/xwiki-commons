@@ -52,17 +52,12 @@ public class DefaultJobProgress implements EventListener, JobProgress
     /**
      * The unique name of the current job progress.
      */
-    private String name;
-
-    /**
-     * The thread on which to filter events.
-     */
-    private Thread thread;
+    private final String name;
 
     /**
      * The progress stack.
      */
-    private Stack<Level> progress = new Stack<Level>();
+    private final Stack<Level> progress = new Stack<Level>();
 
     /**
      * Flag indicating that the next {@link StepProgressEvent} should be ignored (probably because its progress was
@@ -124,12 +119,11 @@ public class DefaultJobProgress implements EventListener, JobProgress
     }
 
     /**
-     * @param thread the thread on which to filter events
+     * Default constructor.
      */
-    public DefaultJobProgress(Thread thread)
+    public DefaultJobProgress()
     {
         this.name = getClass().getName() + '_' + hashCode();
-        this.thread = thread;
 
         // Push the root level to be able to distinguish between the case when the progress hasn't started yet and the
         // case when the progress is over. Otherwise we would have an empty progress stack for both cases.
@@ -153,16 +147,14 @@ public class DefaultJobProgress implements EventListener, JobProgress
     @Override
     public void onEvent(Event event, Object arg1, Object arg2)
     {
-        if (this.thread == null || this.thread == Thread.currentThread()) {
-            boolean ignoreNextStep = this.ignoreNextStepProgressEvent;
-            this.ignoreNextStepProgressEvent = false;
-            if (event instanceof PushLevelProgressEvent) {
-                onPushLevelProgress((PushLevelProgressEvent) event);
-            } else if (event instanceof PopLevelProgressEvent) {
-                onPopLevelProgress();
-            } else if (event instanceof StepProgressEvent && !ignoreNextStep) {
-                onStepProgress();
-            }
+        boolean ignoreNextStep = this.ignoreNextStepProgressEvent;
+        this.ignoreNextStepProgressEvent = false;
+        if (event instanceof PushLevelProgressEvent) {
+            onPushLevelProgress((PushLevelProgressEvent) event);
+        } else if (event instanceof PopLevelProgressEvent) {
+            onPopLevelProgress();
+        } else if (event instanceof StepProgressEvent && !ignoreNextStep) {
+            onStepProgress();
         }
     }
 

@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * A {@link Job} request.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -88,4 +88,10 @@ public interface Request extends Serializable
      * @since 4.2M2
      */
     boolean containsProperty(String key);
+
+    /**
+     * @return true of the job should log informations about what is going on
+     * @since 5.4RC1
+     */
+    boolean isVerbose();
 }
