@@ -62,6 +62,11 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     private static final BeginTranslationMarker LOG_END_ID = new BeginTranslationMarker("job.log.end.id");
 
+    private static final BeginTranslationMarker LOG_EXCEPTION = new BeginTranslationMarker("job.log.exception");
+
+    private static final BeginTranslationMarker LOG_STATUS_STORE_FAILED = new BeginTranslationMarker(
+        "job.log.status.store.failed");
+
     /**
      * Component manager.
      */
@@ -146,7 +151,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
         try {
             runInternal();
         } catch (Throwable t) {
-            this.logger.error("Exception thrown during job execution", t);
+            this.logger.error(LOG_EXCEPTION, "Exception thrown during job execution", t);
             error = t;
         } finally {
             jobFinished(error);
@@ -226,7 +231,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
                     this.storage.store(this.status);
                 }
             } catch (Throwable t) {
-                this.logger.warn("Failed to store job status [{}]", this.status, t);
+                this.logger.warn(LOG_STATUS_STORE_FAILED, "Failed to store job status [{}]", this.status, t);
             }
         } finally {
             this.lock.unlock();
