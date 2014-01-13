@@ -42,6 +42,8 @@ import org.xwiki.job.event.status.PushLevelProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.marker.BeginTranslationMarker;
+import org.xwiki.logging.marker.EndTranslationMarker;
+import org.xwiki.logging.marker.TranslationMarker;
 import org.xwiki.observation.ObservationManager;
 
 /**
@@ -58,13 +60,13 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     private static final BeginTranslationMarker LOG_BEGIN_ID = new BeginTranslationMarker("job.log.begin.id");
 
-    private static final BeginTranslationMarker LOG_END = new BeginTranslationMarker("job.log.end");
+    private static final EndTranslationMarker LOG_END = new EndTranslationMarker("job.log.end");
 
-    private static final BeginTranslationMarker LOG_END_ID = new BeginTranslationMarker("job.log.end.id");
+    private static final EndTranslationMarker LOG_END_ID = new EndTranslationMarker("job.log.end.id");
 
-    private static final BeginTranslationMarker LOG_EXCEPTION = new BeginTranslationMarker("job.log.exception");
+    private static final TranslationMarker LOG_EXCEPTION = new TranslationMarker("job.log.exception");
 
-    private static final BeginTranslationMarker LOG_STATUS_STORE_FAILED = new BeginTranslationMarker(
+    private static final TranslationMarker LOG_STATUS_STORE_FAILED = new TranslationMarker(
         "job.log.status.store.failed");
 
     /**
