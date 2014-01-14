@@ -28,7 +28,6 @@ import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.ClassUtils;
 import org.apache.velocity.util.RuntimeServicesAware;
 import org.apache.velocity.util.introspection.Info;
-import org.apache.velocity.util.introspection.SecureUberspector;
 import org.apache.velocity.util.introspection.Uberspect;
 import org.apache.velocity.util.introspection.UberspectImpl;
 import org.apache.velocity.util.introspection.UberspectLoggable;

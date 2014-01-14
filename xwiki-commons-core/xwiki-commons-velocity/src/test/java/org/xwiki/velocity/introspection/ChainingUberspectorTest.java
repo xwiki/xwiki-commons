@@ -26,7 +26,6 @@ import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.util.introspection.SecureUberspector;
 import org.apache.velocity.util.introspection.UberspectImpl;
 import org.jmock.Expectations;
 import org.jmock.States;
@@ -212,8 +211,8 @@ public class ChainingUberspectorTest
         StringWriter writer = new StringWriter();
         engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
                 new StringReader("#set($foo = 'hello')"
-                        + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
-        Assert.assertEquals("hello$bar", writer.toString());
+                        + "#set($bar = $foo.getClass().getConstructors())$foo $foo.class.name $bar"));
+        Assert.assertEquals("hello java.lang.String $bar", writer.toString());
     }
 
     /*
@@ -231,8 +230,8 @@ public class ChainingUberspectorTest
         StringWriter writer = new StringWriter();
         engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
                 new StringReader("#set($foo = 'hello')"
-                        + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
-        Assert.assertEquals("hello$bar", writer.toString());
+                        + "#set($bar = $foo.getClass().getConstructors())$foo $foo.class.name $bar"));
+        Assert.assertEquals("hello java.lang.String $bar", writer.toString());
     }
 
     /*

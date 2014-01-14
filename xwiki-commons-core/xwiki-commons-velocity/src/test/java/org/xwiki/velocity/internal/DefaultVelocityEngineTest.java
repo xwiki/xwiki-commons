@@ -19,6 +19,10 @@
  */
 package org.xwiki.velocity.internal;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -27,7 +31,6 @@ import java.util.Properties;
 
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeServices;
-import org.apache.velocity.util.introspection.SecureUberspector;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,8 +40,7 @@ import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
-
-import static org.mockito.Mockito.*;
+import org.xwiki.velocity.introspection.SecureUberspector;
 
 /**
  * Unit tests for {@link DefaultVelocityEngine}.

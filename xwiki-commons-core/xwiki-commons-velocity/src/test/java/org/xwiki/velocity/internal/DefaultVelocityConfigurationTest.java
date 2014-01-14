@@ -24,7 +24,6 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.generic.ListTool;
-import org.apache.velocity.util.introspection.SecureUberspector;
 import org.jmock.Expectations;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,6 +35,7 @@ import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
+import org.xwiki.velocity.introspection.SecureUberspector;
 
 /**
  * Unit tests for {@link DefaultVelocityConfiguration}.
