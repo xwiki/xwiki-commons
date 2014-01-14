@@ -24,14 +24,11 @@ import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.slf4j.Logger;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.logging.CompositeLogger;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
-import org.xwiki.logging.LogTree;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.event.LoggerListener;
@@ -83,13 +80,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private transient LoggerListener logListener;
 
     /**
-     * Log sent during job execution organized as a tree.
-     * 
-     * @since 5.4M1
-     */
-    private transient LogTree logTree;
-
-    /**
      * Log sent during job execution.
      */
     private LogQueue logs;
@@ -133,7 +123,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.loggerManager = loggerManager;
         this.subJob = subJob;
 
-        this.logTree = new LogTree();
         this.logs = new LogQueue();
     }
 
@@ -146,9 +135,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.observationManager.addListener(new WrappedThreadEventListener(this.progress, Thread.currentThread()));
 
         // Isolate log for the job status
-        this.logListener =
-            new LoggerListener(LoggerListener.class.getName() + '_' + hashCode(), new CompositeLogger(this.logs,
-                this.logTree));
+        this.logListener = new LoggerListener(LoggerListener.class.getName() + '_' + hashCode(), this.logs);
         if (this.subJob) {
             this.observationManager.addListener(this.logListener);
         } else {
@@ -195,23 +182,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public LogQueue getLog()
     {
         return this.logs;
-    }
-
-    /**
-     * @return the log tree
-     */
-    public LogTree getLogTree()
-    {
-        // The log tree might be null in a serialized job status
-        if (this.logTree == null) {
-            this.logTree = new LogTree();
-
-            if (this.logs != null) {
-                this.logs.log((Logger) this.logTree);
-            }
-        }
-
-        return this.logTree;
     }
 
     @Override
