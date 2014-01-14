@@ -36,6 +36,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.internal.helpers.LogUtils;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
@@ -142,7 +143,8 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
             LogLevel logLevel = this.utils.toLogLevel(event.getLevel());
 
             LogEvent logevent =
-                new LogEvent(event.getMarker(), logLevel, event.getMessage(), event.getArgumentArray(), throwable);
+                LogUtils.newLogEvent(event.getMarker(), logLevel, event.getMessage(), event.getArgumentArray(),
+                    throwable);
 
             getObservationManager().notify(logevent, event.getLoggerName(), null);
         } catch (IllegalArgumentException e) {

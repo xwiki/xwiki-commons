@@ -83,16 +83,16 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private transient LoggerListener logListener;
 
     /**
-     * Log sent during job execution.
-     */
-    private LogQueue logs;
-
-    /**
      * Log sent during job execution organized as a tree.
      * 
      * @since 5.4M1
      */
-    private LogTree logTree;
+    private transient LogTree logTree;
+
+    /**
+     * Log sent during job execution.
+     */
+    private LogQueue logs;
 
     /**
      * General state of the job.
@@ -202,6 +202,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      */
     public LogTree getLogTree()
     {
+        // The log tree might be null in a serialized job status
         if (this.logTree == null) {
             this.logTree = new LogTree();
 

@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Marker;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.internal.helpers.LogUtils;
 
 /**
  * A queue of {@link LogEvent}s.
@@ -113,7 +114,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
      */
     public LogEvent addLogEvent(Marker marker, LogLevel level, String format, Object[] arguments, Throwable throwable)
     {
-        LogEvent logEvent = new LogEvent(marker, level, format, arguments, throwable);
+        LogEvent logEvent = LogUtils.newLogEvent(marker, level, format, arguments, throwable);
         log(logEvent);
 
         return logEvent;

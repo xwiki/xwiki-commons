@@ -249,22 +249,6 @@ public class LogEvent implements Event, Serializable
         return null;
     }
 
-    /**
-     * @return indicate if the log is the beginning of a log group
-     */
-    public boolean isBegin()
-    {
-        return getMarker() != null && getMarker().contains(LogEvent.MARKER_BEGIN);
-    }
-
-    /**
-     * @return indicate if the log is the end of a log group
-     */
-    public boolean isEnd()
-    {
-        return getMarker() != null && getMarker().contains(LogEvent.MARKER_END);
-    }
-
     // Event
 
     @Override

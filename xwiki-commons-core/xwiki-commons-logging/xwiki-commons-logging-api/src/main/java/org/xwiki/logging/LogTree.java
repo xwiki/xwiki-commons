@@ -25,6 +25,9 @@ import java.util.Stack;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Marker;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.internal.helpers.LogUtils;
+import org.xwiki.observation.event.BeginEvent;
+import org.xwiki.observation.event.EndEvent;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -114,7 +117,8 @@ public class LogTree extends LogTreeNode implements Logger
      */
     protected LogEvent log(Marker marker, LogLevel level, String format, Object[] arguments, Throwable throwable)
     {
-        LogEvent logEvent = new LogEvent(marker, level, format, arguments, throwable);
+        LogEvent logEvent = LogUtils.newLogEvent(marker, level, format, arguments, throwable);
+
         log(logEvent);
 
         return logEvent;
@@ -123,11 +127,11 @@ public class LogTree extends LogTreeNode implements Logger
     @Override
     public void log(LogEvent logEvent)
     {
-        if (logEvent.isBegin()) {
+        if (logEvent instanceof BeginEvent) {
             LogTreeNode node = new LogTreeNode(logEvent);
             this.currentNode.peek().add(node);
             this.currentNode.push(node);
-        } else if (logEvent.isEnd()) {
+        } else if (logEvent instanceof EndEvent) {
             this.currentNode.peek().add(logEvent);
             pop();
         } else {
