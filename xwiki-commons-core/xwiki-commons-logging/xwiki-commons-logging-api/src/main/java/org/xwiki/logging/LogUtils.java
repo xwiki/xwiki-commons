@@ -63,6 +63,12 @@ public final class LogUtils
     }
 
     /**
+     * Translate the passed {@link LogEvent} based on the passed translation message pattern.
+     * <p>
+     * The translation message pattern use the same syntax than standard message pattern except that it's optionally
+     * possible to provide a custom index as in <code>Some {1} translation {0} message</code> in order to modify the
+     * order of the argument which can be required depending on the language.
+     * 
      * @param logEvent the {@link LogEvent} to translate
      * @param translatedMessage the translated version of the {@link LogEvent} message
      * @return the translated version of the passed {@link LogEvent}
