@@ -25,7 +25,6 @@ import java.util.Stack;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Marker;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.internal.helpers.LogUtils;
 import org.xwiki.observation.event.BeginEvent;
 import org.xwiki.observation.event.EndEvent;
 import org.xwiki.stability.Unstable;

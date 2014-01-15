@@ -17,13 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.logging.internal.helpers;
+package org.xwiki.logging;
 
 import org.slf4j.Marker;
-import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.BeginLogEvent;
 import org.xwiki.logging.event.EndLogEvent;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.internal.helpers.MessageParser;
+import org.xwiki.logging.internal.helpers.MessageParser.MessageElement;
+import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
 
 /**
  * @version $Id$
@@ -58,5 +60,40 @@ public final class LogUtils
         }
 
         return new LogEvent(marker, level, message, argumentArray, throwable);
+    }
+
+    /**
+     * @param logEvent the {@link LogEvent} to translate
+     * @param translatedMessage the translated version of the {@link LogEvent} message
+     * @return the translated version of the passed {@link LogEvent}
+     */
+    public static LogEvent translate(LogEvent logEvent, String translatedMessage)
+    {
+        if (translatedMessage != null) {
+            MessageParser parser = new MessageParser(translatedMessage, true);
+
+            Object[] defaultArguments = logEvent.getArgumentArray();
+            Object[] arguments = new Object[defaultArguments.length];
+            StringBuilder message = new StringBuilder();
+
+            int index = 0;
+            for (MessageElement element = parser.next(); element != null; element = parser.next()) {
+                if (element instanceof MessageIndex) {
+                    message.append(MessageParser.ARGUMENT_STR);
+                    arguments[index++] = defaultArguments[((MessageIndex) element).getIndex()];
+                } else {
+                    message.append(element.getString());
+                }
+            }
+
+            for (; index < arguments.length; ++index) {
+                arguments[index] = defaultArguments[index];
+            }
+
+            return new LogEvent(logEvent.getMarker(), logEvent.getLevel(), message.toString(), arguments,
+                logEvent.getThrowable());
+        }
+
+        return logEvent;
     }
 }

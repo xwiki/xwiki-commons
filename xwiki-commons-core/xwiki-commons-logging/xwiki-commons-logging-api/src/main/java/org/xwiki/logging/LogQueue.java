@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Marker;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.internal.helpers.LogUtils;
 
 /**
  * A queue of {@link LogEvent}s.
