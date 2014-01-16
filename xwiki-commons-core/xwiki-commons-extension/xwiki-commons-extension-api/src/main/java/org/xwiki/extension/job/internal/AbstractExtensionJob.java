@@ -42,6 +42,7 @@ import org.xwiki.job.internal.AbstractJob;
 import org.xwiki.job.internal.AbstractJobStatus;
 import org.xwiki.logging.marker.BeginTranslationMarker;
 import org.xwiki.logging.marker.EndTranslationMarker;
+import org.xwiki.logging.marker.TranslationMarker;
 
 /**
  * Base class for any Job dealing with extensions.
@@ -58,24 +59,6 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
      * The key to use to access the context extension plan.
      */
     public static final String CONTEXTKEY_PLAN = "job.extension.plan";
-
-    private static final BeginTranslationMarker LOG_APPLYACTION_BEGIN = new BeginTranslationMarker(
-        "extension.log.job.applyaction.begin");
-
-    private static final BeginTranslationMarker LOG_APPLYACTION_NAMESPACE_BEGIN = new BeginTranslationMarker(
-        "extension.log.job.applyaction.begin.namespace");
-
-    private static final EndTranslationMarker LOG_APPLYACTION_SUCCESS_END = new EndTranslationMarker(
-        "extension.log.job.applyaction.success.end");
-
-    private static final EndTranslationMarker LOG_APPLYACTION_SUCCESS_END_NAMESPACE = new EndTranslationMarker(
-        "extension.log.job.applyaction.success.end.namespace");
-
-    private static final EndTranslationMarker LOG_APPLYACTION_FAILURE_END = new EndTranslationMarker(
-        "extension.log.job.applyaction.failure.end");
-
-    private static final EndTranslationMarker LOG_APPLYACTION_FAILURE_END_NAMESPACE = new EndTranslationMarker(
-        "extension.log.job.applyaction.failure.end.namespace");
 
     /**
      * Used to manipulate local extension repository.
@@ -94,6 +77,28 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
      */
     @Inject
     protected InstalledExtensionRepository installedExtensionRepository;
+
+    private static TranslationMarker getTranslationMarker(ExtensionPlanAction action, String extension, boolean begin)
+    {
+        StringBuilder str = new StringBuilder("extension.log.job.");
+
+        str.append(action.getAction().toString().toLowerCase());
+
+        if (extension != null) {
+            str.append('.');
+            str.append(extension);
+        }
+
+        str.append('.');
+        str.append(begin ? "begin" : "end");
+
+        if (action.getNamespace() != null) {
+            str.append('.');
+            str.append("namespace");
+        }
+
+        return begin ? new BeginTranslationMarker(str.toString()) : new EndTranslationMarker(str.toString());
+    }
 
     /**
      * @param actions the actions to apply
@@ -122,17 +127,14 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
      */
     protected void applyAction(ExtensionPlanAction action) throws ExtensionException
     {
+        Collection<InstalledExtension> previousExtensions = action.getPreviousExtensions();
         Extension extension = action.getExtension();
         String namespace = action.getNamespace();
 
         if (getRequest().isVerbose()) {
-            if (namespace != null) {
-                this.logger.info(LOG_APPLYACTION_BEGIN, "Applying {} for extension [{}] on namespace [{}]",
-                    action.getAction(), extension.getId(), namespace);
-            } else {
-                this.logger.info(LOG_APPLYACTION_NAMESPACE_BEGIN, "Applying {} for extension [{}] on all namespaces",
-                    action.getAction(), extension.getId());
-            }
+            this.logger.info(getTranslationMarker(action, null, true),
+                "Applying [{}] for extension [{}] on namespace [{}] from previous extension [{}]", action.getAction(),
+                extension.getId(), namespace, previousExtensions);
         }
 
         notifyPushLevelProgress(2);
@@ -152,31 +154,19 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 notifyStepPropress();
 
                 // Install
-                installExtension(localExtension, action.getPreviousExtensions(), namespace, action.isDependency());
+                installExtension(localExtension, previousExtensions, namespace, action.isDependency());
             }
 
             if (getRequest().isVerbose()) {
-                if (namespace != null) {
-                    this.logger.info(LOG_APPLYACTION_SUCCESS_END,
-                        "Successfully applied {} for extension [{}] on namespace [{}]", action.getAction(),
-                        extension.getId(), namespace);
-                } else {
-                    this.logger.info(LOG_APPLYACTION_SUCCESS_END_NAMESPACE,
-                        "Successfully applied {} for extension [{}] on all namespaces", action.getAction(),
-                        extension.getId());
-                }
+                this.logger.info(getTranslationMarker(action, "success", false),
+                    "Successfully applied [{}] for extension [{}] on namespace [{}] from previous extension [{}]",
+                    action.getAction(), extension.getId(), namespace, previousExtensions);
             }
         } catch (ExtensionException e) {
             if (getRequest().isVerbose()) {
-                if (namespace != null) {
-                    this.logger.error(LOG_APPLYACTION_FAILURE_END,
-                        "Failed to apply {} for extension [{}] on namespace [{}]", action.getAction(),
-                        extension.getId(), namespace, e);
-                } else {
-                    this.logger.error(LOG_APPLYACTION_FAILURE_END_NAMESPACE,
-                        "Failed to apply {} for extension [{}] on all namespaces", action.getAction(),
-                        extension.getId(), e);
-                }
+                this.logger.error(getTranslationMarker(action, "failure", false),
+                    "Failed to apply [{}] for extension [{}] on namespace [{}] from previous extension [{}]",
+                    action.getAction(), extension.getId(), namespace, previousExtensions);
             }
 
             throw e;
