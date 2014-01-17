@@ -58,11 +58,11 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 {
     private static final BeginTranslationMarker LOG_BEGIN = new BeginTranslationMarker("job.log.begin");
 
-    private static final BeginTranslationMarker LOG_BEGIN_ID = new BeginTranslationMarker("job.log.begin.id");
+    private static final BeginTranslationMarker LOG_BEGIN_ID = new BeginTranslationMarker("job.log.beginWithId");
 
     private static final EndTranslationMarker LOG_END = new EndTranslationMarker("job.log.end");
 
-    private static final EndTranslationMarker LOG_END_ID = new EndTranslationMarker("job.log.end.id");
+    private static final EndTranslationMarker LOG_END_ID = new EndTranslationMarker("job.log.endWithId");
 
     private static final TranslationMarker LOG_EXCEPTION = new TranslationMarker("job.log.exception");
 
