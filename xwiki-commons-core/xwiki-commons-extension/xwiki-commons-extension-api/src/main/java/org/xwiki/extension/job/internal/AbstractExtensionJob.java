@@ -93,8 +93,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
         str.append(begin ? "begin" : "end");
 
         if (action.getNamespace() != null) {
-            str.append('.');
-            str.append("namespace");
+            str.append("OnNamespace");
         }
 
         return begin ? new BeginTranslationMarker(str.toString()) : new EndTranslationMarker(str.toString());
