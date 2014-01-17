@@ -19,8 +19,6 @@
  */
 package org.xwiki.observation.internal;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Stack;
 
 import javax.inject.Inject;
@@ -31,7 +29,7 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.AllEvent;
 import org.xwiki.observation.event.BeginEvent;
 import org.xwiki.observation.event.EndEvent;
@@ -46,13 +44,8 @@ import org.xwiki.observation.event.Event;
 @Component
 @Singleton
 @Named("ObservationContextListener")
-public class ObservationContextListener implements EventListener
+public class ObservationContextListener extends AbstractEventListener
 {
-    /**
-     * The events to match.
-     */
-    private static final List<Event> EVENTS = Collections.<Event> singletonList(AllEvent.ALLEVENT);
-
     /**
      * The execution.
      */
@@ -64,6 +57,14 @@ public class ObservationContextListener implements EventListener
      */
     @Inject
     private Logger logger;
+
+    /**
+     * Setup event listener.
+     */
+    public ObservationContextListener()
+    {
+        super("ObservationContextListener", AllEvent.ALLEVENT);
+    }
 
     /**
      * @return the events stacked in the execution context
@@ -99,18 +100,6 @@ public class ObservationContextListener implements EventListener
     }
 
     // EventListener
-
-    @Override
-    public String getName()
-    {
-        return "ObservationContextListener";
-    }
-
-    @Override
-    public List<Event> getEvents()
-    {
-        return EVENTS;
-    }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
