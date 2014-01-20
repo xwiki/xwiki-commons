@@ -19,12 +19,15 @@
  */
 package org.xwiki.extension.job.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionException;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
@@ -127,13 +130,23 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     protected void applyAction(ExtensionPlanAction action) throws ExtensionException
     {
         Collection<InstalledExtension> previousExtensions = action.getPreviousExtensions();
+
         Extension extension = action.getExtension();
         String namespace = action.getNamespace();
 
+        List<ExtensionId> previousExtensionsIds;
+
         if (getRequest().isVerbose()) {
+            previousExtensionsIds = new ArrayList<ExtensionId>(previousExtensions.size());
+            for (InstalledExtension previousExtension : previousExtensions) {
+                previousExtensionsIds.add(previousExtension.getId());
+            }
+
             this.logger.info(getTranslationMarker(action, null, true),
                 "Applying [{}] for extension [{}] on namespace [{}] from previous extension [{}]", action.getAction(),
-                extension.getId(), namespace, previousExtensions);
+                extension.getId(), namespace, previousExtensionsIds);
+        } else {
+            previousExtensionsIds = null;
         }
 
         notifyPushLevelProgress(2);
@@ -159,13 +172,13 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             if (getRequest().isVerbose()) {
                 this.logger.info(getTranslationMarker(action, "success", false),
                     "Successfully applied [{}] for extension [{}] on namespace [{}] from previous extension [{}]",
-                    action.getAction(), extension.getId(), namespace, previousExtensions);
+                    action.getAction(), extension.getId(), namespace, previousExtensionsIds);
             }
         } catch (ExtensionException e) {
             if (getRequest().isVerbose()) {
                 this.logger.error(getTranslationMarker(action, "failure", false),
                     "Failed to apply [{}] for extension [{}] on namespace [{}] from previous extension [{}]",
-                    action.getAction(), extension.getId(), namespace, previousExtensions);
+                    action.getAction(), extension.getId(), namespace, previousExtensionsIds);
             }
 
             throw e;
