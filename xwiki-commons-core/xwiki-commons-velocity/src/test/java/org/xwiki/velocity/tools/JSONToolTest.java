@@ -95,6 +95,7 @@ public class JSONToolTest
         map.put("array", new int[] {9, 8});
         map.put("list", Arrays.asList("one", "two"));
         map.put("map", Collections.singletonMap("level2", true));
+        map.put("null", "null key value");
 
         String json = this.tool.serialize(map);
         // We can't predict the order in the map.
@@ -105,6 +106,7 @@ public class JSONToolTest
         Assert.assertTrue(json.contains("\"array\":[9,8]"));
         Assert.assertTrue(json.contains("\"list\":[\"one\",\"two\"]"));
         Assert.assertTrue(json.contains("\"map\":{\"level2\":true}"));
+        Assert.assertTrue(json.contains("\"null\":\"null key value\""));
     }
 
     @Test
