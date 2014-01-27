@@ -43,6 +43,8 @@ public class FormatMojoTest
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
         verifier.addCliOption("-Dforce=true");
         verifier.addCliOption("-Dpretty=false");
+        verifier.addCliOption("-DformatLicense=true");
+        verifier.addCliOption("-Dcommons.version=" + System.getProperty("commons.version"));
         verifier.executeGoal("xar:format");
         verifier.verifyErrorFreeLog();
 
