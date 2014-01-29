@@ -135,14 +135,16 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
             } else if (file.getName().equals(FILENAME_STATUS)) {
                 JobStatus status = loadStatus(folder);
 
-                File properFolder = getJobFolder(status.getRequest().getId());
+                if (status != null) {
+                    File properFolder = getJobFolder(status.getRequest().getId());
 
-                if (!folder.equals(properFolder)) {
-                    // Move the status in its right place
-                    try {
-                        FileUtils.moveFileToDirectory(file, properFolder, true);
-                    } catch (IOException e) {
-                        this.logger.error("Failed to move job status file", e);
+                    if (!folder.equals(properFolder)) {
+                        // Move the status in its right place
+                        try {
+                            FileUtils.moveFileToDirectory(file, properFolder, true);
+                        } catch (IOException e) {
+                            this.logger.error("Failed to move job status file", e);
+                        }
                     }
                 }
             }
