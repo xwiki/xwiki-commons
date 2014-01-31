@@ -478,7 +478,7 @@
       <dependency>
         <groupId>net.sourceforge.cssparser</groupId>
         <artifactId>cssparser</artifactId>
-        <version>0.9.11</version>
+        <version>0.9.13</version>
       </dependency>
       <!-- Bean validation -->
       <dependency>
