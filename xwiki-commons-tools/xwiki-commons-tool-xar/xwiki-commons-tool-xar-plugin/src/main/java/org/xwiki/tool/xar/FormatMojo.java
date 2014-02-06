@@ -203,13 +203,13 @@ public class FormatMojo extends AbstractVerifyMojo
 
         // Remove any content of the <defaultLanguage> element
         Element element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
-        if (node != null) {
+        if (element != null) {
             removeContent(element);
         }
 
         // Remove any content of the <comment> element
         element = (Element) domdoc.selectSingleNode("xwikidoc/comment");
-        if (node != null) {
+        if (element != null) {
             removeContent(element);
         }
     }
