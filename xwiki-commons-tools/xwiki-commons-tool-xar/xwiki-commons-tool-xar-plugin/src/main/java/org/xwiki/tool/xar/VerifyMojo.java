@@ -96,7 +96,7 @@ public class VerifyMojo extends AbstractVerifyMojo
                 errors.add(String.format("Version must be [%s] but was [%s]", VERSION, xdoc.getVersion()));
             }
             // Verification 5: Check for empty comment
-            if (xdoc.getComment().length() != 0) {
+            if (xdoc.getComment() != null && xdoc.getComment().length() != 0) {
                 errors.add(String.format("Comment must be empty but was [%s]", xdoc.getComment()));
             }
             // Verification 6: Check for minor edit is always "false"
