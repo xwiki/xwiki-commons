@@ -88,7 +88,7 @@ public class VerifyMojoTest
     public void executeWithNotEmptyDefaultLanguage() throws Exception
     {
         verifyExecution("/notEmptyDefaultLanguage", "Verifying [Space/WebHome.xml]... errors",
-            "- Default Language must be empty but was [en]", "There are errors in the XAR XML files!");
+            "- Default Language should have been [] but was [en]", "There are errors in the XAR XML files!");
     }
 
     @Test
