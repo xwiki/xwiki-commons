@@ -21,6 +21,7 @@ package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,7 +69,8 @@ public class VerifyMojo extends AbstractVerifyMojo
         getLog().info("Checking validity of XAR XML files...");
 
         boolean hasErrors = false;
-        for (File file : getXARXMLFiles()) {
+        Collection<File> xmlFiles = getXARXMLFiles();
+        for (File file : xmlFiles) {
             String parentName = file.getParentFile().getName();
             XWikiDocument xdoc = getDocFromXML(file);
             List<String> errors = new ArrayList<String>();
@@ -103,9 +105,11 @@ public class VerifyMojo extends AbstractVerifyMojo
             if (!xdoc.getMinorEdit().equals("false")) {
                 errors.add(String.format("Minor edit must always be [false] but was [%s]", xdoc.getMinorEdit()));
             }
-            // Verification 7: Check that default language is empty
-            if (!StringUtils.isEmpty(xdoc.getDefaultLanguage())) {
-                errors.add(String.format("Default Language must be empty but was [%s]", xdoc.getDefaultLanguage()));
+            // Verification 7: Check the default language value
+            String expectedDefaultLanguage = guessDefaultLanguage(file, xmlFiles);
+            if (!xdoc.getDefaultLanguage().equals(expectedDefaultLanguage)) {
+                errors.add(String.format("Default Language should have been [%s] but was [%s]", expectedDefaultLanguage,
+                    xdoc.getDefaultLanguage()));
             }
 
             if (errors.isEmpty()) {
