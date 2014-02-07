@@ -56,6 +56,14 @@ public class FormatMojoTest
         content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Page2.xml"));
         expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage2.xml"));
         Assert.assertEquals(expected, content);
+
+        // Test the default language
+        content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Page3.xml"));
+        expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage3.xml"));
+        Assert.assertEquals(expected, content);
+        content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Page3.fr.xml"));
+        expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage3.fr.xml"));
+        Assert.assertEquals(expected, content);
     }
 
     @Test

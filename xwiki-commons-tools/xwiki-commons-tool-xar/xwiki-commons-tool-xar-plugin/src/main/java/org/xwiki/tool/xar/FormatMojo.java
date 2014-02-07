@@ -21,8 +21,12 @@ package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
@@ -93,11 +97,20 @@ public class FormatMojo extends AbstractVerifyMojo
     private boolean formatLicense;
 
     /**
+     * The language in which non-translated documents are written in.
+     *
+     * @parameter expression="${defaultLanguage}" default-value="en"
+     */
+    protected String defaultLanguage;
+
+    /**
      * The Commons version to be used by this mojo.
      *
      * @parameter expression="${commons.version}" default-value="${commons.version}"
      */
     private String commonsVersion;
+
+    private static final Pattern TRANSLATION_PATTERN = Pattern.compile("(.*)\\..*\\.xml");
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -105,9 +118,10 @@ public class FormatMojo extends AbstractVerifyMojo
         // Only format XAR modules or when forced
         if (getProject().getPackaging().equals("xar") || this.force) {
             getLog().info("Formatting XAR XML files...");
-            for (File file : getXARXMLFiles()) {
+            Collection<File> xmlFiles = getXARXMLFiles();
+            for (File file : xmlFiles) {
                 try {
-                    format(file);
+                    format(file, guessDefaultLanguage(file, xmlFiles));
                 } catch (Exception e) {
                     throw new MojoExecutionException(String.format("Failed to format file [%s]", file), e);
                 }
@@ -119,6 +133,42 @@ public class FormatMojo extends AbstractVerifyMojo
         } else {
             getLog().info("Not a XAR module, skipping reformatting...");
         }
+    }
+
+    /**
+     * Guess the {@code &lt;defaultLanguage&gt;} value to use for the passed file using the following algorithm:
+     * <ul>
+     *     <li>If there's no other translation of the file then consider default language to be empty to signify that
+     *         it's a technical document. </li>
+     *     <li>If there are other translations ("(prefix).(language).xml" format) then the default language should be
+     *         {@link #defaultLanguage}</li>
+     * </ul>
+     * @since 5.4.1
+     */
+    protected String guessDefaultLanguage(File file, Collection<File> xwikiXmlFiles)
+    {
+        String language = "";
+
+        // Check if the doc is a translation
+        Matcher matcher = TRANSLATION_PATTERN.matcher(file.getName());
+        if (matcher.matches()) {
+            // We're in a translation, use the default language
+            language = this.defaultLanguage;
+        } else {
+            // We're not in a translation, check if there are translations. First get the doc name before the extension
+            String prefix = StringUtils.substringBeforeLast(file.getName(), ".xml");
+            // Check for a translation now
+            Pattern translationPattern = Pattern.compile(String.format("%s\\..*\\.xml", Pattern.quote(prefix)));
+            for (File xwikiXmlFile : xwikiXmlFiles) {
+                Matcher translationMatcher = translationPattern.matcher(xwikiXmlFile.getName());
+                if (translationMatcher.matches()) {
+                    // Found a translation, use the default language
+                    language = this.defaultLanguage;
+                    break;
+                }
+            }
+        }
+        return language;
     }
 
     /**
@@ -157,11 +207,11 @@ public class FormatMojo extends AbstractVerifyMojo
         );
     }
 
-    private void format(File file) throws Exception
+    private void format(File file, String defaultLanguage) throws Exception
     {
         SAXReader reader = new SAXReader();
         Document domdoc = reader.read(file);
-        format(domdoc);
+        format(domdoc, defaultLanguage);
 
         XMLWriter writer;
         if (this.pretty) {
@@ -178,7 +228,7 @@ public class FormatMojo extends AbstractVerifyMojo
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
     }
 
-    private void format(Document domdoc) throws Exception
+    private void format(Document domdoc, String defaultLanguage) throws Exception
     {
         Node node = domdoc.selectSingleNode("xwikidoc/author");
         if (node != null) {
@@ -201,10 +251,14 @@ public class FormatMojo extends AbstractVerifyMojo
             node.setText("false");
         }
 
-        // Remove any content of the <defaultLanguage> element
+        // Set the default language
         Element element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
         if (element != null) {
-            removeContent(element);
+            if (StringUtils.isEmpty(defaultLanguage)) {
+                removeContent(element);
+            } else {
+                element.setText(defaultLanguage);
+            }
         }
 
         // Remove any content of the <comment> element
