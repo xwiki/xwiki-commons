@@ -126,6 +126,12 @@ public class VerifyMojo extends AbstractVerifyMojo
         if (hasErrors) {
             throw new MojoFailureException("There are errors in the XAR XML files!");
         }
+
+        // Check license headers
+        if (this.formatLicense) {
+            getLog().info("Checking for missing XAR XML license headers...");
+            executeLicenseGoal("check");
+        }
     }
 
     private void verifyAuthor(List<String> errors, String author, String message)

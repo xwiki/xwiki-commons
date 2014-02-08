@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -99,6 +100,15 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithMissingLicenseHeader() throws Exception
+    {
+        Verifier verifier = createVerifier("/missingLicense");
+        verifier.addCliOption("-DformatLicense=true");
+        verifier.addCliOption("-Dcommons.version=" + System.getProperty("commons.version"));
+        verifyExecution(verifier, "Missing header in");
+    }
+
+    @Test
     public void executeOk() throws Exception
     {
         File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/allOk");
@@ -110,11 +120,8 @@ public class VerifyMojoTest
         verifier.verifyErrorFreeLog();
     }
 
-    private void verifyExecution(String testDirectory, String... messages) throws Exception
+    private void verifyExecution(Verifier verifier, String... messages) throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), testDirectory);
-
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
 
         try {
@@ -124,8 +131,19 @@ public class VerifyMojoTest
             Assert.fail("An error should have been thrown in the build");
         } catch (VerificationException expected) {
             for (String message : messages) {
-                Assert.assertTrue(expected.getMessage(), expected.getMessage().contains(message));
+                Assert.assertThat(expected.getMessage(), CoreMatchers.containsString(message));
             }
         }
+    }
+
+    private void verifyExecution(String testDirectory, String... messages) throws Exception
+    {
+        verifyExecution(createVerifier(testDirectory), messages);
+    }
+
+    private Verifier createVerifier(String testDirectory) throws Exception
+    {
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), testDirectory);
+        return new Verifier(testDir.getAbsolutePath());
     }
 }

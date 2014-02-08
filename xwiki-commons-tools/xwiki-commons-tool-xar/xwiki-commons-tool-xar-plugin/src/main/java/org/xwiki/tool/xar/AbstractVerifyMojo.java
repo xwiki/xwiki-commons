@@ -29,6 +29,22 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.plugin.BuildPluginManager;
+import org.apache.maven.plugin.MojoExecutionException;
+
+import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.groupId;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.name;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
 /**
  * Common code for the Verify and Format Mojos.
@@ -66,6 +82,38 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      * @parameter expression="${defaultLanguage}" default-value="en"
      */
     protected String defaultLanguage;
+
+    /**
+     * If true then add license header to XML files.
+     *
+     * @parameter expression="${formatLicense}"
+     * @readonly
+     */
+    protected boolean formatLicense;
+
+    /**
+     * The Commons version to be used by this mojo.
+     *
+     * @parameter expression="${commons.version}" default-value="${commons.version}"
+     */
+    protected String commonsVersion;
+
+    /**
+     * The current Maven session.
+     *
+     * @parameter expression="${session}"
+     * @required
+     * @readonly
+     */
+    private MavenSession mavenSession;
+
+    /**
+     * The Maven BuildPluginManager component.
+     *
+     * @component
+     * @required
+     */
+    private BuildPluginManager pluginManager;
 
     /**
      * @return the list of XAR XML files in this project
@@ -122,5 +170,54 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
             }
         }
         return language;
+    }
+
+    /**
+     * @return the version of the XWiki Commons project, either configured in the project using this plugin or taken
+     *         from the {@code commons.version} property if defined, defaulting to the current project version if not
+     *         defined
+     */
+    protected String getXWikiCommonsVersion()
+    {
+        String version = this.commonsVersion;
+        if (version == null) {
+            version = this.project.getVersion();
+        }
+        return version;
+    }
+
+    /**
+     * Executes a mojo of the Maven License plugin (used for adding or checking for license headers.
+     */
+    protected void executeLicenseGoal(String goal) throws MojoExecutionException
+    {
+        Dependency dep = new Dependency();
+        dep.setGroupId("org.xwiki.commons");
+        dep.setArtifactId("xwiki-commons-tool-verification-resources");
+        dep.setVersion(getXWikiCommonsVersion());
+
+        Plugin licensePlugin = plugin(
+            groupId("com.mycila"),
+            artifactId("license-maven-plugin"),
+            version("2.6"));
+        licensePlugin.setDependencies(Collections.singletonList(dep));
+
+        executeMojo(
+            licensePlugin,
+            goal(goal),
+            configuration(
+                element(name("header"), "license.txt"),
+                element(name("strictCheck"), "true"),
+                element(name("headerDefinitions"),
+                    element(name("headerDefinition"), "license-xml-definition.xml")),
+                element(name("includes"),
+                    element(name("include"), "src/main/resources/**/*.xml"))
+            ),
+            executionEnvironment(
+                this.project,
+                this.mavenSession,
+                this.pluginManager
+            )
+        );
     }
 }

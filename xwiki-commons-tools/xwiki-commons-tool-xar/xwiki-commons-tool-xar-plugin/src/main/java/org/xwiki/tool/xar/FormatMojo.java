@@ -22,16 +22,10 @@ package org.xwiki.tool.xar;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Collection;
-import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -53,53 +47,12 @@ import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 public class FormatMojo extends AbstractVerifyMojo
 {
     /**
-     * The project currently being build.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject mavenProject;
-
-    /**
-     * The current Maven session.
-     *
-     * @parameter expression="${session}"
-     * @required
-     * @readonly
-     */
-    private MavenSession mavenSession;
-
-    /**
-     * The Maven BuildPluginManager component.
-     *
-     * @component
-     * @required
-     */
-    private BuildPluginManager pluginManager;
-
-    /**
      * If false then don't pretty print the XML.
      *
      * @parameter expression="${pretty}"
      * @readonly
      */
     private boolean pretty = true;
-
-    /**
-     * If true then add license header to XML files.
-     *
-     * @parameter expression="${formatLicense}"
-     * @readonly
-     */
-    private boolean formatLicense;
-
-    /**
-     * The Commons version to be used by this mojo.
-     *
-     * @parameter expression="${commons.version}" default-value="${commons.version}"
-     */
-    private String commonsVersion;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -117,47 +70,11 @@ public class FormatMojo extends AbstractVerifyMojo
             }
             if (this.formatLicense) {
                 getLog().info("Adding missing XAR XML license headers...");
-                formatLicense();
+                executeLicenseGoal("format");
             }
         } else {
             getLog().info("Not a XAR module, skipping reformatting...");
         }
-    }
-
-    /**
-     * Add license headers to all XML files present in the {@code src/main/resources} directory where this plugin
-     * executes.
-     */
-    private void formatLicense() throws MojoExecutionException
-    {
-        Dependency dep = new Dependency();
-        dep.setGroupId("org.xwiki.commons");
-        dep.setArtifactId("xwiki-commons-tool-verification-resources");
-        dep.setVersion(getXWikiCommonsVersion());
-
-        Plugin licensePlugin = plugin(
-            groupId("com.mycila"),
-            artifactId("license-maven-plugin"),
-            version("2.6"));
-        licensePlugin.setDependencies(Collections.singletonList(dep));
-
-        executeMojo(
-            licensePlugin,
-            goal("format"),
-            configuration(
-                element(name("header"), "license.txt"),
-                element(name("strictCheck"), "true"),
-                element(name("headerDefinitions"),
-                    element(name("headerDefinition"), "license-xml-definition.xml")),
-                element(name("includes"),
-                    element(name("include"), "src/main/resources/**/*.xml"))
-            ),
-            executionEnvironment(
-                this.project,
-                this.mavenSession,
-                this.pluginManager
-            )
-        );
     }
 
     private void format(File file, String defaultLanguage) throws Exception
@@ -226,19 +143,5 @@ public class FormatMojo extends AbstractVerifyMojo
         if (element.hasContent()) {
             ((Node) element.content().get(0)).detach();
         }
-    }
-
-    /**
-     * @return the version of the XWiki Commons project, either configured in the project using this plugin or taken
-     *         from the {@code commons.version} property if defined, defaulting to the current project version if not
-     *         defined
-     */
-    private String getXWikiCommonsVersion()
-    {
-        String version = this.commonsVersion;
-        if (version == null) {
-            version = this.project.getVersion();
-        }
-        return version;
     }
 }
