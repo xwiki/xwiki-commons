@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -154,7 +155,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                 if (this.logger.isDebugEnabled()) {
                     this.logger.warn("Invalid extension [{}]", localExtension.getId(), e);
                 } else {
-                    this.logger.warn("Invalid extension [{}]", localExtension.getId());
+                    this.logger.warn("Invalid extension [{}] ({})", localExtension.getId(),
+                        ExceptionUtils.getRootCauseMessage(e));
                 }
 
                 addInstalledExtension(localExtension, null, false);
@@ -168,7 +170,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                         this.logger.warn("Invalid extension [{}] on namespace [{}]", localExtension.getId(), namespace,
                             e);
                     } else {
-                        this.logger.warn("Invalid extension [{}] on namespace [{}]", localExtension.getId(), namespace);
+                        this.logger.warn("Invalid extension [{}] on namespace [{}] ({})", localExtension.getId(),
+                            namespace, ExceptionUtils.getRootCauseMessage(e));
                     }
 
                     addInstalledExtension(localExtension, namespace, false);
