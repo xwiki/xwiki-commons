@@ -20,15 +20,13 @@
 package org.xwiki.job.event.status;
 
 import org.xwiki.observation.event.Event;
-import org.xwiki.stability.Unstable;
 
 /**
  * Indicate to the progress listener that a new step level is starting.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
-@Unstable
 public class PushLevelProgressEvent implements Event
 {
     /**

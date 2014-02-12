@@ -26,15 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Base class for {@link Request} implementations.
  * 
  * @version $Id$
  * @since 4.0M1
  */
-@Unstable
 public abstract class AbstractRequest implements Request
 {
     /**

@@ -23,15 +23,12 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * A {@link Job} request.
  * 
  * @version $Id$
  * @since 4.0M1
  */
-@Unstable
 public interface Request extends Serializable
 {
     /**

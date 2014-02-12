@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.stability.Unstable;
 
 /**
  * Proxy used to simplify execution of jobs.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @since 4.0M1
  */
 @Role
-@Unstable
 public interface JobManager
 {
     /**
