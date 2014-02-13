@@ -90,14 +90,14 @@ abstract class AbstractXARMojo extends AbstractMojo
     /**
      * List of files to include. Specified as fileset patterns.
      * 
-     * @parameter
+     * @parameter expression="${includes}"
      */
     protected String[] includes;
 
     /**
      * List of files to exclude. Specified as fileset patterns.
-     * 
-     * @parameter
+     *
+     * @parameter expression="${excludes}"
      */
     protected String[] excludes;
 

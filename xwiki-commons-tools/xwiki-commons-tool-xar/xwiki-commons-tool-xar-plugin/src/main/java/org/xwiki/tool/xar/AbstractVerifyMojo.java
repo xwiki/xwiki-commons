@@ -20,20 +20,25 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.plexus.components.io.fileselectors.FileSelector;
+import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
+import org.codehaus.plexus.components.io.resources.PlexusIoFileResourceCollection;
+import org.codehaus.plexus.components.io.resources.PlexusIoResource;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
@@ -118,19 +123,40 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * @return the list of XAR XML files in this project
      */
-    protected Collection<File> getXARXMLFiles()
+    protected Collection<File> getXARXMLFiles() throws MojoFailureException
     {
         // Find all files in the resources dir
         File resourcesDir = getResourcesDirectory();
 
-        // Filter package.xml and files not ending with .xml
-        Collection<File> files = Collections.emptyList();
+        Collection<File> files = new ArrayList<File>();
         if (resourcesDir.exists()) {
-            files = FileUtils.listFiles(resourcesDir,
-                FileFilterUtils.and(
-                    FileFilterUtils.suffixFileFilter(EXTENSION),
-                    FileFilterUtils.notFileFilter(FileFilterUtils.nameFileFilter(PACKAGE_XML))),
-                TrueFileFilter.INSTANCE);
+            PlexusIoFileResourceCollection collection = new PlexusIoFileResourceCollection();
+            collection.setBaseDir(resourcesDir);
+
+            FileSelector[] selectors;
+
+            IncludeExcludeFileSelector fs = new IncludeExcludeFileSelector();
+            fs.setIncludes(getIncludes());
+            fs.setExcludes(getExcludes());
+
+            IncludeExcludeFileSelector fs2 = new IncludeExcludeFileSelector();
+            fs2.setExcludes(new String[] {PACKAGE_XML});
+            selectors = new FileSelector[] {fs, fs2};
+
+            collection.setFileSelectors(selectors);
+
+            Iterator<PlexusIoResource> resources;
+            try {
+                resources = collection.getResources();
+            } catch (IOException e) {
+                throw new MojoFailureException("Failed to get list of XAR XML files", e);
+            }
+            while (resources.hasNext()) {
+                PlexusIoResource resource = resources.next();
+                if (resource.isFile()) {
+                    files.add(new File(collection.getBaseDir(), resource.getName()));
+                }
+            }
         }
 
         return files;

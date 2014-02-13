@@ -33,8 +33,6 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
-
 /**
  * Pretty prints and set valid authors and version to XAR XML files.
  *
