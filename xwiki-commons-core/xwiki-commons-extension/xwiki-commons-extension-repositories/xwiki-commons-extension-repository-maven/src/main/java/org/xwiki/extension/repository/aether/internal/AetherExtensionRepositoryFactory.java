@@ -35,6 +35,7 @@ import org.eclipse.aether.artifact.ArtifactTypeRegistry;
 import org.eclipse.aether.artifact.DefaultArtifactType;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
+import org.eclipse.aether.util.repository.JreProxySelector;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
@@ -46,7 +47,6 @@ import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
 import org.xwiki.extension.repository.aether.internal.configuration.AetherConfiguration;
-import org.xwiki.extension.repository.aether.internal.util.DefaultJavaNetProxySelector;
 
 /**
  * @version $Id$
@@ -93,7 +93,7 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         // session.setIgnoreMissingArtifactDescriptor(false);
         // session.setIgnoreInvalidArtifactDescriptor(false);
         session.setConfigProperty(ConfigurationProperties.USER_AGENT, this.configuration.getUserAgent());
-        session.setProxySelector(new DefaultJavaNetProxySelector());
+        session.setProxySelector(new JreProxySelector());
 
         // Remove all system properties that could disrupt effective pom resolution
         session.setSystemProperty("version", null);

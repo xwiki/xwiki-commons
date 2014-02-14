@@ -67,7 +67,6 @@ import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.extension.repository.aether.internal.util.DefaultJavaNetProxySelector;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
@@ -96,8 +95,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
      * Used to parse the version.
      */
     private static final GenericVersionScheme AETHERVERSIONSCHEME = new GenericVersionScheme();
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AetherExtensionRepository.class);
 
     private transient PlexusContainer plexusContainer;
 
@@ -135,13 +132,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             authenticationBuilder.addUsername(username);
             authenticationBuilder.addPassword(getDescriptor().getProperty("auth.password"));
             repositoryBuilder.setAuthentication(authenticationBuilder.build());
-        }
-
-        // Proxy
-        try {
-            repositoryBuilder.setProxy(DefaultJavaNetProxySelector.determineProxy(repositoryDescriptor.getURI()));
-        } catch (Exception e) {
-            LOGGER.warn("Unexpected exception when trying to find a proxy for [{}]", repositoryDescriptor.getURI());
         }
 
         this.remoteRepository = repositoryBuilder.build();
