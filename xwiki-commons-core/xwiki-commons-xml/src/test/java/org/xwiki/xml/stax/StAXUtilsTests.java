@@ -30,7 +30,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stax.StAXResult;
 import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
@@ -39,7 +43,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.xml.sax.ContentHandler;
 
 public class StAXUtilsTests
 {
@@ -96,7 +99,32 @@ public class StAXUtilsTests
     {
         Assert.assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLEventWriter.class))));
         Assert.assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLStreamWriter.class))));
-        Assert.assertNotNull(StAXUtils.getXMLStreamWriter(new SAXResult(Mockito.mock(ContentHandler.class))));
         Assert.assertNotNull(StAXUtils.getXMLStreamWriter(new StreamResult(new StringWriter())));
+    }
+
+    @Test
+    public void testGetXMLStreamWriterWithSAXREsult() throws TransformerConfigurationException, XMLStreamException
+    {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        if (!tf.getFeature(SAXTransformerFactory.FEATURE)) {
+            throw new RuntimeException("Did not find a SAX-compatible TransformerFactory.");
+        }
+
+        StringWriter output = new StringWriter();
+
+        SAXTransformerFactory stf = (SAXTransformerFactory) tf;
+        TransformerHandler th = stf.newTransformerHandler();
+        th.setResult(new StreamResult(output));
+
+        XMLStreamWriter writer = StAXUtils.getXMLStreamWriter(new SAXResult(th));
+
+        writer.writeStartElement("element");
+        writer.writeAttribute("attribute", "value");
+        writer.writeCharacters("characters");
+        writer.writeCData("cdata");
+        writer.writeEndElement();
+
+        Assert.assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<element attribute=\"value\">"
+            + "characters" + "<![CDATA[cdata]]>" + "</element>", output.getBuffer().toString());
     }
 }

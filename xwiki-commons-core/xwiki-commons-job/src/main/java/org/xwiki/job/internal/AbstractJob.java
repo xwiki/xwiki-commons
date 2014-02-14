@@ -41,6 +41,9 @@ import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.marker.BeginTranslationMarker;
+import org.xwiki.logging.marker.EndTranslationMarker;
+import org.xwiki.logging.marker.TranslationMarker;
 import org.xwiki.observation.ObservationManager;
 
 /**
@@ -53,6 +56,19 @@ import org.xwiki.observation.ObservationManager;
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus< ? super R>> implements Job
 {
+    private static final BeginTranslationMarker LOG_BEGIN = new BeginTranslationMarker("job.log.begin");
+
+    private static final BeginTranslationMarker LOG_BEGIN_ID = new BeginTranslationMarker("job.log.beginWithId");
+
+    private static final EndTranslationMarker LOG_END = new EndTranslationMarker("job.log.end");
+
+    private static final EndTranslationMarker LOG_END_ID = new EndTranslationMarker("job.log.endWithId");
+
+    private static final TranslationMarker LOG_EXCEPTION = new TranslationMarker("job.log.exception");
+
+    private static final TranslationMarker LOG_STATUS_STORE_FAILED = new TranslationMarker(
+        "job.log.status.store.failed");
+
     /**
      * Component manager.
      */
@@ -137,7 +153,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
         try {
             runInternal();
         } catch (Throwable t) {
-            this.logger.error("Exception thrown during job execution", t);
+            this.logger.error(LOG_EXCEPTION, "Exception thrown during job execution", t);
             error = t;
         } finally {
             jobFinished(error);
@@ -167,10 +183,10 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
         this.status.startListening();
 
         if (getStatus().getRequest().getId() != null) {
-            this.logger.info("Starting job of type [{}] with identifier [{}]", getType(), getStatus().getRequest()
-                .getId());
+            this.logger.info(LOG_BEGIN_ID, "Starting job of type [{}] with identifier [{}]", getType(), getStatus()
+                .getRequest().getId());
         } else {
-            this.logger.info("Starting job of type [{}]", getType());
+            this.logger.info(LOG_BEGIN, "Starting job of type [{}]", getType());
         }
     }
 
@@ -193,10 +209,10 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
             this.status.setEndDate(new Date());
 
             if (getStatus().getRequest().getId() != null) {
-                this.logger.info("Finished job of type [{}] with identifier [{}]", getType(), getStatus().getRequest()
-                    .getId());
+                this.logger.info(LOG_END_ID, "Finished job of type [{}] with identifier [{}]", getType(), getStatus()
+                    .getRequest().getId());
             } else {
-                this.logger.info("Finished job of type [{}]", getType());
+                this.logger.info(LOG_END, "Finished job of type [{}]", getType());
             }
 
             // Stop updating job status (progress, log, etc.)
@@ -217,7 +233,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
                     this.storage.store(this.status);
                 }
             } catch (Throwable t) {
-                this.logger.warn("Failed to store job status [{}]", this.status, t);
+                this.logger.warn(LOG_STATUS_STORE_FAILED, "Failed to store job status [{}]", this.status, t);
             }
         } finally {
             this.lock.unlock();

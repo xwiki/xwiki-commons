@@ -21,7 +21,9 @@ package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Collection;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.dom4j.Document;
@@ -56,41 +58,28 @@ public class FormatMojo extends AbstractVerifyMojo
         // Only format XAR modules or when forced
         if (getProject().getPackaging().equals("xar") || this.force) {
             getLog().info("Formatting XAR XML files...");
-            for (File file : getXARXMLFiles()) {
+            Collection<File> xmlFiles = getXARXMLFiles();
+            for (File file : xmlFiles) {
                 try {
-                    format(file);
+                    format(file, guessDefaultLanguage(file, xmlFiles));
                 } catch (Exception e) {
                     throw new MojoExecutionException(String.format("Failed to format file [%s]", file), e);
                 }
+            }
+            if (this.formatLicense) {
+                getLog().info("Adding missing XAR XML license headers...");
+                executeLicenseGoal("format");
             }
         } else {
             getLog().info("Not a XAR module, skipping reformatting...");
         }
     }
 
-    private void format(File file) throws Exception
+    private void format(File file, String defaultLanguage) throws Exception
     {
         SAXReader reader = new SAXReader();
         Document domdoc = reader.read(file);
-
-        Node node = domdoc.selectSingleNode("xwikidoc/author");
-        node.setText(AUTHOR);
-        node = domdoc.selectSingleNode("xwikidoc/contentAuthor");
-        node.setText(AUTHOR);
-        node = domdoc.selectSingleNode("xwikidoc/creator");
-        node.setText(AUTHOR);
-        node = domdoc.selectSingleNode("xwikidoc/version");
-        node.setText(VERSION);
-        node = domdoc.selectSingleNode("xwikidoc/minorEdit");
-        node.setText("false");
-
-        // Remove any content of the <defaultLanguage> element
-        Element element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
-        removeContent(element);
-
-        // Remove any content of the <comment> element
-        element = (Element) domdoc.selectSingleNode("xwikidoc/comment");
-        removeContent(element);
+        format(domdoc, defaultLanguage);
 
         XMLWriter writer;
         if (this.pretty) {
@@ -105,6 +94,46 @@ public class FormatMojo extends AbstractVerifyMojo
 
         String parentName = file.getParentFile().getName();
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
+    }
+
+    private void format(Document domdoc, String defaultLanguage) throws Exception
+    {
+        Node node = domdoc.selectSingleNode("xwikidoc/author");
+        if (node != null) {
+            node.setText(AUTHOR);
+        }
+        node = domdoc.selectSingleNode("xwikidoc/contentAuthor");
+        if (node != null) {
+            node.setText(AUTHOR);
+        }
+        node = domdoc.selectSingleNode("xwikidoc/creator");
+        if (node != null) {
+            node.setText(AUTHOR);
+        }
+        node = domdoc.selectSingleNode("xwikidoc/version");
+        if (node != null) {
+            node.setText(VERSION);
+        }
+        node = domdoc.selectSingleNode("xwikidoc/minorEdit");
+        if (node != null) {
+            node.setText("false");
+        }
+
+        // Set the default language
+        Element element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
+        if (element != null) {
+            if (StringUtils.isEmpty(defaultLanguage)) {
+                removeContent(element);
+            } else {
+                element.setText(defaultLanguage);
+            }
+        }
+
+        // Remove any content of the <comment> element
+        element = (Element) domdoc.selectSingleNode("xwikidoc/comment");
+        if (element != null) {
+            removeContent(element);
+        }
     }
 
     private void removeContent(Element element)

@@ -19,35 +19,25 @@
  */
 package org.xwiki.observation.test;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.AllEvent;
 import org.xwiki.observation.event.Event;
 
 @Component
 @Named("test")
-public class TestEventListener implements EventListener
+public class TestEventListener extends AbstractEventListener
 {
     @Inject
     public ObservationManager observationManager;
 
-    @Override
-    public List<Event> getEvents()
+    public TestEventListener()
     {
-        return Arrays.<Event> asList(AllEvent.ALLEVENT);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "test";
+        super("test", AllEvent.ALLEVENT);
     }
 
     @Override

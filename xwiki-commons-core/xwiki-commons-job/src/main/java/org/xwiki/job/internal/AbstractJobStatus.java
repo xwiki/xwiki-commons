@@ -31,8 +31,9 @@ import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.event.LogQueueListener;
+import org.xwiki.logging.event.LoggerListener;
 import org.xwiki.observation.ObservationManager;
+import org.xwiki.observation.WrappedThreadEventListener;
 
 /**
  * Base implementation of {@link JobStatus}.
@@ -44,14 +45,44 @@ import org.xwiki.observation.ObservationManager;
 public abstract class AbstractJobStatus<R extends Request> implements JobStatus
 {
     /**
+     * Used to lock #ask().
+     */
+    private final transient ReentrantLock askLock = new ReentrantLock();
+
+    /**
+     * Condition for waiting answer.
+     */
+    private final transient Condition answered = this.askLock.newCondition();
+
+    /**
+     * Take care of progress related events to produce a progression information usually used in a progress bar.
+     */
+    private final transient DefaultJobProgress progress = new DefaultJobProgress();
+
+    /**
      * Used register itself to receive logging and progress related events.
      */
-    private transient ObservationManager observationManager;
+    private final transient ObservationManager observationManager;
 
     /**
      * Used to isolate job related log.
      */
-    private transient LoggerManager loggerManager;
+    private final transient LoggerManager loggerManager;
+
+    /**
+     * The question.
+     */
+    private transient volatile Object question;
+
+    /**
+     * Used to listen to all the log produced during job execution.
+     */
+    private transient LoggerListener logListener;
+
+    /**
+     * Log sent during job execution.
+     */
+    private LogQueue logs;
 
     /**
      * General state of the job.
@@ -64,11 +95,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private R request;
 
     /**
-     * Log sent during job execution.
-     */
-    private LogQueue logs = new LogQueue();
-
-    /**
      * @see #getStartDate()
      */
     private Date startDate;
@@ -79,34 +105,9 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private Date endDate;
 
     /**
-     * Used to lock #ask().
-     */
-    private final transient ReentrantLock askLock = new ReentrantLock();
-
-    /**
-     * Condition for waiting answer.
-     */
-    private final transient Condition answered = this.askLock.newCondition();
-
-    /**
-     * The question.
-     */
-    private transient volatile Object question;
-
-    /**
-     * Take care of progress related events to produce a progression information usually used in a progress bar.
-     */
-    private transient DefaultJobProgress progress;
-
-    /**
      * Indicate of the job has been started by another one.
      */
     private boolean subJob;
-
-    /**
-     * Used to listen to all the log produced during job execution.
-     */
-    private LogQueueListener logListener;
 
     /**
      * @param request the request provided when started the job
@@ -121,6 +122,8 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.observationManager = observationManager;
         this.loggerManager = loggerManager;
         this.subJob = subJob;
+
+        this.logs = new LogQueue();
     }
 
     /**
@@ -129,11 +132,10 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public void startListening()
     {
         // Register progress listener
-        this.progress = new DefaultJobProgress(Thread.currentThread());
-        this.observationManager.addListener(this.progress);
+        this.observationManager.addListener(new WrappedThreadEventListener(this.progress, Thread.currentThread()));
 
         // Isolate log for the job status
-        this.logListener = new LogQueueListener(LogQueueListener.class.getName() + '_' + hashCode(), this.logs);
+        this.logListener = new LoggerListener(LoggerListener.class.getName() + '_' + hashCode(), this.logs);
         if (this.subJob) {
             this.observationManager.addListener(this.logListener);
         } else {

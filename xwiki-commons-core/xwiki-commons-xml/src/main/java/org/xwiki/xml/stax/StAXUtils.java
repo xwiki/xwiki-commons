@@ -130,4 +130,29 @@ public final class StAXUtils
 
         return xmlStreamWriter;
     }
+
+    /**
+     * Go to the end of the current element. This include skipping any children element.
+     * 
+     * @param xmlReader the XML stream reader
+     * @return the type of the new current event
+     * @throws XMLStreamException if there is an error processing the underlying XML source
+     * @since 5.3M1
+     */
+    public static int skipElement(XMLStreamReader xmlReader) throws XMLStreamException
+    {
+        if (!xmlReader.isStartElement()) {
+            throw new XMLStreamException("Current node is not start element");
+        }
+
+        if (!xmlReader.isEndElement()) {
+            for (xmlReader.next(); !xmlReader.isEndElement(); xmlReader.next()) {
+                if (xmlReader.isStartElement()) {
+                    skipElement(xmlReader);
+                }
+            }
+        }
+
+        return xmlReader.getEventType();
+    }
 }

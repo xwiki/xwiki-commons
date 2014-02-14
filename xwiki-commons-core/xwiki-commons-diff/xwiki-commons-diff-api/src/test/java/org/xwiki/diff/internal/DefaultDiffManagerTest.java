@@ -24,12 +24,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.diff.Delta.Type;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
+import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -59,6 +62,11 @@ public class DefaultDiffManagerTest
         }
 
         return characters;
+    }
+
+    private static String toString(List<Character> characters)
+    {
+        return StringUtils.join(characters, null);
     }
 
     // Tests
@@ -296,16 +304,41 @@ public class DefaultDiffManagerTest
 
         Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(toCharacters("Alice Wiki Extension (upgraded)"), result.getMerged());
+
+        result =
+            this.mocker.getComponentUnderTest().merge(toCharacters("$a(b)"), toCharacters("$c(d)e"),
+                toCharacters("$c(d)e"), null);
+
+        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals("$c(d)e", toString(result.getMerged()));
     }
 
     @Test
     public void testMergeCharOnConflicts() throws Exception
     {
+        MergeResult<Character> result;
+
         // Current and new at the same place
-        MergeResult<Character> result =
+        result =
             this.mocker.getComponentUnderTest().merge(toCharacters("a"), toCharacters("b"), toCharacters("c"), null);
 
         Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(toCharacters("b"), result.getMerged());
+
+        // Current and new in conflict at different indices
+        result =
+            this.mocker.getComponentUnderTest().merge(toCharacters("abcd"), toCharacters("yycd"), toCharacters("azzd"),
+                null);
+
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals("yycd", toString(result.getMerged()));
+
+        // Current and new in conflict at different indices
+        result =
+            this.mocker.getComponentUnderTest().merge(toCharacters("abcd"), toCharacters("azzd"), toCharacters("yycd"),
+                null);
+
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals("yycd", toString(result.getMerged()));
     }
 }

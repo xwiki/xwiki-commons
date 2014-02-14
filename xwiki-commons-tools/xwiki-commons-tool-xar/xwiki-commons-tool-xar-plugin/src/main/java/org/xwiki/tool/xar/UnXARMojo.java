@@ -115,7 +115,7 @@ public class UnXARMojo extends AbstractXARMojo
         Artifact artifact = findArtifact();
 
         getLog().debug(String.format("Source XAR = [%s]", artifact.getFile()));
-        unpack(artifact.getFile(), this.outputDirectory, "XAR Plugin", true);
+        unpack(artifact.getFile(), this.outputDirectory, "XAR Plugin", true, getIncludes(), getExcludes());
         unpackDependentXars(artifact);
     }
 
@@ -129,7 +129,7 @@ public class UnXARMojo extends AbstractXARMojo
         try {
             Set<Artifact> dependencies = resolveArtifactDependencies(artifact);
             for (Artifact dependency : dependencies) {
-                unpack(dependency.getFile(), this.outputDirectory, "XAR Plugin", false);
+                unpack(dependency.getFile(), this.outputDirectory, "XAR Plugin", false, getIncludes(), getExcludes());
             }
         } catch (Exception e) {
             throw new MojoExecutionException(String.format("Failed to unpack artifact [%s] dependencies", artifact), e);

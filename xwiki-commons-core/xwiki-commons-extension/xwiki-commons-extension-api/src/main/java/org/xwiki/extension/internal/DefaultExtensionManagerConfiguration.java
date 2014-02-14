@@ -36,6 +36,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
@@ -148,7 +149,8 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
                         }
                         repositoriesMap.put(extensionRepositoryId.getId(), extensionRepositoryId);
                     } catch (Exception e) {
-                        this.logger.warn("Faild to parse repository [" + repositoryString + "] from configuration", e);
+                        this.logger.warn("Ignoring invalid repository configuration [{}]. "
+                            + "Root cause [{}]", repositoryString, ExceptionUtils.getRootCauseMessage(e));
                     }
                 } else {
                     this.logger.debug("Empty repository id found in the configuration");
@@ -216,8 +218,9 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
                 matcher.group(3)));
         }
 
-        throw new ExtensionManagerConfigurationException("Don't match repository configuration [" + repositoryString
-            + "]");
+        throw new ExtensionManagerConfigurationException(String.format(
+            "Invalid repository configuration format for [%s]. Should have been matching [%s].", repositoryString,
+            REPOSITORYIDPATTERN.toString()));
     }
 
     @Override

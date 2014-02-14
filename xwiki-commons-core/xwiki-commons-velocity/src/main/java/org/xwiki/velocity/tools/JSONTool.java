@@ -19,17 +19,20 @@
  */
 package org.xwiki.velocity.tools;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONException;
+import net.sf.json.JSONSerializer;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
-import net.sf.json.JSONNull;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-import net.sf.json.util.JSONUtils;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Velocity tool to facilitate serialization of Java objects to the JSON format.
@@ -59,22 +62,22 @@ public class JSONTool
      */
     public String serialize(Object object)
     {
-        JSON json = null;
-        if (object == null) {
-            json = JSONNull.getInstance();
-        } else if (object instanceof String) {
-            return JSONUtils.valueToString(object);
-        } else if (JSONUtils.isBoolean(object)) {
-            return object.toString();
-        } else if (JSONUtils.isNumber(object)) {
-            return JSONUtils.numberToString((Number) object);
-        } else if (JSONUtils.isArray(object)) {
-            json = JSONArray.fromObject(object);
-        } else {
-            json = JSONObject.fromObject(object);
+        StringWriter writer = new StringWriter();
+
+        try {
+            JsonFactory jsonFactory = new JsonFactory();
+            JsonGenerator generator = jsonFactory.createGenerator(writer);
+            generator.setCodec(new ObjectMapper());
+
+            generator.writeObject(object);
+
+            generator.flush();
+        } catch (IOException e) {
+            // There is no reason this ever happen with a StringWriter
+            this.logger.error("Failed to serialize object to JSON", e);
         }
 
-        return json.toString();
+        return writer.toString();
     }
 
     /**
@@ -86,6 +89,8 @@ public class JSONTool
      *         {@code null} if the argument is not a valid JSON
      * @since 5.2M1
      */
+    // FIXME: directly returning in a public API the object of a dead library, not very nice for something introduced in
+    // 5.2...
     public JSON parse(String json)
     {
         try {

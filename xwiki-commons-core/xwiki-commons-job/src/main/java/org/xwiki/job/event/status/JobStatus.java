@@ -26,20 +26,18 @@ import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.stability.Unstable;
 
 /**
  * Describe the current status of a job.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
-@Unstable
 public interface JobStatus
 {
     /**
      * Job status.
-     *
+     * 
      * @version $Id$
      */
     enum State
@@ -100,7 +98,7 @@ public interface JobStatus
 
     /**
      * Indicate that the question has been answered.
-     *
+     * 
      * @since 4.0M2
      */
     void answered();

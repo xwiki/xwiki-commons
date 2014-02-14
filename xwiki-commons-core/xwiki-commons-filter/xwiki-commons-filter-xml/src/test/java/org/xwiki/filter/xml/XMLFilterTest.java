@@ -118,13 +118,13 @@ public class XMLFilterTest
     @Test
     public void testContainerWithParameters() throws Exception
     {
-        assertParseAndSerialize("<containerWithParameters p0=\"value0\" p1=\"1\"></containerWithParameters>");
+        assertParseAndSerialize("<containerWithParameters _0=\"value0\" _1=\"1\"></containerWithParameters>");
     }
 
     @Test
     public void testContainerWithNamedParameters() throws Exception
     {
-        assertParseAndSerialize("<containerWithNamedParameters namedParam=\"value0\" p1=\"1\"></containerWithNamedParameters>");
+        assertParseAndSerialize("<containerWithNamedParameters namedParam=\"value0\" _1=\"1\"></containerWithNamedParameters>");
     }
 
     @Test
@@ -133,7 +133,7 @@ public class XMLFilterTest
         assertParseAndSerialize("<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>");
         assertParseAndSerialize(
             "<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>",
-            "<containerWithMap><p><p0><entry><string>key</string><int>1</int></entry></p0></p></containerWithMap>");
+            "<containerWithMap><p><_0><entry><string>key</string><int>1</int></entry></_0></p></containerWithMap>");
     }
 
     @Test
@@ -146,7 +146,7 @@ public class XMLFilterTest
     @Test
     public void testFromSAX() throws Exception
     {
-        assertParseAndSerializeFromSAX("<containerWithNamedParameters namedParam=\"value0\" p1=\"1\"></containerWithNamedParameters>");
+        assertParseAndSerializeFromSAX("<containerWithNamedParameters namedParam=\"value0\" _1=\"1\"></containerWithNamedParameters>");
     }
 
     // Serialize

@@ -154,17 +154,19 @@ public class EscapeToolTest
         EscapeTool tool = new EscapeTool();
         Assert.assertNull(tool.b(null));
     }
-    
+
     @Test
     public void testURL()
     {
         EscapeTool tool = new EscapeTool();
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("hello", "world");
+        map.put(null, "value");
         map.put("B&B", "yes");
-        Assert.assertEquals("hello=world&B%26B=yes", tool.url(map));
+        map.put("empty", null);
+        Assert.assertEquals("hello=world&B%26B=yes&empty=", tool.url(map));
     }
-    
+
     @Test
     public void testURLWithDouble()
     {
@@ -174,17 +176,17 @@ public class EscapeToolTest
         map.put("B&B", 1.2);
         Assert.assertEquals("B%26B=1.2&A%26A=1.5", tool.url(map));
     }
-    
+
     @Test
     public void testURLWithArray()
     {
         EscapeTool tool = new EscapeTool();
         HashMap<String, String[]> map = new HashMap<String, String[]>();
-        String[] array = {"M&M", "Astronomy&Astrophysics"};
+        String[] array = {"M&M", null, "Astronomy&Astrophysics"};
         map.put("couple", array);
-        Assert.assertEquals("couple=M%26M&couple=Astronomy%26Astrophysics", tool.url(map));
+        Assert.assertEquals("couple=M%26M&couple=&couple=Astronomy%26Astrophysics", tool.url(map));
     }
-    
+
     @Test
     public void testURLWithCollection()
     {
@@ -194,9 +196,10 @@ public class EscapeToolTest
         collection1.add("test");
         map.put("alice", collection1);
         ArrayList<String> collection2 = new ArrayList<String>();
+        collection2.add(null);
         collection2.add("t&t");
         collection2.add("R&D");
         map.put("bob", collection2);
-        Assert.assertEquals("bob=t%26t&bob=R%26D&alice=test", tool.url(map));
+        Assert.assertEquals("bob=&bob=t%26t&bob=R%26D&alice=test", tool.url(map));
     }
 }

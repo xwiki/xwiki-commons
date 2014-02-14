@@ -19,7 +19,9 @@
  */
 package org.xwiki.filter.xml.internal.parameter;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 
 import javax.inject.Inject;
 import javax.xml.stream.XMLStreamException;
@@ -32,6 +34,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.filter.FilterEventParameters;
 import org.xwiki.filter.xml.internal.XMLUtils;
 
 import com.thoughtworks.xstream.XStream;
@@ -74,14 +77,19 @@ public class XStreamParameterManager implements ParameterManager, Initializable
     @Override
     public void initialize() throws InitializationException
     {
-        this.xstream = new XStream();
+        this.staxDriver = new StaxDriver();
+        this.xstream = new XStream(this.staxDriver);
 
         this.xstream.setMarshallingStrategy(new XMLTreeMarshallingStrategy());
 
         this.xstream.registerConverter(new XMLCollectionConverter(this.xstream.getMapper()));
         this.xstream.registerConverter(new XMLMapConverter(this.xstream.getMapper()));
+        this.xstream.registerConverter(new XMLFilterElementParametersConverter(this.xstream.getMapper()));
+        this.xstream.registerConverter(new InputStreamConverter());
 
-        this.staxDriver = new StaxDriver();
+        this.xstream.alias("parameters", FilterEventParameters.class);
+        this.xstream.alias("map", LinkedHashMap.class);
+        this.xstream.alias("input-stream", InputStream.class);
     }
 
     @Override
@@ -103,13 +111,15 @@ public class XStreamParameterManager implements ParameterManager, Initializable
         }
 
         DataHolder dataHolder = new MapBackedDataHolder();
-        dataHolder.put(DDEFAULTTYPE_NAME, type);
+        if (type != Object.class) {
+            dataHolder.put(DDEFAULTTYPE_NAME, type);
+        }
 
         this.xstream.marshal(object, staxWriter, dataHolder);
     }
 
     @Override
-    public Object unSerialize(Type type, Element rootElement)
+    public Object unSerialize(Type type, Element rootElement) throws ClassNotFoundException
     {
         if (type != null && !rootElement.hasChildNodes()) {
             Object value = XMLUtils.emptyValue(ReflectionUtils.getTypeClass(type));
@@ -120,7 +130,11 @@ public class XStreamParameterManager implements ParameterManager, Initializable
 
         DataHolder dataHolder = new MapBackedDataHolder();
 
-        dataHolder.put(DDEFAULTTYPE_NAME, type);
+        if (type == Object.class) {
+            dataHolder.put(DDEFAULTTYPE_NAME, String.class);
+        } else {
+            dataHolder.put(DDEFAULTTYPE_NAME, type);
+        }
 
         return this.xstream.unmarshal(new DomReader(rootElement), null, dataHolder);
     }

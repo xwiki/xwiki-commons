@@ -42,7 +42,7 @@ public interface EventListener
      * @return the list of events this listener is configured to receive. This listener will be automatically
      *         registered with this list of events against the {@link ObservationManager}. When an event occurs, 
      *         for each matching event in this list, the {@link #onEvent(Event, Object, Object)} method will be
-     *         called. 
+     *         called.
      */
     List<Event> getEvents();
     

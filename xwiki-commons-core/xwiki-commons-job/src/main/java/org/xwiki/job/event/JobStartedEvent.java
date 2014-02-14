@@ -24,15 +24,13 @@ import java.util.List;
 
 import org.xwiki.job.Request;
 import org.xwiki.observation.event.BeginEvent;
-import org.xwiki.stability.Unstable;
 
 /**
  * Job started event launched when a new job start.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
-@Unstable
 public class JobStartedEvent extends AbstractJobEvent implements BeginEvent
 {
     /**
@@ -65,6 +63,7 @@ public class JobStartedEvent extends AbstractJobEvent implements BeginEvent
     {
         this(Arrays.asList(jobId), jobType, request);
     }
+
     /**
      * @param jobId the event related job unique id
      * @param jobType the event related job type

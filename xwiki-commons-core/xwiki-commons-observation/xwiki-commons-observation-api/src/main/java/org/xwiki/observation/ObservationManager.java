@@ -34,14 +34,7 @@ import org.xwiki.observation.event.Event;
 public interface ObservationManager
 {
     /**
-     * Manually add a listener. Components implementing the {@link EventListener} interfaces are only loaded
-     * when the Observation Manager component is created. Thus if you need to add a new listener while the
-     * system is running you'll need to call this method.
-     * 
-     * Also note that contrary to other components it's not possible for the Observation Manager to watch
-     * Component Manager events since the Component Manager is itself using the Observation Manager to send
-     * its events (chicken and egg problem). Thus if any new Event Listener is created dynamically it needs to
-     * be added using this method manually.
+     * Manually add a listener.
      * 
      * @param eventListener the listener to register
      */

@@ -28,6 +28,11 @@ public class MockitoRepositoryUtilsRule extends MockitoRepositoryUtils implement
 {
     private final MethodRule parent;
 
+    public MockitoRepositoryUtilsRule()
+    {
+        this(new MockitoComponentManagerRule());
+    }
+
     public MockitoRepositoryUtilsRule(MockitoComponentManagerRule componentManager)
     {
         this(componentManager, componentManager);

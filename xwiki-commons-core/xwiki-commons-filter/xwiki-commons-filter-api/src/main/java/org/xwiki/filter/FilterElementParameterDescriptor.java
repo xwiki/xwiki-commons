@@ -31,7 +31,7 @@ import org.xwiki.stability.Unstable;
  * @since 5.2M1
  */
 @Unstable
-public class FilterElementParameter<T>
+public class FilterElementParameterDescriptor<T>
 {
     /**
      * @see #getIndex()
@@ -60,7 +60,7 @@ public class FilterElementParameter<T>
      * @param type the type of the parameter.
      * @param defaultValue the default value.
      */
-    public FilterElementParameter(int index, String name, Type type, T defaultValue)
+    public FilterElementParameterDescriptor(int index, String name, Type type, T defaultValue)
     {
         this.index = index;
         this.name = name;

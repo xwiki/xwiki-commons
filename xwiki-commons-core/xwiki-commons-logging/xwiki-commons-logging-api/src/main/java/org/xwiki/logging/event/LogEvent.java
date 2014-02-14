@@ -19,15 +19,20 @@
  */
 package org.xwiki.logging.event;
 
+import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.slf4j.helpers.MessageFormatter;
 import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.TranslationMarker;
 import org.xwiki.logging.internal.helpers.ExtendedMessageFormatter;
+import org.xwiki.logging.marker.ContainerMarker;
+import org.xwiki.logging.marker.TranslationMarker;
 import org.xwiki.observation.event.Event;
 
 /**
@@ -36,8 +41,23 @@ import org.xwiki.observation.event.Event;
  * @version $Id$
  * @since 3.2M1
  */
-public class LogEvent implements Event
+public class LogEvent implements Event, Serializable
 {
+    /**
+     * The marker to use to indicate that we start a group of logs.
+     */
+    public static final Marker MARKER_BEGIN = MarkerFactory.getMarker("xwiki.begin");
+
+    /**
+     * The marker to use to indicate that we stop a group of logs.
+     */
+    public static final Marker MARKER_END = MarkerFactory.getMarker("xwiki.end");
+
+    /**
+     * Serialization identifier.
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * @see #getMarker()
      */
@@ -77,6 +97,16 @@ public class LogEvent implements Event
     }
 
     /**
+     * @param logEvent the log event to copy
+     * @since 5.4M1
+     */
+    public LogEvent(LogEvent logEvent)
+    {
+        this(logEvent.getMarker(), logEvent.getLevel(), logEvent.getMessage(), logEvent.getArgumentArray(), logEvent
+            .getThrowable());
+    }
+
+    /**
      * @param level the log level
      * @param message the log message
      * @param argumentArray the event arguments to insert in the message
@@ -102,6 +132,35 @@ public class LogEvent implements Event
         this.message = message;
         this.argumentArray = argumentArray;
         this.throwable = throwable;
+    }
+
+    /**
+     * Copy the stored log into a passed {@link Logger}.
+     * 
+     * @param targetLogger the logger where to copy the stored log
+     * @since 5.3M1
+     */
+    public void log(Logger targetLogger)
+    {
+        switch (level) {
+            case TRACE:
+                targetLogger.trace(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            case DEBUG:
+                targetLogger.debug(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            case INFO:
+                targetLogger.info(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            case WARN:
+                targetLogger.warn(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            case ERROR:
+                targetLogger.error(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -177,8 +236,14 @@ public class LogEvent implements Event
      */
     public String getTranslationKey()
     {
-        if (getMarker() instanceof TranslationMarker) {
-            return ((TranslationMarker) getMarker()).getTranslationKey();
+        if (getMarker() instanceof ContainerMarker) {
+            ContainerMarker containerMarker = (ContainerMarker) getMarker();
+
+            TranslationMarker translationMarker = containerMarker.get(TranslationMarker.NAME);
+
+            if (translationMarker != null) {
+                return ((TranslationMarker) getMarker()).getTranslationKey();
+            }
         }
 
         return null;

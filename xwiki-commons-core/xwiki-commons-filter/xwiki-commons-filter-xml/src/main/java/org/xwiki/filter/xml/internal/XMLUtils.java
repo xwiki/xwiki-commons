@@ -30,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Various tools.
@@ -39,6 +40,11 @@ import java.util.Set;
  */
 public final class XMLUtils
 {
+    /**
+     * An index based parameter.
+     */
+    public static final Pattern INDEX_PATTERN = Pattern.compile("_(\\d+)");
+
     /**
      * The default mapping between interface and instance.
      */
@@ -63,7 +69,7 @@ public final class XMLUtils
      * The classes of object that can easily be converted to simple String.
      */
     private static final Set<Class< ? >> SIMPLECLASSES = new HashSet<Class< ? >>(Arrays.<Class< ? >> asList(
-        String.class, Character.class, Boolean.class));
+        String.class, Character.class, Boolean.class, byte[].class));
 
     /**
      * Utility class.

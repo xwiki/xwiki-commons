@@ -58,8 +58,7 @@ public class DefaultLoggerManagerTest
 {
     @Rule
     public final MockitoComponentMockingRule<DefaultLoggerManager> mocker =
-        new MockitoComponentMockingRule<DefaultLoggerManager>(DefaultLoggerManager.class,
-            Arrays.asList(ObservationManager.class));
+        new MockitoComponentMockingRule<DefaultLoggerManager>(DefaultLoggerManager.class);
 
     private DefaultLoggerManager loggerManager;
 

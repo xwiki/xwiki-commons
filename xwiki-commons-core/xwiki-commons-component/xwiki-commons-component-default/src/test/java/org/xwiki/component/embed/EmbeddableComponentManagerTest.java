@@ -539,12 +539,15 @@ public class EmbeddableComponentManagerTest
 
         ecm.registerComponent(cd);
 
-        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.getInstance(Role.class);
+        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.getInstance(Role.class, "default");
 
         Assert.assertFalse(instance.isFinalized());
 
         ecm.dispose();
 
         Assert.assertTrue(instance.isFinalized());
+
+        Assert.assertNull(ecm.getComponentDescriptor(Role.class, "default"));
+        Assert.assertNotNull(ecm.getComponentDescriptor(ComponentManager.class, "default"));
     }
 }

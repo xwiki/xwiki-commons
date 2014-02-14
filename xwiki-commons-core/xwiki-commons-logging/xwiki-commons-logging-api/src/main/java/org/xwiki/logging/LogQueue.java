@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.xwiki.logging.event.LogEvent;
 
@@ -41,6 +40,19 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
      * Serialization identifier.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Copy the stored log into a passed {@link org.slf4j.Logger}.
+     * 
+     * @param targetLogger the logger where to copy the stored log
+     * @since 5.3M1
+     */
+    public void log(org.slf4j.Logger targetLogger)
+    {
+        for (LogEvent logEvent : this) {
+            logEvent.log(targetLogger);
+        }
+    }
 
     /**
      * @param level the log level
@@ -101,10 +113,16 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
      */
     public LogEvent addLogEvent(Marker marker, LogLevel level, String format, Object[] arguments, Throwable throwable)
     {
-        LogEvent logEvent = new LogEvent(marker, level, format, arguments, throwable);
-        add(logEvent);
+        LogEvent logEvent = LogUtils.newLogEvent(marker, level, format, arguments, throwable);
+        log(logEvent);
 
         return logEvent;
+    }
+
+    @Override
+    public void log(LogEvent logEvent)
+    {
+        add(logEvent);
     }
 
     /**
@@ -264,7 +282,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void debug(String msg, Throwable t)
     {
-        debug((Marker) null, msg, ArrayUtils.EMPTY_OBJECT_ARRAY, t);
+        debug((Marker) null, msg, t);
     }
 
     @Override

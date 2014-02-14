@@ -19,8 +19,9 @@
  */
 package org.xwiki.logging;
 
-import org.junit.Assert;
+import java.util.Arrays;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.logging.event.LogEvent;
 
@@ -37,6 +38,11 @@ public class LogQueueTest
         LogQueue queue = new LogQueue();
         LogEvent logEvent;
 
+        queue.error("");
+        logEvent = queue.poll();
+        Assert.assertEquals(Arrays.asList(""), logEvent.getMessageElements());
+        Assert.assertEquals("", logEvent.getFormattedMessage());
+
         queue.error("message");
         Assert.assertEquals("message", queue.poll().getFormattedMessage());
 
@@ -44,22 +50,31 @@ public class LogQueueTest
         Assert.assertEquals("message param", queue.poll().getFormattedMessage());
 
         queue.error("message {} {}", "param1", "param2");
-        Assert.assertEquals("message param1 param2", queue.poll().getFormattedMessage());
+        logEvent = queue.poll();
+        Assert.assertEquals("message param1 param2", logEvent.getFormattedMessage());
+        Assert.assertEquals(Arrays.asList("message ", " ", ""), logEvent.getMessageElements());
+        Assert.assertEquals(Arrays.asList("param1", "param2"), Arrays.asList(logEvent.getArgumentArray()));
 
         queue.error("message {}", "param1", new Exception());
         logEvent = queue.poll();
         Assert.assertEquals("message param1", logEvent.getFormattedMessage());
+        Assert.assertEquals(Arrays.asList("message ", ""), logEvent.getMessageElements());
+        Assert.assertEquals(Arrays.asList("param1"), Arrays.asList(logEvent.getArgumentArray()));
         Assert.assertNotNull(logEvent.getThrowable());
         Assert.assertNull(logEvent.getTranslationKey());
 
         queue.error("message {}", new Object[] {"param1", new Exception()});
         logEvent = queue.poll();
         Assert.assertEquals("message param1", logEvent.getFormattedMessage());
+        Assert.assertEquals(Arrays.asList("message ", ""), logEvent.getMessageElements());
+        Assert.assertEquals(Arrays.asList("param1"), Arrays.asList(logEvent.getArgumentArray()));
         Assert.assertNotNull(logEvent.getThrowable());
         Assert.assertNull(logEvent.getTranslationKey());
 
         queue.error(new TranslationMarker("translation.key"), "message");
         logEvent = queue.poll();
         Assert.assertEquals("translation.key", logEvent.getTranslationKey());
+        Assert.assertEquals(Arrays.asList("message"), logEvent.getMessageElements());
+        Assert.assertEquals(Arrays.asList(), Arrays.asList(logEvent.getArgumentArray()));
     }
 }

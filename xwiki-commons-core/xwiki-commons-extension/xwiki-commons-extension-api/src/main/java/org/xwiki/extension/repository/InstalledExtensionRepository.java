@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -30,6 +31,8 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.repository.search.Searchable;
 
 /**
@@ -140,4 +143,22 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
 
     @Override
     InstalledExtension resolve(ExtensionId extensionId) throws ResolveException;
+
+    // Search
+
+    /**
+     * Search installed extensions based of the provided pattern and only in the passed namespace.
+     * <p>
+     * The pattern is a simple character chain.
+     * 
+     * @param pattern the pattern to search
+     * @param namespace the namespace where to search
+     * @param offset the offset from where to start returning search results
+     * @param nb the maximum number of search results to return
+     * @return the found extensions descriptors, empty list if nothing could be found
+     * @throws SearchException error when trying to search provided pattern
+     * @since 5.3M1
+     */
+    IterableResult<Extension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
+        throws SearchException;
 }

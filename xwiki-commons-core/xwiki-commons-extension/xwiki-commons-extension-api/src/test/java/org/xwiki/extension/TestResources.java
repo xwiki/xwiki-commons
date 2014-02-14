@@ -31,6 +31,8 @@ public class TestResources
 
     public static final ExtensionId INSTALLED_ID = new ExtensionId("installedextension", "1.0");
 
+    public static final ExtensionId INSTALLED_INVALID_ID = new ExtensionId("installedextensioninvalid", "version");
+
     public static final ExtensionId INSTALLED_DEPENDENCY_ID = new ExtensionId("installedextensiondependency", "1.0");
 
     public static final ExtensionId INSTALLED_ONNAMESPACE_ID = new ExtensionId("installedonnamespace", "version");
@@ -40,6 +42,9 @@ public class TestResources
 
     public static final ExtensionId INSTALLED_WITHFEATUREONNAMESPACE_ID = new ExtensionId(
         "installedwithfeatureonnamespace", "version");
+
+    public static final ExtensionId INSTALLED_WITHFEATUREASDEPENDENCY_ID = new ExtensionId(
+        "installewithfeatureasdependency", "version");
 
     public InstalledExtension installed;
 

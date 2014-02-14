@@ -22,6 +22,8 @@ package org.xwiki.job.internal;
 import java.io.File;
 import java.io.IOException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +43,7 @@ public class JobStatusSerializerTest
     private File testFile = new File("target/test/status.xml");
 
     @Before
-    public void before()
+    public void before() throws ParserConfigurationException
     {
         this.serializer = new JobStatusSerializer();
     }
@@ -72,6 +74,7 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
+        Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
     }
 
@@ -84,6 +87,7 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
+        Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
         Assert.assertEquals("exception message", status.getLog().peek().getThrowable().getMessage());
     }
@@ -97,6 +101,7 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
+        Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
         Assert.assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
         Assert.assertEquals("arg2", status.getLog().peek().getArgumentArray()[1]);
@@ -111,6 +116,7 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
+        Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
         Assert.assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
     }

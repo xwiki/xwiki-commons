@@ -17,10 +17,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.logging;
+package org.xwiki.logging.marker;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Marker;
@@ -50,13 +49,13 @@ public class TranslationMarkerTest
     @Test
     public void getName()
     {
-        Assert.assertEquals(TranslationMarker.class.getName(), this.marker.getName());
+        Assert.assertEquals(TranslationMarker.NAME, this.marker.getName());
     }
 
     @Test
     public void add()
     {
-        this.marker.add(null);
+        this.marker.add(MarkerFactory.getMarker("marker"));
     }
 
     @Test

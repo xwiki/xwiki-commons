@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
- *
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -19,7 +18,6 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -28,7 +26,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>5.2-SNAPSHOT</version>
+  <version>6.0-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page for the module based on the passed id.
        It allows to have a single URL definition in this top level POM and still get valid website URLs for all
@@ -46,16 +44,16 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>5.2-SNAPSHOT</commons.version>
+    <commons.version>6.0-SNAPSHOT</commons.version>
 
     <!-- REST -->
     <restlet.version>2.0.14</restlet.version>
 
     <!-- Selenium -->
-    <selenium.version>2.35.0</selenium.version>
+    <selenium.version>2.33.0</selenium.version>
 
     <!-- SLF4J -->
-    <slf4j.version>1.7.5</slf4j.version>
+    <slf4j.version>1.7.6</slf4j.version>
 
     <!-- Hamcrest -->
     <hamcrest.version>1.3</hamcrest.version>
@@ -68,10 +66,13 @@
     <mockito.version>1.9.5</mockito.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.7.3</aspectj.version>
+    <aspectj.version>1.7.4</aspectj.version>
+
+    <!-- Clover -->
+    <clover.version>3.1.12</clover.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>5.1</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>5.4.1</xwiki.clirr.previous.version>
 
     <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -114,8 +115,10 @@
     <url>http://jira.xwiki.org/jira/browse/XCOMMONS</url>
   </issueManagement>
   <developers>
-    <!-- Fake Developer to satisfy Maven Central requirements. We prefer to list developers and contributors on our
-         wiki at http://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame -->
+    <!-- Note that this information is read by XWiki's Extension Manager and passed to the XWiki Repository Application
+         to mention who developed the various published XWiki extensions. We use a fake Developer who represents the
+         whole team because it's simpler to manage only one developer at this level and instead use the wiki at
+         http://dev.xwiki.org/xwiki/bin/view/Community/HallOfFame to provide an up to date view of all XWiki devs. -->
     <developer>
       <id>devs</id>
       <name>XWiki Development Team</name>
@@ -165,7 +168,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.1</version>
+        <version>3.2</version>
       </dependency>
       <!-- We don't use Commons Lang 2.x ourselves (we use Commons Lang 3.x) but some of our transitive dependencies
            require Commons Lang. The issue is that Maven uses a "closest-to-root" strategy to resolve dependency
@@ -191,13 +194,13 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.2</version>
+        <version>3.3</version>
       </dependency>
       <!-- Apache HttpComponents -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.2.5</version>
+        <version>4.3.2</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -209,12 +212,12 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.2.4</version>
+        <version>4.3.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>4.2.5</version>
+        <version>4.3.2</version>
       </dependency>
       <!-- Old httpclient -->
       <dependency>
@@ -237,12 +240,12 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.2.2</version>
+        <version>1.3.1</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.8</version>
+        <version>1.9</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -259,7 +262,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.9</version>
+        <version>1.10</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -271,14 +274,14 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.5</version>
+        <version>1.6</version>
       </dependency>
 
       <!-- XML processing -->
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.4</version>
+        <version>1.4.6</version>
       </dependency>
       <dependency>
         <groupId>dom4j</groupId>
@@ -300,7 +303,7 @@
         <artifactId>stax-utils</artifactId>
         <version>20070216</version>
         <exclusions>
-          <!-- Not needed in 1.6 -->
+          <!-- Not needed since Java 1.6 -->
           <exclusion>
             <groupId>com.bea.xml</groupId>
             <artifactId>jsr173-ri</artifactId>
@@ -310,7 +313,7 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.10.0</version>
+        <version>2.11.0</version>
       </dependency>
       <!-- xerces require this version of xml-apis -->
       <dependency>
@@ -359,7 +362,7 @@
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
-        <version>2.1.5</version>
+        <version>2.2.1</version>
       </dependency>
 
       <!-- Everybody logs -->
@@ -372,7 +375,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.0.13</version>
+        <version>1.1.0</version>
       </dependency>
       <!-- External libraries using Commons Logging will delegate to SLF4J -->
       <dependency>
@@ -385,6 +388,13 @@
         <groupId>org.slf4j</groupId>
         <artifactId>log4j-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
+      </dependency>
+
+      <!-- Make sure everyone use the same version of JBoss Logging -->
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>3.1.3.GA</version>
       </dependency>
 
       <!-- Triggerd by several Maven related projects (Dexis, Maven, Aether) as transitive dependency -->
@@ -448,7 +458,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
       <!-- Most plugins depend on the servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -459,21 +468,43 @@
         <!-- It should always be provided, otherwise containers will complain about it. -->
         <scope>provided</scope>
       </dependency>
-
       <!-- Needed for Legacy modules. The version needs to be in sync with the one used by the AspectJ plugin -->
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
         <version>${aspectj.version}</version>
       </dependency>
-
       <!-- CSS parsing -->
       <dependency>
         <groupId>net.sourceforge.cssparser</groupId>
         <artifactId>cssparser</artifactId>
-        <version>0.9.9</version>
+        <version>0.9.13</version>
       </dependency>
-
+      <!-- Bean validation -->
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>1.0.0.GA</version>
+      </dependency>
+      <!-- Mail -->
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>1.4.5</version>
+        <exclusions>
+          <!-- We exclude it since it draws version 1.1 and other dependencies we have draw version 1.1.1 -->
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- SmartGWT -->
+      <dependency>
+        <groupId>com.smartgwt</groupId>
+        <artifactId>smartgwt</artifactId>
+        <version>3.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
@@ -484,7 +515,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <!-- Lock down plugin version for build reproducibility -->
-        <version>1.1</version>
+        <version>1.3.1</version>
         <configuration>
           <skip>${xwiki.enforcer.skip}</skip>
         </configuration>
@@ -548,6 +579,22 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               </rules>
             </configuration>
           </execution>
+          <!-- Check dependency versions compatibility -->
+          <execution>
+            <id>enforce-upper-bounds</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <!-- TODO: Disabling since after the upgrade to the Enforcer plugin 1.3.1 (from 1.1) a whole bunch of
+                   new violations were found and are failing the build. Put back when the build has been fixed to pass
+              -->
+              <skip>true</skip>
+              <rules>
+                <requireUpperBoundDeps />
+              </rules>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
@@ -568,10 +615,10 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
         </plugin>
         <!-- Used to check/update license headers -->
         <plugin>
-          <groupId>com.mycila.maven-license-plugin</groupId>
-          <artifactId>maven-license-plugin</artifactId>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.9.0</version>
+          <version>2.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -623,23 +670,23 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.4</version>
+          <version>2.5.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.0</version>
+          <version>3.1</version>
           <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
+            <source>1.7</source>
+            <target>1.7</target>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.13</version>
+          <version>2.16</version>
           <!-- XWiki rule is to put test in *Test classes -->
           <configuration>
             <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
@@ -699,13 +746,13 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.7</version>
+          <version>2.8.1</version>
           <!-- We're deploying using the SCP protocol so we need the SSH Wagon for Maven 3 to work -->
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.wagon</groupId>
               <artifactId>wagon-ssh</artifactId>
-              <version>2.2</version>
+              <version>2.5</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -713,10 +760,11 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.4</version>
+          <version>1.5</version>
           <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
+            <complianceLevel>1.7</complianceLevel>
+            <source>1.7</source>
+            <target>1.7</target>
           </configuration>
           <!-- Override so that we can use the AspectJ version we wish -->
           <dependencies>
@@ -779,7 +827,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>clirr-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5</version>
+          <version>2.6</version>
           <executions>
             <execution>
               <id>clirr-check</id>
@@ -818,13 +866,14 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>com.atlassian.maven.plugins</groupId>
           <artifactId>maven-clover2-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.1.6</version>
+          <version>${clover.version}</version>
           <configuration>
-            <license><![CDATA[mMrRvxjjbfhaCfMulFPnUUpeNQTJOMWcRiBJSAJDFtqBOB
-mi2K4jUCxeZ5N1tfFUViFQV32K7TEehr8rqeYLcnr>xtEQ
-rPNqtwqrmMMMmMroRMpXXRQnPPqRmRonQMsxtVvTWTuoON
-qmnmqmUUnpnpmtnommmmmUUnpnpmtnommmmmUUONfhfUUn
-mmmm]]></license>
+            <license><![CDATA[qrQMuLFrILhIeRILrqhGBqjUrQQEnImixnpoFreoubGuqOa
+mj2Kjoh2sXZcCMFBWOhe<dGh2L053ktz00HxawUp94OiFmK
+rmnrUtrrrnMPPpNRrOOwXoNPnRqQqRMmPOsWsSsvVtTPqQP
+rnmqmUUnptsnqpommmmmUUnptsnqpommmmmUUONfhfUUnmm
+mm
+]]></license>
             <!-- For some reason there's currently a problem in the Rendering Include Macro test execution when
                  IncludeMacroTest is clovered. Needs to be investigated. -->
             <includesTestSourceRoots>false</includesTestSourceRoots>
@@ -852,7 +901,7 @@ mmmm]]></license>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.8.1</version>
+          <version>2.9.1</version>
           <configuration>
             <!-- Always exclude the internal package since it's not user-public -->
             <excludePackageNames>*.internal.*</excludePackageNames>
@@ -864,14 +913,14 @@ mmmm]]></license>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.2</version>
+          <version>3.3</version>
           <!-- Site Plugin doesn’t automatically pull the Apache Wagon SSH implementation which is needed for
                site:deploy goal when using SCP protocol. -->
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.wagon</groupId>
               <artifactId>wagon-ssh</artifactId>
-              <version>2.2</version>
+              <version>2.5</version>
             </dependency>
           </dependencies>
           <configuration>
@@ -898,7 +947,7 @@ mmmm]]></license>
               <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8</version>
+                <version>2.9.1</version>
                 <configuration>
                   <!-- Always exclude the internal package since it's not user-public -->
                   <excludePackageNames>*.internal.*</excludePackageNames>
@@ -1023,8 +1072,8 @@ mmmm]]></license>
                 <configuration>
                   <rules>
                     <requireJavaVersion>
-                      <message>You must release with Java 6!</message>
-                      <version>[1.6,1.7)</version>
+                      <message>You must release with Java 7!</message>
+                      <version>[1.7, 1.8)</version>
                     </requireJavaVersion>
                   </rules>
                 </configuration>
@@ -1216,8 +1265,9 @@ mmmm]]></license>
     </snapshotRepository>
   </distributionManagement>
   <modules>
-    <module>xwiki-commons-tools</module>
-    <module>xwiki-commons-pom</module>
+    <!-- Sorted Alphabetically -->
     <module>xwiki-commons-core</module>
+    <module>xwiki-commons-pom</module>
+    <module>xwiki-commons-tools</module>
   </modules>
 </project>

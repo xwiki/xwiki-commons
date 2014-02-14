@@ -304,9 +304,10 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
                 if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
                     fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
                 } else {
-                    fieldValue = new GenericProvider<Object>(this, new RoleHint<Object>(
-                        ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()),
-                        dependency.getRoleHint()));
+                    fieldValue =
+                        new GenericProvider<Object>(this, new RoleHint<Object>(
+                            ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()),
+                            dependency.getRoleHint()));
                 }
             } else {
                 fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
@@ -505,8 +506,12 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         if (componentEntry != null) {
             ComponentDescriptor< ? > oldDescriptor = componentEntry.descriptor;
 
-            // clean any resource associated to the component instance and descriptor
-            releaseComponentEntry(componentEntry);
+            // We don't want the component manager to dispose itself just because it's not registered as component*
+            // anymore
+            if (componentEntry.instance != this) {
+                // clean any resource associated to the component instance and descriptor
+                releaseComponentEntry(componentEntry);
+            }
 
             // Send event about component unregistration
             if (this.eventManager != null && oldDescriptor != null) {
@@ -528,19 +533,75 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         }
     }
 
+    private int sortEntry(List<RoleHint< ? >> keys, int index)
+    {
+        int oldIndex = index;
+        int newIndex = index;
+
+        RoleHint< ? > key = keys.get(index);
+        ComponentEntry< ? > componentEntry = this.componentEntries.get(key);
+
+        for (ComponentDependency< ? > dependency : componentEntry.descriptor.getComponentDependencies()) {
+            RoleHint< ? > dependencyRole = new RoleHint<Object>(dependency.getRoleType(), dependency.getRoleHint());
+
+            int dependencyIndex = keys.indexOf(dependencyRole);
+
+            
+            if (dependencyIndex != -1 && dependencyIndex < newIndex) {
+                dependencyIndex = sortEntry(keys, dependencyIndex);
+
+                newIndex = dependencyIndex;
+            }
+        }
+
+        if (newIndex != oldIndex) {
+            key = keys.remove(oldIndex);
+            keys.add(newIndex, key);
+        }
+
+        return newIndex;
+    }
+
     @Override
     public void dispose()
     {
-        for (ComponentEntry< ? > entry : this.componentEntries.values()) {
-            Object instance = entry.instance;
-            if (instance != null && instance != this && instance instanceof Disposable) {
-                try {
-                    ((Disposable) instance).dispose();
-                } catch (ComponentLifecycleException e) {
-                    this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
-                        entry.descriptor.getRoleType(), entry.descriptor.getRoleHint(), e);
+        List<RoleHint< ? >> keys = new ArrayList<RoleHint< ? >>(this.componentEntries.keySet());
+
+        // Exclude this component
+        RoleHint<ComponentManager> cmRoleHint = new RoleHint<ComponentManager>(ComponentManager.class);
+        ComponentEntry< ? > cmEntry = this.componentEntries.get(cmRoleHint);
+        if (cmEntry != null && cmEntry.instance == this) {
+            keys.remove(cmRoleHint);
+        }
+
+        // Order component based on dependencies relations
+        for (int i = 0; i < keys.size(); ++i) {
+            i = sortEntry(keys, i);
+        }
+
+        // Dispose old components
+        for (RoleHint< ? > key : keys) {
+            ComponentEntry< ? > componentEntry = this.componentEntries.get(key);
+
+            synchronized (componentEntry) {
+                Object instance = componentEntry.instance;
+
+                if (instance instanceof Disposable) {
+                    try {
+                        ((Disposable) instance).dispose();
+                    } catch (ComponentLifecycleException e) {
+                        this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
+                            componentEntry.descriptor.getRoleType(), componentEntry.descriptor.getRoleHint(), e);
+                    }
                 }
             }
+        }
+
+        // Remove disposed components from the map. Doing it in two steps to give as many chances as possible to the
+        // components that have to use a component already disposed (usually because it dynamically requires it and
+        // there is no way for the ComponentManager to know that dependency).
+        for (RoleHint< ? > key : keys) {
+            this.componentEntries.remove(key);
         }
     }
 

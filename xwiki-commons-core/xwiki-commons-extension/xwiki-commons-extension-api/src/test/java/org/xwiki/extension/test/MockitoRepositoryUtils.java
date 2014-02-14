@@ -93,6 +93,11 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         this.componentManager.<ExtensionInitializer> getInstance(ExtensionInitializer.class).initialize();
     }
 
+    public MockitoComponentManagerRule getComponentManager()
+    {
+        return this.componentManager;
+    }
+
     public ComponentAnnotationLoader getComponentLoader()
     {
         if (this.componentLoader == null) {

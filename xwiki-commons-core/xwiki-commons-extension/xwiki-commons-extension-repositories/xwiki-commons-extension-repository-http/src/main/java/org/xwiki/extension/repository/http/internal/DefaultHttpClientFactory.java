@@ -19,24 +19,23 @@
  */
 package org.xwiki.extension.repository.http.internal;
 
-import java.net.ProxySelector;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 
 /**
  * Configures user agent, timeouts, proxy and authentication.
- *
+ * 
  * @version $Id$
  * @since 5.2M1
  */
@@ -51,26 +50,30 @@ public class DefaultHttpClientFactory implements HttpClientFactory
     private ExtensionManagerConfiguration configuration;
 
     @Override
-    public HttpClient createClient(String user, String password)
+    public CloseableHttpClient createClient(String user, String password)
     {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
 
-        httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, this.configuration.getUserAgent());
-        httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 60000);
-        httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
+        // Pre-configure with everything configured at JVM level
+        httpClientBuilder.useSystemProperties();
 
-        // Setup proxy
-        ProxySelectorRoutePlanner routePlanner =
-            new ProxySelectorRoutePlanner(httpClient.getConnectionManager().getSchemeRegistry(),
-                ProxySelector.getDefault());
-        httpClient.setRoutePlanner(routePlanner);
+        // Setup user agent
+        httpClientBuilder.setUserAgent(this.configuration.getUserAgent());
+
+        // Setup timeout
+        BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
+        SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(60000).build();
+        connectionManager.setSocketConfig(socketConfig);
+        httpClientBuilder.setConnectionManager(connectionManager);
 
         // Setup authentication
         if (user != null) {
-            httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
-                new UsernamePasswordCredentials(user, password));
+            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+
+            credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
+            httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         }
 
-        return httpClient;
+        return httpClientBuilder.build();
     }
 }

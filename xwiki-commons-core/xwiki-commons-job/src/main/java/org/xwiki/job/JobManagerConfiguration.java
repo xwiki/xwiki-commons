@@ -22,16 +22,14 @@ package org.xwiki.job;
 import java.io.File;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Some job manager related configuration.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
 @Role
-@Unstable
 public interface JobManagerConfiguration
 {
     /**

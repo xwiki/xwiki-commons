@@ -66,10 +66,17 @@ public class DefaultXMLSerializerFactory implements XMLSerializerFactory
     public <T> T createSerializer(Class<T> filterInterface, Result xmlResult, XMLConfiguration configuration)
         throws XMLStreamException, FactoryConfigurationError
     {
+        return createSerializer(new Class< ? >[] {filterInterface}, xmlResult, configuration);
+    }
+
+    @Override
+    public <T> T createSerializer(Class< ? >[] filterInterfaces, Result xmlResult, XMLConfiguration configuration)
+        throws XMLStreamException, FactoryConfigurationError
+    {
         DefaultXMLSerializer handler =
             new DefaultXMLSerializer(xmlResult, this.parameterManager,
-                this.descriptorManager.getFilterDescriptor(filterInterface), this.converter, configuration);
+                this.descriptorManager.getFilterDescriptor(filterInterfaces), this.converter, configuration);
 
-        return (T) Proxy.newProxyInstance(filterInterface.getClassLoader(), new Class[] {filterInterface}, handler);
+        return (T) Proxy.newProxyInstance(filterInterfaces[0].getClassLoader(), filterInterfaces, handler);
     }
 }

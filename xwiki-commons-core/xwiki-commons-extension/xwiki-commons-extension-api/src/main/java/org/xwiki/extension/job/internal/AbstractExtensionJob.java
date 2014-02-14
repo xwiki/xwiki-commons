@@ -19,15 +19,18 @@
  */
 package org.xwiki.extension.job.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionException;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
-import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.event.ExtensionInstalledEvent;
 import org.xwiki.extension.event.ExtensionUninstalledEvent;
@@ -40,6 +43,9 @@ import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.job.internal.AbstractJob;
 import org.xwiki.job.internal.AbstractJobStatus;
+import org.xwiki.logging.marker.BeginTranslationMarker;
+import org.xwiki.logging.marker.EndTranslationMarker;
+import org.xwiki.logging.marker.TranslationMarker;
 
 /**
  * Base class for any Job dealing with extensions.
@@ -75,14 +81,32 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     @Inject
     protected InstalledExtensionRepository installedExtensionRepository;
 
+    private static TranslationMarker getTranslationMarker(ExtensionPlanAction action, String extension, boolean begin)
+    {
+        StringBuilder str = new StringBuilder("extension.log.job.");
+
+        str.append(action.getAction().toString().toLowerCase());
+
+        if (extension != null) {
+            str.append('.');
+            str.append(extension);
+        }
+
+        str.append('.');
+        str.append(begin ? "begin" : "end");
+
+        if (action.getNamespace() != null) {
+            str.append("OnNamespace");
+        }
+
+        return begin ? new BeginTranslationMarker(str.toString()) : new EndTranslationMarker(str.toString());
+    }
+
     /**
      * @param actions the actions to apply
-     * @throws InstallException failed to install extension
-     * @throws UninstallException failed to uninstall extension
-     * @throws ResolveException could not find extension in the local repository
+     * @throws ExtensionException failed to apply action
      */
-    protected void applyActions(Collection<ExtensionPlanAction> actions) throws InstallException, UninstallException,
-        ResolveException
+    protected void applyActions(Collection<ExtensionPlanAction> actions) throws ExtensionException
     {
         notifyPushLevelProgress(actions.size());
 
@@ -101,21 +125,28 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
 
     /**
      * @param action the action to perform
-     * @throws InstallException failed to install extension
-     * @throws UninstallException failed to uninstall extension
-     * @throws ResolveException could not find extension in the local repository
+     * @throws ExtensionException failed to apply action
      */
-    protected void applyAction(ExtensionPlanAction action) throws InstallException, UninstallException,
-        ResolveException
+    protected void applyAction(ExtensionPlanAction action) throws ExtensionException
     {
+        Collection<InstalledExtension> previousExtensions = action.getPreviousExtensions();
+
         Extension extension = action.getExtension();
         String namespace = action.getNamespace();
 
-        if (namespace != null) {
-            this.logger.info("Applying {} for extension [{}] on namespace [{}]", new Object[] {action.getAction(),
-                extension.getId(), namespace});
+        List<ExtensionId> previousExtensionsIds;
+
+        if (getRequest().isVerbose()) {
+            previousExtensionsIds = new ArrayList<ExtensionId>(previousExtensions.size());
+            for (InstalledExtension previousExtension : previousExtensions) {
+                previousExtensionsIds.add(previousExtension.getId());
+            }
+
+            this.logger.info(getTranslationMarker(action, null, true),
+                "Applying [{}] for extension [{}] on namespace [{}] from previous extension [{}]", action.getAction(),
+                extension.getId(), namespace, previousExtensionsIds);
         } else {
-            this.logger.info("Applying {} for extension [{}] on all namespaces", action.getAction(), extension.getId());
+            previousExtensionsIds = null;
         }
 
         notifyPushLevelProgress(2);
@@ -135,16 +166,22 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 notifyStepPropress();
 
                 // Install
-                installExtension(localExtension, action.getPreviousExtensions(), namespace, action.isDependency());
+                installExtension(localExtension, previousExtensions, namespace, action.isDependency());
             }
 
-            if (namespace != null) {
-                this.logger.info("Successfully applied {} for extension [{}] on namespace [{}]",
-                    new Object[] {action.getAction(), extension.getId(), namespace});
-            } else {
-                this.logger.info("Successfully applied {} for extension [{}] on all namespaces", action.getAction(),
-                    extension.getId());
+            if (getRequest().isVerbose()) {
+                this.logger.info(getTranslationMarker(action, "success", false),
+                    "Successfully applied [{}] for extension [{}] on namespace [{}] from previous extension [{}]",
+                    action.getAction(), extension.getId(), namespace, previousExtensionsIds);
             }
+        } catch (ExtensionException e) {
+            if (getRequest().isVerbose()) {
+                this.logger.error(getTranslationMarker(action, "failure", false),
+                    "Failed to apply [{}] for extension [{}] on namespace [{}] from previous extension [{}]",
+                    action.getAction(), extension.getId(), namespace, previousExtensionsIds);
+            }
+
+            throw e;
         } finally {
             notifyPopLevelProgress();
         }

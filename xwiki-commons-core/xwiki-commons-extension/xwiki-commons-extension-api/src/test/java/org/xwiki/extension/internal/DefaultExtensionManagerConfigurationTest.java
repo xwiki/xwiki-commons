@@ -39,6 +39,11 @@ import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
+/**
+ * Unit test for {@link DefaultExtensionManagerConfiguration}.
+ *
+ * @version $Id$
+ */
 @ComponentList({DefaultExtensionManagerConfiguration.class})
 public class DefaultExtensionManagerConfigurationTest
 {
@@ -46,7 +51,10 @@ public class DefaultExtensionManagerConfigurationTest
     public final MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
 
     @Rule
-    public final LogRule logCapture = new LogRule();
+    public final LogRule logCapture = new LogRule() {{
+        record(LogLevel.WARN);
+        recordLoggingForType(DefaultExtensionManagerConfiguration.class);
+    }};
 
     private ExtensionManagerConfiguration configuration;
 
@@ -71,17 +79,24 @@ public class DefaultExtensionManagerConfigurationTest
     @Test
     public void testGetRepositoriesWithInvalid() throws Exception
     {
+        // We define 2 repositories: a valid one and an invalid one.
+        // The goal is to verify that the invalid one is ignored but a warning is reported in the logs.
         this.source.setProperty("extension.repositories", Arrays.asList("id:type:http://url", "invalid"));
 
         Assert.assertEquals(
             Arrays.asList(new DefaultExtensionRepositoryDescriptor("id", "type", new URI("http://url"))),
             new ArrayList<ExtensionRepositoryDescriptor>(this.configuration.getExtensionRepositoryDescriptors()));
+        Assert.assertEquals(1, this.logCapture.size());
+        Assert.assertEquals("Ignoring invalid repository configuration [invalid]. Root cause "
+            + "[ExtensionManagerConfigurationException: Invalid repository configuration format for [invalid]. Should "
+            + "have been matching [([^:]+):([^:]+):(.+)].]", this.logCapture.getMessage(0));
     }
 
     @Test
     public void testGetExtensionRepositoryDescriptorsEmpty()
     {
         Assert.assertEquals(null, this.configuration.getExtensionRepositoryDescriptors());
+        Assert.assertEquals(0, this.logCapture.size());
     }
 
     @Test
@@ -102,5 +117,6 @@ public class DefaultExtensionManagerConfigurationTest
         Assert.assertEquals(new URI("http://url"), descriptor.getURI());
         Assert.assertEquals("value", descriptor.getProperty("property"));
         Assert.assertEquals("other value", descriptor.getProperty("property.with.dots"));
+        Assert.assertEquals(0, this.logCapture.size());
     }
 }

@@ -23,15 +23,12 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * A {@link Job} request.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
-@Unstable
 public interface Request extends Serializable
 {
     /**
@@ -88,4 +85,10 @@ public interface Request extends Serializable
      * @since 4.2M2
      */
     boolean containsProperty(String key);
+
+    /**
+     * @return true of the job should log informations about what is going on
+     * @since 5.4RC1
+     */
+    boolean isVerbose();
 }

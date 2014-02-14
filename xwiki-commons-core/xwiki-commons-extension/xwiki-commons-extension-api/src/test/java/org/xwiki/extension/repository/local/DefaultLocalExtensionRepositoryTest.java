@@ -19,8 +19,6 @@
  */
 package org.xwiki.extension.repository.local;
 
-import java.util.Collections;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -122,20 +120,20 @@ public class DefaultLocalExtensionRepositoryTest
         CollectionIterableResult<Extension> result =
             (CollectionIterableResult<Extension>) this.localExtensionRepository.search(null, 0, -1);
 
-        Assert.assertEquals(6, result.getTotalHits());
-        Assert.assertEquals(6, result.getSize());
+        Assert.assertEquals(7, result.getTotalHits());
+        Assert.assertEquals(7, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search("", 0, -1);
 
-        Assert.assertEquals(6, result.getTotalHits());
-        Assert.assertEquals(6, result.getSize());
+        Assert.assertEquals(7, result.getTotalHits());
+        Assert.assertEquals(7, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search("extension", 0, -1);
 
-        Assert.assertEquals(2, result.getTotalHits());
-        Assert.assertEquals(2, result.getSize());
+        Assert.assertEquals(3, result.getTotalHits());
+        Assert.assertEquals(3, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search("dependency", 0, -1);
@@ -146,43 +144,43 @@ public class DefaultLocalExtensionRepositoryTest
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search(null, 0, 0);
 
-        Assert.assertEquals(6, result.getTotalHits());
+        Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(0, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search(null, 0, 2);
 
-        Assert.assertEquals(6, result.getTotalHits());
+        Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search(null, 0, 1);
 
-        Assert.assertEquals(6, result.getTotalHits());
+        Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(1, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search(null, 1, 2);
 
-        Assert.assertEquals(6, result.getTotalHits());
+        Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(1, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search(null, 2, 2);
 
-        Assert.assertEquals(6, result.getTotalHits());
+        Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(2, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search(null, -1, 2);
 
-        Assert.assertEquals(6, result.getTotalHits());
+        Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(-1, result.getOffset());
 
         result = (CollectionIterableResult<Extension>) this.localExtensionRepository.search(null, -1, 1);
 
-        Assert.assertEquals(6, result.getTotalHits());
+        Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(1, result.getSize());
         Assert.assertEquals(-1, result.getOffset());
     }
@@ -202,9 +200,9 @@ public class DefaultLocalExtensionRepositoryTest
             // expected
         }
 
-        Assert.assertEquals(Collections.EMPTY_LIST,
-            this.localExtensionRepository.getLocalExtensionVersions(TestResources.INSTALLED_ID.getId()));
-        Assert.assertEquals(Collections.EMPTY_LIST,
-            this.localExtensionRepository.getLocalExtensionVersions(TestResources.INSTALLED_ID.getId() + "-feature"));
+        Assert.assertFalse(this.localExtensionRepository.getLocalExtensionVersions(TestResources.INSTALLED_ID.getId())
+            .contains(localExtension));
+        Assert.assertFalse(this.localExtensionRepository.getLocalExtensionVersions(
+            TestResources.INSTALLED_ID.getId() + "-feature").contains(localExtension));
     }
 }

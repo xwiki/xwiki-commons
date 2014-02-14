@@ -40,6 +40,7 @@ import org.xwiki.job.Request;
 import org.xwiki.job.internal.DefaultJobStatus;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.marker.TranslationMarker;
 
 /**
  * Extension installation related task.
@@ -57,6 +58,8 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
      * The id of the job.
      */
     public static final String JOBTYPE = "install";
+
+    private static final TranslationMarker LOG_DOWNLOADING = new TranslationMarker("extension.log.job.downloading");
 
     /**
      * Used to generate the install plan.
@@ -103,7 +106,8 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
             InstallRequest planRequest = new InstallRequest(getRequest());
             planRequest.setId((List<String>) null);
 
-            this.installPlanJob.start(planRequest);
+            this.installPlanJob.initialize(planRequest);
+            this.installPlanJob.run();
 
             ExtensionPlan plan = (ExtensionPlan) this.installPlanJob.getStatus();
 
@@ -169,7 +173,10 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
     private void storeExtension(Extension extension) throws LocalExtensionRepositoryException
     {
         if (!this.localExtensionRepository.exists(extension.getId())) {
-            this.logger.info("Downloading [{}]", extension.getId());
+            if (getRequest().isVerbose()) {
+                this.logger.info(LOG_DOWNLOADING, "Downloading extension [{}]", extension.getId());
+            }
+
             this.localExtensionRepository.storeExtension(extension);
         }
     }

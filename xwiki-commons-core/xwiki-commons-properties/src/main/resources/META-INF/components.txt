@@ -6,6 +6,7 @@ org.xwiki.properties.internal.converter.ColorConverter
 org.xwiki.properties.internal.converter.ConvertUtilsConverter
 org.xwiki.properties.internal.converter.EnumConverter
 org.xwiki.properties.internal.converter.HashSetConverter
+org.xwiki.properties.internal.converter.InputStreamConverter
 org.xwiki.properties.internal.converter.LinkedHashSetConverter
 org.xwiki.properties.internal.converter.ListConverter
 org.xwiki.properties.internal.converter.LocaleConverter

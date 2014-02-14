@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.xwiki.logging.internal.helpers.MessageParser.MessageElement;
+import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
+import org.xwiki.logging.internal.helpers.MessageParser.MessageString;
+
 /**
  * Provide what is missing in {@link org.slf4j.helpers.MessageFormatter}.
  * 
@@ -32,26 +36,6 @@ import java.util.List;
 // TODO: remove as soon as all that is provided by org.slf4j.helpers.MessageFormatter
 public final class ExtendedMessageFormatter
 {
-    /**
-     * Argument start syntax in message pattern.
-     */
-    static final char DELIM_START = '{';
-
-    /**
-     * Argument end syntax in message pattern.
-     */
-    static final char DELIM_STOP = '}';
-
-    /**
-     * Argument syntax in message pattern.
-     */
-    static final String DELIM_STR = "{}";
-
-    /**
-     * Character used to escape syntax in message pattern.
-     */
-    private static final char ESCAPE_CHAR = '\\';
-
     /**
      * Default constructor.
      */
@@ -77,79 +61,26 @@ public final class ExtendedMessageFormatter
 
         List<String> messageList = new ArrayList<String>(arguments.length + 1);
 
-        int i = 0;
-        int j;
+        MessageParser parser = new MessageParser(messagePattern, false);
 
-        int argumentsIndex;
-        for (argumentsIndex = 0; argumentsIndex < arguments.length; ++argumentsIndex) {
-            j = messagePattern.indexOf(DELIM_STR, i);
-
-            if (j == -1) {
-                // no more variables
-                if (i == 0) {
-                    // this is a simple string
-                    messageList.add(messagePattern);
-
-                    return messageList;
-                } else {
-                    // add the tail string which contains no variables and return the result.
-                    messageList.add(messagePattern.substring(i, messagePattern.length()));
-
-                    return messageList;
-                }
+        StringBuilder lastElement = new StringBuilder();
+        for (MessageElement element = parser.next(), previous = null; element != null; previous = element, element =
+                parser.next()) {
+            if (arguments.length < messageList.size()) {
+                lastElement.append(element.getString());
             } else {
-                if (isEscapedDelimeter(messagePattern, j)) {
-                    if (!isDoubleEscaped(messagePattern, j)) {
-                        // DELIM_START was escaped, thus should not be incremented
-                        --argumentsIndex;
-                        String str = messagePattern.substring(i, j - 1) + DELIM_START;
-                        if (messageList.isEmpty()) {
-                            messageList.add(str);
-                        } else {
-                            messageList.set(messageList.size() - 1, messageList.get(messageList.size() - 1) + str);
-                        }
-                        i = j + 1;
-                    } else {
-                        // The escape character preceding the delimiter start is
-                        // itself escaped: "abc x:\\{}" we have to consume one backward slash
-                        messageList.add(messagePattern.substring(i, j - 1));
-                        i = j + 2;
-                    }
-                } else {
-                    // normal case
-                    messageList.add(messagePattern.substring(i, j));
-                    i = j + 2;
+                if (element instanceof MessageString) {
+                    messageList.add(element.getString());
+                } else if (!(previous instanceof MessageString)) {
+                    messageList.add("");
                 }
             }
         }
 
-        // append the characters following the last {} pair.
-        messageList.add(messagePattern.substring(i, messagePattern.length()));
-
-        return messageList;
-    }
-
-    /**
-     * @param messagePattern the message pattern
-     * @param delimeterStartIndex the index of the start argument
-     * @return true if the syntax is escaped twice
-     */
-    static boolean isDoubleEscaped(String messagePattern, int delimeterStartIndex)
-    {
-        return delimeterStartIndex >= 2 && messagePattern.charAt(delimeterStartIndex - 2) == ESCAPE_CHAR;
-    }
-
-    /**
-     * @param messagePattern the message pattern
-     * @param delimeterStartIndex the index of the start argument
-     * @return true if the syntax is escaped
-     */
-    static boolean isEscapedDelimeter(String messagePattern, int delimeterStartIndex)
-    {
-        if (delimeterStartIndex == 0) {
-            return false;
+        if (lastElement.length() > 0 || parser.getCurrentMessageElement() instanceof MessageIndex) {
+            messageList.add(lastElement.toString());
         }
 
-        return messagePattern.charAt(delimeterStartIndex - 1) == ESCAPE_CHAR;
+        return messageList;
     }
 }

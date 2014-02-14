@@ -19,8 +19,6 @@
  */
 package org.xwiki.filter.xml;
 
-import java.util.regex.Pattern;
-
 /**
  * Allow to customize the syntax.
  * 
@@ -40,9 +38,14 @@ public class XMLConfiguration
     public static final String DEFAULT_ATT_BLOCK_NAME = "n";
 
     /**
-     * The default name of the attribute containing the name of the block.
+     * The default name of the attribute containing the name of the parameter.
      */
     public static final String DEFAULT_ATT_PARAMETER_NAME = DEFAULT_ATT_BLOCK_NAME;
+
+    /**
+     * The default name of the attribute containing the type of the parameter.
+     */
+    public static final String DEFAULT_ATT_PARAMETER_TYPE = "t";
 
     /**
      * The default name of the parameter element.
@@ -65,14 +68,14 @@ public class XMLConfiguration
     private String elementParameters;
 
     /**
-     * @see #getElementParameter()
-     */
-    private String elementParameter;
-
-    /**
      * @see #getAttributeParameterName()
      */
     private String attributeParameterName;
+
+    /**
+     * @see #getAttributeParameterType()
+     */
+    private String attributeParameterType;
 
     /**
      * @see #getAttributeBlockName()
@@ -80,20 +83,15 @@ public class XMLConfiguration
     private String attributeBlockName;
 
     /**
-     * @see #getElementParameterPattern()
-     */
-    private Pattern elementParameterPattern;
-
-    /**
      * Default constructor.
      */
     public XMLConfiguration()
     {
         setElementBlock(DEFAULT_ELEM_BLOCK);
-        setElementParameter(DEFAULT_ELEM_PARAMETER);
         setElementParameters(DEFAULT_ELEM_PARAMETERS);
         setAttributeBlockName(DEFAULT_ATT_BLOCK_NAME);
         setAttributeParameterName(DEFAULT_ATT_PARAMETER_NAME);
+        setAttributeParameterType(DEFAULT_ATT_PARAMETER_TYPE);
     }
 
     /**
@@ -129,31 +127,6 @@ public class XMLConfiguration
     }
 
     /**
-     * @return the name of the parameter element
-     */
-    public String getElementParameter()
-    {
-        return this.elementParameter;
-    }
-
-    /**
-     * @param elementParameter the name of the parameter element
-     */
-    public void setElementParameter(String elementParameter)
-    {
-        this.elementParameter = elementParameter;
-        this.elementParameterPattern = Pattern.compile(Pattern.quote(elementParameter) + "(\\d*)");
-    }
-
-    /**
-     * @return the pattern to use to parse the element parameter
-     */
-    public Pattern getElementParameterPattern()
-    {
-        return this.elementParameterPattern;
-    }
-
-    /**
      * @return the name of the attribute containing the name of the block
      */
     public String getAttributeBlockName()
@@ -183,5 +156,21 @@ public class XMLConfiguration
     public void setAttributeParameterName(String attributeParameterName)
     {
         this.attributeParameterName = attributeParameterName;
+    }
+
+    /**
+     * @return the name of the attribute containing the type of the parameter
+     */
+    public String getAttributeParameterType()
+    {
+        return this.attributeParameterType;
+    }
+
+    /**
+     * @param attributeParameterType the name of the attribute containing the type of the parameter
+     */
+    public void setAttributeParameterType(String attributeParameterType)
+    {
+        this.attributeParameterType = attributeParameterType;
     }
 }

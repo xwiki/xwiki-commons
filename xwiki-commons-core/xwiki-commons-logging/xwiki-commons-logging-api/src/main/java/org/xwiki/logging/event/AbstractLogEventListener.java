@@ -19,7 +19,7 @@
  */
 package org.xwiki.logging.event;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.xwiki.observation.EventListener;
@@ -36,7 +36,8 @@ public abstract class AbstractLogEventListener implements EventListener
     /**
      * The matched events.
      */
-    private static final List<Event> EVENTS = Collections.<Event> singletonList(new LogEvent());
+    private static final List<Event> EVENTS = Arrays.<Event> asList(new LogEvent(), new BeginLogEvent(),
+        new EndLogEvent());
 
     @Override
     public List<Event> getEvents()

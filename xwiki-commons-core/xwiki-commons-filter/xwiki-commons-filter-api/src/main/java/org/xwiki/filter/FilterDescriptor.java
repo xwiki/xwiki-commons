@@ -36,12 +36,12 @@ public class FilterDescriptor
     /**
      * @see #getElements()
      */
-    private Map<String, FilterElement> elements = new HashMap<String, FilterElement>();
+    private Map<String, FilterElementDescriptor> elements = new HashMap<String, FilterElementDescriptor>();
 
     /**
      * @return the filter elements
      */
-    public Map<String, FilterElement> getElements()
+    public Map<String, FilterElementDescriptor> getElements()
     {
         return this.elements;
     }
@@ -50,8 +50,16 @@ public class FilterDescriptor
      * @param name the name of the filter element
      * @return the filter element
      */
-    public FilterElement getElement(String name)
+    public FilterElementDescriptor getElement(String name)
     {
         return this.elements.get(name.toLowerCase());
+    }
+
+    /**
+     * @param descriptor the descriptor to merge with this descriptor
+     */
+    public void add(FilterDescriptor descriptor)
+    {
+        this.elements.putAll(descriptor.elements);
     }
 }

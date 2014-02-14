@@ -19,18 +19,15 @@
  */
 package org.xwiki.logging;
 
-import java.util.Collections;
-import java.util.Iterator;
-
-import org.slf4j.Marker;
-
 /**
  * Allows associating a translation key to a log.
  * 
  * @version $Id$
  * @since 5.0M2
+ * @deprecated since 5.4M1, use {@link org.xwiki.logging.marker.TranslationMarker} instead
  */
-public class TranslationMarker implements Marker
+@Deprecated
+public class TranslationMarker extends org.xwiki.logging.marker.TranslationMarker
 {
     /**
      * Serialization id.
@@ -38,111 +35,10 @@ public class TranslationMarker implements Marker
     private static final long serialVersionUID = 1L;
 
     /**
-     * The marker name.
-     */
-    private static final String NAME = TranslationMarker.class.getName();
-
-    /**
-     * @see #getTranslationKey()
-     */
-    private String translationKey;
-
-    /**
      * @param translationKey the translation key to associate to the log
      */
     public TranslationMarker(String translationKey)
     {
-        this.translationKey = translationKey;
-    }
-
-    /**
-     * @return the translation key associate to the log
-     */
-    public String getTranslationKey()
-    {
-        return this.translationKey;
-    }
-
-    // Marker
-
-    @Override
-    public String getName()
-    {
-        return NAME;
-    }
-
-    @Override
-    public void add(Marker reference)
-    {
-        // Not supported
-    }
-
-    @Override
-    public boolean remove(Marker reference)
-    {
-        // Not supported
-        return false;
-    }
-
-    @Override
-    public boolean hasChildren()
-    {
-        // Not supported
-        return false;
-    }
-
-    @Override
-    public boolean hasReferences()
-    {
-        // Not supported
-        return false;
-    }
-
-    @Override
-    public Iterator iterator()
-    {
-        // Not supported
-        return Collections.EMPTY_LIST.iterator();
-    }
-
-    @Override
-    public boolean contains(Marker other)
-    {
-        if (equals(other)) {
-            return true;
-        }
-
-        // Not supported
-        return false;
-    }
-
-    @Override
-    public boolean contains(String name)
-    {
-        if (NAME.equals(name)) {
-            return true;
-        }
-
-        // Not supported
-        return false;
-    }
-
-    // Object
-
-    @Override
-    public int hashCode()
-    {
-        return this.translationKey.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-        if (this == other) {
-            return true;
-        }
-
-        return other instanceof TranslationMarker
-            && this.translationKey.equals(((TranslationMarker) other).getTranslationKey());
+        super(translationKey);
     }
 }

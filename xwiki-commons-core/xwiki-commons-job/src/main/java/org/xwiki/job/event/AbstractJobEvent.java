@@ -22,15 +22,13 @@ package org.xwiki.job.event;
 import java.util.List;
 
 import org.xwiki.job.Request;
-import org.xwiki.stability.Unstable;
 
 /**
  * Common implementation for job events.
- *
+ * 
  * @version $Id$
  * @since 4.0M1
  */
-@Unstable
 abstract class AbstractJobEvent implements JobEvent
 {
     /**

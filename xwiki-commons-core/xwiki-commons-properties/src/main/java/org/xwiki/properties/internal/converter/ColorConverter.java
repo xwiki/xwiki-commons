@@ -59,7 +59,7 @@ public class ColorConverter extends AbstractConverter<Color>
     @Override
     protected String convertToString(Color value)
     {
-        Color colorValue = (Color) value;
+        Color colorValue = value;
 
         return MessageFormat.format("{0}, {1}, {2}", colorValue.getRed(), colorValue.getGreen(), colorValue.getBlue());
     }

@@ -94,4 +94,10 @@ public class DefaultDiffResult<E> implements DiffResult<E>
     {
         this.patch = patch;
     }
+    
+    @Override
+    public String toString()
+    {
+        return this.patch.toString();
+    }
 }

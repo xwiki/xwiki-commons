@@ -23,19 +23,22 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.ReflectionMethodUtils;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
-import org.xwiki.filter.FilterElement;
-import org.xwiki.filter.FilterElementParameter;
+import org.xwiki.filter.FilterElementDescriptor;
+import org.xwiki.filter.FilterElementParameterDescriptor;
 import org.xwiki.filter.annotation.Default;
 import org.xwiki.filter.annotation.Name;
 import org.xwiki.properties.ConverterManager;
@@ -65,6 +68,8 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      */
     public static final String PREFIX_ON = "on";
 
+    private static final Class< ? >[] CLASS_ARRAY = new Class< ? >[0];
+
     /**
      * The descriptors.
      */
@@ -77,15 +82,26 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     private ConverterManager converter;
 
     @Override
-    public FilterDescriptor getFilterDescriptor(Class< ? > type)
+    public FilterDescriptor getFilterDescriptor(Class< ? >... interfaces)
     {
-        FilterDescriptor descriptor = this.descriptors.get(type);
-        if (descriptor == null) {
-            descriptor = createDescriptor(type);
-            this.descriptors.put(type, descriptor);
+        FilterDescriptor totalDescriptor = null;
+
+        for (Class< ? > i : interfaces) {
+            FilterDescriptor descriptor = this.descriptors.get(i);
+
+            if (descriptor == null) {
+                descriptor = createDescriptor(i);
+                this.descriptors.put(i, descriptor);
+            }
+
+            if (totalDescriptor == null) {
+                totalDescriptor = descriptor;
+            } else {
+                totalDescriptor.add(descriptor);
+            }
         }
 
-        return descriptor;
+        return totalDescriptor;
     }
 
     /**
@@ -149,18 +165,19 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     {
         String lowerElementName = elementName.toLowerCase();
 
-        FilterElement element = descriptor.getElements().get(lowerElementName);
+        FilterElementDescriptor element = descriptor.getElements().get(lowerElementName);
 
         Type[] methodTypes = method.getGenericParameterTypes();
         // TODO: add support for multiple methods
         if (element == null || methodTypes.length > element.getParameters().length) {
-            FilterElementParameter< ? >[] parameters = new FilterElementParameter< ? >[methodTypes.length];
+            FilterElementParameterDescriptor< ? >[] parameters =
+                new FilterElementParameterDescriptor< ? >[methodTypes.length];
 
             for (int i = 0; i < methodTypes.length; ++i) {
                 parameters[i] = createFilterElementParameter(method, i, methodTypes[i]);
             }
 
-            element = new FilterElement(elementName, parameters);
+            element = new FilterElementDescriptor(elementName, parameters);
 
             descriptor.getElements().put(lowerElementName, element);
         }
@@ -172,9 +189,9 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      * @param method the method associated to the element
      * @param index the method parameter index
      * @param type the method parameter type
-     * @return the associated {@link FilterElementParameter}
+     * @return the associated {@link FilterElementParameterDescriptor}
      */
-    private FilterElementParameter< ? > createFilterElementParameter(Method method, int index, Type type)
+    private FilterElementParameterDescriptor< ? > createFilterElementParameter(Method method, int index, Type type)
     {
         // @Name
         List<Name> nameAnnotations =
@@ -211,14 +228,14 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
             defaultValue = null;
         }
 
-        return new FilterElementParameter<Object>(index, name, type, defaultValue);
+        return new FilterElementParameterDescriptor<Object>(index, name, type, defaultValue);
     }
 
     /**
      * @param element the element
      * @param method the method to add to the element
      */
-    private void addMethod(FilterElement element, Method method)
+    private void addMethod(FilterElementDescriptor element, Method method)
     {
         String methodName = method.getName();
         Type[] methodTypes = method.getGenericParameterTypes();
@@ -242,9 +259,39 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     }
 
     @Override
-    public <F> F createFilterProxy(Class<F> filterClass, Object targetFilter)
+    public <F> F createFilterProxy(Object targetFilter, Class< ? >... interfaces)
     {
-        return (F) Proxy.newProxyInstance(filterClass.getClassLoader(), new Class[] {filterClass}, new FilterProxy(
-            targetFilter, getFilterDescriptor(filterClass)));
+        return createFilterProxy(targetFilter, Thread.currentThread().getContextClassLoader(), interfaces);
+    }
+
+    @Override
+    public <F> F createFilterProxy(Object targetFilter, ClassLoader loader, Class< ? >... interfaces)
+    {
+        for (Class< ? > i : interfaces) {
+            if (!i.isInstance(targetFilter)) {
+                return (F) Proxy.newProxyInstance(loader, interfaces,
+                    new FilterProxy(targetFilter, getFilterDescriptor(interfaces)));
+            }
+        }
+
+        return (F) targetFilter;
+    }
+
+    @Override
+    public <F> F createCompositeFilter(Object... filters)
+    {
+        return createCompositeFilter(Thread.currentThread().getContextClassLoader(), filters);
+    }
+
+    @Override
+    public <F> F createCompositeFilter(ClassLoader loader, Object... filters)
+    {
+        Set<Class< ? >> interfaces = new HashSet<Class< ? >>();
+        for (Object filter : filters) {
+            interfaces.addAll(ClassUtils.getAllInterfaces(filter.getClass()));
+        }
+
+        return (F) Proxy.newProxyInstance(loader, interfaces.toArray(CLASS_ARRAY),
+            new CompositeFilter(this, filters));
     }
 }

@@ -63,8 +63,31 @@ public interface ExtensionManager
      * @param extensionDependency the extension as dependency
      * @return the resolved extension
      * @throws ResolveException error when trying to resolve extension
+     * @since since 5.3M1, use {@link #resolveExtension(ExtensionDependency, String)} instead
      */
+    @Deprecated
     Extension resolveExtension(ExtensionDependency extensionDependency) throws ResolveException;
+
+    /**
+     * Search the provided extension as a dependency of another extension among all repositories including core and
+     * local repositories.
+     * <p>
+     * The search is done in the following order:
+     * <ul>
+     * <li>Is it a core extension ?</li>
+     * <li>Is it a local extension ?</li>
+     * <li>Is this feature installed in current namespace or parent ?</li>
+     * <li>Is it a remote extension in one of the configured remote repositories ?</li>
+     * </ul>
+     * The first one found is returned.
+     * 
+     * @param extensionDependency the extension as dependency
+     * @param namespace the namespace where to search for the dependency
+     * @return the resolved extension
+     * @throws ResolveException error when trying to resolve extension
+     * @since 5.3M1
+     */
+    Extension resolveExtension(ExtensionDependency extensionDependency, String namespace) throws ResolveException;
 
     /**
      * Return a repository based on its id.

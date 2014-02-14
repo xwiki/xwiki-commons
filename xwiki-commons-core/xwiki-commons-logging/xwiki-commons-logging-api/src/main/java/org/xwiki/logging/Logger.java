@@ -17,30 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package ${package}.internal;
+package org.xwiki.logging;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.script.service.ScriptService;
-
-import ${package}.HelloWorld;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import org.xwiki.logging.event.LogEvent;
 
 /**
- * Make the HelloWorld API available to scripting.
+ * A {@link org.slf4j.Logger} with support for {@link LogEvent}.
+ * 
+ * @version $Id$
+ * @since 5.4M1
  */
-@Component
-@Named("hello")
-@Singleton
-public class HelloWorldScriptService implements ScriptService
+public interface Logger extends org.slf4j.Logger
 {
-    @Inject
-    private HelloWorld helloWorld;
-
-    public String greet()
-    {
-        return this.helloWorld.sayHello();
-    }
+    /**
+     * @param logEvent the log event
+     */
+    void log(LogEvent logEvent);
 }

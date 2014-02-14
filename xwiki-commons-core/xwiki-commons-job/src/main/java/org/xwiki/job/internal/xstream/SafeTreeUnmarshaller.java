@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
- * {@link TreeUnmarshaller} does not support very well some exotic exceptions.
+ * A {@link TreeUnmarshaller} which never fail whatever value is provided.
  * 
  * @version $Id$
  */
@@ -43,6 +43,7 @@ public class SafeTreeUnmarshaller extends TreeUnmarshaller
     private static final Logger LOGGER = LoggerFactory.getLogger(SafeTreeUnmarshaller.class);
 
     /**
+     * @see TreeUnmarshaller#TreeUnmarshaller(Object, HierarchicalStreamReader, ConverterLookup, Mapper).
      * @param root the root object
      * @param reader the reader
      * @param converterLookup the converter lookup
@@ -67,8 +68,8 @@ public class SafeTreeUnmarshaller extends TreeUnmarshaller
             } catch (Exception e1) {
                 // TODO Should never happen
 
-                LOGGER.debug("Failed to access private fied com.thoughtworks.xstream.core.TreeUnmarshaller#types",
-                    type, e);
+                LOGGER.debug("Failed to access private fied com.thoughtworks.xstream.core.TreeUnmarshaller#types", type,
+                    e1);
             }
 
             LOGGER.debug("Got unknown exception when converting object of type [{}]", type, e);

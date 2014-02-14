@@ -19,12 +19,13 @@
  */
 package org.xwiki.extension.repository.http.internal;
 
-import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.xwiki.component.annotation.Role;
 
 /**
- * Constructs {@link HttpClient} objects that can be used to perform request on HTTP-based Extension Repositories.
- *
+ * Constructs {@link CloseableHttpClient} objects that can be used to perform request on HTTP-based Extension
+ * Repositories.
+ * 
  * @version $Id$
  * @since 5.2M1
  */
@@ -34,9 +35,9 @@ public interface HttpClientFactory
     /**
      * @param user the user if the remote repository requires authentication, or null if no authentication is required
      * @param password the password if the remote repository requires authentication, or null if no authentication is
-     *        required
-     * @return the {@link HttpClient} object that can be used to perform HTTP calls to an HTTP-based Extension
+     *            required
+     * @return the {@link CloseableHttpClient} object that can be used to perform HTTP calls to an HTTP-based Extension
      *         Repository
      */
-    HttpClient createClient(String user, String password);
+    CloseableHttpClient createClient(String user, String password);
 }

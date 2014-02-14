@@ -25,15 +25,18 @@ import java.io.FilenameFilter;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.archiver.ArchiveEntry;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.OutputFormat;
@@ -59,6 +62,13 @@ public class XARMojo extends AbstractXARMojo
      * @parameter expression="${includeDependencies}" default-value="false"
      */
     private boolean includeDependencies;
+
+    /**
+     * List of XML transformations to execute on the XML files.
+     *
+     * @parameter
+     */
+    private List<Transformation> transformations;
 
     @Override
     public void execute() throws MojoExecutionException
@@ -104,10 +114,13 @@ public class XARMojo extends AbstractXARMojo
 
         if (this.includeDependencies) {
             // Unzip dependent XARs on top of this project's XML documents but without overwriting
-            // existing files since we want this projet's files to be used if they override a file
+            // existing files since we want this project's files to be used if they override a file
             // present in a XAR dependency.
             unpackDependentXARs();
         }
+
+        // Perform XML transformations
+        performTransformations();
 
         // If no package.xml can be found at the top level of the current project, generate one
         // otherwise, try to use the existing one
@@ -131,6 +144,57 @@ public class XARMojo extends AbstractXARMojo
         this.project.getArtifact().setFile(xarFile);
     }
 
+    private void performTransformations() throws Exception
+    {
+        if (this.transformations == null) {
+            return;
+        }
+
+        // Copy XML pages from dependent XAR if we modify them.
+        unpackTransformedXARs();
+
+        SAXReader reader = new SAXReader();
+
+        // For each defined file, perform the transformation asked
+        for (Transformation transformation : this.transformations) {
+            File file = new File(this.project.getBuild().getOutputDirectory(), transformation.getFile());
+            Document document = reader.read(file);
+            Node node = document.selectSingleNode(transformation.getXpath());
+            String value = transformation.getValue();
+            if (!StringUtils.isEmpty(value)) {
+                // Get the current value at node and replace $1 with it (if any)
+                String currentValue = node.getText();
+                node.setText(value.replace("$1", currentValue));
+            }
+            // Write the modified file to disk
+            XMLWriter writer = new XMLWriter(new FileOutputStream(file));
+            writer.write(document);
+            writer.flush();
+            writer.close();
+        }
+    }
+
+    private void unpackTransformedXARs() throws MojoExecutionException
+    {
+        for (Transformation transformation : this.transformations) {
+            Set<Artifact> artifacts = this.project.getArtifacts();
+            if (artifacts != null) {
+                for (Artifact artifact : artifacts) {
+                    if (!artifact.isOptional()) {
+                        if ("xar".equals(artifact.getType())) {
+                            String id = String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId());
+                            if (id.equals(transformation.getArtifact())) {
+                                unpackXARToOutputDirectory(artifact,
+                                    new String[] {transformation.getFile()}, new String[] {});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     /**
      * Unpack XAR dependencies before pack then into it.
      * 
@@ -143,7 +207,7 @@ public class XARMojo extends AbstractXARMojo
             for (Artifact artifact : artifacts) {
                 if (!artifact.isOptional()) {
                     if ("xar".equals(artifact.getType())) {
-                        unpackXARToOutputDirectory(artifact);
+                        unpackXARToOutputDirectory(artifact, getIncludes(), getExcludes());
                     }
                 }
             }
@@ -232,7 +296,7 @@ public class XARMojo extends AbstractXARMojo
         infoElement.add(el);
 
         el = new DOMElement("backupPack");
-        el.addText("true");
+        el.addText("false");
         infoElement.add(el);
     }
 

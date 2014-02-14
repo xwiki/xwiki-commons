@@ -61,7 +61,7 @@ import org.xwiki.extension.version.VersionConstraint;
  * @since 4.1M1
  */
 public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
-    AbstractExtensionJob<R, DefaultExtensionPlan<R>>
+    AbstractExtensionPlanJob<R>
 {
     protected static class ModifableExtensionPlanTree extends DefaultExtensionPlanTree implements Cloneable
     {
@@ -159,24 +159,12 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     protected CoreExtensionRepository coreExtensionRepository;
 
     /**
-     * The install plan.
-     */
-    protected ModifableExtensionPlanTree extensionTree = new ModifableExtensionPlanTree();
-
-    /**
      * Used to make sure dependencies are compatible between each other in the whole plan.
      * <p>
      * <id, <namespace, node>>.
      */
     private Map<String, Map<String, ModifableExtensionPlanNode>> extensionsNodeCache =
         new HashMap<String, Map<String, ModifableExtensionPlanNode>>();
-
-    @Override
-    protected DefaultExtensionPlan<R> createNewStatus(R request)
-    {
-        return new DefaultExtensionPlan<R>(request, this.observationManager, this.loggerManager, this.extensionTree,
-            this.jobContext.getCurrentJob() != null);
-    }
 
     protected void setExtensionTree(ModifableExtensionPlanTree extensionTree)
     {
@@ -308,7 +296,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     {
         InstalledExtension installedExtension = this.installedExtensionRepository.getInstalledExtension(id, namespace);
         if (installedExtension != null) {
-            this.logger.info("Found already installed extension with id [{}]. Checking compatibility...", id);
+            if (getRequest().isVerbose()) {
+                this.logger.debug("Found already installed extension with id [{}]. Checking compatibility...", id);
+            }
 
             if (version == null) {
                 throw new InstallException(String.format("The extension with id [%s] is already installed", id));
@@ -378,10 +368,13 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     protected void installExtension(ExtensionId extensionId, boolean dependency, String namespace,
         ModifableExtensionPlanTree parentBranch) throws InstallException, ResolveException
     {
-        if (namespace != null) {
-            this.logger.info("Resolving extension [{}] on namespace [{}]", extensionId, namespace);
-        } else {
-            this.logger.info("Resolving extension [{}] on all namespaces", extensionId);
+        if (getRequest().isVerbose()) {
+            if (namespace != null) {
+                this.logger.info(LOG_RESOLVE_NAMESPACE, "Resolving extension [{}] on namespace [{}]", extensionId,
+                    namespace);
+            } else {
+                this.logger.info(LOG_RESOLVE, "Resolving extension [{}] on all namespaces", extensionId);
+            }
         }
 
         // Make sure the extension is not already a core extension
@@ -429,8 +422,10 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 throw new InstallException("Dependency [" + extensionDependency
                     + "] is not compatible with core extension [" + coreExtension + "]");
             } else {
-                this.logger.info("There is already a core extension [{}] covering extension dependency [{}]",
-                    coreExtension.getId(), extensionDependency);
+                if (getRequest().isVerbose()) {
+                    this.logger.debug("There is already a core extension [{}] covering extension dependency [{}]",
+                        coreExtension.getId(), extensionDependency);
+                }
 
                 ModifableExtensionPlanNode node =
                     new ModifableExtensionPlanNode(extensionDependency, extensionDependency.getVersionConstraint());
@@ -487,8 +482,10 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             // Check if already installed version is compatible
             if (installedExtension.isValid(namespace)
                 && versionConstraint.isCompatible(installedExtension.getId().getVersion())) {
-                this.logger.info("There is already an installed extension [{}] covering extension dependency [{}]",
-                    installedExtension.getId(), extensionDependency);
+                if (getRequest().isVerbose()) {
+                    this.logger.debug("There is already an installed extension [{}] covering extension dependency [{}]",
+                        installedExtension.getId(), extensionDependency);
+                }
 
                 ModifableExtensionPlanNode node =
                     new ModifableExtensionPlanNode(extensionDependency, versionConstraint);
@@ -550,10 +547,14 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private void installExtensionDependency(ExtensionDependency extensionDependency, String namespace,
         List<ModifableExtensionPlanNode> parentBranch) throws InstallException
     {
-        if (namespace != null) {
-            this.logger.info("Resolving extension dependency [{}] on namespace [{}]", extensionDependency, namespace);
-        } else {
-            this.logger.info("Resolving extension dependency [{}] on all namespaces", extensionDependency);
+        if (getRequest().isVerbose()) {
+            if (namespace != null) {
+                this.logger.info(LOG_RESOLVEDEPENDENCY_NAMESPACE,
+                    "Resolving extension dependency [{}] on namespace [{}]", extensionDependency, namespace);
+            } else {
+                this.logger.info(LOG_RESOLVEDEPENDENCY, "Resolving extension dependency [{}] on all namespaces",
+                    extensionDependency);
+            }
         }
 
         VersionConstraint versionConstraint = extensionDependency.getVersionConstraint();

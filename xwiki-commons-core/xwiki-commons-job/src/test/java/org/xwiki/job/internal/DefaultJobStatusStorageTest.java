@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,31 +51,48 @@ public class DefaultJobStatusStorageTest
         final JobManagerConfiguration jobManagerConfiguration =
             this.componentManager.getInstance(JobManagerConfiguration.class);
 
-        when(jobManagerConfiguration.getStorage()).thenReturn(new File("src/test/resources/jobs"));
+        FileUtils.deleteDirectory(new File("target/test/jobs/"));
+        FileUtils.copyDirectory(new File("src/test/resources/jobs/"), new File("target/test/jobs/"));
+
+        when(jobManagerConfiguration.getStorage()).thenReturn(new File("target/test/jobs/status"));
     }
 
     @Test
-    public void testInit() throws Exception
+    public void testGetJobStatusWithNullId() throws Exception
     {
         JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus((List<String>) null);
 
         Assert.assertNotNull(jobStatus);
         Assert.assertNull(jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
+    }
 
-        jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2"));
+    @Test
+    public void testGetJobStatusWithMultipleId() throws Exception
+    {
+        JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2"));
 
         Assert.assertNotNull(jobStatus);
         Assert.assertEquals(Arrays.asList("id1", "id2"), jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
+    }
 
-        jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2", "id3"));
+    @Test
+    public void testGetJobStatusInOldPlace() throws Exception
+    {
+        JobStatus jobStatus =
+            this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2", "id3"));
 
         Assert.assertNotNull(jobStatus);
         Assert.assertEquals(Arrays.asList("id1", "id2", "id3"), jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
+    }
 
-        jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("invalidlogargument"));
+    @Test
+    public void testGetJobStatusInWronfPlaceAndWithInvalidLogArgument() throws Exception
+    {
+        JobStatus jobStatus =
+            this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("invalidlogargument"));
 
         Assert.assertEquals(3, jobStatus.getLog().size());
     }

@@ -32,6 +32,7 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionManager;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepository;
@@ -123,20 +124,29 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
         try {
             return this.coreExtensionRepository.resolve(extensionDependency);
         } catch (ResolveException notACoreExtension) {
-            return resolveExtensionFromInstalled(extensionDependency);
+            try {
+                return this.localExtensionRepository.resolve(extensionDependency);
+            } catch (ResolveException notALocalExtension) {
+                return this.repositoryManager.resolve(extensionDependency);
+            }
         }
     }
 
-    /**
-     * @param extensionDependency the extension as dependency
-     * @return the resolved extension
-     * @throws ResolveException error when trying to resolve extension
-     */
-    private Extension resolveExtensionFromInstalled(ExtensionDependency extensionDependency) throws ResolveException
+    @Override
+    public Extension resolveExtension(ExtensionDependency extensionDependency, String namespace)
+        throws ResolveException
     {
         try {
-            return this.installedExtensionRepository.resolve(extensionDependency);
-        } catch (ResolveException notAnInstalledExtension) {
+            return this.coreExtensionRepository.resolve(extensionDependency);
+        } catch (ResolveException notACoreExtension) {
+            InstalledExtension extension =
+                this.installedExtensionRepository.getInstalledExtension(extensionDependency.getId(), namespace);
+
+            if (extension != null
+                && extensionDependency.getVersionConstraint().containsVersion(extension.getId().getVersion())) {
+                return extension;
+            }
+
             try {
                 return this.localExtensionRepository.resolve(extensionDependency);
             } catch (ResolveException notALocalExtension) {

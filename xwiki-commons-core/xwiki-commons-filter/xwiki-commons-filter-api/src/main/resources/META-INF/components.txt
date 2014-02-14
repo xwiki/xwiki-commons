@@ -1,1 +1,2 @@
 org.xwiki.filter.internal.DefaultFilterDescriptorManager
+org.xwiki.filter.internal.converter.FilterElementParametersConverter
