@@ -55,8 +55,6 @@ import org.eclipse.aether.resolution.VersionRangeResult;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.Extension;
