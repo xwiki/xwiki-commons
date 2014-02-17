@@ -19,6 +19,7 @@
  */
 package org.xwiki.filter.xml.internal.parser;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -145,10 +146,10 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             return this.parametersTable;
         }
 
-        public void fireBeginEvent(Object listener, Object[] parameters) throws SAXException
+        public void fireBeginEvent(Object listener) throws SAXException
         {
             if (this.filterElement != null) {
-                fireEvent(this.filterElement.getBeginMethod(), listener, parameters);
+                fireEvent(this.filterElement.getBeginMethod(), listener);
             } else if (listener instanceof UnknownFilter) {
                 try {
                     ((UnknownFilter) listener).beginUnknwon(this.name, this.namedParameters);
@@ -160,10 +161,10 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             this.beginSent = true;
         }
 
-        public void fireEndEvent(Object listener, Object[] parameters) throws SAXException
+        public void fireEndEvent(Object listener) throws SAXException
         {
             if (this.filterElement != null) {
-                fireEvent(this.filterElement.getEndMethod(), listener, parameters);
+                fireEvent(this.filterElement.getEndMethod(), listener);
             } else if (listener instanceof UnknownFilter) {
                 try {
                     ((UnknownFilter) listener).endUnknwon(this.name, this.namedParameters);
@@ -174,10 +175,10 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             }
         }
 
-        public void fireOnEvent(Object listener, Object[] parameters) throws SAXException
+        public void fireOnEvent(Object listener) throws SAXException
         {
             if (this.filterElement != null) {
-                fireEvent(this.filterElement.getOnMethod(), listener, parameters);
+                fireEvent(this.filterElement.getOnMethod(), listener);
             } else if (listener instanceof UnknownFilter) {
                 try {
                     ((UnknownFilter) listener).onUnknwon(this.name, this.namedParameters);
@@ -188,11 +189,12 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             }
         }
 
-        private void fireEvent(Method eventMethod, Object listener, Object[] parameters) throws SAXException
+        private void fireEvent(Method eventMethod, Object listener) throws SAXException
         {
-            Object[] properParameters = parameters;
+            Object[] parameters = getParametersTable();
             Class< ? >[] methodParameters = eventMethod.getParameterTypes();
 
+            Object[] properParameters;
             // Missing parameters
             if (methodParameters.length > parameters.length) {
                 properParameters = new Object[methodParameters.length];
@@ -203,6 +205,8 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                         properParameters[i] = this.filterElement.getParameters()[i].getDefaultValue();
                     }
                 }
+            } else {
+                properParameters = parameters;
             }
 
             // Invalid primitive
@@ -221,6 +225,9 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             // Send event
             try {
                 eventMethod.invoke(listener, properParameters);
+            } catch (InvocationTargetException e) {
+                throw new SAXException("Event [" + eventMethod + "] thrown exception",
+                    e.getCause() instanceof Exception ? (Exception) e.getCause() : e);
             } catch (Exception e) {
                 throw new SAXException("Failed to invoke event [" + eventMethod + "]", e);
             }
@@ -371,7 +378,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             if (currentBlock != null) {
                 // send previous event
                 if (!currentBlock.beginSent) {
-                    currentBlock.fireBeginEvent(this.filter, currentBlock.getParametersTable());
+                    currentBlock.fireBeginEvent(this.filter);
                 }
             }
 
@@ -424,10 +431,10 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             // Flush pending begin event and send end event or send on event
             if (block.isContainer()) {
                 if (!block.beginSent) {
-                    block.fireBeginEvent(this.filter, block.getParametersTable());
+                    block.fireBeginEvent(this.filter);
                 }
 
-                block.fireEndEvent(this.filter, block.getParametersTable());
+                block.fireEndEvent(this.filter);
             } else {
                 if (block.getParametersList().size() == 0
                     && this.filterDescriptor.getElement(qName).getParameters().length > 0) {
@@ -441,7 +448,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                     }
                 }
 
-                block.fireOnEvent(this.filter, block.getParametersTable());
+                block.fireOnEvent(this.filter);
             }
         } else if (currentBlock.parametersDOMBuilder != null) {
             currentBlock.parametersDOMBuilder.endElement(uri, localName, qName);
