@@ -77,6 +77,10 @@ public class RepositoryUtils
         // TODO: add support for maven
 
         this.extensionPackager = new ExtensionPackager(this.permanentDirectory, repositories);
+
+        System.setProperty("extension.repository.local", this.localRepositoryRoot.getAbsolutePath());
+        System.setProperty("extension.repository.maven", this.mavenRepositoryRoot.getAbsolutePath());
+        System.setProperty("extension.repository.remote", this.remoteRepositoryRoot.getAbsolutePath());
     }
 
     public File getPermanentDirectory()
