@@ -503,7 +503,7 @@
       <dependency>
         <groupId>com.smartgwt</groupId>
         <artifactId>smartgwt</artifactId>
-        <version>3.1</version>
+        <version>4.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
