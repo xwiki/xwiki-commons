@@ -22,12 +22,12 @@ package org.xwiki.filter.xml.internal.parameter;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.w3c.dom.Element;
 import org.xwiki.component.annotation.Component;
@@ -96,7 +96,7 @@ public class XStreamParameterManager implements ParameterManager, Initializable
     public void serialize(Type type, Object object, XMLStreamWriter xmlStreamWriter)
     {
         Class< ? > typeClass = ReflectionUtils.getTypeClass(type);
-        if (typeClass != null && ObjectUtils.equals(XMLUtils.emptyValue(typeClass), object)) {
+        if (typeClass != null && Objects.equals(XMLUtils.emptyValue(typeClass), object)) {
             return;
         }
 

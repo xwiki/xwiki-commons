@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.inject.Singleton;
@@ -32,7 +33,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptor;
@@ -113,7 +113,7 @@ public class DefaultXMLSerializer implements InvocationHandler
             if (parameterValue != null) {
                 FilterElementParameterDescriptor< ? > filterParameter = element.getParameters()[i];
 
-                if (!ObjectUtils.equals(filterParameter.getDefaultValue(), parameterValue)) {
+                if (!Objects.equals(filterParameter.getDefaultValue(), parameterValue)) {
                     Class< ? > typeClass = ReflectionUtils.getTypeClass(filterParameter.getType());
 
                     String attributeName;
@@ -138,7 +138,7 @@ public class DefaultXMLSerializer implements InvocationHandler
                                 this.converter.<String> convert(String.class, parameterValue));
 
                             parameters.set(filterParameter.getIndex(), null);
-                        } else if (ObjectUtils.equals(XMLUtils.emptyValue(typeClass), parameterValue)) {
+                        } else if (Objects.equals(XMLUtils.emptyValue(typeClass), parameterValue)) {
                             this.xmlStreamWriter.writeAttribute(attributeName, "");
 
                             parameters.set(filterParameter.getIndex(), null);
@@ -239,7 +239,7 @@ public class DefaultXMLSerializer implements InvocationHandler
         // Write complex parameters
         if (parameters != null && parameters.length == 1 && XMLUtils.isSimpleType(element.getParameters()[0].getType())) {
             Object parameter = parameters[0];
-            if (parameter != null && !ObjectUtils.equals(element.getParameters()[0].getDefaultValue(), parameter)) {
+            if (parameter != null && !Objects.equals(element.getParameters()[0].getDefaultValue(), parameter)) {
                 String value = parameter.toString();
                 this.xmlStreamWriter.writeCharacters(value);
             }
@@ -255,7 +255,7 @@ public class DefaultXMLSerializer implements InvocationHandler
     {
         boolean write;
 
-        if (value != null && !ObjectUtils.equals(filterParameter.getDefaultValue(), value)) {
+        if (value != null && !Objects.equals(filterParameter.getDefaultValue(), value)) {
             write = true;
 
             Type type = filterParameter.getType();
