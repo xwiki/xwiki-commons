@@ -25,12 +25,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Provider;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
@@ -437,7 +437,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @Override
     public void unregisterComponent(ComponentDescriptor< ? > componentDescriptor)
     {
-        if (ObjectUtils.equals(
+        if (Objects.equals(
             getComponentDescriptor(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint()),
             componentDescriptor)) {
             unregisterComponent(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
