@@ -19,7 +19,8 @@
  */
 package org.xwiki.diff.internal;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.Delta;
@@ -127,8 +128,8 @@ public abstract class AbstractDelta<E> implements Delta<E>
         if (obj instanceof Delta) {
             Delta<E> otherDelta = (Delta<E>) obj;
 
-            return getType() == otherDelta.getType() && ObjectUtils.equals(getPrevious(), otherDelta.getPrevious())
-                && ObjectUtils.equals(getNext(), otherDelta.getNext());
+            return getType() == otherDelta.getType() && Objects.equals(getPrevious(), otherDelta.getPrevious())
+                && Objects.equals(getNext(), otherDelta.getNext());
         }
 
         return false;

@@ -20,8 +20,8 @@
 package org.xwiki.diff.internal;
 
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.diff.Chunk;
 import org.xwiki.diff.PatchException;
@@ -126,7 +126,7 @@ public class DefaultChunk<E> implements Chunk<E>
 
         if (obj instanceof Chunk) {
             Chunk<E> otherChunk = (Chunk<E>) obj;
-            return getIndex() == otherChunk.getIndex() && ObjectUtils.equals(getElements(), otherChunk.getElements());
+            return getIndex() == otherChunk.getIndex() && Objects.equals(getElements(), otherChunk.getElements());
         }
 
         return false;
