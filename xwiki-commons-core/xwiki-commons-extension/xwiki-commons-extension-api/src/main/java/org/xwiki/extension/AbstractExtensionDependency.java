@@ -22,8 +22,8 @@ package org.xwiki.extension;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.version.VersionConstraint;
@@ -187,7 +187,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
             ExtensionDependency otherDependency = (ExtensionDependency) obj;
             equals =
                 StringUtils.equals(getId(), otherDependency.getId())
-                    && ObjectUtils.equals(getVersionConstraint(), otherDependency.getVersionConstraint());
+                    && Objects.equals(getVersionConstraint(), otherDependency.getVersionConstraint());
         } else {
             equals = false;
         }

@@ -22,8 +22,8 @@ package org.xwiki.extension.job.plan.internal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.InstalledExtension;
@@ -142,8 +142,7 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
 
         if (obj instanceof ExtensionPlanAction) {
             ExtensionPlanAction epa = (ExtensionPlanAction) obj;
-            equals =
-                this.extension.equals(epa.getExtension()) && ObjectUtils.equals(this.namespace, epa.getNamespace());
+            equals = this.extension.equals(epa.getExtension()) && Objects.equals(this.namespace, epa.getNamespace());
         } else {
             equals = false;
         }

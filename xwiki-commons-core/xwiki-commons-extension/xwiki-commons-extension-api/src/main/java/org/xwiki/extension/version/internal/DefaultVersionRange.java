@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.MessageFormat;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.version.InvalidVersionRangeException;
@@ -439,8 +439,8 @@ public class DefaultVersionRange implements VersionRange
     {
         return this.upperBoundInclusive == version.upperBoundInclusive
             && this.lowerBoundInclusive == version.lowerBoundInclusive
-            && ObjectUtils.equals(this.upperBound, version.upperBound)
-            && ObjectUtils.equals(this.lowerBound, version.lowerBound);
+            && Objects.equals(this.upperBound, version.upperBound)
+            && Objects.equals(this.lowerBound, version.lowerBound);
     }
 
     // Serializable

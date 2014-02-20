@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.version.IncompatibleVersionConstraintException;
 import org.xwiki.extension.version.InvalidVersionConstraintException;
@@ -372,7 +372,7 @@ public class DefaultVersionConstraint implements VersionConstraint
         VersionConstraint versionConstraint = (VersionConstraint) obj;
 
         return this.ranges.equals(versionConstraint.getRanges())
-            && ObjectUtils.equals(this.version, versionConstraint.getVersion());
+            && Objects.equals(this.version, versionConstraint.getVersion());
     }
 
     @Override

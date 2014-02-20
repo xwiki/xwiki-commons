@@ -20,8 +20,8 @@
 package org.xwiki.extension;
 
 import java.net.URL;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -76,7 +76,7 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
 
         if (obj instanceof ExtensionAuthor) {
             ExtensionAuthor author = (ExtensionAuthor) obj;
-            return StringUtils.equals(this.name, author.getName()) && ObjectUtils.equals(this.url, author.getURL());
+            return StringUtils.equals(this.name, author.getName()) && Objects.equals(this.url, author.getURL());
         } else {
             return false;
         }

@@ -29,7 +29,6 @@ import java.util.Collection;
  * @version $Id$
  * @since 4.0M2
  */
-// TODO: move all installation related code from local extension to here
 public interface InstalledExtension extends LocalExtension
 {
     /**
@@ -100,11 +99,12 @@ public interface InstalledExtension extends LocalExtension
      * The idea is to be able to make the difference between extension specifically installed by a user so that it's
      * possible to know which extension are not really required anymore.
      * 
+     * @param namespace the namespace to look at, null indicate the root namespace
      * @return true if the the extension has been installed only because it was a dependency of another extension
-     * @deprecated since 4.3M1 use {@link #isDependency(String)} with <code>null</code> namespace instead
      */
-    @Deprecated
-    boolean isDependency();
+    boolean isDependency(String namespace);
+
+    // Deprecated
 
     /**
      * Indicate if the extension as been installed as a dependency of another one.
@@ -112,8 +112,9 @@ public interface InstalledExtension extends LocalExtension
      * The idea is to be able to make the difference between extension specifically installed by a user so that it's
      * possible to know which extension are not really required anymore.
      * 
-     * @param namespace the namespace to look at, null indicate the root namespace
      * @return true if the the extension has been installed only because it was a dependency of another extension
+     * @deprecated since 4.3M1 use {@link #isDependency(String)} with <code>null</code> namespace instead
      */
-    boolean isDependency(String namespace);
+    @Deprecated
+    boolean isDependency();
 }

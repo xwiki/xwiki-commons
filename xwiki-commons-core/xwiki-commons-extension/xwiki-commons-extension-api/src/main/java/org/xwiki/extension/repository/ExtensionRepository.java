@@ -35,13 +35,6 @@ import org.xwiki.extension.version.Version;
 public interface ExtensionRepository
 {
     /**
-     * @return the repository identifier.
-     * @deprecated since 4.3M1 use {@link #getDescriptor()} instead
-     */
-    @Deprecated
-    ExtensionRepositoryId getId();
-
-    /**
      * @return the repository descriptor
      * @since 4.3M1
      */
@@ -83,4 +76,13 @@ public interface ExtensionRepository
      * @return true if the extension exists in the repository
      */
     boolean exists(ExtensionId extensionId);
+
+    // Deprecated
+
+    /**
+     * @return the repository identifier.
+     * @deprecated since 4.3M1 use {@link #getDescriptor()} instead
+     */
+    @Deprecated
+    ExtensionRepositoryId getId();
 }
