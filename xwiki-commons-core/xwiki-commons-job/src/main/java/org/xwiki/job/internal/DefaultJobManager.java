@@ -21,6 +21,7 @@ package org.xwiki.job.internal;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -29,7 +30,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -94,7 +94,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
      * The thread on which the job manager is running.
      */
     private Thread thread;
-    
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -206,13 +206,13 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     public JobStatus getJobStatus(List<String> id)
     {
         // Is it the current job
-        if (this.currentJob != null && ObjectUtils.equals(id, this.currentJob.getRequest().getId())) {
+        if (this.currentJob != null && Objects.equals(id, this.currentJob.getRequest().getId())) {
             return this.currentJob.getStatus();
         }
 
         // Is it in queue
         for (Job job : this.jobQueue) {
-            if (ObjectUtils.equals(id, job.getRequest().getId())) {
+            if (Objects.equals(id, job.getRequest().getId())) {
                 return job.getStatus();
             }
         }
