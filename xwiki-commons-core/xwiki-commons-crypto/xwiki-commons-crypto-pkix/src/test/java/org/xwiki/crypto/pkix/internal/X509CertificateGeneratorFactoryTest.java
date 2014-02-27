@@ -85,14 +85,12 @@ import static org.junit.Assert.fail;
 public class X509CertificateGeneratorFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<CertificateGeneratorFactory> mocker =
-        new MockitoComponentMockingRule(X509CertificateGeneratorFactory.class);
+        new MockitoComponentMockingRule<CertificateGeneratorFactory>(X509CertificateGeneratorFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<X509ExtensionBuilder> builderMocker =
-        new MockitoComponentMockingRule(DefaultX509ExtensionBuilder.class);
+        new MockitoComponentMockingRule<X509ExtensionBuilder>(DefaultX509ExtensionBuilder.class);
 
     private static final String RSA_PRIVATE_KEY = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDCmjim/3likJ4"
         + "VF564UyygqPjIX/z090AImLl0fDLUkIyCVTSd18wJ3axr1qjLtSgNPWet0puSxO"

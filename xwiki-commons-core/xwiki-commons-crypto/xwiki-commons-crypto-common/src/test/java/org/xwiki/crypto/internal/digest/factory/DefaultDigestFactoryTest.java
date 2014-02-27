@@ -24,13 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.crypto.BinaryStringEncoder;
 import org.xwiki.crypto.DigestFactory;
-import org.xwiki.crypto.internal.digest.factory.BcMD5DigestFactory;
-import org.xwiki.crypto.internal.digest.factory.BcSHA1DigestFactory;
-import org.xwiki.crypto.internal.digest.factory.BcSHA224DigestFactory;
-import org.xwiki.crypto.internal.digest.factory.BcSHA256DigestFactory;
-import org.xwiki.crypto.internal.digest.factory.BcSHA384DigestFactory;
-import org.xwiki.crypto.internal.digest.factory.BcSHA512DigestFactory;
-import org.xwiki.crypto.internal.digest.factory.DefaultDigestFactory;
 import org.xwiki.crypto.internal.encoder.Base64BinaryStringEncoder;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -45,9 +38,8 @@ public class DefaultDigestFactoryTest extends AbstractDigestFactoryTestConstants
     private static final byte[] BYTES = TEXT.getBytes();
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<DigestFactory> mocker =
-        new MockitoComponentMockingRule(DefaultDigestFactory.class);
+        new MockitoComponentMockingRule<DigestFactory>(DefaultDigestFactory.class);
 
     private byte[] md5Digest;
     private byte[] sha1Digest;

@@ -43,9 +43,8 @@ public class HexBinaryStringEncoderTest extends AbstractBinaryStringEncoderTest
     }
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<BinaryStringEncoder> mocker =
-        new MockitoComponentMockingRule(HexBinaryStringEncoder.class);
+        new MockitoComponentMockingRule<BinaryStringEncoder>(HexBinaryStringEncoder.class);
 
     @Before
     public void configure() throws Exception

@@ -46,9 +46,8 @@ import static org.xwiki.crypto.password.PasswordToByteConverter.ToBytesMode.PKCS
 public class BcPKCS5S2KeyDerivationFunctionFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<KeyDerivationFunctionFactory> mocker =
-        new MockitoComponentMockingRule(BcPKCS5S2KeyDerivationFunctionFactory.class);
+        new MockitoComponentMockingRule<KeyDerivationFunctionFactory>(BcPKCS5S2KeyDerivationFunctionFactory.class);
 
     KeyDerivationFunctionFactory factory;
 

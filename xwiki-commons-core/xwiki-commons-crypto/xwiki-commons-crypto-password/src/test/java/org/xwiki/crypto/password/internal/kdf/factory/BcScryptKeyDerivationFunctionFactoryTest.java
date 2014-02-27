@@ -41,9 +41,8 @@ import static org.junit.Assert.assertThat;
 public class BcScryptKeyDerivationFunctionFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<KeyDerivationFunctionFactory> mocker =
-        new MockitoComponentMockingRule(BcScryptKeyDerivationFunctionFactory.class);
+        new MockitoComponentMockingRule<KeyDerivationFunctionFactory>(BcScryptKeyDerivationFunctionFactory.class);
 
     KeyDerivationFunctionFactory factory;
 

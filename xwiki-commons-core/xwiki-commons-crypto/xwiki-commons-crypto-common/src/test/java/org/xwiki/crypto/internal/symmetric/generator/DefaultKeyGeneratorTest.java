@@ -37,9 +37,8 @@ import static org.junit.Assert.assertThat;
 public class DefaultKeyGeneratorTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<KeyGenerator> mocker =
-        new MockitoComponentMockingRule(DefaultKeyGenerator.class);
+        new MockitoComponentMockingRule<KeyGenerator>(DefaultKeyGenerator.class);
 
     private KeyGenerator generator;
 

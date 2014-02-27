@@ -83,9 +83,8 @@ public class BcRsaOaepCipherFactoryTest
     private static final String INPUT = "4e6f77206973207468652074696d6520666f7220616c6c20676f6f64206d656e";
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule(BcRsaOaepCipherFactory.class);
+        new MockitoComponentMockingRule<CipherFactory>(BcRsaOaepCipherFactory.class);
 
     private CipherFactory factory;
 

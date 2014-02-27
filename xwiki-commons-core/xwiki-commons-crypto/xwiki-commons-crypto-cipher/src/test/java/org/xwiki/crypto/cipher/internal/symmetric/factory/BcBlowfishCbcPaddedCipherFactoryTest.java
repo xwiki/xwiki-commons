@@ -29,9 +29,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 public class BcBlowfishCbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule(BcBlowfishCbcPaddedCipherFactory.class);
+        new MockitoComponentMockingRule<CipherFactory>(BcBlowfishCbcPaddedCipherFactory.class);
 
     {
         CIPHER_ALGO = "Blowfish/CBC/PKCS5Padding";

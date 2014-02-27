@@ -198,6 +198,8 @@ public class FixedSecureRandomProvider implements Provider<SecureRandom>, Initia
 
     public static class MySecureRandom extends SecureRandom
     {
+        private static final long serialVersionUID = 1L;
+
         public int counter = 0;
 
         public ByteArrayOutputStream baos = new ByteArrayOutputStream();

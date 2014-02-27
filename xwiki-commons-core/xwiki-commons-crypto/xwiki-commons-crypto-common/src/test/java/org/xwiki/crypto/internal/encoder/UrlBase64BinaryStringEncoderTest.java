@@ -41,9 +41,8 @@ public class UrlBase64BinaryStringEncoderTest extends AbstractBinaryStringEncode
     }
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<BinaryStringEncoder> mocker =
-        new MockitoComponentMockingRule(UrlBase64BinaryStringEncoder.class);
+        new MockitoComponentMockingRule<BinaryStringEncoder>(UrlBase64BinaryStringEncoder.class);
 
     @Before
     public void configure() throws Exception

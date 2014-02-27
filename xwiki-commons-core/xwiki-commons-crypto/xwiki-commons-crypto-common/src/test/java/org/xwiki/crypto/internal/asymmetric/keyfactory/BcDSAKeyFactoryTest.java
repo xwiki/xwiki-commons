@@ -62,9 +62,8 @@ public class BcDSAKeyFactoryTest
         + "scwheuTo0E=";
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<AsymmetricKeyFactory> mocker =
-        new MockitoComponentMockingRule(BcDSAKeyFactory.class);
+        new MockitoComponentMockingRule<AsymmetricKeyFactory>(BcDSAKeyFactory.class);
 
     private AsymmetricKeyFactory factory;
 

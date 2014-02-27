@@ -98,9 +98,8 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
             + "2Gc1syc3+055K4qcfZHH0XWu");
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<PrivateKeyPasswordBasedEncryptor> mocker =
-        new MockitoComponentMockingRule(DefaultPrivateKeyPasswordBasedEncryptor.class);
+        new MockitoComponentMockingRule<PrivateKeyPasswordBasedEncryptor>(DefaultPrivateKeyPasswordBasedEncryptor.class);
 
     PrivateKeyPasswordBasedEncryptor encryptor;
 

@@ -52,34 +52,28 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 public class BcDigestWithRsaSignerFactoryTest extends AbstractRsaSignerFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<SignerFactory> mocker =
-        new MockitoComponentMockingRule(BcSHA1withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<SignerFactory>(BcSHA1withRsaSignerFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<SignerFactory> mockerSha224 =
-        new MockitoComponentMockingRule(BcSHA224withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<SignerFactory>(BcSHA224withRsaSignerFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<SignerFactory> mockerSha256 =
-        new MockitoComponentMockingRule(BcSHA256withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<SignerFactory>(BcSHA256withRsaSignerFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<SignerFactory> mockerSha384 =
-        new MockitoComponentMockingRule(BcSHA384withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<SignerFactory>(BcSHA384withRsaSignerFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<SignerFactory> mockerSha512 =
-        new MockitoComponentMockingRule(BcSHA512withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<SignerFactory>(BcSHA512withRsaSignerFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<SignerFactory> mockerMD5 =
-        new MockitoComponentMockingRule(BcMD5withRsaSignerFactory.class);
+        new MockitoComponentMockingRule<SignerFactory>(BcMD5withRsaSignerFactory.class);
 
     @Before
     public void configure() throws Exception

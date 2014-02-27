@@ -31,9 +31,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 public class BcMD5DigestFactoryTest extends AbstractDigestFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<DigestFactory> mocker =
-        new MockitoComponentMockingRule(BcMD5DigestFactory.class);
+        new MockitoComponentMockingRule<DigestFactory>(BcMD5DigestFactory.class);
 
     @Before
     public void configure() throws Exception

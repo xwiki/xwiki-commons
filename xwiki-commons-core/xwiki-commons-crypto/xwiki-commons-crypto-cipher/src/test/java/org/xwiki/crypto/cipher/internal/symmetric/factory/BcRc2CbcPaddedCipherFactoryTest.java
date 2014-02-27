@@ -35,9 +35,8 @@ import static org.junit.Assert.assertThat;
 public class BcRc2CbcPaddedCipherFactoryTest extends AbstractSymmetricCipherFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<CipherFactory> mocker =
-        new MockitoComponentMockingRule(BcRc2CbcPaddedCipherFactory.class);
+        new MockitoComponentMockingRule<CipherFactory>(BcRc2CbcPaddedCipherFactory.class);
 
     {
         CIPHER_ALGO = "RC2/CBC/PKCS5Padding";

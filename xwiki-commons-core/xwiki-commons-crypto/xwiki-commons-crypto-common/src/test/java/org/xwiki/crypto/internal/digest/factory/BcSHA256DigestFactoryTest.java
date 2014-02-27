@@ -31,9 +31,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 public class BcSHA256DigestFactoryTest extends AbstractDigestFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<DigestFactory> mocker =
-        new MockitoComponentMockingRule(BcSHA256DigestFactory.class);
+        new MockitoComponentMockingRule<DigestFactory>(BcSHA256DigestFactory.class);
 
     @Before
     public void configure() throws Exception

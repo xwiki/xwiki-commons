@@ -41,9 +41,8 @@ import static org.junit.Assert.assertThat;
 public class DefaultKeyDerivationFunctionFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<KeyDerivationFunctionFactory> mocker =
-        new MockitoComponentMockingRule(DefaultKeyDerivationFunctionFactory.class);
+        new MockitoComponentMockingRule<KeyDerivationFunctionFactory>(DefaultKeyDerivationFunctionFactory.class);
 
     KeyDerivationFunctionFactory factory;
 

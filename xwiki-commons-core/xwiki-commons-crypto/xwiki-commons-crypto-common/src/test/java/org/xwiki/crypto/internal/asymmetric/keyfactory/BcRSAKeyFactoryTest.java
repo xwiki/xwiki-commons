@@ -83,9 +83,8 @@ public class BcRSAKeyFactoryTest
         + "2aJPPbMwIDAQAB";
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<AsymmetricKeyFactory> mocker =
-        new MockitoComponentMockingRule(BcRSAKeyFactory.class);
+        new MockitoComponentMockingRule<AsymmetricKeyFactory>(BcRSAKeyFactory.class);
 
     private AsymmetricKeyFactory factory;
 

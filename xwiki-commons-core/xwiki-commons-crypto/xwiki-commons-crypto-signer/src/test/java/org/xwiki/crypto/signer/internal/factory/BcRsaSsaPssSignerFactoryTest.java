@@ -50,9 +50,8 @@ import static org.junit.Assert.assertTrue;
 public class BcRsaSsaPssSignerFactoryTest extends AbstractRsaSignerFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<SignerFactory> mocker =
-        new MockitoComponentMockingRule(BcRsaSsaPssSignerFactory.class);
+        new MockitoComponentMockingRule<SignerFactory>(BcRsaSsaPssSignerFactory.class);
 
     @Before
     public void configure() throws Exception

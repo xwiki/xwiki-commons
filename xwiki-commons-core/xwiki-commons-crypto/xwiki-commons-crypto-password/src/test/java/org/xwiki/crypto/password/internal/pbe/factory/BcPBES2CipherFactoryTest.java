@@ -91,34 +91,28 @@ public class BcPBES2CipherFactoryTest
             + "2Gc1syc3+055K4qcfZHH0XWu");
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> mocker =
-        new MockitoComponentMockingRule(BcPBES2CipherFactory.class);
+        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2CipherFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> desMocker =
-        new MockitoComponentMockingRule(BcPBES2DesCipherFactory.class);
+        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2DesCipherFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> desEdeMocker =
-        new MockitoComponentMockingRule(BcPBES2DesEdeCipherFactory.class);
+        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2DesEdeCipherFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> rc2Mocker =
-        new MockitoComponentMockingRule(BcPBES2Rc2CipherFactory.class);
+        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2Rc2CipherFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> blowfishMocker =
-        new MockitoComponentMockingRule(BcPBES2BlowfishCipherFactory.class);
+        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2BlowfishCipherFactory.class);
 
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<PasswordBasedCipherFactory> aesMocker =
-        new MockitoComponentMockingRule(BcPBES2AesCipherFactory.class);
+        new MockitoComponentMockingRule<PasswordBasedCipherFactory>(BcPBES2AesCipherFactory.class);
 
     PasswordBasedCipherFactory factory;
 

@@ -24,9 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.crypto.KeyGenerator;
 import org.xwiki.crypto.internal.DefaultSecureRandomProvider;
-import org.xwiki.crypto.internal.symmetric.generator.BcDESKeyGenerator;
-import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
+import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -38,9 +37,8 @@ import static org.junit.Assert.assertThat;
 public class BcDESKeyGeneratorTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<KeyGenerator> mocker =
-        new MockitoComponentMockingRule(BcDESKeyGenerator.class);
+        new MockitoComponentMockingRule<KeyGenerator>(BcDESKeyGenerator.class);
 
     private KeyGenerator generator;
 

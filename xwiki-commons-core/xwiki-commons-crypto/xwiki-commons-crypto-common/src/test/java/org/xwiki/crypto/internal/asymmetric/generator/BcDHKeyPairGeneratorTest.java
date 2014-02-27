@@ -51,9 +51,8 @@ import static org.junit.Assert.assertThat;
 public class BcDHKeyPairGeneratorTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<KeyPairGenerator> mocker =
-        new MockitoComponentMockingRule(BcDHKeyPairGenerator.class);
+        new MockitoComponentMockingRule<KeyPairGenerator>(BcDHKeyPairGenerator.class);
 
     private KeyPairGenerator generator;
     private KeyParametersGenerator parameterGenerator;

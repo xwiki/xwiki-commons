@@ -54,9 +54,8 @@ import static org.junit.Assert.assertTrue;
 public class X509CertificateFactoryTest
 {
     @Rule
-    @SuppressWarnings("unchecked")
     public final MockitoComponentMockingRule<CertificateFactory> mocker =
-        new MockitoComponentMockingRule(X509CertificateFactory.class);
+        new MockitoComponentMockingRule<CertificateFactory>(X509CertificateFactory.class);
 
     private static final String V1_CA_CERT = "MIICpzCCAY8CEBySdlSTKgwuylJNlQxTMNIwDQYJKoZIhvcNAQEFBQAwEjEQMA4G"
         + "A1UEAwwHVGVzdCBDQTAeFw0xNDAyMDMxMTAwMDBaFw0xNTA2MTgxMDAwMDBaMBIx"
