@@ -38,6 +38,7 @@
     <module>xwiki-commons-component</module>
     <module>xwiki-commons-configuration</module>
     <module>xwiki-commons-context</module>
+    <module>xwiki-commons-crypto</module>
     <module>xwiki-commons-environment</module>
     <module>xwiki-commons-extension</module>
     <module>xwiki-commons-filter</module>
