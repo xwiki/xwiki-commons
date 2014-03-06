@@ -974,45 +974,6 @@ mm
           <version>2.0</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>selenium-maven-plugin</artifactId>
-          <!-- Lock down plugin version for build reproducibility -->
-          <version>2.2</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.seleniumhq.selenium</groupId>
-              <artifactId>selenium-server</artifactId>
-              <version>${selenium.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.seleniumhq.selenium</groupId>
-              <artifactId>selenium-remote-driver</artifactId>
-              <version>${selenium.version}</version>
-            </dependency>
-            <dependency>
-              <!-- We need this dependency starting with Selenium 2.17, otherwise Selenium server fails to start because
-                   org.openqa.selenium.logging.LoggingHandler is missing. -->
-              <groupId>org.seleniumhq.selenium</groupId>
-              <artifactId>selenium-api</artifactId>
-              <version>${selenium.version}</version>
-            </dependency>
-          </dependencies>
-          <executions>
-            <execution>
-              <id>start-selenium</id>
-              <phase>pre-integration-test</phase>
-              <goals>
-                <goal>start-server</goal>
-              </goals>
-            </execution>
-          </executions>
-          <configuration>
-            <background>true</background>
-            <multiWindow>true</multiWindow>
-            <port>4444</port>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
