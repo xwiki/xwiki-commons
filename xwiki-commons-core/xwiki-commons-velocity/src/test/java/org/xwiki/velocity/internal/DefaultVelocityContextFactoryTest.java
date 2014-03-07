@@ -24,15 +24,22 @@ import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.ListTool;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityContextInitializer;
+import org.junit.Assert;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link DefaultVelocityContextFactory}.
@@ -65,10 +72,9 @@ public class DefaultVelocityContextFactoryTest
     }
 
     /**
-     * Verify that we get different contexts when we call the createContext method but that
-     * they contain the same references to the Velocity tools. Also tests that objects we
-     * put in one context are not shared with other contexts. Also verifies that Velocity Context Initializers are
-     * called.
+     * Verify that we get different contexts when we call the createContext method but that they contain the same
+     * references to the Velocity tools. Also tests that objects we put in one context are not shared with other
+     * contexts. Also verifies that Velocity Context Initializers are called.
      */
     @Test
     public void createDifferentContext() throws Exception
