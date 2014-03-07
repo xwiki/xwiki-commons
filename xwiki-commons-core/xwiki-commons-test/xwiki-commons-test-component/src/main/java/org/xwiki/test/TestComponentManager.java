@@ -104,7 +104,7 @@ public class TestComponentManager extends EmbeddableComponentManager
     {
         Class< ? > testClass = testClassInstance.getClass();
 
-        // If there are methods annotation with the BeforeComponent annotation then call them. This gives an
+        // If there are methods annotated with the BeforeComponent annotation then call them. This gives an
         // opportunity for the test to register some components *before* we register the other components below.
         for (Method declaredMethod : testClass.getMethods()) {
             if (declaredMethod.isAnnotationPresent(BeforeComponent.class)) {
@@ -114,8 +114,8 @@ public class TestComponentManager extends EmbeddableComponentManager
 
         this.componentRegistrator.registerComponents(testClass, this);
 
-        // If there are methods annotation with the AfterComponent annotation then call them. This gives an
-        // opportunity for the override or modify some components *before* they are actually used.
+        // If there are methods annotated with the AfterComponent annotation then call them. This gives an
+        // opportunity to override or modify some components *after* they are actually used.
         for (Method declaredMethod : testClass.getMethods()) {
             if (declaredMethod.isAnnotationPresent(AfterComponent.class)) {
                 declaredMethod.invoke(testClassInstance);
