@@ -24,45 +24,44 @@ import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.ListTool;
-import org.jmock.Expectations;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
+import org.junit.*;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.test.annotation.AfterComponent;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityContextInitializer;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link DefaultVelocityContextFactory}.
  *
  * @version $Id$
  */
-@MockingRequirement(DefaultVelocityContextFactory.class)
-public class DefaultVelocityContextFactoryTest extends AbstractMockingComponentTestCase
+public class DefaultVelocityContextFactoryTest
 {
+    @Rule
+    public MockitoComponentMockingRule<DefaultVelocityContextFactory> mocker =
+        new MockitoComponentMockingRule(DefaultVelocityContextFactory.class);
+
     private VelocityContextFactory factory;
 
     @Before
     public void configure() throws Exception
     {
-        final VelocityConfiguration configuration = getComponentManager().getInstance(VelocityConfiguration.class);
-        final Properties properties = new Properties();
+        VelocityConfiguration configuration = this.mocker.getInstance(VelocityConfiguration.class);
+        Properties properties = new Properties();
         properties.put("listtool", ListTool.class.getName());
-        getMockery().checking(new Expectations() {{
-            allowing(configuration).getTools();
-            will(returnValue(properties));
+        when(configuration.getTools()).thenReturn(properties);
 
-            // Ignore all calls to debug(). Note that we could have also excluded Logger.class in the MockingRequirement
-            // annotation but this allows us to assert if there are warn(), info() or error() calls, which are
-            // important to test.
-            ignoring(any(Logger.class)).method("debug");
-        }});
+        this.factory = this.mocker.getInstance(VelocityContextFactory.class);
+    }
 
-        this.factory = getComponentManager().getInstance(VelocityContextFactory.class);
+    @AfterComponent
+    public void overrideComponents() throws Exception
+    {
+        this.mocker.registerMockComponent(ComponentManager.class);
     }
 
     /**
@@ -72,20 +71,20 @@ public class DefaultVelocityContextFactoryTest extends AbstractMockingComponentT
      * called.
      */
     @Test
-    public void testCreateDifferentContext() throws Exception
+    public void createDifferentContext() throws Exception
     {
         // We also verify that the VelocityContextInitializers are called.
-        final VelocityContextInitializer mockInitializer = getMockery().mock(VelocityContextInitializer.class);
-        final ComponentManager mockComponentManager = getComponentManager().getInstance(ComponentManager.class);
-        getMockery().checking(new Expectations() {{
-            exactly(2).of(mockInitializer).initialize(with(any(VelocityContext.class)));
-            exactly(2). of(mockComponentManager).getInstanceList(VelocityContextInitializer.class);
-            will(returnValue(Arrays.asList(mockInitializer)));
-        }});
+        VelocityContextInitializer mockInitializer = mock(VelocityContextInitializer.class);
+        ComponentManager mockComponentManager = this.mocker.getInstance(ComponentManager.class);
+        when(mockComponentManager.getInstanceList(VelocityContextInitializer.class)).thenReturn(
+            Arrays.<Object>asList(mockInitializer));
 
         VelocityContext context1 = this.factory.createContext();
         context1.put("param", "value");
         VelocityContext context2 = this.factory.createContext();
+
+        verify(mockInitializer, times(2)).initialize(any(VelocityContext.class));
+        verify(mockComponentManager, times(2)).getInstanceList(VelocityContextInitializer.class);
 
         Assert.assertNotSame(context1, context2);
         Assert.assertNotNull(context1.get("listtool"));

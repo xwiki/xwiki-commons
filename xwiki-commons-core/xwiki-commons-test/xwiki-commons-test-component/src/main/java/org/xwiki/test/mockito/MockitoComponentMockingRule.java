@@ -64,7 +64,10 @@ import org.xwiki.component.util.ReflectionUtils;
  * </pre></code>
  * <p>
  * Note that by default there are no component registered against the component manager except those mocked
- * automatically by the Rule. This has 2 advantages:
+ * automatically by the Rule (except for the MockitoComponentMockingRule itself, which means that if your component
+ * under test is injected a default ComponentManager, it'll be the MockitoComponentMockingRule which will get injected.
+ * See more below).
+ * This has 2 advantages:
  * <ul>
  * <li>This is the spirit of this Rule since it's for unit testing and this testing your component in isolation from the
  * rest</li>
@@ -74,6 +77,24 @@ import org.xwiki.component.util.ReflectionUtils;
  * If you really need to register some components, use the {@link org.xwiki.test.annotation.ComponentList} annotation
  * and if you really really need to register all components (it takes time) then use
  * {@link org.xwiki.test.annotation.AllComponents}.
+ * <p>
+ * In addition, you can perform some action before any component is registered in the Component Manager by having one
+ * or several methods annotated with {@link org.xwiki.test.annotation.BeforeComponent}. Similarly, you can perform an
+ * action after all components have been registered in the Component Manager by having one or several methods annotated
+ * with {@link org.xwiki.test.annotation.AfterComponent}.
+ * <p>
+ * This can be useful (for example) in the case you wish to register a mock ComponentManager in your component under
+ * test. You would write:
+ * <code><pre>
+ * &#64;Rule
+ * public final MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
+ *
+ * &#64;AfterComponent
+ * public void overrideComponents() throws Exception
+ * {
+ *     this.mocker.registerMockComponent(ComponentManager.class);
+ * }
+ * </pre></code>
  * 
  * @param <T> the component role type, used to provide a typed instance when calling {@link #getComponentUnderTest()}
  * @version $Id$
@@ -293,7 +314,8 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
                 && Logger.class != roleTypeClass && !roleTypeClass.isAssignableFrom(List.class)
                 && !roleTypeClass.isAssignableFrom(Map.class)
                 && !hasComponent(dependencyDescriptor.getRoleType(),
-                    dependencyDescriptor.getRoleHint())) {
+                    dependencyDescriptor.getRoleHint()))
+            {
                 DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
                 cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
