@@ -85,8 +85,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         }
     }
 
-    private Map<RoleHint< ? >, ComponentEntry< ? >> componentEntries =
-        new ConcurrentHashMap<RoleHint< ? >, ComponentEntry< ? >>();
+    private Map<RoleHint< ? >, ComponentEntry< ? >> componentEntries = new ConcurrentHashMap();
 
     private Logger logger = LoggerFactory.getLogger(EmbeddableComponentManager.class);
 
@@ -105,7 +104,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
      */
     private void registerThis()
     {
-        DefaultComponentDescriptor<ComponentManager> cd = new DefaultComponentDescriptor<ComponentManager>();
+        DefaultComponentDescriptor<ComponentManager> cd = new DefaultComponentDescriptor();
         cd.setRoleType(ComponentManager.class);
 
         registerComponent(cd, this);
@@ -142,7 +141,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @Override
     public boolean hasComponent(Type role, String hint)
     {
-        if (this.componentEntries.containsKey(new RoleHint<Object>(role, hint))) {
+        if (this.componentEntries.containsKey(new RoleHint(role, hint))) {
             return true;
         }
 
@@ -175,7 +174,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @SuppressWarnings("unchecked")
     public <T> Map<String, T> getInstanceMap(Type role) throws ComponentLookupException
     {
-        Map<String, T> objects = new HashMap<String, T>();
+        Map<String, T> objects = new HashMap();
 
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
             RoleHint< ? > roleHint = entry.getKey();
@@ -224,7 +223,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @SuppressWarnings("unchecked")
     public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Type role)
     {
-        Map<String, ComponentDescriptor<T>> descriptors = new HashMap<String, ComponentDescriptor<T>>();
+        Map<String, ComponentDescriptor<T>> descriptors = new HashMap();
 
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
             if (entry.getKey().getRoleType().equals(role)) {
@@ -243,7 +242,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
             }
         }
 
-        return new ArrayList<ComponentDescriptor<T>>(descriptors.values());
+        return new ArrayList(descriptors.values());
     }
 
     @Override
@@ -305,7 +304,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
                     fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
                 } else {
                     fieldValue =
-                        new GenericProvider<Object>(this, new RoleHint<Object>(
+                        new GenericProvider(this, new RoleHint(
                             ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()),
                             dependency.getRoleHint()));
                 }
@@ -431,7 +430,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @Override
     public void unregisterComponent(Type role, String hint)
     {
-        removeComponentWithoutException(new RoleHint<Object>(role, hint));
+        removeComponentWithoutException(new RoleHint(role, hint));
     }
 
     @Override
@@ -565,10 +564,10 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @Override
     public void dispose()
     {
-        List<RoleHint< ? >> keys = new ArrayList<RoleHint< ? >>(this.componentEntries.keySet());
+        List<RoleHint< ? >> keys = new ArrayList(this.componentEntries.keySet());
 
         // Exclude this component
-        RoleHint<ComponentManager> cmRoleHint = new RoleHint<ComponentManager>(ComponentManager.class);
+        RoleHint<ComponentManager> cmRoleHint = new RoleHint(ComponentManager.class);
         ComponentEntry< ? > cmEntry = this.componentEntries.get(cmRoleHint);
         if (cmEntry != null && cmEntry.instance == this) {
             keys.remove(cmRoleHint);
@@ -612,7 +611,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @Deprecated
     public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
     {
-        List<ComponentDescriptor<T>> results = new ArrayList<ComponentDescriptor<T>>();
+        List<ComponentDescriptor<T>> results = new ArrayList();
         for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
             if (entry.getKey().getRoleClass() == role) {
                 results.add((ComponentDescriptor<T>) entry.getValue().descriptor);
