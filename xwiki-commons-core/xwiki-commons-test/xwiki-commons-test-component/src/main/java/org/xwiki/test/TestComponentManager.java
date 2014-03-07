@@ -95,7 +95,7 @@ public class TestComponentManager extends EmbeddableComponentManager
     /**
      * Initialize the test component manager by registering components based on the presence of
      * {@link org.xwiki.test.annotation.AllComponents} and {@link org.xwiki.test.annotation.ComponentList} annotations.
-     * Also calls methods annotated with {@link BeforeComponent}.
+     * Also calls methods annotated with {@link BeforeComponent} and {@link AfterComponent}.
      * 
      * @param testClassInstance the test instance on which the annotations are present
      * @throws Exception if an error happens during initialization
