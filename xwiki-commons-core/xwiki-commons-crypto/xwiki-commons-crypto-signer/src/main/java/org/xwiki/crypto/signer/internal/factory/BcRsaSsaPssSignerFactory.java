@@ -40,7 +40,7 @@ import org.xwiki.crypto.signer.params.PssParameters;
 import org.xwiki.crypto.signer.params.PssSignerParameters;
 
 /**
- * Factory for SHA-1 Digest with RSA encryption signature processing.
+ * Factory for RSASSA-PSS signature processing.
  *
  * @version $Id$
  * @since 5.4RC1
