@@ -71,6 +71,9 @@
     <!-- Clover -->
     <clover.version>3.1.12</clover.version>
 
+    <!-- IzPack -->
+    <izpack.version>5.0.0-rc1</izpack.version>
+
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>5.4.1</xwiki.clirr.previous.version>
 
@@ -804,7 +807,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.codehaus.izpack</groupId>
           <artifactId>izpack-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.0-alpha-4</version>
+          <version>${izpack.version}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
