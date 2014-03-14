@@ -324,6 +324,17 @@
         <artifactId>xml-apis</artifactId>
         <version>1.4.01</version>
       </dependency>
+      <!-- Jackson -->
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-core-asl</artifactId>
+        <version>1.9.13</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-mapper-asl</artifactId>
+        <version>1.9.13</version>
+      </dependency>
 
       <!-- Used in both commons and platform -->
       <dependency>
