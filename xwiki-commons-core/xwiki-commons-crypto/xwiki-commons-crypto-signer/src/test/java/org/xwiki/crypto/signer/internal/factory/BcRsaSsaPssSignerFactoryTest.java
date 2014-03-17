@@ -53,6 +53,8 @@ public class BcRsaSsaPssSignerFactoryTest extends AbstractRsaSignerFactoryTest
     public final MockitoComponentMockingRule<SignerFactory> mocker =
         new MockitoComponentMockingRule<SignerFactory>(BcRsaSsaPssSignerFactory.class);
 
+    private SignerFactory factory;
+
     @Before
     public void configure() throws Exception
     {

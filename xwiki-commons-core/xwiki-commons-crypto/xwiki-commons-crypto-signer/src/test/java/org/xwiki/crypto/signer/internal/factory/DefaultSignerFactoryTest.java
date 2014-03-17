@@ -78,6 +78,8 @@ public class DefaultSignerFactoryTest extends AbstractRsaSignerFactoryTest
     public final MockitoComponentMockingRule<SignerFactory> mockerMD5 =
         new MockitoComponentMockingRule<SignerFactory>(BcMD5withRsaSignerFactory.class);
 
+    private SignerFactory factory;
+
     @Before
     public void configure() throws Exception
     {
