@@ -21,7 +21,18 @@ package org.xwiki.crypto.internal.asymmetric;
 
 import java.io.IOException;
 
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.DERNull;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.pkcs.RSAPublicKey;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.DSAParameter;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.asn1.x9.X9ObjectIdentifiers;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
+import org.bouncycastle.crypto.params.DSAParameters;
+import org.bouncycastle.crypto.params.DSAPublicKeyParameters;
+import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
 
@@ -48,11 +59,43 @@ public class BcPublicKeyParameters extends AbstractBcAsymmetricKeyParameters
         }
     }
 
+    /**
+     * @return parameters converted to BC subject public key info structure.
+     * @throws IOException on error.
+     */
+    public SubjectPublicKeyInfo getSubjectPublicKeyInfo() throws IOException
+    {
+        if (parameters instanceof RSAKeyParameters) {
+            RSAKeyParameters params = (RSAKeyParameters) parameters;
+
+            return new SubjectPublicKeyInfo(
+                new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE),
+                new RSAPublicKey(params.getModulus(), params.getExponent())
+            );
+        } else if (parameters instanceof DSAPublicKeyParameters) {
+            DSAPublicKeyParameters params = (DSAPublicKeyParameters) parameters;
+            DSAParameters dsaParams = params.getParameters();
+            DSAParameter algParams = null;
+
+            if (dsaParams != null) {
+                algParams = new DSAParameter(dsaParams.getP(), dsaParams.getQ(), dsaParams.getG());
+            }
+
+            return new SubjectPublicKeyInfo(
+                new AlgorithmIdentifier(X9ObjectIdentifiers.id_dsa, algParams),
+                new ASN1Integer(params.getY())
+            );
+        } else {
+            // Fallback to Bouncy Castle, not sure it will do anything useful however.
+            return SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(parameters);
+        }
+    }
+
     @Override
     public byte[] getEncoded()
     {
         try {
-            return SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(parameters).getEncoded();
+            return getSubjectPublicKeyInfo().getEncoded();
         } catch (IOException e) {
             return null;
         }

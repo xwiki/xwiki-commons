@@ -28,7 +28,6 @@ import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
-import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
 import org.bouncycastle.jcajce.provider.util.AsymmetricKeyInfoConverter;
 import org.xwiki.crypto.AsymmetricKeyFactory;
 import org.xwiki.crypto.internal.asymmetric.BcAsymmetricKeyParameters;
@@ -135,9 +134,7 @@ public abstract class AbstractBcKeyFactory implements AsymmetricKeyFactory, Asym
                         key.getClass().getName()));
                 }
 
-                return generatePublic(
-                    SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(
-                        ((BcAsymmetricKeyParameters) key).getParameters()));
+                return generatePublic(((BcPublicKeyParameters) key).getSubjectPublicKeyInfo());
             }
 
             // Fallback

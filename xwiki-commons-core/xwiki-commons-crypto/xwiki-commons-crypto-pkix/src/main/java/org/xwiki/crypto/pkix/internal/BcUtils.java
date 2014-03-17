@@ -38,6 +38,7 @@ import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
 import org.xwiki.crypto.internal.asymmetric.BcAsymmetricKeyParameters;
+import org.xwiki.crypto.internal.asymmetric.BcPublicKeyParameters;
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
@@ -108,7 +109,11 @@ public final class BcUtils
     public static SubjectPublicKeyInfo getSubjectPublicKeyInfo(PublicKeyParameters publicKey)
     {
         try {
-            return SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(getAsymmetricKeyParameter(publicKey));
+            if (publicKey instanceof BcPublicKeyParameters) {
+                return ((BcPublicKeyParameters) publicKey).getSubjectPublicKeyInfo();
+            } else {
+                return SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(getAsymmetricKeyParameter(publicKey));
+            }
         } catch (IOException e) {
             // Very unlikely
             throw new IllegalArgumentException("Invalid public key, unable to get subject info.");
