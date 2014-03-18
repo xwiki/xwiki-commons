@@ -40,7 +40,7 @@ import org.xwiki.crypto.signer.SignerFactory;
 @Component
 @Singleton
 @Named("X509")
-public class X509CertificateFactory implements CertificateFactory
+public class BcX509CertificateFactory implements CertificateFactory
 {
     @Inject
     private SignerFactory factory;

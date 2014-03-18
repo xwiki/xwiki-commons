@@ -71,7 +71,7 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
     /**
      * @return a new instance of a TBS certificate builder.
      */
-    protected abstract X509TBSCertificateBuilder getTBSCertificateBuilder();
+    protected abstract BcX509TBSCertificateBuilder getTBSCertificateBuilder();
 
     /**
      * Extend TBS certificate depending of certificate version.
@@ -83,7 +83,7 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
      * @param parameters the X.509 certificate parameters.
      * @throws IOException on encoding error.
      */
-    protected void extendsTBSCertificate(X509TBSCertificateBuilder builder, CertifiedPublicKey issuer,
+    protected void extendsTBSCertificate(BcX509TBSCertificateBuilder builder, CertifiedPublicKey issuer,
         PrincipalIndentifier subjectName, PublicKeyParameters subject, X509CertificateParameters parameters)
         throws IOException
     {
@@ -112,7 +112,7 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
             issuerName = subjectName;
         }
 
-        X509TBSCertificateBuilder builder = getTBSCertificateBuilder();
+        BcX509TBSCertificateBuilder builder = getTBSCertificateBuilder();
 
         builder.setSerialNumber(new BigInteger(128, random))
                .setIssuer(issuerName);
@@ -144,7 +144,7 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
             signerFactory);
     }
 
-    private void addValidityDates(X509TBSCertificateBuilder builder)
+    private void addValidityDates(BcX509TBSCertificateBuilder builder)
     {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR, 0);

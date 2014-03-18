@@ -58,13 +58,13 @@ public class BcX509v3CertificateGenerator extends AbstractBcX509CertificateGener
     }
 
     @Override
-    protected X509TBSCertificateBuilder getTBSCertificateBuilder()
+    protected BcX509TBSCertificateBuilder getTBSCertificateBuilder()
     {
         return new BcX509v3TBSCertificateBuilder();
     }
 
     @Override
-    protected void extendsTBSCertificate(X509TBSCertificateBuilder builder, CertifiedPublicKey issuer,
+    protected void extendsTBSCertificate(BcX509TBSCertificateBuilder builder, CertifiedPublicKey issuer,
         PrincipalIndentifier subjectName, PublicKeyParameters subject, X509CertificateParameters parameters)
         throws IOException
     {

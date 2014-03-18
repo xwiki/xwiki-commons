@@ -36,54 +36,54 @@ import org.xwiki.crypto.signer.Signer;
  * @version $Id$
  * @since 5.4
  */
-public class BcX509v1TBSCertificateBuilder implements X509TBSCertificateBuilder
+public class BcX509v1TBSCertificateBuilder implements BcX509TBSCertificateBuilder
 {
     private final V1TBSCertificateGenerator tbsGen = new V1TBSCertificateGenerator();
 
     @Override
-    public X509TBSCertificateBuilder setSerialNumber(BigInteger serial)
+    public BcX509TBSCertificateBuilder setSerialNumber(BigInteger serial)
     {
         tbsGen.setSerialNumber(new ASN1Integer(serial));
         return this;
     }
 
     @Override
-    public X509TBSCertificateBuilder setSubjectPublicKeyInfo(PublicKeyParameters subject)
+    public BcX509TBSCertificateBuilder setSubjectPublicKeyInfo(PublicKeyParameters subject)
     {
         tbsGen.setSubjectPublicKeyInfo(BcUtils.getSubjectPublicKeyInfo(subject));
         return this;
     }
 
     @Override
-    public X509TBSCertificateBuilder setIssuer(PrincipalIndentifier issuer)
+    public BcX509TBSCertificateBuilder setIssuer(PrincipalIndentifier issuer)
     {
         tbsGen.setIssuer(BcUtils.getX500Name(issuer));
         return this;
     }
 
     @Override
-    public X509TBSCertificateBuilder setSubject(PrincipalIndentifier subject)
+    public BcX509TBSCertificateBuilder setSubject(PrincipalIndentifier subject)
     {
         tbsGen.setSubject(BcUtils.getX500Name(subject));
         return this;
     }
 
     @Override
-    public X509TBSCertificateBuilder setStartDate(Date time)
+    public BcX509TBSCertificateBuilder setStartDate(Date time)
     {
         tbsGen.setStartDate(new Time(time));
         return this;
     }
 
     @Override
-    public X509TBSCertificateBuilder setEndDate(Date time)
+    public BcX509TBSCertificateBuilder setEndDate(Date time)
     {
         tbsGen.setEndDate(new Time(time));
         return this;
     }
 
     @Override
-    public X509TBSCertificateBuilder setSignature(Signer signer)
+    public BcX509TBSCertificateBuilder setSignature(Signer signer)
     {
         tbsGen.setSignature(BcUtils.getSignerAlgoritmIdentifier(signer));
         return this;

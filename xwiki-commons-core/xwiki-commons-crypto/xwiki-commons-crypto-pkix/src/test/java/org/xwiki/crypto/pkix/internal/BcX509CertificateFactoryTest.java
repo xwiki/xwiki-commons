@@ -51,11 +51,11 @@ import static org.junit.Assert.assertTrue;
 @ComponentList({Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class,
     BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class,
     DefaultSignerFactory.class, BcDSAwithSHA1SignerFactory.class})
-public class X509CertificateFactoryTest
+public class BcX509CertificateFactoryTest
 {
     @Rule
     public final MockitoComponentMockingRule<CertificateFactory> mocker =
-        new MockitoComponentMockingRule<CertificateFactory>(X509CertificateFactory.class);
+        new MockitoComponentMockingRule<CertificateFactory>(BcX509CertificateFactory.class);
 
     private static final String V1_CA_CERT = "MIICpzCCAY8CEBySdlSTKgwuylJNlQxTMNIwDQYJKoZIhvcNAQEFBQAwEjEQMA4G"
         + "A1UEAwwHVGVzdCBDQTAeFw0xNDAyMDMxMTAwMDBaFw0xNTA2MTgxMDAwMDBaMBIx"

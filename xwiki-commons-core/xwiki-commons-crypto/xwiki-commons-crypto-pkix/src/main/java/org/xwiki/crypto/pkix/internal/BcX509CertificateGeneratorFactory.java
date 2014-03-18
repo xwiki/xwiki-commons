@@ -41,7 +41,7 @@ import org.xwiki.crypto.signer.SignerFactory;
  */
 @Component
 @Named("X509")
-public class X509CertificateGeneratorFactory implements CertificateGeneratorFactory
+public class BcX509CertificateGeneratorFactory implements CertificateGeneratorFactory
 {
 
     @Inject

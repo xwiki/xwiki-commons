@@ -84,12 +84,12 @@ import static org.junit.Assert.fail;
 
 @ComponentList({Base64BinaryStringEncoder.class, DefaultSecureRandomProvider.class, BcRSAKeyFactory.class,
     BcDSAKeyFactory.class, BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class, DefaultSignerFactory.class,
-    X509CertificateFactory.class, BcDSAwithSHA1SignerFactory.class})
-public class X509CertificateGeneratorFactoryTest
+    BcX509CertificateFactory.class, BcDSAwithSHA1SignerFactory.class})
+public class BcX509CertificateGeneratorFactoryTest
 {
     @Rule
     public final MockitoComponentMockingRule<CertificateGeneratorFactory> mocker =
-        new MockitoComponentMockingRule<CertificateGeneratorFactory>(X509CertificateGeneratorFactory.class);
+        new MockitoComponentMockingRule<CertificateGeneratorFactory>(BcX509CertificateGeneratorFactory.class);
 
     @Rule
     public final MockitoComponentMockingRule<X509ExtensionBuilder> builderMocker =

@@ -49,7 +49,7 @@ public class BcX509v1CertificateGenerator extends AbstractBcX509CertificateGener
     }
 
     @Override
-    protected X509TBSCertificateBuilder getTBSCertificateBuilder()
+    protected BcX509TBSCertificateBuilder getTBSCertificateBuilder()
     {
         return new BcX509v1TBSCertificateBuilder();
     }

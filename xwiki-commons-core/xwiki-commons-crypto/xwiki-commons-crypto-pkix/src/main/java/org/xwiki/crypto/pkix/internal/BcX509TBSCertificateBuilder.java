@@ -33,7 +33,7 @@ import org.xwiki.crypto.signer.Signer;
  * @version $Id$
  * @since 5.4
  */
-public interface X509TBSCertificateBuilder
+public interface BcX509TBSCertificateBuilder
 {
     /**
      * Set the serialNumber value.
@@ -41,7 +41,7 @@ public interface X509TBSCertificateBuilder
      * @param serial the serialNumber value.
      * @return this builder to allow chaining.
      */
-    X509TBSCertificateBuilder setSerialNumber(BigInteger serial);
+    BcX509TBSCertificateBuilder setSerialNumber(BigInteger serial);
 
     /**
      * Set the public key of the subject.
@@ -49,7 +49,7 @@ public interface X509TBSCertificateBuilder
      * @param subject public key parameters.
      * @return this builder to allow chaining.
      */
-    X509TBSCertificateBuilder setSubjectPublicKeyInfo(PublicKeyParameters subject);
+    BcX509TBSCertificateBuilder setSubjectPublicKeyInfo(PublicKeyParameters subject);
 
     /**
      * Set the issuer (subject distinguished name) value.
@@ -57,7 +57,7 @@ public interface X509TBSCertificateBuilder
      * @param issuer a principal identifier.
      * @return this builder to allow chaining.
      */
-    X509TBSCertificateBuilder setIssuer(PrincipalIndentifier issuer);
+    BcX509TBSCertificateBuilder setIssuer(PrincipalIndentifier issuer);
 
     /**
      * Set the subject (subject distinguished name) value.
@@ -65,7 +65,7 @@ public interface X509TBSCertificateBuilder
      * @param subject a principal identifier.
      * @return this builder to allow chaining.
      */
-    X509TBSCertificateBuilder setSubject(PrincipalIndentifier subject);
+    BcX509TBSCertificateBuilder setSubject(PrincipalIndentifier subject);
 
     /**
      * Set the date before which the certificate is not valid.
@@ -73,7 +73,7 @@ public interface X509TBSCertificateBuilder
      * @param time a date.
      * @return this builder to allow chaining.
      */
-    X509TBSCertificateBuilder setStartDate(Date time);
+    BcX509TBSCertificateBuilder setStartDate(Date time);
 
     /**
      * Set the date after which the certificate is not valid.
@@ -81,7 +81,7 @@ public interface X509TBSCertificateBuilder
      * @param time a date.
      * @return this builder to allow chaining.
      */
-    X509TBSCertificateBuilder setEndDate(Date time);
+    BcX509TBSCertificateBuilder setEndDate(Date time);
 
     /**
      * Set the signature algorithm.
@@ -89,7 +89,7 @@ public interface X509TBSCertificateBuilder
      * @param signer the signer that will be used to sign the certificate.
      * @return this builder to allow chaining.
      */
-    X509TBSCertificateBuilder setSignature(Signer signer);
+    BcX509TBSCertificateBuilder setSignature(Signer signer);
 
     /**
      * Build the TBS certificate.
