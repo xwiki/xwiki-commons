@@ -77,4 +77,44 @@ public class LogQueueTest
         Assert.assertEquals(Arrays.asList("message"), logEvent.getMessageElements());
         Assert.assertEquals(Arrays.asList(), Arrays.asList(logEvent.getArgumentArray()));
     }
+
+    @Test
+    public void testContainLogsFrom()
+    {
+        LogQueue queue = new LogQueue();
+
+        Assert.assertFalse(queue.containLogsFrom(LogLevel.TRACE));
+        Assert.assertFalse(queue.containLogsFrom(LogLevel.DEBUG));
+        Assert.assertFalse(queue.containLogsFrom(LogLevel.INFO));
+        Assert.assertFalse(queue.containLogsFrom(LogLevel.WARN));
+        Assert.assertFalse(queue.containLogsFrom(LogLevel.ERROR));
+
+        queue.warn("");
+
+        Assert.assertTrue(queue.containLogsFrom(LogLevel.TRACE));
+        Assert.assertTrue(queue.containLogsFrom(LogLevel.DEBUG));
+        Assert.assertTrue(queue.containLogsFrom(LogLevel.INFO));
+        Assert.assertTrue(queue.containLogsFrom(LogLevel.WARN));
+        Assert.assertFalse(queue.containLogsFrom(LogLevel.ERROR));
+    }
+
+    @Test
+    public void testGetLogsFrom()
+    {
+        LogQueue queue = new LogQueue();
+
+        Assert.assertTrue(queue.getLogsFrom(LogLevel.TRACE).isEmpty());
+        Assert.assertTrue(queue.getLogsFrom(LogLevel.DEBUG).isEmpty());
+        Assert.assertTrue(queue.getLogsFrom(LogLevel.INFO).isEmpty());
+        Assert.assertTrue(queue.getLogsFrom(LogLevel.WARN).isEmpty());
+        Assert.assertTrue(queue.getLogsFrom(LogLevel.ERROR).isEmpty());
+
+        queue.warn("");
+
+        Assert.assertFalse(queue.getLogsFrom(LogLevel.TRACE).isEmpty());
+        Assert.assertFalse(queue.getLogsFrom(LogLevel.DEBUG).isEmpty());
+        Assert.assertFalse(queue.getLogsFrom(LogLevel.INFO).isEmpty());
+        Assert.assertFalse(queue.getLogsFrom(LogLevel.WARN).isEmpty());
+        Assert.assertTrue(queue.getLogsFrom(LogLevel.ERROR).isEmpty());
+    }
 }

@@ -165,6 +165,24 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
         return levelLogs;
     }
 
+    /**
+     * Indicate if the list contains logs of a specific level.
+     * 
+     * @param level the level of the logs to return
+     * @return true if log of provided level or less exist
+     * @since 6.0M1
+     */
+    public boolean containLogsFrom(LogLevel level)
+    {
+        for (LogEvent log : this) {
+            if (log.getLevel().compareTo(level) <= 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // Logger
 
     @Override
