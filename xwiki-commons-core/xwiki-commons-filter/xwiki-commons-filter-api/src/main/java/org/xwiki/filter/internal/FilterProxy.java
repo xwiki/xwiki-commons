@@ -59,10 +59,13 @@ public final class FilterProxy implements InvocationHandler
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws IllegalArgumentException,
-        IllegalAccessException, InvocationTargetException, FilterException
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
-        invoke(this.targetFilter, descriptor, method, args);
+        try {
+            invoke(this.targetFilter, descriptor, method, args);
+        } catch (InvocationTargetException e) {
+            return e.getCause();
+        }
 
         return null;
     }

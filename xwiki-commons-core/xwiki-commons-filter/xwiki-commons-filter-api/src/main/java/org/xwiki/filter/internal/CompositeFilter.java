@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
-import org.xwiki.filter.FilterException;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -71,11 +70,14 @@ public class CompositeFilter implements InvocationHandler
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws IllegalArgumentException,
-        IllegalAccessException, InvocationTargetException, FilterException
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         for (SubFilter filter : this.filters) {
-            FilterProxy.invoke(filter.filter, filter.descriptor, method, args);
+            try {
+                FilterProxy.invoke(filter.filter, filter.descriptor, method, args);
+            } catch (InvocationTargetException e) {
+                return e.getCause();
+            }
         }
 
         return null;
