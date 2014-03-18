@@ -29,6 +29,7 @@ import java.util.List;
 import javax.mail.internet.InternetAddress;
 
 import org.bouncycastle.util.IPAddress;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,6 +65,7 @@ import org.xwiki.crypto.pkix.params.x509certificate.extension.X509Rfc822Name;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509StringGeneralName;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509URI;
 import org.xwiki.crypto.signer.SignerFactory;
+import org.xwiki.crypto.signer.internal.factory.BcDSAwithSHA1SignerFactory;
 import org.xwiki.crypto.signer.internal.factory.BcSHA1withRsaSignerFactory;
 import org.xwiki.crypto.signer.internal.factory.DefaultSignerFactory;
 import org.xwiki.test.annotation.ComponentList;
@@ -81,7 +83,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @ComponentList({Base64BinaryStringEncoder.class, DefaultSecureRandomProvider.class, BcRSAKeyFactory.class,
-    BcDSAKeyFactory.class, BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class, DefaultSignerFactory.class})
+    BcDSAKeyFactory.class, BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class, DefaultSignerFactory.class,
+    X509CertificateFactory.class, BcDSAwithSHA1SignerFactory.class})
 public class X509CertificateGeneratorFactoryTest
 {
     @Rule
@@ -127,6 +130,27 @@ public class X509CertificateGeneratorFactoryTest
         + "mNQi1hlGKmjEp3rNJ0vJHtjzw+ENLLgGc+JrJ4Tbn2p7HLLTPLXDbbGReoY9Cb2"
         + "2aJPPbMwIDAQAB";
 
+    private static final String INTERCA_DSA_PRIVATE_KEY =
+        "MIIBSwIBADCCASwGByqGSM44BAEwggEfAoGBALjHlfmpKj8BiEfekiLTnbYdZlo5"
+        + "Hz6E2dAjx+ryqv3jeGYbPTxh+pxrD0MIIUKF+3o8Y+TBwBpbKnnZ/G2T/P6QXs8+"
+        + "l7H7Q4CUJKShdQ+PhpK8JXYaICN4VAtKsP4PVhBMWLw/3VANh67JDwZz1Oa5soci"
+        + "3dAVQDWN8mc4PdbhAhUAoWrfRj14AUQT759T/Men1dQ9o0ECgYEAgWPlEWkpvgfk"
+        + "CvyBMRiRWchS0suOUUL5RyqYKmVFpDE2aKRMMFO5owlluJ1lm57f4zaddY8zAsT7"
+        + "2tv0tTxz7nFAAPoX4QPOcSxYYapvEGRZklJRU4qrrXOPlXTia6jsWlgjnMaJ43zC"
+        + "BXteK2AdZ2DF7Yr9UPRuNukIzSYc4pcEFgIULVbclkmz+d+shls7gXvWJD6Z1Pc=";
+
+    private static final String INTERCA_DSA_PUBLIC_KEY =
+        "MIIBtzCCASwGByqGSM44BAEwggEfAoGBALjHlfmpKj8BiEfekiLTnbYdZlo5Hz6E"
+        + "2dAjx+ryqv3jeGYbPTxh+pxrD0MIIUKF+3o8Y+TBwBpbKnnZ/G2T/P6QXs8+l7H7"
+        + "Q4CUJKShdQ+PhpK8JXYaICN4VAtKsP4PVhBMWLw/3VANh67JDwZz1Oa5soci3dAV"
+        + "QDWN8mc4PdbhAhUAoWrfRj14AUQT759T/Men1dQ9o0ECgYEAgWPlEWkpvgfkCvyB"
+        + "MRiRWchS0suOUUL5RyqYKmVFpDE2aKRMMFO5owlluJ1lm57f4zaddY8zAsT72tv0"
+        + "tTxz7nFAAPoX4QPOcSxYYapvEGRZklJRU4qrrXOPlXTia6jsWlgjnMaJ43zCBXte"
+        + "K2AdZ2DF7Yr9UPRuNukIzSYc4pcDgYQAAoGAEH/cX4auYYjapwPvipulmUPLPB9G"
+        + "TPcZfcefLYH4FlAs/W1/vfer1kGZL/+urSu+5D/FonOGNE9VRnLhVO4SyOremfJT"
+        + "O0ZLA7w5ciQwcQRxwXX3vvYzxtiFA2H7G7SHVcg8GDzyikHePQnyDwjgXf2C8dxc"
+        + "yasUA5FJb62YKo0=";
+
     private static final String DSA_PRIVATE_KEY = "MIIBTAIBADCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/e"
         + "d2VrBw6TPkgMyV1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6ze"
         + "aTpvUohGLyTa0F7UY15LkbJpyz8WFJaVykH85nz3Zo6Md9Z4X95yvF1+h9qYuak"
@@ -151,6 +175,8 @@ public class X509CertificateGeneratorFactoryTest
     private SignerFactory signerFactory;
     private static PrivateKeyParameters rsaPrivateKey;
     private static PublicKeyParameters rsaPublicKey;
+    private static PrivateKeyParameters interCaDsaPrivateKey;
+    private static PublicKeyParameters interCaDsaPublicKey;
     private static PrivateKeyParameters dsaPrivateKey;
     private static PublicKeyParameters dsaPublicKey;
 
@@ -163,6 +189,8 @@ public class X509CertificateGeneratorFactoryTest
             rsaPrivateKey = keyFactory.fromPKCS8(base64encoder.decode(RSA_PRIVATE_KEY));
             rsaPublicKey = keyFactory.fromX509(base64encoder.decode(RSA_PUBLIC_KEY));
             keyFactory = mocker.getInstance(AsymmetricKeyFactory.class, "DSA");
+            interCaDsaPrivateKey = keyFactory.fromPKCS8(base64encoder.decode(INTERCA_DSA_PRIVATE_KEY));
+            interCaDsaPublicKey = keyFactory.fromX509(base64encoder.decode(INTERCA_DSA_PUBLIC_KEY));
             dsaPrivateKey = keyFactory.fromPKCS8(base64encoder.decode(DSA_PRIVATE_KEY));
             dsaPublicKey = keyFactory.fromX509(base64encoder.decode(DSA_PUBLIC_KEY));
         }
@@ -329,8 +357,6 @@ public class X509CertificateGeneratorFactoryTest
                 .generate(new DistinguishedName("CN=Test CA"), rsaPublicKey,
                     new X509CertificateParameters());
 
-        //dumpCert(caCertificate);
-
         builder = builderMocker.getComponentUnderTest();
 
         CertificateGenerator generator = factory.getInstance(
@@ -412,5 +438,89 @@ public class X509CertificateGeneratorFactoryTest
                 fail("Unexpected SubjectAltName type.");
             }
         }
+    }
+
+    @Test
+    public void testGenerateIntermediateCertificateVersion3() throws Exception
+    {
+        X509ExtensionBuilder builder = builderMocker.getComponentUnderTest();
+
+        CertifiedPublicKey caCertificate =
+            factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
+                new X509CertificateGenerationParameters(
+                    builder.addBasicConstraints(true)
+                        .addKeyUsage(true, EnumSet.of(KeyUsage.keyCertSign,
+                            KeyUsage.cRLSign))
+                        .build()))
+                .generate(new DistinguishedName("CN=Test CA"), rsaPublicKey,
+                    new X509CertificateParameters());
+
+        X509CertifiedPublicKey caKey = (X509CertifiedPublicKey) caCertificate;
+
+        builder = builderMocker.getComponentUnderTest();
+
+        CertificateGenerator generator = factory.getInstance(
+            CertifyingSigner.getInstance(true, new CertifiedKeyPair(rsaPrivateKey, caCertificate), signerFactory),
+            new X509CertificateGenerationParameters(
+                builder.addBasicConstraints(0)
+                    .addKeyUsage(EnumSet.of(KeyUsage.keyCertSign,
+                        KeyUsage.cRLSign))
+                    .build()));
+
+        CertifiedPublicKey interCAcert =
+            generator.generate(new DistinguishedName("CN=Test Intermediate CA"), interCaDsaPublicKey,
+                new X509CertificateParameters());
+
+        assertTrue("Signature should match Root CA key.", interCAcert.isSignedBy(rsaPublicKey));
+        assertThat(interCAcert.getIssuer(), equalTo(caCertificate.getSubject()));
+        assertThat(interCAcert.getSubject(),
+            equalTo((PrincipalIndentifier) new DistinguishedName("CN=Test Intermediate CA")));
+        assertThat(interCAcert, instanceOf(X509CertifiedPublicKey.class));
+
+        X509CertifiedPublicKey interCaKey = (X509CertifiedPublicKey) interCAcert;
+
+        assertThat(interCaKey.getVersionNumber(), equalTo(3));
+        assertTrue("Basic constraints should be critical.",
+            interCaKey.getExtensions().isCritical(X509Extensions.BASIC_CONSTRAINTS_OID));
+        assertTrue("Basic constraints should be set to CA.",
+            interCaKey.getExtensions().hasCertificateAuthorityBasicConstraints());
+        assertThat(interCaKey.getExtensions().getBasicConstraintsPathLen(), Matchers.equalTo(0));
+        assertTrue("KeyUsage extension should be critical.", interCaKey.getExtensions().isCritical(KeyUsage.OID));
+        assertThat(interCaKey.getExtensions().getKeyUsage(), equalTo(EnumSet.of(KeyUsage.keyCertSign,
+            KeyUsage.cRLSign)));
+        assertThat(interCaKey.getExtensions().getAuthorityKeyIdentifier(),
+            equalTo(caKey.getExtensions().getSubjectKeyIdentifier()));
+
+        builder = builderMocker.getComponentUnderTest();
+
+        generator = factory.getInstance(
+            CertifyingSigner.getInstance(true, new CertifiedKeyPair(interCaDsaPrivateKey, interCAcert), (SignerFactory) mocker.getInstance(SignerFactory.class, "DSAwithSHA1")),
+            new X509CertificateGenerationParameters(
+                builder.addKeyUsage(EnumSet.of(KeyUsage.digitalSignature,
+                    KeyUsage.dataEncipherment))
+                    .addExtendedKeyUsage(false,
+                        new ExtendedKeyUsages(new String[]{ExtendedKeyUsages.EMAIL_PROTECTION}))
+                    .build()));
+
+        builder = builderMocker.getComponentUnderTest();
+
+        CertifiedPublicKey certificate =
+            generator.generate(new DistinguishedName("CN=Test End Entity"), dsaPublicKey,
+                new X509CertificateParameters(
+                    builder.addSubjectAltName(false,
+                        new X509GeneralName[] {
+                            new X509Rfc822Name("test@example.com")
+                        })
+                        .build()
+                ));
+
+        assertTrue("Signature should match intermediate CA key.", certificate.isSignedBy(interCaDsaPublicKey));
+        assertThat(certificate.getIssuer(), equalTo(interCAcert.getSubject()));
+        assertThat(certificate.getSubject(), equalTo((PrincipalIndentifier) new DistinguishedName("CN=Test End Entity")));
+        assertThat(certificate, instanceOf(X509CertifiedPublicKey.class));
+
+        X509CertifiedPublicKey key = (X509CertifiedPublicKey) certificate;
+        assertThat(key.getExtensions().getAuthorityKeyIdentifier(),
+            equalTo(interCaKey.getExtensions().getSubjectKeyIdentifier()));
     }
 }

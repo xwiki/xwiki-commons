@@ -35,7 +35,7 @@ import org.xwiki.crypto.pkix.params.x509certificate.X509CertifiedPublicKey;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.ExtendedKeyUsages;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.KeyUsage;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509Extensions;
-import org.xwiki.crypto.signer.internal.factory.BcRsaSsaPssSignerFactory;
+import org.xwiki.crypto.signer.internal.factory.BcDSAwithSHA1SignerFactory;
 import org.xwiki.crypto.signer.internal.factory.BcSHA1withRsaSignerFactory;
 import org.xwiki.crypto.signer.internal.factory.DefaultSignerFactory;
 import org.xwiki.test.annotation.ComponentList;
@@ -49,8 +49,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @ComponentList({Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class,
-    BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class, BcRsaSsaPssSignerFactory.class,
-    DefaultSignerFactory.class})
+    BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class,
+    DefaultSignerFactory.class, BcDSAwithSHA1SignerFactory.class})
 public class X509CertificateFactoryTest
 {
     @Rule
@@ -92,56 +92,70 @@ public class X509CertificateFactoryTest
         + "wJLu0jsLxRl+pRqced1xaz42KYHwZceBIVjg1SP6goowbwfgaQKfteGcpZk27KME"
         + "x3zaPAb+IcpeOs3gOMfdiAk77nlo3mxo";
 
-    private static final String V3_CA_CERT = "MIIDETCCAfmgAwIBAgIQcGoZ+d8mnKUSOv270U6ZrTANBgkqhkiG9w0BAQUFADAS"
-        + "MRAwDgYDVQQDDAdUZXN0IENBMB4XDTE0MDIwMzExMDAwMFoXDTE1MDYxODEwMDAw"
-        + "MFowEjEQMA4GA1UEAwwHVGVzdCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC"
-        + "AQoCggEBAMKaOKb/eWKQnhUXnrhTLKCo+Mhf/PT3QAiYuXR8MtSQjIJVNJ3XzAnd"
-        + "rGvWqMu1KA09Z63Sm5LE4UfQDMUpEIk6NSRBFTyICTPrgwsB/3GvHicEQJyKp4H3"
-        + "jWzTWQu0bwL9SoLc71LAdJ2G1SlRTxX/3VKIPT3I0myc4OLdaozeguDVBjMqGhoP"
-        + "aZWjbEktD9BeqvZchzmLYyWl+rpLkk1sUP8j5QWEFSUE24M4RXu20i3Z4UwRSx+Q"
-        + "J6y0ajRihBg6lMs9w8ZFLsydJjUItYZRipoxKd6zSdLyR7Y88PhDSy4BnPiayeE2"
-        + "59qexyy0zy1w22xkXqGPQm9tmiTz2zMCAwEAAaNjMGEwHwYDVR0jBBgwFoAUiBZ2"
-        + "8+5dImSVCTC89MiGmBPOFWEwHQYDVR0OBBYEFIgWdvPuXSJklQkwvPTIhpgTzhVh"
-        + "MA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMA0GCSqGSIb3DQEBBQUA"
-        + "A4IBAQCou90IDsVku2cVEUguedn1J5hFYlYXZBhK4/6QNwS8cfPetqJJywwRClnH"
-        + "mJWHgc0alswX5MJ184z5IM3G9NTmqzHjplpNiw6HZ1N0/8cCYIIng3kSrK4Y6w9F"
-        + "FVH2HVYy+3EspWHcwPdSr2Kcs4dFD/w4J4cjcp8UILSQyTlKpv+Dh8XHKZFv6f1U"
-        + "vy+gIYdrxnmApcOcnX4vAPVwbVMd+he9HpjHxf4zsdXrtSdLM7RP6VeeFouxoox/"
-        + "GZKuV59XK0DWMcGya8JAScedfCEQL6AbMs/CZBL4Hx/Y1/bnsdncmclcWPgmp0KD"
-        + "i5ZotvGKE+kkN1srsfPZLx8FrU9v";
+    private static final String V3_CA_CERT = "MIIDEjCCAfqgAwIBAgIRANKASb61Xw7K0Oz9c034VPswDQYJKoZIhvcNAQEFBQAw"
+        + "EjEQMA4GA1UEAwwHVGVzdCBDQTAeFw0xNDAzMTcyMzAwMDBaFw0xNTA3MzAyMjAw"
+        + "MDBaMBIxEDAOBgNVBAMMB1Rlc3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw"
+        + "ggEKAoIBAQDCmjim/3likJ4VF564UyygqPjIX/z090AImLl0fDLUkIyCVTSd18wJ"
+        + "3axr1qjLtSgNPWet0puSxOFH0AzFKRCJOjUkQRU8iAkz64MLAf9xrx4nBECciqeB"
+        + "941s01kLtG8C/UqC3O9SwHSdhtUpUU8V/91SiD09yNJsnODi3WqM3oLg1QYzKhoa"
+        + "D2mVo2xJLQ/QXqr2XIc5i2Mlpfq6S5JNbFD/I+UFhBUlBNuDOEV7ttIt2eFMEUsf"
+        + "kCestGo0YoQYOpTLPcPGRS7MnSY1CLWGUYqaMSnes0nS8ke2PPD4Q0suAZz4msnh"
+        + "NufanscstM8tcNtsZF6hj0JvbZok89szAgMBAAGjYzBhMB8GA1UdIwQYMBaAFIgW"
+        + "dvPuXSJklQkwvPTIhpgTzhVhMB0GA1UdDgQWBBSIFnbz7l0iZJUJMLz0yIaYE84V"
+        + "YTAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjANBgkqhkiG9w0BAQUF"
+        + "AAOCAQEAs8QhTcl1gIczPhb0JFFB44Uvv5PSGzmnZev9PRstdHzyElCXngM3DVDc"
+        + "RfoukW0FUcStw7r7XrVKxMAQPHiFmmfESr8M5uX/RNvp9Vm/x3NsCZfYXFsj7P89"
+        + "kRfZOrld+IEVlKa/OhMiG9uOvT3ZZQIUON7pLZEfiVgMTnzKKAyJ1uE0cD18wXrZ"
+        + "XkzvVwyBX61ALnLA49ZvE9IWpzJEk9F+hgFnJox1GNuQn6JC9ibdEW+FQVuThCVI"
+        + "axcICn4Ek9fPos990Ehd9EdMx+tWgz+6URtkpRYLPGCFZ3ygejGvCh6FqRfLMFoc"
+        + "DdEVSTgcutG5PEOLctckxeHsS6yJkg==";
 
-    private static final String V3_CERT = "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"
-        + "DnmN4S10tHJsLSoa";
+    private static final String V3_ITERCA_CERT = "MIID4zCCAsugAwIBAgIQTAHcJ2NjsKKdlkNAWCJaxTANBgkqhkiG9w0BAQUFADAS"
+        + "MRAwDgYDVQQDDAdUZXN0IENBMB4XDTE0MDMxNzIzMDAwMFoXDTE1MDczMDIyMDAw"
+        + "MFowHzEdMBsGA1UEAwwUVGVzdCBJbnRlcm1lZGlhdGUgQ0EwggG3MIIBLAYHKoZI"
+        + "zjgEATCCAR8CgYEAuMeV+akqPwGIR96SItOdth1mWjkfPoTZ0CPH6vKq/eN4Zhs9"
+        + "PGH6nGsPQwghQoX7ejxj5MHAGlsqedn8bZP8/pBezz6XsftDgJQkpKF1D4+Gkrwl"
+        + "dhogI3hUC0qw/g9WEExYvD/dUA2HrskPBnPU5rmyhyLd0BVANY3yZzg91uECFQCh"
+        + "at9GPXgBRBPvn1P8x6fV1D2jQQKBgQCBY+URaSm+B+QK/IExGJFZyFLSy45RQvlH"
+        + "KpgqZUWkMTZopEwwU7mjCWW4nWWbnt/jNp11jzMCxPva2/S1PHPucUAA+hfhA85x"
+        + "LFhhqm8QZFmSUlFTiqutc4+VdOJrqOxaWCOcxonjfMIFe14rYB1nYMXtiv1Q9G42"
+        + "6QjNJhzilwOBhAACgYAQf9xfhq5hiNqnA++Km6WZQ8s8H0ZM9xl9x58tgfgWUCz9"
+        + "bX+996vWQZkv/66tK77kP8Wic4Y0T1VGcuFU7hLI6t6Z8lM7RksDvDlyJDBxBHHB"
+        + "dfe+9jPG2IUDYfsbtIdVyDwYPPKKQd49CfIPCOBd/YLx3FzJqxQDkUlvrZgqjaOB"
+        + "kjCBjzBKBgNVHSMEQzBBgBSIFnbz7l0iZJUJMLz0yIaYE84VYaEWpBQwEjEQMA4G"
+        + "A1UEAwwHVGVzdCBDQYIRANKASb61Xw7K0Oz9c034VPswHQYDVR0OBBYEFG663aJM"
+        + "aoS1UB532ZKStTze5FG6MBIGA1UdEwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQD"
+        + "AgEGMA0GCSqGSIb3DQEBBQUAA4IBAQAfcpvFEzTGdqcdg/3XUS7PDnuP40O+Alli"
+        + "5Vqt77Ldh3a11+g6HBxSrk+MrqB/0gC2SQ1id0FCyJxfXAameZpqqXt2DnjwOWX/"
+        + "cWcDBws0VbZDisq37eg/LwPAAxnJvF9ap625Vwmr+Gr7B/zehegdOajYj5Iufk0Z"
+        + "72ZJEXs39KX9g4+95YxRX8wRgASv3qSl1rtdR7jEo8T2+Ca5CjueNtk7uGxzPzUV"
+        + "93dfky41j1UKXlCndj0vqTvlRe7pJ9OPFR5I9P2afQWOKELVR67yDsQnD9MRblkF"
+        + "/zEecnWSgPNAJi/YywA3ImvwlVJADrIOsAwbAOm6SHADgHgNAJ2n";
+
+    private static final String V3_CERT = "MIIDMTCCAu+gAwIBAgIRANthik4fzttcoxdetKvv3g0wCwYHKoZIzjgEAwUAMB8x"
+        + "HTAbBgNVBAMMFFRlc3QgSW50ZXJtZWRpYXRlIENBMB4XDTE0MDMxNzIzMDAwMFoX"
+        + "DTE1MDczMDIyMDAwMFowGjEYMBYGA1UEAwwPVGVzdCBFbmQgRW50aXR5MIIBtzCC"
+        + "ASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/ed2VrBw6TPkgMy"
+        + "V1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6zeaTpvUohGLyTa0F"
+        + "7UY15LkbJpyz8WFJaVykH85nz3Zo6Md9Z4X95yvF1+h9qYuakjWcHW31+pN4u3cJ"
+        + "Ng5FAhUAj986cVG9NgWgWzFVSLbB9pEPbFUCgYEAmQrZFH3MX5CLX/5vDvxyTeeR"
+        + "PZHLWc0ik3GwrIJExuVrOkuFInpx0aVbuJTxrEnY2fuc/+Byj/F56DDO31+qPu7Z"
+        + "xbSvvD33OOk8eFEfn+Hia3QmA+dGrhUqoMpfDf4/GBgJhnyQtFzMddHmYB0QnS9y"
+        + "X1n6DOWj/CSX0PvrlMYDgYQAAoGAJvnuTm8oI/RRI2tiZHtPkvSQaA3FP4PRsVx6"
+        + "z1oIGg9OAxrtSS/aiQa+HWFg7fjHlMJ30Vh0yqt7igj70jaLGyDvr3MPDyiO++72"
+        + "IiGUluc6yHg6m9cQ53eeJt9i44LJfTOw1S3YMU1ST7alokSnJRTICp5WBy0m1scw"
+        + "heuTo0Gjga8wgawwSQYDVR0jBEIwQIAUbrrdokxqhLVQHnfZkpK1PN7kUbqhFqQU"
+        + "MBIxEDAOBgNVBAMMB1Rlc3QgQ0GCEEwB3CdjY7CinZZDQFgiWsUwHQYDVR0OBBYE"
+        + "FJ0i7GBYsbjkyTTVEdohFS7ZFp0eMA4GA1UdDwEB/wQEAwIEkDATBgNVHSUEDDAK"
+        + "BggrBgEFBQcDBDAbBgNVHREEFDASgRB0ZXN0QGV4YW1wbGUuY29tMAsGByqGSM44"
+        + "BAMFAAMvADAsAhQJWXbMhGtsgc8EbXoXWWlk+QNuoQIURvSp4HxJ8oFD8RbmiRsc"
+        + "4jiu93Q=";
 
     private CertificateFactory factory;
     private static byte[] v1CaCert;
     private static byte[] v1Cert;
     private static byte[] v3CaCert;
+    private static byte[] v3InterCaCert;
     private static byte[] v3Cert;
 
     public void setupTest(MockitoComponentMockingRule<CertificateFactory> mocker) throws Exception
@@ -152,6 +166,7 @@ public class X509CertificateFactoryTest
             v1CaCert = base64encoder.decode(V1_CA_CERT);
             v1Cert = base64encoder.decode(V1_CERT);
             v3CaCert = base64encoder.decode(V3_CA_CERT);
+            v3InterCaCert = base64encoder.decode(V3_ITERCA_CERT);
             v3Cert = base64encoder.decode(V3_CERT);
         }
     }
@@ -211,12 +226,39 @@ public class X509CertificateFactoryTest
     }
 
     @Test
-    public void testV3Cert() throws Exception
+    public void testV3InterCACert() throws Exception
     {
         CertifiedPublicKey caCert = factory.decode(v3CaCert);
+        CertifiedPublicKey interCaCert = factory.decode(v3InterCaCert);
+
+        assertTrue("Intermediate CA certificate should be verified by CA.",
+            interCaCert.isSignedBy(caCert.getPublicKeyParameters()));
+
+        assertThat(interCaCert, instanceOf(X509CertifiedPublicKey.class));
+        X509CertifiedPublicKey cert = (X509CertifiedPublicKey) interCaCert;
+        assertThat(cert.getVersionNumber(), equalTo(3));
+
+        assertTrue("Basic constraints should be critical.",
+            cert.getExtensions().isCritical(X509Extensions.BASIC_CONSTRAINTS_OID));
+        assertTrue("Basic constraints should be set to CA.",
+            cert.getExtensions().hasCertificateAuthorityBasicConstraints());
+        assertThat(cert.getExtensions().getBasicConstraintsPathLen(), equalTo(0));
+        assertTrue("KeyUsage extension should be critical.", cert.getExtensions().isCritical(KeyUsage.OID));
+        assertThat(cert.getExtensions().getKeyUsage(), equalTo(EnumSet.of(KeyUsage.keyCertSign,
+            KeyUsage.cRLSign)));
+
+        assertThat(cert.getExtensions().getAuthorityKeyIdentifier(),
+            equalTo(((X509CertifiedPublicKey) caCert).getExtensions().getSubjectKeyIdentifier()));
+    }
+
+    @Test
+    public void testV3Cert() throws Exception
+    {
+        CertifiedPublicKey interCaCert = factory.decode(v3InterCaCert);
         CertifiedPublicKey certificate = factory.decode(v3Cert);
 
-        assertTrue("End certificate should be verified by CA.", certificate.isSignedBy(caCert.getPublicKeyParameters()));
+        assertTrue("End certificate should be verified by CA.",
+            certificate.isSignedBy(interCaCert.getPublicKeyParameters()));
 
         assertThat(certificate, instanceOf(X509CertifiedPublicKey.class));
         X509CertifiedPublicKey cert = (X509CertifiedPublicKey) certificate;
@@ -231,6 +273,9 @@ public class X509CertificateFactoryTest
             new String[]{ExtendedKeyUsages.EMAIL_PROTECTION}));
         assertTrue("Email data protection extended usage should be set.",
             cert.getExtensions().getExtendedKeyUsage().hasUsage(ExtendedKeyUsages.EMAIL_PROTECTION));
+
+        assertThat(cert.getExtensions().getAuthorityKeyIdentifier(),
+            equalTo(((X509CertifiedPublicKey) interCaCert).getExtensions().getSubjectKeyIdentifier()));
     }
 
 }

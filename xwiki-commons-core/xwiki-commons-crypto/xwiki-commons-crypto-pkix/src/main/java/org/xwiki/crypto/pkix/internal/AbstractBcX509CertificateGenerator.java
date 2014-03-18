@@ -107,7 +107,7 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
 
         if (signer instanceof CertifyingSigner) {
             issuer = ((CertifyingSigner) signer).getCertifier();
-            issuerName = issuer.getIssuer();
+            issuerName = issuer.getSubject();
         } else {
             issuerName = subjectName;
         }
