@@ -118,12 +118,12 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
     /**
      * Main lock guarding all access.
      */
-    private final ReentrantLock lock = new ReentrantLock();
+    protected final ReentrantLock lock = new ReentrantLock();
 
     /**
-     * Condition for waiting takes.
+     * Condition to wait for finished state.
      */
-    private final Condition finishedCondition = lock.newCondition();
+    protected final Condition finishedCondition = lock.newCondition();
 
     @Override
     public R getRequest()
