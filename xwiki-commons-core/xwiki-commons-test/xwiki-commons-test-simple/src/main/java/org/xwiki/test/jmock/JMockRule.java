@@ -29,7 +29,9 @@ import org.junit.runners.model.Statement;
  *
  * @version $Id$
  * @since 4.3.1
+ * @deprecated we're now standardizing on Mockito, use Mockito instead!
  */
+@Deprecated
 public class JMockRule extends JUnitRuleMockery
 {
     @Override
