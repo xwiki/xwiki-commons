@@ -132,7 +132,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public void startListening()
     {
         // Register progress listener
-        this.observationManager.addListener(new WrappedThreadEventListener(this.progress, Thread.currentThread()));
+        this.observationManager.addListener(new WrappedThreadEventListener(this.progress));
 
         // Isolate log for the job status
         this.logListener = new LoggerListener(LoggerListener.class.getName() + '_' + hashCode(), this.logs);

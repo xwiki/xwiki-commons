@@ -112,7 +112,7 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
         }
 
         if (listener != null) {
-            this.observation.addListener(new WrappedThreadEventListener(listener, Thread.currentThread()));
+            this.observation.addListener(new WrappedThreadEventListener(listener));
         }
         if (listenerStack.isEmpty()) {
             grabLog(Thread.currentThread());
@@ -136,7 +136,7 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
             } else {
                 EventListener topListener = listenerStack.peek();
                 if (topListener != null) {
-                    this.observation.addListener(new WrappedThreadEventListener(topListener, Thread.currentThread()));
+                    this.observation.addListener(new WrappedThreadEventListener(topListener));
                 }
             }
         } else {

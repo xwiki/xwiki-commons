@@ -19,13 +19,13 @@
  */
 package org.xwiki.observation.event;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
+import java.io.Serializable;
+import java.util.Objects;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.observation.event.filter.AlwaysMatchingEventFilter;
 import org.xwiki.observation.event.filter.EventFilter;
 import org.xwiki.observation.event.filter.FixedNameEventFilter;
-
-import java.io.Serializable;
 
 /**
  * A generic Event implementation to extend for all Events that want to support {@link EventFilter}s.
@@ -48,18 +48,18 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
 
     /**
      * Constructor initializing the event filter with an
-     * {@link org.xwiki.observation.event.filter.AlwaysMatchingEventFilter}, meaning that this event will
-     * match any other event of the same type.
+     * {@link org.xwiki.observation.event.filter.AlwaysMatchingEventFilter}, meaning that this event will match any
+     * other event of the same type.
      */
     public AbstractFilterableEvent()
     {
-        this.eventFilter = new AlwaysMatchingEventFilter();
+        this.eventFilter = AlwaysMatchingEventFilter.INSTANCE;
     }
 
     /**
      * Constructor initializing the event filter with a {@link org.xwiki.observation.event.filter.FixedNameEventFilter},
      * meaning that this event will match only events of the same type affecting the same passed name.
-     *
+     * 
      * @param name a generic name that uniquely identifies an event type
      */
     public AbstractFilterableEvent(String name)
@@ -69,7 +69,7 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
 
     /**
      * Constructor using a custom {@link EventFilter}.
-     *
+     * 
      * @param eventFilter the filter to use for matching events
      */
     public AbstractFilterableEvent(EventFilter eventFilter)
@@ -87,19 +87,25 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
      * {@inheritDoc}
      * <p>
      * This type of events match only events of the same type, and only if the internal {@link #eventFilter}s also
-     * {@link EventFilter#matches(EventFilter) match}.
+     * {@link EventFilter#matches(EventFilter)} match.
      * </p>
-     *
+     * 
      * @see Event#matches(Object)
      * @see EventFilter#matches(EventFilter)
      */
     @Override
     public boolean matches(Object otherEvent)
     {
+        if (otherEvent == this) {
+            return true;
+        }
+
         boolean isMatching = false;
+
         if (this.getClass().isAssignableFrom(otherEvent.getClass())) {
             isMatching = getEventFilter().matches(((AbstractFilterableEvent) otherEvent).getEventFilter());
         }
+
         return isMatching;
     }
 
@@ -109,23 +115,22 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
         if (object == null) {
             return false;
         }
+
         if (object == this) {
             return true;
         }
+
         if (object.getClass() != getClass()) {
             return false;
         }
+
         FilterableEvent rhs = (FilterableEvent) object;
-        return new EqualsBuilder()
-            .append(getEventFilter(), rhs.getEventFilter())
-            .isEquals();
+        return Objects.equals(getEventFilter(), rhs.getEventFilter());
     }
 
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder(3, 125)
-            .append(getEventFilter())
-            .toHashCode();
+        return new HashCodeBuilder(3, 125).append(getEventFilter()).toHashCode();
     }
 }

@@ -38,6 +38,17 @@ public class WrappedThreadEventListener extends AbstractThreadEventListener
     private EventListener listener;
 
     /**
+     * Use {@link Thread#currentThread()}.
+     * 
+     * @param listener the wrapped listener
+     * @since 6.0M1
+     */
+    public WrappedThreadEventListener(EventListener listener)
+    {
+        this.listener = listener;
+    }
+
+    /**
      * @param listener the wrapped listener
      * @param thread the thread to match to receive events
      */

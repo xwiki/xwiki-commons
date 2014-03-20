@@ -17,23 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.observation;
+package org.xwiki.observation.event;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xwiki.observation.event.ActionExecutionEvent;
-import org.xwiki.observation.event.Event;
 
-public class ActionExecutionEventTest
+public class ApplicationStoppedEventTest
 {
     @Test
-    public void testActionExecutionEventEquals()
+    public void testApplicationStoppedEvent()
     {
-        Event e1 = new ActionExecutionEvent("test");
-        Event e2 = new ActionExecutionEvent("test");
-        Event e3 = new ActionExecutionEvent("different");
-        Assert.assertTrue(e1.equals(e1));
-        Assert.assertTrue(e1.equals(e2));
-        Assert.assertFalse(e1.equals(e3));
+        ApplicationStoppedEvent event = new ApplicationStoppedEvent();
+
+        Assert.assertTrue(event.matches(event));
+
+        Assert.assertFalse(event.matches(AllEvent.ALLEVENT));
     }
 }

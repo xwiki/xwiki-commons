@@ -29,10 +29,26 @@ import java.io.Serializable;
 public class AlwaysMatchingEventFilter implements EventFilter, Serializable
 {
     /**
+     * Unique instance of {@link AlwaysMatchingEventFilter}.
+     * 
+     * @since 6.0M1
+     */
+    public static final AlwaysMatchingEventFilter INSTANCE = new AlwaysMatchingEventFilter();
+
+    /**
      * The version identifier for this Serializable class. Increment only if the <i>serialized</i> form of the class
      * changes.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * @deprecated since 6.0M1, use {@link #INSTANCE} instead
+     */
+    @Deprecated
+    public AlwaysMatchingEventFilter()
+    {
+
+    }
 
     @Override
     public String getFilter()
@@ -44,5 +60,17 @@ public class AlwaysMatchingEventFilter implements EventFilter, Serializable
     public boolean matches(EventFilter eventFilter)
     {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj != null && obj.getClass() == getClass();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 0;
     }
 }

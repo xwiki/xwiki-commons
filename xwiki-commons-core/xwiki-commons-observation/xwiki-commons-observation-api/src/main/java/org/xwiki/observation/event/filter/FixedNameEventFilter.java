@@ -20,8 +20,8 @@
 package org.xwiki.observation.event.filter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
@@ -68,23 +68,22 @@ public class FixedNameEventFilter implements EventFilter, Serializable
         if (object == null) {
             return false;
         }
+
         if (object == this) {
             return true;
         }
+
         if (object.getClass() != getClass()) {
             return false;
         }
+
         FixedNameEventFilter rhs = (FixedNameEventFilter) object;
-        return new EqualsBuilder()
-            .append(getFilter(), rhs.getFilter())
-            .isEquals();
+        return Objects.equals(getFilter(), rhs.getFilter());
     }
 
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder(3, 125)
-            .append(getFilter())
-            .toHashCode();
+        return new HashCodeBuilder(3, 125).append(getFilter()).toHashCode();
     }
 }
