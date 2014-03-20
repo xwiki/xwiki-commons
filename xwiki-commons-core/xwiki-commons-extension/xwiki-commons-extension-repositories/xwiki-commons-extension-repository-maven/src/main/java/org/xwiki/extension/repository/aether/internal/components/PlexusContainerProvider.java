@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.extension.repository.aether.internal.XWikiLoggerManager;
 
 /**
  * Provide easy access to singleton {@link PlexusContainer}.
