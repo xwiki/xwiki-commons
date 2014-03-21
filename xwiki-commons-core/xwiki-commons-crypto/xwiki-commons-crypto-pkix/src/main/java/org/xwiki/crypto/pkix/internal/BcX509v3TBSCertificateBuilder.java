@@ -115,10 +115,12 @@ public class BcX509v3TBSCertificateBuilder implements BcX509TBSCertificateBuilde
     {
         DefaultX509ExtensionBuilder extBuilder = new DefaultX509ExtensionBuilder();
 
-        extBuilder.addAuthorityKeyIdentifier(subject)
-            .addSubjectKeyIdentifier(subject)
-            .addExtensions(extensions1)
-            .addExtensions(extensions2);
+        if (extensions1 != null || extensions2 != null) {
+            extBuilder.addAuthorityKeyIdentifier(subject)
+                .addSubjectKeyIdentifier(subject)
+                .addExtensions(extensions1)
+                .addExtensions(extensions2);
+        }
 
         if (!extBuilder.isEmpty())
         {
