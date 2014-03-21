@@ -58,6 +58,12 @@ public interface CertifiedPublicKey
     boolean isSignedBy(PublicKeyParameters publicKey) throws GeneralSecurityException;
 
     /**
+     * @return true if this certificate is self signed.
+     * @since 6.0M1
+     */
+    boolean isSelfSigned();
+
+    /**
      * @return the ASN.1 encoded form of this certificate.
      * @throws IOException on encoding error.
      */

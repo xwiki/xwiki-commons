@@ -64,6 +64,12 @@ public interface X509CertifiedPublicKey extends CertifiedPublicKey
     boolean isValidOn(Date date);
 
     /**
+     * @return true if this certificate is a CA certificate.
+     * @since 6.0M1
+     */
+    boolean isRootCA();
+
+    /**
      * @return X.509 extension.
      */
     X509Extensions getExtensions();

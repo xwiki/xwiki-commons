@@ -33,6 +33,7 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xwiki.crypto.AbstractPKIXTest;
 import org.xwiki.crypto.AsymmetricKeyFactory;
 import org.xwiki.crypto.BinaryStringEncoder;
 import org.xwiki.crypto.internal.DefaultSecureRandomProvider;
@@ -85,7 +86,7 @@ import static org.junit.Assert.fail;
 @ComponentList({Base64BinaryStringEncoder.class, DefaultSecureRandomProvider.class, BcRSAKeyFactory.class,
     BcDSAKeyFactory.class, BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class, DefaultSignerFactory.class,
     BcX509CertificateFactory.class, BcDSAwithSHA1SignerFactory.class})
-public class BcX509CertificateGeneratorFactoryTest
+public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
 {
     @Rule
     public final MockitoComponentMockingRule<CertificateGeneratorFactory> mocker =
@@ -94,82 +95,6 @@ public class BcX509CertificateGeneratorFactoryTest
     @Rule
     public final MockitoComponentMockingRule<X509ExtensionBuilder> builderMocker =
         new MockitoComponentMockingRule<X509ExtensionBuilder>(DefaultX509ExtensionBuilder.class);
-
-    private static final String RSA_PRIVATE_KEY = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDCmjim/3likJ4"
-        + "VF564UyygqPjIX/z090AImLl0fDLUkIyCVTSd18wJ3axr1qjLtSgNPWet0puSxO"
-        + "FH0AzFKRCJOjUkQRU8iAkz64MLAf9xrx4nBECciqeB941s01kLtG8C/UqC3O9Sw"
-        + "HSdhtUpUU8V/91SiD09yNJsnODi3WqM3oLg1QYzKhoaD2mVo2xJLQ/QXqr2XIc5"
-        + "i2Mlpfq6S5JNbFD/I+UFhBUlBNuDOEV7ttIt2eFMEUsfkCestGo0YoQYOpTLPcP"
-        + "GRS7MnSY1CLWGUYqaMSnes0nS8ke2PPD4Q0suAZz4msnhNufanscstM8tcNtsZF"
-        + "6hj0JvbZok89szAgMBAAECggEBAKWJ1SlR5ysORDtDBXRc5HiiZEbnSGIFtYXaj"
-        + "N/nCsJBWBVCb+jZeirmU9bEGoB20OQ6WOjHYCnAqraQ51wMK5HgXvZBGtSMD/AH"
-        + "pkiF4YsOYULlXiUL2aQ4NijdvEC1sz1Cw9CAKmElb83UtZ1ZGkJnjhi35giZvU5"
-        + "BQRgbK5k57DFY66yv9VDg8tuD/enI9sRsCUZfCImuShGv4nLqhPMPg+1UxDPGet"
-        + "Vs8uEaJQ017E14wLKLA0DlED13icelU1A7ufkEdeBSv/yZ7ENjervzPwa9nITK/"
-        + "19uzqaHOcYZxmDQn6UHTnaLpIEaUvpp/pbed5S97ETSsqUBC8fqEUECgYEA/Sba"
-        + "o6efydhlXDHbXtyvaJWao19sbI9OfxGC6dR2fZiBx8Do9kVDDbMtb1PYEfLhYbi"
-        + "urmKGbUtcLSFgxNbZifUmG54M92nBsnsetMCqvMVNzYl2Je83V+NrIsLJjFIZ2C"
-        + "BvZa/FKOLDTwSe35fNqaS0ExdwcGNMIT//bDQCmyECgYEAxMq6rN+HpBRuhvvst"
-        + "V99zV+lI/1DzZuXExd+c3PSchiqkJrTLaQDvcaHQir9hK7RqF9vO7tvdluJjgX+"
-        + "f/CMPNQuC5k6vY/0fS4V2NQWtln9BBSzHtocTnZzFNq8tAZqyEhZUHIbkncroXv"
-        + "eUXqtlfOnKB2aYI/+3gPEMYJlH9MCgYA4exjA9r9B65QB0+Xb7mT8cpSD6uBoAD"
-        + "lFRITu4sZlE0exZ6sSdzWUsutqMUy+BHCguvHOWpEfhXbVYuMSR9VVYGrWMpc2B"
-        + "FSBG9MoBOyTHXpUZ10C7bJtW4IlyUvqkM7PV71C9MqKar2kvaUswdPTC7pZoBso"
-        + "GB9+M6crXxdNwQKBgDUVMlGbYi1CTaYfonQyM+8IE7WnhXiatZ+ywKtH3MZmHOw"
-        + "wtzIigdfZC3cvvX7i4S73vztvjdtxSaODvmiobEukOF9sj8m+YQa7Pa1lWFML5x"
-        + "IIu2BhGS2ZCeXgMvKkoH0x9tWaUhGqD5zZmtiDrPs75CUQBypw7SDaBzwLnld9A"
-        + "oGBAPgUh90PvUzbVVkzpVCPI82cmOIVMI1rDE6uCeNzIlN6Xu80RimCSaaDsESi"
-        + "tBtoVWLRWWmuCINyqr6e9AdyvbvT6mQCjbn9+y7t6ZAhLaya5ZMUVEBLyLLqMzr"
-        + "y oi/huj7m4nV4kPZz9LKxDRu3r6o0Pah+daDsTxEYObtsKa7e";
-
-    private static final String RSA_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwpo4pv95YpCeFReeuFM"
-        + "soKj4yF/89PdACJi5dHwy1JCMglU0ndfMCd2sa9aoy7UoDT1nrdKbksThR9AMxS"
-        + "kQiTo1JEEVPIgJM+uDCwH/ca8eJwRAnIqngfeNbNNZC7RvAv1KgtzvUsB0nYbVK"
-        + "VFPFf/dUog9PcjSbJzg4t1qjN6C4NUGMyoaGg9plaNsSS0P0F6q9lyHOYtjJaX6"
-        + "ukuSTWxQ/yPlBYQVJQTbgzhFe7bSLdnhTBFLH5AnrLRqNGKEGDqUyz3DxkUuzJ0"
-        + "mNQi1hlGKmjEp3rNJ0vJHtjzw+ENLLgGc+JrJ4Tbn2p7HLLTPLXDbbGReoY9Cb2"
-        + "2aJPPbMwIDAQAB";
-
-    private static final String INTERCA_DSA_PRIVATE_KEY =
-        "MIIBSwIBADCCASwGByqGSM44BAEwggEfAoGBALjHlfmpKj8BiEfekiLTnbYdZlo5"
-        + "Hz6E2dAjx+ryqv3jeGYbPTxh+pxrD0MIIUKF+3o8Y+TBwBpbKnnZ/G2T/P6QXs8+"
-        + "l7H7Q4CUJKShdQ+PhpK8JXYaICN4VAtKsP4PVhBMWLw/3VANh67JDwZz1Oa5soci"
-        + "3dAVQDWN8mc4PdbhAhUAoWrfRj14AUQT759T/Men1dQ9o0ECgYEAgWPlEWkpvgfk"
-        + "CvyBMRiRWchS0suOUUL5RyqYKmVFpDE2aKRMMFO5owlluJ1lm57f4zaddY8zAsT7"
-        + "2tv0tTxz7nFAAPoX4QPOcSxYYapvEGRZklJRU4qrrXOPlXTia6jsWlgjnMaJ43zC"
-        + "BXteK2AdZ2DF7Yr9UPRuNukIzSYc4pcEFgIULVbclkmz+d+shls7gXvWJD6Z1Pc=";
-
-    private static final String INTERCA_DSA_PUBLIC_KEY =
-        "MIIBtzCCASwGByqGSM44BAEwggEfAoGBALjHlfmpKj8BiEfekiLTnbYdZlo5Hz6E"
-        + "2dAjx+ryqv3jeGYbPTxh+pxrD0MIIUKF+3o8Y+TBwBpbKnnZ/G2T/P6QXs8+l7H7"
-        + "Q4CUJKShdQ+PhpK8JXYaICN4VAtKsP4PVhBMWLw/3VANh67JDwZz1Oa5soci3dAV"
-        + "QDWN8mc4PdbhAhUAoWrfRj14AUQT759T/Men1dQ9o0ECgYEAgWPlEWkpvgfkCvyB"
-        + "MRiRWchS0suOUUL5RyqYKmVFpDE2aKRMMFO5owlluJ1lm57f4zaddY8zAsT72tv0"
-        + "tTxz7nFAAPoX4QPOcSxYYapvEGRZklJRU4qrrXOPlXTia6jsWlgjnMaJ43zCBXte"
-        + "K2AdZ2DF7Yr9UPRuNukIzSYc4pcDgYQAAoGAEH/cX4auYYjapwPvipulmUPLPB9G"
-        + "TPcZfcefLYH4FlAs/W1/vfer1kGZL/+urSu+5D/FonOGNE9VRnLhVO4SyOremfJT"
-        + "O0ZLA7w5ciQwcQRxwXX3vvYzxtiFA2H7G7SHVcg8GDzyikHePQnyDwjgXf2C8dxc"
-        + "yasUA5FJb62YKo0=";
-
-    private static final String DSA_PRIVATE_KEY = "MIIBTAIBADCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/e"
-        + "d2VrBw6TPkgMyV1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6ze"
-        + "aTpvUohGLyTa0F7UY15LkbJpyz8WFJaVykH85nz3Zo6Md9Z4X95yvF1+h9qYuak"
-        + "jWcHW31+pN4u3cJNg5FAhUAj986cVG9NgWgWzFVSLbB9pEPbFUCgYEAmQrZFH3M"
-        + "X5CLX/5vDvxyTeeRPZHLWc0ik3GwrIJExuVrOkuFInpx0aVbuJTxrEnY2fuc/+B"
-        + "yj/F56DDO31+qPu7ZxbSvvD33OOk8eFEfn+Hia3QmA+dGrhUqoMpfDf4/GBgJhn"
-        + "yQtFzMddHmYB0QnS9yX1n6DOWj/CSX0PvrlMYEFwIVAIO1GUQjAddL4btiFQnhe"
-        + "N4fxBTa";
-
-    private static final String DSA_PUBLIC_KEY = "MIIBtzCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/ed2VrB"
-        + "w6TPkgMyV1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6zeaTpvUo"
-        + "hGLyTa0F7UY15LkbJpyz8WFJaVykH85nz3Zo6Md9Z4X95yvF1+h9qYuakjWcHW31"
-        + "+pN4u3cJNg5FAhUAj986cVG9NgWgWzFVSLbB9pEPbFUCgYEAmQrZFH3MX5CLX/5v"
-        + "DvxyTeeRPZHLWc0ik3GwrIJExuVrOkuFInpx0aVbuJTxrEnY2fuc/+Byj/F56DDO"
-        + "31+qPu7ZxbSvvD33OOk8eFEfn+Hia3QmA+dGrhUqoMpfDf4/GBgJhnyQtFzMddHm"
-        + "YB0QnS9yX1n6DOWj/CSX0PvrlMYDgYQAAoGAJvnuTm8oI/RRI2tiZHtPkvSQaA3F"
-        + "P4PRsVx6z1oIGg9OAxrtSS/aiQa+HWFg7fjHlMJ30Vh0yqt7igj70jaLGyDvr3MP"
-        + "DyiO++72IiGUluc6yHg6m9cQ53eeJt9i44LJfTOw1S3YMU1ST7alokSnJRTICp5W"
-        + "By0m1scwheuTo0E=";
 
     private CertificateGeneratorFactory factory;
     private SignerFactory signerFactory;
@@ -238,6 +163,7 @@ public class BcX509CertificateGeneratorFactoryTest
             x509cert.isValidOn(yesterday));
         assertFalse("Certificate should not be valid in more than 500 days.",
             x509cert.isValidOn(inMoreThan500Days));
+        assertTrue(x509cert.isRootCA());
 
         return x509cert;
     }
@@ -265,6 +191,7 @@ public class BcX509CertificateGeneratorFactoryTest
             x509cert.isValidOn(yesterday));
         assertFalse("Certificate should not be valid in more than 500 days.",
             x509cert.isValidOn(inMoreThan500Days));
+        assertFalse(x509cert.isRootCA());
 
         return x509cert;
     }

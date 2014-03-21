@@ -22,8 +22,11 @@ package org.xwiki.crypto.pkix.internal;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.Date;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.asn1.x509.TBSCertificate;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
@@ -105,9 +108,20 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
     }
 
     @Override
+    public boolean isRootCA()
+    {
+        X509Extensions exts = this.getExtensions();
+        if (exts != null) {
+            return exts.hasCertificateAuthorityBasicConstraints() && isSelfSigned();
+        }
+        return isSelfSigned();
+    }
+
+    @Override
     public X509Extensions getExtensions()
     {
-        return new BcX509Extensions(holder.getExtensions());
+        Extensions extensions = holder.getExtensions();
+        return (extensions != null) ? new BcX509Extensions(extensions) : null;
     }
 
     @Override
@@ -151,8 +165,73 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
     }
 
     @Override
+    public boolean isSelfSigned()
+    {
+        X509Extensions exts = this.getExtensions();
+        if (exts != null) {
+            byte[] issuerId = exts.getAuthorityKeyIdentifier();
+            byte[] subjectId = exts.getSubjectKeyIdentifier();
+            if (issuerId != null) {
+                return Arrays.equals(issuerId, subjectId);
+            }
+        }
+        return getIssuer().equals(getSubject());
+    }
+
+    @Override
     public byte[] getEncoded() throws IOException
     {
         return holder.getEncoded();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 6.0M1
+     */
+    @Override
+    public boolean equals(Object cert)
+    {
+        if (this == cert) {
+            return true;
+        }
+        if (cert == null || !(cert instanceof X509CertifiedPublicKey)) {
+            return false;
+        }
+
+        X509CertifiedPublicKey that = (X509CertifiedPublicKey) cert;
+
+        X509Extensions thisExts = this.getExtensions();
+        X509Extensions thatExts = that.getExtensions();
+
+        byte[] thisId = (thisExts != null) ? thisExts.getSubjectKeyIdentifier() : null;
+        byte[] thatId = (thatExts != null) ? thatExts.getSubjectKeyIdentifier() : null;
+
+        if (thisId != null) {
+            return Arrays.equals(thisId, thatId);
+        } else if (thatExts != null) {
+            return false;
+        }
+
+        return this.getIssuer().equals(that.getIssuer()) && this.getSerialNumber().equals(that.getSerialNumber());
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 6.0M1
+     */
+    @Override
+    public int hashCode()
+    {
+        X509Extensions exts = this.getExtensions();
+        if (exts != null) {
+            byte[] id = exts.getSubjectKeyIdentifier();
+            if (id != null) {
+                return Arrays.hashCode(id);
+            }
+        }
+        return new HashCodeBuilder(3, 17)
+            .append(getIssuer())
+            .append(getSerialNumber())
+            .toHashCode();
     }
 }
