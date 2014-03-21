@@ -33,7 +33,7 @@
   <name>XWiki Commons - Crypto - PKI API</name>
   <description>Provides X.509 certificates management</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.77</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.76</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services for Authentication</xwiki.extension.name>
   </properties>

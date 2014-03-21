@@ -32,6 +32,9 @@ import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.Signer;
 import org.bouncycastle.crypto.io.SignerInputStream;
 import org.bouncycastle.crypto.io.SignerOutputStream;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.ContentVerifier;
+import org.bouncycastle.operator.RuntimeOperatorException;
 
 /**
  * Bouncy Castle based signer.
@@ -39,7 +42,7 @@ import org.bouncycastle.crypto.io.SignerOutputStream;
  * @version $Id$
  * @since 5.4RC1
  */
-public class BcSigner implements org.xwiki.crypto.signer.Signer
+public class BcSigner implements org.xwiki.crypto.signer.Signer, ContentSigner, ContentVerifier
 {
     /** The underlying signer. */
     protected final Signer signer;
@@ -77,10 +80,9 @@ public class BcSigner implements org.xwiki.crypto.signer.Signer
         return signerAlgorithm;
     }
 
-    /**
-     * @return this signer algorithm identifier.
-     */
-    public AlgorithmIdentifier getSignerAlgorithmIdentifier() {
+    @Override
+    public AlgorithmIdentifier getAlgorithmIdentifier()
+    {
         return signerAlgorithmIdentifier;
     }
 
@@ -146,8 +148,24 @@ public class BcSigner implements org.xwiki.crypto.signer.Signer
         return generate();
     }
 
+    /**
+     * {@inheritDoc}
+     * @since 6.0M1
+     */
     @Override
-    public boolean verify(byte[] signature) throws GeneralSecurityException
+    public byte[] getSignature()
+    {
+        try
+        {
+            return generate();
+        } catch (GeneralSecurityException e)
+        {
+            throw new RuntimeOperatorException("exception obtaining signature: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean verify(byte[] signature)
     {
         return signer.verifySignature(signature);
     }

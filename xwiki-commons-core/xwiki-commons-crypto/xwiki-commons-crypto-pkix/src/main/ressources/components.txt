@@ -1,3 +1,8 @@
+org.xwiki.crypto.pkix.internal.BcStoreX509CertificateProvider
+org.xwiki.crypto.pkix.internal.BcX509CertificateChainBuilder
 org.xwiki.crypto.pkix.internal.extension.DefaultX509ExtensionBuilder
 org.xwiki.crypto.pkix.internal.BcX509CertificateFactory
 org.xwiki.crypto.pkix.internal.BcX509CertificateGeneratorFactory
+org.xwiki.crypto.signer.internal.cms.DefaultCMSSignedDataGenerator
+org.xwiki.crypto.signer.internal.cms.DefaultCMSSignedDataVerifier
+org.xwiki.crypto.signer.internal.cms.DefaultBcContentVerifierProviderBuilder

@@ -19,11 +19,16 @@
  */
 package org.xwiki.crypto.internal.digest.factory;
 
+import java.io.OutputStream;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.operator.DigestCalculator;
+import org.bouncycastle.operator.DigestCalculatorProvider;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -42,7 +47,7 @@ import org.xwiki.crypto.DigestFactory;
  */
 @Component
 @Singleton
-public class DefaultDigestFactory extends AbstractBcDigestFactory
+public class DefaultDigestFactory extends AbstractBcDigestFactory implements DigestCalculatorProvider
 {
     private static final RuntimeException UNSUPPORTED =
         new UnsupportedOperationException("Unexpected internal function call.");
@@ -82,6 +87,40 @@ public class DefaultDigestFactory extends AbstractBcDigestFactory
             return manager.getInstance(DigestFactory.class, algId.getId());
         } catch (ComponentLookupException e) {
             throw new UnsupportedOperationException("Digest algorithm not found.", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 6.0M1
+     */
+    @Override
+    public DigestCalculator get(final AlgorithmIdentifier algorithmIdentifier) throws OperatorCreationException
+    {
+        final Digest digest = getFactory(algorithmIdentifier.getAlgorithm()).getInstance();
+
+        if (digest instanceof DigestCalculator) {
+            return (DigestCalculator) digest;
+        } else {
+            return new DigestCalculator() {
+                @Override
+                public AlgorithmIdentifier getAlgorithmIdentifier()
+                {
+                    return algorithmIdentifier;
+                }
+
+                @Override
+                public OutputStream getOutputStream()
+                {
+                    return digest.getOutputStream();
+                }
+
+                @Override
+                public byte[] getDigest()
+                {
+                    return digest.digest();
+                }
+            };
         }
     }
 }

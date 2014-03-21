@@ -26,6 +26,7 @@ import java.io.OutputStream;
 
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.crypto.io.DigestInputStream;
+import org.bouncycastle.operator.DigestCalculator;
 import org.xwiki.crypto.Digest;
 import org.xwiki.crypto.params.DigestParameters;
 
@@ -35,7 +36,7 @@ import org.xwiki.crypto.params.DigestParameters;
  * @version $Id$
  * @since 5.4M1
  */
-public class BouncyCastleDigest implements Digest
+public class BouncyCastleDigest implements Digest, DigestCalculator
 {
     private final org.bouncycastle.crypto.Digest digest;
     private AlgorithmIdentifier algId;
@@ -122,8 +123,19 @@ public class BouncyCastleDigest implements Digest
     }
 
     /**
+     * {@inheritDoc}
+     * @since 6.0M1
+     */
+    @Override
+    public byte[] getDigest()
+    {
+        return digest();
+    }
+
+    /**
      * @return the algorithm identifier of this digest.
      */
+    @Override
     public AlgorithmIdentifier getAlgorithmIdentifier()
     {
         return algId;

@@ -37,13 +37,14 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
+import org.bouncycastle.operator.ContentSigner;
 import org.xwiki.crypto.internal.asymmetric.BcAsymmetricKeyParameters;
 import org.xwiki.crypto.internal.asymmetric.BcPublicKeyParameters;
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
+import org.xwiki.crypto.pkix.CertificateFactory;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
 import org.xwiki.crypto.signer.Signer;
-import org.xwiki.crypto.signer.internal.BcSigner;
 
 /**
  * Utility class for converting values from/into Bouncy Castle equivalents.
@@ -210,10 +211,36 @@ public final class BcUtils
      */
     public static AlgorithmIdentifier getSignerAlgoritmIdentifier(Signer signer)
     {
-        if (signer instanceof BcSigner) {
-            return ((BcSigner) signer).getSignerAlgorithmIdentifier();
+        if (signer instanceof ContentSigner) {
+            return ((ContentSigner) signer).getAlgorithmIdentifier();
         } else {
             return AlgorithmIdentifier.getInstance(signer.getEncoded());
+        }
+    }
+
+    /**
+     * Convert a Bouncy Castle certificate holder into a certified public key.
+     *
+     * @param certFactory the certificate factory to be used for conversion.
+     * @param cert the certificate to convert.
+     * @return a certified public key wrapping equivalent to the provided holder.
+     * @since 6.0M1
+     */
+    public static CertifiedPublicKey convertCertificate(CertificateFactory certFactory, X509CertificateHolder cert)
+    {
+        if (cert == null) {
+            return null;
+        }
+
+        if (certFactory instanceof BcX509CertificateFactory) {
+            return ((BcX509CertificateFactory) certFactory).convert(cert);
+        } else {
+            try {
+                return certFactory.decode(cert.getEncoded());
+            } catch (IOException e) {
+                // Very unlikely
+                throw new IllegalArgumentException("Invalid Certificate, unable to encode", e);
+            }
         }
     }
 }

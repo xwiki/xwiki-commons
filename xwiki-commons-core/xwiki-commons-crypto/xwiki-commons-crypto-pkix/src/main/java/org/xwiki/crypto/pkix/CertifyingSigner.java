@@ -24,6 +24,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.operator.ContentSigner;
+import org.xwiki.crypto.pkix.internal.BcUtils;
 import org.xwiki.crypto.pkix.params.CertifiedKeyPair;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.signer.Signer;
@@ -37,7 +40,7 @@ import org.xwiki.stability.Unstable;
  * @since 5.4
  */
 @Unstable
-public final class CertifyingSigner implements Signer
+public final class CertifyingSigner implements Signer, ContentSigner
 {
     private final CertifiedPublicKey certifier;
     private final Signer signer;
@@ -159,5 +162,27 @@ public final class CertifyingSigner implements Signer
     public byte[] getEncoded()
     {
         return signer.getEncoded();
+    }
+
+    // ContentSigner interface
+
+    /**
+     * {@inheritDoc}
+     * @since 6.0M1
+     */
+    @Override
+    public AlgorithmIdentifier getAlgorithmIdentifier()
+    {
+        return BcUtils.getSignerAlgoritmIdentifier(signer);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 6.0M1
+     */
+    @Override
+    public byte[] getSignature()
+    {
+        return ((ContentSigner) signer).getSignature();
     }
 }

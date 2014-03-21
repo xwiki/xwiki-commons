@@ -48,6 +48,21 @@ public class BcX509CertificateFactory implements CertificateFactory
     @Override
     public CertifiedPublicKey decode(byte[] encoded) throws IOException
     {
-        return new BcX509CertifiedPublicKey(new X509CertificateHolder(encoded), factory);
+        return convert(new X509CertificateHolder(encoded));
+    }
+
+    /**
+     * Convert Bouncy Castle certificate holder.
+     *
+     * @param cert a certificate holder.
+     * @return a certified public key.
+     * @since 6.0M1
+     */
+    public CertifiedPublicKey convert(X509CertificateHolder cert)
+    {
+        if (cert == null) {
+            return null;
+        }
+        return new BcX509CertifiedPublicKey(cert, factory);
     }
 }
