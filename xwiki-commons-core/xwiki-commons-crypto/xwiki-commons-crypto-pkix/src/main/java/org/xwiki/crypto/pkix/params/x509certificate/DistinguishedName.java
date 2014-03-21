@@ -82,7 +82,7 @@ public class DistinguishedName implements PrincipalIndentifier, BcPrincipalIdent
 
         X500Name name;
         if (o instanceof BcPrincipalIdentifier) {
-            name = getX500Name();
+            name = ((BcPrincipalIdentifier) o).getX500Name();
         } else {
             name = new X500Name(((PrincipalIndentifier) o).getName());
         }
