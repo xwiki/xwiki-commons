@@ -238,4 +238,69 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
         assertThat(signerInfo.isVerified(), equalTo(true));
         assertThat(signerInfo.getCertificateChain(), contains(v3CaCert, v3InterCaCert, v3Cert));
     }
+
+    @Test
+    public void testPreCalculatedSignature() throws Exception
+    {
+        byte[] signature = generator.generate(text,
+            new CMSSignedDataGeneratorParameters()
+                .addSigner(CertifyingSigner.getInstance(true,
+                    new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
+        );
+
+        CMSSignedDataVerified result = verifier.verify(signature, text,
+            new CMSSignedDataVerifierParameters()
+                .addCertificate(v3Cert)
+                .addCertificate(v3InterCaCert)
+                .addCertificate(v3CaCert)
+        );
+
+        byte[] signature2 = generator.generate(text,
+            new CMSSignedDataGeneratorParameters()
+                .addSignature(result.getSignatures().iterator().next())
+        );
+
+        result = verifier.verify(signature2, text,
+            new CMSSignedDataVerifierParameters()
+                .addCertificate(v3Cert)
+                .addCertificate(v3InterCaCert)
+                .addCertificate(v3CaCert)
+        );
+
+        assertThat(signature2, equalTo(signature));
+    }
+
+    @Test
+    public void testAddingCertificatesToSignature() throws Exception
+    {
+        byte[] signature = generator.generate(text,
+            new CMSSignedDataGeneratorParameters()
+                .addSigner(CertifyingSigner.getInstance(true,
+                    new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
+        );
+
+        CMSSignedDataVerified result = verifier.verify(signature, text,
+            new CMSSignedDataVerifierParameters()
+                .addCertificate(v3Cert)
+                .addCertificate(v3InterCaCert)
+                .addCertificate(v3CaCert)
+        );
+
+        byte[] signature2 = generator.generate(text,
+            new CMSSignedDataGeneratorParameters()
+                .addSignature(result.getSignatures().iterator().next())
+                .addCertificates(result.getSignatures().iterator().next().getCertificateChain())
+        );
+
+        result = verifier.verify(signature2, text);
+
+        assertThat(result.isVerified(), equalTo(true));
+        assertThat(result.getCertificates(), containsInAnyOrder(v3CaCert, v3InterCaCert, v3Cert));
+        assertThat(result.getSignatures().size(),equalTo(1));
+
+        CMSSignerVerifiedInformation signerInfo = result.getSignatures().iterator().next();
+
+        assertThat(signerInfo.isVerified(), equalTo(true));
+        assertThat(signerInfo.getCertificateChain(), contains(v3CaCert, v3InterCaCert, v3Cert));
+    }
 }
