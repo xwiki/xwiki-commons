@@ -21,6 +21,7 @@ package org.xwiki.crypto.internal.digest.factory;
 
 import javax.inject.Singleton;
 
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.crypto.Digest;
@@ -37,7 +38,8 @@ import org.xwiki.component.annotation.Component;
 @Singleton
 public class BcSHA1DigestFactory extends AbstractBcDigestFactory
 {
-    private static final AlgorithmIdentifier ALG_ID = new AlgorithmIdentifier(X509ObjectIdentifiers.id_SHA1);
+    private static final AlgorithmIdentifier ALG_ID = new AlgorithmIdentifier(X509ObjectIdentifiers.id_SHA1,
+        DERNull.INSTANCE);
 
     @Override
     public Digest getDigestInstance()

@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.KeyDerivationFunc;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -55,15 +56,15 @@ import org.xwiki.crypto.password.params.PBKDF2Parameters;
 public class BcPKCS5S2KeyDerivationFunctionFactory extends AbstractBcKDFFactory
 {
     private static final AlgorithmIdentifier HMAC_SHA1   =
-        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA1);
+        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA1, DERNull.INSTANCE);
     private static final AlgorithmIdentifier HMAC_SHA224 =
-        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA224);
+        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA224, DERNull.INSTANCE);
     private static final AlgorithmIdentifier HMAC_SHA256 =
-        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA256);
+        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA256, DERNull.INSTANCE);
     private static final AlgorithmIdentifier HMAC_SHA384 =
-        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA384);
+        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA384, DERNull.INSTANCE);
     private static final AlgorithmIdentifier HMAC_SHA512 =
-        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA512);
+        new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA512, DERNull.INSTANCE);
 
     @Inject
     private ComponentManager manager;

@@ -21,6 +21,7 @@ package org.xwiki.crypto.internal.digest.factory;
 
 import javax.inject.Singleton;
 
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.crypto.Digest;
@@ -37,7 +38,8 @@ import org.xwiki.component.annotation.Component;
 @Singleton
 public class BcMD5DigestFactory extends AbstractBcDigestFactory
 {
-    private static final AlgorithmIdentifier ALG_ID = new AlgorithmIdentifier(PKCSObjectIdentifiers.md5);
+    private static final AlgorithmIdentifier ALG_ID = new AlgorithmIdentifier(PKCSObjectIdentifiers.md5,
+        DERNull.INSTANCE);
 
     @Override
     public Digest getDigestInstance()

@@ -19,6 +19,7 @@
  */
 package org.xwiki.crypto.internal.digest.factory;
 
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -39,15 +40,16 @@ public abstract class AbstractDigestFactoryTestConstants
     protected static final String SHA512_DIGEST = "l1Kiq5RRUU7ftTEIcBDc0VOQhkBuowzB1Cf+ThbExxqmSv8zG4LWs4RvVf9uB3rk"
         + "8iCUvxKTmJR1wYJgcJD0GA==";
 
-    protected static final AlgorithmIdentifier MD5_DIGEST_ALGO = new AlgorithmIdentifier(PKCSObjectIdentifiers.md5);
+    protected static final AlgorithmIdentifier MD5_DIGEST_ALGO =
+        new AlgorithmIdentifier(PKCSObjectIdentifiers.md5, DERNull.INSTANCE);
     protected static final AlgorithmIdentifier SHA1_DIGEST_ALGO
-        = new AlgorithmIdentifier(X509ObjectIdentifiers.id_SHA1);
+        = new AlgorithmIdentifier(X509ObjectIdentifiers.id_SHA1, DERNull.INSTANCE);
     protected static final AlgorithmIdentifier SHA224_DIGEST_ALGO
-        = new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha224);
+        = new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha224, DERNull.INSTANCE);
     protected static final AlgorithmIdentifier SHA256_DIGEST_ALGO
-        = new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha256);
+        = new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha256, DERNull.INSTANCE);
     protected static final AlgorithmIdentifier SHA384_DIGEST_ALGO
-        = new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha384);
+        = new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha384, DERNull.INSTANCE);
     protected static final AlgorithmIdentifier SHA512_DIGEST_ALGO
-        = new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha512);
+        = new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha512, DERNull.INSTANCE);
 }
