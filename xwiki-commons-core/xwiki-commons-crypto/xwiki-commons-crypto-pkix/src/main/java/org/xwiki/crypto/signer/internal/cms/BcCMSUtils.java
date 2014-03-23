@@ -26,7 +26,6 @@ import java.util.Collection;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.CMSVerifierCertificateNotValidException;
 import org.bouncycastle.cms.DefaultCMSSignatureAlgorithmNameGenerator;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationVerifier;
@@ -64,16 +63,16 @@ public final class BcCMSUtils
         CertifiedPublicKey certKey, BcContentVerifierProviderBuilder contentVerifierProviderBuilder,
         DigestFactory digestProvider) throws CMSException
     {
-        try {
-            return signer.verify(
-                new SignerInformationVerifier(
-                    new DefaultCMSSignatureAlgorithmNameGenerator(),
-                    new DefaultSignatureAlgorithmIdentifierFinder(),
-                    contentVerifierProviderBuilder.build(certKey),
-                    (DigestCalculatorProvider) digestProvider));
-        } catch (CMSVerifierCertificateNotValidException e) {
-            return false;
+        if (certKey == null) {
+            throw new CMSException("No certified key for proceeding to signature validation.");
         }
+
+        return signer.verify(
+            new SignerInformationVerifier(
+                new DefaultCMSSignatureAlgorithmNameGenerator(),
+                new DefaultSignatureAlgorithmIdentifierFinder(),
+                contentVerifierProviderBuilder.build(certKey),
+                (DigestCalculatorProvider) digestProvider));
     }
 
     /**

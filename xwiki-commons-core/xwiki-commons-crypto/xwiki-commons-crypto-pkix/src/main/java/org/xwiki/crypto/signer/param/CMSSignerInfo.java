@@ -20,6 +20,9 @@
 
 package org.xwiki.crypto.signer.param;
 
+import java.math.BigInteger;
+
+import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -31,5 +34,18 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public interface CMSSignerInfo
 {
+    /**
+     * @return the issuer of the certificate related to this signature.
+     */
+    PrincipalIndentifier getIssuer();
 
+    /**
+     * @return the serial number attributed to the certificate related to this signature by the issuer.
+     */
+    BigInteger getSerialNumber();
+
+    /**
+     * @return the subject key identifier.
+     */
+    byte[] getSubjectKeyIdentifier();
 }

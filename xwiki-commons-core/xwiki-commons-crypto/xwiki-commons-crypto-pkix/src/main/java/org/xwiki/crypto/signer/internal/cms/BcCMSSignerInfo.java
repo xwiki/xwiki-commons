@@ -20,7 +20,11 @@
 
 package org.xwiki.crypto.signer.internal.cms;
 
+import java.math.BigInteger;
+
 import org.bouncycastle.cms.SignerInformation;
+import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
+import org.xwiki.crypto.pkix.params.x509certificate.DistinguishedName;
 import org.xwiki.crypto.signer.param.CMSSignerInfo;
 
 /**
@@ -44,5 +48,23 @@ public class BcCMSSignerInfo implements CMSSignerInfo
     SignerInformation getSignerInfo()
     {
         return signerInfo;
+    }
+
+    @Override
+    public PrincipalIndentifier getIssuer()
+    {
+        return new DistinguishedName(signerInfo.getSID().getIssuer());
+    }
+
+    @Override
+    public BigInteger getSerialNumber()
+    {
+        return signerInfo.getSID().getSerialNumber();
+    }
+
+    @Override
+    public byte[] getSubjectKeyIdentifier()
+    {
+        return signerInfo.getSID().getSubjectKeyIdentifier();
     }
 }
