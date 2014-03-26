@@ -1045,11 +1045,6 @@ mm
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <artifactId>xwiki-commons-tool-enforcer-dependencies</artifactId>
-              </dependency>
-            </dependencies>
             <executions>
               <execution>
                 <id>enforce-java</id>
