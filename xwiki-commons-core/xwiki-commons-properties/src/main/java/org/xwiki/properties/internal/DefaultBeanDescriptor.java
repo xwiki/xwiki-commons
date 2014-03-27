@@ -24,6 +24,7 @@ import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -92,7 +93,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                     currentClass.getSuperclass()) {
                 Field[] fields = currentClass.getFields();
                 for (Field field : fields) {
-                    extractPropertyDescriptor(field, defaultInstance);
+                    if (!Modifier.isStatic(field.getModifiers())) {
+                        extractPropertyDescriptor(field, defaultInstance);
+                    }
                 }
             }
 
