@@ -40,6 +40,8 @@ public class DefaultBeanDescriptorTest
 {
     public static class BeanTest
     {
+        public static final String STATICFIELD = "staticfield";
+
         private String lowerprop;
 
         private String upperProp;
@@ -198,6 +200,12 @@ public class DefaultBeanDescriptorTest
         Assert.assertNull(publicFieldPropertyDescriptor.getWriteMethod());
         Assert.assertNull(publicFieldPropertyDescriptor.getReadMethod());
         Assert.assertNotNull(publicFieldPropertyDescriptor.getField());
+    }
+
+    @Test
+    public void testPropertyDescriptorPublicStaticField()
+    {
+        Assert.assertNull(this.beanDescriptor.getProperty("STATICFIELD"));
     }
 
     @Test
