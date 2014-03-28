@@ -214,13 +214,18 @@
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpmime</artifactId>
+        <version>4.3.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
         <version>4.3.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpmime</artifactId>
-        <version>4.3.3</version>
+        <artifactId>httpcore-nio</artifactId>
+        <version>4.3.2</version>
       </dependency>
       <!-- Old httpclient -->
       <dependency>
