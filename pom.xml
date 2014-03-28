@@ -319,6 +319,8 @@
           </exclusion>
         </exclusions>
       </dependency>
+
+      <!-- What is included in the JRE is too old and Oracle does not seems to plan to upgrade it anytime soon -->
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
@@ -330,6 +332,7 @@
         <artifactId>xml-apis</artifactId>
         <version>1.4.01</version>
       </dependency>
+
       <!-- Jackson -->
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
