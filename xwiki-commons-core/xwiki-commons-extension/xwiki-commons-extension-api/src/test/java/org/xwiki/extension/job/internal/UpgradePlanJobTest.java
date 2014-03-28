@@ -64,6 +64,21 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    public void testUpgradePlanOnNamespaceWithExtensionOnRoot() throws Throwable
+    {
+        // install first version
+        install(TestResources.REMOTE_UPGRADE10_ID);
+
+        // check upgrade
+
+        ExtensionPlan plan = upgradePlan("namespace");
+
+        // Tree
+
+        Assert.assertEquals(0, plan.getTree().size());
+    }
+
+    @Test
     public void testUpgradePlanWithDependencyOnRoot() throws Throwable
     {
         // install first version
@@ -112,7 +127,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertSame(childAction, actionIterator.next());
         Assert.assertSame(action, actionIterator.next());
     }
-    
+
     @Test
     public void testUpgradePlanWithDependencyOnNamespace() throws Throwable
     {

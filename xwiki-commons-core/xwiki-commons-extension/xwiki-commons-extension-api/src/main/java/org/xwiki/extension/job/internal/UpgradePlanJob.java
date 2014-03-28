@@ -183,7 +183,9 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
 
                     try {
                         for (InstalledExtension installedExtension : installedExtensions) {
-                            upgradeExtension(installedExtension, namespace);
+                            if (namespace == null || !installedExtension.isInstalled(null)) {
+                                upgradeExtension(installedExtension, namespace);
+                            }
 
                             notifyStepPropress();
                         }
