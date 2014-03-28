@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.test;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Before;
@@ -176,14 +177,28 @@ public abstract class AbstractExtensionHandlerTest
 
     protected ExtensionPlan upgradePlan(String namespace) throws Throwable
     {
-        return upgradePlan(namespace, LogLevel.WARN);
+        return upgradePlan(namespace, (Collection<ExtensionId>) null);
+    }
+
+    protected ExtensionPlan upgradePlan(String namespace, Collection<ExtensionId> excludedExtensions) throws Throwable
+    {
+        return upgradePlan(namespace, excludedExtensions, LogLevel.WARN);
     }
 
     protected ExtensionPlan upgradePlan(String namespace, LogLevel failFrom) throws Throwable
     {
+        return upgradePlan(namespace, null, failFrom);
+    }
+
+    protected ExtensionPlan upgradePlan(String namespace, Collection<ExtensionId> excludedExtensions, LogLevel failFrom)
+        throws Throwable
+    {
         InstallRequest installRequest = new InstallRequest();
         if (namespace != null) {
             installRequest.addNamespace(namespace);
+        }
+        if (excludedExtensions != null) {
+            installRequest.getExcludedExtensions().addAll(excludedExtensions);
         }
 
         return (ExtensionPlan) executeJob("upgradeplan", installRequest, failFrom).getStatus();

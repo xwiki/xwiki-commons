@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.job.internal;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.junit.Assert;
@@ -61,6 +62,12 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(1, plan.getActions().size());
 
         Assert.assertSame(action, plan.getActions().iterator().next());
+
+        // //////////////////////
+        // Exclude extension
+
+        Assert.assertEquals(0, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE10_ID)).getTree().size());
+        Assert.assertEquals(1, upgradePlan(null, Arrays.asList(TestResources.REMOTE_UPGRADE20_ID)).getTree().size());
     }
 
     @Test

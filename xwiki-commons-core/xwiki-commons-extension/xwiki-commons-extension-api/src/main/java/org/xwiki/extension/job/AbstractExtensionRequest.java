@@ -21,6 +21,7 @@ package org.xwiki.extension.job;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.job.AbstractRequest;
@@ -40,6 +41,11 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public static final String PROPERTY_EXTENSIONS = "extensions";
 
     /**
+     * @see #getExtensions()
+     */
+    public static final String PROPERTY_EXCLUDEDEXTENSIONS = "extensions.excluded";
+
+    /**
      * @see #getNamespaces()
      */
     public static final String PROPERTY_NAMESPACES = "namespaces";
@@ -55,6 +61,7 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public AbstractExtensionRequest()
     {
         setProperty(PROPERTY_EXTENSIONS, new ArrayList<ExtensionId>());
+        setProperty(PROPERTY_EXCLUDEDEXTENSIONS, new HashSet<ExtensionId>());
     }
 
     /**
@@ -74,6 +81,14 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public Collection<ExtensionId> getExtensions()
     {
         return getProperty(PROPERTY_EXTENSIONS);
+    }
+
+    /**
+     * @return extensions to not take into account
+     */
+    public Collection<ExtensionId> getExcludedExtensions()
+    {
+        return getProperty(PROPERTY_EXCLUDEDEXTENSIONS);
     }
 
     @Override
@@ -96,6 +111,14 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public void addExtension(ExtensionId extensionId)
     {
         getExtensions().add(extensionId);
+    }
+
+    /**
+     * @param extensionId the extension identifier
+     */
+    public void addExcludedExtension(ExtensionId extensionId)
+    {
+        getExcludedExtensions().add(extensionId);
     }
 
     /**
