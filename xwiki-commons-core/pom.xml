@@ -99,10 +99,11 @@
         <configuration>
           <includes>
             <!-- At the moment, only check the following list of files for license headers -->
-            <include>**/*.java</include>
-            <include>**/*.bat</include>
-            <include>**/*.sh</include>
-            <include>**/ApplicationResources.properties</include>
+            <include>pom.xml</include>
+            <include>src/**/*.java</include>
+            <include>src/**/*.bat</include>
+            <include>src/**/*.sh</include>
+            <include>src/**/ApplicationResources.properties</include>
           </includes>
         </configuration>
       </plugin>
