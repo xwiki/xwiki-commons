@@ -39,7 +39,7 @@ public class SystemHTTPProxyTest
     {
         ExtensionRepository repository =
             this.repositoryFactory.getComponentUnderTest().createRepository(
-                new DefaultExtensionRepositoryDescriptor("id", "xwiki", new URI("http://host:9999/")));
+                new DefaultExtensionRepositoryDescriptor("id", "xwiki", new URI("http://host")));
 
         try {
             repository.resolveVersions("id", 0, -1);
