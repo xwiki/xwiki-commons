@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusContainer;
@@ -33,6 +34,7 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.impl.RepositoryConnectorProvider;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -101,18 +103,24 @@ public class AetherExtensionFile implements ExtensionFile
         }
 
         RepositorySystemSession session = this.repository.createRepositorySystemSession();
+        List<RemoteRepository> repositories;
+        try {
+            repositories = this.repository.newResolutionRepositories(session);
+        } catch (ComponentLookupException e) {
+            throw new IOException("Failed to create repository descriptors", e);
+        }
+        RemoteRepository repository = repositories.get(0);
 
         RepositoryConnector connector;
         try {
-            connector =
-                repositoryConnectorProvider.newRepositoryConnector(session, this.repository.getRemoteRepository());
+            connector = repositoryConnectorProvider.newRepositoryConnector(session, repository);
         } catch (NoRepositoryConnectorException e) {
             throw new IOException("Failed to download artifact [" + this.artifact + "]", e);
         }
 
         ArtifactDownload download = new ArtifactDownload();
         download.setArtifact(this.artifact);
-        download.setRepositories(Arrays.asList(this.repository.getRemoteRepository()));
+        download.setRepositories(repositories);
 
         try {
             connector.get(Arrays.asList(download), null);
@@ -123,7 +131,7 @@ public class AetherExtensionFile implements ExtensionFile
         // /////////////////////////////////////////////////////////////////////////////:
 
         ArtifactRequest artifactRequest = new ArtifactRequest();
-        artifactRequest.addRepository(this.repository.getRemoteRepository());
+        artifactRequest.setRepositories(repositories);
         artifactRequest.setArtifact(this.artifact);
 
         ArtifactResult artifactResult;

@@ -33,7 +33,7 @@
   <description>Allows accessing extensions located in a Maven repository</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.68</xwiki.jacoco.instructionRatio>
-    <aether.version>0.9.0.M4</aether.version>
+    <aether.version>0.9.1.v20140329</aether.version>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-aether,org.xwiki.commons:xwiki-commons-extension-repository-maven</xwiki.extension.features>
     <!-- Name to display by the Extension Manager -->
@@ -125,6 +125,25 @@
       <artifactId>xwiki-commons-extension-api</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock</artifactId>
+      <version>1.46</version>
+      <scope>test</scope>
+      <exclusions>
+        <!-- We are using SLF4J -->
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-environment-standard</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

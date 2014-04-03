@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -35,6 +36,8 @@ import org.apache.maven.model.Developer;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.ArtifactProperties;
@@ -46,6 +49,7 @@ import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.impl.ArtifactDescriptorReader;
 import org.eclipse.aether.impl.VersionRangeResolver;
+import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
 import org.eclipse.aether.resolution.ArtifactDescriptorResult;
@@ -132,6 +136,10 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             repositoryBuilder.setAuthentication(authenticationBuilder.build());
         }
 
+        // Proxy
+        Proxy proxy = AetherExtensionRepositoryFactory.JREPROXYSELECTOR.getProxy(repositoryBuilder.build());
+        repositoryBuilder.setProxy(proxy);
+
         this.remoteRepository = repositoryBuilder.build();
 
         this.converter = componentManager.getInstance(ConverterManager.class);
@@ -192,7 +200,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             if (versions.isEmpty()) {
                 throw new ResolveException("No versions available for id [" + id + "]");
             }
-        } catch (VersionRangeResolutionException e) {
+        } catch (Exception e) {
             throw new ResolveException("Failed to resolve versions for id [" + id + "]", e);
         }
 
@@ -264,17 +272,17 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
 
             return versions;
-        } catch (VersionRangeResolutionException e) {
+        } catch (Exception e) {
             throw new ResolveException("Failed to resolve version range", e);
         }
     }
 
-    private List<org.eclipse.aether.version.Version> resolveVersions(Artifact artifact, RepositorySystemSession session)
-        throws VersionRangeResolutionException
+    List<org.eclipse.aether.version.Version> resolveVersions(Artifact artifact, RepositorySystemSession session)
+        throws VersionRangeResolutionException, ComponentLookupException
     {
         VersionRangeRequest rangeRequest = new VersionRangeRequest();
         rangeRequest.setArtifact(artifact);
-        rangeRequest.addRepository(this.remoteRepository);
+        rangeRequest.setRepositories(newResolutionRepositories(session));
 
         VersionRangeResult rangeResult = this.versionRangeResolver.resolveVersionRange(session, rangeRequest);
 
@@ -459,11 +467,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     }
 
     private Model loadPom(Artifact artifact, RepositorySystemSession session) throws IllegalArgumentException,
-        IllegalAccessException, InvocationTargetException
+        IllegalAccessException, InvocationTargetException, ComponentLookupException
     {
         ArtifactDescriptorRequest artifactDescriptorRequest = new ArtifactDescriptorRequest();
         artifactDescriptorRequest.setArtifact(artifact);
-        artifactDescriptorRequest.addRepository(this.remoteRepository);
+        artifactDescriptorRequest.setRepositories(newResolutionRepositories(session));
 
         ArtifactDescriptorResult artifactDescriptorResult = new ArtifactDescriptorResult(artifactDescriptorRequest);
 
@@ -471,8 +479,15 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             artifactDescriptorResult);
     }
 
-    protected RemoteRepository getRemoteRepository()
+    List<RemoteRepository> newResolutionRepositories(RepositorySystemSession session) throws ComponentLookupException
     {
-        return this.remoteRepository;
+        RepositorySystem repositorySystem = this.plexusContainer.lookup(RepositorySystem.class);
+
+        return repositorySystem.newResolutionRepositories(session, Arrays.asList(this.remoteRepository));
+    }
+
+    RemoteRepository newResolutionRepository(RepositorySystemSession session) throws ComponentLookupException
+    {
+        return newResolutionRepositories(session).get(0);
     }
 }

@@ -49,7 +49,6 @@ import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
 @AllComponents
 public class AetherDefaultRepositoryManagerTest
@@ -58,10 +57,8 @@ public class AetherDefaultRepositoryManagerTest
 
     private static final String ARTIfACTID = "artifactid";
 
-    private MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
-
     @Rule
-    public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule(this.mocker);
+    public MockitoRepositoryUtilsRule repositoryUtil = new MockitoRepositoryUtilsRule();
 
     private ExtensionRepositoryManager repositoryManager;
 
@@ -107,8 +104,10 @@ public class AetherDefaultRepositoryManagerTest
 
         // lookup
 
-        this.repositoryManager = this.mocker.getInstance(ExtensionRepositoryManager.class);
-        this.extensionLicenseManager = this.mocker.getInstance(ExtensionLicenseManager.class);
+        this.repositoryManager =
+            this.repositoryUtil.getComponentManager().getInstance(ExtensionRepositoryManager.class);
+        this.extensionLicenseManager =
+            this.repositoryUtil.getComponentManager().getInstance(ExtensionLicenseManager.class);
     }
 
     // Tests

@@ -57,6 +57,8 @@ import org.xwiki.extension.repository.aether.internal.configuration.AetherConfig
 @Named("maven")
 public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositoryFactory implements Initializable
 {
+    static final JreProxySelector JREPROXYSELECTOR = new JreProxySelector();
+
     @Inject
     private ComponentManager componentManager;
 
@@ -72,7 +74,7 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
     private RepositorySystem repositorySystem;
 
     private LocalRepository localRepository;
-
+    
     @Override
     public void initialize() throws InitializationException
     {
@@ -93,7 +95,7 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         // session.setIgnoreMissingArtifactDescriptor(false);
         // session.setIgnoreInvalidArtifactDescriptor(false);
         session.setConfigProperty(ConfigurationProperties.USER_AGENT, this.configuration.getUserAgent());
-        session.setProxySelector(new JreProxySelector());
+        session.setProxySelector(JREPROXYSELECTOR);
 
         // Remove all system properties that could disrupt effective pom resolution
         session.setSystemProperty("version", null);
