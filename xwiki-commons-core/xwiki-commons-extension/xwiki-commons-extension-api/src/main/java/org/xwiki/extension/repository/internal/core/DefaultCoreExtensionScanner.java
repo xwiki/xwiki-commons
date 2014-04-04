@@ -296,7 +296,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
             } catch (ResolveException e) {
                 this.logger.debug("Can't find remote extension with id [{}]", extension.getId(), e);
             } catch (Exception e) {
-                this.logger.warn("Failed to update core extension [{}]", extension.getId(),
+                this.logger.warn("Failed to update core extension [{}]: [{}]", extension.getId(),
                     ExceptionUtils.getRootCauseMessage(e));
             }
         }
