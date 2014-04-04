@@ -39,6 +39,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Developer;
 import org.apache.maven.model.License;
@@ -294,6 +295,9 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                 extension.set(remoteExtension);
             } catch (ResolveException e) {
                 this.logger.debug("Can't find remote extension with id [{}]", extension.getId(), e);
+            } catch (Exception e) {
+                this.logger.warn("Failed to update core extension [{}]", extension.getId(),
+                    ExceptionUtils.getRootCauseMessage(e));
             }
         }
     }
