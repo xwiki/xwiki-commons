@@ -127,9 +127,9 @@ public class BcX509CertificateFactoryTest extends AbstractPKIXTest
         assertTrue("KeyUsage extension should be critical.", cert.getExtensions().isCritical(KeyUsage.OID));
         assertThat(cert.getExtensions().getKeyUsage(), equalTo(EnumSet.of(KeyUsage.keyCertSign,
             KeyUsage.cRLSign)));
-        assertThat(cert.getExtensions().getAuthorityKeyIdentifier(), notNullValue());
-        assertThat(cert.getExtensions().getAuthorityKeyIdentifier(),
-            equalTo(cert.getExtensions().getSubjectKeyIdentifier()));
+        assertThat(cert.getAuthorityKeyIdentifier(), notNullValue());
+        assertThat(cert.getAuthorityKeyIdentifier(),
+            equalTo(cert.getSubjectKeyIdentifier()));
         assertThat(cert.isRootCA(), equalTo(true));
     }
 
@@ -155,8 +155,8 @@ public class BcX509CertificateFactoryTest extends AbstractPKIXTest
         assertThat(cert.getExtensions().getKeyUsage(), equalTo(EnumSet.of(KeyUsage.keyCertSign,
             KeyUsage.cRLSign)));
 
-        assertThat(cert.getExtensions().getAuthorityKeyIdentifier(),
-            equalTo(((X509CertifiedPublicKey) caCert).getExtensions().getSubjectKeyIdentifier()));
+        assertThat(cert.getAuthorityKeyIdentifier(),
+            equalTo(((X509CertifiedPublicKey) caCert).getSubjectKeyIdentifier()));
         assertThat(cert.isRootCA(), equalTo(false));
     }
 
@@ -183,8 +183,8 @@ public class BcX509CertificateFactoryTest extends AbstractPKIXTest
         assertTrue("Email data protection extended usage should be set.",
             cert.getExtensions().getExtendedKeyUsage().hasUsage(ExtendedKeyUsages.EMAIL_PROTECTION));
 
-        assertThat(cert.getExtensions().getAuthorityKeyIdentifier(),
-            equalTo(((X509CertifiedPublicKey) interCaCert).getExtensions().getSubjectKeyIdentifier()));
+        assertThat(cert.getAuthorityKeyIdentifier(),
+            equalTo(((X509CertifiedPublicKey) interCaCert).getSubjectKeyIdentifier()));
         assertThat(cert.isRootCA(), equalTo(false));
     }
 

@@ -243,9 +243,9 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         assertTrue("KeyUsage extension should be critical.", cert.getExtensions().isCritical(KeyUsage.OID));
         assertThat(cert.getExtensions().getKeyUsage(), equalTo(EnumSet.of(KeyUsage.keyCertSign,
             KeyUsage.cRLSign)));
-        assertThat(cert.getExtensions().getAuthorityKeyIdentifier(), notNullValue());
-        assertThat(cert.getExtensions().getAuthorityKeyIdentifier(),
-            equalTo(cert.getExtensions().getSubjectKeyIdentifier()));
+        assertThat(cert.getAuthorityKeyIdentifier(), notNullValue());
+        assertThat(cert.getAuthorityKeyIdentifier(),
+            equalTo(cert.getSubjectKeyIdentifier()));
     }
 
     @Test
@@ -415,8 +415,8 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         assertTrue("KeyUsage extension should be critical.", interCaKey.getExtensions().isCritical(KeyUsage.OID));
         assertThat(interCaKey.getExtensions().getKeyUsage(), equalTo(EnumSet.of(KeyUsage.keyCertSign,
             KeyUsage.cRLSign)));
-        assertThat(interCaKey.getExtensions().getAuthorityKeyIdentifier(),
-            equalTo(caKey.getExtensions().getSubjectKeyIdentifier()));
+        assertThat(interCaKey.getAuthorityKeyIdentifier(),
+            equalTo(caKey.getSubjectKeyIdentifier()));
 
         builder = builderMocker.getComponentUnderTest();
 
@@ -447,7 +447,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         assertThat(certificate, instanceOf(X509CertifiedPublicKey.class));
 
         X509CertifiedPublicKey key = (X509CertifiedPublicKey) certificate;
-        assertThat(key.getExtensions().getAuthorityKeyIdentifier(),
-            equalTo(interCaKey.getExtensions().getSubjectKeyIdentifier()));
+        assertThat(key.getAuthorityKeyIdentifier(),
+            equalTo(interCaKey.getSubjectKeyIdentifier()));
     }
 }

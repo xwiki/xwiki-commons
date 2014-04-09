@@ -73,4 +73,14 @@ public interface X509CertifiedPublicKey extends CertifiedPublicKey
      * @return X.509 extension.
      */
     X509Extensions getExtensions();
+
+    /**
+     * @return the authority key identifier, or null of not available.
+     */
+    byte[] getAuthorityKeyIdentifier();
+
+    /**
+     * @return the subject key identifier, or null of not available.
+     */
+    byte[] getSubjectKeyIdentifier();
 }

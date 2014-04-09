@@ -125,6 +125,26 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
     }
 
     @Override
+    public byte[] getAuthorityKeyIdentifier()
+    {
+        X509Extensions exts = this.getExtensions();
+        if (exts == null) {
+            return null;
+        }
+        return exts.getAuthorityKeyIdentifier();
+    }
+
+    @Override
+    public byte[] getSubjectKeyIdentifier()
+    {
+        X509Extensions exts = this.getExtensions();
+        if (exts == null) {
+            return null;
+        }
+        return exts.getSubjectKeyIdentifier();
+    }
+
+    @Override
     public PublicKeyParameters getPublicKeyParameters()
     {
         try {
