@@ -5,4 +5,4 @@ org.xwiki.crypto.pkix.internal.BcX509CertificateFactory
 org.xwiki.crypto.pkix.internal.BcX509CertificateGeneratorFactory
 org.xwiki.crypto.signer.internal.cms.DefaultCMSSignedDataGenerator
 org.xwiki.crypto.signer.internal.cms.DefaultCMSSignedDataVerifier
-org.xwiki.crypto.signer.internal.cms.DefaultBcContentVerifierProviderBuilder
+org.xwiki.crypto.signer.internal.DefaultBcContentVerifierProviderBuilder
