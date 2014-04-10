@@ -20,6 +20,8 @@
 
 package org.xwiki.crypto.signer.internal.cms;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,8 +36,8 @@ import org.xwiki.crypto.internal.encoder.Base64BinaryStringEncoder;
 import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
 import org.xwiki.crypto.pkix.CertificateFactory;
 import org.xwiki.crypto.pkix.CertifyingSigner;
-import org.xwiki.crypto.pkix.internal.BcX509CertificateChainBuilder;
 import org.xwiki.crypto.pkix.internal.BcStoreX509CertificateProvider;
+import org.xwiki.crypto.pkix.internal.BcX509CertificateChainBuilder;
 import org.xwiki.crypto.pkix.internal.BcX509CertificateFactory;
 import org.xwiki.crypto.pkix.params.CertifiedKeyPair;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
@@ -48,7 +50,6 @@ import org.xwiki.crypto.signer.internal.factory.BcSHA1withRsaSignerFactory;
 import org.xwiki.crypto.signer.internal.factory.DefaultSignerFactory;
 import org.xwiki.crypto.signer.param.CMSSignedDataGeneratorParameters;
 import org.xwiki.crypto.signer.param.CMSSignedDataVerified;
-import org.xwiki.crypto.signer.param.CMSSignedDataVerifierParameters;
 import org.xwiki.crypto.signer.param.CMSSignerVerifiedInformation;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -144,11 +145,7 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
                 .addSigner(CertifyingSigner.getInstance(true,
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory)), true);
 
-        CMSSignedDataVerified result = verifier.verify(signature,
-            new CMSSignedDataVerifierParameters()
-                .addCertificate(v3Cert)
-                .addCertificate(v3InterCaCert)
-                .addCertificate(v3CaCert));
+        CMSSignedDataVerified result = verifier.verify(signature, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
         assertThat(result.isVerified(), equalTo(true));
         assertThat(result.getCertificates().isEmpty(), equalTo(true));
@@ -195,11 +192,7 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
                 .addSigner(CertifyingSigner.getInstance(true,
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory)));
 
-        CMSSignedDataVerified result = verifier.verify(signature, text,
-            new CMSSignedDataVerifierParameters()
-                .addCertificate(v3Cert)
-                .addCertificate(v3InterCaCert)
-                .addCertificate(v3CaCert));
+        CMSSignedDataVerified result = verifier.verify(signature, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
         assertThat(result.isVerified(), equalTo(true));
         assertThat(result.getCertificates().isEmpty(), equalTo(true));
@@ -222,10 +215,7 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
                 .addCertificate(v3Cert));
 
-        CMSSignedDataVerified result = verifier.verify(signature, text,
-            new CMSSignedDataVerifierParameters()
-                .addCertificate(v3InterCaCert)
-                .addCertificate(v3CaCert));
+        CMSSignedDataVerified result = verifier.verify(signature, text, Arrays.asList(v3InterCaCert, v3CaCert));
 
         assertThat(result.isVerified(), equalTo(true));
         assertThat(result.getCertificates(), containsInAnyOrder(v3Cert));
@@ -248,24 +238,14 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
         );
 
-        CMSSignedDataVerified result = verifier.verify(signature, text,
-            new CMSSignedDataVerifierParameters()
-                .addCertificate(v3Cert)
-                .addCertificate(v3InterCaCert)
-                .addCertificate(v3CaCert)
-        );
+        CMSSignedDataVerified result = verifier.verify(signature, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
         byte[] signature2 = generator.generate(text,
             new CMSSignedDataGeneratorParameters()
                 .addSignature(result.getSignatures().iterator().next())
         );
 
-        result = verifier.verify(signature2, text,
-            new CMSSignedDataVerifierParameters()
-                .addCertificate(v3Cert)
-                .addCertificate(v3InterCaCert)
-                .addCertificate(v3CaCert)
-        );
+        result = verifier.verify(signature2, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
         assertThat(signature2, equalTo(signature));
     }
@@ -279,12 +259,7 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
                     new CertifiedKeyPair(dsaPrivateKey, v3Cert), dsaSignerFactory))
         );
 
-        CMSSignedDataVerified result = verifier.verify(signature, text,
-            new CMSSignedDataVerifierParameters()
-                .addCertificate(v3Cert)
-                .addCertificate(v3InterCaCert)
-                .addCertificate(v3CaCert)
-        );
+        CMSSignedDataVerified result = verifier.verify(signature, text, Arrays.asList(v3Cert, v3InterCaCert, v3CaCert));
 
         byte[] signature2 = generator.generate(text,
             new CMSSignedDataGeneratorParameters()

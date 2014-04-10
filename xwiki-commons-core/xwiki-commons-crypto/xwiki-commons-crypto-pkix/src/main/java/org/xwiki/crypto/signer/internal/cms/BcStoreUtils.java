@@ -20,11 +20,14 @@
 
 package org.xwiki.crypto.signer.internal.cms;
 
+import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Store;
@@ -32,9 +35,12 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.crypto.pkix.CertificateFactory;
 import org.xwiki.crypto.pkix.CertificateProvider;
+import org.xwiki.crypto.pkix.ChainingCertificateProvider;
 import org.xwiki.crypto.pkix.internal.BcStoreX509CertificateProvider;
 import org.xwiki.crypto.pkix.internal.BcUtils;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
+import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
+import org.xwiki.crypto.pkix.params.x509certificate.DistinguishedName;
 
 /**
  * Utility class to interface Bouncy Castle store.
@@ -50,24 +56,24 @@ public final class BcStoreUtils
     }
 
     /**
-     * Get a certificate provider for a given store and some additional certificates.
+     * Get a certificate provider for a given store and an additional certificate provider.
      *
      * @param manager the component manager.
      * @param store the store to wrap.
-     * @param moreCerts some additional certificates to be also included.
+     * @param certificateProvider provider of additional certificate to proceed to the verification.
      * @return a certificate provider wrapping the store.
      * @throws GeneralSecurityException if unable to initialize the provider.
      */
     public static CertificateProvider getCertificateProvider(ComponentManager manager, Store store,
-        Collection<CertifiedPublicKey> moreCerts) throws GeneralSecurityException
+        CertificateProvider certificateProvider) throws GeneralSecurityException
     {
-        try {
-            CertificateProvider provider = manager.getInstance(CertificateProvider.class, "BCStoreX509");
-            ((BcStoreX509CertificateProvider) provider).setStore(mergeCertificateFromParameters(store, moreCerts));
+        CertificateProvider provider = newCertificateProvider(manager, store);
+
+        if (certificateProvider == null) {
             return provider;
-        } catch (ComponentLookupException e) {
-            throw new GeneralSecurityException("Unable to initialize the certificates store", e);
         }
+
+        return new ChainingCertificateProvider(provider, certificateProvider);
     }
 
     /**
@@ -86,30 +92,48 @@ public final class BcStoreUtils
     }
 
     /**
-     * Create a new store containing the given one and some additional certificates.
+     * Create a new store containing the given certificates and return it as a certificate provider.
      *
-     * @param certs the store.
-     * @param moreCerts the additional certificates.
-     * @return the new store.
+     * @param manager the component manager.
+     * @param certificates the certificates.
+     * @return a certificate provider wrapping the collection of certificate.
+     * @throws GeneralSecurityException if unable to initialize the provider.
      */
-    private static Store mergeCertificateFromParameters(Store certs, Collection<CertifiedPublicKey> moreCerts)
+    public static CertificateProvider getCertificateProvider(ComponentManager manager,
+        Collection<CertifiedPublicKey> certificates) throws GeneralSecurityException
     {
-        if (moreCerts == null || moreCerts.isEmpty()) {
-            return certs;
+        if (certificates == null || certificates.isEmpty()) {
+            return null;
         }
 
-        Collection<X509CertificateHolder> sigCerts = getCertificates(certs);
+        Collection<X509CertificateHolder> certs = new ArrayList<X509CertificateHolder>(certificates.size());
 
-        Collection<X509CertificateHolder> allCerts =
-            new ArrayList<X509CertificateHolder>(sigCerts.size() + moreCerts.size());
-
-        allCerts.addAll(sigCerts);
-
-        for (CertifiedPublicKey cert : moreCerts) {
-            allCerts.add(BcUtils.getX509CertificateHolder(cert));
+        for (CertifiedPublicKey cert : certificates) {
+            certs.add(BcUtils.getX509CertificateHolder(cert));
         }
 
-        return new CollectionStore(allCerts);
+        return newCertificateProvider(manager, new CollectionStore(certs));
+    }
+
+    /**
+     * Wrap a bouncy castle store into an adapter for the CertificateProvider interface.
+     *
+     * @param manager the component manager.
+     * @param store the store.
+     * @return a certificate provider wrapping the store.
+     * @throws GeneralSecurityException if unable to initialize the provider.
+     */
+    private static CertificateProvider newCertificateProvider(ComponentManager manager, Store store)
+        throws GeneralSecurityException
+    {
+        try {
+            CertificateProvider provider = manager.getInstance(CertificateProvider.class, "BCStoreX509");
+            ((BcStoreX509CertificateProvider) provider).setStore(store);
+
+            return provider;
+        } catch (ComponentLookupException e) {
+            throw new GeneralSecurityException("Unable to initialize the certificates store", e);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -121,7 +145,7 @@ public final class BcStoreUtils
     /**
      * Retrieve the certificate matching the given signer from the certificate provider.
      *
-     * @param provider a BCStoreX509 certificate provider.
+     * @param provider a certificate provider.
      * @param signer the signer for which you want to retrieve the certificate.
      * @param factory a certificate factory to convert the certificate.
      * @return a certified public key.
@@ -129,12 +153,29 @@ public final class BcStoreUtils
     public static CertifiedPublicKey getCertificate(CertificateProvider provider, SignerInformation signer,
         CertificateFactory factory)
     {
-        X509CertificateHolder cert = ((BcStoreX509CertificateProvider) provider).getCertificate(signer.getSID());
+        SignerId id = signer.getSID();
 
-        if (cert == null) {
-            return null;
+        if (provider instanceof BcStoreX509CertificateProvider) {
+            X509CertificateHolder cert = ((BcStoreX509CertificateProvider) provider).getCertificate(id);
+            return (cert != null) ? BcUtils.convertCertificate(factory, cert) : null;
         }
 
-        return BcUtils.convertCertificate(factory, cert);
+        X500Name bcIssuer = id.getIssuer();
+        BigInteger serial = id.getSerialNumber();
+        byte[] keyId = id.getSubjectKeyIdentifier();
+
+        if (bcIssuer != null) {
+            PrincipalIndentifier issuer = new DistinguishedName(bcIssuer);
+            if (keyId != null) {
+                return provider.getCertificate(issuer, serial, keyId);
+            }
+            return provider.getCertificate(issuer, serial);
+        }
+
+        if (keyId != null) {
+            return provider.getCertificate(keyId);
+        }
+
+        return null;
     }
 }

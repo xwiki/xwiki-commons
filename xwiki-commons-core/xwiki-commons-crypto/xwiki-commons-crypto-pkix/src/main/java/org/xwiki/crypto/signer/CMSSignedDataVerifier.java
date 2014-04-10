@@ -21,10 +21,12 @@
 package org.xwiki.crypto.signer;
 
 import java.security.GeneralSecurityException;
+import java.util.Collection;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.crypto.pkix.CertificateProvider;
+import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.signer.param.CMSSignedDataVerified;
-import org.xwiki.crypto.signer.param.CMSSignedDataVerifierParameters;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -51,11 +53,22 @@ public interface CMSSignedDataVerifier
      * Verify all signature contained in the signature against the embedded data.
      *
      * @param signature the encoded signature to verify.
-     * @param parameters additional certificate to proceed to the verification.
+     * @param certificates additional certificates to proceed to the verification.
      * @return the result of that verification, and information contained in the signed data.
      * @throws java.security.GeneralSecurityException on error.
      */
-    CMSSignedDataVerified verify(byte[] signature, CMSSignedDataVerifierParameters parameters)
+    CMSSignedDataVerified verify(byte[] signature, Collection<CertifiedPublicKey> certificates)
+        throws GeneralSecurityException;
+
+    /**
+     * Verify all signature contained in the signature against the embedded data.
+     *
+     * @param signature the encoded signature to verify.
+     * @param certificateProvider provider of additional certificate to proceed to the verification.
+     * @return the result of that verification, and information contained in the signed data.
+     * @throws java.security.GeneralSecurityException on error.
+     */
+    CMSSignedDataVerified verify(byte[] signature, CertificateProvider certificateProvider)
         throws GeneralSecurityException;
 
     /**
@@ -74,10 +87,22 @@ public interface CMSSignedDataVerifier
      *
      * @param signature the encoded signature to verify.
      * @param data the data to check the signature against.
-     * @param parameters additional certificate to proceed to the verification.
+     * @param certificates additional certificates to proceed to the verification.
      * @return the result of that verification, and information contained in the signed data.
      * @throws java.security.GeneralSecurityException on error.
      */
-    CMSSignedDataVerified verify(byte[] signature, byte[] data, CMSSignedDataVerifierParameters parameters)
+    CMSSignedDataVerified verify(byte[] signature, byte[] data, Collection<CertifiedPublicKey> certificates)
+        throws GeneralSecurityException;
+
+    /**
+     * Verify all signature contained in the signature against the provided data.
+     *
+     * @param signature the encoded signature to verify.
+     * @param data the data to check the signature against.
+     * @param certificateProvider provider of additional certificate to proceed to the verification.
+     * @return the result of that verification, and information contained in the signed data.
+     * @throws java.security.GeneralSecurityException on error.
+     */
+    CMSSignedDataVerified verify(byte[] signature, byte[] data, CertificateProvider certificateProvider)
         throws GeneralSecurityException;
 }

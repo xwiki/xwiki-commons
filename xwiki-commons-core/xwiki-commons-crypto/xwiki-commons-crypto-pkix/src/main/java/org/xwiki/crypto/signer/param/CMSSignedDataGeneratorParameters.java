@@ -34,10 +34,11 @@ import org.xwiki.stability.Unstable;
  * @since 6.0M1
  */
 @Unstable
-public class CMSSignedDataGeneratorParameters extends CMSSignedDataVerifierParameters
+public class CMSSignedDataGeneratorParameters
 {
     private Collection<CMSSignerInfo> signatures = new ArrayList<CMSSignerInfo>();
     private Collection<CertifyingSigner> signers = new ArrayList<CertifyingSigner>();
+    private Collection<CertifiedPublicKey> certificates = new ArrayList<CertifiedPublicKey>();
 
     /**
      * Add existing signature.
@@ -87,16 +88,36 @@ public class CMSSignedDataGeneratorParameters extends CMSSignedDataVerifierParam
         return this;
     }
 
-    @Override
+    /**
+     * Add a certificate.
+     *
+     * @param certificate a certificate.
+     * @return this object for call chaining.
+     */
     public CMSSignedDataGeneratorParameters addCertificate(CertifiedPublicKey certificate)
     {
-        return (CMSSignedDataGeneratorParameters) super.addCertificate(certificate);
+        certificates.add(certificate);
+        return this;
     }
 
-    @Override
+    /**
+     * Add a collection of certificates.
+     *
+     * @param certificates a collection of certificates to be joined with the signed data.
+     * @return this object for call chaining.
+     */
     public CMSSignedDataGeneratorParameters addCertificates(Collection<CertifiedPublicKey> certificates)
     {
-        return (CMSSignedDataGeneratorParameters) super.addCertificates(certificates);
+        this.certificates.addAll(certificates);
+        return this;
+    }
+
+    /**
+     * @return the aggregated collection of certificates to be joined with the signed data.
+     */
+    public Collection<CertifiedPublicKey> getCertificates()
+    {
+        return certificates;
     }
 
     /**

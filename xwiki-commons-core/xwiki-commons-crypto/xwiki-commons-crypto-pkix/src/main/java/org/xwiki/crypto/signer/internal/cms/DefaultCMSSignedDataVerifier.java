@@ -21,6 +21,7 @@
 package org.xwiki.crypto.signer.internal.cms;
 
 import java.security.GeneralSecurityException;
+import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,7 +43,6 @@ import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.signer.CMSSignedDataVerifier;
 import org.xwiki.crypto.signer.internal.BcContentVerifierProviderBuilder;
 import org.xwiki.crypto.signer.param.CMSSignedDataVerified;
-import org.xwiki.crypto.signer.param.CMSSignedDataVerifierParameters;
 
 /**
  * Default implementation of {@link CMSSignedDataVerifier} based on Bouncy Castle.
@@ -82,30 +82,44 @@ public class DefaultCMSSignedDataVerifier implements CMSSignedDataVerifier, Init
     @Override
     public CMSSignedDataVerified verify(byte[] signature) throws GeneralSecurityException
     {
-        return verify(signature, null, null);
+        return verify(signature, null, (CertificateProvider) null);
     }
 
     @Override
-    public CMSSignedDataVerified verify(byte[] signature, CMSSignedDataVerifierParameters parameters)
+    public CMSSignedDataVerified verify(byte[] signature, Collection<CertifiedPublicKey> certificates)
         throws GeneralSecurityException
     {
-        return verify(signature, null, parameters);
+        return verify(signature, null, certificates);
+    }
+
+    @Override
+    public CMSSignedDataVerified verify(byte[] signature, CertificateProvider certificateProvider)
+        throws GeneralSecurityException
+    {
+        return verify(signature, null, certificateProvider);
     }
 
     @Override
     public CMSSignedDataVerified verify(byte[] signature, byte[] data) throws GeneralSecurityException
     {
-        return verify(signature, data, null);
+        return verify(signature, data, (CertificateProvider) null);
     }
 
     @Override
-    public CMSSignedDataVerified verify(byte[] signature, byte[] data, CMSSignedDataVerifierParameters parameters)
+    public CMSSignedDataVerified verify(byte[] signature, byte[] data,
+        Collection<CertifiedPublicKey> certificates) throws GeneralSecurityException
+    {
+        return verify(signature, data, BcStoreUtils.getCertificateProvider(manager, certificates));
+    }
+
+    @Override
+    public CMSSignedDataVerified verify(byte[] signature, byte[] data, CertificateProvider certificateProvider)
         throws GeneralSecurityException
     {
         CMSSignedData signedData = BcCMSUtils.getSignedData(signature, data);
 
         CertificateProvider provider = BcStoreUtils.getCertificateProvider(manager, signedData.getCertificates(),
-            (parameters != null) ? parameters.getCertificates() : null);
+            certificateProvider);
 
         return verify(signedData, provider);
     }
