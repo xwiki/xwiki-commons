@@ -24,7 +24,9 @@ package org.xwiki.script.service;
  * 
  * @version $Id$
  * @since 2.3M1
+ * @deprecated not used anymore
  */
+@Deprecated
 public class ScriptServiceNotFoundException extends Exception
 {
     /**
