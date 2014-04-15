@@ -46,6 +46,9 @@
          commons children anyway -->
     <commons.version>6.1-SNAPSHOT</commons.version>
 
+    <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
+    <xwiki.clirr.previous.version>6.0-rc-1</xwiki.clirr.previous.version>
+
     <!-- REST -->
     <restlet.version>2.0.14</restlet.version>
 
@@ -73,9 +76,6 @@
 
     <!-- IzPack -->
     <izpack.version>5.0.0-rc1</izpack.version>
-
-    <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>5.4.3</xwiki.clirr.previous.version>
 
     <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
