@@ -76,7 +76,7 @@ public class CompositeFilter implements InvocationHandler
             try {
                 FilterProxy.invoke(filter.filter, filter.descriptor, method, args);
             } catch (InvocationTargetException e) {
-                return e.getCause();
+                throw e.getCause();
             }
         }
 
