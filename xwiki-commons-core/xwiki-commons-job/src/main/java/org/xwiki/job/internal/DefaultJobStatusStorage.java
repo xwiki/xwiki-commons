@@ -149,7 +149,7 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
                         }
                     }
                 } catch (Exception e) {
-                    this.logger.warn("Failed to load job status in forlder [{}]", folder, e);
+                    this.logger.warn("Failed to load job status in folder [{}]", folder, e);
                 }
             }
         }
