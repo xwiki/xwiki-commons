@@ -133,19 +133,23 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
             if (file.isDirectory()) {
                 repairFolder(file);
             } else if (file.getName().equals(FILENAME_STATUS)) {
-                JobStatus status = loadStatus(folder);
+                try {
+                    JobStatus status = loadStatus(folder);
 
-                if (status != null) {
-                    File properFolder = getJobFolder(status.getRequest().getId());
+                    if (status != null) {
+                        File properFolder = getJobFolder(status.getRequest().getId());
 
-                    if (!folder.equals(properFolder)) {
-                        // Move the status in its right place
-                        try {
-                            FileUtils.moveFileToDirectory(file, properFolder, true);
-                        } catch (IOException e) {
-                            this.logger.error("Failed to move job status file", e);
+                        if (!folder.equals(properFolder)) {
+                            // Move the status in its right place
+                            try {
+                                FileUtils.moveFileToDirectory(file, properFolder, true);
+                            } catch (IOException e) {
+                                this.logger.error("Failed to move job status file", e);
+                            }
                         }
                     }
+                } catch (Exception e) {
+                    this.logger.warn("Failed to load job status in forlder [{}]", folder, e);
                 }
             }
         }
@@ -253,7 +257,14 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
         File jobFolder = getJobFolder(id);
 
         if (jobFolder.exists()) {
-            JobStatus status = loadStatus(jobFolder);
+            JobStatus status;
+            try {
+                status = loadStatus(jobFolder);
+            } catch (Exception e) {
+                this.logger.warn("Failed to load job status with id [{}]", id, e);
+
+                status = null;
+            }
 
             try {
                 FileUtils.deleteDirectory(jobFolder);
