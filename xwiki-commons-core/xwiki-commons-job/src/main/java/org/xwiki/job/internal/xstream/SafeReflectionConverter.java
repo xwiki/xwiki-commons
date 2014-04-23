@@ -33,7 +33,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
@@ -77,9 +76,9 @@ public class SafeReflectionConverter extends ReflectionConverter
         }
     }
 
-    private final XStream xstream;
+    private final SafeXStream xstream;
 
-    public SafeReflectionConverter(XStream xstream)
+    public SafeReflectionConverter(SafeXStream xstream)
     {
         super(xstream.getMapper(), xstream.getReflectionProvider());
 

@@ -230,7 +230,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
             // Store the job status
             try {
                 if (this.request.getId() != null) {
-                    this.storage.store(this.status);
+                    this.storage.storeAsync(this.status);
                 }
             } catch (Throwable t) {
                 this.logger.warn(LOG_STATUS_STORE_FAILED, "Failed to store job status [{}]", this.status, t);

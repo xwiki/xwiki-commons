@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xwiki.component.annotation.Role;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.collections.ArrayConverter;
@@ -60,12 +59,12 @@ public class SafeArrayConverter extends ArrayConverter
 
     private final HierarchicalStreamCopier copier;
 
-    private XStream xstream;
+    private SafeXStream xstream;
 
     /**
      * @param xstream the {@link XStream} instance to use to isolate array element marshaling
      */
-    public SafeArrayConverter(XStream xstream)
+    public SafeArrayConverter(SafeXStream xstream)
     {
         super(xstream.getMapper());
 

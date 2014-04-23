@@ -52,6 +52,11 @@ public interface JobStatusStorage
     void store(JobStatus status);
 
     /**
+     * @param status the job status
+     */
+    void storeAsync(JobStatus status);
+
+    /**
      * @param id the id of the job
      * @return the job status
      */
