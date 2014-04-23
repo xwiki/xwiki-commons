@@ -26,11 +26,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -77,6 +82,27 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
 
     private JobStatusSerializer serializer;
 
+    private ExecutorService executorService;
+
+    class JobStatusSerializerRunnable implements Runnable
+    {
+        /**
+         * The status to store.
+         */
+        private final JobStatus status;
+
+        public JobStatusSerializerRunnable(JobStatus status)
+        {
+            this.status = status;
+        }
+
+        @Override
+        public void run()
+        {
+            store(this.status);
+        }
+    }
+
     @Override
     public void initialize() throws InitializationException
     {
@@ -87,6 +113,13 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
         } catch (Exception e) {
             this.logger.error("Failed to load jobs", e);
         }
+
+        BasicThreadFactory threadFactory =
+            new BasicThreadFactory.Builder().namingPattern("Job status serializer").daemon(true)
+                .priority(Thread.MIN_PRIORITY).build();
+        this.executorService =
+            new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
+                threadFactory);
     }
 
     /**
@@ -243,6 +276,12 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
                 this.logger.warn("Failed to save job status [{}]", status, e);
             }
         }
+    }
+
+    @Override
+    public void storeAsync(JobStatus status)
+    {
+        this.executorService.execute(new JobStatusSerializerRunnable(status));
     }
 
     @Override

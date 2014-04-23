@@ -22,7 +22,6 @@ package org.xwiki.job.internal.xstream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
@@ -43,7 +42,7 @@ public class SafeTreeMarshaller extends TreeMarshaller
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SafeTreeMarshaller.class);
 
-    private XStream xstream;
+    private SafeXStream xstream;
 
     /**
      * @see TreeMarshaller#TreeMarshaller(HierarchicalStreamWriter, ConverterLookup,
@@ -54,7 +53,7 @@ public class SafeTreeMarshaller extends TreeMarshaller
      * @param xstream the {@link XStream} instance to use to isolate array element marshaling
      */
     public SafeTreeMarshaller(HierarchicalStreamWriter writer, ConverterLookup converterLookup, Mapper mapper,
-        XStream xstream)
+        SafeXStream xstream)
     {
         super(writer, converterLookup, mapper);
 

@@ -98,10 +98,15 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
     @Override
     public void initialize() throws InitializationException
     {
+        initialize("Job Manager daemon thread");
+    }
+
+    protected void initialize(String threadName) throws InitializationException
+    {
         this.thread = new Thread(this);
         this.thread.setDaemon(true);
         this.thread.start();
-        this.thread.setName("Job Manager daemon thread");
+        this.thread.setName(threadName);
     }
 
     // Runnable

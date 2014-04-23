@@ -19,7 +19,6 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConverterLookup;
 import com.thoughtworks.xstream.core.TreeMarshaller;
 import com.thoughtworks.xstream.core.TreeMarshallingStrategy;
@@ -36,12 +35,12 @@ import com.thoughtworks.xstream.mapper.Mapper;
  */
 public class SafeTreeMarshallingStrategy extends TreeMarshallingStrategy
 {
-    private XStream xstream;
+    private SafeXStream xstream;
 
     /**
      * @param xstream the {@link XStream} instance to use to isolate array element marshaling
      */
-    public SafeTreeMarshallingStrategy(XStream xstream)
+    public SafeTreeMarshallingStrategy(SafeXStream xstream)
     {
         this.xstream = xstream;
     }
