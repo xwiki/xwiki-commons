@@ -181,6 +181,11 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     @Override
     public LogQueue getLog()
     {
+        // Make sure there is a log queue (it could be null if unserialized as such)
+        if (this.logs == null) {
+            this.logs = new LogQueue();
+        }
+
         return this.logs;
     }
 
@@ -261,6 +266,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     @Deprecated
     public List<LogEvent> getLog(LogLevel level)
     {
-        return this.logs.getLogs(level);
+        return getLog().getLogs(level);
     }
 }
