@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -70,10 +72,16 @@ public class JobStatusSerializer
      */
     public void write(JobStatus status, File file) throws IOException
     {
-        FileOutputStream stream = FileUtils.openOutputStream(file);
+        File tempFile = File.createTempFile(file.getName(), ".tmp");
+
+        FileOutputStream stream = FileUtils.openOutputStream(tempFile);
 
         try {
             write(status, stream);
+
+            // Copy the file in it's final destination
+            file.mkdirs();
+            Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } finally {
             IOUtils.closeQuietly(stream);
         }
