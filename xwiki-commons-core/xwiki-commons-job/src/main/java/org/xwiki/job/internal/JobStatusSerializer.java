@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -80,8 +78,10 @@ public class JobStatusSerializer
             write(status, stream);
 
             // Copy the file in it's final destination
-            file.mkdirs();
-            Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            if (file.exists()) {
+                file.delete();
+            }
+            FileUtils.moveFile(tempFile, file);
         } finally {
             IOUtils.closeQuietly(stream);
         }
