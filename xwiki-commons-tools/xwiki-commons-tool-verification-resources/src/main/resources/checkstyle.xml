@@ -53,7 +53,9 @@
   <module name="StrictDuplicateCode"/>
   -->
 
+  <!--  We actually have a lot of incomplete translations so we can't really afford this rule
   <module name="Translation"/>
+   -->
 
   <!--
      ======================================================================================
