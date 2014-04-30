@@ -193,7 +193,7 @@ public class SafeReflectionConverter extends ReflectionConverter
             {
                 if (XStreamUtils.isSafeType(newObj)) {
                     writeField(fieldName, aliasName, fieldType, definedIn, newObj);
-                } else {
+                } else if (!XStreamUtils.isComponent(newObj)) {
                     try {
                         // Test the serialization
                         xstream.marshal(newObj, VoidWriter.WRITER, new DataHolderWrapper(context));
