@@ -19,17 +19,13 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.xwiki.component.annotation.Role;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -63,7 +59,7 @@ public class SafeArrayConverter extends ArrayConverter
     private XStream xstream;
 
     /**
-     * @param xstream the {@link XStream} instance to use to isolate array element marshaling
+     * @param xstream the {@link com.thoughtworks.xstream.XStream} instance to use to isolate array element marshaling
      */
     public SafeArrayConverter(XStream xstream)
     {
@@ -106,7 +102,7 @@ public class SafeArrayConverter extends ArrayConverter
     {
         if (XStreamUtils.isSafeType(item) || this.docBuilder == null) {
             super.writeItem(item, context, writer);
-        } else if (isComponent(item)) {
+        } else if (XStreamUtils.isComponent(item)) {
             super.writeItem(item.toString(), context, writer);
         } else {
             try {
@@ -125,24 +121,5 @@ public class SafeArrayConverter extends ArrayConverter
                 super.writeItem(item.toString(), context, writer);
             }
         }
-    }
-
-    /**
-     * @param item the item to serialize
-     * @return true of the item looks like a component
-     */
-    private boolean isComponent(Object item)
-    {
-        if (item != null) {
-            List<Class< ? >> interfaces = ClassUtils.getAllInterfaces(item.getClass());
-
-            for (Class< ? > iface : interfaces) {
-                if (iface.isAnnotationPresent(Role.class)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 }
