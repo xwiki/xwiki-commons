@@ -19,6 +19,11 @@
  */
 package org.xwiki.job.internal.xstream;
 
+import java.util.List;
+
+import org.apache.commons.lang3.ClassUtils;
+import org.xwiki.component.annotation.Role;
+
 /**
  * Various XStream related utilities.
  * 
@@ -40,5 +45,24 @@ public final class XStreamUtils
     {
         return obj == null || obj instanceof String || obj instanceof Number || obj.getClass().isArray()
             || obj instanceof Enum;
+    }
+
+    /**
+     * @param item the item to serialize
+     * @return true of the item looks like a component
+     */
+    public static boolean isComponent(Object item)
+    {
+        if (item != null) {
+            List<Class< ? >> interfaces = ClassUtils.getAllInterfaces(item.getClass());
+
+            for (Class< ? > iface : interfaces) {
+                if (iface.isAnnotationPresent(Role.class)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

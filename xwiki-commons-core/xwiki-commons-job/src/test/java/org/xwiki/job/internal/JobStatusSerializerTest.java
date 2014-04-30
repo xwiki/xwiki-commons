@@ -42,6 +42,26 @@ public class JobStatusSerializerTest
 
     private File testFile = new File("target/test/status.xml");
 
+    private static class CrossReferenceObjectTest
+    {
+        public CrossReferenceObjectTest field;
+
+        public CrossReferenceObjectTest()
+        {
+            field = this;
+        }
+    }
+
+    private static class ObjectTest
+    {
+        public Object field;
+
+        public ObjectTest(Object field)
+        {
+            this.field = field;
+        }
+    }
+
     @Before
     public void before() throws ParserConfigurationException
     {
@@ -119,5 +139,31 @@ public class JobStatusSerializerTest
         Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
         Assert.assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
+    }
+
+    @Test
+    public void testLogWithCrossReference() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("message", new CrossReferenceObjectTest());
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertNull(((CrossReferenceObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+    }
+
+    @Test
+    public void testLogWithComponentField() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new ObjectTest(new DefaultJobStatusStorage()));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 }
