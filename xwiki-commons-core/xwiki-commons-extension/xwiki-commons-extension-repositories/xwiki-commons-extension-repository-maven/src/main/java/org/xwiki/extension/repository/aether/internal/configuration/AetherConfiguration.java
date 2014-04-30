@@ -24,12 +24,15 @@ import java.io.File;
 import org.xwiki.component.annotation.Role;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */
 @Role
 public interface AetherConfiguration
 {
+    /**
+     * @deprecated not used anymore since 6.0
+     */
+    @Deprecated
     File getLocalRepository();
 }

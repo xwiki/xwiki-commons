@@ -19,11 +19,15 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.io.File;
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
@@ -37,6 +41,7 @@ import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
 import org.eclipse.aether.util.repository.JreProxySelector;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -46,7 +51,8 @@ import org.xwiki.extension.repository.AbstractExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
-import org.xwiki.extension.repository.aether.internal.configuration.AetherConfiguration;
+
+import com.google.common.io.Files;
 
 /**
  * @version $Id$
@@ -66,15 +72,13 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
     private Provider<PlexusContainer> plexusProvider;
 
     @Inject
-    private AetherConfiguration aetherConfiguration;
+    private ExtensionManagerConfiguration configuration;
 
     @Inject
-    private ExtensionManagerConfiguration configuration;
+    private Logger logger;
 
     private RepositorySystem repositorySystem;
 
-    private LocalRepository localRepository;
-    
     @Override
     public void initialize() throws InitializationException
     {
@@ -83,17 +87,15 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         } catch (ComponentLookupException e) {
             throw new InitializationException("Failed to lookup RepositorySystem", e);
         }
-        this.localRepository = new LocalRepository(this.aetherConfiguration.getLocalRepository());
     }
 
     public RepositorySystemSession createRepositorySystemSession()
     {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
-        session.setLocalRepositoryManager(this.repositorySystem
-            .newLocalRepositoryManager(session, this.localRepository));
-        // session.setIgnoreMissingArtifactDescriptor(false);
-        // session.setIgnoreInvalidArtifactDescriptor(false);
+        File localDir = Files.createTempDir();
+        LocalRepository localRepository = new LocalRepository(localDir);
+        session.setLocalRepositoryManager(this.repositorySystem.newLocalRepositoryManager(session, localRepository));
         session.setConfigProperty(ConfigurationProperties.USER_AGENT, this.configuration.getUserAgent());
         session.setProxySelector(JREPROXYSELECTOR);
 
@@ -114,6 +116,19 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         session.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
 
         return session;
+    }
+
+    public static void dispose(RepositorySystemSession session)
+    {
+        LocalRepository repository = session.getLocalRepository();
+
+        if (repository.getBasedir().exists()) {
+            try {
+                FileUtils.deleteDirectory(repository.getBasedir());
+            } catch (IOException e) {
+                // TODO: Should probably log something even if it should be pretty rare
+            }
+        }
     }
 
     @Override

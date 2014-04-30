@@ -51,6 +51,7 @@ import org.eclipse.aether.impl.ArtifactDescriptorReader;
 import org.eclipse.aether.impl.VersionRangeResolver;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RepositoryPolicy;
 import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
 import org.eclipse.aether.resolution.ArtifactDescriptorResult;
 import org.eclipse.aether.resolution.VersionRangeRequest;
@@ -127,6 +128,10 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             new RemoteRepository.Builder(repositoryDescriptor.getId(), "default", repositoryDescriptor.getURI()
                 .toString());
 
+        // Don't use cached data
+        repositoryBuilder.setPolicy(new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_ALWAYS,
+            RepositoryPolicy.CHECKSUM_POLICY_WARN));
+
         // Authentication
         String username = getDescriptor().getProperty("auth.user");
         if (username != null) {
@@ -193,15 +198,18 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     {
         Artifact artifact = AetherUtils.createArtifact(id, "(,)");
 
+        RepositorySystemSession session = createRepositorySystemSession();
         List<org.eclipse.aether.version.Version> versions;
         try {
-            versions = resolveVersions(artifact, createRepositorySystemSession());
+            versions = resolveVersions(artifact, session);
 
             if (versions.isEmpty()) {
                 throw new ResolveException("No versions available for id [" + id + "]");
             }
         } catch (Exception e) {
             throw new ResolveException("Failed to resolve versions for id [" + id + "]", e);
+        } finally {
+            AetherExtensionRepositoryFactory.dispose(session);
         }
 
         if (nb == 0 || offset >= versions.size()) {
@@ -305,20 +313,25 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         Artifact artifact;
         String artifactExtension;
-        if (extensionDependency instanceof AetherExtensionDependency) {
-            artifact = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact();
-            artifactExtension =
-                ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact().getExtension();
-        } else {
-            artifact =
-                AetherUtils.createArtifact(extensionDependency.getId(), extensionDependency.getVersionConstraint()
-                    .getValue());
-            if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {
+        try {
+            if (extensionDependency instanceof AetherExtensionDependency) {
+                artifact = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact();
+                artifactExtension =
+                    ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact()
+                        .getExtension();
+            } else {
                 artifact =
-                    artifact.setVersion(resolveVersionConstraint(extensionDependency.getId(),
-                        extensionDependency.getVersionConstraint(), session).toString());
+                    AetherUtils.createArtifact(extensionDependency.getId(), extensionDependency.getVersionConstraint()
+                        .getValue());
+                if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {
+                    artifact =
+                        artifact.setVersion(resolveVersionConstraint(extensionDependency.getId(),
+                            extensionDependency.getVersionConstraint(), session).toString());
+                }
+                artifactExtension = null;
             }
-            artifactExtension = null;
+        } finally {
+            AetherExtensionRepositoryFactory.dispose(session);
         }
 
         return resolveMaven(artifact, artifactExtension);
@@ -335,6 +348,16 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     {
         RepositorySystemSession session = createRepositorySystemSession();
 
+        try {
+            return resolveMaven(artifact, artifactExtension, session);
+        } finally {
+            AetherExtensionRepositoryFactory.dispose(session);
+        }
+    }
+
+    private AetherExtension resolveMaven(Artifact artifact, String artifactExtension, RepositorySystemSession session)
+        throws ResolveException
+    {
         // Get Maven descriptor
 
         Model model;
