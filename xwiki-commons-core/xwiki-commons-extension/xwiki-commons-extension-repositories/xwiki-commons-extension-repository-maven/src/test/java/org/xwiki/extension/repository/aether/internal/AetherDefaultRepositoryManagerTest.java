@@ -265,16 +265,6 @@ public class AetherDefaultRepositoryManagerTest
         } finally {
             is.close();
         }
-
-        // Make sure it has been removed from AETHER cache
-        String filePrefix =
-            "aether-repository/" + GROUPID + '/' + ARTIfACTID + '/' + extension.getId().getVersion() + '/' + ARTIfACTID
-                + '-' + extension.getId().getVersion();
-        File pomFile = new File(this.repositoryUtil.getTemporaryDirectory(), filePrefix + ".pom");
-        Assert.assertTrue("Can't find file " + pomFile, pomFile.exists());
-        Assert
-            .assertFalse(new File(this.repositoryUtil.getTemporaryDirectory(), filePrefix + '.' + extension.getType())
-                .exists());
     }
 
     @Test

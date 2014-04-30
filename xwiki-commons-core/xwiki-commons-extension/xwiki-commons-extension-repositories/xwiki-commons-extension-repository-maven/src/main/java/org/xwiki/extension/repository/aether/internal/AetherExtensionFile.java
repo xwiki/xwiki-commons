@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.eclipse.aether.RepositorySystem;
@@ -57,13 +56,13 @@ public class AetherExtensionFile implements ExtensionFile
 
     static class AetherExtensionFileInputStream extends FileInputStream
     {
-        private File file;
+        private RepositorySystemSession session;
 
-        public AetherExtensionFileInputStream(File file) throws FileNotFoundException
+        public AetherExtensionFileInputStream(File file, RepositorySystemSession session) throws FileNotFoundException
         {
             super(file);
 
-            this.file = file;
+            this.session = session;
         }
 
         @Override
@@ -71,8 +70,8 @@ public class AetherExtensionFile implements ExtensionFile
         {
             super.close();
 
-            // Delete the file until a real stream download is done
-            FileUtils.deleteQuietly(this.file);
+            // Cleanup AETHER session
+            AetherExtensionRepositoryFactory.dispose(this.session);
         }
     }
 
@@ -93,6 +92,8 @@ public class AetherExtensionFile implements ExtensionFile
     @Override
     public InputStream openStream() throws IOException
     {
+        RepositorySystemSession session = this.repository.createRepositorySystemSession();
+
         RepositorySystem repositorySystem;
         RepositoryConnectorProvider repositoryConnectorProvider;
         try {
@@ -102,7 +103,6 @@ public class AetherExtensionFile implements ExtensionFile
             throw new IOException("Failed to get org.sonatype.aether.RepositorySystem component", e);
         }
 
-        RepositorySystemSession session = this.repository.createRepositorySystemSession();
         List<RemoteRepository> repositories;
         try {
             repositories = this.repository.newResolutionRepositories(session);
@@ -143,6 +143,6 @@ public class AetherExtensionFile implements ExtensionFile
 
         File aetherFile = artifactResult.getArtifact().getFile();
 
-        return new AetherExtensionFileInputStream(aetherFile);
+        return new AetherExtensionFileInputStream(aetherFile, session);
     }
 }
