@@ -170,7 +170,7 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
             } catch (Exception e) {
                 // TODO: clean
 
-                throw new LocalExtensionRepositoryException("Failed to save extensoin [" + extension + "] descriptor",
+                throw new LocalExtensionRepositoryException("Failed to save extension [" + extension + "] descriptor",
                     e);
             }
         } else {
