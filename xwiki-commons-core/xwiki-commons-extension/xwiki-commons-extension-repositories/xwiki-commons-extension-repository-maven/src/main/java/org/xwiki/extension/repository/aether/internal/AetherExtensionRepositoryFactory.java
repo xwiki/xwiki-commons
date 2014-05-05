@@ -19,29 +19,14 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
-import java.io.File;
-import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.eclipse.aether.ConfigurationProperties;
-import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.artifact.ArtifactTypeRegistry;
-import org.eclipse.aether.artifact.DefaultArtifactType;
-import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
-import org.eclipse.aether.util.repository.JreProxySelector;
-import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -52,8 +37,6 @@ import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
 
-import com.google.common.io.Files;
-
 /**
  * @version $Id$
  * @since 4.0M1
@@ -63,8 +46,6 @@ import com.google.common.io.Files;
 @Named("maven")
 public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositoryFactory implements Initializable
 {
-    static final JreProxySelector JREPROXYSELECTOR = new JreProxySelector();
-
     @Inject
     private ComponentManager componentManager;
 
@@ -73,9 +54,6 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
 
     @Inject
     private ExtensionManagerConfiguration configuration;
-
-    @Inject
-    private Logger logger;
 
     private RepositorySystem repositorySystem;
 
@@ -89,46 +67,13 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         }
     }
 
-    public RepositorySystemSession createRepositorySystemSession()
+    public XWikiRepositorySystemSession createRepositorySystemSession()
     {
-        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+        XWikiRepositorySystemSession session = new XWikiRepositorySystemSession(this.repositorySystem);
 
-        File localDir = Files.createTempDir();
-        LocalRepository localRepository = new LocalRepository(localDir);
-        session.setLocalRepositoryManager(this.repositorySystem.newLocalRepositoryManager(session, localRepository));
-        session.setConfigProperty(ConfigurationProperties.USER_AGENT, this.configuration.getUserAgent());
-        session.setProxySelector(JREPROXYSELECTOR);
-
-        // Remove all system properties that could disrupt effective pom resolution
-        session.setSystemProperty("version", null);
-        session.setSystemProperty("groupId", null);
-
-        // Add various type descriptors
-        ArtifactTypeRegistry artifactTypeRegistry = session.getArtifactTypeRegistry();
-        if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
-            DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
-                (DefaultArtifactTypeRegistry) artifactTypeRegistry;
-            defaultArtifactTypeRegistry.add(new DefaultArtifactType("bundle", "jar", "", "java"));
-            defaultArtifactTypeRegistry.add(new DefaultArtifactType("eclipse-plugin", "jar", "", "java"));
-        }
-
-        // Fail when the pom is missing or invalid
-        session.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
+        session.setUserAgent(this.configuration.getUserAgent());
 
         return session;
-    }
-
-    public static void dispose(RepositorySystemSession session)
-    {
-        LocalRepository repository = session.getLocalRepository();
-
-        if (repository.getBasedir().exists()) {
-            try {
-                FileUtils.deleteDirectory(repository.getBasedir());
-            } catch (IOException e) {
-                // TODO: Should probably log something even if it should be pretty rare
-            }
-        }
     }
 
     @Override
