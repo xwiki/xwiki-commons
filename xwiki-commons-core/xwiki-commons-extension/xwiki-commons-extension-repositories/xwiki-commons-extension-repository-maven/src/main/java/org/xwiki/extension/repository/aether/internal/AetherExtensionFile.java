@@ -30,7 +30,6 @@ import java.util.List;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.impl.RepositoryConnectorProvider;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -56,9 +55,10 @@ public class AetherExtensionFile implements ExtensionFile
 
     static class AetherExtensionFileInputStream extends FileInputStream
     {
-        private RepositorySystemSession session;
+        private XWikiRepositorySystemSession session;
 
-        public AetherExtensionFileInputStream(File file, RepositorySystemSession session) throws FileNotFoundException
+        public AetherExtensionFileInputStream(File file, XWikiRepositorySystemSession session)
+            throws FileNotFoundException
         {
             super(file);
 
@@ -71,7 +71,7 @@ public class AetherExtensionFile implements ExtensionFile
             super.close();
 
             // Cleanup AETHER session
-            AetherExtensionRepositoryFactory.dispose(this.session);
+            this.session.close();
         }
     }
 
@@ -92,7 +92,7 @@ public class AetherExtensionFile implements ExtensionFile
     @Override
     public InputStream openStream() throws IOException
     {
-        RepositorySystemSession session = this.repository.createRepositorySystemSession();
+        XWikiRepositorySystemSession session = this.repository.createRepositorySystemSession();
 
         RepositorySystem repositorySystem;
         RepositoryConnectorProvider repositoryConnectorProvider;

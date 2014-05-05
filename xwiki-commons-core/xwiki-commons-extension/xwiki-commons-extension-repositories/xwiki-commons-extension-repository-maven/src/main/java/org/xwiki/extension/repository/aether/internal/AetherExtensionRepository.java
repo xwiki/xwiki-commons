@@ -142,7 +142,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         // Proxy
-        Proxy proxy = AetherExtensionRepositoryFactory.JREPROXYSELECTOR.getProxy(repositoryBuilder.build());
+        Proxy proxy = XWikiRepositorySystemSession.JREPROXYSELECTOR.getProxy(repositoryBuilder.build());
         repositoryBuilder.setProxy(proxy);
 
         this.remoteRepository = repositoryBuilder.build();
@@ -166,7 +166,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         this.loadPomMethod.setAccessible(true);
     }
 
-    protected RepositorySystemSession createRepositorySystemSession()
+    protected XWikiRepositorySystemSession createRepositorySystemSession()
     {
         return this.repositoryFactory.createRepositorySystemSession();
     }
@@ -198,9 +198,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     {
         Artifact artifact = AetherUtils.createArtifact(id, "(,)");
 
-        RepositorySystemSession session = createRepositorySystemSession();
         List<org.eclipse.aether.version.Version> versions;
-        try {
+        try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
             versions = resolveVersions(artifact, session);
 
             if (versions.isEmpty()) {
@@ -208,8 +207,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
         } catch (Exception e) {
             throw new ResolveException("Failed to resolve versions for id [" + id + "]", e);
-        } finally {
-            AetherExtensionRepositoryFactory.dispose(session);
         }
 
         if (nb == 0 || offset >= versions.size()) {
@@ -309,11 +306,9 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private AetherExtension resolveMaven(ExtensionDependency extensionDependency) throws ResolveException
     {
-        RepositorySystemSession session = createRepositorySystemSession();
-
         Artifact artifact;
         String artifactExtension;
-        try {
+        try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
             if (extensionDependency instanceof AetherExtensionDependency) {
                 artifact = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact();
                 artifactExtension =
@@ -330,8 +325,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                 }
                 artifactExtension = null;
             }
-        } finally {
-            AetherExtensionRepositoryFactory.dispose(session);
         }
 
         return resolveMaven(artifact, artifactExtension);
@@ -346,12 +339,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private AetherExtension resolveMaven(Artifact artifact, String artifactExtension) throws ResolveException
     {
-        RepositorySystemSession session = createRepositorySystemSession();
-
-        try {
+        try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
             return resolveMaven(artifact, artifactExtension, session);
-        } finally {
-            AetherExtensionRepositoryFactory.dispose(session);
         }
     }
 

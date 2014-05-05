@@ -29,12 +29,15 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */
 public final class AetherUtils
 {
+    public static final String JAR_EXTENSION = "jar";
+
+    public static final String JAVA_LANGUAGE = "java";
+
     private static final Pattern PARSER_ID = Pattern.compile("([^: ]+):([^: ]+)(:([^: ]+))?");
 
     static public DefaultArtifact createArtifact(String id, String version) throws ResolveException
