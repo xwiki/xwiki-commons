@@ -20,13 +20,14 @@
 package org.xwiki.extension.repository.internal;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -86,7 +87,10 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     /**
      * The registered repositories.
      */
-    private Map<String, ExtensionRepository> repositories = new ConcurrentHashMap<String, ExtensionRepository>();
+    private final Map<String, ExtensionRepository> repositoryMap = Collections
+        .synchronizedMap(new LinkedHashMap<String, ExtensionRepository>());
+
+    private Collection<ExtensionRepository> repositories = Collections.emptyList();
 
     @Override
     public void initialize() throws InitializationException
@@ -135,25 +139,27 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public void addRepository(ExtensionRepository repository)
     {
-        this.repositories.put(repository.getDescriptor().getId(), repository);
+        this.repositoryMap.put(repository.getDescriptor().getId(), repository);
+        this.repositories = new ArrayList<>(this.repositoryMap.values());
     }
 
     @Override
     public void removeRepository(String repositoryId)
     {
-        this.repositories.remove(repositoryId);
+        this.repositoryMap.remove(repositoryId);
+        this.repositories = new ArrayList<>(this.repositoryMap.values());
     }
 
     @Override
     public ExtensionRepository getRepository(String repositoryId)
     {
-        return this.repositories.get(repositoryId);
+        return this.repositoryMap.get(repositoryId);
     }
 
     @Override
     public Collection<ExtensionRepository> getRepositories()
     {
-        return Collections.unmodifiableCollection(this.repositories.values());
+        return Collections.unmodifiableCollection(this.repositories);
     }
 
     @Override
@@ -161,7 +167,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     {
         ResolveException lastExtension = null;
 
-        for (ExtensionRepository repository : this.repositories.values()) {
+        for (ExtensionRepository repository : this.repositories) {
             try {
                 return repository.resolve(extensionId);
             } catch (ResolveException e) {
@@ -180,7 +186,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     {
         ResolveException lastExtension = null;
 
-        for (ExtensionRepository repository : this.repositories.values()) {
+        for (ExtensionRepository repository : this.repositories) {
             try {
                 return repository.resolve(extensionDependency);
             } catch (ResolveException e) {
@@ -200,7 +206,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     {
         SortedSet<Version> versionSet = new TreeSet<Version>();
 
-        for (ExtensionRepository repository : this.repositories.values()) {
+        for (ExtensionRepository repository : this.repositories) {
             try {
                 IterableResult<Version> versions = repository.resolveVersions(id, 0, -1);
 
@@ -228,7 +234,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
         int currentNb = nb;
 
         // A local index would avoid things like this...
-        for (ExtensionRepository repository : this.repositories.values()) {
+        for (ExtensionRepository repository : this.repositories) {
             try {
                 searchResult = search(repository, pattern, currentOffset, currentNb, searchResult);
 
@@ -249,7 +255,8 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
                 }
             } catch (SearchException e) {
                 this.logger.error("Failed to search on repository [{}] with pattern=[{}], offset=[{}] and nb=[{}]. "
-                    + "Ignore and go to next repository.", repository.getDescriptor().toString(), pattern, offset, nb, e);
+                    + "Ignore and go to next repository.", repository.getDescriptor().toString(), pattern, offset, nb,
+                    e);
             }
         }
 
