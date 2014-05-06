@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
@@ -142,17 +143,17 @@ public class AetherDefaultRepositoryManagerTest
         Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor()
             .getId());
 
-        // TODO: see http://jira.xwiki.org/browse/XWIKI-7163 // Modify the file on the descriptor on the repository
-        // File pomFile =
-        // new File(this.repositoryUtil.getMavenRepository(), this.extensionId.getId().replace('.', '/')
-        // .replace(':', '/')
-        // + '/' + this.extensionId.getVersion() + '/' + ARTIfACTID + '-' + this.extensionId.getVersion() + ".pom");
-        // FileUtils.writeStringToFile(
-        // pomFile,
-        // FileUtils.readFileToString(pomFile, "UTF-8").replace("<description>summary</description>",
-        // "<description>modified summary</description>"), "UTF-8");
-        // extension = this.repositoryManager.resolve(this.extensionId);
-        // Assert.assertEquals("modified description", extension.getSummary());
+        // Modify the file on the descriptor on the repository
+        File pomFile =
+            new File(this.repositoryUtil.getMavenRepository(), this.extensionId.getId().replace('.', '/')
+                .replace(':', '/')
+                + '/' + this.extensionId.getVersion() + '/' + ARTIfACTID + '-' + this.extensionId.getVersion() + ".pom");
+        FileUtils.writeStringToFile(
+            pomFile,
+            FileUtils.readFileToString(pomFile, "UTF-8").replace("<description>summary</description>",
+                "<description>modified summary</description>"), "UTF-8");
+        extension = this.repositoryManager.resolve(this.extensionId);
+        Assert.assertEquals("modified summary", extension.getSummary());
     }
 
     @Test
@@ -317,5 +318,22 @@ public class AetherDefaultRepositoryManagerTest
         Assert.assertEquals(2, versions.getTotalHits());
         Assert.assertEquals(2, versions.getSize());
         Assert.assertEquals(0, versions.getOffset());
+    }
+
+    @Test
+    public void testResolveWithExternalParent() throws ResolveException, IOException
+    {
+        ExtensionId extensionId = new ExtensionId("lgroupid:lartifactid", "version");
+
+        Extension extension = this.repositoryManager.resolve(extensionId);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(extensionId.getId(), extension.getId().getId());
+        Assert.assertEquals(extensionId.getVersion(), extension.getId().getVersion());
+        Assert.assertEquals("type", extension.getType());
+        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor()
+            .getId());
+
+        Assert.assertEquals("parent description", extension.getSummary());
     }
 }

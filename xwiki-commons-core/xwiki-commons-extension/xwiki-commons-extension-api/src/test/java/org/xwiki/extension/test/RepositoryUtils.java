@@ -43,6 +43,8 @@ public class RepositoryUtils
 {
     protected static final String MAVENREPOSITORY_ID = "test-maven";
 
+    protected static final String MAVEN2REPOSITORY_ID = "test-maven2";
+
     protected final File permanentDirectory;
 
     protected final File temporaryDirectory;
@@ -52,6 +54,8 @@ public class RepositoryUtils
     protected final File localRepositoryRoot;
 
     protected final File mavenRepositoryRoot;
+
+    protected final File maven2RepositoryRoot;
 
     protected final File remoteRepositoryRoot;
 
@@ -68,18 +72,19 @@ public class RepositoryUtils
         this.localRepositoryRoot = new File(this.extensionDirectory, "repository/");
 
         this.mavenRepositoryRoot = new File(testDirectory, "maven/");
+        this.maven2RepositoryRoot = new File(testDirectory, "maven2/");
         this.remoteRepositoryRoot = new File(testDirectory, "remote/");
 
         Map<String, File> repositories = new HashMap<String, File>();
         repositories.put(null, getRemoteRepository());
         repositories.put("remote", getRemoteRepository());
         repositories.put("local", getLocalRepository());
-        // TODO: add support for maven
 
         this.extensionPackager = new ExtensionPackager(this.permanentDirectory, repositories);
 
         System.setProperty("extension.repository.local", this.localRepositoryRoot.getAbsolutePath());
         System.setProperty("extension.repository.maven", this.mavenRepositoryRoot.getAbsolutePath());
+        System.setProperty("extension.repository.maven2", this.maven2RepositoryRoot.getAbsolutePath());
         System.setProperty("extension.repository.remote", this.remoteRepositoryRoot.getAbsolutePath());
     }
 
@@ -113,9 +118,19 @@ public class RepositoryUtils
         return this.mavenRepositoryRoot;
     }
 
+    public File getMaven2Repository()
+    {
+        return this.maven2RepositoryRoot;
+    }
+
     public String getMavenRepositoryId()
     {
         return MAVENREPOSITORY_ID;
+    }
+
+    public String getMaven2RepositoryId()
+    {
+        return MAVEN2REPOSITORY_ID;
     }
 
     public ExtensionPackager getExtensionPackager()
@@ -129,6 +144,7 @@ public class RepositoryUtils
 
         copyResourceFolder(getLocalRepository(), "repository.local");
         copyResourceFolder(getMavenRepository(), "repository.maven");
+        copyResourceFolder(getMaven2Repository(), "repository.maven2");
 
         // generated extensions
 
@@ -142,14 +158,19 @@ public class RepositoryUtils
         Set<URL> urls = ClasspathHelper.forPackage(resourcePackage);
 
         if (!urls.isEmpty()) {
+            String prefix = resourcePackage;
+            if (!prefix.endsWith(".")) {
+                prefix = prefix + '.';
+            }
+
             Reflections reflections =
                 new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner()).setUrls(urls)
-                    .filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(resourcePackage))));
+                    .filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(prefix))));
 
             for (String resource : reflections.getResources(Pattern.compile(".*"))) {
                 targetFolder.mkdirs();
 
-                File targetFile = new File(targetFolder, resource.substring(resourcePackage.length() + 1));
+                File targetFile = new File(targetFolder, resource.substring(prefix.length()));
 
                 InputStream resourceStream = getClass().getResourceAsStream("/" + resource);
 

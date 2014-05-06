@@ -19,6 +19,10 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -27,6 +31,7 @@ import javax.inject.Singleton;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -36,6 +41,7 @@ import org.xwiki.extension.repository.AbstractExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
+import org.xwiki.extension.repository.ExtensionRepositoryManager;
 
 /**
  * @version $Id$
@@ -54,6 +60,9 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
 
     @Inject
     private ExtensionManagerConfiguration configuration;
+
+    @Inject
+    private ExtensionRepositoryManager repositoryManager;
 
     private RepositorySystem repositorySystem;
 
@@ -86,5 +95,28 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         } catch (Exception e) {
             throw new ExtensionRepositoryException("Failed to create repository [" + repositoryDescriptor + "]", e);
         }
+    }
+
+    List<RemoteRepository> getAllMavenRepositories(RemoteRepository firstRepository)
+    {
+        Collection<ExtensionRepository> extensionRepositories = this.repositoryManager.getRepositories();
+
+        List<RemoteRepository> reposirories = new ArrayList<RemoteRepository>(extensionRepositories.size());
+
+        // Put first repository
+        reposirories.add(firstRepository);
+
+        // Add other repositories (and filter first one)
+        for (ExtensionRepository extensionRepository : extensionRepositories) {
+            if (extensionRepository instanceof AetherExtensionRepository) {
+                RemoteRepository repository = ((AetherExtensionRepository) extensionRepository).getRemoteRepository();
+
+                if (firstRepository != repository) {
+                    reposirories.add(repository);
+                }
+            }
+        }
+
+        return reposirories;
     }
 }

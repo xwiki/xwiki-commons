@@ -20,7 +20,6 @@
 package org.xwiki.extension.repository.aether.internal;
 
 import org.apache.maven.model.Model;
-import org.codehaus.plexus.PlexusContainer;
 import org.eclipse.aether.artifact.Artifact;
 import org.xwiki.extension.AbstractExtension;
 
@@ -36,12 +35,11 @@ public class AetherExtension extends AbstractExtension
 
     public static final String PKEY_MAVEN_MODEL = "maven.Model";
 
-    public AetherExtension(Artifact artifact, Model mavenModel, AetherExtensionRepository repository,
-        PlexusContainer plexusComponentManager)
+    public AetherExtension(Artifact artifact, Model mavenModel, AetherExtensionRepository repository)
     {
         super(repository, AetherUtils.createExtensionId(artifact), artifact.getExtension());
 
-        setFile(new AetherExtensionFile(artifact, repository, plexusComponentManager));
+        setFile(new AetherExtensionFile(artifact, repository));
 
         // custom properties
         putProperty(PKEY_AETHER_ATIFACT, artifact);

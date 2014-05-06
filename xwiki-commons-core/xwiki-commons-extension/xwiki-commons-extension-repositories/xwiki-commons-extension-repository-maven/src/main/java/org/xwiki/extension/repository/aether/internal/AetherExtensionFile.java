@@ -27,8 +27,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.impl.RepositoryConnectorProvider;
@@ -47,8 +45,6 @@ import org.xwiki.extension.ExtensionFile;
  */
 public class AetherExtensionFile implements ExtensionFile
 {
-    private PlexusContainer plexusContainer;
-
     private Artifact artifact;
 
     private AetherExtensionRepository repository;
@@ -75,10 +71,9 @@ public class AetherExtensionFile implements ExtensionFile
         }
     }
 
-    public AetherExtensionFile(Artifact artifact, AetherExtensionRepository repository, PlexusContainer plexusContainer)
+    public AetherExtensionFile(Artifact artifact, AetherExtensionRepository repository)
     {
         this.repository = repository;
-        this.plexusContainer = plexusContainer;
         this.artifact = artifact;
     }
 
@@ -94,25 +89,12 @@ public class AetherExtensionFile implements ExtensionFile
     {
         XWikiRepositorySystemSession session = this.repository.createRepositorySystemSession();
 
-        RepositorySystem repositorySystem;
-        RepositoryConnectorProvider repositoryConnectorProvider;
-        try {
-            repositorySystem = this.plexusContainer.lookup(RepositorySystem.class);
-            repositoryConnectorProvider = this.plexusContainer.lookup(RepositoryConnectorProvider.class);
-        } catch (ComponentLookupException e) {
-            throw new IOException("Failed to get org.sonatype.aether.RepositorySystem component", e);
-        }
-
-        List<RemoteRepository> repositories;
-        try {
-            repositories = this.repository.newResolutionRepositories(session);
-        } catch (ComponentLookupException e) {
-            throw new IOException("Failed to create repository descriptors", e);
-        }
+        List<RemoteRepository> repositories = this.repository.newResolutionRepositories(session);
         RemoteRepository repository = repositories.get(0);
 
         RepositoryConnector connector;
         try {
+            RepositoryConnectorProvider repositoryConnectorProvider = this.repository.getRepositoryConnectorProvider();
             connector = repositoryConnectorProvider.newRepositoryConnector(session, repository);
         } catch (NoRepositoryConnectorException e) {
             throw new IOException("Failed to download artifact [" + this.artifact + "]", e);
@@ -136,6 +118,7 @@ public class AetherExtensionFile implements ExtensionFile
 
         ArtifactResult artifactResult;
         try {
+            RepositorySystem repositorySystem = this.repository.getRepositorySystem();
             artifactResult = repositorySystem.resolveArtifact(session, artifactRequest);
         } catch (ArtifactResolutionException e) {
             throw new IOException("Failed to resolve artifact", e);

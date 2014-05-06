@@ -81,11 +81,16 @@ public class MockitoRepositoryUtils extends RepositoryUtils
             repositoryManager.addRepository(this.remoteRepository);
         }
 
-        // maven repository
+        // maven repositories
 
         if (getMavenRepository().exists()) {
             repositoryManager.addRepository(new DefaultExtensionRepositoryDescriptor(MAVENREPOSITORY_ID, "maven",
                 getMavenRepository().toURI()));
+        }
+
+        if (getMaven2Repository().exists()) {
+            repositoryManager.addRepository(new DefaultExtensionRepositoryDescriptor(MAVEN2REPOSITORY_ID, "maven",
+                getMaven2Repository().toURI()));
         }
 
         // init
