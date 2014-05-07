@@ -62,7 +62,7 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
     private ExtensionManagerConfiguration configuration;
 
     @Inject
-    private ExtensionRepositoryManager repositoryManager;
+    private Provider<ExtensionRepositoryManager> repositoryManagerProvider;
 
     private RepositorySystem repositorySystem;
 
@@ -99,7 +99,7 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
 
     List<RemoteRepository> getAllMavenRepositories(RemoteRepository firstRepository)
     {
-        Collection<ExtensionRepository> extensionRepositories = this.repositoryManager.getRepositories();
+        Collection<ExtensionRepository> extensionRepositories = this.repositoryManagerProvider.get().getRepositories();
 
         List<RemoteRepository> reposirories = new ArrayList<RemoteRepository>(extensionRepositories.size());
 
