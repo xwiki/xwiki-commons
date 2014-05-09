@@ -105,9 +105,14 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private Date endDate;
 
     /**
-     * Indicate of the job has been started by another one.
+     * Indicate if the job has been started by another one.
      */
     private boolean subJob;
+
+    /**
+     * Indicate if Job log should be grabbed.
+     */
+    private boolean isolated;
 
     /**
      * @param request the request provided when started the job
@@ -122,6 +127,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.observationManager = observationManager;
         this.loggerManager = loggerManager;
         this.subJob = subJob;
+        this.isolated = !subJob;
 
         this.logs = new LogQueue();
     }
@@ -136,10 +142,10 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
 
         // Isolate log for the job status
         this.logListener = new LoggerListener(LoggerListener.class.getName() + '_' + hashCode(), this.logs);
-        if (this.subJob) {
-            this.observationManager.addListener(this.logListener);
-        } else {
+        if (isIsolated()) {
             this.loggerManager.pushLogListener(this.logListener);
+        } else {
+            this.observationManager.addListener(new WrappedThreadEventListener(this.logListener));
         }
     }
 
@@ -148,10 +154,10 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      */
     public void stopListening()
     {
-        if (this.subJob) {
-            this.observationManager.removeListener(this.logListener.getName());
-        } else {
+        if (isIsolated()) {
             this.loggerManager.popLogListener();
+        } else {
+            this.observationManager.removeListener(this.logListener.getName());
         }
         this.observationManager.removeListener(this.progress.getName());
     }
@@ -258,6 +264,33 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public void setEndDate(Date endDate)
     {
         this.endDate = endDate;
+    }
+
+    /**
+     * @return true if the job is part of another job execution
+     * @since 6.1M1
+     */
+    public boolean isSubJob()
+    {
+        return this.subJob;
+    }
+
+    /**
+     * @return true if the job log should be grabbed
+     * @since 6.1M1
+     */
+    public boolean isIsolated()
+    {
+        return this.isolated;
+    }
+
+    /**
+     * @param isolated true if the job log should be grabbed
+     * @since 6.1M1
+     */
+    public void setIsolated(boolean isolated)
+    {
+        this.isolated = isolated;
     }
 
     // Deprecated
