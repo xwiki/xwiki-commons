@@ -26,6 +26,7 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.BCodec;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.xwiki.xml.XMLUtils;
 
 /**
@@ -60,6 +61,23 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     public String xml(Object content)
     {
         return XMLUtils.escape(content);
+    }
+
+    /**
+     * Escapes the characters in a <code>String</code> using JSON String rules: escapes with backslash double quotes,
+     * back and forward slashes, newlines, the control characters {@code \b}, {@code \t} and {@code \f}, and with
+     * {@code \}{@code uXXXX} any non-ASCII characters.
+     *
+     * @param string the string to escape, may be {@code null}; any non-string object will be converted to a string
+     *        first, using {@code String.valueOf(obj)}
+     * @return String with escaped values, {@code null} if {@code null} input
+     */
+    public String json(Object string)
+    {
+        if (string == null) {
+            return null;
+        }
+        return StringEscapeUtils.escapeJson(String.valueOf(string));
     }
 
     /**

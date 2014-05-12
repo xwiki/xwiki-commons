@@ -72,6 +72,41 @@ public class EscapeToolTest
     }
 
     @Test
+    public void testEscapeJSON()
+    {
+        EscapeTool tool = new EscapeTool();
+        String escapedText = tool.json("\"'\\/\b\f\n\r\t\u1234 plain  text");
+
+        Assert.assertTrue("Failed to escape [\"]", escapedText.contains("\\\""));
+        Assert.assertTrue("Wrongly escaped [']", escapedText.contains("'"));
+        Assert.assertTrue("Failed to escape [\\]", escapedText.contains("\\\\"));
+        Assert.assertTrue("Failed to escape [/]", escapedText.contains("\\/"));
+        Assert.assertTrue("Failed to escape [\\b]", escapedText.contains("\\b"));
+        Assert.assertTrue("Failed to escape [\\f]", escapedText.contains("\\f"));
+        Assert.assertTrue("Failed to escape [\\n]", escapedText.contains("\\n"));
+        Assert.assertTrue("Failed to escape [\\r]", escapedText.contains("\\r"));
+        Assert.assertTrue("Failed to escape [\\t]", escapedText.contains("\\t"));
+        Assert.assertTrue("Failed to escape [\\u1234]", escapedText.contains("\\u1234"));
+        Assert.assertTrue("Wrongly escaped plain text", escapedText.contains(" plain  text"));
+    }
+
+    @Test
+    public void testEscapeJSONWithNullInput()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertNull("Unexpected non-null output for null input", tool.json(null));
+    }
+
+    @Test
+    public void testEscapeJSONWithNonStringInput()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("true", tool.json(true));
+        Assert.assertEquals("42", tool.json(42));
+        Assert.assertEquals(tool.toString(), tool.json(tool));
+    }
+
+    @Test
     public void testQuotedPrintableWithSimpleText()
     {
         EscapeTool tool = new EscapeTool();
