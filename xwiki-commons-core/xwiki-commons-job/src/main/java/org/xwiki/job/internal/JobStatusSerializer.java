@@ -76,15 +76,15 @@ public class JobStatusSerializer
 
         try {
             write(status, stream);
-
-            // Copy the file in it's final destination
-            if (file.exists()) {
-                file.delete();
-            }
-            FileUtils.moveFile(tempFile, file);
         } finally {
             IOUtils.closeQuietly(stream);
         }
+
+        // Copy the file in it's final destination
+        if (file.exists()) {
+            file.delete();
+        }
+        FileUtils.moveFile(tempFile, file);
     }
 
     /**
