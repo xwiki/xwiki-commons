@@ -319,7 +319,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     }
 
     /**
-     * @param dependency indicate if the extension as been installed as a dependency of another one.
+     * @param dependency indicate if the extension has been installed as a dependency of another one
      * @see #isDependency()
      * @deprecated
      */
@@ -330,7 +330,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     }
 
     /**
-     * @param dependency indicate if the extension as been installed as a dependency of another one.
+     * @param dependency indicate if the extension has been installed as a dependency of another one
      * @param namespace the namespace
      * @see #isDependency(String)
      */
