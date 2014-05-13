@@ -78,13 +78,13 @@ public class JobStatusSerializer
 
         try {
             write(status, stream);
-
-            // Copy the file in it's final destination
-            file.mkdirs();
-            Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } finally {
             IOUtils.closeQuietly(stream);
         }
+
+        // Copy the file in it's final destination
+        file.mkdirs();
+        Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**
