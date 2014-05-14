@@ -30,7 +30,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.JobManagerConfiguration;
+import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -46,7 +49,7 @@ public class DefaultJobStatusStorageTest
         new MockitoComponentMockingRule<DefaultJobStatusStorage>(DefaultJobStatusStorage.class);
 
     @Before
-    public void configure() throws Exception
+    public void before() throws Exception
     {
         final JobManagerConfiguration jobManagerConfiguration =
             this.componentManager.getInstance(JobManagerConfiguration.class);
@@ -65,6 +68,8 @@ public class DefaultJobStatusStorageTest
         Assert.assertNotNull(jobStatus);
         Assert.assertNull(jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
+
+        Assert.assertSame(jobStatus, this.componentManager.getComponentUnderTest().getJobStatus((List<String>) null));
     }
 
     @Test
@@ -75,6 +80,9 @@ public class DefaultJobStatusStorageTest
         Assert.assertNotNull(jobStatus);
         Assert.assertEquals(Arrays.asList("id1", "id2"), jobStatus.getRequest().getId());
         Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
+
+        Assert.assertSame(jobStatus,
+            this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2")));
     }
 
     @Test
@@ -95,5 +103,37 @@ public class DefaultJobStatusStorageTest
             this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("invalidlogargument"));
 
         Assert.assertEquals(3, jobStatus.getLog().size());
+    }
+
+    @Test
+    public void testRemoveJobStatus() throws ComponentLookupException
+    {
+        List<String> id = (List<String>) null;
+
+        JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(id);
+
+        Assert.assertNotNull(jobStatus);
+        Assert.assertNull(jobStatus.getRequest().getId());
+        Assert.assertEquals(JobStatus.State.FINISHED, jobStatus.getState());
+
+        Assert.assertSame(jobStatus, this.componentManager.getComponentUnderTest().getJobStatus(id));
+
+        this.componentManager.getComponentUnderTest().remove(id);
+
+        Assert.assertSame(null, this.componentManager.getComponentUnderTest().getJobStatus(id));
+    }
+
+    @Test
+    public void testStoreJobStatus() throws ComponentLookupException
+    {
+        List<String> id = Arrays.asList("newstatus");
+
+        DefaultRequest request = new DefaultRequest();
+        request.setId(id);
+        JobStatus jobStatus = new DefaultJobStatus<Request>(request, null, null, false);
+
+        this.componentManager.getComponentUnderTest().store(jobStatus);
+
+        Assert.assertSame(jobStatus, this.componentManager.getComponentUnderTest().getJobStatus(id));
     }
 }
