@@ -25,7 +25,9 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
@@ -41,6 +44,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.job.JobManagerConfiguration;
+import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
 
 /**
@@ -68,6 +72,8 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
      */
     private static final String FOLDER_NULL = "&null";
 
+    private static final JobStatus NOSTATUS = new DefaultJobStatus<Request>(null, null, null, false);
+
     /**
      * Used to get the storage directory.
      */
@@ -79,6 +85,9 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
      */
     @Inject
     private Logger logger;
+
+    // TODO: probably use JCache instead
+    private Map<List<String>, JobStatus> cache;
 
     private JobStatusSerializer serializer;
 
@@ -118,8 +127,9 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
             new BasicThreadFactory.Builder().namingPattern("Job status serializer").daemon(true)
                 .priority(Thread.MIN_PRIORITY).build();
         this.executorService =
-            new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
-                threadFactory);
+            new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), threadFactory);
+
+        this.cache = Collections.synchronizedMap(new LRUMap(50));
     }
 
     /**
@@ -256,24 +266,42 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
     @Override
     public JobStatus getJobStatus(List<String> id)
     {
-        try {
-            return loadStatus(id);
-        } catch (Exception e) {
-            this.logger.warn("Failed to load job status for id [{}]", id, e);
+        JobStatus status = this.cache.get(id);
 
-            return null;
+        if (status == null) {
+            synchronized (this) {
+                status = this.cache.get(id);
+
+                if (status == null) {
+                    try {
+                        status = loadStatus(id);
+
+                        this.cache.put(id, status);
+                    } catch (Exception e) {
+                        this.logger.warn("Failed to load job status for id [{}]", id, e);
+
+                        this.cache.put(id, NOSTATUS);
+                    }
+                }
+            }
         }
+
+        return status == NOSTATUS ? null : status;
     }
 
     @Override
     public void store(JobStatus status)
     {
-        // On store Serializable job status on file system
-        if (status instanceof Serializable) {
-            try {
-                saveJobStatus(status);
-            } catch (Exception e) {
-                this.logger.warn("Failed to save job status [{}]", status, e);
+        if (status != null && status.getRequest() != null && status.getRequest().getId() != null) {
+            this.cache.put(status.getRequest().getId(), status);
+
+            // On store Serializable job status on file system
+            if (status instanceof Serializable) {
+                try {
+                    saveJobStatus(status);
+                } catch (Exception e) {
+                    this.logger.warn("Failed to save job status [{}]", status, e);
+                }
             }
         }
     }
@@ -311,8 +339,12 @@ public class DefaultJobStatusStorage implements JobStatusStorage, Initializable
                 this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
             }
 
+            this.cache.remove(id);
+
             return status;
         }
+
+        this.cache.remove(id);
 
         return null;
     }
