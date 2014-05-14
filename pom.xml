@@ -75,7 +75,7 @@
     <izpack.version>5.0.0-rc1</izpack.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>5.4.4</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>6.0</xwiki.clirr.previous.version>
 
     <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
