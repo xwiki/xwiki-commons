@@ -74,7 +74,7 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
      * @param string the string to escape, may be {@code null}; any non-string object will be converted to a string
      *        first, using {@code String.valueOf(obj)}
      * @return String with escaped values, {@code null} if {@code null} input
-     * @since 6.0M1
+     * @since 6.1M1
      */
     public String json(Object string)
     {
