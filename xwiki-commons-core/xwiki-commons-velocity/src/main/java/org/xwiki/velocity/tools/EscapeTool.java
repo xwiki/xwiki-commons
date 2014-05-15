@@ -68,7 +68,8 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     /**
      * Escapes the characters in a <code>String</code> using JSON String rules: escapes with backslash double quotes,
      * back and forward slashes, newlines, the control characters {@code \b}, {@code \t} and {@code \f}, and with
-     * {@code \}{@code uXXXX} any non-ASCII characters.
+     * {@code \}{@code uXXXX} any non-ASCII characters. Unlike {@link #javascript(Object)}, it does not escape {@code '}
+     * , which is not a special character in JSON, and it would be a syntax error to do so.
      *
      * @param string the string to escape, may be {@code null}; any non-string object will be converted to a string
      *        first, using {@code String.valueOf(obj)}
