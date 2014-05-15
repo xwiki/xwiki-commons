@@ -52,7 +52,9 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
     private static final String AND = "&";
 
     /**
-     * Escapes the XML special characters in a <code>String</code> using numerical XML entities.
+     * Escapes the XML special characters in a <code>String</code> using numerical XML entities. This overrides the base
+     * implementation from Velocity, which is over-zealous and escapes any non-ASCII character. Since XWiki works with
+     * Unicode-capable encodings (UTF-8), there is no need to escape non-special characters.
      * 
      * @param content the text to escape, may be {@code null}
      * @return a new escaped {@code String}, {@code null} if {@code null} input
