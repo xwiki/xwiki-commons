@@ -72,26 +72,32 @@ import org.xwiki.extension.version.VersionConstraint;
 public class DefaultInstalledExtensionRepository extends AbstractCachedExtensionRepository<DefaultInstalledExtension>
     implements InstalledExtensionRepository, Initializable
 {
-    private static class InstalledFeature
+    private static class InstalledRootFeature
     {
         public DefaultInstalledExtension extension;
 
         public Set<DefaultInstalledExtension> invalidExtensions = new HashSet<DefaultInstalledExtension>();
 
-        public String feature;
-
         public String namespace;
 
         public Set<DefaultInstalledExtension> backwardDependencies = new HashSet<DefaultInstalledExtension>();
 
-        /**
-         * @param feature the feature
-         * @param namespace the namespace
-         */
-        public InstalledFeature(String feature, String namespace)
+        public InstalledRootFeature(String namespace)
         {
-            this.feature = feature;
             this.namespace = namespace;
+        }
+    }
+
+    private static class InstalledFeature
+    {
+        public InstalledRootFeature root;
+
+        public String feature;
+
+        public InstalledFeature(InstalledRootFeature root, String feature)
+        {
+            this.root = root;
+            this.feature = feature;
         }
     }
 
@@ -247,9 +253,9 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
         boolean register) throws InvalidExtensionException
     {
         InstalledFeature feature = getInstalledFeatureFromCache(localExtension.getId().getId(), namespace);
-        if (feature != null && feature.extension != null) {
+        if (feature != null && feature.root.extension != null) {
             // Already validated
-            return feature.extension;
+            return feature.root.extension;
         }
 
         // Actually validate
@@ -404,7 +410,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                 InstalledFeature installedFeature = getInstalledFeatureFromCache(dependency.getId(), namespace);
 
                 if (installedFeature != null) {
-                    installedFeature.backwardDependencies.remove(installedExtension);
+                    installedFeature.root.backwardDependencies.remove(installedExtension);
                 }
             }
         }
@@ -452,19 +458,49 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
             addInstalledFeatureToCache(feature, namespace, installedExtension);
         }
 
-        if (installedExtension.isValid(namespace)) {
-            // Add backward dependencies
-            for (ExtensionDependency dependency : installedExtension.getDependencies()) {
-                if (!this.coreExtensionRepository.exists(dependency.getId())) {
-                    // Get the extension for the dependency feature for the provided namespace
-                    DefaultInstalledExtension dependencyLocalExtension =
-                        (DefaultInstalledExtension) getInstalledExtension(dependency.getId(), namespace);
+        // Recalculate backward dependencies index
+        updateMissingBackwardDependencies();
+    }
 
+    private void updateMissingBackwardDependencies()
+    {
+        for (DefaultInstalledExtension installedExtension : this.extensions.values()) {
+            updateMissingBackwardDependencies(installedExtension);
+        }
+    }
+
+    private void updateMissingBackwardDependencies(DefaultInstalledExtension installedExtension)
+    {
+        Collection<String> namespaces = installedExtension.getNamespaces();
+
+        if (namespaces == null) {
+            if (installedExtension.isValid(null)) {
+                updateMissingBackwardDependencies(installedExtension, null);
+            }
+        } else {
+            for (String namespace : namespaces) {
+                if (installedExtension.isValid(namespace)) {
+                    updateMissingBackwardDependencies(installedExtension, namespace);
+                }
+            }
+        }
+    }
+
+    private void updateMissingBackwardDependencies(DefaultInstalledExtension installedExtension, String namespace)
+    {
+        // Add the extension as backward dependency
+        for (ExtensionDependency dependency : installedExtension.getDependencies()) {
+            if (!this.coreExtensionRepository.exists(dependency.getId())) {
+                // Get the extension for the dependency feature for the provided namespace
+                DefaultInstalledExtension dependencyLocalExtension =
+                    (DefaultInstalledExtension) getInstalledExtension(dependency.getId(), namespace);
+
+                if (dependencyLocalExtension != null) {
                     // Make sure to register backward dependency on the right namespace
                     InstalledFeature dependencyInstalledExtension =
                         addInstalledFeatureToCache(dependency.getId(), namespace, dependencyLocalExtension);
 
-                    dependencyInstalledExtension.backwardDependencies.add(installedExtension);
+                    dependencyInstalledExtension.root.backwardDependencies.add(installedExtension);
                 }
             }
         }
@@ -490,19 +526,25 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
             this.extensionNamespaceByFeature.put(feature, installedExtensionsForFeature);
         }
 
-        InstalledFeature installedExtension = installedExtensionsForFeature.get(namespace);
-        if (installedExtension == null) {
-            installedExtension = new InstalledFeature(feature, namespace);
-            installedExtensionsForFeature.put(namespace, installedExtension);
+        InstalledFeature installedFeature = installedExtensionsForFeature.get(namespace);
+        if (installedFeature == null) {
+            InstalledRootFeature rootFeature;
+            if (localExtension.getId().getId().equals(feature)) {
+                rootFeature = new InstalledRootFeature(namespace);
+            } else {
+                rootFeature = getInstalledFeatureFromCache(localExtension.getId().getId(), namespace).root;
+            }
+            installedFeature = new InstalledFeature(rootFeature, feature);
+            installedExtensionsForFeature.put(namespace, installedFeature);
         }
 
         if (localExtension.isValid(namespace)) {
-            installedExtension.extension = localExtension;
+            installedFeature.root.extension = localExtension;
         } else {
-            installedExtension.invalidExtensions.add(localExtension);
+            installedFeature.root.invalidExtensions.add(localExtension);
         }
 
-        return installedExtension;
+        return installedFeature;
     }
 
     /**
@@ -568,12 +610,12 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
         InstalledFeature installedFeature = getInstalledFeatureFromCache(feature, namespace);
 
         if (installedFeature != null) {
-            if (installedFeature.extension != null) {
-                return installedFeature.extension;
+            if (installedFeature.root.extension != null) {
+                return installedFeature.root.extension;
             }
 
-            return installedFeature.invalidExtensions.isEmpty() ? null : installedFeature.invalidExtensions.iterator()
-                .next();
+            return installedFeature.root.invalidExtensions.isEmpty() ? null : installedFeature.root.invalidExtensions
+                .iterator().next();
         }
 
         return null;
@@ -659,7 +701,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
             InstalledFeature installedExtension = installedExtensionsByFeature.get(namespace);
 
             if (installedExtension != null) {
-                Set<DefaultInstalledExtension> backwardDependencies = installedExtension.backwardDependencies;
+                Set<DefaultInstalledExtension> backwardDependencies = installedExtension.root.backwardDependencies;
 
                 // copy the list to allow use cases like uninstalling all backward dependencies without getting a
                 // concurrent issue on the list
@@ -687,12 +729,12 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
         if (featureExtensions != null) {
             result = new HashMap<String, Collection<InstalledExtension>>();
             for (InstalledFeature festureExtension : featureExtensions.values()) {
-                if ((namespaces == null || namespaces.contains(festureExtension.namespace))
-                    && !festureExtension.backwardDependencies.isEmpty()) {
+                if ((namespaces == null || namespaces.contains(festureExtension.root.namespace))
+                    && !festureExtension.root.backwardDependencies.isEmpty()) {
                     // copy the list to allow use cases like uninstalling all backward dependencies without getting a
                     // concurrent issue on the list
-                    result.put(festureExtension.namespace, new ArrayList<InstalledExtension>(
-                        festureExtension.backwardDependencies));
+                    result.put(festureExtension.root.namespace, new ArrayList<InstalledExtension>(
+                        festureExtension.root.backwardDependencies));
                 }
             }
         } else {
