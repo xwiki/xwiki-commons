@@ -50,6 +50,10 @@ public class TestResources
 
     public InstalledExtension installedDependency;
 
+    public InstalledExtension installedwithfeatureasdependency;
+
+    public InstalledExtension installedonnemspacewithrootdependency;
+
     // Remote
 
     public static final ExtensionId REMOTE_SIMPLE_ID = new ExtensionId("rsimple", "version");
@@ -86,5 +90,10 @@ public class TestResources
     {
         this.installed = installedExtensionRepository.resolve(INSTALLED_ID);
         this.installedDependency = installedExtensionRepository.resolve(INSTALLED_DEPENDENCY_ID);
+        this.installedwithfeatureasdependency =
+            installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_WITHFEATUREASDEPENDENCY_ID);
+        this.installedonnemspacewithrootdependency =
+            installedExtensionRepository
+                .getInstalledExtension(TestResources.INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID);
     }
 }

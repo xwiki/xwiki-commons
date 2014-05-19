@@ -19,8 +19,12 @@
  */
 package org.xwiki.extension.job.internal;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.TestResources;
@@ -179,5 +183,32 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
         Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
             TestResources.REMOTE_UPGRADE20_ID.getId(), "namespace"));
+    }
+
+    @Test
+    public void testReplaceDependencyWithFeature() throws Throwable
+    {
+        InstalledExtension installedextension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID);
+
+        // installedextensiondependency 1.0
+        Assert.assertEquals(Arrays.asList(installedextension), this.installedExtensionRepository
+            .getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), null));
+        Assert.assertEquals(Collections.singletonMap(null, Arrays.asList(installedextension)),
+            this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID));
+
+        ExtensionId installedextensiondependency2 = new ExtensionId("overrideinstalledextensiondependency", "2.0");
+
+        // change dependency
+        install(installedextensiondependency2);
+
+        // installedextensiondependency 2.0
+        Assert.assertEquals(Arrays.asList(installedextension),
+            this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), null));
+        // overrideinstalledextensiondependency
+        Assert.assertEquals(Arrays.asList(installedextension),
+            this.installedExtensionRepository.getBackwardDependencies(installedextensiondependency2.getId(), null));
+        Assert.assertEquals(Collections.singletonMap(null, Arrays.asList(installedextension)),
+            this.installedExtensionRepository.getBackwardDependencies(installedextensiondependency2));
     }
 }
