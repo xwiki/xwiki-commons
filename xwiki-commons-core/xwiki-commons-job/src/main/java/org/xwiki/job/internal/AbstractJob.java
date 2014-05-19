@@ -35,11 +35,9 @@ import org.xwiki.job.JobContext;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobStartedEvent;
+import org.xwiki.job.event.status.JobProgressManager;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.JobStatus.State;
-import org.xwiki.job.event.status.PopLevelProgressEvent;
-import org.xwiki.job.event.status.PushLevelProgressEvent;
-import org.xwiki.job.event.status.StepProgressEvent;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.logging.marker.BeginTranslationMarker;
 import org.xwiki.logging.marker.EndTranslationMarker;
@@ -104,6 +102,9 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
      */
     @Inject
     protected JobContext jobContext;
+
+    @Inject
+    protected JobProgressManager progressManager;
 
     /**
      * The job request.
@@ -266,26 +267,34 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
      * Push new progression level.
      * 
      * @param steps number of steps in this new level
+     * @deprecated since 6.1M1, use {@link #progressManager} instead
      */
+    @Deprecated
     protected void notifyPushLevelProgress(int steps)
     {
-        this.observationManager.notify(new PushLevelProgressEvent(steps), this);
+        this.progressManager.pushLevelProgress(steps, this);
     }
 
     /**
      * Next step.
+     * 
+     * @deprecated since 6.1M1, use {@link #progressManager} instead
      */
+    @Deprecated
     protected void notifyStepPropress()
     {
-        this.observationManager.notify(new StepProgressEvent(), this);
+        this.progressManager.stepPropress(this);
     }
 
     /**
      * Pop progression level.
+     * 
+     * @deprecated since 6.1M1, use {@link #progressManager} instead
      */
+    @Deprecated
     protected void notifyPopLevelProgress()
     {
-        this.observationManager.notify(new PopLevelProgressEvent(), this);
+        this.progressManager.popLevelProgress(this);
     }
 
     /**
