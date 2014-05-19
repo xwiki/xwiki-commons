@@ -87,6 +87,26 @@ public class DefaultInstalledExtensionRepositoryTest
         this.resources.init(this.installedExtensionRepository);
     }
 
+    private void install(ExtensionId extensionId) throws ResolveException, LocalExtensionRepositoryException,
+        InstallException
+    {
+        Extension extension = this.repositoryManager.resolve(extensionId);
+
+        // store
+
+        this.localExtensionRepository.storeExtension(extension);
+
+        LocalExtension localExtension = this.localExtensionRepository.resolve(extensionId);
+
+        Assert.assertEquals(extensionId, localExtension.getId());
+
+        // install
+
+        this.installedExtensionRepository.installExtension(localExtension, null, false);
+    }
+
+    // Tests
+
     @Test
     public void testInit()
     {
@@ -263,19 +283,7 @@ public class DefaultInstalledExtensionRepositoryTest
     public void testStoreExtensionAndInstall() throws ResolveException, LocalExtensionRepositoryException,
         InstallException
     {
-        Extension extension = this.repositoryManager.resolve(TestResources.REMOTE_SIMPLE_ID);
-
-        // store
-
-        this.localExtensionRepository.storeExtension(extension);
-
-        LocalExtension localExtension = this.localExtensionRepository.resolve(TestResources.REMOTE_SIMPLE_ID);
-
-        Assert.assertEquals(TestResources.REMOTE_SIMPLE_ID, localExtension.getId());
-
-        // install
-
-        this.installedExtensionRepository.installExtension(localExtension, null, false);
+        install(TestResources.REMOTE_SIMPLE_ID);
 
         Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
             TestResources.REMOTE_SIMPLE_ID.getId(), null));
@@ -344,23 +352,21 @@ public class DefaultInstalledExtensionRepositoryTest
     @Test
     public void testBackwardDependenciesAfterInit() throws ResolveException
     {
-        InstalledExtension installedextension =
-            this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_ID);
-        InstalledExtension installedonnemspacewithrootdependency =
-            this.installedExtensionRepository
-                .getInstalledExtension(TestResources.INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID);
-
         // installedextension
-        Assert.assertEquals(Collections.EMPTY_LIST,
+        Assert.assertEquals(Arrays.asList(this.resources.installedwithfeatureasdependency),
             this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID.getId(), null));
-        Assert.assertEquals(
-            Collections.singletonMap("namespace", Arrays.asList(installedonnemspacewithrootdependency)),
-            this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID));
+        Assert.assertEquals(new HashMap<String, Collection<InstalledExtension>>()
+        {
+            {
+                put(null, Arrays.asList(resources.installedwithfeatureasdependency));
+                put("namespace", Arrays.asList(resources.installedonnemspacewithrootdependency));
+            }
+        }, this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID));
 
         // installedextensiondependency
-        Assert.assertEquals(Arrays.asList(installedextension), this.installedExtensionRepository
+        Assert.assertEquals(Arrays.asList(this.resources.installed), this.installedExtensionRepository
             .getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), null));
-        Assert.assertEquals(Collections.singletonMap(null, Arrays.asList(installedextension)),
+        Assert.assertEquals(Collections.singletonMap(null, Arrays.asList(this.resources.installed)),
             this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID));
 
         // installedonnemspacewithrootdependency
@@ -393,7 +399,7 @@ public class DefaultInstalledExtensionRepositoryTest
                 TestResources.INSTALLED_DEPENDENCY_ID.getId(), "namespace")));
 
         Assert.assertEquals(
-            Arrays.asList(),
+            Arrays.asList(this.resources.installedwithfeatureasdependency),
             new ArrayList<InstalledExtension>(this.installedExtensionRepository.getBackwardDependencies(
                 TestResources.INSTALLED_ID.getId(), null)));
 
@@ -418,7 +424,7 @@ public class DefaultInstalledExtensionRepositoryTest
         Assert.assertEquals(Arrays.asList(this.resources.installed), this.installedExtensionRepository
             .getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), "namespace"));
 
-        Assert.assertEquals(Collections.EMPTY_LIST,
+        Assert.assertEquals(Arrays.asList(this.resources.installedonnemspacewithrootdependency),
             this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID.getId(), "namespace"));
     }
 
@@ -435,7 +441,7 @@ public class DefaultInstalledExtensionRepositoryTest
         Assert.assertEquals(Arrays.asList(this.resources.installed), this.installedExtensionRepository
             .getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), "namespace"));
 
-        Assert.assertEquals(Collections.EMPTY_LIST,
+        Assert.assertEquals(Arrays.asList(this.resources.installedonnemspacewithrootdependency),
             this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID.getId(), "namespace"));
     }
 
