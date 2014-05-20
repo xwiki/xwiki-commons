@@ -110,12 +110,12 @@
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <version>0.2.0</version>
+      <version>0.2.1</version>
     </dependency>
     <dependency>
       <groupId>org.sonatype.sisu</groupId>
       <artifactId>sisu-guice</artifactId>
-      <version>3.2.0</version>
+      <version>3.2.1</version>
       <classifier>no_aop</classifier>
     </dependency>
 
