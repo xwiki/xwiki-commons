@@ -112,7 +112,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     /**
      * Indicate if Job log should be grabbed.
      */
-    private boolean isolated;
+    private boolean isolated = true;
 
     /**
      * @param request the request provided when started the job
