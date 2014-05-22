@@ -55,5 +55,6 @@
     <module>xwiki-commons-crypto-password</module>
     <module>xwiki-commons-crypto-pkix</module>
     <module>xwiki-commons-crypto-signer</module>
+    <module>xwiki-commons-crypto-store</module>
   </modules>
 </project>
