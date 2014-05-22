@@ -40,7 +40,7 @@ public interface CertificateStore
     /**
      * Store a certificate into a certificate store.
      *
-     * @param store the reference of a document or a space where the certificate should be stored.
+     * @param store the reference of the store where the certificate should be saved.
      * @param certificate the certificate to store.
      * @throws CertificateStoreException on error.
      */
@@ -49,7 +49,7 @@ public interface CertificateStore
     /**
      * Return a certificate provider providing from the given certificate store.
      *
-     * @param store the reference of a document or a space where the certificate are stored.
+     * @param store the reference of the store where the certificate should be saved.
      * @return a certificate provider.
      * @throws CertificateStoreException on error.
      */
@@ -58,7 +58,7 @@ public interface CertificateStore
     /**
      * Return all the certificates available in a certificate store.
      *
-     * @param store the reference of a document or a space where the certificate are stored.
+     * @param store the reference of the store where the certificate should be saved.
      * @return a collection of certificates.
      * @throws CertificateStoreException on error.
      */
