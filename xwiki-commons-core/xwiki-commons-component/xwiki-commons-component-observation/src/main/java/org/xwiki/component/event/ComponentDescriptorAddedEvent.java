@@ -23,6 +23,13 @@ import java.lang.reflect.Type;
 
 /**
  * Event sent to tell that a new Component Descriptor has been registered.
+ * <p>
+ * The event also send the following parameters:
+ * </p>
+ * <ul>
+ * <li>source: the {@link org.xwiki.component.descriptor.ComponentDescriptor} instance</li>
+ * <li>data: the {@link org.xwiki.component.manager.ComponentManager} where the component was registered</li>
+ * </ul>
  * 
  * @version $Id$
  * @since 2.6RC2

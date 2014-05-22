@@ -26,8 +26,10 @@ import java.io.Serializable;
  * specific event corresponds to only one {@link #actionName action type}.
  * 
  * @version $Id$
+ * @deprecated since 3.2M3, use {@link org.xwiki.bridge.event.ActionExecutedEvent} instead
  */
 // TODO: use the enumerated Action class when it's implemented...
+@Deprecated
 public class ActionExecutionEvent implements Event, Serializable
 {
     /**

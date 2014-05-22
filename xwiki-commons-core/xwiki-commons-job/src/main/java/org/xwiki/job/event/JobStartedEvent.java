@@ -27,6 +27,13 @@ import org.xwiki.observation.event.BeginEvent;
 
 /**
  * Job started event launched when a new job start.
+ * <p>
+ * The event also send the following parameters:
+ * </p>
+ * <ul>
+ * <li>source: the related {@link org.xwiki.job.Job} instance</li>
+ * <li>data: null</li>
+ * </ul>
  * 
  * @version $Id$
  * @since 4.0M1

@@ -37,6 +37,13 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Sent when logger is called.
+ * <p>
+ * The event also send the following parameters:
+ * </p>
+ * <ul>
+ * <li>source: the name of the associated logger</li>
+ * <li>data: null</li>
+ * </ul>
  * 
  * @version $Id$
  * @since 3.2M1
