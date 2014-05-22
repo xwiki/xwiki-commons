@@ -23,6 +23,13 @@ import org.xwiki.extension.ExtensionId;
 
 /**
  * An event triggered when a extension has been upgraded.
+ * <p>
+ * The event also send the following parameters:
+ * </p>
+ * <ul>
+ * <li>source: the related new {@link org.xwiki.extension.InstalledExtension} instance</li>
+ * <li>data: the related previous {@link org.xwiki.extension.InstalledExtension} instance</li>
+ * </ul>
  * 
  * @version $Id$
  * @since 4.0M1
