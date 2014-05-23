@@ -69,12 +69,12 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     /**
      * The prefix of all the extension related properties.
      */
-    private static final String CK_PEFIX = "extension.";
+    private static final String CK_PREFIX = "extension.";
 
     /**
      * The prefix of all the extension related properties.
      */
-    private static final String CK_REPOSITORIES_PEFIX = CK_PEFIX + "repositories.";
+    private static final String CK_REPOSITORIES_PEFIX = CK_PREFIX + "repositories.";
 
     /**
      * The logger to log.
@@ -113,7 +113,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     public File getLocalRepository()
     {
         if (this.localRepository == null) {
-            String localRepositoryPath = this.configuration.get().getProperty(CK_PEFIX + "localRepository");
+            String localRepositoryPath = this.configuration.get().getProperty(CK_PREFIX + "localRepository");
 
             if (localRepositoryPath == null) {
                 this.localRepository = new File(getHome(), "repository/");
@@ -131,7 +131,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         Collection<ExtensionRepositoryDescriptor> repositories;
 
         List<String> repositoryStrings =
-            this.configuration.get().getProperty(CK_PEFIX + "repositories", Collections.<String> emptyList());
+            this.configuration.get().getProperty(CK_PREFIX + "repositories", Collections.<String> emptyList());
 
         if (repositoryStrings.isEmpty()) {
             repositories = null;
@@ -227,6 +227,6 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     public String getUserAgent()
     {
         // TODO: add version (need a way to get platform version first)
-        return this.configuration.get().getProperty(CK_PEFIX + "userAgent", DEFAULT_USERAGENT);
+        return this.configuration.get().getProperty(CK_PREFIX + "userAgent", DEFAULT_USERAGENT);
     }
 }
