@@ -72,9 +72,9 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     private static final String CK_PREFIX = "extension.";
 
     /**
-     * The prefix of all the extension related properties.
+     * The prefix of all the extension repository related properties.
      */
-    private static final String CK_REPOSITORIES_PEFIX = CK_PREFIX + "repositories.";
+    private static final String CK_REPOSITORIES_PREFIX = CK_PREFIX + "repositories.";
 
     /**
      * The logger to log.
@@ -176,7 +176,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     {
         String id = descriptor.getId();
 
-        String prefix = CK_REPOSITORIES_PEFIX + id + '.';
+        String prefix = CK_REPOSITORIES_PREFIX + id + '.';
 
         ConfigurationSource configurationSource = this.configuration.get();
 
