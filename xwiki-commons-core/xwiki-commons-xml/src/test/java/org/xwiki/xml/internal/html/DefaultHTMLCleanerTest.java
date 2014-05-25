@@ -180,27 +180,31 @@ public class DefaultHTMLCleanerTest
     @Test
     public void scriptAndCData()
     {
-        assertHTML("<script type=\"text/javascript\">//<![CDATA[\n//\nalert(\"Hello World\")\n// \n//]]></script>", 
-            "<script type=\"text/javascript\">//<![CDATA[\nalert(\"Hello World\")\n// ]]></script>");
+        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>",
+            "<script type=\"text/javascript\"><![CDATA[\nalert(\"Hello World\")\n]]></script>");
 
-        assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\n"
-            + "// \n"
+        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*///\nalert(\"Hello World\")\n/*]]>*/</script>",
+            "<script type=\"text/javascript\">//<![CDATA[\nalert(\"Hello World\")\n//]]></script>");
+
+        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>",
+            "<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>");
+
+        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\n\n"
             + "function escapeForXML(origtext) {\n"
             + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
             + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');"
-            + "}\n"
-            + "// \n\n//]]>"
+            + "}\n\n/*]]>*/"
             + "</script>", "<script type=\"text/javascript\">\n"
-            + "// <![CDATA[\n"
+            + "/*<![CDATA[*/\n"
             + "function escapeForXML(origtext) {\n"
             + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
             + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');"
             + "}\n"
-            + "// ]]>\n"
+            + "/*]]>*/\n"
             + "</script>");
 
-        assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script>&lt;&gt;</script>");
-        assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script><></script>");
+        assertHTML("<script>/*<![CDATA[*/<>\n/*]]>*/</script>", "<script>&lt;&gt;</script>");
+        assertHTML("<script>/*<![CDATA[*/<>\n/*]]>*/</script>", "<script><></script>");
 
         // Verify that CDATA not inside SCRIPT or STYLE elements are considered comments in HTML and thus stripped
         // when cleaned.
@@ -208,6 +212,24 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p>&amp;&amp;</p>", "<p>&<![CDATA[&]]>&</p>");
     }
 
+    /**
+     * Verify that inline style elements are not cleaned and that we can have a CDATA section inside.
+     */
+    @Test
+    public void styleAndCData()
+    {
+        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
+            "<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>");
+
+        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
+            "<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>");
+
+        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/a>span { color: blue;}\n/*]]>*/</style>",
+            "<style type=\"text/css\">a&gt;span { color: blue;}</style>");
+
+        assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
+        assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style><></style>");
+    }
     /**
      * Verify that we can control what filters are used for cleaning.
      */
@@ -325,6 +347,12 @@ public class DefaultHTMLCleanerTest
     private void assertHTML(String expected, String actual)
     {
         Assert.assertEquals(HEADER_FULL + expected + FOOTER,
+            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
+    }
+
+    private void assertHTMLWithHeadContent(String expected, String actual)
+    {
+        Assert.assertEquals(HEADER + "<html><head>" + expected + "</head><body>" + FOOTER,
             HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
     }
 }
