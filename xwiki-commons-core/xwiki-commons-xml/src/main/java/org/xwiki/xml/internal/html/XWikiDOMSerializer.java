@@ -28,6 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.htmlcleaner.BaseToken;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.CommentNode;
@@ -59,6 +60,10 @@ public class XWikiDOMSerializer
      */
     private static final Pattern CDATA_PATTERN =
         Pattern.compile("<!\\[CDATA\\[.*(\\]\\]>|<!\\[CDATA\\[)", Pattern.DOTALL);
+
+    private static final String COMMENT_START = "/*";
+
+    private static final String COMMENT_END = "*/";
 
     /**
      * The HTML Cleaner properties set by the user to control the HTML cleaning.
@@ -122,8 +127,10 @@ public class XWikiDOMSerializer
             // Generate a javascript comment in front on the CDATA block so that it works in IE6 and when
             // serving XHTML under a mimetype of HTML.
             if (specialCase) {
-                element.appendChild(document.createTextNode("//"));
-                element.appendChild(document.createCDATASection("\n" + content + "\n//"));
+                element.appendChild(document.createTextNode(COMMENT_START));
+                element.appendChild(document.createCDATASection(COMMENT_END + StringUtils.chomp(content) + "\n"
+                    + COMMENT_START));
+                element.appendChild(document.createTextNode(COMMENT_END));
             } else {
                 element.appendChild(document.createTextNode(content));
             }
