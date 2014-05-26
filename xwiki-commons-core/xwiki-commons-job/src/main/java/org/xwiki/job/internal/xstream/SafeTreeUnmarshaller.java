@@ -25,17 +25,18 @@ import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
+import com.thoughtworks.xstream.core.ReferenceByXPathUnmarshaller;
 import com.thoughtworks.xstream.core.TreeUnmarshaller;
 import com.thoughtworks.xstream.core.util.FastStack;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
- * A {@link TreeUnmarshaller} which never fail whatever value is provided.
+ * A {@link ReferenceByXPathUnmarshaller} which never fail whatever value is provided.
  * 
  * @version $Id$
  */
-public class SafeTreeUnmarshaller extends TreeUnmarshaller
+public class SafeTreeUnmarshaller extends ReferenceByXPathUnmarshaller
 {
     /**
      * The logger.
@@ -68,8 +69,8 @@ public class SafeTreeUnmarshaller extends TreeUnmarshaller
             } catch (Exception e1) {
                 // TODO Should never happen
 
-                LOGGER.debug("Failed to access private fied com.thoughtworks.xstream.core.TreeUnmarshaller#types", type,
-                    e1);
+                LOGGER.debug("Failed to access private fied com.thoughtworks.xstream.core.TreeUnmarshaller#types",
+                    type, e1);
             }
 
             LOGGER.debug("Got unknown exception when converting object of type [{}]", type, e);

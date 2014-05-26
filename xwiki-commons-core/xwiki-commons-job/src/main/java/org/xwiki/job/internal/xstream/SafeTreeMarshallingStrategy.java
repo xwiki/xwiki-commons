@@ -20,28 +20,30 @@
 package org.xwiki.job.internal.xstream;
 
 import com.thoughtworks.xstream.converters.ConverterLookup;
+import com.thoughtworks.xstream.core.ReferenceByXPathMarshallingStrategy;
 import com.thoughtworks.xstream.core.TreeMarshaller;
-import com.thoughtworks.xstream.core.TreeMarshallingStrategy;
 import com.thoughtworks.xstream.core.TreeUnmarshaller;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
- * A {@link TreeMarshallingStrategy} which never fail whatever value is provided.
+ * A {@link ReferenceByXPathMarshallingStrategy} which never fail whatever value is provided.
  * 
  * @version $Id$
  * @since 5.4M1
  */
-public class SafeTreeMarshallingStrategy extends TreeMarshallingStrategy
+public class SafeTreeMarshallingStrategy extends ReferenceByXPathMarshallingStrategy
 {
     private SafeXStream xstream;
 
     /**
-     * @param xstream the {@link XStream} instance to use to isolate array element marshaling
+     * @param xstream the {@link com.thoughtworks.xstream.XStream} instance to use to isolate array element marshaling
      */
     public SafeTreeMarshallingStrategy(SafeXStream xstream)
     {
+        super(RELATIVE);
+
         this.xstream = xstream;
     }
 
@@ -58,6 +60,6 @@ public class SafeTreeMarshallingStrategy extends TreeMarshallingStrategy
     protected TreeMarshaller createMarshallingContext(HierarchicalStreamWriter writer, ConverterLookup converterLookup,
         Mapper mapper)
     {
-        return new SafeTreeMarshaller(writer, converterLookup, mapper, xstream);
+        return new SafeTreeMarshaller(writer, converterLookup, mapper, RELATIVE, this.xstream);
     }
 }

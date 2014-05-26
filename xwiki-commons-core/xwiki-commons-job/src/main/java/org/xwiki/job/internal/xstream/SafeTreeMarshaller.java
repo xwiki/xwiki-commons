@@ -25,17 +25,17 @@ import org.slf4j.LoggerFactory;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
-import com.thoughtworks.xstream.core.TreeMarshaller;
+import com.thoughtworks.xstream.core.ReferenceByXPathMarshaller;
 import com.thoughtworks.xstream.core.util.ObjectIdDictionary;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
- * A {@link TreeMarshaller} which never fail whatever value is provided.
+ * A {@link ReferenceByXPathMarshaller} which never fail whatever value is provided.
  * 
  * @version $Id$
  */
-public class SafeTreeMarshaller extends TreeMarshaller
+public class SafeTreeMarshaller extends ReferenceByXPathMarshaller
 {
     /**
      * The logger.
@@ -45,17 +45,18 @@ public class SafeTreeMarshaller extends TreeMarshaller
     private SafeXStream xstream;
 
     /**
-     * @see TreeMarshaller#TreeMarshaller(HierarchicalStreamWriter, ConverterLookup,
-     *      com.thoughtworks.xstream.mapper.Mapper)
+     * @see ReferenceByXPathMarshaller#ReferenceByXPathMarshaller(HierarchicalStreamWriter, ConverterLookup, Mapper,
+     *      int)
      * @param writer the writer
      * @param converterLookup the converter lookup
      * @param mapper the mapper
-     * @param xstream the {@link XStream} instance to use to isolate array element marshaling
+     * @param mode the marshalling mode
+     * @param xstream the {@link com.thoughtworks.xstream.XStream} instance to use to isolate array element marshaling
      */
     public SafeTreeMarshaller(HierarchicalStreamWriter writer, ConverterLookup converterLookup, Mapper mapper,
-        SafeXStream xstream)
+        int mode, SafeXStream xstream)
     {
-        super(writer, converterLookup, mapper);
+        super(writer, converterLookup, mapper, mode);
 
         this.xstream = xstream;
     }
@@ -73,7 +74,7 @@ public class SafeTreeMarshaller extends TreeMarshaller
     }
 
     @Override
-    protected void convert(Object item, Converter converter)
+    public void convert(Object item, Converter converter)
     {
         ObjectIdDictionary parentObjects = getParentObjects();
 
@@ -91,24 +92,4 @@ public class SafeTreeMarshaller extends TreeMarshaller
             parentObjects.removeId(item);
         }
     }
-
-    /*
-    @Override
-    protected void convert(Object item, Converter converter)
-    {
-        if (!XStreamUtils.isSafeType(item)) {
-            // Test the serialization
-            try {
-                this.xstream.marshal(item, VoidWriter.WRITER);
-            } catch (Throwable e) {
-                LOGGER.debug("Failed to write field. Ingoring it.", e);
-
-                // If anything goes wrong ignore it
-                return;
-            }
-        }
-
-        super.convert(item, converter);
-    }
-    */
 }
