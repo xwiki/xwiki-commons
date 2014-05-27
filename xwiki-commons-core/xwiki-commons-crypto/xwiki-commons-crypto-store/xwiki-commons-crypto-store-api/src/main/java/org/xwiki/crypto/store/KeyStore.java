@@ -59,22 +59,22 @@ public interface KeyStore
     /**
      * Retrieve a private key from a given store that may contains only a single key.
      *
-     * @param entity the single-key store where the key is stored with its certificate.
+     * @param store the single-key store where the key is stored with its certificate.
      * @return the certified key pair, or null if none have been found.
      * @throws KeyStoreException on error.
      */
-    CertifiedKeyPair retrieve(StoreReference entity) throws KeyStoreException;
+    CertifiedKeyPair retrieve(StoreReference store) throws KeyStoreException;
 
     /**
      * Retrieve the certified key pair from a given store that may contains only a single key and decrypt it using
      * the given password.
      *
-     * @param entity the single-key store where the key is stored encrypted with its certificate.
+     * @param store the single-key store where the key is stored encrypted with its certificate.
      * @param password the password to decrypt the private key.
      * @return the certified key pair, or null if none have been found.
      * @throws KeyStoreException on error.
      */
-    CertifiedKeyPair retrieve(StoreReference entity, byte[] password) throws KeyStoreException;
+    CertifiedKeyPair retrieve(StoreReference store, byte[] password) throws KeyStoreException;
 
 
     /**

@@ -20,19 +20,29 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>xwiki-commons-crypto</artifactId>
+    <artifactId>xwiki-commons-crypto-store</artifactId>
     <groupId>org.xwiki.commons</groupId>
     <version>6.1-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-crypto-store</artifactId>
-  <packaging>pom</packaging>
-  <name>XWiki Commons - Crypto - Store</name>
-  <description>Provide storage services for cryptographic data</description>
-  <modules>
-    <module>xwiki-commons-crypto-store-api</module>
-    <module>xwiki-commons-crypto-store-filesystem</module>
-  </modules>
+  <artifactId>xwiki-commons-crypto-store-api</artifactId>
+  <packaging>jar</packaging>
+  <name>XWiki Commons - Cryptographic Services - Storage API</name>
+  <description>Provides common storage API for cryptographic data</description>
+  <properties>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Common Storage API for cryptographic data</xwiki.extension.name>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-crypto-pkix</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
