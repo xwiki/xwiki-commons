@@ -34,7 +34,6 @@ import org.xwiki.crypto.pkix.CertificateFactory;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.pkix.params.x509certificate.X509CertifiedPublicKey;
 import org.xwiki.crypto.store.FileStoreReference;
-import org.xwiki.crypto.store.KeyStore;
 import org.xwiki.crypto.store.StoreReference;
 
 /**
@@ -43,7 +42,7 @@ import org.xwiki.crypto.store.StoreReference;
  * @version $Id$
  * @since 6.1M2
  */
-public abstract class AbstractX509FileSystemStore implements KeyStore
+public abstract class AbstractX509FileSystemStore
 {
     protected static final String CERTIFICATE = "CERTIFICATE";
     protected static final String DASHES = "-----";

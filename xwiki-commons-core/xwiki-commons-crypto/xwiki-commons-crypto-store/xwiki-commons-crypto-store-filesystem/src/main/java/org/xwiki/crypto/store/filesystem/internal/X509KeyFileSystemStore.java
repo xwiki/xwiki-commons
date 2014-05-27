@@ -38,6 +38,7 @@ import org.xwiki.crypto.password.PrivateKeyPasswordBasedEncryptor;
 import org.xwiki.crypto.pkix.params.CertifiedKeyPair;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.pkix.params.x509certificate.X509CertifiedPublicKey;
+import org.xwiki.crypto.store.KeyStore;
 import org.xwiki.crypto.store.KeyStoreException;
 import org.xwiki.crypto.store.StoreReference;
 
@@ -50,7 +51,7 @@ import org.xwiki.crypto.store.StoreReference;
 @Component
 @Named("X509file")
 @Singleton
-public class X509KeyFileSystemStore extends AbstractX509FileSystemStore
+public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implements KeyStore
 {
     private static final String PRIVATE_KEY = "PRIVATE KEY";
     private static final String ENCRYPTED_PRIVATE_KEY = "ENCRYPTED " + PRIVATE_KEY;
