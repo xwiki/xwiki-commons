@@ -95,6 +95,13 @@
     <dependency>
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
+      <exclusions>
+        <!-- Useless in Java 6 -->
+        <exclusion>
+          <artifactId>backport-spi</artifactId>
+          <groupId>org.99soft.commons</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
