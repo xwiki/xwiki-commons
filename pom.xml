@@ -380,6 +380,13 @@
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
         <version>0.9.9-RC1</version>
+        <exclusions>
+          <!-- Useless in Java 6 -->
+          <exclusion>
+            <artifactId>backport-spi</artifactId>
+            <groupId>org.99soft.commons</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Used by reflections and other projects in commons, platform and rendering -->
