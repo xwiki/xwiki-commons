@@ -1,0 +1,1 @@
+org.xwiki.crypto.store.filesystem.internal.X509KeyFileSystemStore
