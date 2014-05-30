@@ -244,7 +244,8 @@ public class DefaultDiffManager implements DiffManager
                         merged.add(commonAncestor.get(index));
                     }
 
-                    if (isInPreviousDelta(deltaNext, deltaCurrent.getPrevious().getLastIndex())) {
+                    if (deltaNext != null
+                        && deltaNext.getPrevious().getIndex() <= deltaCurrent.getPrevious().getLastIndex()) {
                         // Conflict
                         logConflict(mergeResult, deltaCurrent, deltaNext);
                         deltaNext = nextElement(patchNext);
@@ -259,7 +260,8 @@ public class DefaultDiffManager implements DiffManager
                     merged.add(commonAncestor.get(index));
                 }
 
-                if (isInPreviousDelta(deltaCurrent, deltaNext.getPrevious().getLastIndex())) {
+                if (deltaCurrent != null
+                    && deltaCurrent.getPrevious().getIndex() <= deltaNext.getPrevious().getLastIndex()) {
                     // Conflict
                     logConflict(mergeResult, deltaCurrent, deltaNext);
                     deltaCurrent = nextElement(patchCurrent);
@@ -351,10 +353,5 @@ public class DefaultDiffManager implements DiffManager
     private <E> boolean isPreviousIndex(Delta<E> delta, int index)
     {
         return delta != null && delta.getPrevious().getIndex() == index;
-    }
-
-    private <E> boolean isInPreviousDelta(Delta<E> delta, int index)
-    {
-        return delta != null && delta.getPrevious().getIndex() <= index && delta.getPrevious().getLastIndex() >= index;
     }
 }
