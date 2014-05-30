@@ -19,20 +19,21 @@
  */
 package org.xwiki.diff.internal;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.diff.Delta.Type;
 import org.xwiki.diff.DiffManager;
 import org.xwiki.diff.DiffResult;
-import org.xwiki.diff.MergeException;
 import org.xwiki.diff.MergeResult;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -340,5 +341,21 @@ public class DefaultDiffManagerTest
 
         Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals("yycd", toString(result.getMerged()));
+
+        // New overlapping current
+        result =
+            this.mocker.getComponentUnderTest().merge(toCharacters("aabbcc"), toCharacters("arrbcc"),
+                toCharacters("ddddcc"), null);
+
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals("ddddcc", toString(result.getMerged()));
+
+        // current overlapping new
+        result =
+            this.mocker.getComponentUnderTest().merge(toCharacters("aabbcc"), toCharacters("ddddcc"),
+                toCharacters("arrbcc"), null);
+
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals("ddddcc", toString(result.getMerged()));
     }
 }
