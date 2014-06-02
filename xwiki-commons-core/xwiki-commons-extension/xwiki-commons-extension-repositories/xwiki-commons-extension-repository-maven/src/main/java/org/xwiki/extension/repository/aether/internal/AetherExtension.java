@@ -19,9 +19,12 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.util.Map;
+
 import org.apache.maven.model.Model;
 import org.eclipse.aether.artifact.Artifact;
 import org.xwiki.extension.AbstractExtension;
+import org.xwiki.extension.repository.internal.MavenExtension;
 
 /**
  * Add support for repositories supported by AETHER (only Maven for now).
@@ -29,7 +32,7 @@ import org.xwiki.extension.AbstractExtension;
  * @version $Id$
  * @since 4.0M1
  */
-public class AetherExtension extends AbstractExtension
+public class AetherExtension extends AbstractExtension implements MavenExtension
 {
     public static final String PKEY_AETHER_ATIFACT = "aether.Artifact";
 
@@ -44,6 +47,10 @@ public class AetherExtension extends AbstractExtension
         // custom properties
         putProperty(PKEY_AETHER_ATIFACT, artifact);
         putProperty(PKEY_MAVEN_MODEL, mavenModel);
+
+        for (Map.Entry<Object, Object> entry : mavenModel.getProperties().entrySet()) {
+            putProperty((String) entry.getKey(), entry.getValue());
+        }
     }
 
     /**
@@ -52,5 +59,17 @@ public class AetherExtension extends AbstractExtension
     public Model getMavenModel()
     {
         return (Model) getProperty(PKEY_MAVEN_MODEL);
+    }
+
+    @Override
+    public String getMavenArtifactId()
+    {
+        return getMavenModel().getArtifactId();
+    }
+
+    @Override
+    public String getMavenGroupId()
+    {
+        return getMavenModel().getGroupId();
     }
 }

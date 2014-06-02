@@ -64,6 +64,7 @@ import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.extension.repository.internal.MavenExtension;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.properties.ConverterManager;
 
@@ -159,11 +160,10 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
     private String getArtifactId(DefaultCoreExtension extension) throws ResolveException
     {
-        Model model = (Model) extension.getProperty(MavenCoreExtension.PKEY_MAVEN_MODEL);
-
         String artifactId;
-        if (model != null) {
-            artifactId = model.getArtifactId();
+
+        if (extension instanceof MavenExtension) {
+            artifactId = ((MavenExtension) extension).getMavenArtifactId();
         } else {
             Matcher matcher = PARSER_ID.matcher(extension.getId().getId());
             if (!matcher.matches()) {

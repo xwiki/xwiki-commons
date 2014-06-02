@@ -20,9 +20,11 @@
 package org.xwiki.extension.repository.internal.core;
 
 import java.net.URL;
+import java.util.Map;
 
 import org.apache.maven.model.Model;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.repository.internal.MavenExtension;
 
 /**
  * Extends {@link DefaultCoreExtension} with Maven related informations.
@@ -30,12 +32,17 @@ import org.xwiki.extension.ExtensionId;
  * @version $Id$
  * @since 4.0M1
  */
-public class MavenCoreExtension extends DefaultCoreExtension
+public class MavenCoreExtension extends DefaultCoreExtension implements MavenExtension
 {
     /**
-     * The associated to the Maven model object.
+     * The name of the property containing the artifact id.
      */
-    public static final String PKEY_MAVEN_MODEL = "maven.Model";
+    private static final String PKEY_MAVEN_ARTIFACTID = "maven.artifactId";
+
+    /**
+     * The name of the property containing the group id.
+     */
+    private static final String PKEY_MAVEN_GROUPID = "maven.groupId";
 
     /**
      * @param repository the core extension repository
@@ -49,14 +56,27 @@ public class MavenCoreExtension extends DefaultCoreExtension
     {
         super(repository, url, id, type);
 
-        putProperty(PKEY_MAVEN_MODEL, mavenModel);
+        putProperty(PKEY_MAVEN_ARTIFACTID, mavenModel.getArtifactId());
+        putProperty(PKEY_MAVEN_GROUPID, mavenModel.getGroupId());
+
+        for (Map.Entry<Object, Object> entry : mavenModel.getProperties().entrySet()) {
+            putProperty((String) entry.getKey(), entry.getValue());
+        }
     }
-    
+
     /**
-     * @return the Maven model object
+     * @return the Maven artifact id
      */
-    public Model getMavenModel()
+    public String getMavenArtifactId()
     {
-        return (Model) getProperty(PKEY_MAVEN_MODEL);
+        return (String) getProperty(PKEY_MAVEN_ARTIFACTID);
+    }
+
+    /**
+     * @return the Maven artifact id
+     */
+    public String getMavenGroupId()
+    {
+        return (String) getProperty(PKEY_MAVEN_GROUPID);
     }
 }
