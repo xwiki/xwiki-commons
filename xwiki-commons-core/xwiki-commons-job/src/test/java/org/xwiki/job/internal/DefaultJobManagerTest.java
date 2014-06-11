@@ -22,17 +22,17 @@ package org.xwiki.job.internal;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-
 import org.jmock.Expectations;
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.context.internal.DefaultExecution;
 import org.xwiki.context.internal.DefaultExecutionContextManager;
 import org.xwiki.job.JobManager;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
+import org.xwiki.job.JobStatusStore;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.jmock.annotation.MockingRequirement;
 
 /**
@@ -51,7 +51,7 @@ public class DefaultJobManagerTest extends AbstractMockingComponentTestCase<JobM
     public void testGetJobStatusForUnexistingJob() throws Exception
     {
         final List<String> jobId = Arrays.asList("unexisting-job");
-        final JobStatusStorage jobStatusStorage = getComponentManager().getInstance(JobStatusStorage.class);
+        final JobStatusStore jobStatusStorage = getComponentManager().getInstance(JobStatusStore.class);
 
         getMockery().checking(new Expectations()
         {

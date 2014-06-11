@@ -42,6 +42,7 @@ import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobException;
 import org.xwiki.job.JobManager;
+import org.xwiki.job.JobStatusStore;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
 
@@ -50,9 +51,11 @@ import org.xwiki.job.event.status.JobStatus;
  * 
  * @version $Id$
  * @since 4.0M1
+ * @deprecated since 6.1M2, use {@link DefaultJobExecutor} instead
  */
 @Component
 @Singleton
+@Deprecated
 public class DefaultJobManager implements JobManager, Runnable, Initializable
 {
     /**
@@ -66,7 +69,7 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
      * Used to store the results of the jobs execution.
      */
     @Inject
-    private JobStatusStorage storage;
+    private JobStatusStore store;
 
     /**
      * Used to get the Execution Context.
@@ -223,6 +226,6 @@ public class DefaultJobManager implements JobManager, Runnable, Initializable
         }
 
         // Is it stored
-        return this.storage.getJobStatus(id);
+        return this.store.getJobStatus(id);
     }
 }

@@ -20,6 +20,7 @@
 package org.xwiki.extension.job.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -41,6 +42,9 @@ import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.job.GroupedJob;
+import org.xwiki.job.JobGroupPath;
+import org.xwiki.job.Request;
 import org.xwiki.job.internal.AbstractJob;
 import org.xwiki.job.internal.AbstractJobStatus;
 import org.xwiki.logging.marker.BeginTranslationMarker;
@@ -56,12 +60,17 @@ import org.xwiki.logging.marker.TranslationMarker;
  * @since 4.0M1
  */
 public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends AbstractJobStatus<R>> extends
-    AbstractJob<R, S>
+    AbstractJob<R, S> implements GroupedJob
 {
     /**
      * The key to use to access the context extension plan.
      */
     public static final String CONTEXTKEY_PLAN = "job.extension.plan";
+
+    /**
+     * The root group of all extension related jobs.
+     */
+    public static final JobGroupPath ROOT_GROUP = new JobGroupPath(Arrays.asList("extension"));
 
     /**
      * Used to manipulate local extension repository.
@@ -80,6 +89,27 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
      */
     @Inject
     protected InstalledExtensionRepository installedExtensionRepository;
+
+    protected JobGroupPath groupPath;
+
+    @Override
+    public void initialize(Request request)
+    {
+        super.initialize(request);
+
+        // Build the group path
+        if (getRequest().getNamespaces() != null && getRequest().getNamespaces().size() == 1) {
+            this.groupPath = new JobGroupPath(getRequest().getNamespaces().iterator().next(), ROOT_GROUP);
+        } else {
+            this.groupPath = ROOT_GROUP;
+        }
+    }
+
+    @Override
+    public JobGroupPath getGroupPath()
+    {
+        return this.groupPath;
+    }
 
     private static TranslationMarker getTranslationMarker(ExtensionPlanAction action, String extension, boolean begin)
     {
@@ -108,7 +138,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
      */
     protected void applyActions(Collection<ExtensionPlanAction> actions) throws ExtensionException
     {
-        notifyPushLevelProgress(actions.size());
+        this.progressManager.pushLevelProgress(actions.size(), this);
 
         try {
             for (ExtensionPlanAction action : actions) {
@@ -116,10 +146,10 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                     applyAction(action);
                 }
 
-                notifyStepPropress();
+                this.progressManager.stepPropress(this);
             }
         } finally {
-            notifyPopLevelProgress();
+            this.progressManager.popLevelProgress(this);
         }
     }
 
@@ -149,13 +179,13 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             previousExtensionsIds = null;
         }
 
-        notifyPushLevelProgress(2);
+        this.progressManager.pushLevelProgress(2, this);
 
         try {
             if (action.getAction() == Action.UNINSTALL) {
                 InstalledExtension installedExtension = (InstalledExtension) action.getExtension();
 
-                notifyStepPropress();
+                this.progressManager.stepPropress(this);
 
                 // Uninstall
                 uninstallExtension(installedExtension, namespace);
@@ -163,7 +193,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 // Store extension in local repository
                 LocalExtension localExtension = this.localExtensionRepository.resolve(extension.getId());
 
-                notifyStepPropress();
+                this.progressManager.stepPropress(this);
 
                 // Install
                 installExtension(localExtension, previousExtensions, namespace, action.isDependency());
@@ -183,7 +213,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
 
             throw e;
         } finally {
-            notifyPopLevelProgress();
+            this.progressManager.popLevelProgress(this);
         }
     }
 

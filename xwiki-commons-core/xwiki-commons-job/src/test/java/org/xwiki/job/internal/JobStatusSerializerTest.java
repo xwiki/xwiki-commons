@@ -132,7 +132,7 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
 
-        status.getLog().error("error message", new DefaultJobStatusStorage());
+        status.getLog().error("error message", new DefaultJobStatusStore());
 
         status = writeread(status);
 
@@ -159,7 +159,7 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
 
-        status.getLog().error("error message", new ObjectTest(new DefaultJobStatusStorage()));
+        status.getLog().error("error message", new ObjectTest(new DefaultJobStatusStore()));
 
         status = writeread(status);
 

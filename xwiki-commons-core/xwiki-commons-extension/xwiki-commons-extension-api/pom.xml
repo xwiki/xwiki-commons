@@ -143,6 +143,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
+              **/AbstractExtensionJob.java,
               **/DefaultCoreExtensionScanner.java,
               **/DefaultExtensionRepositoryManager.java,
               **/DefaultExtensionSerializer.java,

@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.job.internal;
+package org.xwiki.job;
 
 import java.util.List;
 
@@ -28,19 +28,11 @@ import org.xwiki.job.event.status.JobStatus;
  * Store and retrieve {@link JobStatus} instances.
  * 
  * @version $Id$
- * @since 4.0M1
- * @deprecated since 6.1M2, use {@link org.xwiki.job.JobStatusStore} instead
+ * @since 6.1M2
  */
 @Role
-@Deprecated
-public interface JobStatusStorage
+public interface JobStatusStore
 {
-    /**
-     * @param id the id of the job
-     * @return the job status
-     */
-    JobStatus getJobStatus(String id);
-
     /**
      * @param id the id of the job
      * @return the job status
@@ -59,13 +51,6 @@ public interface JobStatusStorage
 
     /**
      * @param id the id of the job
-     * @return the job status
      */
-    JobStatus remove(String id);
-
-    /**
-     * @param id the id of the job
-     * @return the job status
-     */
-    JobStatus remove(List<String> id);
+    void remove(List<String> id);
 }

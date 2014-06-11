@@ -22,66 +22,55 @@ package org.xwiki.job;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.stability.Unstable;
 
 /**
- * Proxy used to simplify execution of jobs.
+ * By default Jobs are either executed asynchronously whenever there is a free thread in the pool. Jobs can implement
+ * {@link GroupedJob} to make sure they con't be executed at the same time than the jobs from the same groups.
  * 
  * @version $Id$
- * @since 4.0M1
- * @deprecated since 6.1M2, use {@link JobExecutor} instead
+ * @see GroupedJob
+ * @see Job
+ * @since 6.1M2
  */
 @Role
-@Deprecated
-public interface JobManager
+@Unstable
+public interface JobExecutor
 {
     /**
-     * @return the job currently running or the latest job, null if there is no job
+     * The current job running in the passed jobs group.
+     * 
+     * @param groupPath the group path
+     * @return the currently running job in the passed group
      */
-    Job getCurrentJob();
+    Job getCurrentJob(JobGroupPath groupPath);
 
     /**
-     * Return job status corresponding to the provided id from the current executed job or stored history.
+     * Return job corresponding to the provided id from the current executed or waiting jobs.
      * 
-     * @param id the id of the job
+     * @param jobId the id of the job
      * @return the job status corresponding to the provided job id, null if none can be found
      */
-    JobStatus getJobStatus(String id);
+    Job getJob(List<String> jobId);
 
     /**
-     * Return job status corresponding to the provided id from the current executed job or stored history.
-     * 
-     * @param id the id of the job
-     * @return the job status corresponding to the provided job id, null if none can be found
-     * @since 4.1M2
-     */
-    JobStatus getJobStatus(List<String> id);
-
-    /**
-     * Start a new job with the provided identifier and wait until its finished.
+     * Create and add a new job in the queue of jobs to execute.
      * 
      * @param jobType the role hint of the job component
      * @param request the request
      * @return the created job
      * @throws JobException error when creating the job
+     * @throws java.util.concurrent.RejectedExecutionException if this task cannot be accepted for execution (for
+     *             example when the {@link JobExecutor} is disposed).
      */
-    Job executeJob(String jobType, Request request) throws JobException;
-
-    /**
-     * Add a new job in the queue of jobs to execute.
-     * 
-     * @param jobType the role hint of the job component
-     * @param request the request
-     * @return the created job
-     * @throws JobException error when creating the job
-     */
-    Job addJob(String jobType, Request request) throws JobException;
+    Job execute(String jobType, Request request) throws JobException;
 
     /**
      * Add a new job in the queue of jobs to execute.
      * 
      * @param job the job to execute
-     * @since 5.1M2
+     * @throws java.util.concurrent.RejectedExecutionException if this task cannot be accepted for execution (for
+     *             example when the {@link JobExecutor} is disposed).
      */
-    void addJob(Job job);
+    void execute(Job job);
 }

@@ -38,15 +38,15 @@ import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 /**
- * Unit tests for {@link DefaultJobStatusStorage}.
+ * Unit tests for {@link DefaultJobStatusStore}.
  * 
  * @version $Id$
  */
 public class DefaultJobStatusStorageTest
 {
     @Rule
-    public final MockitoComponentMockingRule<DefaultJobStatusStorage> componentManager =
-        new MockitoComponentMockingRule<DefaultJobStatusStorage>(DefaultJobStatusStorage.class);
+    public final MockitoComponentMockingRule<DefaultJobStatusStore> componentManager =
+        new MockitoComponentMockingRule<DefaultJobStatusStore>(DefaultJobStatusStore.class);
 
     @Before
     public void before() throws Exception

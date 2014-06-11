@@ -34,7 +34,7 @@ import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.job.Job;
-import org.xwiki.job.JobManager;
+import org.xwiki.job.JobExecutor;
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
@@ -53,19 +53,21 @@ public abstract class AbstractExtensionHandlerTest
 
     protected InstalledExtensionRepository installedExtensionRepository;
 
-    protected JobManager jobManager;
+    protected JobExecutor jobExecutor;
 
     @Before
     public void setUp() throws Exception
     {
-        this.jobManager = this.mocker.getInstance(JobManager.class);
+        this.jobExecutor = this.mocker.getInstance(JobExecutor.class);
         this.localExtensionRepository = this.mocker.getInstance(LocalExtensionRepository.class);
         this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
     }
 
     protected Job executeJob(String jobId, Request request, LogLevel failFrom) throws Throwable
     {
-        Job installJob = this.jobManager.executeJob(jobId, request);
+        Job installJob = this.jobExecutor.execute(jobId, request);
+
+        installJob.join();
 
         List<LogEvent> errors = installJob.getStatus().getLog().getLogsFrom(failFrom);
         if (!errors.isEmpty()) {

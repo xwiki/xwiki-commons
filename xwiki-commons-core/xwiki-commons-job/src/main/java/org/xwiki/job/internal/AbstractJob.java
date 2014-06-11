@@ -25,13 +25,19 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
+import org.xwiki.context.ExecutionContextException;
+import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobContext;
+import org.xwiki.job.JobStatusStore;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobStartedEvent;
@@ -89,7 +95,19 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
      * Used to store the results of the jobs execution.
      */
     @Inject
-    protected JobStatusStorage storage;
+    protected JobStatusStore store;
+
+    /**
+     * Used to get the Execution Context.
+     */
+    @Inject
+    private Provider<Execution> executionProvider;
+
+    /**
+     * Used to create a new Execution Context from scratch.
+     */
+    @Inject
+    private Provider<ExecutionContextManager> executionContextManagerProvider;
 
     /**
      * The logger to log.
@@ -126,6 +144,8 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
      */
     protected final Condition finishedCondition = lock.newCondition();
 
+    protected boolean initExecutionContext = true;
+
     @Override
     public R getRequest()
     {
@@ -148,10 +168,44 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
     @Override
     public void run()
     {
-        jobStarting();
+        if (this.initExecutionContext) {
+            Execution execution = this.executionProvider.get();
 
+            // Initialize a new context only if there is not already one
+            ExecutionContext context;
+            if (execution.getContext() == null) {
+                // Create a clean Execution Context
+                context = new ExecutionContext();
+            } else {
+                context = null;
+            }
+
+            try {
+                if (context != null) {
+                    try {
+                        this.executionContextManagerProvider.get().initialize(context);
+                    } catch (ExecutionContextException e) {
+                        throw new RuntimeException("Failed to initialize Job [" + this + "] execution context", e);
+                    }
+                }
+
+                runInContext();
+            } finally {
+                if (context != null) {
+                    execution.removeContext();
+                }
+            }
+        } else {
+            runInContext();
+        }
+    }
+
+    protected void runInContext()
+    {
         Throwable error = null;
         try {
+            jobStarting();
+
             runInternal();
         } catch (Throwable t) {
             this.logger.error(LOG_EXCEPTION, "Exception thrown during job execution", t);
@@ -231,7 +285,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
             // Store the job status
             try {
                 if (this.request.getId() != null) {
-                    this.storage.storeAsync(this.status);
+                    this.store.storeAsync(this.status);
                 }
             } catch (Throwable t) {
                 this.logger.warn(LOG_STATUS_STORE_FAILED, "Failed to store job status [{}]", this.status, t);

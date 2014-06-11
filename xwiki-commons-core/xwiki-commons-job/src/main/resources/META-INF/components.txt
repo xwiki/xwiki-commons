@@ -1,5 +1,7 @@
 org.xwiki.job.internal.DefaultJobContext
+org.xwiki.job.internal.DefaultJobExecutor
 org.xwiki.job.internal.DefaultJobManager
 org.xwiki.job.internal.DefaultJobManagerConfiguration
 org.xwiki.job.internal.DefaultJobProgressManager
 org.xwiki.job.internal.DefaultJobStatusStorage
+org.xwiki.job.internal.DefaultJobStatusStore
