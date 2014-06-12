@@ -108,7 +108,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         @Override
         public void run()
         {
-            store(this.status);
+            saveJobStatus(this.status);
         }
     }
 
@@ -249,12 +249,16 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      * @param status the job status to save
      * @throws IOException when falling to store the provided status
      */
-    private void saveJobStatus(JobStatus status) throws IOException
+    private void saveJobStatus(JobStatus status)
     {
-        File statusFile = getJobFolder(status.getRequest().getId());
-        statusFile = new File(statusFile, FILENAME_STATUS);
+        try {
+            File statusFile = getJobFolder(status.getRequest().getId());
+            statusFile = new File(statusFile, FILENAME_STATUS);
 
-        this.serializer.write(status, statusFile);
+            this.serializer.write(status, statusFile);
+        } catch (Exception e) {
+            this.logger.warn("Failed to save job status [{}]", status, e);
+        }
     }
 
     @Override
@@ -286,24 +290,29 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     @Override
     public void store(JobStatus status)
     {
-        if (status != null && status.getRequest() != null && status.getRequest().getId() != null) {
-            this.cache.put(status.getRequest().getId(), status);
-
-            // On store Serializable job status on file system
-            if (status instanceof Serializable) {
-                try {
-                    saveJobStatus(status);
-                } catch (Exception e) {
-                    this.logger.warn("Failed to save job status [{}]", status, e);
-                }
-            }
-        }
+        store(status, false);
     }
 
     @Override
     public void storeAsync(JobStatus status)
     {
-        this.executorService.execute(new JobStatusSerializerRunnable(status));
+        store(status, true);
+    }
+
+    private void store(JobStatus status, boolean async)
+    {
+        if (status != null && status.getRequest() != null && status.getRequest().getId() != null) {
+            this.cache.put(status.getRequest().getId(), status);
+
+            // Only store Serializable job status on file system
+            if (status instanceof Serializable) {
+                if (async) {
+                    this.executorService.execute(new JobStatusSerializerRunnable(status));
+                } else {
+                    saveJobStatus(status);
+                }
+            }
+        }
     }
 
     @Override

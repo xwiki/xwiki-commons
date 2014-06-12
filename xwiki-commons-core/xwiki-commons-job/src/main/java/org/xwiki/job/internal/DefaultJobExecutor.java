@@ -70,6 +70,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
         private Job currentJob;
 
+        private String groupThreadName;
+
         public JobGroupExecutor(JobGroupPath path)
         {
             super(1, 36000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
@@ -77,11 +79,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
             setThreadFactory(this);
 
             this.path = path;
-        }
-
-        public JobGroupPath getPath()
-        {
-            return this.path;
+            this.groupThreadName = this.path + " job group daemon thread";
         }
 
         @Override
@@ -91,12 +89,16 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             this.currentJob = (Job) r;
 
+            Thread.currentThread().setName(this.groupThreadName + " - " + this.currentJob);
+
             super.beforeExecute(t, r);
         }
 
         @Override
         protected void afterExecute(Runnable r, Throwable t)
         {
+            Thread.currentThread().setName(this.groupThreadName);
+
             lockTree.unlock(this.path);
 
             this.currentJob = null;
@@ -123,10 +125,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         {
             Thread thread = this.threadFactory.newThread(r);
 
-            if (r instanceof GroupedJob) {
-                thread.setDaemon(true);
-                thread.setName(((GroupedJob) r).getGroupPath() + " job group daemon thread");
-            }
+            thread.setDaemon(true);
+            thread.setName(this.groupThreadName);
 
             return thread;
         }
@@ -164,17 +164,20 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     @Named("context")
     private Provider<ComponentManager> componentManager;
 
+    private final Map<List<String>, Queue<Job>> groupedJobs = new ConcurrentHashMap<List<String>, Queue<Job>>();
+
+    private final Map<List<String>, Job> jobs = new ConcurrentHashMap<List<String>, Job>();
+
+    /**
+     * Handle care of hierarchical locking for grouped jobs.
+     */
+    private final JobGroupPathLockTree lockTree = new JobGroupPathLockTree();
+
     /**
      * Map<groupname, group executor>.
      */
     private final Map<JobGroupPath, JobGroupExecutor> groupExecutors =
         new ConcurrentHashMap<JobGroupPath, JobGroupExecutor>();
-
-    private final Map<List<String>, Queue<Job>> groupedJobs = new ConcurrentHashMap<List<String>, Queue<Job>>();
-
-    private final Map<List<String>, Job> jobs = new ConcurrentHashMap<List<String>, Job>();
-
-    private final JobGroupPathLockTree lockTree = new JobGroupPathLockTree();
 
     /**
      * Execute non grouped jobs.

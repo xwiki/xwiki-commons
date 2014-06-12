@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * A job group path/identifier.
  * 
@@ -96,5 +98,11 @@ public class JobGroupPath
         }
 
         return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        return StringUtils.join(this.path, '/');
     }
 }
