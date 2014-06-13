@@ -106,4 +106,10 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
             return actionsCache;
         }
     }
+
+    @Override
+    public String toString()
+    {
+        return this.tree.toString();
+    }
 }

@@ -44,7 +44,6 @@ import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
-import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
@@ -60,8 +59,7 @@ import org.xwiki.extension.version.VersionConstraint;
  * @version $Id$
  * @since 4.1M1
  */
-public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
-    AbstractExtensionPlanJob<R>
+public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends AbstractExtensionPlanJob<R>
 {
     protected static class ModifableExtensionPlanTree extends DefaultExtensionPlanTree implements Cloneable
     {
@@ -132,7 +130,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         @Override
         public VersionConstraint getInitialVersionConstraint()
         {
-            return this.initialDependency.getVersionConstraint();
+            return this.initialDependency != null ? this.initialDependency.getVersionConstraint() : null;
         }
 
         public void setAction(ExtensionPlanAction action)
@@ -483,7 +481,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             if (installedExtension.isValid(namespace)
                 && versionConstraint.isCompatible(installedExtension.getId().getVersion())) {
                 if (getRequest().isVerbose()) {
-                    this.logger.debug("There is already an installed extension [{}] covering extension dependency [{}]",
+                    this.logger.debug(
+                        "There is already an installed extension [{}] covering extension dependency [{}]",
                         installedExtension.getId(), extensionDependency);
                 }
 

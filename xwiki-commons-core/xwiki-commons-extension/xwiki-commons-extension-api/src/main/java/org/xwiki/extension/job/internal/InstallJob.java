@@ -96,7 +96,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
     @Override
     protected void runInternal() throws Exception
     {
-        notifyPushLevelProgress(3);
+        this.progressManager.pushLevelProgress(3, this);
 
         ExecutionContext context = this.execution.getContext();
 
@@ -117,7 +117,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
                     .get(0).getThrowable());
             }
 
-            notifyStepPropress();
+            this.progressManager.stepPropress(this);
 
             // Put the plan in context
             // TODO: use a stack ?
@@ -129,25 +129,25 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
 
             // Download all extensions
 
-            notifyPushLevelProgress(actions.size());
+            this.progressManager.pushLevelProgress(actions.size(), this);
 
             try {
                 for (ExtensionPlanAction action : actions) {
                     store(action);
 
-                    notifyStepPropress();
+                    this.progressManager.stepPropress(this);
                 }
             } finally {
-                notifyPopLevelProgress();
+                this.progressManager.popLevelProgress(this);
             }
 
-            notifyStepPropress();
+            this.progressManager.stepPropress(this);
 
             // Install all extensions
 
             applyActions(actions);
         } finally {
-            notifyPopLevelProgress();
+            this.progressManager.popLevelProgress(this);
 
             // Clean context
             context.removeProperty(CONTEXTKEY_PLAN);
