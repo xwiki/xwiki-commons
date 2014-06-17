@@ -161,11 +161,13 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
 
         builder.append(this.extension);
 
-        if (this.namespace != null) {
-            builder.append(" (");
-            builder.append(this.namespace);
-            builder.append(')');
+        builder.append(" (");
+        builder.append(this.namespace);
+        if (!this.previousExtensions.isEmpty()) {
+            builder.append(", ");
+            builder.append(this.previousExtensions);
         }
+        builder.append(')');
 
         return builder.toString();
     }
