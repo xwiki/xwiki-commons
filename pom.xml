@@ -185,6 +185,11 @@
         <version>2.6</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>4.0</version>
+      </dependency>
+      <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>3.2.1</version>
@@ -203,7 +208,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.3.3</version>
+        <version>4.3.4</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -215,7 +220,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>4.3.3</version>
+        <version>4.3.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -258,7 +263,7 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.9.1</version>
+        <version>1.9.2</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -379,7 +384,7 @@
       <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
-        <version>0.9.9-RC1</version>
+        <version>0.9.9-RC2</version>
         <exclusions>
           <!-- Useless in Java 6 -->
           <exclusion>
