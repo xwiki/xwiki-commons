@@ -380,7 +380,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     {
         JobStatus status = this.cache.get(id);
 
-        logger.error("GET 1: " + id + " " + (status == NOSTATUS ? "NOSTATUS" : status));
         if (status == null) {
             synchronized (this.cache) {
                 status = this.cache.get(id);
@@ -389,12 +388,10 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                     try {
                         status = loadStatus(id);
 
-                        logger.error("GET: " + id + " " + status);
                         this.cache.put(id, status);
                     } catch (Exception e) {
                         this.logger.warn("Failed to load job status for id [{}]", id, e);
 
-                        logger.error("GETe: " + id + " " + status);
                         this.cache.put(id, null);
                     }
                 }
@@ -420,11 +417,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     {
         if (status != null && status.getRequest() != null && status.getRequest().getId() != null) {
             synchronized (this.cache) {
-                logger.error("PUT: " + status.getRequest().getId() + " " + status);
-
                 this.cache.put(status.getRequest().getId(), status);
-
-                logger.error("PUT result: " + this.cache.get(status.getRequest().getId()));
             }
 
             // Only store Serializable job status on file system
