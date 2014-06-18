@@ -24,9 +24,12 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -57,6 +60,118 @@ import org.xwiki.job.event.status.JobStatus;
 @Singleton
 public class DefaultJobStatusStore implements JobStatusStore, Initializable
 {
+    private static class Cache implements Map<List<String>, JobStatus>
+    {
+        // TODO: probably use JCache instead
+        private final Map<List<String>, JobStatus> cache;
+
+        private final Set<List<String>> noStatusCache;
+
+        public Cache(int size)
+        {
+            this.cache = new LRUMap(size);
+            this.noStatusCache = new HashSet<List<String>>();
+        }
+
+        @Override
+        public int size()
+        {
+            return this.cache.size() + this.noStatusCache.size();
+        }
+
+        @Override
+        public boolean isEmpty()
+        {
+            return this.cache.isEmpty() && this.noStatusCache.isEmpty();
+        }
+
+        @Override
+        public boolean containsKey(Object key)
+        {
+            return this.cache.containsKey(key) || this.noStatusCache.contains(key);
+        }
+
+        @Override
+        public boolean containsValue(Object value)
+        {
+            // not used
+            return false;
+        }
+
+        @Override
+        public JobStatus get(Object key)
+        {
+            if (!this.noStatusCache.contains(key)) {
+                return this.cache.get(key);
+            }
+
+            return NOSTATUS;
+        }
+
+        @Override
+        public JobStatus put(List<String> key, JobStatus value)
+        {
+            JobStatus status = get(key);
+
+            if (value == null) {
+                this.cache.remove(key);
+                this.noStatusCache.add(key);
+            } else {
+                this.cache.put(key, value);
+                this.noStatusCache.remove(key);
+            }
+
+            return status;
+        }
+
+        @Override
+        public JobStatus remove(Object key)
+        {
+            JobStatus status = get(key);
+
+            this.cache.remove(key);
+            this.noStatusCache.remove(key);
+
+            return status;
+        }
+
+        @Override
+        public void putAll(Map< ? extends List<String>, ? extends JobStatus> m)
+        {
+            for (Map.Entry< ? extends List<String>, ? extends JobStatus> entry : m.entrySet()) {
+                put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        @Override
+        public void clear()
+        {
+            this.cache.clear();
+            this.noStatusCache.clear();
+        }
+
+        @Override
+        public Set<List<String>> keySet()
+        {
+            // not used
+            return null;
+        }
+
+        @Override
+        public Collection<JobStatus> values()
+        {
+            // not used
+            return null;
+        }
+
+        @Override
+        public Set<java.util.Map.Entry<List<String>, JobStatus>> entrySet()
+        {
+            // not used
+            return null;
+        }
+    }
+
     /**
      * The name of the file where the job status is stored.
      */
@@ -86,12 +201,11 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     @Inject
     private Logger logger;
 
-    // TODO: probably use JCache instead
-    private Map<List<String>, JobStatus> cache;
-
     private JobStatusSerializer serializer;
 
     private ExecutorService executorService;
+
+    private Map<List<String>, JobStatus> cache;
 
     class JobStatusSerializerRunnable implements Runnable
     {
@@ -129,7 +243,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         this.executorService =
             new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), threadFactory);
 
-        this.cache = Collections.synchronizedMap(new LRUMap(50));
+        this.cache = Collections.synchronizedMap(new Cache(50));
     }
 
     /**
@@ -266,19 +380,22 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     {
         JobStatus status = this.cache.get(id);
 
+        logger.error("GET 1: " + id + " " + (status == NOSTATUS ? "NOSTATUS" : status));
         if (status == null) {
-            synchronized (this) {
+            synchronized (this.cache) {
                 status = this.cache.get(id);
 
                 if (status == null) {
                     try {
                         status = loadStatus(id);
 
+                        logger.error("GET: " + id + " " + status);
                         this.cache.put(id, status);
                     } catch (Exception e) {
                         this.logger.warn("Failed to load job status for id [{}]", id, e);
 
-                        this.cache.put(id, NOSTATUS);
+                        logger.error("GETe: " + id + " " + status);
+                        this.cache.put(id, null);
                     }
                 }
             }
@@ -302,7 +419,13 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     private void store(JobStatus status, boolean async)
     {
         if (status != null && status.getRequest() != null && status.getRequest().getId() != null) {
-            this.cache.put(status.getRequest().getId(), status);
+            synchronized (this.cache) {
+                logger.error("PUT: " + status.getRequest().getId() + " " + status);
+
+                this.cache.put(status.getRequest().getId(), status);
+
+                logger.error("PUT result: " + this.cache.get(status.getRequest().getId()));
+            }
 
             // Only store Serializable job status on file system
             if (status instanceof Serializable) {
