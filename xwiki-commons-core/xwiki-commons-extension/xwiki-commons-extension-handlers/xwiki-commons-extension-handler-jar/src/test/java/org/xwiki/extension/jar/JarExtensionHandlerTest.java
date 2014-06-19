@@ -63,7 +63,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     {
         // Override the system ClassLoader to isolate class loading of extensions from the current ClassLoader
         // (which already contains the extensions)
-        this.mocker.registerComponent(TestJarExtensionClassLoader.class);
+        this.mocker.registerComponent(TestJarExtensionClassLoaderManager.class);
 
         // Make sure to fully enable ObservationManager to test EventListener live registration
         StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
@@ -109,7 +109,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     {
         ClassLoader extensionLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, false);
         if (extensionLoader == null) {
-            extensionLoader = ((TestJarExtensionClassLoader) this.jarExtensionClassLoader).getSystemClassLoader();
+            extensionLoader =
+                ((TestJarExtensionClassLoaderManager) this.jarExtensionClassLoader).getSystemClassLoader();
         }
 
         return extensionLoader;
@@ -273,10 +274,11 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Assert.assertFalse(DefaultInstalledExtension.isInstalled(localExtension, null));
 
         // check repository status
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(localExtension.getId().getId(),
-            namespace));
-        Assert
-            .assertNull(this.installedExtensionRepository.getInstalledExtension(localExtension.getId().getId(), null));
+        InstalledExtension installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(localExtension.getId().getId(), namespace);
+        if (installedExtension != null) {
+            Assert.assertNotEquals(localExtension.getId(), installedExtension.getId());
+        }
     }
 
     /**
@@ -354,7 +356,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallAndUninstallExtensionOnAWiki() throws Throwable
+    public void testInstallAndUninstallExtensionOnNamespace() throws Throwable
     {
         final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension", "test");
 
@@ -999,5 +1001,60 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
                 packagefile.installedextensiononroot.DefaultTestInstalledComponent.class, null);
 
         uninstall(extensionId, null);
+    }
+
+    @Test
+    public void testInstallOnNamespaceThenOnRoot() throws Throwable
+    {
+        final ExtensionId extensionId = new ExtensionId("org.xwiki.test:test-extension", "test");
+
+        // install on namespace
+        InstalledExtension installedExtension = install(extensionId, NAMESPACE);
+
+        checkInstallStatus(installedExtension, NAMESPACE);
+
+        Assert.assertSame(installedExtension,
+            this.installedExtensionRepository.getInstalledExtension(extensionId.getId(), NAMESPACE));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId.getId(), null));
+
+        checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, NAMESPACE);
+
+        // install on root
+        installedExtension = install(extensionId);
+
+        checkInstallStatus(installedExtension);
+
+        checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
+    }
+
+    @Test
+    public void testInstallOnNamespaceThenUpgradeOnRoot() throws Throwable
+    {
+        final ExtensionId extensionId1 = new ExtensionId("jarupgrade", "1.0");
+        final ExtensionId extensionId2 = new ExtensionId("jarupgrade", "2.0");
+
+        // install on namespace
+        InstalledExtension installedExtension1 = install(extensionId1, NAMESPACE);
+
+        checkInstallStatus(installedExtension1, NAMESPACE);
+
+        Assert.assertSame(installedExtension1,
+            this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), NAMESPACE));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
+
+        checkJarExtensionAvailability(packagefile.jarupgrade1.TestComponent.class,
+            packagefile.jarupgrade1.DefaultTestComponent.class, NAMESPACE);
+
+        // install on root
+        InstalledExtension installedExtension2 = install(extensionId2);
+
+        LocalExtension localExtension = this.localExtensionRepository.getLocalExtension(extensionId1);
+
+        ckeckUninstallStatus(localExtension, NAMESPACE);
+        checkInstallStatus(installedExtension2);
+
+        checkJarExtensionUnavailability(packagefile.jarupgrade1.TestComponent.class, NAMESPACE);
+        checkJarExtensionAvailability(packagefile.jarupgrade2.TestComponent.class,
+            packagefile.jarupgrade2.DefaultTestComponent.class);
     }
 }

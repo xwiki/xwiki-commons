@@ -41,6 +41,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
@@ -203,7 +204,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     protected void start(Map<ExtensionId, Collection<String>> extensionsByNamespace) throws Exception
     {
-        notifyPushLevelProgress(extensionsByNamespace.size());
+        this.progressManager.pushLevelProgress(extensionsByNamespace.size(), this);
 
         try {
             for (Map.Entry<ExtensionId, Collection<String>> entry : extensionsByNamespace.entrySet()) {
@@ -211,25 +212,25 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 Collection<String> namespaces = entry.getValue();
 
                 if (namespaces != null) {
-                    notifyPushLevelProgress(namespaces.size());
+                    this.progressManager.pushLevelProgress(namespaces.size(), this);
 
                     try {
                         for (String namespace : namespaces) {
                             installExtension(extensionId, namespace, this.extensionTree);
 
-                            notifyStepPropress();
+                            this.progressManager.stepPropress(this);
                         }
                     } finally {
-                        notifyPopLevelProgress();
+                        this.progressManager.popLevelProgress(this);
                     }
                 } else {
                     installExtension(extensionId, null, this.extensionTree);
                 }
 
-                notifyStepPropress();
+                this.progressManager.stepPropress(this);
             }
         } finally {
-            notifyPopLevelProgress();
+            this.progressManager.popLevelProgress(this);
         }
     }
 
@@ -347,17 +348,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                 return Arrays.asList(previousExtension);
             }
-        } else if (namespace == null) {
-            Collection<InstalledExtension> installedExtensions = new ArrayList<InstalledExtension>();
-            for (InstalledExtension installedExtension : this.installedExtensionRepository.getInstalledExtensions()) {
-                if (installedExtension.getId().getId().equals(id) || installedExtension.getFeatures().contains(id)) {
-                    for (String installedNamespace : installedExtension.getNamespaces()) {
-                        installedExtensions.addAll(checkAlreadyInstalledExtensions(id, version, installedNamespace));
-                    }
-                }
-            }
-
-            return installedExtensions;
         }
 
         return Collections.emptyList();
@@ -391,13 +381,32 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 extensionId.getId()));
         }
 
-        Collection<InstalledExtension> previousExtensions =
-            checkAlreadyInstalledExtensions(extensionId.getId(), extensionId.getVersion(), namespace);
+        this.progressManager.pushLevelProgress(3, this);
 
-        ModifableExtensionPlanNode node = installExtension(previousExtensions, extensionId, dependency, namespace);
+        try {
+            Collection<InstalledExtension> previousExtensions =
+                checkAlreadyInstalledExtensions(extensionId.getId(), extensionId.getVersion(), namespace);
 
-        addExtensionNode(node);
-        parentBranch.add(node);
+            this.progressManager.stepPropress(this);
+
+            if (previousExtensions.isEmpty() && namespace == null) {
+                try {
+                    uninstallFromNamespaces(extensionId.getId());
+                } catch (UninstallException e) {
+                    throw new InstallException("Failed to uninstall feature [" + extensionId.getId()
+                        + "] from namespaces", e);
+                }
+            }
+
+            this.progressManager.stepPropress(this);
+
+            ModifableExtensionPlanNode node = installExtension(previousExtensions, extensionId, dependency, namespace);
+
+            addExtensionNode(node);
+            parentBranch.add(node);
+        } finally {
+            this.progressManager.popLevelProgress(this);
+        }
     }
 
     /**
@@ -593,7 +602,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         // Not found locally, search it remotely
         ModifableExtensionPlanNode node =
-            installExtension(Arrays.asList(previousExtension), targetDependency, true, namespace);
+            installExtension(
+                previousExtension != null ? Arrays.asList(previousExtension)
+                    : Collections.<InstalledExtension> emptyList(), targetDependency, true, namespace);
 
         node.versionConstraint = versionConstraint;
 
@@ -614,13 +625,13 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private ModifableExtensionPlanNode installExtension(Collection<InstalledExtension> previousExtensions,
         ExtensionDependency targetDependency, boolean dependency, String namespace) throws InstallException
     {
-        notifyPushLevelProgress(2);
+        this.progressManager.pushLevelProgress(2, this);
 
         try {
             // Check if the extension is already in local repository
             Extension extension = resolveExtension(targetDependency);
 
-            notifyStepPropress();
+            this.progressManager.stepPropress(this);
 
             try {
                 return installExtension(previousExtensions, extension, dependency, namespace, targetDependency);
@@ -628,7 +639,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 throw new InstallException("Failed to resolve extension dependency", e);
             }
         } finally {
-            notifyPopLevelProgress();
+            this.progressManager.popLevelProgress(this);
         }
     }
 
@@ -694,13 +705,13 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private ModifableExtensionPlanNode installExtension(Collection<InstalledExtension> previousExtensions,
         ExtensionId extensionId, boolean dependency, String namespace) throws InstallException
     {
-        notifyPushLevelProgress(2);
+        this.progressManager.pushLevelProgress(2, this);
 
         try {
             // Check is the extension is already in local repository
             Extension extension = resolveExtension(extensionId);
 
-            notifyStepPropress();
+            this.progressManager.stepPropress(this);
 
             try {
                 return installExtension(previousExtensions, extension, dependency, namespace, null);
@@ -708,7 +719,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 throw new InstallException("Failed to resolve extension", e);
             }
         } finally {
-            notifyPopLevelProgress();
+            this.progressManager.popLevelProgress(this);
         }
     }
 
@@ -762,6 +773,26 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         return extension;
     }
 
+    private void uninstallFromNamespaces(String feature) throws UninstallException
+    {
+        Collection<InstalledExtension> installedExtensions = this.installedExtensionRepository.getInstalledExtensions();
+
+        this.progressManager.pushLevelProgress(installedExtensions.size(), this);
+
+        try {
+            for (InstalledExtension installedExtension : installedExtensions) {
+                if (installedExtension.getId().getId().equals(feature)
+                    || installedExtension.getFeatures().contains(feature)) {
+                    uninstallExtension(installedExtension, installedExtension.getNamespaces(), this.extensionTree);
+                }
+
+                this.progressManager.stepPropress(this);
+            }
+        } finally {
+            this.progressManager.popLevelProgress(this);
+        }
+    }
+
     /**
      * @param previousExtensions the previous installed version of the extension to install
      * @param extension the new extension to install
@@ -782,46 +813,75 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             }
         }
 
-        // Find all previous version of the extension
-        Set<InstalledExtension> finalPreviousExtensions = new LinkedHashSet<InstalledExtension>();
-        if (previousExtensions != null) {
-            finalPreviousExtensions.addAll(previousExtensions);
-        }
-        if (!extension.getFeatures().isEmpty()) {
-            for (String feature : extension.getFeatures()) {
-                Collection<InstalledExtension> installedExtensions =
-                    checkAlreadyInstalledExtensions(feature, extension.getId().getVersion(), namespace);
-                finalPreviousExtensions.addAll(installedExtensions);
+        this.progressManager.pushLevelProgress(3, this);
+
+        try {
+            // Find all previous version of the extension
+            Set<InstalledExtension> finalPreviousExtensions = new LinkedHashSet<InstalledExtension>();
+            if (previousExtensions != null) {
+                finalPreviousExtensions.addAll(previousExtensions);
             }
-        }
+            if (!extension.getFeatures().isEmpty()) {
+                this.progressManager.pushLevelProgress(extension.getFeatures().size(), this);
 
-        ExtensionHandler extensionHandler;
+                try {
+                    for (String feature : extension.getFeatures()) {
+                        Collection<InstalledExtension> installedExtensions =
+                            checkAlreadyInstalledExtensions(feature, extension.getId().getVersion(), namespace);
+                        if (installedExtensions.isEmpty()) {
+                            if (namespace == null) {
+                                try {
+                                    uninstallFromNamespaces(feature);
+                                } catch (UninstallException e) {
+                                    throw new InstallException("Failed to uninstall feature [" + feature
+                                        + "] from namespaces", e);
+                                }
+                            }
+                        } else {
+                            finalPreviousExtensions.addAll(installedExtensions);
+                        }
 
-        // Is type supported ?
-        try {
-            extensionHandler = this.componentManager.getInstance(ExtensionHandler.class, extension.getType());
-        } catch (ComponentLookupException e) {
-            throw new InstallException(String.format("Unsupported type [%s]", extension.getType()), e);
-        }
-
-        // Is installing the extension allowed ?
-        extensionHandler.checkInstall(extension, namespace, getRequest());
-
-        // Check dependencies
-        Collection< ? extends ExtensionDependency> dependencies = extension.getDependencies();
-
-        notifyPushLevelProgress(dependencies.size() + 1);
-
-        try {
-            List<ModifableExtensionPlanNode> children = null;
-            if (!dependencies.isEmpty()) {
-                children = new ArrayList<ModifableExtensionPlanNode>();
-                for (ExtensionDependency dependencyDependency : extension.getDependencies()) {
-                    installExtensionDependency(dependencyDependency, namespace, children);
-
-                    notifyStepPropress();
+                        this.progressManager.stepPropress(this);
+                    }
+                } finally {
+                    this.progressManager.popLevelProgress(this);
                 }
             }
+
+            this.progressManager.stepPropress(this);
+
+            ExtensionHandler extensionHandler;
+
+            // Is type supported ?
+            try {
+                extensionHandler = this.componentManager.getInstance(ExtensionHandler.class, extension.getType());
+            } catch (ComponentLookupException e) {
+                throw new InstallException(String.format("Unsupported type [%s]", extension.getType()), e);
+            }
+
+            // Is installing the extension allowed ?
+            extensionHandler.checkInstall(extension, namespace, getRequest());
+
+            // Check dependencies
+            Collection< ? extends ExtensionDependency> dependencies = extension.getDependencies();
+
+            List<ModifableExtensionPlanNode> children = null;
+            if (!dependencies.isEmpty()) {
+                this.progressManager.pushLevelProgress(dependencies.size() + 1, this);
+
+                try {
+                    children = new ArrayList<ModifableExtensionPlanNode>();
+                    for (ExtensionDependency dependencyDependency : extension.getDependencies()) {
+                        installExtensionDependency(dependencyDependency, namespace, children);
+
+                        this.progressManager.stepPropress(this);
+                    }
+                } finally {
+                    this.progressManager.popLevelProgress(this);
+                }
+            }
+
+            this.progressManager.stepPropress(this);
 
             ModifableExtensionPlanNode node =
                 initialDependency != null ? new ModifableExtensionPlanNode(initialDependency,
@@ -846,7 +906,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
             return node;
         } finally {
-            notifyPopLevelProgress();
+            this.progressManager.popLevelProgress(this);
         }
     }
 }

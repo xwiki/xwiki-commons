@@ -232,6 +232,8 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         installedExtension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), null);
+        Assert.assertSame(installedExtension, this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADE10_ID.getId(), "namespace"));
         Assert.assertNotNull(installedExtension);
         Assert.assertNull("Extension is not marked as installed on root", installedExtension.getNamespaces());
         Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
@@ -244,13 +246,17 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
 
         install(TestResources.REMOTE_UPGRADE10_ID, "namespace");
 
+        InstalledExtension installedExtension1 =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID);
+
+        Assert.assertNotNull(installedExtension1);
+
         // Upgrade 2.0 on root
 
         install(TestResources.REMOTE_UPGRADE20_ID);
 
-        LocalExtension installedExtension1 =
-            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(),
-                "namespace");
+        installedExtension1 =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID);
 
         Assert.assertNull(installedExtension1);
 

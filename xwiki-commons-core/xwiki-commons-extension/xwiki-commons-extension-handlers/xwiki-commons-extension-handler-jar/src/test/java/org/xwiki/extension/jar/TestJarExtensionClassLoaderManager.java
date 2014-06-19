@@ -30,7 +30,7 @@ import org.xwiki.component.annotation.Component;
  * @version $Id$
  */
 @Component
-public class TestJarExtensionClassLoader extends DefaultClassLoaderManager
+public class TestJarExtensionClassLoaderManager extends DefaultClassLoaderManager
 {
     @Override
     protected ClassLoader getSystemClassLoader()
