@@ -203,12 +203,69 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
         install(installedextensiondependency2);
 
         // installedextensiondependency 2.0
-        Assert.assertEquals(Arrays.asList(installedextension),
-            this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), null));
+        Assert.assertEquals(Arrays.asList(installedextension), this.installedExtensionRepository
+            .getBackwardDependencies(TestResources.INSTALLED_DEPENDENCY_ID.getId(), null));
         // overrideinstalledextensiondependency
         Assert.assertEquals(Arrays.asList(installedextension),
             this.installedExtensionRepository.getBackwardDependencies(installedextensiondependency2.getId(), null));
         Assert.assertEquals(Collections.singletonMap(null, Arrays.asList(installedextension)),
             this.installedExtensionRepository.getBackwardDependencies(installedextensiondependency2));
+    }
+
+    @Test
+    public void testInstallOnNamespaceThenOnRoot() throws Throwable
+    {
+        // Install 1.0 on "namespace"
+
+        install(TestResources.REMOTE_UPGRADE10_ID, "namespace");
+
+        InstalledExtension installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID);
+
+        Assert.assertNotNull(installedExtension);
+        Assert.assertNotNull(installedExtension.getNamespaces());
+        Assert.assertTrue(this.handler.getExtensions().get("namespace").contains(installedExtension));
+
+        // Install 1.0 on root
+
+        install(TestResources.REMOTE_UPGRADE10_ID);
+
+        installedExtension =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID.getId(), null);
+        Assert.assertSame(installedExtension, this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADE10_ID.getId(), "namespace"));
+        Assert.assertNotNull(installedExtension);
+        Assert.assertNull("Extension is not marked as installed on root", installedExtension.getNamespaces());
+        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension));
+    }
+
+    @Test
+    public void testInstallOnNamespaceThenUpgradeOnRoot() throws Throwable
+    {
+        // Install 1.0 on "namespace"
+
+        install(TestResources.REMOTE_UPGRADE10_ID, "namespace");
+
+        InstalledExtension installedExtension1 =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID);
+
+        Assert.assertNotNull(installedExtension1);
+
+        // Upgrade 2.0 on root
+
+        install(TestResources.REMOTE_UPGRADE20_ID);
+
+        installedExtension1 =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID);
+
+        Assert.assertNull(installedExtension1);
+
+        LocalExtension installedExtension2 =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE20_ID.getId(), null);
+        Assert.assertNotNull(installedExtension2);
+        Assert.assertTrue(this.handler.getExtensions().get(null).contains(installedExtension2));
+
+        Assert.assertNull(installedExtension2 =
+            this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
     }
 }

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,7 +83,7 @@ public class ExtensionPackager
 
     public void generateExtensions() throws IOException
     {
-        Set<URL> urls = ClasspathHelper.forPackage(PACKAGEFILE_PACKAGE);
+        Collection<URL> urls = ClasspathHelper.forPackage(PACKAGEFILE_PACKAGE);
 
         if (!urls.isEmpty()) {
             Reflections reflections =

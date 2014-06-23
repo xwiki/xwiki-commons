@@ -24,9 +24,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -80,7 +80,7 @@ public class DefaultExtensionLicenseManager implements ExtensionLicenseManager, 
     @Override
     public void initialize() throws InitializationException
     {
-        Set<URL> licenseURLs = ClasspathHelper.forPackage(LICENSE_PACKAGE);
+        Collection<URL> licenseURLs = ClasspathHelper.forPackage(LICENSE_PACKAGE);
 
         Reflections reflections =
             new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner()).setUrls(licenseURLs)

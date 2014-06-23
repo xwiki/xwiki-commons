@@ -109,4 +109,21 @@ public class DefaultExtensionPlanNode implements ExtensionPlanNode
     {
         return this.initialVersionConstraint;
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(getAction());
+        builder.append(" (");
+        builder.append(getChildren());
+        if (getInitialVersionConstraint() != null) {
+            builder.append(", ");
+            builder.append(getInitialVersionConstraint());
+        }
+        builder.append(')');
+
+        return builder.toString();
+    }
 }

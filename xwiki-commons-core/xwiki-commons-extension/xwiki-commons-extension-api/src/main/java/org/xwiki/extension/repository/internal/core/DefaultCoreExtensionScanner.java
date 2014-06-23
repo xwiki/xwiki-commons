@@ -360,7 +360,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     private void loadExtensionsFromClassloaders(Map<String, DefaultCoreExtension> extensions,
         DefaultCoreExtensionRepository repository)
     {
-        Set<URL> mavenURLs = ClasspathHelper.forPackage(MAVENPACKAGE);
+        Collection<URL> mavenURLs = ClasspathHelper.forPackage(MAVENPACKAGE);
 
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.setScanners(new ResourcesScanner());
@@ -411,7 +411,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
         Map<String, Object[]> fileNames = new HashMap<String, Object[]>();
         Map<String, Object[]> guessedArtefacts = new HashMap<String, Object[]>();
-        Set<URL> urls = ClasspathHelper.forClassLoader();
+        Collection<URL> urls = ClasspathHelper.forClassLoader();
 
         for (URL url : urls) {
             if (!validaedFiles.contains(url.toString())) {

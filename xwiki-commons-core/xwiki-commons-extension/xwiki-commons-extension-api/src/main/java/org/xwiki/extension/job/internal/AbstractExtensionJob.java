@@ -208,7 +208,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             if (getRequest().isVerbose()) {
                 this.logger.error(getTranslationMarker(action, "failure", false),
                     "Failed to apply [{}] for extension [{}] on namespace [{}] from previous extension [{}]",
-                    action.getAction(), extension.getId(), namespace, previousExtensionsIds);
+                    action.getAction(), extension.getId(), namespace, previousExtensionsIds, e);
             }
 
             throw e;

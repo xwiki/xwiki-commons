@@ -23,10 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -155,7 +155,7 @@ public class RepositoryUtils
     {
         int nb = 0;
 
-        Set<URL> urls = ClasspathHelper.forPackage(resourcePackage);
+        Collection<URL> urls = ClasspathHelper.forPackage(resourcePackage);
 
         if (!urls.isEmpty()) {
             String prefix = resourcePackage;
