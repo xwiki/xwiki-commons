@@ -127,10 +127,7 @@ public class XWikiDOMSerializer
             // Generate a javascript comment in front on the CDATA block so that it works in IE6 and when
             // serving XHTML under a mimetype of HTML.
             if (specialCase) {
-                element.appendChild(document.createTextNode(COMMENT_START));
-                element.appendChild(document.createCDATASection(COMMENT_END + StringUtils.chomp(content) + "\n"
-                    + COMMENT_START));
-                element.appendChild(document.createTextNode(COMMENT_END));
+                element.appendChild(document.createCDATASection(StringUtils.chomp(content) + "\n"));
             } else {
                 element.appendChild(document.createTextNode(content));
             }
@@ -141,7 +138,7 @@ public class XWikiDOMSerializer
 
     /**
      * Remove any existing CDATA section and unencode HTML entities that are not inside a CDATA block.
-     * 
+     *
      * @param content the text input to transform
      * @return the transformed content that will be wrapped inside a CDATA block
      */

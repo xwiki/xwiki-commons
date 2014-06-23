@@ -180,20 +180,20 @@ public class DefaultHTMLCleanerTest
     @Test
     public void scriptAndCData()
     {
-        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>",
+        assertHTML("<script type=\"text/javascript\"><![CDATA[\nalert(\"Hello World\")\n]]></script>",
             "<script type=\"text/javascript\"><![CDATA[\nalert(\"Hello World\")\n]]></script>");
 
-        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*///\nalert(\"Hello World\")\n/*]]>*/</script>",
+        assertHTML("<script type=\"text/javascript\"><![CDATA[//\nalert(\"Hello World\")\n]]></script>",
             "<script type=\"text/javascript\">//<![CDATA[\nalert(\"Hello World\")\n//]]></script>");
 
-        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>",
+        assertHTML("<script type=\"text/javascript\"><![CDATA[\nalert(\"Hello World\")\n]]></script>",
             "<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>");
 
-        assertHTML("<script type=\"text/javascript\">/*<![CDATA[*/\n\n"
+        assertHTML("<script type=\"text/javascript\"><![CDATA[\n\n"
             + "function escapeForXML(origtext) {\n"
             + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
             + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');"
-            + "}\n\n/*]]>*/"
+            + "}\n\n]]>"
             + "</script>", "<script type=\"text/javascript\">\n"
             + "/*<![CDATA[*/\n"
             + "function escapeForXML(origtext) {\n"
@@ -203,8 +203,8 @@ public class DefaultHTMLCleanerTest
             + "/*]]>*/\n"
             + "</script>");
 
-        assertHTML("<script>/*<![CDATA[*/<>\n/*]]>*/</script>", "<script>&lt;&gt;</script>");
-        assertHTML("<script>/*<![CDATA[*/<>\n/*]]>*/</script>", "<script><></script>");
+        assertHTML("<script><![CDATA[<>\n]]></script>", "<script>&lt;&gt;</script>");
+        assertHTML("<script><![CDATA[<>\n]]></script>", "<script><></script>");
 
         // Verify that CDATA not inside SCRIPT or STYLE elements are considered comments in HTML and thus stripped
         // when cleaned.
@@ -218,17 +218,17 @@ public class DefaultHTMLCleanerTest
     @Test
     public void styleAndCData()
     {
-        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
+        assertHTMLWithHeadContent("<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>",
             "<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>");
 
-        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
+        assertHTMLWithHeadContent("<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>",
             "<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>");
 
-        assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/a>span { color: blue;}\n/*]]>*/</style>",
+        assertHTMLWithHeadContent("<style type=\"text/css\"><![CDATA[a>span { color: blue;}\n]]></style>",
             "<style type=\"text/css\">a&gt;span { color: blue;}</style>");
 
-        assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
-        assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style><></style>");
+        assertHTMLWithHeadContent("<style><![CDATA[<>\n]]></style>", "<style>&lt;&gt;</style>");
+        assertHTMLWithHeadContent("<style><![CDATA[<>\n]]></style>", "<style><></style>");
     }
     /**
      * Verify that we can control what filters are used for cleaning.
