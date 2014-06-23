@@ -61,9 +61,17 @@ public class XWikiDOMSerializer
     private static final Pattern CDATA_PATTERN =
         Pattern.compile("<!\\[CDATA\\[.*(\\]\\]>|<!\\[CDATA\\[)", Pattern.DOTALL);
 
-    private static final String COMMENT_START = "/*";
+    private static final String CSS_COMMENT_START = "/*";
 
-    private static final String COMMENT_END = "*/";
+    private static final String CSS_COMMENT_END = "*/";
+
+    private static final String JS_COMMENT = "//";
+
+    private static final String NEW_LINE = "\n";
+
+    private static final String SCRIPT_TAG_NAME = "script";
+
+    private static final String STYLE_TAG_NAME = "style";
 
     /**
      * The HTML Cleaner properties set by the user to control the HTML cleaning.
@@ -124,13 +132,20 @@ public class XWikiDOMSerializer
                 content = processCDATABlocks(content);
             }
 
-            // Generate a javascript comment in front on the CDATA block so that it works in IE6 and when
+            // Generate a javascript comment in front on the CDATA block so that it works in IE and when
             // serving XHTML under a mimetype of HTML.
             if (specialCase) {
-                element.appendChild(document.createTextNode(COMMENT_START));
-                element.appendChild(document.createCDATASection(COMMENT_END + StringUtils.chomp(content) + "\n"
-                    + COMMENT_START));
-                element.appendChild(document.createTextNode(COMMENT_END));
+                if (SCRIPT_TAG_NAME.equalsIgnoreCase(element.getNodeName())) {
+                    // JS
+                    element.appendChild(document.createTextNode(JS_COMMENT));
+                    element.appendChild(document.createCDATASection(NEW_LINE + content + NEW_LINE + JS_COMMENT));
+                } else {
+                    // CSS
+                    element.appendChild(document.createTextNode(CSS_COMMENT_START));
+                    element.appendChild(document.createCDATASection(CSS_COMMENT_END + StringUtils.chomp(content)
+                            + NEW_LINE + CSS_COMMENT_START));
+                    element.appendChild(document.createTextNode(CSS_COMMENT_END));
+                }
             } else {
                 element.appendChild(document.createTextNode(content));
             }
@@ -172,7 +187,7 @@ public class XWikiDOMSerializer
     protected boolean isScriptOrStyle(Element element)
     {
         String tagName = element.getNodeName();
-        return "script".equalsIgnoreCase(tagName) || "style".equalsIgnoreCase(tagName);
+        return SCRIPT_TAG_NAME.equalsIgnoreCase(tagName) || STYLE_TAG_NAME.equalsIgnoreCase(tagName);
     }
 
     /**
