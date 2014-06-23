@@ -61,10 +61,6 @@ public class XWikiDOMSerializer
     private static final Pattern CDATA_PATTERN =
         Pattern.compile("<!\\[CDATA\\[.*(\\]\\]>|<!\\[CDATA\\[)", Pattern.DOTALL);
 
-    private static final String COMMENT_START = "/*";
-
-    private static final String COMMENT_END = "*/";
-
     /**
      * The HTML Cleaner properties set by the user to control the HTML cleaning.
      */
@@ -213,7 +209,6 @@ public class XWikiDOMSerializer
                 } else if (item instanceof TagNode) {
                     TagNode subTagNode = (TagNode) item;
                     Element subelement = document.createElement(subTagNode.getName());
-                    @SuppressWarnings("unchecked")
                     Map<String, String> attributes = subTagNode.getAttributes();
                     for (Map.Entry<String, String> entry : attributes.entrySet()) {
                         String attrName = entry.getKey();
