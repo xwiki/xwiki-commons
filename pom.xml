@@ -795,7 +795,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.5</version>
+          <version>1.6</version>
           <configuration>
             <complianceLevel>1.7</complianceLevel>
             <source>1.7</source>
