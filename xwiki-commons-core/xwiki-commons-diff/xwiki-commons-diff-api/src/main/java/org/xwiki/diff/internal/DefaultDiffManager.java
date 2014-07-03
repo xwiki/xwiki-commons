@@ -144,12 +144,12 @@ public class DefaultDiffManager implements DiffManager
         if (configuration != null) {
             fallbackVersion = configuration.getFallbackOnConflict();
         } else {
-            fallbackVersion = Version.NEXT;
+            fallbackVersion = Version.CURRENT;
         }
 
         switch (fallbackVersion) {
-            case CURRENT:
-                newIndex = apply(deltaCurrent, merged, currentIndex);
+            case NEXT:
+                newIndex = apply(deltaNext, merged, currentIndex);
                 break;
             case PREVIOUS:
                 for (; newIndex < deltaNext.getPrevious().getIndex(); ++newIndex) {
@@ -160,8 +160,8 @@ public class DefaultDiffManager implements DiffManager
                 }
                 break;
             default:
-                // NEXT is the default
-                newIndex = apply(deltaNext, merged, currentIndex);
+                // CURRENT is the default
+                newIndex = apply(deltaCurrent, merged, currentIndex);
                 break;
         }
 
