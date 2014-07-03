@@ -58,7 +58,7 @@ public class MergeConfiguration<E> extends HashMap<String, Object>
     }
 
     /**
-     * @param version the version to fallback on when finding a conflict
+     * @param version the version to fallback on when finding a conflict. Default is {@link Version#CURRENT}.
      */
     public void setFallbackOnConflict(Version version)
     {
@@ -66,11 +66,11 @@ public class MergeConfiguration<E> extends HashMap<String, Object>
     }
 
     /**
-     * @return the version to fallback on when finding a conflict
+     * @return the version to fallback on when finding a conflict. Default is {@link Version#CURRENT}.
      */
     public Version getFallbackOnConflict()
     {
         // Default is Version.NEXT
-        return containsKey(KEY_FALLBACKONCONFLICT) ? (Version) get(KEY_FALLBACKONCONFLICT) : Version.NEXT;
+        return containsKey(KEY_FALLBACKONCONFLICT) ? (Version) get(KEY_FALLBACKONCONFLICT) : Version.CURRENT;
     }
 }
