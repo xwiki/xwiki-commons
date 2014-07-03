@@ -19,14 +19,11 @@
  */
 package org.xwiki.diff.internal;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -193,6 +190,15 @@ public class DefaultDiffManagerTest
     {
         MergeResult<Character> result;
 
+        // New empty
+
+        result =
+            this.mocker.getComponentUnderTest()
+                .merge(toCharacters("a"), toCharacters(""), toCharacters("b"), null);
+
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(toCharacters("b"), result.getMerged());
+
         // New before
 
         result =
@@ -324,7 +330,7 @@ public class DefaultDiffManagerTest
             this.mocker.getComponentUnderTest().merge(toCharacters("a"), toCharacters("b"), toCharacters("c"), null);
 
         Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("b"), result.getMerged());
+        Assert.assertEquals(toCharacters("c"), result.getMerged());
 
         // Current and new in conflict at different indices
         result =
@@ -357,5 +363,18 @@ public class DefaultDiffManagerTest
 
         Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals("ddddcc", toString(result.getMerged()));
+    }
+
+    @Test
+    public void testMergeWithEmptyNew() throws Exception
+    {
+        MergeResult<Character> result;
+
+        result =
+            this.mocker.getComponentUnderTest()
+                .merge(toCharacters("a"), toCharacters(""), toCharacters("b"), null);
+
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(toCharacters("b"), result.getMerged());
     }
 }
