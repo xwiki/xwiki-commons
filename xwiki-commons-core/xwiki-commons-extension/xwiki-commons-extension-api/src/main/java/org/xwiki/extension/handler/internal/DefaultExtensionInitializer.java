@@ -101,8 +101,8 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
             if (type == null || type.equals(installedExtension.getType())) {
                 try {
                     initializeExtension(installedExtension, namespaceToInitialize, initializedExtensions);
-                } catch (Exception e) {
-                    this.logger.error("Failed to initialize local extension [{}]", installedExtension.getId(), e);
+                } catch (Throwable t) {
+                    this.logger.error("Failed to initialize local extension [{}]", installedExtension.getId(), t);
                 }
             }
         }
@@ -156,26 +156,41 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
         }
 
         if (!initializedExtensionsInNamespace.contains(installedExtension)) {
-            if (namespace != null && installedExtension.getNamespaces() == null) {
-                // This extension is supposed to be installed on root namespace only so redirecting to null namespace
-                // initialization
-                initializeExtensionInNamespace(installedExtension, null, initializedExtensions);
-            } else {
-                // Initialize dependencies
-                for (ExtensionDependency dependency : installedExtension.getDependencies()) {
-                    if (!this.coreExtensionRepository.exists(dependency.getId())) {
-                        InstalledExtension dependencyExtension =
-                            this.installedExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
-                        initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
+            initializeExtensionInNamespace(installedExtension, namespace, initializedExtensions,
+                initializedExtensionsInNamespace);
+        }
+    }
+
+    private void initializeExtensionInNamespace(InstalledExtension installedExtension, String namespace,
+        Map<String, Set<InstalledExtension>> initializedExtensions,
+        Set<InstalledExtension> initializedExtensionsInNamespace) throws ExtensionException
+    {
+        if (namespace != null && installedExtension.getNamespaces() == null) {
+            // This extension is supposed to be installed on root namespace only so redirecting to null namespace
+            // initialization
+            initializeExtensionInNamespace(installedExtension, null, initializedExtensions);
+        } else {
+            // Initialize dependencies
+            for (ExtensionDependency dependency : installedExtension.getDependencies()) {
+                if (!this.coreExtensionRepository.exists(dependency.getId())) {
+                    InstalledExtension dependencyExtension =
+                        this.installedExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
+
+                    if (dependencyExtension == installedExtension) {
+                        throw new ExtensionException(String.format("Extension [] has itself as dependency ([])."
+                            + " It usually mean an extension is installed along with one of it's features.",
+                            installedExtension, dependency));
                     }
+
+                    initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
                 }
-
-                // Initialize the extension
-                this.extensionHandlerManager.initialize(installedExtension, namespace);
-
-                // Cache the extension to not initialize several times
-                initializedExtensionsInNamespace.add(installedExtension);
             }
+
+            // Initialize the extension
+            this.extensionHandlerManager.initialize(installedExtension, namespace);
+
+            // Cache the extension to not initialize several times
+            initializedExtensionsInNamespace.add(installedExtension);
         }
     }
 }
