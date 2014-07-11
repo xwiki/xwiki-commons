@@ -63,7 +63,7 @@ public class ExecutionContextRunnable implements Runnable
             this.componentManager.<ExecutionContextManager> getInstance(ExecutionContextManager.class).initialize(
                 context);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize Job " + this + " execution context", e);
+            throw new RuntimeException("Failed to initialize Runnable [" + this + "] execution context", e);
         }
 
         try {
@@ -72,7 +72,7 @@ public class ExecutionContextRunnable implements Runnable
             try {
                 this.componentManager.<Execution> getInstance(Execution.class).removeContext();
             } catch (ComponentLookupException e) {
-                throw new RuntimeException("Failed to clanup ExecutionContext after Runnable execution", e);
+                throw new RuntimeException("Failed to cleanup ExecutionContext after Runnable execution", e);
             }
         }
     }
