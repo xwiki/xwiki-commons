@@ -24,19 +24,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-filter</artifactId>
     <version>6.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-filter</artifactId>
-  <name>XWiki Commons - Filter - Parent POM</name>
+  <artifactId>xwiki-commons-filter-streams</artifactId>
   <packaging>pom</packaging>
-  <description>XWiki Commons - Filter - Parent POM</description>
+  <name>XWiki Commons - Filter - Streams</name>
   <modules>
-    <module>xwiki-commons-filter-api</module>
-    <module>xwiki-commons-filter-xml</module>
-    <module>xwiki-commons-filter-test</module>
-    <module>xwiki-commons-filter-events</module>
-    <module>xwiki-commons-filter-streams</module>
+    <module>xwiki-commons-filter-stream-xml</module>
   </modules>
 </project>
-       

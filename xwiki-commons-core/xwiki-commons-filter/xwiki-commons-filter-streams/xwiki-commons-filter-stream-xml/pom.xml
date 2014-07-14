@@ -24,19 +24,28 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-filter-streams</artifactId>
     <version>6.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-filter</artifactId>
-  <name>XWiki Commons - Filter - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Filter - Parent POM</description>
-  <modules>
-    <module>xwiki-commons-filter-api</module>
-    <module>xwiki-commons-filter-xml</module>
-    <module>xwiki-commons-filter-test</module>
-    <module>xwiki-commons-filter-events</module>
-    <module>xwiki-commons-filter-streams</module>
-  </modules>
+  <artifactId>xwiki-commons-filter-stream-xml</artifactId>
+  <name>XWiki Commons - Filter - Stream - Generic XML</name>
+  <description>XWiki Commons - Filter - Stream - Generic XML</description>
+  <properties>
+    <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-filter-xml</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-filter-test</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
-       

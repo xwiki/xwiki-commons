@@ -24,19 +24,20 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-filter-events</artifactId>
     <version>6.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-filter</artifactId>
-  <name>XWiki Commons - Filter - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Filter - Parent POM</description>
-  <modules>
-    <module>xwiki-commons-filter-api</module>
-    <module>xwiki-commons-filter-xml</module>
-    <module>xwiki-commons-filter-test</module>
-    <module>xwiki-commons-filter-events</module>
-    <module>xwiki-commons-filter-streams</module>
-  </modules>
+  <artifactId>xwiki-commons-filter-event-extension</artifactId>
+  <name>XWiki Commons - Filter - Event - Extension</name>
+  <description>Extensions related Filter events</description>
+  <properties>
+    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-filter-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
-       
