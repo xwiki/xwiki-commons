@@ -19,7 +19,8 @@
  */
 package org.xwiki.filter.type;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
+
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.stability.Unstable;
@@ -209,8 +210,8 @@ public class FilterStreamType implements Comparable<FilterStreamType>
         } else {
             if (object instanceof FilterStreamType) {
                 result =
-                    ObjectUtils.equals(getType(), ((FilterStreamType) object).getType())
-                        && ObjectUtils.equals(getDataFormat(), ((FilterStreamType) object).getDataFormat());
+                    Objects.equals(getType(), ((FilterStreamType) object).getType())
+                        && Objects.equals(getDataFormat(), ((FilterStreamType) object).getDataFormat());
             } else {
                 result = false;
             }

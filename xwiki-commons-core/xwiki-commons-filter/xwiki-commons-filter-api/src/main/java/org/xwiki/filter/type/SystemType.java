@@ -19,7 +19,8 @@
  */
 package org.xwiki.filter.type;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
+
 import org.xwiki.stability.Unstable;
 
 /**
@@ -112,7 +113,7 @@ public class SystemType
             result = true;
         } else {
             if (object instanceof SystemType) {
-                result = ObjectUtils.equals(getId(), ((SystemType) object).getId());
+                result = Objects.equals(getId(), ((SystemType) object).getId());
             } else {
                 result = false;
             }
