@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.wikixml.input;
+package org.xwiki.filter.filterxml.input;
 
 import org.xwiki.filter.xml.input.XMLInputProperties;
 import org.xwiki.stability.Unstable;
@@ -29,7 +29,7 @@ import org.xwiki.stability.Unstable;
  * @since 6.2M1
  */
 @Unstable
-public class WikiXMLInputProperties extends XMLInputProperties
+public class FilterXMLInputProperties extends XMLInputProperties
 {
 
 }

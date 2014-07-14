@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.wikixml.output;
+package org.xwiki.filter.filterxml.output;
 
 import org.xwiki.filter.xml.output.XMLOutputProperties;
 import org.xwiki.stability.Unstable;
@@ -29,7 +29,7 @@ import org.xwiki.stability.Unstable;
  * @since 6.2M1
  */
 @Unstable
-public class WikiXMLOutputProperties extends XMLOutputProperties
+public class FilterXMLOutputProperties extends XMLOutputProperties
 {
 
 }

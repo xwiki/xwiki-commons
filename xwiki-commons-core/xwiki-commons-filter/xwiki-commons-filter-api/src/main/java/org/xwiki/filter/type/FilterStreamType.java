@@ -42,7 +42,7 @@ public class FilterStreamType implements Comparable<FilterStreamType>
     /**
      * Generic WIKI XML Syntax.
      */
-    public static final FilterStreamType WIKI_XML = new FilterStreamType(SystemType.WIKI, DATA_XML);
+    public static final FilterStreamType FILTER_XML = new FilterStreamType(SystemType.FILTER, DATA_XML);
 
     /**
      * The XAR format.

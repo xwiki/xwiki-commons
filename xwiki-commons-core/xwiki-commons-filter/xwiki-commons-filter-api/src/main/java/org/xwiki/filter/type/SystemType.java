@@ -50,7 +50,7 @@ public class SystemType
     /**
      * Generic WIKI.
      */
-    public static final SystemType WIKI = new SystemType("wiki");
+    public static final SystemType FILTER = new SystemType("wiki");
 
     /**
      * Id of a Wiki.

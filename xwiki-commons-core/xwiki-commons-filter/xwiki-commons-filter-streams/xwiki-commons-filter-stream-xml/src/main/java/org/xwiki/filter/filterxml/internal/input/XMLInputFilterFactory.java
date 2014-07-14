@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.wikixml.internal.output;
+package org.xwiki.filter.filterxml.internal.input;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,22 +28,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.Result;
+import javax.xml.stream.XMLEventWriter;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.UnknownFilter;
-import org.xwiki.filter.input.InputFilterStreamFactory;
+import org.xwiki.filter.filterxml.input.FilterXMLInputProperties;
+import org.xwiki.filter.filterxml.internal.output.XMLOutputFilterFactory;
+import org.xwiki.filter.output.OutputFilterStreamFactory;
 import org.xwiki.filter.type.FilterStreamType;
-import org.xwiki.filter.wikixml.internal.input.WikiXMLInputFilterFactory;
-import org.xwiki.filter.wikixml.output.WikiXMLOutputProperties;
-import org.xwiki.filter.xml.internal.output.AbstractXMLBeanOutputFilterStreamFactory;
-import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
+import org.xwiki.filter.xml.internal.input.AbstractXMLBeanInputFilterStreamFactory;
+import org.xwiki.filter.xml.parser.XMLParserFactory;
 
 /**
  * A generic xml output filter implementation. This class can be used as a test bench to validate various
@@ -53,13 +50,13 @@ import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
  * @since 6.2M1
  */
 @Component
-@Named("wiki+xml")
+@Named("filter+xml")
 @Singleton
-public class WikiXMLOutputFilterFactory extends
-    AbstractXMLBeanOutputFilterStreamFactory<WikiXMLOutputProperties, Object>
+public class XMLInputFilterFactory extends
+    AbstractXMLBeanInputFilterStreamFactory<FilterXMLInputProperties, Object>
 {
     @Inject
-    private XMLSerializerFactory serializerFactory;
+    private XMLParserFactory parserFactory;
 
     @Inject
     private Provider<ComponentManager> contextComponentManager;
@@ -67,30 +64,30 @@ public class WikiXMLOutputFilterFactory extends
     /**
      * Default constructor.
      */
-    public WikiXMLOutputFilterFactory()
+    public XMLInputFilterFactory()
     {
-        super(FilterStreamType.WIKI_XML);
+        super(FilterStreamType.FILTER_XML);
 
         setName("Generic XML output stream");
-        setDescription("Write generic XML from wiki events.");
+        setDescription("Generates wiki events from generic XML file.");
     }
 
     @Override
     public Collection<Class< ? >> getFilterInterfaces() throws FilterException
     {
-        List<InputFilterStreamFactory> factories;
+        List<OutputFilterStreamFactory> factories;
         try {
-            factories = this.contextComponentManager.get().getInstanceList(InputFilterStreamFactory.class);
+            factories = this.contextComponentManager.get().getInstanceList(OutputFilterStreamFactory.class);
         } catch (ComponentLookupException e) {
-            throw new FilterException("Failed to lookup InputFilterFactory components instances", e);
+            throw new FilterException("Failed to lookup OutputFilterFactory components instances", e);
         }
 
         Set<Class< ? >> filters = new HashSet<Class< ? >>();
 
         filters.add(UnknownFilter.class);
 
-        for (InputFilterStreamFactory factory : factories) {
-            if (factory.getClass() != WikiXMLInputFilterFactory.class) {
+        for (OutputFilterStreamFactory factory : factories) {
+            if (factory.getClass() != XMLOutputFilterFactory.class) {
                 filters.addAll(factory.getFilterInterfaces());
             }
         }
@@ -99,11 +96,8 @@ public class WikiXMLOutputFilterFactory extends
     }
 
     @Override
-    protected Object createListener(Result result, WikiXMLOutputProperties properties) throws XMLStreamException,
-        FactoryConfigurationError, FilterException
+    protected XMLEventWriter createXMLEventWriter(Object filter, FilterXMLInputProperties parameters)
     {
-
-        return this.serializerFactory.createSerializer(getFilterInterfaces().toArray(ArrayUtils.EMPTY_CLASS_ARRAY),
-            result, null);
+        return this.parserFactory.createXMLEventWriter(filter, null);
     }
 }

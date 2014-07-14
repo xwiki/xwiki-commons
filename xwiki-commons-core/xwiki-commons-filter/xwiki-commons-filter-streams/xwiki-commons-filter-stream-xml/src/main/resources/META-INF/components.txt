@@ -1,2 +1,2 @@
-org.xwiki.filter.wikixml.internal.input.WikiXMLInputFilterFactory
-org.xwiki.filter.wikixml.internal.output.WikiXMLOutputFilterFactory
+org.xwiki.filter.filterxml.internal.input.XMLInputFilterFactory
+org.xwiki.filter.filterxml.internal.output.XMLOutputFilterFactory
