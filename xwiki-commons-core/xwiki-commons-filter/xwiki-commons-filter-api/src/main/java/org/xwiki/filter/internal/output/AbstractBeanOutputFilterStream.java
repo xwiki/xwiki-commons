@@ -26,7 +26,7 @@ import org.xwiki.filter.FilterException;
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractBeanOutputFilterStream<P> implements BeanOutputFilter<P>
+public abstract class AbstractBeanOutputFilterStream<P> implements BeanOutputFilterStream<P>
 {
     protected P properties;
 

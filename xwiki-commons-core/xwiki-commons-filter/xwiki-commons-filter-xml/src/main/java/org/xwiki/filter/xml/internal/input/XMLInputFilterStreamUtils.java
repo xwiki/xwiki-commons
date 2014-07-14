@@ -38,7 +38,7 @@ import org.xwiki.xml.stax.StAXUtils;
  * @version $Id$
  * @since 6.2M1
  */
-public final class XMLInputFilterUtils
+public final class XMLInputFilterStreamUtils
 {
     public static XMLEventReader createXMLEventReader(XMLInputProperties properties) throws XMLStreamException,
         IOException, FilterException

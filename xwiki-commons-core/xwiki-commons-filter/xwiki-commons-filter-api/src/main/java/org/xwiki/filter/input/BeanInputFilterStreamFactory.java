@@ -20,7 +20,7 @@
 package org.xwiki.filter.input;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.internal.input.BeanInputFilter;
+import org.xwiki.filter.internal.input.BeanInputFilterStream;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -28,7 +28,7 @@ import org.xwiki.stability.Unstable;
  * @since 6.2M1
  */
 @Unstable
-public interface BeanInputFilterStreamFactory<P> extends InputFilterFactory
+public interface BeanInputFilterStreamFactory<P> extends InputFilterStreamFactory
 {
-    BeanInputFilter<P> createInputFilter(P properties) throws FilterException;
+    BeanInputFilterStream<P> createInputFilterStream(P properties) throws FilterException;
 }

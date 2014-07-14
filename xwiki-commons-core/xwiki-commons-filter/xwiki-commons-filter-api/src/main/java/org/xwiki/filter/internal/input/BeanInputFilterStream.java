@@ -17,11 +17,11 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.output;
+package org.xwiki.filter.internal.input;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.output.OutputFilter;
+import org.xwiki.filter.input.InputFilterStream;
 
 /**
  * @param <P> the type of the properties bean
@@ -29,7 +29,7 @@ import org.xwiki.filter.output.OutputFilter;
  * @since 6.2M1
  */
 @Role
-public interface BeanOutputFilter<P> extends OutputFilter
+public interface BeanInputFilterStream<P> extends InputFilterStream
 {
     void setProperties(P properties) throws FilterException;
 }

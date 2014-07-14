@@ -17,19 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.output;
+package org.xwiki.filter.internal.output;
 
-import java.io.Closeable;
-
+import org.xwiki.component.annotation.Role;
 import org.xwiki.filter.FilterException;
-import org.xwiki.stability.Unstable;
+import org.xwiki.filter.output.OutputFilterStream;
 
 /**
+ * @param <P> the type of the properties bean
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
-public interface OutputFilter extends Closeable
+@Role
+public interface BeanOutputFilterStream<P> extends OutputFilterStream
 {
-    Object getFilter() throws FilterException;
+    void setProperties(P properties) throws FilterException;
 }

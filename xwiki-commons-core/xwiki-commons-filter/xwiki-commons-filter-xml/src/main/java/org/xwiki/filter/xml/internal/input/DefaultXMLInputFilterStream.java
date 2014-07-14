@@ -17,30 +17,40 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter;
+package org.xwiki.filter.xml.internal.input;
 
-import org.xwiki.stability.Unstable;
+import javax.xml.stream.XMLEventWriter;
+
+import org.xwiki.filter.FilterException;
+import org.xwiki.filter.internal.input.BeanInputFilterStream;
+import org.xwiki.filter.xml.input.XMLInputProperties;
 
 /**
- * Properties common to most streams.
- * 
+ * @param <P>
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
-public class DefaultFilterProperties implements FilterProperties
+public class DefaultXMLInputFilterStream<P extends XMLInputProperties, F> extends AbstractXMLInputFilterStream<P> implements
+    BeanInputFilterStream<P>
 {
-    private boolean verbose = true;
+    private final AbstractXMLBeanInputFilterStreamFactory<P, F> factory;
 
-    @Override
-    public boolean isVerbose()
+    public DefaultXMLInputFilterStream(AbstractXMLBeanInputFilterStreamFactory<P, F> factory, P parameters)
     {
-        return this.verbose;
+        super(parameters);
+
+        this.factory = factory;
     }
 
     @Override
-    public void setVerbose(boolean verbose)
+    protected XMLEventWriter createXMLEventWriter(Object listener, P parameters)
     {
-        this.verbose = verbose;
+        return this.factory.createXMLEventWriter(listener, parameters);
+    }
+
+    @Override
+    public void setProperties(P properties) throws FilterException
+    {
+        // Not used
     }
 }

@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.FilterFactory;
+import org.xwiki.filter.FilterStreamFactory;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -32,13 +32,13 @@ import org.xwiki.stability.Unstable;
  */
 @Role
 @Unstable
-public interface OutputFilterStreamFactory extends FilterFactory
+public interface OutputFilterStreamFactory extends FilterStreamFactory
 {
     /**
-     * @param properties the properties to control {@link OutputFilter} behavior
-     * @return a new {@link OutputFilter}
-     * @throws FilterException when failing to create a {@link OutputFilter}
+     * @param properties the properties to control {@link OutputFilterStream} behavior
+     * @return a new {@link OutputFilterStream}
+     * @throws FilterException when failing to create a {@link OutputFilterStream}
      * @since 6.2M1
      */
-    OutputFilter createOutputFilter(Map<String, Object> properties) throws FilterException;
+    OutputFilterStream createOutputFilterStream(Map<String, Object> properties) throws FilterException;
 }

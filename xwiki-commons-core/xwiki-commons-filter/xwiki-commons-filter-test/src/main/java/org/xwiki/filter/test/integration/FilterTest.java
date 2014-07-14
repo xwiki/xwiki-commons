@@ -35,8 +35,8 @@ import org.xwiki.filter.FilterException;
 import org.xwiki.filter.input.FileInputSource;
 import org.xwiki.filter.input.InputSource;
 import org.xwiki.filter.input.InputStreamInputSource;
-import org.xwiki.filter.input.InputFilter;
-import org.xwiki.filter.input.InputFilterFactory;
+import org.xwiki.filter.input.InputFilterStream;
+import org.xwiki.filter.input.InputFilterStreamFactory;
 import org.xwiki.filter.input.ReaderInputSource;
 import org.xwiki.filter.internal.input.DefaultFileInputSource;
 import org.xwiki.filter.internal.input.DefaultURLInputSource;
@@ -44,7 +44,7 @@ import org.xwiki.filter.internal.input.StringInputSource;
 import org.xwiki.filter.internal.output.ByteArrayOutputTarget;
 import org.xwiki.filter.internal.output.StringWriterOutputTarget;
 import org.xwiki.filter.output.OutputTarget;
-import org.xwiki.filter.output.OutputFilter;
+import org.xwiki.filter.output.OutputFilterStream;
 import org.xwiki.filter.output.OutputFilterStreamFactory;
 import org.xwiki.filter.test.internal.FileAssert;
 import org.xwiki.filter.utils.FilterStreamConstants;
@@ -212,11 +212,11 @@ public class FilterTest
 
         // Input
 
-        InputFilterFactory inputFactory =
-            getComponentManager().getInstance(InputFilterFactory.class,
+        InputFilterStreamFactory inputFactory =
+            getComponentManager().getInstance(InputFilterStreamFactory.class,
                 this.configuration.inputConfiguration.typeId);
-        InputFilter inputFilter =
-            inputFactory.createInputFilter(toInputConfiguration(this.configuration,
+        InputFilterStream inputFilter =
+            inputFactory.createInputFilterStream(toInputConfiguration(this.configuration,
                 this.configuration.inputConfiguration));
 
         // Output
@@ -226,7 +226,7 @@ public class FilterTest
         OutputFilterStreamFactory outputFactory =
             getComponentManager().getInstance(OutputFilterStreamFactory.class,
                 this.configuration.expectConfiguration.typeId);
-        OutputFilter outputFilter = outputFactory.createOutputFilter(outputConfiguration);
+        OutputFilterStream outputFilter = outputFactory.createOutputFilterStream(outputConfiguration);
 
         // Convert
 

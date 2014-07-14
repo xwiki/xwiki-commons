@@ -17,22 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.input;
+package org.xwiki.filter.output;
 
-import java.util.Map;
+import java.io.Closeable;
 
-import org.xwiki.component.annotation.Role;
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.FilterFactory;
 import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Role
 @Unstable
-public interface InputFilterFactory extends FilterFactory
+public interface OutputFilterStream extends Closeable
 {
-    InputFilter createInputFilter(Map<String, Object> properties) throws FilterException;
+    Object getFilter() throws FilterException;
 }

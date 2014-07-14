@@ -17,37 +17,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter;
+package org.xwiki.filter.xml.internal.input;
 
-import java.util.Collection;
+import javax.xml.stream.XMLEventWriter;
 
-import org.xwiki.filter.descriptor.FilterStreamDescriptor;
+import org.xwiki.filter.FilterException;
+import org.xwiki.filter.internal.input.AbstractBeanInputFilterStreamFactory;
+import org.xwiki.filter.internal.input.BeanInputFilterStream;
 import org.xwiki.filter.type.FilterStreamType;
-import org.xwiki.stability.Unstable;
+import org.xwiki.filter.xml.input.XMLInputProperties;
 
 /**
- * Filter class should be inherited by all the stream based classes to implement the type and descriptor which
- * describes a filter with list of bean class parameters.
- * 
+ * @param <P>
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
-public interface FilterFactory
+public abstract class AbstractXMLBeanInputFilterStreamFactory<P extends XMLInputProperties, F> extends
+    AbstractBeanInputFilterStreamFactory<P, F>
 {
-    /**
-     * @return The {@link FilterStreamType}, which identifies a filter input and output components using a role hint.
-     */
-    FilterStreamType getType();
+    public AbstractXMLBeanInputFilterStreamFactory(FilterStreamType type)
+    {
+        super(type);
+    }
 
-    /**
-     * @return The FilterDescriptor describes a Filter and has the list of bean class parameters or properties.
-     */
-    FilterStreamDescriptor getDescriptor();
+    @Override
+    public BeanInputFilterStream<P> createInputFilterStream(P properties) throws FilterException
+    {
+        return new DefaultXMLInputFilterStream<P, F>(this, properties);
+    }
 
-    /**
-     * @return the filters supported by this stream factory
-     * @throws FilterException when failing to get filters interfaces
-     */
-    Collection<Class< ? >> getFilterInterfaces() throws FilterException;
+    protected abstract XMLEventWriter createXMLEventWriter(Object filter, P parameters);
 }

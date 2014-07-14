@@ -28,7 +28,7 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.input.InputFilter;
+import org.xwiki.filter.input.InputFilterStream;
 import org.xwiki.filter.input.InputSource;
 import org.xwiki.filter.input.InputStreamInputSource;
 import org.xwiki.filter.input.ReaderInputSource;
@@ -39,11 +39,11 @@ import org.xwiki.filter.xml.input.XMLInputProperties;
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractXMLInputFilter<P extends XMLInputProperties> implements InputFilter
+public abstract class AbstractXMLInputFilterStream<P extends XMLInputProperties> implements InputFilterStream
 {
     protected P parameters;
 
-    public AbstractXMLInputFilter(P parameters)
+    public AbstractXMLInputFilterStream(P parameters)
     {
         this.parameters = parameters;
     }

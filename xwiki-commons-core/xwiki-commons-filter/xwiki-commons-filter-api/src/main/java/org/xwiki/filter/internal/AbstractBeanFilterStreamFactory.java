@@ -28,7 +28,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.FilterFactory;
+import org.xwiki.filter.FilterStreamFactory;
 import org.xwiki.filter.descriptor.DefaultFilterStreamBeanDescriptor;
 import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.properties.BeanManager;
@@ -38,7 +38,7 @@ import org.xwiki.properties.BeanManager;
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractBeanFilterStreamFactory<P> extends AbstractFilterStream implements FilterFactory, Initializable
+public abstract class AbstractBeanFilterStreamFactory<P> extends AbstractFilterStream implements FilterStreamFactory, Initializable
 {
     /**
      * The {@link BeanManager} component.

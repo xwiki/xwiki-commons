@@ -17,18 +17,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.xml;
+package org.xwiki.filter;
 
-import org.xwiki.filter.DefaultFilterStreamProperties;
+import java.util.Collection;
+
+import org.xwiki.filter.descriptor.FilterStreamDescriptor;
+import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.stability.Unstable;
 
 /**
- * Base Java bean for XML based modules.
+ * Filter class should be inherited by all the stream based classes to implement the type and descriptor which
+ * describes a filter with list of bean class parameters.
  * 
  * @version $Id$
  * @since 6.2M1
  */
 @Unstable
-public class XMLProperties extends DefaultFilterStreamProperties
+public interface FilterStreamFactory
 {
+    /**
+     * @return The {@link FilterStreamType}, which identifies a filter input and output components using a role hint.
+     */
+    FilterStreamType getType();
+
+    /**
+     * @return The FilterDescriptor describes a Filter and has the list of bean class parameters or properties.
+     */
+    FilterStreamDescriptor getDescriptor();
+
+    /**
+     * @return the filters supported by this stream factory
+     * @throws FilterException when failing to get filters interfaces
+     */
+    Collection<Class< ? >> getFilterInterfaces() throws FilterException;
 }

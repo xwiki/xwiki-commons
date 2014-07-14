@@ -19,7 +19,7 @@
  */
 package org.xwiki.filter.internal;
 
-import org.xwiki.filter.FilterFactory;
+import org.xwiki.filter.FilterStreamFactory;
 import org.xwiki.filter.descriptor.FilterStreamDescriptor;
 import org.xwiki.filter.type.FilterStreamType;
 
@@ -28,7 +28,7 @@ import org.xwiki.filter.type.FilterStreamType;
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractFilterStream implements FilterFactory
+public abstract class AbstractFilterStream implements FilterStreamFactory
 {
     protected final FilterStreamType type;
 

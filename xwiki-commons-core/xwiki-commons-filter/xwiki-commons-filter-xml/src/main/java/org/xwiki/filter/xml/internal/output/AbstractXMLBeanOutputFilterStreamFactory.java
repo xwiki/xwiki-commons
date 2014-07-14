@@ -19,43 +19,41 @@
  */
 package org.xwiki.filter.xml.internal.output;
 
-import java.io.IOException;
-
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.transform.Result;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.internal.output.BeanOutputFilter;
+import org.xwiki.filter.internal.output.AbstractBeanOutputFilterStreamFactory;
+import org.xwiki.filter.internal.output.BeanOutputFilterStream;
+import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.filter.xml.output.XMLOutputProperties;
 
 /**
- * @param <P>
+ * A generic xml output filter implementation. This class can be used as a test bench to validate various
+ * XMLInputStream wiki parsers.
+ * 
  * @version $Id$
  * @since 6.2M1
  */
-public class DefaultXMLOutputFilter<P extends XMLOutputProperties, F> extends AbstractXMLOutputFilter<P>
-    implements BeanOutputFilter<P>
+public abstract class AbstractXMLBeanOutputFilterStreamFactory<P extends XMLOutputProperties, F> extends
+    AbstractBeanOutputFilterStreamFactory<P, F>
 {
-    private final AbstractXMLBeanOutputFilterFactory<P, F> factory;
-
-    public DefaultXMLOutputFilter(AbstractXMLBeanOutputFilterFactory<P, F> factory, P properties)
-        throws FilterException, XMLStreamException, IOException
+    public AbstractXMLBeanOutputFilterStreamFactory(FilterStreamType type)
     {
-        super(properties);
-
-        this.factory = factory;
+        super(type);
     }
 
     @Override
-    protected Object createFilter(P properties) throws XMLStreamException, FactoryConfigurationError,
-        FilterException
+    public BeanOutputFilterStream<P> createOutputFilterStream(P properties) throws FilterException
     {
-        return this.factory.createListener(this.result, properties);
+        try {
+            return new DefaultXMLOutputFilterStream<P, F>(this, properties);
+        } catch (Exception e) {
+            throw new FilterException("Failed to create output filter stream", e);
+        }
     }
 
-    @Override
-    public void setProperties(P properties) throws FilterException
-    {
-        // Not needed
-    }
+    protected abstract Object createListener(Result result, P parameters) throws XMLStreamException,
+        FactoryConfigurationError, FilterException;
 }

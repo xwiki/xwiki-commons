@@ -19,17 +19,20 @@
  */
 package org.xwiki.filter.input;
 
-import java.io.Closeable;
+import java.util.Map;
 
+import org.xwiki.component.annotation.Role;
 import org.xwiki.filter.FilterException;
+import org.xwiki.filter.FilterStreamFactory;
 import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
+@Role
 @Unstable
-public interface InputFilter extends Closeable
+public interface InputFilterStreamFactory extends FilterStreamFactory
 {
-    void read(Object filter) throws FilterException;
+    InputFilterStream createInputFilterStream(Map<String, Object> properties) throws FilterException;
 }

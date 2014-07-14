@@ -20,7 +20,7 @@
 package org.xwiki.filter.output;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.internal.output.BeanOutputFilter;
+import org.xwiki.filter.internal.output.BeanOutputFilterStream;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -31,10 +31,10 @@ import org.xwiki.stability.Unstable;
 public interface BeanOutputFilterStreamFactory<P> extends OutputFilterStreamFactory
 {
     /**
-     * @param properties the properties to control {@link OutputFilter} behavior
-     * @return a new {@link OutputFilter}
-     * @throws FilterException when failing to create a {@link OutputFilter}
+     * @param properties the properties to control {@link OutputFilterStream} behavior
+     * @return a new {@link OutputFilterStream}
+     * @throws FilterException when failing to create a {@link OutputFilterStream}
      * @since 6.2M1
      */
-    BeanOutputFilter<P> createOutputFilter(P properties) throws FilterException;
+    BeanOutputFilterStream<P> createOutputFilterStream(P properties) throws FilterException;
 }

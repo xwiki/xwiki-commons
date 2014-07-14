@@ -29,11 +29,11 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.filter.input.InputFilter;
-import org.xwiki.filter.input.InputFilterFactory;
+import org.xwiki.filter.input.InputFilterStream;
+import org.xwiki.filter.input.InputFilterStreamFactory;
 import org.xwiki.filter.job.FilterStreamConverterJobRequest;
 import org.xwiki.filter.job.FilterStreamJobRequest;
-import org.xwiki.filter.output.OutputFilter;
+import org.xwiki.filter.output.OutputFilterStream;
 import org.xwiki.filter.output.OutputFilterStreamFactory;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.JobGroupPath;
@@ -83,17 +83,17 @@ public class FilterStreamConverterJob extends
     @Override
     protected void runInternal() throws Exception
     {
-        InputFilterFactory inputFactory =
-            this.componentManagerProvider.get().getInstance(InputFilterFactory.class,
+        InputFilterStreamFactory inputFactory =
+            this.componentManagerProvider.get().getInstance(InputFilterStreamFactory.class,
                 getRequest().getInputType().serialize());
 
-        InputFilter inputFilter = inputFactory.createInputFilter(getRequest().getInputProperties());
+        InputFilterStream inputFilter = inputFactory.createInputFilterStream(getRequest().getInputProperties());
 
         OutputFilterStreamFactory outputFactory =
             this.componentManagerProvider.get().getInstance(OutputFilterStreamFactory.class,
                 getRequest().getOutputType().serialize());
 
-        OutputFilter outputFilter = outputFactory.createOutputFilter(getRequest().getOutputProperties());
+        OutputFilterStream outputFilter = outputFactory.createOutputFilterStream(getRequest().getOutputProperties());
 
         // Convert
 

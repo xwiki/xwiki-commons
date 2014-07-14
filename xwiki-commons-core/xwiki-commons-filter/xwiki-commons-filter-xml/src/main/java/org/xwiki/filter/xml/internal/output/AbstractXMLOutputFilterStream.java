@@ -31,7 +31,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.stax.StAXResult;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.output.OutputFilter;
+import org.xwiki.filter.output.OutputFilterStream;
 import org.xwiki.filter.output.OutputStreamOutputTarget;
 import org.xwiki.filter.output.OutputTarget;
 import org.xwiki.filter.output.WriterOutputTarget;
@@ -43,7 +43,7 @@ import org.xwiki.filter.xml.output.XMLOutputProperties;
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractXMLOutputFilter<P extends XMLOutputProperties> implements OutputFilter
+public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputProperties> implements OutputFilterStream
 {
     protected final P properties;
 
@@ -51,7 +51,7 @@ public abstract class AbstractXMLOutputFilter<P extends XMLOutputProperties> imp
 
     protected Object filter;
 
-    public AbstractXMLOutputFilter(P properties) throws FilterException, XMLStreamException, IOException
+    public AbstractXMLOutputFilterStream(P properties) throws FilterException, XMLStreamException, IOException
     {
         this.properties = properties;
         this.result = createResult(this.properties);

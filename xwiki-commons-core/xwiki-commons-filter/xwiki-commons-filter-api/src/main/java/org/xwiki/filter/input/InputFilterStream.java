@@ -17,37 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter;
+package org.xwiki.filter.input;
 
-import org.xwiki.properties.annotation.PropertyDescription;
-import org.xwiki.properties.annotation.PropertyName;
+import java.io.Closeable;
+
+import org.xwiki.filter.FilterException;
 import org.xwiki.stability.Unstable;
 
 /**
- * Properties common to most streams.
- * 
  * @version $Id$
  * @since 6.2M1
  */
 @Unstable
-public interface FilterProperties
+public interface InputFilterStream extends Closeable
 {
-    /**
-     * The {@link String} name of the <code>verbose</code> property.
-     * 
-     * @since 6.2M1
-     */
-    String PROPNAME_VERBOSE = "verbose";
-
-    /**
-     * @return true if the stream should log details of what is happening
-     */
-    @PropertyName("Verbose")
-    @PropertyDescription("Indicates if the stream should log details of what is happening")
-    boolean isVerbose();
-
-    /**
-     * @param verbose true if the stream should log details of what is happening
-     */
-    void setVerbose(boolean verbose);
+    void read(Object filter) throws FilterException;
 }

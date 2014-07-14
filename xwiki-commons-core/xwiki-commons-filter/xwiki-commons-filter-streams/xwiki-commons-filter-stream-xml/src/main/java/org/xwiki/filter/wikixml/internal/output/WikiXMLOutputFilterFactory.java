@@ -38,11 +38,11 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.UnknownFilter;
-import org.xwiki.filter.input.InputFilterFactory;
+import org.xwiki.filter.input.InputFilterStreamFactory;
 import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.filter.wikixml.internal.input.WikiXMLInputFilterFactory;
 import org.xwiki.filter.wikixml.output.WikiXMLOutputProperties;
-import org.xwiki.filter.xml.internal.output.AbstractXMLBeanOutputFilterFactory;
+import org.xwiki.filter.xml.internal.output.AbstractXMLBeanOutputFilterStreamFactory;
 import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
 
 /**
@@ -56,7 +56,7 @@ import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
 @Named("wiki+xml")
 @Singleton
 public class WikiXMLOutputFilterFactory extends
-    AbstractXMLBeanOutputFilterFactory<WikiXMLOutputProperties, Object>
+    AbstractXMLBeanOutputFilterStreamFactory<WikiXMLOutputProperties, Object>
 {
     @Inject
     private XMLSerializerFactory serializerFactory;
@@ -78,9 +78,9 @@ public class WikiXMLOutputFilterFactory extends
     @Override
     public Collection<Class< ? >> getFilterInterfaces() throws FilterException
     {
-        List<InputFilterFactory> factories;
+        List<InputFilterStreamFactory> factories;
         try {
-            factories = this.contextComponentManager.get().getInstanceList(InputFilterFactory.class);
+            factories = this.contextComponentManager.get().getInstanceList(InputFilterStreamFactory.class);
         } catch (ComponentLookupException e) {
             throw new FilterException("Failed to lookup InputFilterFactory components instances", e);
         }
@@ -89,7 +89,7 @@ public class WikiXMLOutputFilterFactory extends
 
         filters.add(UnknownFilter.class);
 
-        for (InputFilterFactory factory : factories) {
+        for (InputFilterStreamFactory factory : factories) {
             if (factory.getClass() != WikiXMLInputFilterFactory.class) {
                 filters.addAll(factory.getFilterInterfaces());
             }

@@ -89,17 +89,17 @@
           <excludes>
             org/xwiki/filter/xml/internal/parser/DefaultXMLParser.java,
             org/xwiki/filter/xml/internal/serializer/DefaultXMLSerializer.java,
-            org/xwiki/filter/xml/internal/input/AbstractXMLBeanInputFilterFactory.java,
-            org/xwiki/filter/xml/internal/input/AbstractXMLInputFilter.java,
+            org/xwiki/filter/xml/internal/input/AbstractXMLBeanInputFilterStreamFactory.java,
+            org/xwiki/filter/xml/internal/input/AbstractXMLInputFilterStream.java,
             org/xwiki/filter/xml/internal/input/DefaultSourceInputSource.java,
-            org/xwiki/filter/xml/internal/input/DefaultXMLInputFilter.java,
-            org/xwiki/filter/xml/internal/input/XMLInputFilterUtils.java,
-            org/xwiki/filter/xml/internal/output/AbstractXMLBeanOutputFilterFactory.java,
-            org/xwiki/filter/xml/internal/output/AbstractXMLOutputFilter.java,
+            org/xwiki/filter/xml/internal/input/DefaultXMLInputFilterStream.java,
+            org/xwiki/filter/xml/internal/input/XMLInputFilterStreamUtils.java,
+            org/xwiki/filter/xml/internal/output/AbstractXMLBeanOutputFilterStreamFactory.java,
+            org/xwiki/filter/xml/internal/output/AbstractXMLOutputFilterStream.java,
             org/xwiki/filter/xml/internal/output/DefaultResultInputSource.java,
-            org/xwiki/filter/xml/internal/output/DefaultXMLOutputFilter.java,
-            org/xwiki/filter/xml/internal/output/FilterXMLStreamWriter.java,
-            org/xwiki/filter/xml/internal/output/XMLOutputFilterUtils.java
+            org/xwiki/filter/xml/internal/output/DefaultXMLOutputFilterStream.java,
+            org/xwiki/filter/xml/internal/output/FilterStreamXMLStreamWriter.java,
+            org/xwiki/filter/xml/internal/output/XMLOutputFilterStreamUtils.java
           </excludes>
         </configuration>
       </plugin>

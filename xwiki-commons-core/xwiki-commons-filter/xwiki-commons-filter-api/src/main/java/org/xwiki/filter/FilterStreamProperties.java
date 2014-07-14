@@ -17,34 +17,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.xml.internal.input;
+package org.xwiki.filter;
 
-import javax.xml.stream.XMLEventWriter;
-
-import org.xwiki.filter.FilterException;
-import org.xwiki.filter.internal.input.AbstractBeanInputFilterStreamFactory;
-import org.xwiki.filter.internal.input.BeanInputFilter;
-import org.xwiki.filter.type.FilterStreamType;
-import org.xwiki.filter.xml.input.XMLInputProperties;
+import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyName;
+import org.xwiki.stability.Unstable;
 
 /**
- * @param <P>
+ * Properties common to most streams.
+ * 
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractXMLBeanInputFilterFactory<P extends XMLInputProperties, F> extends
-    AbstractBeanInputFilterStreamFactory<P, F>
+@Unstable
+public interface FilterStreamProperties
 {
-    public AbstractXMLBeanInputFilterFactory(FilterStreamType type)
-    {
-        super(type);
-    }
+    /**
+     * The {@link String} name of the <code>verbose</code> property.
+     * 
+     * @since 6.2M1
+     */
+    String PROPNAME_VERBOSE = "verbose";
 
-    @Override
-    public BeanInputFilter<P> createInputFilter(P properties) throws FilterException
-    {
-        return new DefaultXMLInputFilter<P, F>(this, properties);
-    }
+    /**
+     * @return true if the stream should log details of what is happening
+     */
+    @PropertyName("Verbose")
+    @PropertyDescription("Indicates if the stream should log details of what is happening")
+    boolean isVerbose();
 
-    protected abstract XMLEventWriter createXMLEventWriter(Object filter, P parameters);
+    /**
+     * @param verbose true if the stream should log details of what is happening
+     */
+    void setVerbose(boolean verbose);
 }

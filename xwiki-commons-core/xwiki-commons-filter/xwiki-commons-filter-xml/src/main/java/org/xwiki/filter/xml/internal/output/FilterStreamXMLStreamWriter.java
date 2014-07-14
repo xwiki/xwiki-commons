@@ -34,19 +34,19 @@ import org.xwiki.filter.xml.output.XMLOutputProperties;
  * @version $Id$
  * @since 6.2M1
  */
-public class FilterXMLStreamWriter
+public class FilterStreamXMLStreamWriter
 {
     private final XMLStreamWriter writer;
 
     private final boolean printNullValue;
 
-    public FilterXMLStreamWriter(XMLStreamWriter writer, boolean printNullValue)
+    public FilterStreamXMLStreamWriter(XMLStreamWriter writer, boolean printNullValue)
     {
         this.writer = writer;
         this.printNullValue = printNullValue;
     }
 
-    public FilterXMLStreamWriter(OutputStream outputStream, String encoding, boolean format, boolean printNullValue)
+    public FilterStreamXMLStreamWriter(OutputStream outputStream, String encoding, boolean format, boolean printNullValue)
         throws FilterException
     {
         try {
@@ -64,10 +64,10 @@ public class FilterXMLStreamWriter
         this.printNullValue = printNullValue;
     }
 
-    public FilterXMLStreamWriter(XMLOutputProperties properties, boolean printNullValue) throws FilterException
+    public FilterStreamXMLStreamWriter(XMLOutputProperties properties, boolean printNullValue) throws FilterException
     {
         try {
-            this.writer = XMLOutputFilterUtils.createXMLStreamWriter(properties);
+            this.writer = XMLOutputFilterStreamUtils.createXMLStreamWriter(properties);
         } catch (Exception e) {
             throw new FilterException("Failed to create XML writer", e);
         }

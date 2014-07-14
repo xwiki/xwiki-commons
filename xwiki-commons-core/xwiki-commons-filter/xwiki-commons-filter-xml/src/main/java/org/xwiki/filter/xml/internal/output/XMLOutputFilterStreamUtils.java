@@ -40,7 +40,7 @@ import org.xwiki.xml.stax.StAXUtils;
  * @version $Id$
  * @since 6.2M1
  */
-public final class XMLOutputFilterUtils
+public final class XMLOutputFilterStreamUtils
 {
     public static XMLStreamWriter createXMLStreamWriter(XMLOutputProperties properties) throws XMLStreamException,
         IOException, FilterException

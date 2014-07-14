@@ -17,19 +17,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter;
 
-import org.xwiki.component.annotation.Role;
-import org.xwiki.filter.FilterException;
-import org.xwiki.filter.input.InputFilter;
+import org.xwiki.stability.Unstable;
 
 /**
- * @param <P> the type of the properties bean
+ * Properties common to most streams.
+ * 
  * @version $Id$
  * @since 6.2M1
  */
-@Role
-public interface BeanInputFilter<P> extends InputFilter
+@Unstable
+public class DefaultFilterStreamProperties implements FilterStreamProperties
 {
-    void setProperties(P properties) throws FilterException;
+    private boolean verbose = true;
+
+    @Override
+    public boolean isVerbose()
+    {
+        return this.verbose;
+    }
+
+    @Override
+    public void setVerbose(boolean verbose)
+    {
+        this.verbose = verbose;
+    }
 }

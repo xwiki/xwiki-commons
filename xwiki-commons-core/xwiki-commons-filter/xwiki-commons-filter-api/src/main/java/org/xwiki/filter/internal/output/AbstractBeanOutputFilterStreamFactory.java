@@ -34,9 +34,9 @@ import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.internal.AbstractBeanFilterStreamFactory;
-import org.xwiki.filter.internal.input.BeanInputFilter;
+import org.xwiki.filter.internal.input.BeanInputFilterStream;
 import org.xwiki.filter.output.BeanOutputFilterStreamFactory;
-import org.xwiki.filter.output.OutputFilter;
+import org.xwiki.filter.output.OutputFilterStream;
 import org.xwiki.filter.type.FilterStreamType;
 
 /**
@@ -76,22 +76,22 @@ public abstract class AbstractBeanOutputFilterStreamFactory<P, F> extends Abstra
     }
 
     @Override
-    public OutputFilter createOutputFilter(Map<String, Object> properties) throws FilterException
+    public OutputFilterStream createOutputFilterStream(Map<String, Object> properties) throws FilterException
     {
-        return createOutputFilter(createPropertiesBean(properties));
+        return createOutputFilterStream(createPropertiesBean(properties));
     }
 
     @Override
-    public BeanOutputFilter<P> createOutputFilter(P properties) throws FilterException
+    public BeanOutputFilterStream<P> createOutputFilterStream(P properties) throws FilterException
     {
-        BeanOutputFilter<P> inputFilter;
+        BeanOutputFilterStream<P> inputFilter;
         try {
             inputFilter =
-                this.componentManager.getInstance(new DefaultParameterizedType(null, BeanOutputFilter.class,
+                this.componentManager.getInstance(new DefaultParameterizedType(null, BeanOutputFilterStream.class,
                     getPropertiesBeanClass()), getType().serialize());
         } catch (ComponentLookupException e) {
             throw new FilterException(String.format("Failed to get instance of [%s] for type [%s]",
-                BeanInputFilter.class, getType()), e);
+                BeanInputFilterStream.class, getType()), e);
         }
 
         inputFilter.setProperties(properties);

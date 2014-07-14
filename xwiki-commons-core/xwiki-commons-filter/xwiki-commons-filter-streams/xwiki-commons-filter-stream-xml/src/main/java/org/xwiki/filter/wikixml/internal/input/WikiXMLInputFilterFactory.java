@@ -39,7 +39,7 @@ import org.xwiki.filter.output.OutputFilterStreamFactory;
 import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.filter.wikixml.input.WikiXMLInputProperties;
 import org.xwiki.filter.wikixml.internal.output.WikiXMLOutputFilterFactory;
-import org.xwiki.filter.xml.internal.input.AbstractXMLBeanInputFilterFactory;
+import org.xwiki.filter.xml.internal.input.AbstractXMLBeanInputFilterStreamFactory;
 import org.xwiki.filter.xml.parser.XMLParserFactory;
 
 /**
@@ -53,7 +53,7 @@ import org.xwiki.filter.xml.parser.XMLParserFactory;
 @Named("wiki+xml")
 @Singleton
 public class WikiXMLInputFilterFactory extends
-    AbstractXMLBeanInputFilterFactory<WikiXMLInputProperties, Object>
+    AbstractXMLBeanInputFilterStreamFactory<WikiXMLInputProperties, Object>
 {
     @Inject
     private XMLParserFactory parserFactory;
