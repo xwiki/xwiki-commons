@@ -48,9 +48,9 @@ public class SystemType
     public static final SystemType XWIKI = new SystemType("xwiki");
 
     /**
-     * Generic WIKI.
+     * Generic filter.
      */
-    public static final SystemType FILTER = new SystemType("wiki");
+    public static final SystemType FILTER = new SystemType("filter");
 
     /**
      * Id of a Wiki.
