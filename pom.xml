@@ -1088,10 +1088,7 @@ mm
                 </goals>
                 <configuration>
                   <rules>
-                    <evaluateBeanshell>
-                      <condition>("${project.packaging}" != "jar") || ("${project.packaging}" == "jar" &amp;&amp; new java.io.File("${project.build.directory}/${project.build.finalName}-javadoc.jar").exists())</condition>
-                      <message>Missing Javadoc JAR</message>
-                    </evaluateBeanshell>
+                    <javadocCheck implementation="org.xwiki.tool.enforcer.JavadocCheck" />
                   </rules>
                   <fail>true</fail>
                 </configuration>
