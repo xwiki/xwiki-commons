@@ -1074,28 +1074,6 @@ mm
                   </rules>
                 </configuration>
               </execution>
-              <!-- Make sure we have Javadoc JARs since this is a requirement for being able to be on Maven Central.
-                   Note that running the Javadoc plugin's JAR mojo doesn't ensure this since we exclude "internal"
-                   packages from Javadoc generation and modules having only classes in the "internal" package would
-                   not by default generate a Javadoc JAR so we need to add some tricks to ensure they get one. This
-                   check is here is to make sure we can release to Maven Central without any doubt.
-                   When http://jira.codehaus.org/browse/MJAVADOC-329 is fixed, remove these checks -->
-              <execution>
-                <id>enforce-javadoc-exists</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <evaluateBeanshell>
-                      <condition>("${project.packaging}" != "jar") || ("${project.packaging}" == "jar" &amp;&amp; new java.io.File("${project.build.directory}/${project.build.finalName}-javadoc.jar").exists())</condition>
-                      <message>Missing Javadoc JAR</message>
-                    </evaluateBeanshell>
-                  </rules>
-                  <fail>true</fail>
-                </configuration>
-              </execution>
             </executions>
           </plugin>
           <plugin>
