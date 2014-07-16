@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.aether.internal;
+package org.xwiki.extension.repository.internal;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -42,8 +42,8 @@ import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
  */
 @Component
 @Singleton
-@Named("default.aether.snapshots")
-public class AetherSnapshotsDefaultExtensionRepositorySource extends AbstractExtensionRepositorySource
+@Named("default.snapshots")
+public class SnapshotsDefaultExtensionRepositorySource extends AbstractExtensionRepositorySource
 {
     /**
      * Used to get configuration properties containing repositories.

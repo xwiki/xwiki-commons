@@ -1,1 +1,1 @@
-org.xwiki.extension.repository.aether.internal.AetherSnapshotsDefaultExtensionRepositorySource
+org.xwiki.extension.repository.internal.SnapshotsDefaultExtensionRepositorySource
