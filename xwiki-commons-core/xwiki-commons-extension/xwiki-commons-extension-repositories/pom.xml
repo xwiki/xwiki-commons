@@ -35,7 +35,7 @@
     <module>xwiki-commons-extension-repository-http</module>
     <module>xwiki-commons-extension-repository-maven</module>
     <module>xwiki-commons-extension-repository-xwiki</module>
-    <module>xwiki-commons-extension-repositories-maven-snapshots</module>
+    <module>xwiki-commons-extension-repository-maven-snapshots</module>
   </modules>
 </project>
        
