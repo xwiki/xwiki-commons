@@ -3,11 +3,6 @@
     "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
     "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 
-        <!-- ==================================================================================== -->
-        <!-- NOTE: THIS FILE HAS NOT BEEN APPROVED YET. IT'S A WORK IN PROGRESS AND SHOULDN'T YET
-             BE CONSIDERED AS THE AUTHORATIVE CHECKSTYLE RULES OF THE XWIKI PROJECT -->
-        <!-- ==================================================================================== -->
-
 <!-- Checkstyle properties for XWiki projects -->
 <module name="Checker">
 
