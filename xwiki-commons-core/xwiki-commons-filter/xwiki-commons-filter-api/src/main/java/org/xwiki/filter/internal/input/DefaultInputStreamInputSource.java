@@ -32,9 +32,17 @@ public class DefaultInputStreamInputSource implements InputStreamInputSource
 {
     private final InputStream inputStream;
 
+    private final boolean close;
+
     public DefaultInputStreamInputSource(InputStream inputStream)
     {
+        this(inputStream, false);
+    }
+
+    public DefaultInputStreamInputSource(InputStream inputStream, boolean close)
+    {
         this.inputStream = inputStream;
+        this.close = close;
     }
 
     @Override
@@ -51,7 +59,9 @@ public class DefaultInputStreamInputSource implements InputStreamInputSource
     @Override
     public void close() throws IOException
     {
-        // Closing the stream is the responsibility of the caller
+        if (this.close) {
+            this.inputStream.close();
+        }
     }
 
     @Override
