@@ -32,7 +32,7 @@ import org.xwiki.component.manager.ComponentRepositoryException;
 
 /**
  * Delegate all calls to a defined Component Manager, acting as a Proxy for it.
- * 
+ *
  * @version $Id$
  * @since 3.3M2
  */
@@ -127,7 +127,7 @@ public class DelegateComponentManager implements ComponentManager
     }
 
     @Override
-    public void unregisterComponent(ComponentDescriptor< ? > classComponentDescriptor)
+    public void unregisterComponent(ComponentDescriptor<?> classComponentDescriptor)
     {
         getComponentManager().unregisterComponent(classComponentDescriptor);
     }

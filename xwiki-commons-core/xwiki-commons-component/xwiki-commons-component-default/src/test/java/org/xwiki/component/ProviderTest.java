@@ -27,7 +27,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.ComponentRole;
@@ -43,7 +42,7 @@ import org.xwiki.component.phase.InitializationException;
 
 /**
  * Validate loading and injection of Providers in a real use case.
- * 
+ *
  * @version $Id$
  */
 public class ProviderTest

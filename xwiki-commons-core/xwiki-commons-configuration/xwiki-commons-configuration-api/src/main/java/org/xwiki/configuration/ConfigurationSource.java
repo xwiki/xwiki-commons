@@ -38,7 +38,7 @@ public interface ConfigurationSource
      * @since 2.0M1
      */
     <T> T getProperty(String key, T defaultValue);
-   
+
     /**
      * @param <T> the value type
      * @param key the property key for which we want the value
@@ -57,7 +57,7 @@ public interface ConfigurationSource
     /**
      * @param <T> the value type
      * @param key the property key for which we want the value
-     * @return the property as an untyped Object or null if the key wasn't found. In general you should prefer 
+     * @return the property as an untyped Object or null if the key wasn't found. In general you should prefer
      *         {@link #getProperty(String, Class)} or {@link #getProperty(String, Object)}
      */
     <T> T getProperty(String key);

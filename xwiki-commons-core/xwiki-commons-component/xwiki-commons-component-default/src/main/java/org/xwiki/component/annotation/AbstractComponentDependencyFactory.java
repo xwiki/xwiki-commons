@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * Provides useful methods for implementing {@link ComponentDependencyFactory}.
- * 
+ *
  * @version $Id$
  * @since 3.2RC1
  */
@@ -39,20 +39,20 @@ public abstract class AbstractComponentDependencyFactory implements ComponentDep
      * @deprecated since 4.0M1 it's useless
      */
     @Deprecated
-    protected boolean isDependencyOfListType(Class< ? > type)
+    protected boolean isDependencyOfListType(Class<?> type)
     {
         return Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
     }
 
     /**
      * Extract generic type from the list field.
-     * 
+     *
      * @param field the list field to inject
      * @return the role of the components in the list
      * @since 4.0M1 it's useless
      */
     @Deprecated
-    protected Class< ? > getGenericRole(Field field)
+    protected Class<?> getGenericRole(Field field)
     {
         Type type = field.getGenericType();
 

@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Helpers for {@link ScriptContext} management. Like context initialization, etc.
- * 
+ *
  * @version $Id$
  */
 @Role
@@ -35,8 +35,8 @@ public interface ScriptContextManager
      * @return a clean and initialized {@link ScriptContext}. Clean means that all
      *         {@link org.xwiki.script.ScriptContextInitializer} will have been executed on the returned Script Context
      *         which will thus contain re-initialized values for the values which are set in
-     *         {@link org.xwiki.script.ScriptContextInitializer}. The values that are set before calling this method
-     *         and for which there are no {@link org.xwiki.script.ScriptContextInitializer} will not be modified.  
+     *         {@link org.xwiki.script.ScriptContextInitializer}. The values that are set before calling this method and
+     *         for which there are no {@link org.xwiki.script.ScriptContextInitializer} will not be modified.
      */
     ScriptContext getScriptContext();
 }

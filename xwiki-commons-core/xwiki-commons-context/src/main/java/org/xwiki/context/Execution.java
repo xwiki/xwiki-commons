@@ -23,7 +23,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Allows setting/retrieving the {@link ExecutionContext}.
- * 
+ *
  * @version $Id$
  * @since 1.5M2
  */

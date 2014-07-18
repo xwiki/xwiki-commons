@@ -25,7 +25,7 @@ import org.xwiki.component.manager.ComponentManager;
 
 /**
  * Handles lifecycle for {@link Composable}.
- * 
+ *
  * @version $Id$
  * @since 3.2RC1
  */

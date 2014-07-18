@@ -26,7 +26,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * An {@link EventFilter} that matches exactly one document name.
- * 
+ *
  * @version $Id$
  */
 public class FixedNameEventFilter implements EventFilter, Serializable
@@ -42,7 +42,7 @@ public class FixedNameEventFilter implements EventFilter, Serializable
 
     /**
      * Constructor initializing this event filter with a document name that should be matched.
-     * 
+     *
      * @param filter the name of the matched document
      */
     public FixedNameEventFilter(String filter)

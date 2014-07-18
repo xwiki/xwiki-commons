@@ -26,7 +26,7 @@ import org.xwiki.observation.event.Event;
 /**
  * Wraps a provided {@link EventListener} and filters events by only keeping those coming from the provided
  * {@link Thread}.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  */
@@ -39,7 +39,7 @@ public class WrappedThreadEventListener extends AbstractThreadEventListener
 
     /**
      * Use {@link Thread#currentThread()}.
-     * 
+     *
      * @param listener the wrapped listener
      * @since 6.0M1
      */

@@ -34,7 +34,7 @@ import org.xwiki.context.ExecutionContextManager;
 
 /**
  * Default implementation of {@link ExecutionContextManager}.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -62,7 +62,7 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
 
     /**
      * Generally used for unit tests.
-     * 
+     *
      * @param execution an {@link Execution} to use when initializing {@link ExecutionContext}.
      * @since 3.2RC1
      */
@@ -84,7 +84,7 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
         try {
             this.execution.pushContext(clonedContext);
         } catch (RuntimeException e) {
-            // If inheritance fails, we will get an unchecked exception here.  So we'll wrap it in an
+            // If inheritance fails, we will get an unchecked exception here. So we'll wrap it in an
             // ExecutionContextException.
             throw new ExecutionContextException("Failed to push cloned execution context.", e);
         }
@@ -110,7 +110,7 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
         try {
             this.execution.setContext(context);
         } catch (RuntimeException e) {
-            // If inheritance fails, we will get an unchecked exception here.  So we'll wrap it in an
+            // If inheritance fails, we will get an unchecked exception here. So we'll wrap it in an
             // ExecutionContextException.
             throw new ExecutionContextException("Failed to set the execution context.", e);
         }
@@ -122,7 +122,6 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
      * Run the initializers.
      *
      * @param context the execution context to initialize
-     * 
      * @throws ExecutionContextException in case one {@link ExecutionContextInitializer} fails to execute
      */
     private void runInitializers(ExecutionContext context) throws ExecutionContextException

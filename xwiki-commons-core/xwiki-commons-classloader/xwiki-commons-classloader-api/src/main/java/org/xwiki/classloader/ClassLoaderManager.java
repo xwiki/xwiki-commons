@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
  * Store and create automatically class loaders by namespace.
  * <p>
  * All classloaders inherit from root classloader which is associated to null namespace.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -34,7 +34,7 @@ public interface ClassLoaderManager
 {
     /**
      * Create and get classloader associated to the provided namespace.
-     * 
+     *
      * @param namespace the namespace
      * @param create true if the class loader should be created if it does not exists
      * @return the class loader
@@ -48,7 +48,7 @@ public interface ClassLoaderManager
 
     /**
      * Remove the classloader associated to the provided namespace.
-     * 
+     *
      * @param namespace the namespace
      */
     void dropURLClassLoader(String namespace);

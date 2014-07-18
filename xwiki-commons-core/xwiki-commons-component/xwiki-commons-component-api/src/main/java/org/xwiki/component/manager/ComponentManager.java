@@ -28,7 +28,7 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
 
 /**
  * Provide way to access and modify components repository.
- * 
+ *
  * @version $Id$
  */
 @Role
@@ -53,7 +53,7 @@ public interface ComponentManager
     /**
      * Find a component instance that implements that passed type. If the component has a singleton lifecycle then this
      * method always return the same instance.
-     * 
+     *
      * @param <T> the component role type
      * @param roleType the class (aka role) that the component implements
      * @return the component instance
@@ -65,7 +65,7 @@ public interface ComponentManager
     /**
      * Find a component instance that implements that passed interface class. If the component has a singleton lifecycle
      * then this method always return the same instance.
-     * 
+     *
      * @param <T> the component role type
      * @param roleType the class (aka role) that the component implements
      * @param roleHint the hint that differentiates a component implementation from another one (each component is
@@ -79,7 +79,7 @@ public interface ComponentManager
     /**
      * Release the provided singleton instance but don't unregister the component descriptor. This means that next time
      * the component is looked up a new instance will be created.
-     * 
+     *
      * @param componentInstance the component to release passed as a component instance.
      * @throws ComponentLifecycleException if the component's ending lifecycle raises an error
      * @since 4.0M1
@@ -88,7 +88,7 @@ public interface ComponentManager
 
     /**
      * Find all the components implementing the provided role.
-     * 
+     *
      * @param role the type of the components role
      * @return the components
      * @param <T> the type of the components role
@@ -99,7 +99,7 @@ public interface ComponentManager
 
     /**
      * Find all the components implementing the provided role and organize then in a {@link Map} with role hint as key.
-     * 
+     *
      * @param role the type of the components role
      * @return the components
      * @param <T> the type of the components role
@@ -113,7 +113,7 @@ public interface ComponentManager
      * <p>
      * If a component with the same role and role hint already exists it will be replaced by this provided one when
      * lookup.
-     * 
+     *
      * @param <T> the component role type
      * @param componentDescriptor the descriptor of the component to register.
      * @throws ComponentRepositoryException error when registering component descriptor.
@@ -127,7 +127,7 @@ public interface ComponentManager
      * <p>
      * If a component with the same role and role hint already exists it will be replaced by this provided one when
      * lookup.
-     * 
+     *
      * @param <T> the component role type
      * @param componentDescriptor the descriptor of the component to register.
      * @param componentInstance the initial component instance
@@ -139,7 +139,7 @@ public interface ComponentManager
 
     /**
      * Remove a component from the component repository dynamically.
-     * 
+     *
      * @param role the role identifying the component
      * @param hint the hint identifying the component
      * @since 4.0M1
@@ -148,11 +148,11 @@ public interface ComponentManager
 
     /**
      * Remove a component from the component repository dynamically.
-     * 
+     *
      * @param componentDescriptor the component descriptor
      * @since 4.0M1
      */
-    void unregisterComponent(ComponentDescriptor< ? > componentDescriptor);
+    void unregisterComponent(ComponentDescriptor<?> componentDescriptor);
 
     /**
      * @param <T> the component role type

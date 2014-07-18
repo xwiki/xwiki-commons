@@ -31,7 +31,7 @@ import org.xwiki.component.manager.ComponentManager;
 /**
  * Provide the {@link ComponentManager} associated to the current context. Return the root {@link ComponentManager} if
  * no context oriented {@link ComponentManager} can be found.
- * 
+ *
  * @version $Id$
  * @since 4.1.4
  */

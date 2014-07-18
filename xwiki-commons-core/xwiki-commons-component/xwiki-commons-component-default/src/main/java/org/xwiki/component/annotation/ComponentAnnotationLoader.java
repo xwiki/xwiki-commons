@@ -51,7 +51,7 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Dynamically loads all components defined using Annotations and declared in META-INF/components.txt files.
- * 
+ *
  * @version $Id$
  * @since 1.8.1
  */
@@ -66,7 +66,7 @@ public class ComponentAnnotationLoader
     /**
      * Location in the classloader of the file specifying which component implementation to use when several components
      * with the same role/hint are found.
-     * 
+     *
      * @deprecated starting with 3.3M1 use the notion of priorities instead (see {@link ComponentDeclaration}).
      */
     @Deprecated
@@ -89,7 +89,7 @@ public class ComponentAnnotationLoader
 
     /**
      * Loads all components defined using annotations.
-     * 
+     *
      * @param manager the component manager to use to dynamically register components
      * @param classLoader the classloader to use to look for the Component list declaration file (
      *            {@code META-INF/components.txt})
@@ -149,12 +149,12 @@ public class ComponentAnnotationLoader
         try {
             // 2) For each component class name found, load its class and use introspection to find the necessary
             // annotations required to create a Component Descriptor.
-            Map<RoleHint< ? >, ComponentDescriptor< ? >> descriptorMap =
-                new HashMap<RoleHint< ? >, ComponentDescriptor< ? >>();
-            Map<RoleHint< ? >, Integer> priorityMap = new HashMap<RoleHint< ? >, Integer>();
+            Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap =
+                new HashMap<RoleHint<?>, ComponentDescriptor<?>>();
+            Map<RoleHint<?>, Integer> priorityMap = new HashMap<RoleHint<?>, Integer>();
 
             for (ComponentDeclaration componentDeclaration : componentDeclarations) {
-                Class< ? > componentClass;
+                Class<?> componentClass;
                 try {
                     componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
                 } catch (Throwable e) {
@@ -165,11 +165,11 @@ public class ComponentAnnotationLoader
 
                 // Look for ComponentRole annotations and register one component per ComponentRole found
                 for (Type componentRoleType : findComponentRoleTypes(componentClass)) {
-                    for (ComponentDescriptor< ? > componentDescriptor : this.factory.createComponentDescriptors(
+                    for (ComponentDescriptor<?> componentDescriptor : this.factory.createComponentDescriptors(
                         componentClass, componentRoleType)) {
                         // If there's already a existing role/hint in the list of descriptors then decide which one
                         // to keep by looking at their priorities. Highest priority wins (i.e. lowest integer value).
-                        RoleHint< ? > roleHint =
+                        RoleHint<?> roleHint =
                             new RoleHint(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint());
 
                         addComponent(descriptorMap, priorityMap, roleHint, componentDescriptor, componentDeclaration,
@@ -179,7 +179,7 @@ public class ComponentAnnotationLoader
             }
 
             // 3) Activate all component descriptors
-            for (ComponentDescriptor< ? > descriptor : descriptorMap.values()) {
+            for (ComponentDescriptor<?> descriptor : descriptorMap.values()) {
                 manager.registerComponent(descriptor);
             }
         } catch (Exception e) {
@@ -189,8 +189,8 @@ public class ComponentAnnotationLoader
         }
     }
 
-    private void addComponent(Map<RoleHint< ? >, ComponentDescriptor< ? >> descriptorMap,
-        Map<RoleHint< ? >, Integer> priorityMap, RoleHint< ? > roleHint, ComponentDescriptor< ? > componentDescriptor,
+    private void addComponent(Map<RoleHint<?>, ComponentDescriptor<?>> descriptorMap,
+        Map<RoleHint<?>, Integer> priorityMap, RoleHint<?> roleHint, ComponentDescriptor<?> componentDescriptor,
         ComponentDeclaration componentDeclaration, boolean warn)
     {
         if (descriptorMap.containsKey(roleHint)) {
@@ -207,15 +207,15 @@ public class ComponentAnnotationLoader
                         "Component [{}] which implements [{}] tried to overwrite component "
                             + "[{}]. However, no action was taken since both components have the same priority "
                             + "level of [{}].",
-                        new Object[] {componentDeclaration.getImplementationClassName(), roleHint,
-                            descriptorMap.get(roleHint).getImplementation().getName(), currentPriority});
+                        new Object[] { componentDeclaration.getImplementationClassName(), roleHint,
+                            descriptorMap.get(roleHint).getImplementation().getName(), currentPriority });
                 }
             } else {
                 getLogger().debug(
                     "Ignored component [{}] since its priority level of [{}] is lower "
                         + "than the currently registered component [{}] which has a priority of [{}]",
-                    new Object[] {componentDeclaration.getImplementationClassName(),
-                        componentDeclaration.getPriority(), currentPriority});
+                    new Object[] { componentDeclaration.getImplementationClassName(),
+                        componentDeclaration.getPriority(), currentPriority });
             }
         } else {
             descriptorMap.put(roleHint, componentDescriptor);
@@ -234,7 +234,7 @@ public class ComponentAnnotationLoader
         List<ComponentDeclaration> componentDeclarations)
     {
         for (ComponentDeclaration componentDeclaration : componentDeclarations) {
-            Class< ? > componentClass = null;
+            Class<?> componentClass = null;
             try {
                 componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
             } catch (ClassNotFoundException e) {
@@ -246,13 +246,13 @@ public class ComponentAnnotationLoader
             }
 
             if (componentClass != null) {
-                for (ComponentDescriptor< ? > componentDescriptor : getComponentsDescriptors(componentClass)) {
+                for (ComponentDescriptor<?> componentDescriptor : getComponentsDescriptors(componentClass)) {
                     manager.unregisterComponent(componentDescriptor);
 
                     if (componentDescriptor.getRoleType() instanceof ParameterizedType) {
                         Class roleClass = ReflectionUtils.getTypeClass(componentDescriptor.getRoleType());
 
-                        DefaultComponentDescriptor< ? > classComponentDescriptor =
+                        DefaultComponentDescriptor<?> classComponentDescriptor =
                             new DefaultComponentDescriptor(componentDescriptor);
                         classComponentDescriptor.setRoleType(roleClass);
 
@@ -263,7 +263,7 @@ public class ComponentAnnotationLoader
         }
     }
 
-    public List<ComponentDescriptor> getComponentsDescriptors(Class< ? > componentClass)
+    public List<ComponentDescriptor> getComponentsDescriptors(Class<?> componentClass)
     {
         List<ComponentDescriptor> descriptors = new ArrayList<ComponentDescriptor>();
 
@@ -275,12 +275,12 @@ public class ComponentAnnotationLoader
         return descriptors;
     }
 
-    public Set<Type> findComponentRoleTypes(Class< ? > componentClass)
+    public Set<Type> findComponentRoleTypes(Class<?> componentClass)
     {
         return findComponentRoleTypes(componentClass, null);
     }
 
-    public Set<Type> findComponentRoleTypes(Class< ? > componentClass, Type[] parameters)
+    public Set<Type> findComponentRoleTypes(Class<?> componentClass, Type[] parameters)
     {
         // Note: We use a Set to ensure that we don't register duplicate roles.
         Set<Type> types = new LinkedHashSet<Type>();
@@ -294,7 +294,7 @@ public class ComponentAnnotationLoader
             // Auto-discover roles by looking for a @Role annotation or a @Provider one in both the superclass
             // and implemented interfaces.
             for (Type interfaceType : getGenericInterfaces(componentClass)) {
-                Class< ? > interfaceClass;
+                Class<?> interfaceClass;
                 Type[] interfaceParameters;
 
                 if (interfaceType instanceof ParameterizedType) {
@@ -314,7 +314,7 @@ public class ComponentAnnotationLoader
                                 interfaceParameters);
                     }
                 } else if (interfaceType instanceof Class) {
-                    interfaceClass = (Class< ? >) interfaceType;
+                    interfaceClass = (Class<?>) interfaceType;
                     interfaceParameters = null;
                 } else {
                     continue;
@@ -382,23 +382,23 @@ public class ComponentAnnotationLoader
      * component implementation class. If the roles annotation value is specified then use the specified list instead of
      * doing auto-discovery. Also note that we support component classes implementing JSR 330's
      * {@link javax.inject.Provider} (and thus without a component role annotation).
-     * 
+     *
      * @param componentClass the component implementation class for which to find the component roles it implements
      * @return the list of component role classes implemented
      * @deprecated since 4.0M1 use {@link #findComponentRoleTypes(Class)} instead
      */
     @Deprecated
-    public Set<Class< ? >> findComponentRoleClasses(Class< ? > componentClass)
+    public Set<Class<?>> findComponentRoleClasses(Class<?> componentClass)
     {
         // Note: We use a Set to ensure that we don't register duplicate roles.
-        Set<Class< ? >> classes = new LinkedHashSet<Class< ? >>();
+        Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
 
         Component component = componentClass.getAnnotation(Component.class);
         if (component != null && component.roles().length > 0) {
             classes.addAll(Arrays.asList(component.roles()));
         } else {
             // Look in both superclass and interfaces for @Role or javax.inject.Provider
-            for (Class< ? > interfaceClass : componentClass.getInterfaces()) {
+            for (Class<?> interfaceClass : componentClass.getInterfaces()) {
                 // Handle superclass of interfaces
                 classes.addAll(findComponentRoleClasses(interfaceClass));
 
@@ -417,7 +417,7 @@ public class ComponentAnnotationLoader
 
             // Note that we need to look into the superclass since the super class can itself implements an interface
             // that has the @Role annotation.
-            Class< ? > superClass = componentClass.getSuperclass();
+            Class<?> superClass = componentClass.getSuperclass();
             if (superClass != null && superClass != Object.class) {
                 classes.addAll(findComponentRoleClasses(superClass));
             }
@@ -428,7 +428,7 @@ public class ComponentAnnotationLoader
 
     /**
      * Get all components listed in the passed resource file.
-     * 
+     *
      * @param classLoader the classloader to use to find the resources
      * @param location the name of the resources to look for
      * @return the list of component implementation class names
@@ -460,7 +460,7 @@ public class ComponentAnnotationLoader
     /**
      * Get all components listed in the passed resource stream. The format is:
      * {@code (priority level):(fully qualified component implementation name)}.
-     * 
+     *
      * @param componentListStream the stream to parse
      * @return the list of component declaration (implementation class names and priorities)
      * @throws IOException in case of an error loading the component list resource
@@ -500,7 +500,7 @@ public class ComponentAnnotationLoader
 
     /**
      * Get all components listed in a JAR file.
-     * 
+     *
      * @param jarFile the JAR file to parse
      * @return the list of component declaration (implementation class names and priorities)
      * @throws IOException in case of an error loading the component list resource
@@ -539,7 +539,7 @@ public class ComponentAnnotationLoader
     /**
      * Useful for unit tests that need to capture logs; they can return a mock logger instead of the real logger and
      * thus assert what's been logged.
-     * 
+     *
      * @return the Logger instance to use to log
      */
     protected Logger getLogger()

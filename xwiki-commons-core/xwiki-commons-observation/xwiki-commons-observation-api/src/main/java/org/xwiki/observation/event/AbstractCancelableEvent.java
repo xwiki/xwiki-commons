@@ -23,7 +23,7 @@ import org.xwiki.observation.event.filter.EventFilter;
 
 /**
  * Abstract base class for cancelable events.
- * 
+ *
  * @version $Id$
  * @since 2.5M1
  */
@@ -93,4 +93,3 @@ public abstract class AbstractCancelableEvent extends AbstractFilterableEvent im
         return this.reason;
     }
 }
-

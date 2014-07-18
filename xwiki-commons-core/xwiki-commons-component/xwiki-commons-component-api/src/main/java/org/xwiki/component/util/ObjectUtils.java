@@ -21,7 +21,7 @@ package org.xwiki.component.util;
 
 /**
  * Various Object utilities.
- * 
+ *
  * @version $Id$
  * @since 2.1RC1
  */
@@ -37,7 +37,7 @@ public final class ObjectUtils
 
     /**
      * Check if provided object are equals. This method also take care of null.
-     * 
+     *
      * @param object1 the first object
      * @param object2 the second object
      * @return true of the provided objects are equal

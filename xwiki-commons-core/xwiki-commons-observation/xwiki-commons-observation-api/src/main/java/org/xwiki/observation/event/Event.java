@@ -21,7 +21,7 @@ package org.xwiki.observation.event;
 
 /**
  * All Event types must implement this interface.
- * 
+ *
  * @version $Id$
  */
 public interface Event
@@ -33,7 +33,7 @@ public interface Event
      * on the event implementation. For example for Document events two events match if they implement the same event
      * class and if their {@link org.xwiki.observation.event.filter.EventFilter} match. Note that the implementation is
      * left open in order to cater for all the possible ways this Observation component can be used.
-     * 
+     *
      * @param otherEvent the occuring event matched against the current object
      * @return <code>true</code> if the passed event matches this event, <code>false</code> otherwise.
      */

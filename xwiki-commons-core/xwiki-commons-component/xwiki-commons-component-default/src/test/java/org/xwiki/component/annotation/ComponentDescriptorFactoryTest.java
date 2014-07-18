@@ -37,7 +37,7 @@ import org.xwiki.component.util.DefaultParameterizedType;
 
 /**
  * Unit tests for {@link ComponentDescriptorFactory}.
- * 
+ *
  * @version $Id$
  * @since 1.8.1
  */
@@ -113,7 +113,7 @@ public class ComponentDescriptorFactoryTest
     /**
      * Test that we can have a component implementing several roles.
      */
-    @Component(hints = {"hint1", "hint2"})
+    @Component(hints = { "hint1", "hint2" })
     public class MultipleRolesImpl implements NonGenericRole
     {
     }
@@ -179,7 +179,7 @@ public class ComponentDescriptorFactoryTest
         Assert.assertEquals("special", descriptors.get(0).getRoleHint());
     }
 
-    private void assertComponentDescriptor(Class< ? > componentClass, String fieldRoleName)
+    private void assertComponentDescriptor(Class<?> componentClass, String fieldRoleName)
     {
         ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
         List<ComponentDescriptor> descriptors = factory.createComponentDescriptors(componentClass, ExtendedRole.class);

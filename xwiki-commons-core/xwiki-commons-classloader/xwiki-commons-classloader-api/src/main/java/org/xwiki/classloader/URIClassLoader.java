@@ -33,8 +33,8 @@ import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import java.util.jar.Attributes.Name;
+import java.util.jar.Manifest;
 
 import org.xwiki.classloader.internal.ResourceLoader;
 
@@ -58,10 +58,9 @@ import edu.emory.mathcs.util.classloader.ResourceHandle;
  * This class avoids these problems by 1) using URIs instead of URLs for the search path (thus enforcing strict syntax
  * conformance and defining precise escaping semantics), and 2) using custom URLStreamHandler which ensures
  * per-classloader JAR caching policy.
- * 
  * <p>
- * Originally written by Dawid Kurzyniec and released to the public domain, as explained
- * at http://creativecommons.org/licenses/publicdomain
+ * Originally written by Dawid Kurzyniec and released to the public domain, as explained at
+ * http://creativecommons.org/licenses/publicdomain
  * </p>
  * <p>
  * Source: http://dcl.mathcs.emory.edu/php/loadPage.php?content=util/features.html#classloading
@@ -80,7 +79,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Creates URIClassLoader with the specified search path.
-     * 
+     *
      * @param uris the search path
      */
     public URIClassLoader(URI[] uris)
@@ -90,7 +89,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Creates URIClassLoader with the specified search path.
-     * 
+     *
      * @param uris the search path
      * @param handlerFactory the URLStreamHandlerFactory to use when creating URLs
      */
@@ -103,7 +102,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Creates URIClassLoader with the specified search path and parent class loader.
-     * 
+     *
      * @param uris the search path
      * @param parent the parent class loader
      */
@@ -114,7 +113,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Creates URIClassLoader with the specified search path and parent class loader.
-     * 
+     *
      * @param uris the search path
      * @param parent the parent class loader.
      * @param handlerFactory the URLStreamHandlerFactory to use when creating URLs
@@ -128,7 +127,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Add specified URI at the end of the search path.
-     * 
+     *
      * @param uri the URI to add
      */
     protected void addURI(URI uri)
@@ -138,7 +137,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Add specified URL at the end of the search path.
-     * 
+     *
      * @param url the URL to add
      */
     @Override
@@ -149,7 +148,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Add specified URLs at the end of the search path.
-     * 
+     *
      * @param urls the URLs to add
      */
     @Override
@@ -168,19 +167,19 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Finds and loads the class with the specified name.
-     * 
+     *
      * @param name the name of the class
      * @return the resulting class
      * @exception ClassNotFoundException if the class could not be found
      */
     @Override
-    protected Class< ? > findClass(final String name) throws ClassNotFoundException
+    protected Class<?> findClass(final String name) throws ClassNotFoundException
     {
         try {
-            return AccessController.doPrivileged(new PrivilegedExceptionAction<Class< ? >>()
+            return AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>()
             {
                 @Override
-                public Class< ? > run() throws ClassNotFoundException
+                public Class<?> run() throws ClassNotFoundException
                 {
                     String path = name.replace('.', '/').concat(".class");
                     ResourceHandle h = URIClassLoader.this.finder.getResource(path);
@@ -200,7 +199,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
         }
     }
 
-    protected Class< ? > defineClass(String name, ResourceHandle h) throws IOException
+    protected Class<?> defineClass(String name, ResourceHandle h) throws IOException
     {
         int i = name.lastIndexOf('.');
         URL url = h.getCodeSourceURL();
@@ -260,7 +259,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Finds the resource with the specified name.
-     * 
+     *
      * @param name the name of the resource
      * @return a <code>URL</code> for the resource, or <code>null</code> if the resource could not be found.
      */
@@ -279,7 +278,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Returns an Enumeration of URLs representing all of the resources having the specified name.
-     * 
+     *
      * @param name the resource name
      * @exception IOException if an I/O exception occurs
      * @return an <code>Enumeration</code> of <code>URL</code>s
@@ -305,7 +304,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
      * "file", the system-dependent absolute library file path is returned. Otherwise this method returns null.
      * <p>
      * Subclasses can override this method to provide specific approaches in library searching.
-     * 
+     *
      * @param libname the library name
      * @return the absolute path of the native library
      * @see java.lang.System#loadLibrary(java.lang.String)
@@ -328,7 +327,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
     /**
      * Finds the ResourceHandle object for the class with the specified name. Unlike <code>findClass()</code>, this
      * method does not load the class.
-     * 
+     *
      * @param name the name of the class
      * @return the ResourceHandle of the class
      */
@@ -340,7 +339,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Finds the ResourceHandle object for the resource with the specified name.
-     * 
+     *
      * @param name the name of the resource
      * @return the ResourceHandle of the resource
      */
@@ -363,7 +362,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
      * library as it was ordinary resource.
      * <p>
      * Subclasses can override this method to provide specific approaches in library searching.
-     * 
+     *
      * @param name the name of the library
      * @return the ResourceHandle of the library
      */
@@ -386,7 +385,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
 
     /**
      * Returns an Enumeration of ResourceHandle objects representing all of the resources having the specified name.
-     * 
+     *
      * @param name the name of the resource
      * @return the ResourceHandle of the resource
      */

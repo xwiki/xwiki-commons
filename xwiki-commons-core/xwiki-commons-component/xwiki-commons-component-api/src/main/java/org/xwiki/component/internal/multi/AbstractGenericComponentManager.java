@@ -31,7 +31,7 @@ import org.xwiki.component.manager.ComponentRepositoryException;
  * Generic implementation that creates Component Manager instances based on the generic notion of a key. This is used
  * for example by the Wiki Component Manager or the User Component Manager which respectively have a key returning the
  * current wiki and the current user in the Execution Context.
- * 
+ *
  * @version $Id$
  * @since 3.3M2
  */

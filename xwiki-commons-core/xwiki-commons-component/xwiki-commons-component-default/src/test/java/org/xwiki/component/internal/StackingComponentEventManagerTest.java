@@ -35,7 +35,7 @@ import org.xwiki.observation.ObservationManager;
 
 /**
  * Test {@link StackingComponentEventManager}.
- * 
+ *
  * @version $Id$
  */
 public class StackingComponentEventManagerTest

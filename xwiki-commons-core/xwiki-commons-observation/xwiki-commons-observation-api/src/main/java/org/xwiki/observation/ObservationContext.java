@@ -24,7 +24,7 @@ import org.xwiki.observation.event.BeginEvent;
 
 /**
  * Allow to get observation related information from the execution context.
- * 
+ *
  * @version $Id$
  * @since 3.2M1
  */
@@ -33,7 +33,7 @@ public interface ObservationContext
 {
     /**
      * Indicates if the provided begin event is still in the current event stack.
-     * 
+     *
      * @param event the event to check
      * @return true if the provided event is found in the current event stack
      */

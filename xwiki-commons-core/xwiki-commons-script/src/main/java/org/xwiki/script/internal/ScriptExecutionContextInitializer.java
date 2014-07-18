@@ -31,7 +31,7 @@ import org.xwiki.context.ExecutionContextInitializer;
 /**
  * Allow registering the Script Context in the Execution Context object since it's shared during the whole execution of
  * the current request.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -48,7 +48,7 @@ public class ScriptExecutionContextInitializer implements ExecutionContextInitia
     public void initialize(ExecutionContext executionContext) throws ExecutionContextException
     {
         // We're storing an instance of the Script Context class in the Execution Context so that it can be
-        // shared between different script invocations during the lifetime of the Execution Context.        
+        // shared between different script invocations during the lifetime of the Execution Context.
         executionContext.setProperty(SCRIPT_CONTEXT_ID, new SimpleScriptContext());
     }
 }

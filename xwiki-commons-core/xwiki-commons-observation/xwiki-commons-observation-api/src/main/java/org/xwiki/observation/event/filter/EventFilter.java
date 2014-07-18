@@ -29,14 +29,14 @@ package org.xwiki.observation.event.filter;
  * new DocumentSaveEvent(new RegexEventFilter(&quot;.*Doc.*&quot;))
  * </pre></code>
  * </p>
- * 
+ *
  * @version $Id$
  */
 public interface EventFilter
 {
     /**
      * Provides access to the filter's criterion.
-     * 
+     *
      * @return the filter used in the {@link #matches(EventFilter)} method to verify if a passed event filter matches
      *         it.
      * @see #matches(EventFilter)
@@ -51,7 +51,7 @@ public interface EventFilter
      * <code>referenceEventFilter</code>, will be notified of any occuring event for which
      * <code>referenceEvent.matches(occuringEvent)</code> will return <code>true</code> and
      * <code>referenceEvent.getEventFilter().matches(occurringEvent.getEventFilter())</code>.
-     * 
+     *
      * @param eventFilter the event filter to compare to the filter value
      * @return <code>true</code> if both event filters match. The matching algorithm is left to the filter event
      *         implementation. For example the {@link RegexEventFilter Regex event filter} will match another filter if

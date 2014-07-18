@@ -32,7 +32,7 @@ import org.xwiki.script.ScriptContextManager;
 
 /**
  * Default implementation of {@link ScriptContextManager}.
- * 
+ *
  * @version $Id$
  */
 @Component

@@ -28,7 +28,7 @@ import org.xwiki.component.descriptor.ComponentDependency;
  * implementations, for example one using {@code @Inject} and {@code @Named} annotations to describe a Component
  * Dependency. Note that this interface allows cleanly plugging new implementations to extend how Component Descriptor
  * are recognized. This allows for example to cleanly support legacy implementation (for example to use the old
- * @code @Requirement} annotations we used to use).
+ * {@code @Requirement} annotations we used to use).
  *
  * @version $Id$
  * @since 3.2RC1

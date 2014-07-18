@@ -19,9 +19,6 @@
  */
 package org.xwiki.component.annotation;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -29,8 +26,11 @@ import java.lang.annotation.Target;
 
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 /**
- * Defines the instantiation strategy for this component (Singleton, per lookup). 
+ * Defines the instantiation strategy for this component (Singleton, per lookup).
  *
  * @version $Id$
  * @since 1.8.1

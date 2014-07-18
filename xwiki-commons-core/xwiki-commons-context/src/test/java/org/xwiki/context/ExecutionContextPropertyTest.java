@@ -19,23 +19,22 @@
  */
 package org.xwiki.context;
 
-import org.junit.Test;
-import org.junit.Assert;
-
-import java.util.Map;
 import java.lang.reflect.Field;
+import java.util.Map;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.xwiki.context.internal.ExecutionContextProperty;
 
 /**
- * @version $Id$ 
+ * @version $Id$
  * @since 4.3M1
  */
 public class ExecutionContextPropertyTest
 {
 
     /**
-     * Access the properties via reflection.  This method requires ReflectPermission suppressAccessChecks.
+     * Access the properties via reflection. This method requires ReflectPermission suppressAccessChecks.
      *
      * @param context The execution context
      * @param key The property key
@@ -48,8 +47,8 @@ public class ExecutionContextPropertyTest
 
         propertiesField.setAccessible(true);
 
-        Map<String, ExecutionContextProperty> properties
-            = (Map<String, ExecutionContextProperty>) propertiesField.get(context);
+        Map<String, ExecutionContextProperty> properties =
+            (Map<String, ExecutionContextProperty>) propertiesField.get(context);
 
         return properties.get(key);
     }
@@ -100,7 +99,7 @@ public class ExecutionContextPropertyTest
         Assert.assertTrue(fetch(context, k3).clone().isClonedFrom(fetch(context, k3)));
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void cloningNonPublicCloneMethod() throws Exception
     {
         ExecutionContext context = new ExecutionContext();
@@ -114,7 +113,7 @@ public class ExecutionContextPropertyTest
         fetch(context, key).clone();
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void nonNullCheck()
     {
         ExecutionContext context = new ExecutionContext();
@@ -137,7 +136,7 @@ public class ExecutionContextPropertyTest
         context.setProperty(key, new SomeSubClass());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void typeCheckingMismatch()
     {
         ExecutionContext context = new ExecutionContext();

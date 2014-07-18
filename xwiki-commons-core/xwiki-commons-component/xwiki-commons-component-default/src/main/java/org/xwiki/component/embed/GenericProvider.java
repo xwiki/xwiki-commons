@@ -35,7 +35,7 @@ import org.xwiki.component.util.ReflectionUtils;
  * Default provider used when the Component Manager needs to inject a {@link Provider} field but no custom Provider has
  * been registered. The default behavior is simply to look up the Component role class when
  * {@link javax.inject.Provider#get()} is called. This is useful for example when you wish to do "lazy injection".
- * 
+ *
  * @param <T> the role type
  * @version $Id$
  * @since 3.3M2

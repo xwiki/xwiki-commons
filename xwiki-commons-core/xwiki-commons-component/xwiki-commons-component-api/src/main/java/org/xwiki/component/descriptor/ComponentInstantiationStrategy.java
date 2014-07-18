@@ -21,7 +21,7 @@ package org.xwiki.component.descriptor;
 
 /**
  * Lists valid instantiation strategy types (singleton, per lookup).
- *  
+ *
  * @version $Id$
  * @since 1.8.1
  */
@@ -30,8 +30,8 @@ public enum ComponentInstantiationStrategy
     /**
      * The same component implementation instance is returned for all lookups.
      */
-    SINGLETON, 
-    
+    SINGLETON,
+
     /**
      * A new component implementation instance is created at a each lookup.
      */

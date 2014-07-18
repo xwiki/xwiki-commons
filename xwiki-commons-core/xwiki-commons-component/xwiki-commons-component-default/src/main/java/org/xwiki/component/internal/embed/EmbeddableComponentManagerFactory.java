@@ -30,7 +30,7 @@ import org.xwiki.component.manager.ComponentManager;
 /**
  * Create Component Manager implementation based on the Embeddable Component Manager (i.e. a simple implementation of
  * {@link ComponentManager} to be used when using some XWiki modules standalone).
- * 
+ *
  * @version $Id$
  * @since 3.3M2
  */

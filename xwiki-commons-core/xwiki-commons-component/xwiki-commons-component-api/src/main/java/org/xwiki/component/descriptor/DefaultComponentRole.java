@@ -51,7 +51,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
 
     /**
      * Create a new {@link DefaultComponentRole} by cloning the provided {@link ComponentRole}.
-     * 
+     *
      * @param componentRole the component role to clone
      * @since 3.4M1
      */
@@ -86,7 +86,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
     @Override
     public String getRoleHint()
     {
-        return roleHint;
+        return this.roleHint;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @since 3.3M1
      */
     @Override
@@ -127,7 +127,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @since 3.3M1
      */
     @Override

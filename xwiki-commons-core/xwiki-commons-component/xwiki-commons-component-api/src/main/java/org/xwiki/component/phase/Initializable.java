@@ -30,7 +30,7 @@ public interface Initializable
      * for the first time or if the component is specified as being loaded on startup). If the component instantiation
      * strategy is singleton then this method is called only once during the lifecycle of the Component Manager.
      * Otherwise the component is created at each lookup and thus this method is called at each lookup too.
-     * 
+     *
      * @throws InitializationException if an error happens during a component's initialization
      */
     void initialize() throws InitializationException;

@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Implementation that allows adding URLs on demand (the default {@link URLClassLoader} only allows adding URLs in the
  * constructor).
- * 
+ *
  * @version $Id$
  * @since 2.0.1
  */
@@ -35,7 +35,7 @@ public class ExtendedURLClassLoader extends URLClassLoader
 {
     /**
      * See {@link URLClassLoader#URLClassLoader(URL[], ClassLoader, URLStreamHandlerFactory)}.
-     * 
+     *
      * @param urls the URLs from which to load classes and resources
      * @param parent the parent class loader for delegation
      * @param factory the URLStreamHandlerFactory to use when creating URLs
@@ -47,7 +47,7 @@ public class ExtendedURLClassLoader extends URLClassLoader
 
     /**
      * See {@link URLClassLoader#URLClassLoader(URL[], ClassLoader)}.
-     * 
+     *
      * @param urls the URLs from which to load classes and resources
      * @param parent the parent class loader for delegation
      */
@@ -58,7 +58,7 @@ public class ExtendedURLClassLoader extends URLClassLoader
 
     /**
      * See {@link URLClassLoader#URLClassLoader(URL[])}.
-     * 
+     *
      * @param urls the URLs from which to load classes and resources
      */
     public ExtendedURLClassLoader(URL[] urls)

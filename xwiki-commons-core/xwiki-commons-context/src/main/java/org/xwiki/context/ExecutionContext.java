@@ -19,19 +19,18 @@
  */
 package org.xwiki.context;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.xwiki.context.internal.ExecutionContextProperty;
 
 /**
  * Contains all state data related to the current user action. Note that the execution context is independent of the
  * environment and all environment-dependent data are stored in the Container component instead.
  *
- * @version $Id$ 
+ * @version $Id$
  * @since 1.5M2
  */
 public class ExecutionContext
@@ -50,7 +49,7 @@ public class ExecutionContext
      */
     public Object getProperty(String key)
     {
-        ExecutionContextProperty property = properties.get(key);
+        ExecutionContextProperty property = this.properties.get(key);
 
         if (property == null) {
             LOGGER.debug("Getting undefined property {} from execution context.", key);
@@ -62,8 +61,8 @@ public class ExecutionContext
 
     /**
      * @param key the key of the property.
-     * @return a builder object for performing the declaration.  The property will not be declared until the declare
-     * method is called on the builder object.
+     * @return a builder object for performing the declaration. The property will not be declared until the declare
+     *         method is called on the builder object.
      */
     public DeclarationBuilder newProperty(String key)
     {
@@ -76,7 +75,7 @@ public class ExecutionContext
      */
     public boolean hasProperty(String key)
     {
-        return properties.containsKey(key);
+        return this.properties.containsKey(key);
     }
 
     /**
@@ -86,19 +85,19 @@ public class ExecutionContext
     {
         Map<String, Object> map = new HashMap<String, Object>();
 
-        for (Map.Entry<String, ExecutionContextProperty> entry : properties.entrySet()) {
+        for (Map.Entry<String, ExecutionContextProperty> entry : this.properties.entrySet()) {
             map.put(entry.getKey(), entry.getValue().getValue());
         }
 
         return map;
     }
-    
+
     /**
      * @param key remove the property whose key matches the passed key
      */
     public void removeProperty(String key)
     {
-        ExecutionContextProperty property = properties.get(key);
+        ExecutionContextProperty property = this.properties.get(key);
 
         if (property == null) {
             LOGGER.warn("Tried to remove non-existing property [{}] from execution context.", key);
@@ -118,12 +117,12 @@ public class ExecutionContext
      */
     public void setProperty(String key, Object value)
     {
-        ExecutionContextProperty property = properties.get(key);
+        ExecutionContextProperty property = this.properties.get(key);
 
         if (property == null) {
             LOGGER.debug("Implicit declaration of property {}.", key);
             newProperty(key).declare();
-            property = properties.get(key);
+            property = this.properties.get(key);
         } else if (property.isFinal()) {
             throw new PropertyIsFinalException(key);
         }
@@ -145,18 +144,16 @@ public class ExecutionContext
      * Declare a property.
      *
      * @param property The property with configured metadata attributes.
-     *
      * @throws PropertyAlreadyExistsException if the property alread exists in this execution context.
-     * 
      * @since 4.3M1
      */
     private void declareProperty(ExecutionContextProperty property)
     {
-        if (properties.containsKey(property.getKey())) {
+        if (this.properties.containsKey(property.getKey())) {
             throw new PropertyAlreadyExistsException(property.getKey());
         }
 
-        properties.put(property.getKey(), property);
+        this.properties.put(property.getKey(), property);
     }
 
     /**
@@ -170,7 +167,7 @@ public class ExecutionContext
      *
      * It is an error if this context contain a value that was declared as 'inherited' and 'final' in the inherited
      * execution context and an exception will be thrown.
-     * 
+     *
      * @param executionContext The execution to inherit.
      * @throws IllegalStateException if the execution context cannot be inherited.
      * @since 4.3M1
@@ -198,9 +195,9 @@ public class ExecutionContext
             ExecutionContextProperty shadowingProperty = this.properties.get(property.getKey());
             if (!(shadowingProperty == property || shadowingProperty.isClonedFrom(property))) {
                 throw new IllegalStateException(
-                     String.format("Execution context cannot be inherited because it already contains"
-                                 + " property [%s] which must be inherited because it is an inherited"
-                                 + " final property.", property.getKey()));
+                    String.format("Execution context cannot be inherited because it already contains"
+                        + " property [%s] which must be inherited because it is an inherited"
+                        + " final property.", property.getKey()));
             }
         }
     }
@@ -250,7 +247,8 @@ public class ExecutionContext
         public void declare()
         {
             ExecutionContext.this.declareProperty(
-                 new ExecutionContextProperty(key, value, cloneValue, isFinal, inherited, nonNull, type));
+                new ExecutionContextProperty(this.key, this.value, this.cloneValue, this.isFinal, this.inherited,
+                    this.nonNull, this.type));
         }
 
         /**
@@ -263,14 +261,14 @@ public class ExecutionContext
             return this;
         }
 
-        /** 
+        /**
          * Make the initial value the final value.
          *
          * @return this declaration builder.
          */
         public DeclarationBuilder makeFinal()
         {
-            isFinal = true;
+            this.isFinal = true;
             return this;
         }
 
@@ -281,7 +279,7 @@ public class ExecutionContext
          */
         public DeclarationBuilder cloneValue()
         {
-            cloneValue = true;
+            this.cloneValue = true;
             return this;
         }
 
@@ -289,7 +287,6 @@ public class ExecutionContext
          * Set the type of the value.
          *
          * @param type The type to declare for the property.
-         * 
          * @return this declaration builder.
          */
         public DeclarationBuilder type(Class<?> type)
@@ -299,24 +296,24 @@ public class ExecutionContext
         }
 
         /**
-         * Indicate that the property should be inherited. 
+         * Indicate that the property should be inherited.
          *
          * @return this declaration builder.
          */
         public DeclarationBuilder inherited()
         {
-            inherited = true;
+            this.inherited = true;
             return this;
         }
 
         /**
          * Indicate that the property value may not be {@literal null}.
-         * 
+         *
          * @return this declaration builder.
          */
         public DeclarationBuilder nonNull()
         {
-            nonNull = true;
+            this.nonNull = true;
             return this;
         }
     }

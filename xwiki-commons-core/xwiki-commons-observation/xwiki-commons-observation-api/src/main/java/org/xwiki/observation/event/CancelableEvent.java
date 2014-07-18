@@ -21,7 +21,7 @@ package org.xwiki.observation.event;
 
 /**
  * This event can be canceled by the receiver. Sender of this event must take care of undoing any changes in this case.
- * 
+ *
  * @version $Id$
  * @since 2.5M1
  */
@@ -29,7 +29,7 @@ public interface CancelableEvent extends Event
 {
     /**
      * Check if this event was canceled by one of the receivers.
-     * 
+     *
      * @return true if the event was canceled, false otherwise
      */
     boolean isCanceled();
@@ -41,16 +41,15 @@ public interface CancelableEvent extends Event
 
     /**
      * Cancel the event, giving a reason why. The actual canceling will be performed by the sender.
-     * 
+     *
      * @param reason the reason why the event was canceled
      */
     void cancel(String reason);
 
     /**
      * Get the reason why the event was canceled.
-     * 
+     *
      * @return reason for cancel or null of the event was not canceled or canceled using {@link #cancel()}
      */
     String getReason();
 }
-

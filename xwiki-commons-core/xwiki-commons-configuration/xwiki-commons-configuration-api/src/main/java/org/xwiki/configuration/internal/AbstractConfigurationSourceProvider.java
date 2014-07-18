@@ -30,7 +30,7 @@ import org.xwiki.configuration.ConfigurationSource;
 
 /**
  * Common code for Configuration Source Provider implementations.
- * 
+ *
  * @version $Id$
  * @since 4.1M2
  */

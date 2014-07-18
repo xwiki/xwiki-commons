@@ -22,10 +22,9 @@ package org.xwiki.component.phase;
 import org.xwiki.component.manager.ComponentLifecycleException;
 
 /**
- * If a singleton component could be destroyed and replaced in the component manager, it should implement
- * this interface to properly clean up its resources. Any component depending of a component exposing this
- * interface should be aware that this component could be destroyed and should prevent itself to use a
- * destroyed component.
+ * If a singleton component could be destroyed and replaced in the component manager, it should implement this interface
+ * to properly clean up its resources. Any component depending of a component exposing this interface should be aware
+ * that this component could be destroyed and should prevent itself to use a destroyed component.
  *
  * @version $Id$
  * @since 3.3M2

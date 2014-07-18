@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 /**
  * An {@link EventFilter} that selects only events whose affected document name matches a regular expression.
- * 
+ *
  * @version $Id$
  */
 public class RegexEventFilter implements EventFilter, Serializable
@@ -44,7 +44,7 @@ public class RegexEventFilter implements EventFilter, Serializable
 
     /**
      * Constructor initializing this event filter with a regular expression that should be matched.
-     * 
+     *
      * @param filter the regular expression to check against document names
      */
     public RegexEventFilter(String filter)

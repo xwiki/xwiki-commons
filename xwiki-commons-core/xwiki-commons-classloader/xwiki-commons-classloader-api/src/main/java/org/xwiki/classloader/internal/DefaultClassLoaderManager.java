@@ -31,7 +31,7 @@ import org.xwiki.component.annotation.Component;
 
 /**
  * Default implementation of {@link ClassLoaderManager}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -52,7 +52,7 @@ public class DefaultClassLoaderManager implements ClassLoaderManager
 
     /**
      * Allow overriding the system classloader during tests.
-     * 
+     *
      * @return a ClassLoader to be used as the system parent
      */
     protected ClassLoader getSystemClassLoader()
@@ -89,7 +89,7 @@ public class DefaultClassLoaderManager implements ClassLoaderManager
     public void dropURLClassLoaders()
     {
         if (this.rootClassLoader != null) {
-            for (String namespace : wikiClassLoaderMap.keySet()) {
+            for (String namespace : this.wikiClassLoaderMap.keySet()) {
                 dropURLClassLoader(namespace);
             }
 

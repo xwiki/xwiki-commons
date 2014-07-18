@@ -21,8 +21,8 @@ package org.xwiki.context;
 
 /**
  * Thrown when declaring a property that already exists in the execution context.
- * 
- * @version $Id$ 
+ *
+ * @version $Id$
  * @since 4.3M1
  */
 public class PropertyAlreadyExistsException extends RuntimeException

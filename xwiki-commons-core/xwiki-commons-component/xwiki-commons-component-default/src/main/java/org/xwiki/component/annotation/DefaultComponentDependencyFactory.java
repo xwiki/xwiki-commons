@@ -30,7 +30,7 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Uses {@link javax.inject.Inject} and {@link javax.inject.Named} annotations to recognize a Component Dependency.
- * 
+ *
  * @version $Id$
  * @since 3.2RC1
  */
@@ -45,7 +45,7 @@ public class DefaultComponentDependencyFactory extends AbstractComponentDependen
         if (inject != null) {
             dependency = new DefaultComponentDependency();
 
-            Class< ? > fieldClass = field.getType();
+            Class<?> fieldClass = field.getType();
             if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, fieldClass) != null
                 && ReflectionUtils.getDirectAnnotation(Role.class, fieldClass) == null) {
                 // since 4.0M1, retro-compatibility (generic type used to not be taken into account)

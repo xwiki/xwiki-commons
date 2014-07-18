@@ -27,7 +27,7 @@ import org.xwiki.context.ExecutionContextManager;
 
 /**
  * {@link Runnable} wrapper which initialize and clean the execution context.
- * 
+ *
  * @version $Id$
  * @since 5.1RC1
  */
@@ -60,7 +60,7 @@ public class ExecutionContextRunnable implements Runnable
         ExecutionContext context = new ExecutionContext();
 
         try {
-            this.componentManager.<ExecutionContextManager> getInstance(ExecutionContextManager.class).initialize(
+            this.componentManager.<ExecutionContextManager>getInstance(ExecutionContextManager.class).initialize(
                 context);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize Runnable [" + this + "] execution context", e);
@@ -70,7 +70,7 @@ public class ExecutionContextRunnable implements Runnable
             this.runnable.run();
         } finally {
             try {
-                this.componentManager.<Execution> getInstance(Execution.class).removeContext();
+                this.componentManager.<Execution>getInstance(Execution.class).removeContext();
             } catch (ComponentLookupException e) {
                 throw new RuntimeException("Failed to cleanup ExecutionContext after Runnable execution", e);
             }

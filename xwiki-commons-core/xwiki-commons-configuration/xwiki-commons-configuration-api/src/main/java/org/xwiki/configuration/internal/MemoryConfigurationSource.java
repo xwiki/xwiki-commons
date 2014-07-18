@@ -33,7 +33,7 @@ import org.xwiki.component.annotation.Component;
  * Runtime configuration source stored in memory.
  * <p>
  * Can be modified by lookuping the component and using {@link MemoryConfigurationSource#setProperty(String, Object)}.
- * 
+ *
  * @version $Id$
  * @since 3.5M1
  */

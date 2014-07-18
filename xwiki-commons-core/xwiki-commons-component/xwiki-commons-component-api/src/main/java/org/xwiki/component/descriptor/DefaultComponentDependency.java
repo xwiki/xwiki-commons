@@ -34,7 +34,7 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Default implementation of {@link ComponentDependency}.
- * 
+ *
  * @version $Id$
  * @param <T> the type of the component role
  * @since 1.7M1
@@ -60,7 +60,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
     /**
      * Create a new DefaultComponentDependency by cloning the provided {@link ComponentDependency}.
-     * 
+     *
      * @param dependency the component dependency to clone
      * @since 3.4M1
      */
@@ -106,7 +106,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @since 3.3M1
      */
     @Override
@@ -140,7 +140,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @since 3.3M1
      */
     @Override
@@ -162,7 +162,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
     @Override
     @Deprecated
-    public Class< ? > getMappingType()
+    public Class<?> getMappingType()
     {
         return ReflectionUtils.getTypeClass(getRoleType());
     }
@@ -172,7 +172,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
      * @deprecated since 4.0M1 use {@link #setRoleType(java.lang.reflect.Type)} instead
      */
     @Deprecated
-    public void setMappingType(Class< ? > mappingType)
+    public void setMappingType(Class<?> mappingType)
     {
         Type ownerType;
         Type[] parameters;
@@ -206,11 +206,11 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
         if (mapping == List.class || mapping == Collection.class || mapping == Map.class || mapping == Provider.class) {
             Type ownerType;
-            Class< ? > rawType;
+            Class<?> rawType;
             if (getRoleType() instanceof ParameterizedType) {
                 ParameterizedType parameterizedType = (ParameterizedType) getRoleType();
                 ownerType = parameterizedType.getOwnerType();
-                rawType = (Class< ? >) parameterizedType.getRawType();
+                rawType = (Class<?>) parameterizedType.getRawType();
             } else {
                 ownerType = null;
                 rawType = mapping;

@@ -29,7 +29,7 @@ import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * Default implementation of {@link ComponentDescriptor}.
- * 
+ *
  * @version $Id$
  * @param <T> the type of the component role
  * @since 1.7M1
@@ -39,7 +39,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     /**
      * @see #getImplementation()
      */
-    private Class< ? extends T> implementation;
+    private Class<? extends T> implementation;
 
     /**
      * @see #getInstantiationStrategy()
@@ -49,7 +49,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     /**
      * @see #getComponentDependencies()
      */
-    private List<ComponentDependency< ? >> componentDependencies = new ArrayList<ComponentDependency< ? >>();
+    private List<ComponentDependency<?>> componentDependencies = new ArrayList<ComponentDependency<?>>();
 
     /**
      * Default constructor.
@@ -60,7 +60,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
 
     /**
      * Creating a new {@link DefaultComponentDescriptor} by cloning the provided {@link ComponentDescriptor}.
-     * 
+     *
      * @param descriptor the component descriptor to clone
      * @since 3.4M1
      */
@@ -70,7 +70,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
 
         setImplementation(descriptor.getImplementation());
         setInstantiationStrategy(descriptor.getInstantiationStrategy());
-        for (ComponentDependency< ? > dependency : descriptor.getComponentDependencies()) {
+        for (ComponentDependency<?> dependency : descriptor.getComponentDependencies()) {
             addComponentDependency(new DefaultComponentDependency(dependency));
         }
     }
@@ -78,15 +78,15 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     /**
      * @param implementation the class of the component implementation
      */
-    public void setImplementation(Class< ? extends T> implementation)
+    public void setImplementation(Class<? extends T> implementation)
     {
         this.implementation = implementation;
     }
 
     @Override
-    public Class< ? extends T> getImplementation()
+    public Class<? extends T> getImplementation()
     {
-        return implementation;
+        return this.implementation;
     }
 
     /**
@@ -105,7 +105,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     }
 
     @Override
-    public Collection<ComponentDependency< ? >> getComponentDependencies()
+    public Collection<ComponentDependency<?>> getComponentDependencies()
     {
         return this.componentDependencies;
     }
@@ -113,7 +113,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     /**
      * @param componentDependency the dependency to add
      */
-    public void addComponentDependency(ComponentDependency< ? > componentDependency)
+    public void addComponentDependency(ComponentDependency<?> componentDependency)
     {
         this.componentDependencies.add(componentDependency);
     }
@@ -121,11 +121,11 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     /**
      * @param role the class of the component role
      * @param roleHint the hint of the component role
-     * @param <TT> the type of the dependency role
+     * @param <D> the type of the dependency role
      */
-    public <TT> void addComponentDependency(Class<TT> role, String roleHint)
+    public <D> void addComponentDependency(Class<D> role, String roleHint)
     {
-        DefaultComponentDependency<TT> componentDependency = new DefaultComponentDependency<TT>();
+        DefaultComponentDependency<D> componentDependency = new DefaultComponentDependency<D>();
         componentDependency.setRole(role);
         componentDependency.setRoleHint(roleHint);
 
@@ -143,7 +143,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @since 3.3M1
      */
     @Override
@@ -173,7 +173,7 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @since 3.3M1
      */
     @Override

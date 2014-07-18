@@ -44,7 +44,7 @@ import org.xwiki.test.jmock.JMockRule;
 
 /**
  * Unit tests for {@link ComponentAnnotationLoader}.
- * 
+ *
  * @version $Id$
  * @since 1.8.1
  */
@@ -180,7 +180,7 @@ public class ComponentAnnotationLoaderTest
      * priority wins (ie the smallest integer value).
      */
     @Test
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void testPriorities() throws Exception
     {
         final ComponentManager mockManager = this.mockery.mock(ComponentManager.class);
@@ -248,7 +248,7 @@ public class ComponentAnnotationLoaderTest
         assertComponentRoleTypes(SuperRoleImpl.class);
     }
 
-    private void assertComponentRoleTypes(Class< ? > componentClass)
+    private void assertComponentRoleTypes(Class<?> componentClass)
     {
         Set<Type> type = this.loader.findComponentRoleTypes(componentClass);
         Assert.assertEquals(2, type.size());

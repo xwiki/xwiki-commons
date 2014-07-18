@@ -32,7 +32,7 @@ import org.xwiki.component.manager.ComponentManager;
 
 /**
  * Stream handler factory that uses components to lookup stream handler for protocols.
- * 
+ *
  * @version $Id$
  * @since 2.0.1
  */
@@ -41,11 +41,11 @@ import org.xwiki.component.manager.ComponentManager;
 public class ExtendedURLStreamHandlerFactory implements URLStreamHandlerFactory
 {
     /**
-     * To dynamically lookup stream handler components. 
+     * To dynamically lookup stream handler components.
      */
     @Inject
     private ComponentManager componentManager;
-    
+
     @Override
     public URLStreamHandler createURLStreamHandler(String protocol)
     {
@@ -57,7 +57,7 @@ public class ExtendedURLStreamHandlerFactory implements URLStreamHandlerFactory
             // should know how to deal when no protocol handler is found.
             result = null;
         }
-        
+
         // All implementations of ExtendedURLStreamHandler must also extend URLStreamHandler
         // Note: we could make ExtendedURLStreamHandler extend URLStreamHandler since URLStreamHandler
         // is an abstract class and not an interface...

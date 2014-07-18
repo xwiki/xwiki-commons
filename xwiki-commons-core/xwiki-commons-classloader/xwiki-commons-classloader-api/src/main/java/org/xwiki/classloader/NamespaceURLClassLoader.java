@@ -22,9 +22,9 @@ package org.xwiki.classloader;
 import java.net.URI;
 
 /**
- * A {@link URIClassLoader} associated with a namespace. The namespace can be anything. For example it's used by
- * the Extension Manager to have one classloader per wiki using a namrspace of the type {@code wiki:wikiname}.
- * 
+ * A {@link URIClassLoader} associated with a namespace. The namespace can be anything. For example it's used by the
+ * Extension Manager to have one classloader per wiki using a namrspace of the type {@code wiki:wikiname}.
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -52,6 +52,6 @@ public class NamespaceURLClassLoader extends URIClassLoader
      */
     public String getNamespace()
     {
-        return namespace;
+        return this.namespace;
     }
 }

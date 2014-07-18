@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 /**
  * Basic implementation of {@link ParameterizedType}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultParameterizedType implements ParameterizedType
@@ -43,14 +43,14 @@ public class DefaultParameterizedType implements ParameterizedType
     /**
      * @see #getRawType()
      */
-    private final Class< ? > rawType;
+    private final Class<?> rawType;
 
     /**
      * @param ownerType the owner type
      * @param rawType the raw type
      * @param actualTypeArguments the generic arguments
      */
-    public DefaultParameterizedType(Type ownerType, Class< ? > rawType, Type... actualTypeArguments)
+    public DefaultParameterizedType(Type ownerType, Class<?> rawType, Type... actualTypeArguments)
     {
         this.ownerType = ownerType;
         this.actualTypeArguments = actualTypeArguments;
@@ -62,7 +62,7 @@ public class DefaultParameterizedType implements ParameterizedType
      */
     public DefaultParameterizedType(ParameterizedType type)
     {
-        this(type.getOwnerType(), (Class< ? >) type.getRawType(), type.getActualTypeArguments());
+        this(type.getOwnerType(), (Class<?>) type.getRawType(), type.getActualTypeArguments());
     }
 
     @Override
@@ -110,7 +110,7 @@ public class DefaultParameterizedType implements ParameterizedType
         StringBuilder sb = new StringBuilder();
         if (this.ownerType != null) {
             if (this.ownerType instanceof Class) {
-                sb.append(((Class< ? >) this.ownerType).getName());
+                sb.append(((Class<?>) this.ownerType).getName());
             } else {
                 sb.append(this.ownerType.toString());
             }
@@ -121,7 +121,7 @@ public class DefaultParameterizedType implements ParameterizedType
                 // Find simple name of nested type by removing the
                 // shared prefix with owner.
                 sb.append(this.rawType.getName().replace(
-                    ((Class< ? >) ((ParameterizedType) ownerType).getRawType()).getName() + '$', ""));
+                    ((Class<?>) ((ParameterizedType) this.ownerType).getRawType()).getName() + '$', ""));
             } else {
                 sb.append(this.rawType.getName());
             }
@@ -139,7 +139,7 @@ public class DefaultParameterizedType implements ParameterizedType
                 }
 
                 if (type instanceof Class) {
-                    sb.append(((Class< ? >) type).getName());
+                    sb.append(((Class<?>) type).getName());
                 } else {
                     sb.append(type.toString());
                 }

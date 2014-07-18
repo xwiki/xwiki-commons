@@ -35,10 +35,10 @@ public class WrappedThreadEventListenerTest
         WrappedThreadEventListener wrapper = new WrappedThreadEventListener(this.listenermock);
 
         wrapper.getName();
-        Mockito.verify(listenermock).getName();
+        Mockito.verify(this.listenermock).getName();
 
         wrapper.getEvents();
-        Mockito.verify(listenermock).getEvents();
+        Mockito.verify(this.listenermock).getEvents();
     }
 
     @Test
@@ -58,15 +58,15 @@ public class WrappedThreadEventListenerTest
         Thread thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(listenermock, Mockito.times(0)).onEvent(AllEvent.ALLEVENT, null, null);
+        Mockito.verify(this.listenermock, Mockito.times(0)).onEvent(AllEvent.ALLEVENT, null, null);
 
         wrapper.onEvent(AllEvent.ALLEVENT, null, null);
-        Mockito.verify(listenermock).onEvent(AllEvent.ALLEVENT, null, null);
+        Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
 
         thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(listenermock).onEvent(AllEvent.ALLEVENT, null, null);
+        Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
     }
 
     @Test
@@ -87,14 +87,14 @@ public class WrappedThreadEventListenerTest
         Thread thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(listenermock, Mockito.times(0)).onEvent(AllEvent.ALLEVENT, null, null);
+        Mockito.verify(this.listenermock, Mockito.times(0)).onEvent(AllEvent.ALLEVENT, null, null);
 
         wrapper.onEvent(AllEvent.ALLEVENT, null, null);
-        Mockito.verify(listenermock).onEvent(AllEvent.ALLEVENT, null, null);
+        Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
 
         thread = new Thread(runnable);
         thread.start();
         thread.join();
-        Mockito.verify(listenermock).onEvent(AllEvent.ALLEVENT, null, null);
+        Mockito.verify(this.listenermock).onEvent(AllEvent.ALLEVENT, null, null);
     }
 }

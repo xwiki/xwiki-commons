@@ -33,7 +33,7 @@ import org.xwiki.context.ExecutionContextInitializer;
 
 /**
  * Unit tests for {@link ExecutionContext}.
- * 
+ *
  * @version $Id$
  * @since 1.8RC3
  */
@@ -52,18 +52,18 @@ public class DefaultExecutionContextManagerTest
 
         Map xwikicontext = new HashMap();
         context.newProperty("property1").initial(xwikicontext).inherited().declare();
-        context.newProperty("property2").initial(xwikicontext)
-            .inherited().makeFinal().cloneValue().declare();
+        context.newProperty("property2").initial(xwikicontext).inherited().makeFinal().cloneValue().declare();
 
         DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager(execution);
-        contextManager.addExecutionContextInitializer(new ExecutionContextInitializer() {
+        contextManager.addExecutionContextInitializer(new ExecutionContextInitializer()
+        {
             @Override
             public void initialize(ExecutionContext context) throws ExecutionContextException
             {
                 context.setProperty("key", Arrays.asList("value"));
             }
         });
-        
+
         ExecutionContext clonedContext = contextManager.clone(context);
 
         Assert.assertSame(context, execution.getContext());

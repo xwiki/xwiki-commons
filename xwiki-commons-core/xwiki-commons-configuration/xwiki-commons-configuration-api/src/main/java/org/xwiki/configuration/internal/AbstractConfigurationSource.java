@@ -27,7 +27,7 @@ import org.xwiki.configuration.ConfigurationSource;
 
 /**
  * Base class to use to implement {@link ConfigurationSource}.
- * 
+ *
  * @version $Id$
  * @since 3.5M1
  */

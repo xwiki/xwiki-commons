@@ -33,7 +33,7 @@ import org.xwiki.observation.event.Event;
  * Allow stacking component events and flush them whenever the user of this class wants to. This is used for example at
  * application initialization time when we don't want to send events before the Application Context has been initialized
  * since components subscribing to these events may want to use the Application Context.
- * 
+ *
  * @version $Id$
  * @since 2.0M1
  */
@@ -55,28 +55,28 @@ public class StackingComponentEventManager implements ComponentEventManager
     private boolean shouldStack = true;
 
     @Override
-    public void notifyComponentRegistered(ComponentDescriptor< ? > descriptor)
+    public void notifyComponentRegistered(ComponentDescriptor<?> descriptor)
     {
         notifyComponentEvent(new ComponentDescriptorAddedEvent(descriptor.getRoleType(), descriptor.getRoleHint()),
             descriptor, null);
     }
 
     @Override
-    public void notifyComponentRegistered(ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
+    public void notifyComponentRegistered(ComponentDescriptor<?> descriptor, ComponentManager componentManager)
     {
         notifyComponentEvent(new ComponentDescriptorAddedEvent(descriptor.getRoleType(), descriptor.getRoleHint()),
             descriptor, componentManager);
     }
 
     @Override
-    public void notifyComponentUnregistered(ComponentDescriptor< ? > descriptor)
+    public void notifyComponentUnregistered(ComponentDescriptor<?> descriptor)
     {
         notifyComponentEvent(new ComponentDescriptorRemovedEvent(descriptor.getRoleType(), descriptor.getRoleHint()),
             descriptor, null);
     }
 
     @Override
-    public void notifyComponentUnregistered(ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
+    public void notifyComponentUnregistered(ComponentDescriptor<?> descriptor, ComponentManager componentManager)
     {
         notifyComponentEvent(new ComponentDescriptorRemovedEvent(descriptor.getRoleType(), descriptor.getRoleHint()),
             descriptor, componentManager);
@@ -111,13 +111,13 @@ public class StackingComponentEventManager implements ComponentEventManager
 
     /**
      * Send or stack the provided event dependening on the configuration.
-     * 
+     *
      * @param event the event send by the component manager
      * @param descriptor the event related component descriptor.
      * @param componentManager the event related component manager instance.
      * @see #shouldStack(boolean)
      */
-    private void notifyComponentEvent(Event event, ComponentDescriptor< ? > descriptor,
+    private void notifyComponentEvent(Event event, ComponentDescriptor<?> descriptor,
         ComponentManager componentManager)
     {
         if (this.shouldStack) {
@@ -131,12 +131,12 @@ public class StackingComponentEventManager implements ComponentEventManager
 
     /**
      * Send the event.
-     * 
+     *
      * @param event the event to send
      * @param descriptor the event related component descriptor.
      * @param componentManager the event related component manager instance.
      */
-    private void sendEvent(Event event, ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
+    private void sendEvent(Event event, ComponentDescriptor<?> descriptor, ComponentManager componentManager)
     {
         if (this.observationManager != null) {
             this.observationManager.notify(event, componentManager, descriptor);
@@ -145,7 +145,7 @@ public class StackingComponentEventManager implements ComponentEventManager
 
     /**
      * Contains a stacked event.
-     * 
+     *
      * @version $Id$
      */
     static class ComponentEventEntry
@@ -158,7 +158,7 @@ public class StackingComponentEventManager implements ComponentEventManager
         /**
          * The event related component descriptor.
          */
-        public ComponentDescriptor< ? > descriptor;
+        public ComponentDescriptor<?> descriptor;
 
         /**
          * The event related component manager instance.
@@ -170,7 +170,7 @@ public class StackingComponentEventManager implements ComponentEventManager
          * @param descriptor the event related component descriptor.
          * @param componentManager the event related component manager instance.
          */
-        public ComponentEventEntry(Event event, ComponentDescriptor< ? > descriptor, ComponentManager componentManager)
+        public ComponentEventEntry(Event event, ComponentDescriptor<?> descriptor, ComponentManager componentManager)
         {
             this.event = event;
             this.descriptor = descriptor;

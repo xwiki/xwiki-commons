@@ -38,7 +38,7 @@ import java.util.Map;
 
 /**
  * Various Reflection utilities.
- * 
+ *
  * @version $Id$
  * @since 2.1RC1
  */
@@ -56,11 +56,11 @@ public final class ReflectionUtils
      * @param clazz the class for which to return all fields
      * @return all fields declared by the passed class and its superclasses
      */
-    public static Collection<Field> getAllFields(Class< ? > clazz)
+    public static Collection<Field> getAllFields(Class<?> clazz)
     {
         // Note: use a linked hash map to keep the same order as the one used to declare the fields.
         Map<String, Field> fields = new LinkedHashMap<String, Field>();
-        Class< ? > targetClass = clazz;
+        Class<?> targetClass = clazz;
         while (targetClass != null) {
             Field[] targetClassFields;
             try {
@@ -92,10 +92,10 @@ public final class ReflectionUtils
      * @return the field specified from either the passed class or its superclasses
      * @exception NoSuchFieldException if the field doesn't exist in the class or superclasses
      */
-    public static Field getField(Class< ? > clazz, String fieldName) throws NoSuchFieldException
+    public static Field getField(Class<?> clazz, String fieldName) throws NoSuchFieldException
     {
         Field resultField = null;
-        Class< ? > targetClass = clazz;
+        Class<?> targetClass = clazz;
         while (targetClass != null) {
             try {
                 resultField = targetClass.getDeclaredField(fieldName);
@@ -116,7 +116,7 @@ public final class ReflectionUtils
 
     /**
      * Extract the main class from the passed {@link Type}.
-     * 
+     *
      * @param type the generic {@link Type}
      * @return the main Class of the generic {@link Type}
      * @since 4.0M1
@@ -130,7 +130,7 @@ public final class ReflectionUtils
         } else if (type instanceof ParameterizedType) {
             typeClassClass = (Class) ((ParameterizedType) type).getRawType();
         } else if (type instanceof GenericArrayType) {
-            Class< ? > arrrayParameter = getTypeClass(((GenericArrayType) type).getGenericComponentType());
+            Class<?> arrrayParameter = getTypeClass(((GenericArrayType) type).getGenericComponentType());
             if (arrrayParameter != null) {
                 typeClassClass = Array.newInstance(arrrayParameter, 0).getClass();
             }
@@ -141,7 +141,7 @@ public final class ReflectionUtils
 
     /**
      * Sets a value to a field using reflection even if the field is private.
-     * 
+     *
      * @param instanceContainingField the object containing the field
      * @param fieldName the name of the field in the object
      * @param fieldValue the value to set for the provided field
@@ -149,7 +149,7 @@ public final class ReflectionUtils
     public static void setFieldValue(Object instanceContainingField, String fieldName, Object fieldValue)
     {
         // Find the class containing the field to set
-        Class< ? > targetClass = instanceContainingField.getClass();
+        Class<?> targetClass = instanceContainingField.getClass();
         while (targetClass != null) {
             for (Field field : targetClass.getDeclaredFields()) {
                 if (field.getName().equalsIgnoreCase(fieldName)) {
@@ -180,11 +180,11 @@ public final class ReflectionUtils
     /**
      * Extract the last generic type from the passed field. For example <tt>private List&lt;A, B&gt; field</tt> would
      * return the {@code B} class.
-     * 
+     *
      * @param field the field from which to extract the generic type
      * @return the class of the last generic type or null if the field doesn't have a generic type
      */
-    public static Class< ? > getLastGenericFieldType(Field field)
+    public static Class<?> getLastGenericFieldType(Field field)
     {
         return getTypeClass(getLastFieldGenericArgument(field));
     }
@@ -192,7 +192,7 @@ public final class ReflectionUtils
     /**
      * Extract the last generic type from the passed field. For example <tt>private List&lt;A, B&gt; field</tt> would
      * return the {@code B} class.
-     * 
+     *
      * @param field the field from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
      * @since 4.0M1
@@ -205,7 +205,7 @@ public final class ReflectionUtils
     /**
      * Extract the last generic type from the passed Type. For example <tt>private List&lt;A, B&gt; field</tt> would
      * return the {@code B} class.
-     * 
+     *
      * @param type the type from which to extract the generic type
      * @return the type of the last generic type or null if the field doesn't have a generic type
      * @since 4.0M1
@@ -226,12 +226,12 @@ public final class ReflectionUtils
     /**
      * Extract the last generic type from the passed class. For example
      * <tt>public Class MyClass implements FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;</tt> will return {@code B}.
-     * 
+     *
      * @param clazz the class to extract from
      * @param filterClass the class of the generic type we're looking for
      * @return the last generic type from the interfaces of the passed class, filtered by the passed filter class
      */
-    public static Class< ? > getLastGenericClassType(Class clazz, Class filterClass)
+    public static Class<?> getLastGenericClassType(Class clazz, Class filterClass)
     {
         Type type = getGenericClassType(clazz, filterClass);
 
@@ -252,7 +252,7 @@ public final class ReflectionUtils
      * Extract the real Type from the passed class. For example
      * <tt>public Class MyClass implements FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;</tt> will return
      * <tt>FilterClass&lt;A, B&gt;, SomeOtherClass&lt;C&gt;</tt>.
-     * 
+     *
      * @param clazz the class to extract from
      * @param filterClass the class of the generic type we're looking for
      * @return the real Type from the interfaces of the passed class, filtered by the passed filter class
@@ -340,7 +340,7 @@ public final class ReflectionUtils
             if (resolvedArguments != arguments) {
                 resolvedType =
                     new DefaultParameterizedType(parameterizedType.getOwnerType(),
-                        (Class< ? >) parameterizedType.getRawType(), resolvedArguments);
+                        (Class<?>) parameterizedType.getRawType(), resolvedArguments);
             } else {
                 resolvedType = type;
             }
@@ -385,7 +385,7 @@ public final class ReflectionUtils
 
     /**
      * Find and replace the generic parameters with the real types.
-     * 
+     *
      * @param targetType the type for which to resolve the parameters
      * @param rootType an extending class as Type
      * @return the Type with resolved parameters
@@ -398,7 +398,7 @@ public final class ReflectionUtils
             ParameterizedType parameterizedType = (ParameterizedType) targetType;
 
             resolvedType =
-                resolveType((Class< ? >) parameterizedType.getRawType(), parameterizedType.getActualTypeArguments(),
+                resolveType((Class<?>) parameterizedType.getRawType(), parameterizedType.getActualTypeArguments(),
                     getTypeClass(rootType));
         } else {
             resolvedType = resolveType(getTypeClass(rootType), null, getTypeClass(targetType));
@@ -410,13 +410,13 @@ public final class ReflectionUtils
     /**
      * Find the real generic parameters of the passed target class from the extending/implementing root class and create
      * a Type from it.
-     * 
+     *
      * @param rootClass the root class from which to start searching
      * @param parameters the parameters of the root class
      * @param targetClass the class from which to resolve the generic parameters
      * @return a {@link ParameterizedType} version of the passed target class with resolved parameters
      */
-    private static Type resolveType(Class< ? > rootClass, Type[] parameters, Class< ? > targetClass)
+    private static Type resolveType(Class<?> rootClass, Type[] parameters, Class<?> targetClass)
     {
         // Look at super interfaces
         for (Type interfaceType : rootClass.getGenericInterfaces()) {
@@ -441,11 +441,11 @@ public final class ReflectionUtils
      * @param targetClass the target class
      * @return the passed type with the real parameters
      */
-    private static Type resolveType(Type superType, Class< ? > rootClass, Type[] parameters, Class< ? > targetClass)
+    private static Type resolveType(Type superType, Class<?> rootClass, Type[] parameters, Class<?> targetClass)
     {
         Type newType = superType;
 
-        Class< ? > interfaceClass;
+        Class<?> interfaceClass;
         Type[] interfaceParameters;
 
         if (newType instanceof ParameterizedType) {
@@ -464,7 +464,7 @@ public final class ReflectionUtils
                         interfaceParameters);
             }
         } else if (newType instanceof Class) {
-            interfaceClass = (Class< ? >) newType;
+            interfaceClass = (Class<?>) newType;
             interfaceParameters = null;
         } else {
             return null;
@@ -479,7 +479,7 @@ public final class ReflectionUtils
 
     /**
      * Retrieve a {@link Type} object from it's serialized form.
-     * 
+     *
      * @param serializedType the serialized form of the {@link Type} to retrieve
      * @param classLoader the {@link ClassLoader} to look into to find the given {@link Type}
      * @return the type built from the given {@link String}
@@ -543,7 +543,7 @@ public final class ReflectionUtils
     /**
      * Get the first found annotation with the provided class directly assigned to the provided {@link AnnotatedElement}
      * .
-     * 
+     *
      * @param <T> the type of the annotation
      * @param annotationClass the annotation class
      * @param element the class on which annotation are assigned
@@ -567,7 +567,7 @@ public final class ReflectionUtils
      */
     public static List<Type> getDirectTypes(Type type)
     {
-        Class< ? > clazz = getTypeClass(type);
+        Class<?> clazz = getTypeClass(type);
 
         if (clazz == null) {
             return Collections.emptyList();

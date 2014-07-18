@@ -29,7 +29,7 @@ import org.xwiki.observation.event.filter.EventFilter;
  * This event is supposed to be sent with {@code org.xwiki.rendering.transformation.MacroTransformationContext} as the
  * source and {@code org.xwiki.rendering.macro.script.ScriptMacroParameters} as data.
  * </p>
- * 
+ *
  * @version $Id$
  * @see ScriptEvaluatedEvent
  * @since 2.6RC2
@@ -70,4 +70,3 @@ public class ScriptEvaluatingEvent extends AbstractCancelableEvent
         super(eventFilter);
     }
 }
-

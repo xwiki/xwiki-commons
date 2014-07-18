@@ -46,10 +46,9 @@ import edu.emory.mathcs.util.io.RedirectingInputStream;
 
 /**
  * Implementation of {@link JarURLConnection.JarOpener} that caches downloaded JAR files in a local file system.
- *
  * <p>
- * Originally written by Dawid Kurzyniec and released to the public domain, as explained
- * at http://creativecommons.org/licenses/publicdomain
+ * Originally written by Dawid Kurzyniec and released to the public domain, as explained at
+ * http://creativecommons.org/licenses/publicdomain
  * </p>
  * <p>
  * Source: http://dcl.mathcs.emory.edu/php/loadPage.php?content=util/features.html#classloading
@@ -64,6 +63,7 @@ public class JarProxy implements JarURLConnection.JarOpener
 {
     private final Map<URL, CachedJarFile> cache = new HashMap<URL, CachedJarFile>();
 
+    @Override
     public JarFile openJarFile(JarURLConnection conn) throws IOException
     {
         URL url = conn.getJarFileURL();
@@ -118,6 +118,7 @@ public class JarProxy implements JarURLConnection.JarOpener
             try {
                 result = AccessController.doPrivileged(new PrivilegedExceptionAction<CachedJarFile>()
                 {
+                    @Override
                     public CachedJarFile run() throws IOException
                     {
                         File file = File.createTempFile("jar_cache", "");

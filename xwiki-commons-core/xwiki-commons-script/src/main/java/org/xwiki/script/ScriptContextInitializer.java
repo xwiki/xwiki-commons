@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Initialize {@link ScriptContext}.
- * 
+ *
  * @version $Id$
  */
 @Role
@@ -33,7 +33,7 @@ public interface ScriptContextInitializer
 {
     /**
      * Initialize provided {@link ScriptContext}.
-     * 
+     *
      * @param context the {@link ScriptContext} to initialize.
      */
     void initialize(ScriptContext context);

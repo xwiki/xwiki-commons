@@ -31,7 +31,7 @@ import org.xwiki.component.phase.InitializationException;
 
 /**
  * Allow injecting the root component manager.
- * 
+ *
  * @version $Id$
  * @since 4.1.4
  */

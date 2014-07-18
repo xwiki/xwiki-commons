@@ -25,7 +25,7 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Represent the unique identifier of a Component (pair Role/Hint).
- * 
+ *
  * @param <T> the role type
  * @version $Id$
  * @since 2.0M1

@@ -24,7 +24,7 @@ import org.xwiki.component.annotation.Role;
 /**
  * Called at {@link ComponentManager} initialization to be able to apply modification to the ComponentManager and its
  * components before it's really used (send events, etc.).
- * 
+ *
  * @version $Id$
  */
 @Role
@@ -32,7 +32,7 @@ public interface ComponentManagerInitializer
 {
     /**
      * Apply modifications on ComponentManager at init (register new components, disables others, ...).
-     * 
+     *
      * @param componentManager the component manager to initialize
      */
     void initialize(ComponentManager componentManager);

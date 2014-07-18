@@ -37,7 +37,6 @@ public interface JarURLConnection
      * @return the JAR file for this connection. If the connection is a connection to an entry of a JAR file, the JAR
      *         file object is returned
      * @exception IOException if an IOException occurs while trying to connect to the JAR file for this connection.
-     *
      * @see java.net.JarURLConnection#getJarFile()
      */
     JarFile getJarFile() throws IOException;

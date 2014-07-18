@@ -73,10 +73,9 @@ import edu.emory.mathcs.util.classloader.ResourceUtils;
  * when done processing, just like input streams. In contrast, find methods return URLs that can be used to open
  * multiple connections to the resource. In typical class loader applications, when a single retrieval is sufficient, it
  * is preferable to use <i>get</i> methods since they pose slightly smaller communication overhead.
- *
  * <p>
- * Originally written by Dawid Kurzyniec and released to the public domain, as explained
- * at http://creativecommons.org/licenses/publicdomain
+ * Originally written by Dawid Kurzyniec and released to the public domain, as explained at
+ * http://creativecommons.org/licenses/publicdomain
  * </p>
  * <p>
  * Source: http://dcl.mathcs.emory.edu/php/loadPage.php?content=util/features.html#classloading
@@ -95,7 +94,7 @@ public class ResourceLoader
 
     /**
      * Constructs new ResourceLoader with specified JAR file handler which can implement custom JAR caching policy.
-     * 
+     *
      * @param jarHandler JAR file handler
      */
     public ResourceLoader(URLStreamHandler jarHandler)
@@ -108,7 +107,7 @@ public class ResourceLoader
      * path relative to this directory. If the URL points to a JAR file, the name identifies an entry in that JAR file.
      * If the URL points to a JAR file, the resource is not found in that JAR file, and the JAR file has Class-Path
      * attribute, the JAR files identified in the Class-Path are also searched for the resource.
-     * 
+     *
      * @param source the source URL
      * @param name the resource name
      * @return handle representing the resource, or null if not found
@@ -124,7 +123,7 @@ public class ResourceLoader
      * file, the name identifies an entry in that JAR file. If the URL points to the JAR file, the resource is not found
      * in that JAR file, and the JAR file has Class-Path attribute, the JAR files identified in the Class-Path are also
      * searched for the resource.
-     * 
+     *
      * @param sources the source URL path
      * @param name the resource name
      * @return handle representing the resource, or null if not found
@@ -132,8 +131,8 @@ public class ResourceLoader
     public ResourceHandle getResource(URL[] sources, String name)
     {
         Set<URL> visited = new HashSet<URL>();
-        for (int i = 0; i < sources.length; i++) {
-            ResourceHandle h = getResource(sources[i], name, visited, null);
+        for (URL source : sources) {
+            ResourceHandle h = getResource(source, name, visited, null);
             if (h != null) {
                 return h;
             }
@@ -149,7 +148,7 @@ public class ResourceLoader
      * <p>
      * The search is lazy, that is, "find next resource" operation is triggered by calling
      * {@link Enumeration#hasMoreElements}.
-     * 
+     *
      * @param source the source URL
      * @param name the resource name
      * @return enumeration of resource handles representing the resources
@@ -167,7 +166,7 @@ public class ResourceLoader
      * <p>
      * The search is lazy, that is, "find next resource" operation is triggered by calling
      * {@link Enumeration#hasMoreElements}.
-     * 
+     *
      * @param sources the source URL path
      * @param name the resource name
      * @return enumeration of resource handles representing the resources
@@ -260,7 +259,7 @@ public class ResourceLoader
      * path relative to this directory. If the URL points to a JAR file, the name identifies an entry in that JAR file.
      * If the URL points to a JAR file, the resource is not found in that JAR file, and the JAR file has Class-Path
      * attribute, the JAR files identified in the Class-Path are also searched for the resource.
-     * 
+     *
      * @param source the source URL
      * @param name the resource name
      * @return URL of the resource, or null if not found
@@ -276,7 +275,7 @@ public class ResourceLoader
      * file, the name identifies an entry in that JAR file. If the URL points to the JAR file, the resource is not found
      * in that JAR file, and the JAR file has Class-Path attribute, the JAR files identified in the Class-Path are also
      * searched for the resource.
-     * 
+     *
      * @param sources the source URL path
      * @param name the resource name
      * @return URL of the resource, or null if not found
@@ -284,8 +283,8 @@ public class ResourceLoader
     public URL findResource(URL[] sources, String name)
     {
         Set<URL> visited = new HashSet<URL>();
-        for (int i = 0; i < sources.length; i++) {
-            URL url = findResource(sources[i], name, visited, null);
+        for (URL source : sources) {
+            URL url = findResource(source, name, visited, null);
             if (url != null) {
                 return url;
             }
@@ -301,7 +300,7 @@ public class ResourceLoader
      * <p>
      * The search is lazy, that is, "find next resource" operation is triggered by calling
      * {@link Enumeration#hasMoreElements}.
-     * 
+     *
      * @param source the source URL
      * @param name the resource name
      * @return enumeration of URLs of the resources
@@ -319,7 +318,7 @@ public class ResourceLoader
      * <p>
      * The search is lazy, that is, "find next resource" operation is triggered by calling
      * {@link Enumeration#hasMoreElements}.
-     * 
+     *
      * @param sources the source URL path
      * @param name the resource name
      * @return enumeration of URLs of the resources
@@ -368,13 +367,12 @@ public class ResourceLoader
                 return null;
             }
         }
-
     }
 
     /**
      * Test whether given URL points to a directory. URL is deemed to point to a directory if has non-null "file"
      * component ending with "/".
-     * 
+     *
      * @param url the URL to test
      * @return true if the URL points to a directory, false otherwise
      */
@@ -458,8 +456,7 @@ public class ResourceLoader
                 return null;
             }
 
-            for (int i = 0; i < dependencies.length; i++) {
-                URL cpUrl = dependencies[i];
+            for (URL cpUrl : dependencies) {
                 if (visited.contains(cpUrl)) {
                     continue;
                 }

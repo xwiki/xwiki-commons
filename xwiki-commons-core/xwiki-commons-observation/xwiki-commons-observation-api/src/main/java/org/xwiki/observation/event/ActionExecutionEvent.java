@@ -24,7 +24,7 @@ import java.io.Serializable;
 /**
  * An event triggered whenever a client request (action) is processed, like <tt>/upload/</tt> or <tt>/view/</tt>. A
  * specific event corresponds to only one {@link #actionName action type}.
- * 
+ *
  * @version $Id$
  * @deprecated since 3.2M3, use {@link org.xwiki.bridge.event.ActionExecutedEvent} instead
  */
@@ -43,7 +43,7 @@ public class ActionExecutionEvent implements Event, Serializable
 
     /**
      * Constructor initializing the action name of the event.
-     * 
+     *
      * @param actionName the name of the executed action
      */
     public ActionExecutionEvent(String actionName)
@@ -53,7 +53,7 @@ public class ActionExecutionEvent implements Event, Serializable
 
     /**
      * Gets the name of the action causing this event.
-     * 
+     *
      * @return the action causing this event, like <code>upload</code> or <code>login</code>
      */
     public String getActionName()

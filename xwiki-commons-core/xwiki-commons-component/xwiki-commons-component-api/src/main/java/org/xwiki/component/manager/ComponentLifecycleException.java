@@ -21,7 +21,7 @@ package org.xwiki.component.manager;
 
 /**
  * Raised during component's unregistration if an error happens during the end lifecycle execution.
- * 
+ *
  * @version $Id$
  */
 public class ComponentLifecycleException extends Exception

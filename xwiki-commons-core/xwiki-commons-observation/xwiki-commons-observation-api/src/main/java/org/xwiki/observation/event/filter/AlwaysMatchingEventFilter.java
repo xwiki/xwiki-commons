@@ -23,14 +23,14 @@ import java.io.Serializable;
 
 /**
  * An {@link EventFilter} that always matches another event filter.
- * 
+ *
  * @version $Id$
  */
 public class AlwaysMatchingEventFilter implements EventFilter, Serializable
 {
     /**
      * Unique instance of {@link AlwaysMatchingEventFilter}.
-     * 
+     *
      * @since 6.0M1
      */
     public static final AlwaysMatchingEventFilter INSTANCE = new AlwaysMatchingEventFilter();

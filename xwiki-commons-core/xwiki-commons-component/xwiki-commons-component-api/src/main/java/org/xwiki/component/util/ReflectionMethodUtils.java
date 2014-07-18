@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * Various Reflection tools related to {@link Method}s.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -43,7 +43,7 @@ public final class ReflectionMethodUtils
 
     /**
      * Get {@link Annotation}s of the provided class associated to the the provided method parameter.
-     * 
+     *
      * @param <A> the actual {@link Annotation} type
      * @param method the method
      * @param index the index of the parameter in the method
@@ -69,7 +69,7 @@ public final class ReflectionMethodUtils
 
     /**
      * Get {@link Annotation}s of the provided class associated to the the provided method parameter.
-     * 
+     *
      * @param <A> the actual {@link Annotation} type
      * @param method the method
      * @param index the index of the parameter in the method
@@ -83,9 +83,9 @@ public final class ReflectionMethodUtils
         List<A> annotations = getMethodParameterAnnotations(method, index, annotationClass);
 
         if (inherits && annotationClass.getAnnotation(Inherited.class) != null) {
-            Class< ? >[] ifaces = method.getDeclaringClass().getInterfaces();
+            Class<?>[] ifaces = method.getDeclaringClass().getInterfaces();
 
-            for (Class< ? > iface : ifaces) {
+            for (Class<?> iface : ifaces) {
                 Method interfaceMethod;
                 try {
                     interfaceMethod = iface.getMethod(method.getName(), method.getParameterTypes());
@@ -99,7 +99,7 @@ public final class ReflectionMethodUtils
                 }
             }
 
-            Class< ? > superClass = method.getDeclaringClass().getSuperclass();
+            Class<?> superClass = method.getDeclaringClass().getSuperclass();
             if (superClass != null) {
                 try {
                     Method superMethod = superClass.getMethod(method.getName(), method.getParameterTypes());

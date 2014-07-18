@@ -37,10 +37,9 @@ import java.util.jar.Manifest;
  * URL Connection that knows how to get a JAR file with any custom protocol specified (in the form {@code jar:<custom
  * protocol>://<path to jar file>!<path inside jar file>}. Note that we don't extend the JDK's JarURLConnection since it
  * doesn't know how to use a custom URL Stream Handler Factory to handle custom protocols.
- * 
  * <p>
- * Originally written by Dawid Kurzyniec and released to the public domain, as explained
- * at http://creativecommons.org/licenses/publicdomain
+ * Originally written by Dawid Kurzyniec and released to the public domain, as explained at
+ * http://creativecommons.org/licenses/publicdomain
  * </p>
  * <p>
  * Source: http://dcl.mathcs.emory.edu/php/loadPage.php?content=util/features.html#classloading
@@ -73,38 +72,43 @@ public class JarURLConnection extends java.net.URLConnection implements org.xwik
         parseSpecs(url);
     }
 
+    @Override
     public synchronized void connect() throws IOException
     {
-        if (connected)
+        if (this.connected) {
             return;
-        jfile = opener.openJarFile(this);
-        if (jfile != null && getEntryName() != null) {
-            jentry = jfile.getJarEntry(getEntryName());
-            if (jentry == null) {
+        }
+        this.jfile = this.opener.openJarFile(this);
+        if (this.jfile != null && getEntryName() != null) {
+            this.jentry = this.jfile.getJarEntry(getEntryName());
+            if (this.jentry == null) {
                 throw new FileNotFoundException("Entry " + getEntryName() + " not found in " + getJarFileURL());
             }
         }
-        connected = true;
+        this.connected = true;
     }
 
+    @Override
     public synchronized JarFile getJarFile() throws IOException
     {
         connect();
-        return jfile;
+        return this.jfile;
     }
 
     public synchronized JarEntry getJarEntry() throws IOException
     {
         connect();
-        return jentry;
+        return this.jentry;
     }
 
+    @Override
     public synchronized InputStream getInputStream() throws IOException
     {
         connect();
-        return jfile.getInputStream(jentry);
+        return this.jfile.getInputStream(this.jentry);
     }
 
+    @Override
     public Permission getPermission() throws IOException
     {
         return getJarFileURL().openConnection().getPermission();
@@ -130,49 +134,49 @@ public class JarURLConnection extends java.net.URLConnection implements org.xwik
 
         // This is the important part: we use a URL Stream Handler Factory to find the URL Stream handler to use for
         // the nested protocol.
-        jarFileURL =
+        this.jarFileURL =
             new URL(null, spec.substring(0, separator++), this.handlerFactory.createURLStreamHandler(protocol));
-        entryName = null;
+        this.entryName = null;
 
         /* if ! is the last letter of the innerURL, entryName is null */
         if (++separator != spec.length()) {
-            entryName = spec.substring(separator, spec.length());
+            this.entryName = spec.substring(separator, spec.length());
             try {
                 // Note: we decode using UTF8 since it's the W3C recommendation.
                 // See http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars
-                entryName = URLDecoder.decode(entryName, "UTF-8");
+                this.entryName = URLDecoder.decode(this.entryName, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 // Not supporting UTF-8 as a valid encoding for some reasons. We consider XWiki cannot work
                 // without that encoding.
-                throw new RuntimeException("Failed to URL decode [" + entryName + "] using UTF-8.", e);
+                throw new RuntimeException("Failed to URL decode [" + this.entryName + "] using UTF-8.", e);
             }
         }
     }
 
     /**
      * Returns the URL for the Jar file for this connection.
-     * 
+     *
      * @return the URL for the Jar file for this connection.
      */
     public URL getJarFileURL()
     {
-        return jarFileURL;
+        return this.jarFileURL;
     }
 
     /**
      * Return the entry name for this connection. This method returns null if the JAR file URL corresponding to this
      * connection points to a JAR file and not a JAR file entry.
-     * 
+     *
      * @return the entry name for this connection, if any.
      */
     public String getEntryName()
     {
-        return entryName;
+        return this.entryName;
     }
 
     /**
      * Returns the Manifest for this connection, or null if none.
-     * 
+     *
      * @return the manifest object corresponding to the JAR file object for this connection.
      * @exception IOException if getting the JAR file for this connection causes an IOException to be trown.
      * @see #getJarFile
@@ -184,7 +188,7 @@ public class JarURLConnection extends java.net.URLConnection implements org.xwik
 
     /**
      * Return the Attributes object for this connection if the URL for it points to a JAR file entry, null otherwise.
-     * 
+     *
      * @return the Attributes object for this connection if the URL for it points to a JAR file entry, null otherwise.
      * @exception IOException if getting the JAR entry causes an IOException to be thrown.
      * @see #getJarEntry
@@ -197,7 +201,7 @@ public class JarURLConnection extends java.net.URLConnection implements org.xwik
 
     /**
      * Returns the main Attributes for the JAR file for this connection.
-     * 
+     *
      * @return the main Attributes for the JAR file for this connection.
      * @exception IOException if getting the manifest causes an IOException to be thrown.
      * @see #getJarFile
@@ -213,7 +217,7 @@ public class JarURLConnection extends java.net.URLConnection implements org.xwik
      * Return the Certificate object for this connection if the URL for it points to a JAR file entry, null otherwise.
      * This method can only be called once the connection has been completely verified by reading from the input stream
      * until the end of the stream has been reached. Otherwise, this method will return <code>null</code>
-     * 
+     *
      * @return the Certificate object for this connection if the URL for it points to a JAR file entry, null otherwise.
      * @exception IOException if getting the JAR entry causes an IOException to be thrown.
      * @see #getJarEntry
@@ -228,7 +232,7 @@ public class JarURLConnection extends java.net.URLConnection implements org.xwik
      * Abstraction of JAR opener which allows to implement various caching policies. The opener receives URL pointing to
      * the JAR file, along with other meta-information, as a JarURLConnection instance. Then it has to download the file
      * (if it is remote) and open it.
-     * 
+     *
      * @author Dawid Kurzyniec
      * @version 1.0
      */
@@ -237,7 +241,7 @@ public class JarURLConnection extends java.net.URLConnection implements org.xwik
         /**
          * Given the URL connection (not yet connected), return JarFile representing the resource. This method is
          * invoked as a part of the {@link #connect} method in JarURLConnection.
-         * 
+         *
          * @param conn the connection for which the JAR file is required
          * @return opened JAR file
          * @throws IOException if I/O error occurs

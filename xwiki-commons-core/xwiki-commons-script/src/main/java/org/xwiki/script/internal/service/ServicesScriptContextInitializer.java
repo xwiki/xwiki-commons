@@ -19,18 +19,18 @@
  */
 package org.xwiki.script.internal.service;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.script.ScriptContextInitializer;
-import org.xwiki.script.service.ScriptServiceManager;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.script.ScriptContext;
 
+import org.xwiki.component.annotation.Component;
+import org.xwiki.script.ScriptContextInitializer;
+import org.xwiki.script.service.ScriptServiceManager;
+
 /**
  * Registers the Script Service Manager in the Script Context so that it's available from scripting languages.
- *  
+ *
  * @version $Id$
  * @since 2.3M1
  */

@@ -19,17 +19,16 @@
  */
 package org.xwiki.component.annotation;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 /**
- * Defines a component implementation. A hint can be specified to differentiate this implementation from 
- * another one.
+ * Defines a component implementation. A hint can be specified to differentiate this implementation from another one.
  *
  * @version $Id$
  * @since 1.8.1
@@ -41,23 +40,23 @@ import java.lang.annotation.Target;
 public @interface Component
 {
     /**
-     * The hint value. Can be any text value. It's used to differentiate one component implementation
-     * from another one.
+     * The hint value. Can be any text value. It's used to differentiate one component implementation from another one.
+     *
      * @deprecated since 3.1M1 use the {@code @Named} annotation instead
      */
     @Deprecated
     String value() default "";
 
     /**
-     * Sometimes you want to register the component several times with different hints. In this case the
-     * default annotation value is ignored and the passed list of hints is used instead.
+     * Sometimes you want to register the component several times with different hints. In this case the default
+     * annotation value is ignored and the passed list of hints is used instead.
      */
     String[] hints() default { };
-    
+
     /**
-     * When specified forces the component to be registered as many times as there are roles specified. Otherwise
-     * the superclass/interface hierarchy is scanned for ComponentRole annotations and the component is registered
-     * under all roles found. 
+     * When specified forces the component to be registered as many times as there are roles specified. Otherwise the
+     * superclass/interface hierarchy is scanned for ComponentRole annotations and the component is registered under all
+     * roles found.
      */
-    Class< ? >[] roles() default { };
+    Class<?>[] roles() default { };
 }

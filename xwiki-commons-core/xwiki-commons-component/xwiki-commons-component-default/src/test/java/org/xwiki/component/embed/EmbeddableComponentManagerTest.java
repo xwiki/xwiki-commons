@@ -44,7 +44,7 @@ import org.xwiki.test.jmock.JMockRule;
 
 /**
  * Unit tests for {@link EmbeddableComponentManager}.
- * 
+ *
  * @version $Id$
  * @since 2.0M1
  */
@@ -72,12 +72,12 @@ public class EmbeddableComponentManagerTest
         @Override
         public void initialize() throws InitializationException
         {
-            initialized = true;
+            this.initialized = true;
         }
 
         public boolean isInitialized()
         {
-            return initialized;
+            return this.initialized;
         }
     }
 
@@ -88,12 +88,12 @@ public class EmbeddableComponentManagerTest
         @Override
         public void dispose() throws ComponentLifecycleException
         {
-            finalized = true;
+            this.finalized = true;
         }
 
         public boolean isFinalized()
         {
-            return finalized;
+            return this.finalized;
         }
     }
 

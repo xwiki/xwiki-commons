@@ -26,7 +26,7 @@ import org.xwiki.configuration.ConfigurationSource;
 
 /**
  * Provide an empty Configuration Source if a default one cannot be looked-up.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

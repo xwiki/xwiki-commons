@@ -42,7 +42,7 @@ import static com.google.inject.matcher.Matchers.any;
 /**
  * Verifies that XWiki components using JSR330 annotation can be used with Guice, thus demonstrating that we're kind of
  * spec compliant (even if we do not implement the whole JSR330 specification).
- * 
+ *
  * @version $Id$
  * @since 3.1M1
  */
@@ -73,7 +73,8 @@ public class GuiceCompatibilityTest
     @Component
     public static class ProviderImpl implements Provider<FieldRole>
     {
-        @Override public FieldRole get()
+        @Override
+        public FieldRole get()
         {
             return new FieldRoleImpl2();
         }

@@ -26,8 +26,6 @@ import org.xwiki.observation.event.filter.RegexEventFilter;
 
 public class RegexEventFilterTest
 {
-    // Tests
-    
     @Test
     public void testRegexEventFilter()
     {

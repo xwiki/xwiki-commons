@@ -28,7 +28,7 @@ import org.xwiki.configuration.ConfigurationSource;
 /**
  * Provide an empty Restricted Configuration Source if a default one cannot be looked-up. A Restricted Configuration
  * Source is a source that cannot be modified dynamically.
- * 
+ *
  * @version $Id$
  * @since 4.1M2
  */

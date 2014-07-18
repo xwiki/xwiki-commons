@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 
 /**
  * Identify a unique component.
- * 
+ *
  * @param <T> the type of the component role
  * @version $Id$
  */

@@ -23,7 +23,7 @@ import org.xwiki.observation.event.filter.EventFilter;
 
 /**
  * An Event that supports {@link EventFilter}s.
- * 
+ *
  * @version $Id$
  * @since 2.4M2
  */

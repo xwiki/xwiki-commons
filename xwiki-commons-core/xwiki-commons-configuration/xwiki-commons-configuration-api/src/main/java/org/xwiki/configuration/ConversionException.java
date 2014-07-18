@@ -20,9 +20,9 @@
 package org.xwiki.configuration;
 
 /**
- * Raised when a property of a given type is retrieved as a property of another type
- * (eg trying to get a String property as a Boolean).
- * 
+ * Raised when a property of a given type is retrieved as a property of another type (eg trying to get a String property
+ * as a Boolean).
+ *
  * @version $Id$
  * @since 2.0M1
  */
@@ -47,8 +47,8 @@ public class ConversionException extends RuntimeException
      * Construct a new Exception with the specified detail message and cause.
      *
      * @param message The detailed message. This can later be retrieved by the Throwable.getMessage() method.
-     * @param cause the cause. This can be retrieved later by the Throwable.getCause() method. (A null value
-     *        is permitted, and indicates that the cause is nonexistent or unknown)
+     * @param cause the cause. This can be retrieved later by the Throwable.getCause() method. (A null value is
+     *            permitted, and indicates that the cause is nonexistent or unknown)
      */
     public ConversionException(String message, Throwable cause)
     {

@@ -19,19 +19,19 @@
  */
 package org.xwiki.component.annotation;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 /**
  * Marks a class as defining a component role.
  * <p>
  * The difference with Role is that Role is taking in to account the generic parameters while ComponentRole does not.
- * 
+ *
  * @version $Id$
  * @since 1.8.1
  * @deprecated since 4.0M1 use {@link Role} instead

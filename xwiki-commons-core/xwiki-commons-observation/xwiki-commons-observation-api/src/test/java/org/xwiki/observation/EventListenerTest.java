@@ -31,7 +31,7 @@ public class EventListenerTest
 {
     static class TestEventListener extends AbstractEventListener
     {
-        public TestEventListener(String name, List< ? extends Event> events)
+        public TestEventListener(String name, List<? extends Event> events)
         {
             super(name, events);
         }

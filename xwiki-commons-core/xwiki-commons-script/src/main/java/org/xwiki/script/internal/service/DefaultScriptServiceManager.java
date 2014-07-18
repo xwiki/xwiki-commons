@@ -32,7 +32,7 @@ import org.xwiki.script.service.ScriptServiceManager;
 
 /**
  * Locate Script Services by name dynamically at runtime by looking them up agains the Component Manager.
- * 
+ *
  * @version $Id$
  * @since 2.3M1
  */

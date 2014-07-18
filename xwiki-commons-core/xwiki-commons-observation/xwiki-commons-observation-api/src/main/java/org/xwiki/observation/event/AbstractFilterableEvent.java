@@ -29,7 +29,7 @@ import org.xwiki.observation.event.filter.FixedNameEventFilter;
 
 /**
  * A generic Event implementation to extend for all Events that want to support {@link EventFilter}s.
- * 
+ *
  * @version $Id$
  * @since 2.4M2
  */
@@ -59,7 +59,7 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
     /**
      * Constructor initializing the event filter with a {@link org.xwiki.observation.event.filter.FixedNameEventFilter},
      * meaning that this event will match only events of the same type affecting the same passed name.
-     * 
+     *
      * @param name a generic name that uniquely identifies an event type
      */
     public AbstractFilterableEvent(String name)
@@ -69,7 +69,7 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
 
     /**
      * Constructor using a custom {@link EventFilter}.
-     * 
+     *
      * @param eventFilter the filter to use for matching events
      */
     public AbstractFilterableEvent(EventFilter eventFilter)
@@ -89,7 +89,7 @@ public abstract class AbstractFilterableEvent implements FilterableEvent, Serial
      * This type of events match only events of the same type, and only if the internal {@link #eventFilter}s also
      * {@link EventFilter#matches(EventFilter)} match.
      * </p>
-     * 
+     *
      * @see Event#matches(Object)
      * @see EventFilter#matches(EventFilter)
      */

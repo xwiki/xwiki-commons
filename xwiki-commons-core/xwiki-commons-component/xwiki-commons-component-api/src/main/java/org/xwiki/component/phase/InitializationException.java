@@ -21,7 +21,7 @@ package org.xwiki.component.phase;
 
 /**
  * Raised when component initialization failed.
- * 
+ *
  * @version $Id$
  */
 public class InitializationException extends Exception

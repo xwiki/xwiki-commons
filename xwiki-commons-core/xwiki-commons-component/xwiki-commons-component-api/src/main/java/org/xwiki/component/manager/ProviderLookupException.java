@@ -21,7 +21,7 @@ package org.xwiki.component.manager;
 
 /**
  * Raised during provider lookup when an error happens.
- * 
+ *
  * @see ComponentManager#getInstance(java.lang.reflect.Type)
  * @version $Id$
  */

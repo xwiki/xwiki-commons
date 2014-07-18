@@ -21,8 +21,8 @@ package org.xwiki.context;
 
 /**
  * Thrown when trying to update a final value.
- * 
- * @version $Id$ 
+ *
+ * @version $Id$
  * @since 4.3M1
  */
 public class PropertyIsFinalException extends RuntimeException

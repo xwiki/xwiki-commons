@@ -42,10 +42,9 @@ import edu.emory.mathcs.util.classloader.ResourceUtils;
  * Handler for the "jar" protocol. Note that we don't use the JDK's JAR URL Connection class since it doesn't support
  * using a URL Stream Handler Factory for handling nested protocols (the protocol inside the "jar" protocol, for
  * example: {@code jar:http://...} or {@code jar:attachmentjar://...}, etc).
- * 
  * <p>
- * Originally written by Dawid Kurzyniec and released to the public domain, as explained
- * at http://creativecommons.org/licenses/publicdomain
+ * Originally written by Dawid Kurzyniec and released to the public domain, as explained at
+ * http://creativecommons.org/licenses/publicdomain
  * </p>
  * <p>
  * Source: http://dcl.mathcs.emory.edu/php/loadPage.php?content=util/features.html#classloading
@@ -82,9 +81,9 @@ public class JarURLStreamHandler extends URLStreamHandler implements ExtendedURL
     private JarOpener opener = new JarProxy();
 
     /**
-     * Stream factory passed to the JAR URL Connection class we create so that it can support custom
-     * protocols even if they are not globally registered (the problems with global registration are
-     * described at http://accu.org/index.php/journals/1434).
+     * Stream factory passed to the JAR URL Connection class we create so that it can support custom protocols even if
+     * they are not globally registered (the problems with global registration are described at
+     * http://accu.org/index.php/journals/1434).
      */
     @Inject
     private URLStreamHandlerFactory handlerFactory;
@@ -103,11 +102,11 @@ public class JarURLStreamHandler extends URLStreamHandler implements ExtendedURL
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * Implementation copied from Emory's Classloader Utilities. We had to copy it since we cannot extend Emory's
      * JarURLStreamHandler implementation since it extends the JDK's JAR URL Connection (see this class's description
      * to understand why we cannot use it).
-     * 
+     *
      * @see URLStreamHandler#parseURL(URL, String, int, int)
      */
     @Override

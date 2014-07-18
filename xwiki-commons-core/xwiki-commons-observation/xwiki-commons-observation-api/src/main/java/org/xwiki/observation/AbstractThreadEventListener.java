@@ -23,7 +23,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Filter events by keeping only events produced by the provided {@link Thread}.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  */
@@ -60,7 +60,7 @@ public abstract class AbstractThreadEventListener implements EventListener
 
     /**
      * Called when the event has been produce by the proper {@link Thread}.
-     * 
+     *
      * @param event the event triggered. Can be used to differentiate different events if your Object supports several
      *            events for example.
      * @param source the event source i.e. the object for which the event was triggered. For example this would be the

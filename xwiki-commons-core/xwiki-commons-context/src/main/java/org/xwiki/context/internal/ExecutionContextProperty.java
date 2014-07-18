@@ -27,7 +27,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * This class may require ReflectPermission suppressAccessChecks to clone the object value.
  *
- * @version $Id$ 
+ * @version $Id$
  * @since 4.3M1
  */
 public class ExecutionContextProperty implements Cloneable
@@ -35,7 +35,7 @@ public class ExecutionContextProperty implements Cloneable
     /** The key that is the name of this property in the execution context. */
     private final String key;
 
-    /** This is the actual property value.  */
+    /** This is the actual property value. */
     private Object value;
 
     /**
@@ -47,9 +47,9 @@ public class ExecutionContextProperty implements Cloneable
     private final boolean isFinal;
 
     /**
-     *  Controls whether this property should be inherited across execution contexts.  It will be inherited as long as
-     *  an execution context containing the property is the current execution context.  It will not be propagated to
-     *  parent execution contexts.  Hence, it may be removed by a call to popExecutionContext.
+     * Controls whether this property should be inherited across execution contexts. It will be inherited as long as an
+     * execution context containing the property is the current execution context. It will not be propagated to parent
+     * execution contexts. Hence, it may be removed by a call to popExecutionContext.
      */
     private final boolean inherited;
 
@@ -74,7 +74,7 @@ public class ExecutionContextProperty implements Cloneable
      * @param type Set a class which the value must be assignable to.
      */
     public ExecutionContextProperty(String key, Object initialValue, boolean cloneValue, boolean isFinal,
-                                    boolean inherited, boolean nonNull, Class<?> type)
+        boolean inherited, boolean nonNull, Class<?> type)
     {
         this.key = key;
         this.value = initialValue;
@@ -88,10 +88,10 @@ public class ExecutionContextProperty implements Cloneable
 
     /**
      * Check that the value is compatible with the configure constraints.
-     * 
+     *
      * @param value The value.
      * @throws IllegalArgumentException if the value is null and this property has the nonNull attribute set, or if the
-     * type is set for this value, but the value is not assignable to the set type.
+     *             type is set for this value, but the value is not assignable to the set type.
      */
     private void checkValue(Object value)
     {
@@ -108,7 +108,7 @@ public class ExecutionContextProperty implements Cloneable
     /**
      * @param value The object value.
      * @throws IllegalArgumentException if the value is null and this property has the nonNull attribute set, or if the
-     * type is set for this value, but the value is not assignable to the set type.
+     *             type is set for this value, but the value is not assignable to the set type.
      */
     public void setValue(Object value)
     {
@@ -160,9 +160,9 @@ public class ExecutionContextProperty implements Cloneable
                 clonedValue = getValue().getClass().getMethod("clone").invoke(getValue());
             } catch (NoSuchMethodException e) {
                 throw new IllegalStateException(String.format(
-                     "cloneValue attribute was set on property [%s], "
-                     + "but the value had class [%s] which has no public clone method", getKey(),
-                     getValue().getClass().getName()));
+                    "cloneValue attribute was set on property [%s], "
+                        + "but the value had class [%s] which has no public clone method", getKey(),
+                    getValue().getClass().getName()));
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
@@ -198,5 +198,4 @@ public class ExecutionContextProperty implements Cloneable
     {
         return this.clonedFrom != null && this.clonedFrom.get() == property;
     }
-    
 }

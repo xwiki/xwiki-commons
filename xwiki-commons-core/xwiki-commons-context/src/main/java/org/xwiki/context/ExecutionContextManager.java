@@ -23,7 +23,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Provides various services for manipulating an {@link ExecutionContext}.
- * 
+ *
  * @version $Id$
  */
 @Role
@@ -32,7 +32,7 @@ public interface ExecutionContextManager
     /**
      * Set the passed Execution Context in {@link Execution} and initialize it by executing all
      * {@link ExecutionContextInitializer} registered components.
-     * 
+     *
      * @param context the execution context to initialize
      * @throws ExecutionContextException in case one {@link ExecutionContextInitializer} fails to execute
      */
@@ -40,7 +40,7 @@ public interface ExecutionContextManager
 
     /**
      * Perform deep cloning of Execution Context properties.
-     * 
+     *
      * @return the cloned Execution Context
      * @param context the execution context to clone
      * @throws ExecutionContextException if the Execution Context failed to be cloned for any reason

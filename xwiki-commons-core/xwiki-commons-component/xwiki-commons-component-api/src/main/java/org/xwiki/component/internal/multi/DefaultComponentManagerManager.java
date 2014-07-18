@@ -31,7 +31,7 @@ import org.xwiki.component.manager.ComponentManager;
 
 /**
  * Default implementation of {@link ComponentManagerManager}.
- * 
+ *
  * @version $Id$
  * @since 3.3M2
  */
@@ -76,7 +76,7 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
 
     /**
      * Create a new {@link ComponentManager} for the provided id.
-     * 
+     *
      * @param id the identifier of the component manager
      * @return a new {@link ComponentManager} instance
      */
@@ -96,7 +96,7 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
 
     /**
      * Extract prefix of the id used to find custom factory.
-     * 
+     *
      * @param id the identifier of the component manager to create
      * @return the prefix of the id or null if none is provided
      */

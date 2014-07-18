@@ -19,8 +19,6 @@
  */
 package org.xwiki.context.concurrent;
 
-import static org.mockito.Matchers.any;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -30,9 +28,11 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
 
+import static org.mockito.Matchers.any;
+
 /**
  * Validate {@link ExecutionContextRunnable}.
- * 
+ *
  * @version $Id$
  */
 public class ExecutionContextRunnableTest

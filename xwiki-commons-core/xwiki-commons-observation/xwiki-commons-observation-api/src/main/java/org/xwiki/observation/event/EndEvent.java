@@ -22,7 +22,7 @@ package org.xwiki.observation.event;
 /**
  * Implemented by event indicating some task is stopping. This should only be used when there is a corresponding
  * {@link BeginEvent}.
- * 
+ *
  * @version $Id$
  * @since 3.2M1
  */

@@ -50,7 +50,7 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Simple implementation of {@link ComponentManager} to be used when using some XWiki modules standalone.
- * 
+ *
  * @version $Id$
  * @since 2.0M1
  */
@@ -85,7 +85,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         }
     }
 
-    private Map<RoleHint< ? >, ComponentEntry< ? >> componentEntries = new ConcurrentHashMap();
+    private Map<RoleHint<?>, ComponentEntry<?>> componentEntries = new ConcurrentHashMap();
 
     private Logger logger = LoggerFactory.getLogger(EmbeddableComponentManager.class);
 
@@ -112,7 +112,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
 
     /**
      * Load all component annotations and register them as components.
-     * 
+     *
      * @param classLoader the class loader to use to look for component definitions
      */
     public void initialize(ClassLoader classLoader)
@@ -167,7 +167,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         // Component Manager
         Map<String, T> objects = getInstanceMap(role);
 
-        return objects.isEmpty() ? Collections.<T> emptyList() : new ArrayList<T>(objects.values());
+        return objects.isEmpty() ? Collections.<T>emptyList() : new ArrayList<T>(objects.values());
     }
 
     @Override
@@ -176,8 +176,8 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     {
         Map<String, T> objects = new HashMap();
 
-        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
-            RoleHint< ? > roleHint = entry.getKey();
+        for (Map.Entry<RoleHint<?>, ComponentEntry<?>> entry : this.componentEntries.entrySet()) {
+            RoleHint<?> roleHint = entry.getKey();
 
             if (role.equals(roleHint.getRoleType())) {
                 try {
@@ -191,7 +191,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         // Add parent's list of components
         if (getParent() != null) {
             // If the hint already exists in the children Component Manager then don't add the one from the parent.
-            for (Map.Entry<String, T> entry : getParent().<T> getInstanceMap(role).entrySet()) {
+            for (Map.Entry<String, T> entry : getParent().<T>getInstanceMap(role).entrySet()) {
                 if (!objects.containsKey(entry.getKey())) {
                     objects.put(entry.getKey(), entry.getValue());
                 }
@@ -225,7 +225,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     {
         Map<String, ComponentDescriptor<T>> descriptors = new HashMap();
 
-        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
+        for (Map.Entry<RoleHint<?>, ComponentEntry<?>> entry : this.componentEntries.entrySet()) {
             if (entry.getKey().getRoleType().equals(role)) {
                 descriptors.put(entry.getKey().getHint(), (ComponentDescriptor<T>) entry.getValue().descriptor);
             }
@@ -274,7 +274,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         T instance = descriptor.getImplementation().newInstance();
 
         // Set each dependency
-        for (ComponentDependency< ? > dependency : descriptor.getComponentDependencies()) {
+        for (ComponentDependency<?> dependency : descriptor.getComponentDependencies()) {
 
             // TODO: Handle dependency cycles
 
@@ -290,7 +290,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
             // Step 3: No producer found, handle scalar and collection types by looking up standard component
             // implementations.
 
-            Class< ? > dependencyRoleClass = ReflectionUtils.getTypeClass(dependency.getRoleType());
+            Class<?> dependencyRoleClass = ReflectionUtils.getTypeClass(dependency.getRoleType());
 
             if (dependencyRoleClass.isAssignableFrom(Logger.class)) {
                 fieldValue = createLogger(instance.getClass());
@@ -329,7 +329,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     /**
      * Create a Logger instance to inject.
      */
-    protected Object createLogger(Class< ? > instanceClass)
+    protected Object createLogger(Class<?> instanceClass)
     {
         return LoggerFactory.getLogger(instanceClass);
     }
@@ -434,7 +434,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     }
 
     @Override
-    public void unregisterComponent(ComponentDescriptor< ? > componentDescriptor)
+    public void unregisterComponent(ComponentDescriptor<?> componentDescriptor)
     {
         if (Objects.equals(
             getComponentDescriptor(componentDescriptor.getRoleType(), componentDescriptor.getRoleHint()),
@@ -448,9 +448,9 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     public void release(Object component) throws ComponentLifecycleException
     {
         // First find the descriptor matching the passed component
-        RoleHint< ? > key = null;
-        ComponentDescriptor< ? > oldDescriptor = null;
-        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
+        RoleHint<?> key = null;
+        ComponentDescriptor<?> oldDescriptor = null;
+        for (Map.Entry<RoleHint<?>, ComponentEntry<?>> entry : this.componentEntries.entrySet()) {
             if (entry.getValue().instance == component) {
                 key = entry.getKey();
                 oldDescriptor = entry.getValue().descriptor;
@@ -474,7 +474,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         }
     }
 
-    private void releaseInstance(ComponentEntry< ? > componentEntry) throws ComponentLifecycleException
+    private void releaseInstance(ComponentEntry<?> componentEntry) throws ComponentLifecycleException
     {
         // Make sure the singleton component instance can't be "lost" (impossible to dispose because returned but not
         // stored).
@@ -490,20 +490,20 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         }
     }
 
-    private void releaseComponentEntry(ComponentEntry< ? > componentEntry) throws ComponentLifecycleException
+    private void releaseComponentEntry(ComponentEntry<?> componentEntry) throws ComponentLifecycleException
     {
         // clean existing instance
         releaseInstance(componentEntry);
     }
 
-    private void removeComponent(RoleHint< ? > roleHint) throws ComponentLifecycleException
+    private void removeComponent(RoleHint<?> roleHint) throws ComponentLifecycleException
     {
         // Make sure to remove the entry from the map before destroying it to reduce at the minimum the risk of
         // lookupping something invalid
-        ComponentEntry< ? > componentEntry = this.componentEntries.remove(roleHint);
+        ComponentEntry<?> componentEntry = this.componentEntries.remove(roleHint);
 
         if (componentEntry != null) {
-            ComponentDescriptor< ? > oldDescriptor = componentEntry.descriptor;
+            ComponentDescriptor<?> oldDescriptor = componentEntry.descriptor;
 
             // We don't want the component manager to dispose itself just because it's not registered as component*
             // anymore
@@ -528,24 +528,23 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         try {
             removeComponent(roleHint);
         } catch (Exception e) {
-            logger.warn("Instance released but disposal failed. Some resources may not have been released.", e);
+            this.logger.warn("Instance released but disposal failed. Some resources may not have been released.", e);
         }
     }
 
-    private int sortEntry(List<RoleHint< ? >> keys, int index)
+    private int sortEntry(List<RoleHint<?>> keys, int index)
     {
         int oldIndex = index;
         int newIndex = index;
 
-        RoleHint< ? > key = keys.get(index);
-        ComponentEntry< ? > componentEntry = this.componentEntries.get(key);
+        RoleHint<?> key = keys.get(index);
+        ComponentEntry<?> componentEntry = this.componentEntries.get(key);
 
-        for (ComponentDependency< ? > dependency : componentEntry.descriptor.getComponentDependencies()) {
-            RoleHint< ? > dependencyRole = new RoleHint<Object>(dependency.getRoleType(), dependency.getRoleHint());
+        for (ComponentDependency<?> dependency : componentEntry.descriptor.getComponentDependencies()) {
+            RoleHint<?> dependencyRole = new RoleHint<Object>(dependency.getRoleType(), dependency.getRoleHint());
 
             int dependencyIndex = keys.indexOf(dependencyRole);
 
-            
             if (dependencyIndex != -1 && dependencyIndex < newIndex) {
                 dependencyIndex = sortEntry(keys, dependencyIndex);
 
@@ -564,11 +563,11 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     @Override
     public void dispose()
     {
-        List<RoleHint< ? >> keys = new ArrayList(this.componentEntries.keySet());
+        List<RoleHint<?>> keys = new ArrayList(this.componentEntries.keySet());
 
         // Exclude this component
         RoleHint<ComponentManager> cmRoleHint = new RoleHint(ComponentManager.class);
-        ComponentEntry< ? > cmEntry = this.componentEntries.get(cmRoleHint);
+        ComponentEntry<?> cmEntry = this.componentEntries.get(cmRoleHint);
         if (cmEntry != null && cmEntry.instance == this) {
             keys.remove(cmRoleHint);
         }
@@ -579,8 +578,8 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         }
 
         // Dispose old components
-        for (RoleHint< ? > key : keys) {
-            ComponentEntry< ? > componentEntry = this.componentEntries.get(key);
+        for (RoleHint<?> key : keys) {
+            ComponentEntry<?> componentEntry = this.componentEntries.get(key);
 
             synchronized (componentEntry) {
                 Object instance = componentEntry.instance;
@@ -599,7 +598,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         // Remove disposed components from the map. Doing it in two steps to give as many chances as possible to the
         // components that have to use a component already disposed (usually because it dynamically requires it and
         // there is no way for the ComponentManager to know that dependency).
-        for (RoleHint< ? > key : keys) {
+        for (RoleHint<?> key : keys) {
             this.componentEntries.remove(key);
         }
     }
@@ -612,7 +611,7 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     public <T> List<ComponentDescriptor<T>> getComponentDescriptorList(Class<T> role)
     {
         List<ComponentDescriptor<T>> results = new ArrayList();
-        for (Map.Entry<RoleHint< ? >, ComponentEntry< ? >> entry : this.componentEntries.entrySet()) {
+        for (Map.Entry<RoleHint<?>, ComponentEntry<?>> entry : this.componentEntries.entrySet()) {
             if (entry.getKey().getRoleClass() == role) {
                 results.add((ComponentDescriptor<T>) entry.getValue().descriptor);
             }

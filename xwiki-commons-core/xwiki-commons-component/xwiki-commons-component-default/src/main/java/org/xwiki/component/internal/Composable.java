@@ -23,7 +23,7 @@ import org.xwiki.component.manager.ComponentManager;
 
 /**
  * Used internally to inject {@link ComponentManager} instance.
- * 
+ *
  * @version $Id$
  */
 public interface Composable

@@ -36,7 +36,7 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Constructs a Component Descriptor out of a class definition that contains Annotations.
- * 
+ *
  * @version $Id$
  * @since 1.8.1
  * @see ComponentAnnotationLoader
@@ -54,15 +54,15 @@ public class ComponentDescriptorFactory
     /**
      * Create component descriptors for the passed component implementation class and component role class. There can be
      * more than one descriptor if the component class has specified several hints.
-     * 
+     *
      * @param componentClass the component implementation class
      * @param componentRoleClass the component role class
      * @return the component descriptors with resolved component dependencies
      * @deprecated since 4.0M1 use {@link #createComponentDescriptors(Class, Type)} instead
      */
     @Deprecated
-    public List<ComponentDescriptor> createComponentDescriptors(Class< ? > componentClass,
-        Class< ? > componentRoleClass)
+    public List<ComponentDescriptor> createComponentDescriptors(Class<?> componentClass,
+        Class<?> componentRoleClass)
     {
         return createComponentDescriptors(componentClass, (Type) componentRoleClass);
     }
@@ -70,13 +70,13 @@ public class ComponentDescriptorFactory
     /**
      * Create component descriptors for the passed component implementation class and component role class. There can be
      * more than one descriptor if the component class has specified several hints.
-     * 
+     *
      * @param componentClass the component implementation class
      * @param componentRoleType the component role type
      * @return the component descriptors with resolved component dependencies
      * @since 4.0M1
      */
-    public List<ComponentDescriptor> createComponentDescriptors(Class< ? > componentClass, Type componentRoleType)
+    public List<ComponentDescriptor> createComponentDescriptors(Class<?> componentClass, Type componentRoleType)
     {
         List<ComponentDescriptor> descriptors = new ArrayList<ComponentDescriptor>();
 
@@ -110,13 +110,13 @@ public class ComponentDescriptorFactory
 
     /**
      * Create a component descriptor for the passed component implementation class, hint and component role class.
-     * 
+     *
      * @param componentClass the component implementation class
      * @param hint the hint
      * @param componentRoleType the component role type
      * @return the component descriptor with resolved component dependencies
      */
-    private ComponentDescriptor createComponentDescriptor(Class< ? > componentClass, String hint,
+    private ComponentDescriptor createComponentDescriptor(Class<?> componentClass, String hint,
         Type componentRoleType)
     {
         DefaultComponentDescriptor descriptor = new DefaultComponentDescriptor();
@@ -143,7 +143,7 @@ public class ComponentDescriptorFactory
      * @param componentClass the component class from which to extract the component instantiation strategy
      * @return the component instantiation strategy to use
      */
-    private ComponentInstantiationStrategy createComponentInstantiationStrategy(Class< ? > componentClass)
+    private ComponentInstantiationStrategy createComponentInstantiationStrategy(Class<?> componentClass)
     {
         ComponentInstantiationStrategy strategy;
 

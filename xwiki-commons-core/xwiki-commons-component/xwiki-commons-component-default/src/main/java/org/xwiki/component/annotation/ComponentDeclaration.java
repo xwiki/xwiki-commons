@@ -24,7 +24,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Represents a Component declaration (i.e. component implementation class name and component priority).
- * 
+ *
  * @version $Id$
  * @since 3.3M1
  */

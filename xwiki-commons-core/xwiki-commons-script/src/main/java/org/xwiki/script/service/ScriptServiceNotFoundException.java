@@ -21,7 +21,7 @@ package org.xwiki.script.service;
 
 /**
  * Thrown when a Script Service cannot be located.
- * 
+ *
  * @version $Id$
  * @since 2.3M1
  * @deprecated not used anymore

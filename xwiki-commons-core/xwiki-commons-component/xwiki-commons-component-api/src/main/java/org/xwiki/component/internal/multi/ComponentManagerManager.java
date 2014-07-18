@@ -27,7 +27,7 @@ import org.xwiki.component.manager.ComponentManager;
  * <p>
  * The provided id is generally of the form <code>prefix:subid</code> where <code>prefix</code> is used to find the
  * proper factory. <code>:</code> can be escaped using <code>\</code> and <code>\</code> need to be escaped as well.
- * 
+ *
  * @version $Id$
  * @since 3.3M2
  */

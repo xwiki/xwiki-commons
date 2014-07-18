@@ -26,7 +26,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Base class for {@link EventListener}s.
- * 
+ *
  * @version $Id$
  * @since 5.4RC1
  */
@@ -34,7 +34,7 @@ public abstract class AbstractEventListener implements EventListener
 {
     private final String name;
 
-    private final List< ? extends Event> events;
+    private final List<? extends Event> events;
 
     /**
      * @param name the listener's name. It's a free form text identifying this listener instance in a unique manner.
@@ -43,7 +43,7 @@ public abstract class AbstractEventListener implements EventListener
      *            registered with this list of events against the {@link ObservationManager}. When an event occurs, for
      *            each matching event in this list, the {@link #onEvent(Event, Object, Object)} method will be called.
      */
-    public AbstractEventListener(String name, List< ? extends Event> events)
+    public AbstractEventListener(String name, List<? extends Event> events)
     {
         this.name = name;
         this.events = events;
