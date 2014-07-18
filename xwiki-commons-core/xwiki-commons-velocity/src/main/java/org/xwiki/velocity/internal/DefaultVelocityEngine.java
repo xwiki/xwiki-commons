@@ -295,9 +295,6 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
         // to make macros included with #includeMacros() work even though we're using
         // the Velocity setting:
         // velocimacro.permissions.allow.inline.local.scope = true
-        // TODO: Fix this when by rewriting the XWiki.include() implementation so that
-        // included Velocity templates are added to the current document before
-        // evaluation instead of doing 2 separate executions.
         this.rsvc = runtimeServices;
     }
 
