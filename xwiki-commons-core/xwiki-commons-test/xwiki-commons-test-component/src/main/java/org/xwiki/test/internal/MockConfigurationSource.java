@@ -25,7 +25,7 @@ import org.xwiki.configuration.internal.MemoryConfigurationSource;
 
 /**
  * Mock {@link ConfigurationSource} that returns an empty list of configuration sources.
- * 
+ *
  * @version $Id$
  * @since 1.6M2
  */

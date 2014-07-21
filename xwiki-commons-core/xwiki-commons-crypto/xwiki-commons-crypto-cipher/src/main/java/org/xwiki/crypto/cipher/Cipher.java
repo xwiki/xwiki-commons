@@ -38,7 +38,7 @@ public interface Cipher
 {
     /**
      * @return the algorithm name of the underlying cipher. The returned string has in the form algorithm/mode/padding,
-     * like in "DES/CBC/PKCS5Padding".
+     *         like in "DES/CBC/PKCS5Padding".
      */
     String getAlgorithmName();
 
@@ -81,19 +81,21 @@ public interface Cipher
 
     /**
      * Continues a multiple-part encryption or decryption operation, processing another data chunk.
+     *
      * @param input the input buffer.
-     * @return the new buffer with the result, or null if the underlying cipher is a block cipher and the input data
-     * is too short to result in a new block.
+     * @return the new buffer with the result, or null if the underlying cipher is a block cipher and the input data is
+     *         too short to result in a new block.
      */
     byte[] update(byte[] input);
 
     /**
      * Continues a multiple-part encryption or decryption operation processing another data chunk.
+     *
      * @param input the input buffer.
      * @param inputOffset the offset in input where the input starts.
      * @param inputLen the input length.
-     * @return the new buffer with the result, or null if the underlying cipher is a block cipher and the input data
-     * is too short to result in a new block.
+     * @return the new buffer with the result, or null if the underlying cipher is a block cipher and the input data is
+     *         too short to result in a new block.
      */
     byte[] update(byte[] input, int inputOffset, int inputLen);
 
@@ -109,7 +111,6 @@ public interface Cipher
      * @throws GeneralSecurityException if this encryption algorithm is unable to proceed properly.
      */
     byte[] doFinal() throws GeneralSecurityException;
-
 
     /**
      * Encrypts or decrypts data in a one shot operation, or finishes a multiple-part operation.

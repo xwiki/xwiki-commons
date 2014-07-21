@@ -42,7 +42,7 @@ public class BcDSAKeyFactory extends AbstractBcKeyFactory
     @Override
     protected AsymmetricKeyInfoConverter getKeyInfoConverter()
     {
-        return keyInfoConverter;
+        return this.keyInfoConverter;
     }
 
     @Override

@@ -57,7 +57,7 @@ public class BcDHKeyPairGenerator extends AbstractBcKeyPairGenerator
     @Override
     protected AsymmetricKeyFactory getFactory()
     {
-        return factory;
+        return this.factory;
     }
 
     @Override
@@ -72,9 +72,8 @@ public class BcDHKeyPairGenerator extends AbstractBcKeyPairGenerator
         org.bouncycastle.crypto.params.DHParameters keyGenParams;
 
         if (parameters instanceof DHKeyParametersGenerationParameters) {
-            keyGenParams =
-                BcDHKeyParameterGenerator.getDhParameters(random.get(),
-                    (DHKeyParametersGenerationParameters) parameters);
+            keyGenParams = BcDHKeyParameterGenerator.getDhParameters(this.random.get(),
+                (DHKeyParametersGenerationParameters) parameters);
         } else if (parameters instanceof DHKeyGenerationParameters) {
             keyGenParams = getDhParameters((DHKeyGenerationParameters) parameters);
         } else {
@@ -83,13 +82,14 @@ public class BcDHKeyPairGenerator extends AbstractBcKeyPairGenerator
         }
 
         AsymmetricCipherKeyPairGenerator generator = new DHKeyPairGenerator();
-        generator.init(new org.bouncycastle.crypto.params.DHKeyGenerationParameters(random.get(),
+        generator.init(new org.bouncycastle.crypto.params.DHKeyGenerationParameters(this.random.get(),
             keyGenParams));
 
         return getKeyPair(generator.generateKeyPair());
     }
 
-    private org.bouncycastle.crypto.params.DHParameters getDhParameters(DHKeyGenerationParameters parameters) {
+    private org.bouncycastle.crypto.params.DHParameters getDhParameters(DHKeyGenerationParameters parameters)
+    {
         DHKeyValidationParameters dhValidParams = parameters.getValidationParameters();
 
         return new org.bouncycastle.crypto.params.DHParameters(parameters.getP(), parameters.getG(), parameters.getQ(),

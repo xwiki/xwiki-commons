@@ -63,6 +63,6 @@ public class BcX509CertificateFactory implements CertificateFactory
         if (cert == null) {
             return null;
         }
-        return new BcX509CertifiedPublicKey(cert, factory);
+        return new BcX509CertifiedPublicKey(cert, this.factory);
     }
 }

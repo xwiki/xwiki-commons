@@ -46,8 +46,11 @@ import org.xwiki.crypto.signer.SignerFactory;
 public abstract class AbstractBcX509CertificateGenerator implements CertificateGenerator
 {
     private final Signer signer;
+
     private final int validity;
+
     private final SignerFactory signerFactory;
+
     private final SecureRandom random;
 
     /**
@@ -105,8 +108,8 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
         PrincipalIndentifier issuerName;
         CertifiedPublicKey issuer = null;
 
-        if (signer instanceof CertifyingSigner) {
-            issuer = ((CertifyingSigner) signer).getCertifier();
+        if (this.signer instanceof CertifyingSigner) {
+            issuer = ((CertifyingSigner) this.signer).getCertifier();
             issuerName = issuer.getSubject();
         } else {
             issuerName = subjectName;
@@ -114,17 +117,13 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
 
         BcX509TBSCertificateBuilder builder = getTBSCertificateBuilder();
 
-        builder.setSerialNumber(new BigInteger(128, random))
-               .setIssuer(issuerName);
+        builder.setSerialNumber(new BigInteger(128, this.random)).setIssuer(issuerName);
 
         addValidityDates(builder);
 
         extendsTBSCertificate(builder, issuer, subjectName, subject, parameters);
 
-        return builder.setSubject(subjectName)
-                      .setSubjectPublicKeyInfo(subject)
-                      .setSignature(signer)
-                      .build();
+        return builder.setSubject(subjectName).setSubjectPublicKeyInfo(subject).setSignature(this.signer).build();
     }
 
     @Override
@@ -138,10 +137,9 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
 
         TBSCertificate tbsCert = buildTBSCertificate(subjectName, subject, (X509CertificateParameters) parameters);
 
-        return new BcX509CertifiedPublicKey(BcUtils.getX509CertificateHolder(
-            tbsCert,
-            BcUtils.updateDEREncodedObject(signer, tbsCert).generate()),
-            signerFactory);
+        return new BcX509CertifiedPublicKey(
+            BcUtils.getX509CertificateHolder(tbsCert, BcUtils.updateDEREncodedObject(this.signer, tbsCert).generate()),
+            this.signerFactory);
     }
 
     private void addValidityDates(BcX509TBSCertificateBuilder builder)
@@ -153,7 +151,7 @@ public abstract class AbstractBcX509CertificateGenerator implements CertificateG
 
         builder.setStartDate(cal.getTime());
 
-        cal.add(Calendar.DATE, validity);
+        cal.add(Calendar.DATE, this.validity);
 
         builder.setEndDate(cal.getTime());
     }

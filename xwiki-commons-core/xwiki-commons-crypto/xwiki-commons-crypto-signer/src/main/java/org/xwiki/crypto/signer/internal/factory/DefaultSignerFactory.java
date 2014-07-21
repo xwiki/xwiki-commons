@@ -77,7 +77,7 @@ public class DefaultSignerFactory extends AbstractSignerFactory implements BcSig
     protected SignerFactory getFactory(String hint)
     {
         try {
-            return manager.getInstance(SignerFactory.class, hint);
+            return this.manager.getInstance(SignerFactory.class, hint);
         } catch (ComponentLookupException e) {
             throw new UnsupportedOperationException("Signing algorithm not found.", e);
         }

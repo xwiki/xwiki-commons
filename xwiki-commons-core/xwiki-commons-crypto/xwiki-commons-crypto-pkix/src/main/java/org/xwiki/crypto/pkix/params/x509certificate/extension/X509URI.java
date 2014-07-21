@@ -39,7 +39,9 @@ import org.xwiki.stability.Unstable;
 public class X509URI implements X509StringGeneralName, BcGeneralName
 {
     private final String str;
+
     private final URI uri;
+
     private final URL url;
 
     /**
@@ -114,7 +116,7 @@ public class X509URI implements X509StringGeneralName, BcGeneralName
      */
     public URL getURL()
     {
-        return url;
+        return this.url;
     }
 
     /**
@@ -122,18 +124,18 @@ public class X509URI implements X509StringGeneralName, BcGeneralName
      */
     public URI getURI()
     {
-        return uri;
+        return this.uri;
     }
 
     @Override
     public String getName()
     {
-        return str;
+        return this.str;
     }
 
     @Override
     public GeneralName getGeneralName()
     {
-        return new GeneralName(GeneralName.uniformResourceIdentifier, str);
+        return new GeneralName(GeneralName.uniformResourceIdentifier, this.str);
     }
 }

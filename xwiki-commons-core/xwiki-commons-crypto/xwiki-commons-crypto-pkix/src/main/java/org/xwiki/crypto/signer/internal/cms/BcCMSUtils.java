@@ -111,9 +111,7 @@ public final class BcCMSUtils
         CertificateFactory factory)
     {
         BcCMSSignedDataVerified verifiedData = new BcCMSSignedDataVerified(signedData.getSignedContentTypeOID(),
-            (signedData.getSignedContent() != null
-                ? (byte[]) signedData.getSignedContent().getContent()
-                : null));
+            (signedData.getSignedContent() != null ? (byte[]) signedData.getSignedContent().getContent() : null));
 
         BcStoreUtils.addCertificatesToVerifiedData(signedData.getCertificates(), verifiedData, factory);
         return verifiedData;
@@ -122,6 +120,6 @@ public final class BcCMSUtils
     @SuppressWarnings("unchecked")
     static Collection<SignerInformation> getSigners(CMSSignedData signedData)
     {
-        return (Collection<SignerInformation>) signedData.getSignerInfos().getSigners();
+        return signedData.getSignerInfos().getSigners();
     }
 }

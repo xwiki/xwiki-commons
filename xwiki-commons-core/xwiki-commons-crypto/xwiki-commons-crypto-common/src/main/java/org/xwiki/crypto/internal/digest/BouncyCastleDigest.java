@@ -39,11 +39,14 @@ import org.xwiki.crypto.params.DigestParameters;
 public class BouncyCastleDigest implements Digest, DigestCalculator
 {
     private final org.bouncycastle.crypto.Digest digest;
+
     private AlgorithmIdentifier algId;
+
     private DigestParameters parameters;
 
     /**
      * Create a new digest based on the given Bouncy Castle digest engine.
+     *
      * @param digest a bouncy castle digest.
      * @param algId the algorithm identifier of this digest.
      * @param parameters digest parameters if any.
@@ -59,33 +62,33 @@ public class BouncyCastleDigest implements Digest, DigestCalculator
     @Override
     public String getAlgorithmName()
     {
-        return digest.getAlgorithmName();
+        return this.digest.getAlgorithmName();
     }
 
     @Override
     public int getDigestSize()
     {
-        return digest.getDigestSize();
+        return this.digest.getDigestSize();
     }
 
     @Override
     public DigestParameters getParameters()
     {
-        return parameters;
+        return this.parameters;
     }
 
     @Override
     public FilterInputStream getInputStream(InputStream is)
     {
-        digest.reset();
-        return new DigestInputStream(is, digest);
+        this.digest.reset();
+        return new DigestInputStream(is, this.digest);
     }
 
     @Override
     public OutputStream getOutputStream()
     {
-        digest.reset();
-        return new org.bouncycastle.crypto.io.DigestOutputStream(digest);
+        this.digest.reset();
+        return new org.bouncycastle.crypto.io.DigestOutputStream(this.digest);
     }
 
     @Override
@@ -97,14 +100,14 @@ public class BouncyCastleDigest implements Digest, DigestCalculator
     @Override
     public void update(byte[] input, int inputOffset, int inputLen)
     {
-        digest.update(input, inputOffset, inputLen);
+        this.digest.update(input, inputOffset, inputLen);
     }
 
     @Override
     public byte[] digest()
     {
-        byte[] dig = new byte[digest.getDigestSize()];
-        digest.doFinal(dig, 0);
+        byte[] dig = new byte[this.digest.getDigestSize()];
+        this.digest.doFinal(dig, 0);
         return dig;
     }
 
@@ -124,6 +127,7 @@ public class BouncyCastleDigest implements Digest, DigestCalculator
 
     /**
      * {@inheritDoc}
+     *
      * @since 6.0M1
      */
     @Override
@@ -138,7 +142,7 @@ public class BouncyCastleDigest implements Digest, DigestCalculator
     @Override
     public AlgorithmIdentifier getAlgorithmIdentifier()
     {
-        return algId;
+        return this.algId;
     }
 
     @Override

@@ -35,6 +35,7 @@ public class KeyParameter implements SymmetricCipherParameters
 
     /**
      * Initialize parameters.
+     *
      * @param key the key.
      */
     public KeyParameter(byte[] key)
@@ -47,6 +48,6 @@ public class KeyParameter implements SymmetricCipherParameters
      */
     public byte[] getKey()
     {
-        return key;
+        return this.key;
     }
 }

@@ -57,5 +57,4 @@ public interface CMSSignedDataGenerator
      */
     byte[] generate(byte[] data, CMSSignedDataGeneratorParameters parameters, boolean embedData)
         throws GeneralSecurityException;
-
 }

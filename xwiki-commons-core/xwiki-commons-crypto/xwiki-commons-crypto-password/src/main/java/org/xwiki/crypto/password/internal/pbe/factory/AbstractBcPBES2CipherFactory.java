@@ -27,9 +27,9 @@ import org.bouncycastle.asn1.pkcs.EncryptionScheme;
 import org.bouncycastle.asn1.pkcs.KeyDerivationFunc;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.params.cipher.symmetric.KeyParameter;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
+import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.password.KeyDerivationFunction;
 import org.xwiki.crypto.password.KeyDerivationFunctionFactory;
 import org.xwiki.crypto.password.PasswordBasedCipher;
@@ -69,7 +69,6 @@ public abstract class AbstractBcPBES2CipherFactory extends AbstractBcPBCipherFac
         PBES2Parameters params = PBES2Parameters.getInstance(alg.getParameters());
         return getInstance(forEncryption, password, params.getKeyDerivationFunc(), params.getEncryptionScheme());
     }
-
 
     @Override
     public PasswordBasedCipher getInstance(boolean forEncryption, SymmetricCipherParameters password,
@@ -133,7 +132,8 @@ public abstract class AbstractBcPBES2CipherFactory extends AbstractBcPBCipherFac
      * @return a initialized password based cipher.
      */
     protected PasswordBasedCipher getPasswordBasedCipher(boolean forEncryption, final KeyDerivationFunction kdf,
-        SymmetricCipherParameters params) {
+        SymmetricCipherParameters params)
+    {
         throw UNSUPPORTED;
     }
 

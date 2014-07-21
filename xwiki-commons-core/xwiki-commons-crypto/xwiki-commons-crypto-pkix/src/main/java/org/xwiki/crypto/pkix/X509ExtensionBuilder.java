@@ -55,6 +55,7 @@ public interface X509ExtensionBuilder
 
     /**
      * Add all extension in an existing extension set to the currently built extension set.
+     *
      * @param extensionSet the extension set to copy.
      * @return this extensions builder to allow chaining.
      * @throws IOException on encoding error.

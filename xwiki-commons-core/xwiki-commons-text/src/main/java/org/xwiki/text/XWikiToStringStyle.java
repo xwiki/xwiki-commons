@@ -38,6 +38,8 @@ import org.apache.commons.lang3.builder.StandardToStringStyle;
  */
 public class XWikiToStringStyle extends StandardToStringStyle
 {
+    private static final long serialVersionUID = 1767758908431225408L;
+
     /**
      * Sets the XWiki style.
      */
@@ -77,11 +79,11 @@ public class XWikiToStringStyle extends StandardToStringStyle
     }
 
     @Override
-    protected void appendDetail(StringBuffer buffer, String fieldName, Map map)
+    protected void appendDetail(StringBuffer buffer, String fieldName, Map<?, ?> map)
     {
-        Iterator it = map.entrySet().iterator();
+        Iterator<?> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
+            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) it.next();
             buffer.append('[');
             buffer.append(entry.getKey());
             buffer.append(']');

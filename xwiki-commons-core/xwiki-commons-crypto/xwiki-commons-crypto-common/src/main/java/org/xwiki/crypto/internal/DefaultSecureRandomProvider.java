@@ -43,12 +43,12 @@ public class DefaultSecureRandomProvider implements Provider<SecureRandom>, Init
     @Override
     public void initialize() throws InitializationException
     {
-        random = new SecureRandom();
+        this.random = new SecureRandom();
     }
 
     @Override
     public SecureRandom get()
     {
-        return random;
+        return this.random;
     }
 }

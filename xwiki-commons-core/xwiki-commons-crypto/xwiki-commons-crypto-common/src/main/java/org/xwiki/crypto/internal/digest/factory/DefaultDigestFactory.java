@@ -84,7 +84,7 @@ public class DefaultDigestFactory extends AbstractBcDigestFactory implements Dig
     private DigestFactory getFactory(ASN1ObjectIdentifier algId)
     {
         try {
-            return manager.getInstance(DigestFactory.class, algId.getId());
+            return this.manager.getInstance(DigestFactory.class, algId.getId());
         } catch (ComponentLookupException e) {
             throw new UnsupportedOperationException("Digest algorithm not found.", e);
         }
@@ -92,6 +92,7 @@ public class DefaultDigestFactory extends AbstractBcDigestFactory implements Dig
 
     /**
      * {@inheritDoc}
+     *
      * @since 6.0M1
      */
     @Override
@@ -102,7 +103,8 @@ public class DefaultDigestFactory extends AbstractBcDigestFactory implements Dig
         if (digest instanceof DigestCalculator) {
             return (DigestCalculator) digest;
         } else {
-            return new DigestCalculator() {
+            return new DigestCalculator()
+            {
                 @Override
                 public AlgorithmIdentifier getAlgorithmIdentifier()
                 {

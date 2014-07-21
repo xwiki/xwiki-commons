@@ -22,6 +22,7 @@ package org.xwiki.crypto.password.internal.kdf;
 import java.math.BigInteger;
 import java.util.Enumeration;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Object;
@@ -41,8 +42,11 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 public class PBKDF2Params extends ASN1Object
 {
     private final ASN1OctetString octStr;
+
     private final ASN1Integer iterationCount;
+
     private final ASN1Integer keyLength;
+
     private final AlgorithmIdentifier prf;
 
     /**
@@ -109,27 +113,28 @@ public class PBKDF2Params extends ASN1Object
      */
     private PBKDF2Params(ASN1Sequence seq)
     {
-        Enumeration e = seq.getObjects();
+        @SuppressWarnings("unchecked")
+        Enumeration<ASN1Encodable> e = seq.getObjects();
 
-        octStr = (ASN1OctetString) e.nextElement();
-        iterationCount = (ASN1Integer) e.nextElement();
+        this.octStr = (ASN1OctetString) e.nextElement();
+        this.iterationCount = (ASN1Integer) e.nextElement();
 
         if (e.hasMoreElements()) {
             Object obj = e.nextElement();
             if (obj instanceof ASN1Integer) {
-                keyLength = (ASN1Integer) obj;
+                this.keyLength = (ASN1Integer) obj;
                 if (e.hasMoreElements()) {
-                    prf = AlgorithmIdentifier.getInstance(obj);
+                    this.prf = AlgorithmIdentifier.getInstance(obj);
                 } else {
-                    prf = null;
+                    this.prf = null;
                 }
             } else {
-                keyLength = null;
-                prf = AlgorithmIdentifier.getInstance(obj);
+                this.keyLength = null;
+                this.prf = AlgorithmIdentifier.getInstance(obj);
             }
         } else {
-            keyLength = null;
-            prf = null;
+            this.keyLength = null;
+            this.prf = null;
         }
     }
 
@@ -167,7 +172,7 @@ public class PBKDF2Params extends ASN1Object
      */
     public byte[] getSalt()
     {
-        return octStr.getOctets();
+        return this.octStr.getOctets();
     }
 
     /**
@@ -175,7 +180,7 @@ public class PBKDF2Params extends ASN1Object
      */
     public BigInteger getIterationCount()
     {
-        return iterationCount.getValue();
+        return this.iterationCount.getValue();
     }
 
     /**
@@ -183,8 +188,8 @@ public class PBKDF2Params extends ASN1Object
      */
     public BigInteger getKeyLength()
     {
-        if (keyLength != null) {
-            return keyLength.getValue();
+        if (this.keyLength != null) {
+            return this.keyLength.getValue();
         }
 
         return null;
@@ -195,25 +200,26 @@ public class PBKDF2Params extends ASN1Object
      */
     public AlgorithmIdentifier getPseudoRandomFunctionIdentifier()
     {
-        return prf;
+        return this.prf;
     }
 
     /**
      * @return the underlying primitive type.
      */
+    @Override
     public ASN1Primitive toASN1Primitive()
     {
         ASN1EncodableVector v = new ASN1EncodableVector();
 
-        v.add(octStr);
-        v.add(iterationCount);
+        v.add(this.octStr);
+        v.add(this.iterationCount);
 
-        if (keyLength != null) {
-            v.add(keyLength);
+        if (this.keyLength != null) {
+            v.add(this.keyLength);
         }
 
-        if (prf != null) {
-            v.add(prf);
+        if (this.prf != null) {
+            v.add(this.prf);
         }
 
         return new DERSequence(v);

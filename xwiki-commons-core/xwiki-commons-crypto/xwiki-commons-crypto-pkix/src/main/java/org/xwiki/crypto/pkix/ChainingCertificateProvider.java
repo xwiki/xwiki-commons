@@ -38,6 +38,7 @@ public class ChainingCertificateProvider implements CertificateProvider
 
     /**
      * Create a new chaining certificate provider from the given providers.
+     *
      * @param providers providers to be chained in order.
      */
     public ChainingCertificateProvider(CertificateProvider... providers)
@@ -49,7 +50,7 @@ public class ChainingCertificateProvider implements CertificateProvider
     public CertifiedPublicKey getCertificate(byte[] keyIdentifier)
     {
         CertifiedPublicKey result = null;
-        for (CertificateProvider provider : providers) {
+        for (CertificateProvider provider : this.providers) {
             result = provider.getCertificate(keyIdentifier);
             if (result != null) {
                 break;
@@ -62,7 +63,7 @@ public class ChainingCertificateProvider implements CertificateProvider
     public CertifiedPublicKey getCertificate(PrincipalIndentifier issuer, BigInteger serial)
     {
         CertifiedPublicKey result = null;
-        for (CertificateProvider provider : providers) {
+        for (CertificateProvider provider : this.providers) {
             result = provider.getCertificate(issuer, serial);
             if (result != null) {
                 break;
@@ -75,7 +76,7 @@ public class ChainingCertificateProvider implements CertificateProvider
     public CertifiedPublicKey getCertificate(PrincipalIndentifier issuer, BigInteger serial, byte[] keyIdentifier)
     {
         CertifiedPublicKey result = null;
-        for (CertificateProvider provider : providers) {
+        for (CertificateProvider provider : this.providers) {
             result = provider.getCertificate(issuer, serial, keyIdentifier);
             if (result != null) {
                 break;
@@ -88,7 +89,7 @@ public class ChainingCertificateProvider implements CertificateProvider
     public Collection<CertifiedPublicKey> getCertificate(PrincipalIndentifier subject)
     {
         Collection<CertifiedPublicKey> result = null;
-        for (CertificateProvider provider : providers) {
+        for (CertificateProvider provider : this.providers) {
             result = provider.getCertificate(subject);
             if (result != null) {
                 break;

@@ -31,7 +31,7 @@ import org.xwiki.crypto.params.cipher.asymmetric.AsymmetricKeyPair;
  *
  * @version $Id$
  */
-public abstract class AbstractBcKeyPairGenerator  implements KeyPairGenerator
+public abstract class AbstractBcKeyPairGenerator implements KeyPairGenerator
 {
     protected abstract AsymmetricKeyFactory getFactory();
 
@@ -39,7 +39,6 @@ public abstract class AbstractBcKeyPairGenerator  implements KeyPairGenerator
     {
         return new AsymmetricKeyPair(
             new BcPrivateKeyParameters(keyPair.getPrivate()),
-            new BcPublicKeyParameters(keyPair.getPublic())
-        );
+            new BcPublicKeyParameters(keyPair.getPublic()));
     }
 }

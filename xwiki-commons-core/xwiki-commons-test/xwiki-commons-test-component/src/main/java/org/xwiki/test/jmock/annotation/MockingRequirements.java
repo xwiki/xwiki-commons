@@ -27,7 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Used to be able to define several {@link MockingRequirement} annotations.
- * 
+ *
  * @version $Id$
  * @since 4.2M3
  * @deprecated starting with 4.3.1 use {@link org.xwiki.test.mockito.MockitoComponentMockingRule} instead

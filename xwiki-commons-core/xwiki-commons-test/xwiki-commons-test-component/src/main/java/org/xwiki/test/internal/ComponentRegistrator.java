@@ -34,7 +34,7 @@ import org.xwiki.test.annotation.ComponentList;
 
 /**
  * Helper methods to configure components for testing.
- * 
+ *
  * @version $Id$
  * @since 4.3.1
  */
@@ -47,7 +47,7 @@ public class ComponentRegistrator
 
     /**
      * Registers a component (using the default role hint).
-     * 
+     *
      * @param roleType the type of the component role to register
      * @param instance the instance to register
      * @param componentManager the component manager against which to register the component
@@ -60,7 +60,7 @@ public class ComponentRegistrator
 
     /**
      * Registers a component.
-     * 
+     *
      * @param roleType the type of the component role to register
      * @param roleHint the role hint of the component to register
      * @param instance the instance to register
@@ -80,13 +80,13 @@ public class ComponentRegistrator
 
     /**
      * Register components associated to the provided class.
-     * 
+     *
      * @param componentImplementation the implementation of the component
      * @param componentManager the component manager against which to register the components
      * @throws Exception in case of an error during registration
      * @since 5.2M1
      */
-    public void registerComponent(Class< ? > componentImplementation, ComponentManager componentManager)
+    public void registerComponent(Class<?> componentImplementation, ComponentManager componentManager)
         throws Exception
     {
         List<ComponentDescriptor> descriptors = this.loader.getComponentsDescriptors(componentImplementation);
@@ -101,11 +101,11 @@ public class ComponentRegistrator
      * loaded; however this is not recommended since it slows down the execution time and makes the test less
      * controlled; we recommend instead to use the {@link org.xwiki.test.annotation.ComponentList} annotation which only
      * registers the component implementation you pass to it.
-     * 
+     *
      * @param testClass the class containing the annotations
      * @param componentManager the component manager against which to register the components
      */
-    public void registerComponents(Class< ? > testClass, ComponentManager componentManager)
+    public void registerComponents(Class<?> testClass, ComponentManager componentManager)
     {
         AllComponents allComponentsAnnotation = testClass.getAnnotation(AllComponents.class);
         if (allComponentsAnnotation != null) {
@@ -114,7 +114,7 @@ public class ComponentRegistrator
             ComponentList componentListAnnotation = testClass.getAnnotation(ComponentList.class);
             if (componentListAnnotation != null) {
                 List<ComponentDeclaration> componentDeclarations = new ArrayList<ComponentDeclaration>();
-                for (Class< ? > componentClass : componentListAnnotation.value()) {
+                for (Class<?> componentClass : componentListAnnotation.value()) {
                     componentDeclarations.add(new ComponentDeclaration(componentClass.getName()));
                 }
                 this.loader.initialize(componentManager, testClass.getClassLoader(), componentDeclarations);
@@ -124,7 +124,7 @@ public class ComponentRegistrator
 
     /**
      * Register in-memory data source for the default and "xwikiproperties" configuration sources.
-     * 
+     *
      * @param componentManager the component manager against which to register the configuration sources
      * @return the in-memory configuration source used for both default and "xwikiproperties" component hints
      * @throws Exception in case the registration fails

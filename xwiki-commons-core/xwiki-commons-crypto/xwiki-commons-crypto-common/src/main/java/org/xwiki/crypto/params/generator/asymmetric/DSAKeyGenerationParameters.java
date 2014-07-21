@@ -33,8 +33,11 @@ import org.xwiki.stability.Unstable;
 public class DSAKeyGenerationParameters implements KeyGenerationParameters
 {
     private final BigInteger p;
-    private final  BigInteger q;
-    private final  BigInteger g;
+
+    private final BigInteger q;
+
+    private final BigInteger g;
+
     private final DSAKeyValidationParameters parameters;
 
     /**
@@ -70,7 +73,7 @@ public class DSAKeyGenerationParameters implements KeyGenerationParameters
      */
     public BigInteger getP()
     {
-        return p;
+        return this.p;
     }
 
     /**
@@ -78,7 +81,7 @@ public class DSAKeyGenerationParameters implements KeyGenerationParameters
      */
     public BigInteger getQ()
     {
-        return q;
+        return this.q;
     }
 
     /**
@@ -86,7 +89,7 @@ public class DSAKeyGenerationParameters implements KeyGenerationParameters
      */
     public BigInteger getG()
     {
-        return g;
+        return this.g;
     }
 
     /**
@@ -94,6 +97,6 @@ public class DSAKeyGenerationParameters implements KeyGenerationParameters
      */
     public DSAKeyValidationParameters getValidationParameters()
     {
-        return parameters;
+        return this.parameters;
     }
 }

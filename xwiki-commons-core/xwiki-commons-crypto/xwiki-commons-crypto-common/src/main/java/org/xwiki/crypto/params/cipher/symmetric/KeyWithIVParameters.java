@@ -34,10 +34,12 @@ public class KeyWithIVParameters implements SymmetricCipherParameters
 {
     /** A encryption initialization vector. */
     private final KeyParameter keyParam;
+
     private final byte[] iv;
 
     /**
      * Initialize parameters with a random initialization vector.
+     *
      * @param key the key.
      * @param ivSize the size of the initialization vector.
      */
@@ -48,6 +50,7 @@ public class KeyWithIVParameters implements SymmetricCipherParameters
 
     /**
      * Initialize parameters.
+     *
      * @param key the key.
      * @param iv the initialization vector.
      */
@@ -58,6 +61,7 @@ public class KeyWithIVParameters implements SymmetricCipherParameters
 
     /**
      * Initialize parameters.
+     *
      * @param key the key.
      * @param ivSize the size of the initialization vector to randomize.
      * @param random the random source.
@@ -69,6 +73,7 @@ public class KeyWithIVParameters implements SymmetricCipherParameters
 
     /**
      * Initialize parameters.
+     *
      * @param key the key.
      * @param ivSize the size of the initialization vector to randomize using a new default SecureRandom.
      */
@@ -79,6 +84,7 @@ public class KeyWithIVParameters implements SymmetricCipherParameters
 
     /**
      * Initialize parameters.
+     *
      * @param key the key.
      * @param ivSize the size of the initialization vector to randomize.
      * @param random the random source.
@@ -92,6 +98,7 @@ public class KeyWithIVParameters implements SymmetricCipherParameters
 
     /**
      * Initialize parameters.
+     *
      * @param key the key.
      * @param iv the initialization vector.
      */
@@ -106,7 +113,7 @@ public class KeyWithIVParameters implements SymmetricCipherParameters
      */
     public KeyParameter getKeyParameter()
     {
-        return keyParam;
+        return this.keyParam;
     }
 
     /**
@@ -114,7 +121,7 @@ public class KeyWithIVParameters implements SymmetricCipherParameters
      */
     public byte[] getKey()
     {
-        return keyParam.getKey();
+        return this.keyParam.getKey();
     }
 
     /**
@@ -122,6 +129,6 @@ public class KeyWithIVParameters implements SymmetricCipherParameters
      */
     public byte[] getIV()
     {
-        return iv;
+        return this.iv;
     }
 }

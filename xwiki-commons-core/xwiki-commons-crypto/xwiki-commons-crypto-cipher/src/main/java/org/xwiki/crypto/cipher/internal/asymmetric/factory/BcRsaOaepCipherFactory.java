@@ -51,6 +51,6 @@ public class BcRsaOaepCipherFactory extends AbstractBcOAEPEncodedCipherFactory
     @Override
     protected SecureRandom getRandomSource()
     {
-        return random.get();
+        return this.random.get();
     }
 }

@@ -99,7 +99,6 @@ public interface Signer
      */
     byte[] generate() throws GeneralSecurityException;
 
-
     /**
      * Generate a signature for the accumulated data, including the provided buffer.
      *
@@ -113,7 +112,6 @@ public interface Signer
      * @throws GeneralSecurityException if this signing algorithm is unable to proceed properly.
      */
     byte[] generate(byte[] input) throws GeneralSecurityException;
-
 
     /**
      * Generate a signature for the accumulated data, including the part of the provided buffer.
@@ -145,7 +143,6 @@ public interface Signer
      */
     boolean verify(byte[] signature) throws GeneralSecurityException;
 
-
     /**
      * Verify the given signature against the accumulated data, including the provided buffer.
      *
@@ -160,7 +157,6 @@ public interface Signer
      * @throws GeneralSecurityException if this signing algorithm is unable to proceed properly.
      */
     boolean verify(byte[] signature, byte[] input) throws GeneralSecurityException;
-
 
     /**
      * Verify the given signature against the accumulated data, including the part of the provided buffer.

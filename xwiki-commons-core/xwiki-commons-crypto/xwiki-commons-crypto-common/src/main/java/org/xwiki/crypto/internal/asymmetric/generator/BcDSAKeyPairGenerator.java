@@ -37,7 +37,6 @@ import org.xwiki.crypto.params.generator.asymmetric.DSAKeyGenerationParameters;
 import org.xwiki.crypto.params.generator.asymmetric.DSAKeyParametersGenerationParameters;
 import org.xwiki.crypto.params.generator.asymmetric.DSAKeyValidationParameters;
 
-
 /**
  * Generate new RSA key pair.
  *
@@ -63,7 +62,7 @@ public class BcDSAKeyPairGenerator extends AbstractBcKeyPairGenerator
     @Override
     protected AsymmetricKeyFactory getFactory()
     {
-        return factory;
+        return this.factory;
     }
 
     @Override
@@ -79,7 +78,7 @@ public class BcDSAKeyPairGenerator extends AbstractBcKeyPairGenerator
 
         if (parameters instanceof DSAKeyParametersGenerationParameters) {
             keyGenParams = getDsaParameters((DSAKeyGenerationParameters)
-                parametersGenerator.generate((DSAKeyParametersGenerationParameters) parameters));
+                this.parametersGenerator.generate((DSAKeyParametersGenerationParameters) parameters));
         } else if (parameters instanceof DSAKeyGenerationParameters) {
             keyGenParams = getDsaParameters((DSAKeyGenerationParameters) parameters);
         } else {
@@ -88,13 +87,14 @@ public class BcDSAKeyPairGenerator extends AbstractBcKeyPairGenerator
         }
 
         AsymmetricCipherKeyPairGenerator generator = new DSAKeyPairGenerator();
-        generator.init(new org.bouncycastle.crypto.params.DSAKeyGenerationParameters(random.get(),
-                                                                                     keyGenParams));
+        generator.init(new org.bouncycastle.crypto.params.DSAKeyGenerationParameters(this.random.get(),
+            keyGenParams));
 
         return getKeyPair(generator.generateKeyPair());
     }
 
-    private org.bouncycastle.crypto.params.DSAParameters getDsaParameters(DSAKeyGenerationParameters parameters) {
+    private org.bouncycastle.crypto.params.DSAParameters getDsaParameters(DSAKeyGenerationParameters parameters)
+    {
         DSAKeyValidationParameters dsaValidParams = parameters.getValidationParameters();
 
         return new org.bouncycastle.crypto.params.DSAParameters(parameters.getP(), parameters.getQ(), parameters.getG(),

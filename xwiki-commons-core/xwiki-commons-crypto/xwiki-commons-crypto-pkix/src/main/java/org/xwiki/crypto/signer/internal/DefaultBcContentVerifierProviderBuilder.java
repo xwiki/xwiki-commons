@@ -59,16 +59,19 @@ public class DefaultBcContentVerifierProviderBuilder implements BcContentVerifie
     {
         return new ContentVerifierProvider()
         {
+            @Override
             public boolean hasAssociatedCertificate()
             {
                 return true;
             }
 
+            @Override
             public X509CertificateHolder getAssociatedCertificate()
             {
                 return BcUtils.getX509CertificateHolder(certificate);
             }
 
+            @Override
             public ContentVerifier get(AlgorithmIdentifier algorithm)
             {
                 return getInstance(certificate.getPublicKeyParameters(), algorithm);
@@ -81,16 +84,19 @@ public class DefaultBcContentVerifierProviderBuilder implements BcContentVerifie
     {
         return new ContentVerifierProvider()
         {
+            @Override
             public boolean hasAssociatedCertificate()
             {
                 return false;
             }
 
+            @Override
             public X509CertificateHolder getAssociatedCertificate()
             {
                 return null;
             }
 
+            @Override
             public ContentVerifier get(AlgorithmIdentifier algorithm)
             {
                 return getInstance(publicKey, algorithm);
@@ -114,7 +120,8 @@ public class DefaultBcContentVerifierProviderBuilder implements BcContentVerifie
             throw new IllegalArgumentException("Unable to encode algorithm identifier.");
         }
 
-        return new ContentVerifier() {
+        return new ContentVerifier()
+        {
             @Override
             public AlgorithmIdentifier getAlgorithmIdentifier()
             {
@@ -147,7 +154,7 @@ public class DefaultBcContentVerifierProviderBuilder implements BcContentVerifie
     protected SignerFactory getFactory(String hint)
     {
         try {
-            return manager.getInstance(SignerFactory.class, hint);
+            return this.manager.getInstance(SignerFactory.class, hint);
         } catch (ComponentLookupException e) {
             throw new UnsupportedOperationException("Signing algorithm not found.", e);
         }

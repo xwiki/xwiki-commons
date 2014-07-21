@@ -36,6 +36,7 @@ import org.xwiki.crypto.signer.param.CMSSignerVerifiedInformation;
 public class BcCMSSignerVerifiedInformation extends BcCMSSignerInfo implements CMSSignerVerifiedInformation
 {
     private final boolean verified;
+
     private final Collection<CertifiedPublicKey> chain;
 
     BcCMSSignerVerifiedInformation(SignerInformation signer, boolean verified, Collection<CertifiedPublicKey> chain)
@@ -48,12 +49,12 @@ public class BcCMSSignerVerifiedInformation extends BcCMSSignerInfo implements C
     @Override
     public boolean isVerified()
     {
-        return verified;
+        return this.verified;
     }
 
     @Override
     public Collection<CertifiedPublicKey> getCertificateChain()
     {
-        return chain;
+        return this.chain;
     }
 }

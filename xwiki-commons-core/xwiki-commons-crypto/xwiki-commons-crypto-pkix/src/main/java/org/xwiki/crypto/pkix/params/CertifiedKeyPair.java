@@ -34,6 +34,7 @@ import org.xwiki.stability.Unstable;
 public class CertifiedKeyPair
 {
     private final PrivateKeyParameters privateKey;
+
     private final CertifiedPublicKey certificate;
 
     /**
@@ -53,7 +54,7 @@ public class CertifiedKeyPair
      */
     public CertifiedPublicKey getCertificate()
     {
-        return certificate;
+        return this.certificate;
     }
 
     /**
@@ -61,7 +62,7 @@ public class CertifiedKeyPair
      */
     public PublicKeyParameters getPublicKey()
     {
-        return certificate.getPublicKeyParameters();
+        return this.certificate.getPublicKeyParameters();
     }
 
     /**
@@ -69,13 +70,14 @@ public class CertifiedKeyPair
      */
     public PrivateKeyParameters getPrivateKey()
     {
-        return privateKey;
+        return this.privateKey;
     }
 
     /**
      * @return a simple key pair.
      */
-    public AsymmetricKeyPair getKeyPair() {
+    public AsymmetricKeyPair getKeyPair()
+    {
         return new AsymmetricKeyPair(getPrivateKey(), getPublicKey());
     }
 }

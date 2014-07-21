@@ -34,11 +34,17 @@ public class DHKeyGenerationParameters implements KeyGenerationParameters
     private static final int DEFAULT_MINIMUM_LENGTH = 20;
 
     private final BigInteger p;
+
     private final BigInteger g;
+
     private final BigInteger q;
+
     private final int l;
+
     private final int m;
+
     private final BigInteger j;
+
     private final DHKeyValidationParameters parameters;
 
     /**
@@ -106,7 +112,6 @@ public class DHKeyGenerationParameters implements KeyGenerationParameters
         this(p, g, q, DEFAULT_MINIMUM_LENGTH, 0, j, parameters);
     }
 
-
     /**
      * Initialize DH parameters.
      *
@@ -135,7 +140,7 @@ public class DHKeyGenerationParameters implements KeyGenerationParameters
      */
     public BigInteger getP()
     {
-        return p;
+        return this.p;
     }
 
     /**
@@ -143,7 +148,7 @@ public class DHKeyGenerationParameters implements KeyGenerationParameters
      */
     public BigInteger getG()
     {
-        return g;
+        return this.g;
     }
 
     /**
@@ -151,7 +156,7 @@ public class DHKeyGenerationParameters implements KeyGenerationParameters
      */
     public BigInteger getQ()
     {
-        return q;
+        return this.q;
     }
 
     /**
@@ -159,7 +164,7 @@ public class DHKeyGenerationParameters implements KeyGenerationParameters
      */
     public int getM()
     {
-        return m;
+        return this.m;
     }
 
     /**
@@ -167,7 +172,7 @@ public class DHKeyGenerationParameters implements KeyGenerationParameters
      */
     public int getL()
     {
-        return l;
+        return this.l;
     }
 
     /**
@@ -175,7 +180,7 @@ public class DHKeyGenerationParameters implements KeyGenerationParameters
      */
     public BigInteger getJ()
     {
-        return j;
+        return this.j;
     }
 
     /**
@@ -183,7 +188,7 @@ public class DHKeyGenerationParameters implements KeyGenerationParameters
      */
     public DHKeyValidationParameters getValidationParameters()
     {
-        return parameters;
+        return this.parameters;
     }
 
     private static int getDefaultM(int l)

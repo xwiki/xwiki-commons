@@ -76,7 +76,6 @@ public interface KeyStore
      */
     CertifiedKeyPair retrieve(StoreReference store, byte[] password) throws KeyStoreException;
 
-
     /**
      * Retrieve the certified key pair from a given store that match the given certificate.
      *

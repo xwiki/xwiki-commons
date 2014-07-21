@@ -33,6 +33,7 @@ import org.xwiki.stability.Unstable;
 public class PssSignerParameters implements AsymmetricCipherParameters
 {
     private final AsymmetricKeyParameters keyParams;
+
     private final PssParameters pssParams;
 
     /**
@@ -95,7 +96,7 @@ public class PssSignerParameters implements AsymmetricCipherParameters
      */
     public AsymmetricKeyParameters getKeyParameters()
     {
-        return keyParams;
+        return this.keyParams;
     }
 
     /**
@@ -103,6 +104,6 @@ public class PssSignerParameters implements AsymmetricCipherParameters
      */
     public PssParameters getPssParameters()
     {
-        return pssParams;
+        return this.pssParams;
     }
 }

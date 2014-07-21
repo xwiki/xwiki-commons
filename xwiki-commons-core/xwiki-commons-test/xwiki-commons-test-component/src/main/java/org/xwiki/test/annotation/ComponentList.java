@@ -44,7 +44,7 @@ public @interface ComponentList
      * @return
      */
     // TODO: I would have liked to put the following documentation in the @return javadoc annotation above:
-    // " the list of component implementation classes for components to register". But Checkstyle is buggy, see:
-    // http://sourceforge.net/tracker/?func=detail&atid=397078&aid=2685184&group_id=29721
-    Class< ? >[] value() default { };
+    // " the list of component implementation classes for components to register".
+    // But Checkstyle is buggy, see: http://sourceforge.net/tracker/?func=detail&atid=397078&aid=2685184&group_id=29721
+    Class<?>[] value() default { };
 }

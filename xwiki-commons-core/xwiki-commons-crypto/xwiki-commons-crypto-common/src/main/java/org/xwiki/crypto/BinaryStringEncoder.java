@@ -61,10 +61,11 @@ public interface BinaryStringEncoder
      * @param wrapAt maximum length of a line.
      * @return a filtered output stream based on this encoder.
      */
-    FilterOutputStream getEncoderOutputStream(OutputStream os,  int wrapAt);
+    FilterOutputStream getEncoderOutputStream(OutputStream os, int wrapAt);
 
     /**
      * Encode input with this encoder and without any wrapping.
+     *
      * @param input a byte array.
      * @return a string representing the encoded byte array.
      * @throws IOException on error.
@@ -73,6 +74,7 @@ public interface BinaryStringEncoder
 
     /**
      * Encode input with this encoder, wrapping line at a fixed length.
+     *
      * @param input a byte array.
      * @param wrapAt maximum length of a line.
      * @return a string representing the encoded byte array.
@@ -82,6 +84,7 @@ public interface BinaryStringEncoder
 
     /**
      * Encode input with this encoder and without any wrapping.
+     *
      * @param input a byte array.
      * @param off offset to start with in the byte array.
      * @param len to encode in the byte array.
@@ -92,10 +95,11 @@ public interface BinaryStringEncoder
 
     /**
      * Encode input with this encoder, wrapping line at a fixed length.
+     *
      * @param input a byte array.
      * @param off offset to start with in the byte array.
      * @param len to encode in the byte array.
-     * @param  wrapAt maximum length of a line.
+     * @param wrapAt maximum length of a line.
      * @return a string representing the encoded byte array.
      * @throws IOException on error.
      */
@@ -103,6 +107,7 @@ public interface BinaryStringEncoder
 
     /**
      * Decode input string to bytes, whitespace and line-feed are ignored.
+     *
      * @param input a string to decode.
      * @return a bytes array.
      * @throws IOException on error.

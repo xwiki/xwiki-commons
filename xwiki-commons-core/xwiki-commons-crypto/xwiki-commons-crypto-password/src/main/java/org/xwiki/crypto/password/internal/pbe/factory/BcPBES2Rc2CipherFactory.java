@@ -31,10 +31,10 @@ import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.RC2CBCParameter;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.crypto.cipher.CipherFactory;
-import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.params.cipher.symmetric.KeyParameter;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
 import org.xwiki.crypto.params.cipher.symmetric.RC2KeyParameters;
+import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.password.KeyDerivationFunction;
 import org.xwiki.crypto.password.PasswordBasedCipher;
 import org.xwiki.crypto.password.internal.pbe.AbstractBcPBES2Cipher;
@@ -57,7 +57,7 @@ public class BcPBES2Rc2CipherFactory extends AbstractBcPBES2CipherFactory
     @Override
     protected CipherFactory getCipherFactory()
     {
-        return cipherFactory;
+        return this.cipherFactory;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class BcPBES2Rc2CipherFactory extends AbstractBcPBES2CipherFactory
         } else if (password instanceof RC2KeyParameters) {
             params = kdf.derive(((KeyParameter) password).getKey(), getIVSize());
             params = new KeyWithIVParameters(new RC2KeyParameters(params.getKey(),
-                                                ((RC2KeyParameters) password).getEffectiveBits()), params.getIV());
+                ((RC2KeyParameters) password).getEffectiveBits()), params.getIV());
         } else if (password instanceof KeyParameter) {
             params = kdf.derive(((KeyParameter) password).getKey(), getIVSize());
         } else {
@@ -153,7 +153,7 @@ public class BcPBES2Rc2CipherFactory extends AbstractBcPBES2CipherFactory
             keySize = keyParams.getKey().length * 8;
         }
 
-        switch(keySize) {
+        switch (keySize) {
             case 40:
                 return 160;
             case 64:
@@ -186,8 +186,9 @@ public class BcPBES2Rc2CipherFactory extends AbstractBcPBES2CipherFactory
         return new KeyWithIVParameters(keyParam, rc2Params.getIV());
     }
 
-    private int getRC2EffectiveBits(int version) {
-        switch(version) {
+    private int getRC2EffectiveBits(int version)
+    {
+        switch (version) {
             case 160:
                 return 40;
             case 120:

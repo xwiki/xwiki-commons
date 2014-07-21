@@ -45,12 +45,12 @@ public @interface MockingRequirement
      * @return the Component implementation class
      * @since 4.2M3
      */
-    Class< ? > value();
+    Class<?> value();
 
     /**
      * @return the role if the component implementation implements several roles
      */
-    Class< ? > role() default Object.class;
+    Class<?> role() default Object.class;
 
     /**
      * @return the hint if the component implementation has several roles
@@ -60,5 +60,5 @@ public @interface MockingRequirement
     /**
      * @return a list of component roles for classes that shouldn't be mocked
      */
-    Class< ? >[] exceptions() default { };
+    Class<?>[] exceptions() default {};
 }

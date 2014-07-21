@@ -68,7 +68,8 @@ public class DefaultKeyDerivationFunctionFactory extends AbstractBcKDFFactory
     }
 
     @Override
-    public KeyDerivationFunction getInstance(ASN1Encodable parameters) {
+    public KeyDerivationFunction getInstance(ASN1Encodable parameters)
+    {
         KeyDerivationFunc func = KeyDerivationFunc.getInstance(parameters);
         return getBcInstance(getFactory(func.getAlgorithm().getId()), func);
     }
@@ -84,7 +85,7 @@ public class DefaultKeyDerivationFunctionFactory extends AbstractBcKDFFactory
     private KeyDerivationFunctionFactory getFactory(String hint)
     {
         try {
-            return manager.getInstance(KeyDerivationFunctionFactory.class, hint);
+            return this.manager.getInstance(KeyDerivationFunctionFactory.class, hint);
         } catch (ComponentLookupException e) {
             throw new UnsupportedOperationException("Key derivation function algorithm not found.", e);
         }

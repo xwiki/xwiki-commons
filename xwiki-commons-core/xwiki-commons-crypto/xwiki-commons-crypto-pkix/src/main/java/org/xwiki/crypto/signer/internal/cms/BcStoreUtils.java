@@ -139,7 +139,7 @@ public final class BcStoreUtils
     @SuppressWarnings("unchecked")
     private static Collection<X509CertificateHolder> getCertificates(Store store)
     {
-        return (Collection<X509CertificateHolder>) store.getMatches(null);
+        return store.getMatches(null);
     }
 
     /**

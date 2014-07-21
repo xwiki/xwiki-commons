@@ -31,7 +31,8 @@ import org.xwiki.stability.Unstable;
 public class DSAKeyValidationParameters extends DHKeyValidationParameters
 {
     /** Definition of the usage of the key for FIPS186.3. */
-    public enum Usage {
+    public enum Usage
+    {
         /** Digital signature usage. */
         DIGITAL_SIGNATURE,
 
@@ -73,6 +74,6 @@ public class DSAKeyValidationParameters extends DHKeyValidationParameters
      */
     public Usage getUsage()
     {
-        return usage;
+        return this.usage;
     }
 }

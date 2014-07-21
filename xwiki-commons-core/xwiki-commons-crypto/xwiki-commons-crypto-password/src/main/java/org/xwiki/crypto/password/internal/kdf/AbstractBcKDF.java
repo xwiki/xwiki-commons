@@ -38,12 +38,14 @@ public abstract class AbstractBcKDF implements KeyDerivationFunction
     public abstract KeyDerivationFunc getKeyDerivationFunction();
 
     @Override
-    public int getKeySize() {
+    public int getKeySize()
+    {
         return isKeySizeOverwritten() ? this.keySize : getParameters().getKeySize();
     }
 
     @Override
-    public void overrideKeySize(int keySize) {
+    public void overrideKeySize(int keySize)
+    {
         this.keySize = keySize;
     }
 

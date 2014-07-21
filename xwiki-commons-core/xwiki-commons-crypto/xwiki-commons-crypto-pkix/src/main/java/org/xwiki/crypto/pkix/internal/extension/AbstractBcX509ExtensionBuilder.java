@@ -44,7 +44,7 @@ public abstract class AbstractBcX509ExtensionBuilder implements X509ExtensionBui
     @Override
     public X509ExtensionBuilder addExtension(String oid, boolean critical, byte[] value) throws IOException
     {
-        extensions.addExtension(new ASN1ObjectIdentifier(oid), critical, value);
+        this.extensions.addExtension(new ASN1ObjectIdentifier(oid), critical, value);
         return this;
     }
 
@@ -63,12 +63,12 @@ public abstract class AbstractBcX509ExtensionBuilder implements X509ExtensionBui
             while (oids.hasMoreElements()) {
                 ASN1ObjectIdentifier oid = oids.nextElement();
                 Extension ext = exts.getExtension(oid);
-                extensions.addExtension(ext.getExtnId(), ext.isCritical(), ext.getParsedValue());
+                this.extensions.addExtension(ext.getExtnId(), ext.isCritical(), ext.getParsedValue());
             }
         } else {
             // Fallback
             for (String oid : extensionSet.getExtensionOID()) {
-                extensions.addExtension(new ASN1ObjectIdentifier(oid), extensionSet.isCritical(oid),
+                this.extensions.addExtension(new ASN1ObjectIdentifier(oid), extensionSet.isCritical(oid),
                     extensionSet.getExtensionValue(oid));
             }
         }
@@ -86,7 +86,7 @@ public abstract class AbstractBcX509ExtensionBuilder implements X509ExtensionBui
     public X509ExtensionBuilder addExtension(ASN1ObjectIdentifier oid, boolean critical, ASN1Encodable value)
     {
         try {
-            extensions.addExtension(oid, critical, value.toASN1Primitive().getEncoded(ASN1Encoding.DER));
+            this.extensions.addExtension(oid, critical, value.toASN1Primitive().getEncoded(ASN1Encoding.DER));
         } catch (IOException e) {
             // Very unlikely
             throw new IllegalArgumentException("Invalid extension value, it could not be properly DER encoded.");
@@ -97,15 +97,15 @@ public abstract class AbstractBcX509ExtensionBuilder implements X509ExtensionBui
     @Override
     public X509Extensions build()
     {
-        if (extensions.isEmpty()) {
+        if (this.extensions.isEmpty()) {
             return null;
         }
-        return new BcX509Extensions(extensions.generate());
+        return new BcX509Extensions(this.extensions.generate());
     }
 
     @Override
     public boolean isEmpty()
     {
-        return extensions.isEmpty();
+        return this.extensions.isEmpty();
     }
 }

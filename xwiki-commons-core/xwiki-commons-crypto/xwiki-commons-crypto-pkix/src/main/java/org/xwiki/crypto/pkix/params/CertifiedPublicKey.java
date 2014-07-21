@@ -51,6 +51,7 @@ public interface CertifiedPublicKey
 
     /**
      * Check that the key has been certified by the private key associated with the given public key.
+     *
      * @param publicKey the public key of the signer.
      * @return true if the signature is verified.
      * @throws GeneralSecurityException if the signing algorithm is unable to proceed properly.

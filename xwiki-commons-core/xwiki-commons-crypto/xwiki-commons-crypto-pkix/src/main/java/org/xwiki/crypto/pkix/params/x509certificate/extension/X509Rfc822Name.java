@@ -37,6 +37,7 @@ import org.xwiki.stability.Unstable;
 public class X509Rfc822Name implements X509StringGeneralName, BcGeneralName
 {
     private final String str;
+
     private final InternetAddress addr;
 
     /**
@@ -90,18 +91,18 @@ public class X509Rfc822Name implements X509StringGeneralName, BcGeneralName
      */
     public InternetAddress getAddress()
     {
-        return addr;
+        return this.addr;
     }
 
     @Override
     public String getName()
     {
-        return str;
+        return this.str;
     }
 
     @Override
     public GeneralName getGeneralName()
     {
-        return new GeneralName(GeneralName.rfc822Name, str);
+        return new GeneralName(GeneralName.rfc822Name, this.str);
     }
 }

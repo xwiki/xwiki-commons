@@ -24,8 +24,8 @@ import javax.inject.Named;
 import org.bouncycastle.crypto.BlockCipher;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.crypto.cipher.CipherFactory;
-import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.params.cipher.symmetric.KeyParameter;
+import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 
 /**
  * Abstract base class for a Symmetric Cipher Factory of Bouncy Castle cipher.
@@ -47,6 +47,7 @@ public abstract class AbstractBcSymmetricCipherFactory implements CipherFactory
 
     /**
      * Helper function to create supported key size arrays.
+     *
      * @param minSize minimum size supported.
      * @param maxSize maximum size supported.
      * @param step intermediate step supported.
@@ -103,7 +104,8 @@ public abstract class AbstractBcSymmetricCipherFactory implements CipherFactory
         return false;
     }
 
-    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter) {
+    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter)
+    {
         return new org.bouncycastle.crypto.params.KeyParameter(parameter.getKey());
     }
 }

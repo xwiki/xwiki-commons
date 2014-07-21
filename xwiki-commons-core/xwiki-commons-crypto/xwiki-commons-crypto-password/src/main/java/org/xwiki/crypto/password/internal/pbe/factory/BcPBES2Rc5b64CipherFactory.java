@@ -47,6 +47,6 @@ public class BcPBES2Rc5b64CipherFactory extends AbstractBcPBES2Rc5CipherFactory
     @Override
     protected CipherFactory getCipherFactory()
     {
-        return cipherFactory;
+        return this.cipherFactory;
     }
 }

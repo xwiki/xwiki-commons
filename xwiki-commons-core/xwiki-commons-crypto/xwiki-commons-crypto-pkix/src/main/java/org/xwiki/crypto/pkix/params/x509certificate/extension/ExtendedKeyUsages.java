@@ -36,39 +36,28 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public class ExtendedKeyUsages
 {
-    /**
-     * OID of ExtendedKeyUsage.
-     */
+    /** OID of ExtendedKeyUsage. */
     public static final String OID = Extension.extendedKeyUsage.getId();
 
-    /**
-     * { 2 5 29 37 0 }.
-     */
+    /** { 2 5 29 37 0 }. */
     public static final String ANY_EXTENDED_KEY_USAGE = "2.5.29.37.0";
 
-    /**
-     * Server authentication { 1 3 6 1 5 5 7 3 1 }.
-     */
+    /** Server authentication { 1 3 6 1 5 5 7 3 1 }. */
     public static final String SERVER_AUTH = "1.3.6.1.5.5.7.3.1";
-    /**
-     * Client authentication { 1 3 6 1 5 5 7 3 2 }.
-     */
+
+    /** Client authentication { 1 3 6 1 5 5 7 3 2 }. */
     public static final String CLIENT_AUTH = "1.3.6.1.5.5.7.3.2";
-    /**
-     * Code signing { 1 3 6 1 5 5 7 3 3 }.
-     */
+
+    /** Code signing { 1 3 6 1 5 5 7 3 3 }. */
     public static final String CODE_SIGNING = "1.3.6.1.5.5.7.3.3";
-    /**
-     * Email protection { 1 3 6 1 5 5 7 3 4 }.
-     */
+
+    /** Email protection { 1 3 6 1 5 5 7 3 4 }. */
     public static final String EMAIL_PROTECTION = "1.3.6.1.5.5.7.3.4";
-    /**
-     * Timestamping { 1 3 6 1 5 5 7 3 8 }.
-     */
+
+    /** Timestamping { 1 3 6 1 5 5 7 3 8 }. */
     public static final String TIME_STAMPING = "1.3.6.1.5.5.7.3.8";
-    /**
-     * OCSP Signing { 1 3 6 1 5 5 7 3 9 }.
-     */
+
+    /** OCSP Signing { 1 3 6 1 5 5 7 3 9 }. */
     public static final String OCSP_SIGNING = "1.3.6.1.5.5.7.3.9";
 
     private Set<String> usages = new HashSet<String>();
@@ -101,7 +90,7 @@ public class ExtendedKeyUsages
      */
     public boolean hasUsage(String usage)
     {
-        return usages.contains(usage);
+        return this.usages.contains(usage);
     }
 
     /**
@@ -109,7 +98,7 @@ public class ExtendedKeyUsages
      */
     public Set<String> getAll()
     {
-        return Collections.unmodifiableSet(usages);
+        return Collections.unmodifiableSet(this.usages);
     }
 
     /**
@@ -117,6 +106,6 @@ public class ExtendedKeyUsages
      */
     public boolean isEmpty()
     {
-        return usages.isEmpty();
+        return this.usages.isEmpty();
     }
 }

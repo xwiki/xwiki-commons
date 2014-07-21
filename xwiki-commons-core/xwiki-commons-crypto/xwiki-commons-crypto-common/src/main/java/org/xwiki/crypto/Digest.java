@@ -74,12 +74,14 @@ public interface Digest
 
     /**
      * Continues a multiple-part digest operation, processing another data part.
+     *
      * @param input the input buffer.
      */
     void update(byte[] input);
 
     /**
      * Continues a multiple-part digest operation, processing another data part.
+     *
      * @param input the input buffer.
      * @param inputOffset the offset in input where the input starts.
      * @param inputLen the input length.
@@ -95,7 +97,6 @@ public interface Digest
      */
     byte[] digest();
 
-
     /**
      * Finishes a multiple-part digest operation, and produce the resulting digest.
      *
@@ -105,7 +106,6 @@ public interface Digest
      * @return a new buffer with the resulting digest.
      */
     byte[] digest(byte[] input);
-
 
     /**
      * Finishes a multiple-part digest operation, and produce the resulting digest.

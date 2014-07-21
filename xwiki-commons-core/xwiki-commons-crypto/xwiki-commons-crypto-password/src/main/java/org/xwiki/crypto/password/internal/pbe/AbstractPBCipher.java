@@ -41,12 +41,13 @@ import org.xwiki.crypto.password.PasswordBasedCipher;
 public abstract class AbstractPBCipher implements PasswordBasedCipher
 {
     private KeyDerivationFunction kdf;
+
     private SymmetricCipherParameters parameters;
+
     private Cipher cipher;
 
     /**
-     * New PBE Cipher instance, that wrap the cipher created using the given key derivation function and
-     * parameters.
+     * New PBE Cipher instance, that wrap the cipher created using the given key derivation function and parameters.
      *
      * @param cipher the cipher to wrap.
      * @param kdf the key derivation function used to derive the key of this cipher.
@@ -74,66 +75,66 @@ public abstract class AbstractPBCipher implements PasswordBasedCipher
     @Override
     public String getAlgorithmName()
     {
-        return cipher.getAlgorithmName();
+        return this.cipher.getAlgorithmName();
     }
 
     @Override
     public int getInputBlockSize()
     {
-        return cipher.getInputBlockSize();
+        return this.cipher.getInputBlockSize();
     }
 
     @Override
     public int getOutputBlockSize()
     {
-        return cipher.getOutputBlockSize();
+        return this.cipher.getOutputBlockSize();
     }
 
     @Override
     public FilterInputStream getInputStream(InputStream is)
     {
-        return cipher.getInputStream(is);
+        return this.cipher.getInputStream(is);
     }
 
     @Override
     public FilterOutputStream getOutputStream(OutputStream os)
     {
-        return cipher.getOutputStream(os);
+        return this.cipher.getOutputStream(os);
     }
 
     @Override
     public boolean isForEncryption()
     {
-        return cipher.isForEncryption();
+        return this.cipher.isForEncryption();
     }
 
     @Override
     public byte[] update(byte[] input)
     {
-        return cipher.update(input);
+        return this.cipher.update(input);
     }
 
     @Override
     public byte[] update(byte[] input, int inputOffset, int inputLen)
     {
-        return cipher.update(input, inputOffset, inputLen);
+        return this.cipher.update(input, inputOffset, inputLen);
     }
 
     @Override
     public byte[] doFinal() throws GeneralSecurityException
     {
-        return cipher.doFinal();
+        return this.cipher.doFinal();
     }
 
     @Override
     public byte[] doFinal(byte[] input) throws GeneralSecurityException
     {
-        return cipher.doFinal(input);
+        return this.cipher.doFinal(input);
     }
 
     @Override
     public byte[] doFinal(byte[] input, int inputOffset, int inputLen) throws GeneralSecurityException
     {
-        return cipher.doFinal(input, inputOffset, inputLen);
+        return this.cipher.doFinal(input, inputOffset, inputLen);
     }
 }

@@ -34,7 +34,7 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public interface CMSSignerVerifiedInformation extends CMSSignerInfo
 {
-     /**
+    /**
      * @return true if the signature is verified against the data.
      */
     boolean isVerified();

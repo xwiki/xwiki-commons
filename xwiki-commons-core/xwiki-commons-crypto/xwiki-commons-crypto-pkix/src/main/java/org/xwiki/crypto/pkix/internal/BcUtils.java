@@ -166,7 +166,6 @@ public final class BcUtils
         return id1.getParameters().equals(id2.getParameters());
     }
 
-
     /**
      * DER encode an ASN.1 object into the given signer and return the signer.
      *

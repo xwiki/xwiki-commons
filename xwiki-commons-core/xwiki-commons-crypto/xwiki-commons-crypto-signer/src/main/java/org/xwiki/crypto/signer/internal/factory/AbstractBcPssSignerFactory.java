@@ -92,7 +92,7 @@ public abstract class AbstractBcPssSignerFactory extends AbstractBcSignerFactory
     protected BcDigestFactory getDigestFactory(String hint)
     {
         try {
-            DigestFactory factory = manager.getInstance(DigestFactory.class, hint);
+            DigestFactory factory = this.manager.getInstance(DigestFactory.class, hint);
 
             if (!(factory instanceof BcDigestFactory)) {
                 throw new IllegalArgumentException(

@@ -24,8 +24,8 @@ import java.io.IOException;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.pkcs.KeyDerivationFunc;
 import org.bouncycastle.crypto.generators.SCrypt;
-import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
 import org.xwiki.crypto.params.cipher.symmetric.KeyParameter;
+import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
 import org.xwiki.crypto.password.params.KeyDerivationFunctionParameters;
 import org.xwiki.crypto.password.params.ScryptParameters;
 
@@ -44,6 +44,7 @@ public class BcScryptKDF extends AbstractBcKDF
 
     /**
      * Construct a new SCrypt key derivation function.
+     *
      * @param parameters the parameter for initializing the generator.
      */
     public BcScryptKDF(ScryptParameters parameters)
@@ -54,35 +55,35 @@ public class BcScryptKDF extends AbstractBcKDF
     /**
      * @return an ASN.1 representation of the key derivation function parameters.
      */
+    @Override
     public KeyDerivationFunc getKeyDerivationFunction()
     {
         return new KeyDerivationFunc(ALG_ID,
-            new ScryptKDFParams(parameters.getSalt(), parameters.getCostParameter(), parameters.getBlockSize(),
-                parameters.getParallelizationParameter(), parameters.getKeySize())
-        );
+            new ScryptKDFParams(this.parameters.getSalt(), this.parameters.getCostParameter(),
+                this.parameters.getBlockSize(),
+                this.parameters.getParallelizationParameter(), this.parameters.getKeySize()));
     }
 
     @Override
     public KeyDerivationFunctionParameters getParameters()
     {
-        return parameters;
+        return this.parameters;
     }
 
     @Override
     public KeyParameter derive(byte[] password)
     {
         return new KeyParameter(
-            SCrypt.generate(password, parameters.getSalt(), parameters.getCostParameter(),
-                parameters.getBlockSize(), parameters.getParallelizationParameter(), getKeySize())
-        );
+            SCrypt.generate(password, this.parameters.getSalt(), this.parameters.getCostParameter(),
+                this.parameters.getBlockSize(), this.parameters.getParallelizationParameter(), getKeySize()));
     }
 
     @Override
     public KeyWithIVParameters derive(byte[] password, int ivSize)
     {
         int keySize = getKeySize();
-        byte[] keyIV = SCrypt.generate(password, parameters.getSalt(), parameters.getCostParameter(),
-            parameters.getBlockSize(), parameters.getParallelizationParameter(), keySize + ivSize);
+        byte[] keyIV = SCrypt.generate(password, this.parameters.getSalt(), this.parameters.getCostParameter(),
+            this.parameters.getBlockSize(), this.parameters.getParallelizationParameter(), keySize + ivSize);
 
         byte[] key = new byte[keySize];
         System.arraycopy(keyIV, 0, key, 0, keySize);

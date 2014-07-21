@@ -37,7 +37,9 @@ import org.xwiki.stability.Unstable;
 public class CMSSignedDataGeneratorParameters
 {
     private Collection<CMSSignerInfo> signatures = new ArrayList<CMSSignerInfo>();
+
     private Collection<CertifyingSigner> signers = new ArrayList<CertifyingSigner>();
+
     private Collection<CertifiedPublicKey> certificates = new ArrayList<CertifiedPublicKey>();
 
     /**
@@ -48,7 +50,7 @@ public class CMSSignedDataGeneratorParameters
      */
     public CMSSignedDataGeneratorParameters addSignature(CMSSignerInfo signer)
     {
-        signatures.add(signer);
+        this.signatures.add(signer);
         return this;
     }
 
@@ -60,7 +62,7 @@ public class CMSSignedDataGeneratorParameters
      */
     public CMSSignedDataGeneratorParameters addSigner(CertifyingSigner signer)
     {
-        signers.add(signer);
+        this.signers.add(signer);
         return this;
     }
 
@@ -72,7 +74,7 @@ public class CMSSignedDataGeneratorParameters
      */
     public CMSSignedDataGeneratorParameters addSignatures(Collection<CMSSignerInfo> signers)
     {
-        signatures.addAll(signers);
+        this.signatures.addAll(signers);
         return this;
     }
 
@@ -96,7 +98,7 @@ public class CMSSignedDataGeneratorParameters
      */
     public CMSSignedDataGeneratorParameters addCertificate(CertifiedPublicKey certificate)
     {
-        certificates.add(certificate);
+        this.certificates.add(certificate);
         return this;
     }
 
@@ -117,7 +119,7 @@ public class CMSSignedDataGeneratorParameters
      */
     public Collection<CertifiedPublicKey> getCertificates()
     {
-        return certificates;
+        return this.certificates;
     }
 
     /**
@@ -125,7 +127,7 @@ public class CMSSignedDataGeneratorParameters
      */
     public Collection<CMSSignerInfo> getSignatures()
     {
-        return signatures;
+        return this.signatures;
     }
 
     /**
@@ -133,6 +135,6 @@ public class CMSSignedDataGeneratorParameters
      */
     public Collection<CertifyingSigner> getSigners()
     {
-        return signers;
+        return this.signers;
     }
 }

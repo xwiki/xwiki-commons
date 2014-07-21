@@ -73,6 +73,6 @@ public class X509GenericName implements X509GeneralName, BcGeneralName
     @Override
     public GeneralName getGeneralName()
     {
-        return name;
+        return this.name;
     }
 }

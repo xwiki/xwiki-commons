@@ -32,6 +32,7 @@ public interface InternalBinaryStringEncoder
 {
     /**
      * Encode the given buffer area to the given output stream.
+     *
      * @param buffer buffer to encode.
      * @param offset offset in the buffer to start from.
      * @param length len of the area to encode from the buffer.
@@ -43,6 +44,7 @@ public interface InternalBinaryStringEncoder
 
     /**
      * Decode the given buffer area to the given input stream.
+     *
      * @param buffer buffer to decode.
      * @param offset offset in the buffer to start from.
      * @param length len of the area to decode from the buffer.
@@ -54,6 +56,7 @@ public interface InternalBinaryStringEncoder
 
     /**
      * Check is the given byte is a valid byte of encoded data.
+     *
      * @param b byte to check.
      * @return true if the byte is a valid encoded data.
      */

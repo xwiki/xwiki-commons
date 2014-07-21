@@ -33,11 +33,14 @@ import org.bouncycastle.util.encoders.Encoder;
 public abstract class AbstractBouncyCastleInternalBinaryStringEncoder implements InternalBinaryStringEncoder
 {
     private final Encoder encoder;
+
     private final int blockSize;
+
     private final int charSize;
 
     /**
      * Create a wrapper over the given encoder, providing size methods.
+     *
      * @param encoder the bouncy castle encoder.
      * @param blockSize the blocksize to report for encoding.
      * @param charSize the blocksize to report for decoding.
@@ -52,24 +55,24 @@ public abstract class AbstractBouncyCastleInternalBinaryStringEncoder implements
     @Override
     public int encode(byte[] buffer, int offset, int length, OutputStream outputStream) throws IOException
     {
-        return encoder.encode(buffer, offset, length, outputStream);
+        return this.encoder.encode(buffer, offset, length, outputStream);
     }
 
     @Override
     public int decode(byte[] buffer, int offset, int length, OutputStream outputStream) throws IOException
     {
-        return encoder.decode(buffer, offset, length, outputStream);
+        return this.encoder.decode(buffer, offset, length, outputStream);
     }
 
     @Override
     public int getEncodingBlockSize()
     {
-        return blockSize;
+        return this.blockSize;
     }
 
     @Override
     public int getDecodingBlockSize()
     {
-        return charSize;
+        return this.charSize;
     }
 }

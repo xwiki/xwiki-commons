@@ -35,10 +35,12 @@ public class AsymmetricKeyWithIVParameters implements AsymmetricCipherParameters
 {
     /** A encryption initialization vector. */
     private final AsymmetricKeyParameter keyParam;
+
     private final byte[] iv;
 
     /**
      * Initialize parameters.
+     *
      * @param key the key.
      * @param iv the initialization vector.
      */
@@ -50,6 +52,7 @@ public class AsymmetricKeyWithIVParameters implements AsymmetricCipherParameters
 
     /**
      * Initialize parameters with a random initialization vector.
+     *
      * @param key the key.
      * @param ivSize the size of the initialization vector to randomize using a new default SecureRandom.
      */
@@ -60,9 +63,10 @@ public class AsymmetricKeyWithIVParameters implements AsymmetricCipherParameters
 
     /**
      * Initialize parameters with a random initialization vector.
+     *
      * @param key the key.
      * @param ivSize the size of the initialization vector to randomize.
-     * * @param random the random source.
+     * @param random the random source.
      */
     public AsymmetricKeyWithIVParameters(AsymmetricKeyParameter key, int ivSize, SecureRandom random)
     {
@@ -76,7 +80,7 @@ public class AsymmetricKeyWithIVParameters implements AsymmetricCipherParameters
      */
     public AsymmetricKeyParameter getKeyParameters()
     {
-        return keyParam;
+        return this.keyParam;
     }
 
     /**
@@ -84,6 +88,6 @@ public class AsymmetricKeyWithIVParameters implements AsymmetricCipherParameters
      */
     public byte[] getIV()
     {
-        return iv;
+        return this.iv;
     }
 }

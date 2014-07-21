@@ -42,6 +42,7 @@ public class PBES2Parameters
     implements PKCSObjectIdentifiers
 {
     private KeyDerivationFunc func;
+
     private EncryptionScheme scheme;
 
     /**
@@ -63,16 +64,17 @@ public class PBES2Parameters
      */
     private PBES2Parameters(ASN1Sequence seq)
     {
-        Enumeration e = seq.getObjects();
-        ASN1Sequence  funcSeq = ASN1Sequence.getInstance(((ASN1Encodable) e.nextElement()).toASN1Primitive());
+        @SuppressWarnings("unchecked")
+        Enumeration<ASN1Encodable> e = seq.getObjects();
+        ASN1Sequence funcSeq = ASN1Sequence.getInstance(e.nextElement().toASN1Primitive());
 
         if (funcSeq.getObjectAt(0).equals(id_PBKDF2)) {
-            func = new KeyDerivationFunc(id_PBKDF2, PBKDF2Params.getInstance(funcSeq.getObjectAt(1)));
+            this.func = new KeyDerivationFunc(id_PBKDF2, PBKDF2Params.getInstance(funcSeq.getObjectAt(1)));
         } else {
-            func = KeyDerivationFunc.getInstance(funcSeq);
+            this.func = KeyDerivationFunc.getInstance(funcSeq);
         }
 
-        scheme = EncryptionScheme.getInstance(e.nextElement());
+        this.scheme = EncryptionScheme.getInstance(e.nextElement());
     }
 
     /**
@@ -88,7 +90,7 @@ public class PBES2Parameters
         }
         if (obj instanceof org.bouncycastle.asn1.pkcs.PBES2Parameters) {
             return new PBES2Parameters(((org.bouncycastle.asn1.pkcs.PBES2Parameters) obj).getKeyDerivationFunc(),
-                                       ((org.bouncycastle.asn1.pkcs.PBES2Parameters) obj).getEncryptionScheme());
+                ((org.bouncycastle.asn1.pkcs.PBES2Parameters) obj).getEncryptionScheme());
         }
         if (obj != null) {
             return new PBES2Parameters(ASN1Sequence.getInstance(obj));
@@ -101,7 +103,7 @@ public class PBES2Parameters
      */
     public KeyDerivationFunc getKeyDerivationFunc()
     {
-        return func;
+        return this.func;
     }
 
     /**
@@ -109,18 +111,19 @@ public class PBES2Parameters
      */
     public EncryptionScheme getEncryptionScheme()
     {
-        return scheme;
+        return this.scheme;
     }
 
     /**
      * @return the underlying primitive type.
      */
+    @Override
     public ASN1Primitive toASN1Primitive()
     {
         ASN1EncodableVector v = new ASN1EncodableVector();
 
-        v.add(func);
-        v.add(scheme);
+        v.add(this.func);
+        v.add(this.scheme);
 
         return new DERSequence(v);
     }

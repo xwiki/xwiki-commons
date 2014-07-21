@@ -39,10 +39,11 @@ public class DistinguishedName implements PrincipalIndentifier, BcPrincipalIdent
 
     /**
      * Create a new distinguished name.
+     *
      * @param name the DN name like in "CN=Common Name, O=Organisation"
-
      */
-    public DistinguishedName(Object name) {
+    public DistinguishedName(Object name)
+    {
         if (name instanceof String) {
             this.dn = new X500Name((String) name);
         } else {
@@ -53,13 +54,13 @@ public class DistinguishedName implements PrincipalIndentifier, BcPrincipalIdent
     @Override
     public byte[] getEncoded() throws IOException
     {
-        return dn.getEncoded();
+        return this.dn.getEncoded();
     }
 
     @Override
     public String getName()
     {
-        return dn.toString();
+        return this.dn.toString();
     }
 
     // BcPrincipalIdentifier internal interface
@@ -67,7 +68,7 @@ public class DistinguishedName implements PrincipalIndentifier, BcPrincipalIdent
     @Override
     public X500Name getX500Name()
     {
-        return dn;
+        return this.dn;
     }
 
     @Override
@@ -93,6 +94,6 @@ public class DistinguishedName implements PrincipalIndentifier, BcPrincipalIdent
     @Override
     public int hashCode()
     {
-        return dn.hashCode();
+        return this.dn.hashCode();
     }
 }

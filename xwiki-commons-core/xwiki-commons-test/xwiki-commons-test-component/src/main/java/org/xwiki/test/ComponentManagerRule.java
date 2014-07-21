@@ -25,7 +25,7 @@ import org.junit.runners.model.Statement;
 
 /**
  * A JUnit {@link MethodRule} to initialize a {@link TestComponentManager}.
- * 
+ *
  * @version $Id$
  * @since 4.3.1
  */
@@ -51,7 +51,7 @@ public class ComponentManagerRule extends TestComponentManager implements Method
 
     /**
      * Called before the test.
-     * 
+     *
      * @param base The {@link Statement} to be modified
      * @param method The method to be run
      * @param target The object on with the method will be run.
@@ -65,7 +65,7 @@ public class ComponentManagerRule extends TestComponentManager implements Method
 
     /**
      * Called after the test.
-     * 
+     *
      * @param base The {@link Statement} to be modified
      * @param method The method to be run
      * @param target The object on with the method will be run.

@@ -46,13 +46,12 @@ public class DHKeyValidationParameters
         this.counter = counter;
     }
 
-
     /**
      * @return the counter value;
      */
     public int getCounter()
     {
-        return counter;
+        return this.counter;
     }
 
     /**
@@ -60,6 +59,6 @@ public class DHKeyValidationParameters
      */
     public byte[] getSeed()
     {
-        return seed;
+        return this.seed;
     }
 }

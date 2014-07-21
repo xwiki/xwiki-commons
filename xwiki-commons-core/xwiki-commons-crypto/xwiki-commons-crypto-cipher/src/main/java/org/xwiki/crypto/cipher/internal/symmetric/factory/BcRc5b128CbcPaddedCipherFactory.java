@@ -48,7 +48,8 @@ public class BcRc5b128CbcPaddedCipherFactory extends AbstractBcCbcPaddedCipherFa
     private static final int[] KEY_SIZES = newKeySizeArray(0, 256, 8);
 
     @Override
-    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter) {
+    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter)
+    {
         if (parameter instanceof RC5KeyParameters) {
             return new RC5Parameters(parameter.getKey(), ((RC5KeyParameters) parameter).getRounds());
         } else {

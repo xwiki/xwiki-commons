@@ -48,11 +48,11 @@ public class Base64BinaryStringEncoder extends AbstractBinaryStringEncoder
      */
     protected static final int CHAR_SIZE = 4;
 
-
     @Override
     InternalBinaryStringEncoder getEncoder()
     {
-        return new AbstractBouncyCastleInternalBinaryStringEncoder(new Base64Encoder(), BLOCK_SIZE, CHAR_SIZE) {
+        return new AbstractBouncyCastleInternalBinaryStringEncoder(new Base64Encoder(), BLOCK_SIZE, CHAR_SIZE)
+        {
             @Override
             public boolean isValidEncoding(byte b)
             {

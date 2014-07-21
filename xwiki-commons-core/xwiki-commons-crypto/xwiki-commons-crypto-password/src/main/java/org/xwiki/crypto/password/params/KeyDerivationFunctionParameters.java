@@ -35,17 +35,19 @@ public class KeyDerivationFunctionParameters
     /**
      * Initialise parameters with default values.
      */
-    public KeyDerivationFunctionParameters() {
+    public KeyDerivationFunctionParameters()
+    {
         this(-1);
     }
 
     /**
      * Initialise parameters with a key length and default randomized values.
      *
-     * @param keySize Size of key to be generated in bytes. A negative value means that the key length should be
-     *                smartly deducted from the context of use.
+     * @param keySize Size of key to be generated in bytes. A negative value means that the key length should be smartly
+     *            deducted from the context of use.
      */
-    public KeyDerivationFunctionParameters(int keySize) {
+    public KeyDerivationFunctionParameters(int keySize)
+    {
         this.keySize = keySize;
     }
 
@@ -54,7 +56,7 @@ public class KeyDerivationFunctionParameters
      */
     public int getKeySize()
     {
-        return keySize;
+        return this.keySize;
     }
 
     /**

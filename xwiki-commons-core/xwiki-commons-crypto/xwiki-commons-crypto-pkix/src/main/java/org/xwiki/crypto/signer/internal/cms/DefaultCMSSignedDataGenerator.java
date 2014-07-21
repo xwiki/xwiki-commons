@@ -63,7 +63,7 @@ public class DefaultCMSSignedDataGenerator implements org.xwiki.crypto.signer.CM
     @Override
     public void initialize() throws InitializationException
     {
-        if (!(digestProvider instanceof DigestCalculatorProvider)) {
+        if (!(this.digestProvider instanceof DigestCalculatorProvider)) {
             throw new InitializationException("Incompatible DigestFactory for this signed data generator.");
         }
     }
@@ -104,7 +104,7 @@ public class DefaultCMSSignedDataGenerator implements org.xwiki.crypto.signer.CM
                 }
 
                 generator.addSignerInfoGenerator(
-                    new SignerInfoGeneratorBuilder((DigestCalculatorProvider) digestProvider)
+                    new SignerInfoGeneratorBuilder((DigestCalculatorProvider) this.digestProvider)
                         .build(signer, BcUtils.getX509CertificateHolder(signer.getCertifier()))
                 );
             }

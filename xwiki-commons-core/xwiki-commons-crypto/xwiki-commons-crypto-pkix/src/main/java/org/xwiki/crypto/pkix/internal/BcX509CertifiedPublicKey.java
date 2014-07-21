@@ -49,6 +49,7 @@ import org.xwiki.crypto.signer.internal.factory.BcSignerFactory;
 public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
 {
     private final X509CertificateHolder holder;
+
     private final SignerFactory signerFactory;
 
     BcX509CertifiedPublicKey(X509CertificateHolder holder, SignerFactory signerFactory)
@@ -62,49 +63,49 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
      */
     public X509CertificateHolder getX509CertificateHolder()
     {
-        return holder;
+        return this.holder;
     }
 
     @Override
     public DistinguishedName getIssuer()
     {
-        return new DistinguishedName(holder.getIssuer());
+        return new DistinguishedName(this.holder.getIssuer());
     }
 
     @Override
     public DistinguishedName getSubject()
     {
-        return new DistinguishedName(holder.getSubject());
+        return new DistinguishedName(this.holder.getSubject());
     }
 
     @Override
     public Date getNotAfter()
     {
-        return holder.getNotAfter();
+        return this.holder.getNotAfter();
     }
 
     @Override
     public Date getNotBefore()
     {
-        return holder.getNotBefore();
+        return this.holder.getNotBefore();
     }
 
     @Override
     public int getVersionNumber()
     {
-        return holder.getVersionNumber();
+        return this.holder.getVersionNumber();
     }
 
     @Override
     public BigInteger getSerialNumber()
     {
-        return holder.getSerialNumber();
+        return this.holder.getSerialNumber();
     }
 
     @Override
     public boolean isValidOn(Date date)
     {
-        return holder.isValidOn(date);
+        return this.holder.isValidOn(date);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
     @Override
     public X509Extensions getExtensions()
     {
-        Extensions extensions = holder.getExtensions();
+        Extensions extensions = this.holder.getExtensions();
         return (extensions != null) ? new BcX509Extensions(extensions) : null;
     }
 
@@ -148,7 +149,7 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
     public PublicKeyParameters getPublicKeyParameters()
     {
         try {
-            return new BcPublicKeyParameters(PublicKeyFactory.createKey(holder.getSubjectPublicKeyInfo()));
+            return new BcPublicKeyParameters(PublicKeyFactory.createKey(this.holder.getSubjectPublicKeyInfo()));
         } catch (IOException e) {
             // Very unlikely
             throw new UnsupportedOperationException("Unsupported public key encoding.", e);
@@ -158,27 +159,28 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
     @Override
     public boolean isSignedBy(PublicKeyParameters publicKey) throws GeneralSecurityException
     {
-        TBSCertificate tbsCert = holder.toASN1Structure().getTBSCertificate();
+        TBSCertificate tbsCert = this.holder.toASN1Structure().getTBSCertificate();
 
-        if (!BcUtils.isAlgorithlIdentifierEqual(tbsCert.getSignature(), holder.getSignatureAlgorithm())) {
+        if (!BcUtils.isAlgorithlIdentifierEqual(tbsCert.getSignature(), this.holder.getSignatureAlgorithm())) {
             return false;
         }
 
         Signer signer = null;
 
         // Optimisation
-        if (signerFactory instanceof BcSignerFactory) {
-            signer = ((BcSignerFactory) signerFactory).getInstance(false, publicKey, tbsCert.getSignature());
+        if (this.signerFactory instanceof BcSignerFactory) {
+            signer = ((BcSignerFactory) this.signerFactory).getInstance(false, publicKey, tbsCert.getSignature());
         } else {
             try {
-                signer = signerFactory.getInstance(false, publicKey, holder.getSignatureAlgorithm().getEncoded());
+                signer =
+                    this.signerFactory.getInstance(false, publicKey, this.holder.getSignatureAlgorithm().getEncoded());
             } catch (IOException e) {
                 return false;
             }
         }
 
         try {
-            return BcUtils.updateDEREncodedObject(signer, tbsCert).verify(holder.getSignature());
+            return BcUtils.updateDEREncodedObject(signer, tbsCert).verify(this.holder.getSignature());
         } catch (IOException e) {
             return false;
         }
@@ -201,11 +203,12 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
     @Override
     public byte[] getEncoded() throws IOException
     {
-        return holder.getEncoded();
+        return this.holder.getEncoded();
     }
 
     /**
      * {@inheritDoc}
+     *
      * @since 6.0M1
      */
     @Override
@@ -237,6 +240,7 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
 
     /**
      * {@inheritDoc}
+     *
      * @since 6.0M1
      */
     @Override
@@ -249,9 +253,6 @@ public class BcX509CertifiedPublicKey implements X509CertifiedPublicKey
                 return Arrays.hashCode(id);
             }
         }
-        return new HashCodeBuilder(3, 17)
-            .append(getIssuer())
-            .append(getSerialNumber())
-            .toHashCode();
+        return new HashCodeBuilder(3, 17).append(getIssuer()).append(getSerialNumber()).toHashCode();
     }
 }

@@ -45,6 +45,7 @@ public class LineWrapperOutputStream extends FilterOutputStream
 
     /**
      * Constructs a LineWrapperOutputStream from an OutputStream and a line size.
+     *
      * @param outputStream the output stream.
      * @param wrapAt the count of bytes at which wrapping should occur.
      */
@@ -63,24 +64,24 @@ public class LineWrapperOutputStream extends FilterOutputStream
         }
 
         if (length > 0) {
-            if (count + length >= wrapAt) {
+            if (this.count + length >= this.wrapAt) {
                 int off = offset;
                 int len = length;
-                int curlen = wrapAt - count;
+                int curlen = this.wrapAt - this.count;
                 do {
-                    out.write(bytes, off, curlen);
-                    out.write(NEWLINE, 0, NEWLINE.length);
+                    this.out.write(bytes, off, curlen);
+                    this.out.write(NEWLINE, 0, NEWLINE.length);
                     off += curlen;
                     len -= curlen;
-                    curlen = (len > wrapAt) ? wrapAt : len;
-                } while (curlen == wrapAt);
+                    curlen = (len > this.wrapAt) ? this.wrapAt : len;
+                } while (curlen == this.wrapAt);
                 if (curlen > 0) {
-                    out.write(bytes, off, curlen);
+                    this.out.write(bytes, off, curlen);
                 }
-                count = curlen;
+                this.count = curlen;
             } else {
-                count += length;
-                out.write(bytes, offset, length);
+                this.count += length;
+                this.out.write(bytes, offset, length);
             }
         }
     }
@@ -88,7 +89,7 @@ public class LineWrapperOutputStream extends FilterOutputStream
     @Override
     public void write(int i) throws IOException
     {
-        oneByte[0] = (byte) i;
-        write(oneByte, 0, 1);
+        this.oneByte[0] = (byte) i;
+        write(this.oneByte, 0, 1);
     }
 }

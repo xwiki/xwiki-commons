@@ -33,6 +33,7 @@ public class GenericKeyGenerationParameters implements KeyGenerationParameters
 
     /**
      * New instance specifying a given key strength.
+     *
      * @param strength the strength of the key to generate in bits.
      */
     public GenericKeyGenerationParameters(int strength)
@@ -45,6 +46,6 @@ public class GenericKeyGenerationParameters implements KeyGenerationParameters
      */
     public int getStrength()
     {
-        return strength;
+        return this.strength;
     }
 }

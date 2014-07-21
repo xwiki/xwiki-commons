@@ -19,9 +19,9 @@
  */
 package org.xwiki.crypto.params.generator.asymmetric;
 
-import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyParametersGenerationParameters;
+import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -33,7 +33,7 @@ import org.xwiki.stability.Unstable;
  */
 @Unstable
 public class DSAKeyParametersGenerationParameters extends GenericKeyGenerationParameters
-                                                  implements KeyParametersGenerationParameters, KeyGenerationParameters
+    implements KeyParametersGenerationParameters, KeyGenerationParameters
 {
     /** Default key strength. */
     private static final int DEFAULT_STRENGTH = 128;
@@ -147,11 +147,13 @@ public class DSAKeyParametersGenerationParameters extends GenericKeyGenerationPa
         this.digest = digest;
     }
 
-    private static int getDefaultNsize(int lSize) {
+    private static int getDefaultNsize(int lSize)
+    {
         return lSize > 128 ? 32 : 20;
     }
 
-    private static String getDigestHint(int nSize) {
+    private static String getDigestHint(int nSize)
+    {
         if (nSize <= 20) {
             return "SHA-1";
         } else if (nSize <= 28) {
@@ -167,36 +169,41 @@ public class DSAKeyParametersGenerationParameters extends GenericKeyGenerationPa
     /**
      * @return true if the key should be generated according to FIPS 186.3.
      */
-    public boolean use186r3() {
-        return use186r3;
+    public boolean use186r3()
+    {
+        return this.use186r3;
     }
 
     /**
      * @return the requested P prime size in byte.
      */
-    public int getPrimePsize() {
+    public int getPrimePsize()
+    {
         return getStrength();
     }
 
     /**
      * @return the requested Q prime size in byte.
      */
-    public int getPrimeQsize() {
-        return nSize;
+    public int getPrimeQsize()
+    {
+        return this.nSize;
     }
 
     /**
      * @return the requested certainty for prime number.
      */
-    public int getCertainty() {
-        return certainty;
+    public int getCertainty()
+    {
+        return this.certainty;
     }
 
     /**
      * @return the requested usage for the key.
      */
-    public DSAKeyValidationParameters.Usage getUsage() {
-        return usage;
+    public DSAKeyValidationParameters.Usage getUsage()
+    {
+        return this.usage;
     }
 
     /**
@@ -204,6 +211,6 @@ public class DSAKeyParametersGenerationParameters extends GenericKeyGenerationPa
      */
     public String getHashHint()
     {
-        return digest;
+        return this.digest;
     }
 }

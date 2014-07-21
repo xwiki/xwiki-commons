@@ -64,18 +64,18 @@ public class X509DnsName implements X509StringGeneralName, BcGeneralName
      */
     public String getDomain()
     {
-        return domain;
+        return this.domain;
     }
 
     @Override
     public String getName()
     {
-        return domain;
+        return this.domain;
     }
 
     @Override
     public GeneralName getGeneralName()
     {
-        return new GeneralName(GeneralName.dNSName, domain);
+        return new GeneralName(GeneralName.dNSName, this.domain);
     }
 }

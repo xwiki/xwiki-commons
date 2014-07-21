@@ -81,7 +81,7 @@ public class MockingComponentManager extends EmbeddableComponentManager
      */
     public <T> T registerMockComponent(Mockery mockery, Type role) throws Exception
     {
-        return registerMockComponent(mockery, this.<T> createComponentDescriptor(role));
+        return registerMockComponent(mockery, this.<T>createComponentDescriptor(role));
     }
 
     /**
@@ -96,7 +96,7 @@ public class MockingComponentManager extends EmbeddableComponentManager
      */
     public <T> T registerMockComponentWithId(Mockery mockery, Type role, String mockId) throws Exception
     {
-        return registerMockComponent(mockery, this.<T> createComponentDescriptor(role), mockId);
+        return registerMockComponent(mockery, this.<T>createComponentDescriptor(role), mockId);
     }
 
     /**

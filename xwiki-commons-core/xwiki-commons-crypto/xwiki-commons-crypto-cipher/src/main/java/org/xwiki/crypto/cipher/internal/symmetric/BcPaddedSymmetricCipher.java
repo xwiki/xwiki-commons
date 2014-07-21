@@ -32,14 +32,18 @@ import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 public class BcPaddedSymmetricCipher extends BcSymmetricCipher
 {
     private static final String SEPARATOR = "/";
+
     private static final String PADDING = "Padding";
+
     private static final String PKCS5_PADDING = "PKCS5" + PADDING;
+
     private static final String PKCS7_PADDING = "PKCS7" + PADDING;
 
     private String paddingName;
 
     /**
      * Generic Bouncy Castle based block cipher with padding.
+     *
      * @param cipher the block cipher to encapsulate.
      * @param forEncryption true if the block cipher is setup for encryption.
      * @param parameters parameters to initialize the cipher.
@@ -52,6 +56,7 @@ public class BcPaddedSymmetricCipher extends BcSymmetricCipher
 
     /**
      * Generic Bouncy Castle based block cipher with padding.
+     *
      * @param cipher the block cipher to encapsulate.
      * @param forEncryption true if the block cipher is setup for encryption.
      * @param padding the padding to apply.
@@ -61,15 +66,15 @@ public class BcPaddedSymmetricCipher extends BcSymmetricCipher
         BlockCipherPadding padding)
     {
         super(new PaddedBufferedBlockCipher(cipher, padding), forEncryption, parameters);
-        paddingName = padding.getPaddingName() + PADDING;
-        if (PKCS7_PADDING.equals(paddingName) && getOutputBlockSize() <= 8) {
-            paddingName = PKCS5_PADDING;
+        this.paddingName = padding.getPaddingName() + PADDING;
+        if (PKCS7_PADDING.equals(this.paddingName) && getOutputBlockSize() <= 8) {
+            this.paddingName = PKCS5_PADDING;
         }
     }
 
     @Override
     public String getAlgorithmName()
     {
-        return cipher.getUnderlyingCipher().getAlgorithmName() + SEPARATOR + paddingName;
+        return this.cipher.getUnderlyingCipher().getAlgorithmName() + SEPARATOR + this.paddingName;
     }
 }

@@ -45,6 +45,7 @@ public class MockitoComponentManagerRule extends ComponentManagerRule
      */
     public <T> T registerMockComponent(Type roleType, String roleHint) throws Exception
     {
+        @SuppressWarnings("unchecked")
         T mock = (T) mock(ReflectionUtils.getTypeClass(roleType));
         registerComponent(roleType, roleHint, mock);
         return mock;

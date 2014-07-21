@@ -57,14 +57,14 @@ class BcBinaryStringEncoderOutputStream extends FilterOutputStream
         super(outputStream);
         this.encoder = encoder;
         this.blockSize = encoder.getEncodingBlockSize();
-        this.ofBuf = new byte[blockSize];
+        this.ofBuf = new byte[this.blockSize];
     }
 
     @Override
     public void write(int i) throws IOException
     {
-        oneByte[0] = (byte) i;
-        write(oneByte, 0, 1);
+        this.oneByte[0] = (byte) i;
+        write(this.oneByte, 0, 1);
     }
 
     @Override
@@ -82,21 +82,21 @@ class BcBinaryStringEncoderOutputStream extends FilterOutputStream
         int len = length;
 
         // Is some pending data of a previous call available ?
-        if (ofLen > 0) {
+        if (this.ofLen > 0) {
             // Complete the overflow buffer, trying to reach a full buffer.
-            int underflow = blockSize - ofLen;
+            int underflow = this.blockSize - this.ofLen;
             if (underflow > len) {
                 underflow = len;
             }
-            System.arraycopy(input, off, ofBuf, ofLen, underflow);
-            ofLen += underflow;
+            System.arraycopy(input, off, this.ofBuf, this.ofLen, underflow);
+            this.ofLen += underflow;
             off += underflow;
             len -= underflow;
 
             // Encode and output the overflow buffer if full.
-            if (ofLen == blockSize) {
-                encoder.encode(ofBuf, 0, blockSize, out);
-                ofLen = 0;
+            if (this.ofLen == this.blockSize) {
+                this.encoder.encode(this.ofBuf, 0, this.blockSize, this.out);
+                this.ofLen = 0;
             }
         }
 
@@ -104,16 +104,16 @@ class BcBinaryStringEncoderOutputStream extends FilterOutputStream
         if (len > 0) {
 
             // Store overflow in the overflow buffer
-            int overflow = len - ((len / blockSize) * blockSize);
+            int overflow = len - ((len / this.blockSize) * this.blockSize);
             if (overflow > 0) {
-                System.arraycopy(input, (off + len - overflow), ofBuf, 0, overflow);
-                ofLen += overflow;
+                System.arraycopy(input, (off + len - overflow), this.ofBuf, 0, overflow);
+                this.ofLen += overflow;
                 len -= overflow;
             }
 
             // If there is still some data to write, encode and write them
             if (len > 0) {
-                encoder.encode(input, off, len, out);
+                this.encoder.encode(input, off, len, this.out);
             }
         }
     }
@@ -121,11 +121,11 @@ class BcBinaryStringEncoderOutputStream extends FilterOutputStream
     @Override
     public void flush() throws IOException
     {
-        if (ofLen > 0) {
-            encoder.encode(ofBuf, 0, ofLen, out);
-            ofLen = 0;
+        if (this.ofLen > 0) {
+            this.encoder.encode(this.ofBuf, 0, this.ofLen, this.out);
+            this.ofLen = 0;
         }
-        out.flush();
+        this.out.flush();
     }
 
     @Override

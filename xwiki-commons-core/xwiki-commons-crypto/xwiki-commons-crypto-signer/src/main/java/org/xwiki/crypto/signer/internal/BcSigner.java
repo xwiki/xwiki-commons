@@ -58,6 +58,7 @@ public class BcSigner implements org.xwiki.crypto.signer.Signer, ContentSigner, 
 
     /**
      * Generic Bouncy Castle based signer.
+     *
      * @param signer the signer to encapsulate.
      * @param forSigning true if the signer is setup for signing.
      * @param parameters parameters to initialize the cipher.
@@ -77,58 +78,58 @@ public class BcSigner implements org.xwiki.crypto.signer.Signer, ContentSigner, 
     @Override
     public String getAlgorithmName()
     {
-        return signerAlgorithm;
+        return this.signerAlgorithm;
     }
 
     @Override
     public AlgorithmIdentifier getAlgorithmIdentifier()
     {
-        return signerAlgorithmIdentifier;
+        return this.signerAlgorithmIdentifier;
     }
 
     @Override
     public boolean isForSigning()
     {
-        return forSigning;
+        return this.forSigning;
     }
 
     @Override
     public FilterInputStream getInputStream(InputStream is)
     {
-        signer.reset();
-        return new SignerInputStream(is, signer);
+        this.signer.reset();
+        return new SignerInputStream(is, this.signer);
     }
 
     @Override
     public OutputStream getOutputStream()
     {
-        signer.reset();
-        return new SignerOutputStream(signer);
+        this.signer.reset();
+        return new SignerOutputStream(this.signer);
     }
 
     @Override
     public void update(byte input)
     {
-        signer.update(input);
+        this.signer.update(input);
     }
 
     @Override
     public void update(byte[] input)
     {
-        signer.update(input, 0, input.length);
+        this.signer.update(input, 0, input.length);
     }
 
     @Override
     public void update(byte[] input, int inputOffset, int inputLen)
     {
-        signer.update(input, inputOffset, inputLen);
+        this.signer.update(input, inputOffset, inputLen);
     }
 
     @Override
     public byte[] generate() throws GeneralSecurityException
     {
         try {
-            return signer.generateSignature();
+            return this.signer.generateSignature();
         } catch (CryptoException e) {
             throw new SignatureException(e);
         }
@@ -150,6 +151,7 @@ public class BcSigner implements org.xwiki.crypto.signer.Signer, ContentSigner, 
 
     /**
      * {@inheritDoc}
+     *
      * @since 6.0M1
      */
     @Override
@@ -167,7 +169,7 @@ public class BcSigner implements org.xwiki.crypto.signer.Signer, ContentSigner, 
     @Override
     public boolean verify(byte[] signature)
     {
-        return signer.verifySignature(signature);
+        return this.signer.verifySignature(signature);
     }
 
     @Override
@@ -196,7 +198,7 @@ public class BcSigner implements org.xwiki.crypto.signer.Signer, ContentSigner, 
     public byte[] getEncoded()
     {
         try {
-            return signerAlgorithmIdentifier.getEncoded();
+            return this.signerAlgorithmIdentifier.getEncoded();
         } catch (IOException e) {
             // Very unlikely to happen
             return null;

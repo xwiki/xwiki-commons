@@ -71,10 +71,10 @@ public class BcX509v3CertificateGenerator extends AbstractBcX509CertificateGener
         BcX509v3TBSCertificateBuilder bld = (BcX509v3TBSCertificateBuilder) builder;
 
         if (issuer != null) {
-            bld.setExtensions(issuer, subject, extensions, parameters.getExtensions());
+            bld.setExtensions(issuer, subject, this.extensions, parameters.getExtensions());
         } else {
             // Self signed certificate
-            bld.setExtensions(subject, extensions, parameters.getExtensions());
+            bld.setExtensions(subject, this.extensions, parameters.getExtensions());
         }
     }
 }

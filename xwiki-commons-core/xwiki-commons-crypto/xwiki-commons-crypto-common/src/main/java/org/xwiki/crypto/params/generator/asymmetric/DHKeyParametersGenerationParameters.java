@@ -19,9 +19,9 @@
  */
 package org.xwiki.crypto.params.generator.asymmetric;
 
-import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyParametersGenerationParameters;
+import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -32,7 +32,7 @@ import org.xwiki.stability.Unstable;
  */
 @Unstable
 public class DHKeyParametersGenerationParameters extends GenericKeyGenerationParameters
-                                                 implements KeyParametersGenerationParameters, KeyGenerationParameters
+    implements KeyParametersGenerationParameters, KeyGenerationParameters
 {
     /** Default key strength. */
     private static final int DEFAULT_STRENGTH = 96;
@@ -78,6 +78,6 @@ public class DHKeyParametersGenerationParameters extends GenericKeyGenerationPar
      */
     public int getCertainty()
     {
-        return certainty;
+        return this.certainty;
     }
 }

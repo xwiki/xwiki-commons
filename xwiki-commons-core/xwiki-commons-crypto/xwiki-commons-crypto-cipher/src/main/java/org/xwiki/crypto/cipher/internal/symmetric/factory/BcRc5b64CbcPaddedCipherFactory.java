@@ -38,9 +38,8 @@ import org.xwiki.crypto.params.cipher.symmetric.RC5KeyParameters;
  * @version $Id$
  * @since 5.4M1
  */
-@Component(hints = { "RC5-32/CBC/PKCS5Padding", "RC5-32/CBC/PKCS7Padding",
-                     "RC5/CBC/PKCS5Padding", "RC5/CBC/PKCS7Padding",
-                     "1.2.840.113549.3.9" })
+@Component(hints = { "RC5-32/CBC/PKCS5Padding", "RC5-32/CBC/PKCS7Padding", "RC5/CBC/PKCS5Padding",
+        "RC5/CBC/PKCS7Padding", "1.2.840.113549.3.9" })
 @Singleton
 public class BcRc5b64CbcPaddedCipherFactory extends AbstractBcCbcPaddedCipherFactory
 {
@@ -48,7 +47,8 @@ public class BcRc5b64CbcPaddedCipherFactory extends AbstractBcCbcPaddedCipherFac
     private static final int[] KEY_SIZES = newKeySizeArray(0, 256, 8);
 
     @Override
-    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter) {
+    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter)
+    {
         if (parameter instanceof RC5KeyParameters) {
             return new RC5Parameters(parameter.getKey(), ((RC5KeyParameters) parameter).getRounds());
         } else {

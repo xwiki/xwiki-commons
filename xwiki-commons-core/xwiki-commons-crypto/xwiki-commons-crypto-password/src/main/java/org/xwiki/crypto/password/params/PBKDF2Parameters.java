@@ -33,13 +33,17 @@ import org.xwiki.stability.Unstable;
 public class PBKDF2Parameters extends KeyDerivationFunctionParameters
 {
     private static final int SALT_DEFAULT_SIZE = 16;
+
     private static final int DEFAULT_MIN_ITER = 1000;
+
     private static final int DEFAULT_ITER_RANGE = 2000;
 
     private static final SecureRandom PRND = new SecureRandom();
 
     private final byte[] salt;
+
     private final int iterationCount;
+
     private final String prf;
 
     /**
@@ -49,7 +53,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * (between {@value #DEFAULT_MIN_ITER} and ({@value #DEFAULT_MIN_ITER} + {@value #DEFAULT_ITER_RANGE})).
      * SHA-1 algorithm is used for the key derivation pseudo random function.
      */
-    public PBKDF2Parameters() {
+    public PBKDF2Parameters()
+    {
         this(-1);
     }
 
@@ -62,7 +67,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      *
      * @param random a random source to get randomized values.
      */
-    public PBKDF2Parameters(SecureRandom random) {
+    public PBKDF2Parameters(SecureRandom random)
+    {
         this(-1, random);
     }
 
@@ -74,7 +80,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      *
      * @param prf a pseudo random function hint.
      */
-    public PBKDF2Parameters(String prf) {
+    public PBKDF2Parameters(String prf)
+    {
         this(-1, getRandomIterationCount(PRND), getRandomSalt(PRND), prf);
     }
 
@@ -84,7 +91,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param prf a pseudo random function hint.
      * @param random a random source to get randomized values.
      */
-    public PBKDF2Parameters(String prf, SecureRandom random) {
+    public PBKDF2Parameters(String prf, SecureRandom random)
+    {
         this(-1, getRandomIterationCount(random), getRandomSalt(random), prf);
     }
 
@@ -99,7 +107,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      *                smartly deducted from the context of use.
      *
      */
-    public PBKDF2Parameters(int keySize) {
+    public PBKDF2Parameters(int keySize)
+    {
         this(keySize, getRandomIterationCount(PRND), getRandomSalt(PRND), null);
     }
 
@@ -114,7 +123,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      *                smartly deducted from the context of use.
      * @param random a random source to get randomized values.
      */
-    public PBKDF2Parameters(int keySize, SecureRandom random) {
+    public PBKDF2Parameters(int keySize, SecureRandom random)
+    {
         this(keySize, getRandomIterationCount(random), getRandomSalt(random), null);
     }
 
@@ -128,7 +138,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      *                smartly deducted from the context of use.
      * @param prf a pseudo random function hint.
      */
-    public PBKDF2Parameters(int keySize, String prf) {
+    public PBKDF2Parameters(int keySize, String prf)
+    {
         this(keySize, getRandomIterationCount(PRND), getRandomSalt(PRND), null);
     }
 
@@ -143,7 +154,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param prf a pseudo random function hint.
      * @param random a random source to get randomized values.
      */
-    public PBKDF2Parameters(int keySize, String prf, SecureRandom random) {
+    public PBKDF2Parameters(int keySize, String prf, SecureRandom random)
+    {
         this(keySize, getRandomIterationCount(random), getRandomSalt(random), null);
     }
 
@@ -157,7 +169,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      *                smartly deducted from the context of use.
      * @param iterationCount the number of iterations the "mixing" function is to be applied for.
      */
-    public PBKDF2Parameters(int keySize, int iterationCount) {
+    public PBKDF2Parameters(int keySize, int iterationCount)
+    {
         this(keySize, iterationCount, getRandomSalt(PRND), null);
     }
 
@@ -172,7 +185,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param iterationCount the number of iterations the "mixing" function is to be applied for.
      * @param random a random source to get randomized values.
      */
-    public PBKDF2Parameters(int keySize, int iterationCount, SecureRandom random) {
+    public PBKDF2Parameters(int keySize, int iterationCount, SecureRandom random)
+    {
         this(keySize, iterationCount, getRandomSalt(random), null);
     }
 
@@ -186,7 +200,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param iterationCount the number of iterations the "mixing" function is to be applied for.
      * @param prf a pseudo random function hint.
      */
-    public PBKDF2Parameters(int keySize, int iterationCount, String prf) {
+    public PBKDF2Parameters(int keySize, int iterationCount, String prf)
+    {
         this(keySize, iterationCount, getRandomSalt(PRND), prf);
     }
 
@@ -201,7 +216,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param prf a pseudo random function hint.
      * @param random a random source to get randomized values.
      */
-    public PBKDF2Parameters(int keySize, int iterationCount, String prf, SecureRandom random) {
+    public PBKDF2Parameters(int keySize, int iterationCount, String prf, SecureRandom random)
+    {
         this(keySize, iterationCount, getRandomSalt(random), prf);
     }
 
@@ -216,7 +232,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      *                smartly deducted from the context of use.
      * @param salt the salt to be mixed with the password.
      */
-    public PBKDF2Parameters(int keySize, byte[] salt) {
+    public PBKDF2Parameters(int keySize, byte[] salt)
+    {
         this(keySize, getRandomIterationCount(PRND), salt, null);
     }
 
@@ -232,7 +249,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param salt the salt to be mixed with the password.
      * @param random a random source to get randomized values.
      */
-    public PBKDF2Parameters(int keySize, byte[] salt, SecureRandom random) {
+    public PBKDF2Parameters(int keySize, byte[] salt, SecureRandom random)
+    {
         this(keySize, getRandomIterationCount(random), salt, null);
     }
 
@@ -247,7 +265,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param salt the salt to be mixed with the password.
      * @param prf a pseudo random function hint.
      */
-    public PBKDF2Parameters(int keySize, byte[] salt, String prf) {
+    public PBKDF2Parameters(int keySize, byte[] salt, String prf)
+    {
         this(keySize, getRandomIterationCount(PRND), salt, prf);
     }
 
@@ -263,7 +282,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param prf a pseudo random function hint.
      * @param random a random source to get randomized values.
      */
-    public PBKDF2Parameters(int keySize, byte[] salt, String prf, SecureRandom random) {
+    public PBKDF2Parameters(int keySize, byte[] salt, String prf, SecureRandom random)
+    {
         this(keySize, getRandomIterationCount(random), salt, prf);
     }
 
@@ -275,7 +295,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param iterationCount the number of iterations the "mixing" function is to be applied for.
      * @param salt the salt to be mixed with the password.
      */
-    public PBKDF2Parameters(int keySize, int iterationCount, byte[] salt) {
+    public PBKDF2Parameters(int keySize, int iterationCount, byte[] salt)
+    {
         this(keySize, iterationCount, salt, null);
     }
 
@@ -288,7 +309,8 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      * @param salt the salt to be mixed with the password.
      * @param prf the pseudo random function hint to be used to retrieve the pseudo random function.
      */
-    public PBKDF2Parameters(int keySize, int iterationCount, byte[] salt, String prf) {
+    public PBKDF2Parameters(int keySize, int iterationCount, byte[] salt, String prf)
+    {
         super(keySize);
         this.salt = salt;
         this.iterationCount = iterationCount;
@@ -318,7 +340,7 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      */
     public int getIterationCount()
     {
-        return iterationCount;
+        return this.iterationCount;
     }
 
     /**
@@ -326,7 +348,7 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      */
     public byte[] getSalt()
     {
-        return salt;
+        return this.salt;
     }
 
     /**
@@ -334,6 +356,6 @@ public class PBKDF2Parameters extends KeyDerivationFunctionParameters
      */
     public String getPseudoRandomFuntionHint()
     {
-        return prf;
+        return this.prf;
     }
 }

@@ -85,6 +85,6 @@ public enum KeyUsage
      */
     public int value()
     {
-        return usage;
+        return this.usage;
     }
 }

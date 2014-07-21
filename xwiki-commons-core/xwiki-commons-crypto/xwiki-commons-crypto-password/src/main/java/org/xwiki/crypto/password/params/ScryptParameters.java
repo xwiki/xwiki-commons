@@ -30,15 +30,21 @@ import java.security.SecureRandom;
 public class ScryptParameters extends KeyDerivationFunctionParameters
 {
     private static final int SALT_DEFAULT_SIZE = 16;
+
     private static final int COST_DEFAULT = 1024;
+
     private static final int PARALLELIZATION_DEFAULT = 1;
+
     private static final int BLOCK_DEFAULT_SIZE = 8;
 
     private static final SecureRandom PRND = new SecureRandom();
 
     private final byte[] salt;
+
     private final int costParameter;
+
     private final int blockSize;
+
     private final int parallelizationParameter;
 
     /**
@@ -46,7 +52,8 @@ public class ScryptParameters extends KeyDerivationFunctionParameters
      * a parallelization parameter of {@value #PARALLELIZATION_DEFAULT}
      * and a block size of {@value #BLOCK_DEFAULT_SIZE}.
      */
-    public ScryptParameters() {
+    public ScryptParameters()
+    {
         this(-1, COST_DEFAULT, PARALLELIZATION_DEFAULT, BLOCK_DEFAULT_SIZE, getRandomSalt());
     }
 
@@ -58,7 +65,8 @@ public class ScryptParameters extends KeyDerivationFunctionParameters
      * @param keySize Size of key to be generated in bytes. A negative value means that the key length should be
      *                smartly deducted from the context of use.
      */
-    public ScryptParameters(int keySize) {
+    public ScryptParameters(int keySize)
+    {
         this(keySize, COST_DEFAULT, PARALLELIZATION_DEFAULT, BLOCK_DEFAULT_SIZE, getRandomSalt());
     }
 
@@ -70,7 +78,8 @@ public class ScryptParameters extends KeyDerivationFunctionParameters
      *                smartly deducted from the context of use.
      * @param salt a salt.
      */
-    public ScryptParameters(int keySize, byte[] salt) {
+    public ScryptParameters(int keySize, byte[] salt)
+    {
         this(keySize, COST_DEFAULT, PARALLELIZATION_DEFAULT, BLOCK_DEFAULT_SIZE, salt);
     }
 
@@ -83,7 +92,8 @@ public class ScryptParameters extends KeyDerivationFunctionParameters
      * @param parallelizationParameter Parallelization parameter, a positive integer less than or equal
      *                                 to (2^37-32) / 1024
      */
-    public ScryptParameters(int keySize, int costParameter, int parallelizationParameter) {
+    public ScryptParameters(int keySize, int costParameter, int parallelizationParameter)
+    {
         this(keySize, costParameter, parallelizationParameter, BLOCK_DEFAULT_SIZE, getRandomSalt());
     }
 
@@ -97,7 +107,8 @@ public class ScryptParameters extends KeyDerivationFunctionParameters
      *                                 to (2^37-32) / 1024
      * @param salt a salt.
      */
-    public ScryptParameters(int keySize, int costParameter, int parallelizationParameter, byte[] salt) {
+    public ScryptParameters(int keySize, int costParameter, int parallelizationParameter, byte[] salt)
+    {
         this(keySize, costParameter, parallelizationParameter, BLOCK_DEFAULT_SIZE, salt);
     }
 
@@ -156,7 +167,7 @@ public class ScryptParameters extends KeyDerivationFunctionParameters
      */
     public int getCostParameter()
     {
-        return costParameter;
+        return this.costParameter;
     }
 
     /**
@@ -164,7 +175,7 @@ public class ScryptParameters extends KeyDerivationFunctionParameters
      */
     public int getParallelizationParameter()
     {
-        return parallelizationParameter;
+        return this.parallelizationParameter;
     }
 
     /**
@@ -172,7 +183,7 @@ public class ScryptParameters extends KeyDerivationFunctionParameters
      */
     public byte[] getSalt()
     {
-        return salt;
+        return this.salt;
     }
 
     /**
@@ -180,6 +191,6 @@ public class ScryptParameters extends KeyDerivationFunctionParameters
      */
     public int getBlockSize()
     {
-        return blockSize;
+        return this.blockSize;
     }
 }

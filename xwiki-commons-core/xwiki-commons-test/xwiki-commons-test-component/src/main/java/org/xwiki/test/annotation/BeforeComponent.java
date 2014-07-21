@@ -36,7 +36,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Documented
 @Retention(RUNTIME)
-@Target({METHOD })
+@Target({ METHOD })
 @Inherited
 public @interface BeforeComponent
 {

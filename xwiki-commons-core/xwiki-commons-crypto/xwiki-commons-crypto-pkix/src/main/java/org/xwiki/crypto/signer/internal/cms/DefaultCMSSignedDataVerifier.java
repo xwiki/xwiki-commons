@@ -74,7 +74,7 @@ public class DefaultCMSSignedDataVerifier implements CMSSignedDataVerifier, Init
     @Override
     public void initialize() throws InitializationException
     {
-        if (!(digestProvider instanceof DigestCalculatorProvider)) {
+        if (!(this.digestProvider instanceof DigestCalculatorProvider)) {
             throw new InitializationException("Incompatible DigestFactory for this signed data verifier.");
         }
     }
@@ -109,7 +109,7 @@ public class DefaultCMSSignedDataVerifier implements CMSSignedDataVerifier, Init
     public CMSSignedDataVerified verify(byte[] signature, byte[] data,
         Collection<CertifiedPublicKey> certificates) throws GeneralSecurityException
     {
-        return verify(signature, data, BcStoreUtils.getCertificateProvider(manager, certificates));
+        return verify(signature, data, BcStoreUtils.getCertificateProvider(this.manager, certificates));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class DefaultCMSSignedDataVerifier implements CMSSignedDataVerifier, Init
     {
         CMSSignedData signedData = BcCMSUtils.getSignedData(signature, data);
 
-        CertificateProvider provider = BcStoreUtils.getCertificateProvider(manager, signedData.getCertificates(),
+        CertificateProvider provider = BcStoreUtils.getCertificateProvider(this.manager, signedData.getCertificates(),
             certificateProvider);
 
         return verify(signedData, provider);
@@ -126,22 +126,19 @@ public class DefaultCMSSignedDataVerifier implements CMSSignedDataVerifier, Init
 
     private CMSSignedDataVerified verify(CMSSignedData signedData, CertificateProvider provider)
     {
-        BcCMSSignedDataVerified verifiedData = BcCMSUtils.getCMSSignedDataVerified(signedData, certFactory);
+        BcCMSSignedDataVerified verifiedData = BcCMSUtils.getCMSSignedDataVerified(signedData, this.certFactory);
 
         for (SignerInformation signer : BcCMSUtils.getSigners(signedData)) {
-            CertifiedPublicKey certKey = BcStoreUtils.getCertificate(provider, signer, certFactory);
+            CertifiedPublicKey certKey = BcStoreUtils.getCertificate(provider, signer, this.certFactory);
 
             try {
                 verifiedData.addSignature(
                     new BcCMSSignerVerifiedInformation(signer,
-                        BcCMSUtils.verify(signer, certKey, contentVerifierProviderBuilder, digestProvider),
-                        chainBuilder.build(certKey, provider)
-                    ));
+                        BcCMSUtils.verify(signer, certKey, this.contentVerifierProviderBuilder, this.digestProvider),
+                        this.chainBuilder.build(certKey, provider)));
             } catch (CMSException e) {
                 verifiedData.addSignature(
-                    new BcCMSSignerVerifiedInformation(signer,
-                        false,
-                        chainBuilder.build(certKey, provider)));
+                    new BcCMSSignerVerifiedInformation(signer, false, this.chainBuilder.build(certKey, provider)));
             }
         }
 

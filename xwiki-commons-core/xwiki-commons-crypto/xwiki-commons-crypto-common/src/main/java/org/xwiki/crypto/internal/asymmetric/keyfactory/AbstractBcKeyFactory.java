@@ -45,8 +45,11 @@ import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
 public abstract class AbstractBcKeyFactory implements AsymmetricKeyFactory, AsymmetricKeyInfoConverter
 {
     private static final String PRIVATE = "private";
+
     private static final String PUBLIC = "public";
+
     private static final String CLASS_ERROR = "Expected a %s %s key, but key class is %s.";
+
     private static final String ALGORITHM_ERROR = "Expected a %s %s key, but key algorithm is %s.";
 
     /**
@@ -56,6 +59,7 @@ public abstract class AbstractBcKeyFactory implements AsymmetricKeyFactory, Asym
 
     /**
      * Check the type of the key parameter against the expected type for the current factory.
+     *
      * @param key the parameters to check
      * @return null if the parameter is of the expected type, else a string representing the expected type.
      */
@@ -156,9 +160,8 @@ public abstract class AbstractBcKeyFactory implements AsymmetricKeyFactory, Asym
                         key.getClass().getName()));
                 }
 
-                return generatePrivate(
-                    PrivateKeyInfoFactory.createPrivateKeyInfo(
-                        ((BcAsymmetricKeyParameters) key).getParameters()));
+                return generatePrivate(PrivateKeyInfoFactory.createPrivateKeyInfo(
+                    ((BcAsymmetricKeyParameters) key).getParameters()));
             }
 
             // Fallback
@@ -167,7 +170,6 @@ public abstract class AbstractBcKeyFactory implements AsymmetricKeyFactory, Asym
             throw new IllegalArgumentException("Invalid private key parameters: " + key.getClass().getName());
         }
     }
-
 
     //
     // AsymmetricKeyInfoConverter

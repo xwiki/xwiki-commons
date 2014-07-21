@@ -70,6 +70,7 @@ public interface X509Extensions
 
     /**
      * Return true if the given oid has a critical extension.
+     *
      * @param oid the oid to check.
      * @return true if the given oid has a critical extension.
      */

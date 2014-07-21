@@ -47,24 +47,24 @@ public class BcCMSSignerInfo implements CMSSignerInfo
      */
     SignerInformation getSignerInfo()
     {
-        return signerInfo;
+        return this.signerInfo;
     }
 
     @Override
     public PrincipalIndentifier getIssuer()
     {
-        return new DistinguishedName(signerInfo.getSID().getIssuer());
+        return new DistinguishedName(this.signerInfo.getSID().getIssuer());
     }
 
     @Override
     public BigInteger getSerialNumber()
     {
-        return signerInfo.getSID().getSerialNumber();
+        return this.signerInfo.getSID().getSerialNumber();
     }
 
     @Override
     public byte[] getSubjectKeyIdentifier()
     {
-        return signerInfo.getSID().getSubjectKeyIdentifier();
+        return this.signerInfo.getSID().getSubjectKeyIdentifier();
     }
 }

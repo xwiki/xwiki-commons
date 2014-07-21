@@ -30,6 +30,8 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public class KeyStoreException extends Exception
 {
+    private static final long serialVersionUID = -2977947971178390553L;
+
     /**
      * Constructs a new exception with the specified detail message.
      *

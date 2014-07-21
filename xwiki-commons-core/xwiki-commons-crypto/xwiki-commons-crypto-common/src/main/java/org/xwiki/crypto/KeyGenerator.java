@@ -49,4 +49,3 @@ public interface KeyGenerator
      */
     byte[] generate(KeyGenerationParameters params);
 }
-

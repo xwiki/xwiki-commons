@@ -38,11 +38,14 @@ import org.xwiki.crypto.password.params.PBKDF2Parameters;
 public abstract class AbstractBcPBKDF2 extends AbstractBcKDF
 {
     private final PBEParametersGenerator generator;
+
     private final PBKDF2Parameters parameters;
+
     private final AlgorithmIdentifier algId;
 
     /**
      * Construct a new derivation function based on the given generator.
+     *
      * @param generator the Bouncy Castle generator to use.
      * @param parameters the parameter for initializing the generator.
      * @param algId the algorithm identifier of the pseudo random function used for this key derivation function.
@@ -57,7 +60,7 @@ public abstract class AbstractBcPBKDF2 extends AbstractBcKDF
     @Override
     public KeyDerivationFunctionParameters getParameters()
     {
-        return parameters;
+        return this.parameters;
     }
 
     /**
@@ -65,8 +68,8 @@ public abstract class AbstractBcPBKDF2 extends AbstractBcKDF
      */
     public AlgorithmIdentifier getPRFAlgorithmIdentifier()
     {
-        if (parameters.getPseudoRandomFuntionHint() != null) {
-            return algId;
+        if (this.parameters.getPseudoRandomFuntionHint() != null) {
+            return this.algId;
         }
         return null;
     }
@@ -74,17 +77,17 @@ public abstract class AbstractBcPBKDF2 extends AbstractBcKDF
     @Override
     public org.xwiki.crypto.params.cipher.symmetric.KeyParameter derive(byte[] password)
     {
-        generator.init(password, parameters.getSalt(), parameters.getIterationCount());
-        KeyParameter keyParam = (KeyParameter) generator.generateDerivedParameters(getKeySize() * 8);
+        this.generator.init(password, this.parameters.getSalt(), this.parameters.getIterationCount());
+        KeyParameter keyParam = (KeyParameter) this.generator.generateDerivedParameters(getKeySize() * 8);
         return new org.xwiki.crypto.params.cipher.symmetric.KeyParameter(keyParam.getKey());
     }
 
     @Override
     public KeyWithIVParameters derive(byte[] password, int ivSize)
     {
-        generator.init(password, parameters.getSalt(), parameters.getIterationCount());
+        this.generator.init(password, this.parameters.getSalt(), this.parameters.getIterationCount());
         ParametersWithIV keyParam =
-            (ParametersWithIV) generator.generateDerivedParameters(getKeySize() * 8, ivSize * 8);
+            (ParametersWithIV) this.generator.generateDerivedParameters(getKeySize() * 8, ivSize * 8);
         return new KeyWithIVParameters(((KeyParameter) keyParam.getParameters()).getKey(), keyParam.getIV());
     }
 

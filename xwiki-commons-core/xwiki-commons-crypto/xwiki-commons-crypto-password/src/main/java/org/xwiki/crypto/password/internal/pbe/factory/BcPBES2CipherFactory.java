@@ -119,10 +119,10 @@ public class BcPBES2CipherFactory extends AbstractBcPBES2CipherFactory
                 RC5CBCParameter rc5Param = RC5CBCParameter.getInstance(scheme.getParameters());
                 if (rc5Param.getBlockSizeInBits().intValue() > 64) {
                     // RC5-CBC-Pad with a 128bits block size
-                    return manager.getInstance(PasswordBasedCipherFactory.class, "PBES2-RC5-64-CBC-Pad");
+                    return this.manager.getInstance(PasswordBasedCipherFactory.class, "PBES2-RC5-64-CBC-Pad");
                 }
             }
-            return manager.getInstance(PasswordBasedCipherFactory.class, scheme.getAlgorithm().getId());
+            return this.manager.getInstance(PasswordBasedCipherFactory.class, scheme.getAlgorithm().getId());
         } catch (ComponentLookupException e) {
             throw new UnsupportedOperationException("Password based cipher factory not found.", e);
         }

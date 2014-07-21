@@ -38,10 +38,11 @@ import org.xwiki.crypto.params.cipher.symmetric.KeyParameter;
 public class BcDesCbcPaddedCipherFactory extends AbstractBcCbcPaddedCipherFactory
 {
     /** Supported key sizes for this Cipher. */
-    private static final int[] KEY_SIZES = new int[] {8};
+    private static final int[] KEY_SIZES = new int[] { 8 };
 
     @Override
-    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter) {
+    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter)
+    {
         return new DESParameters(parameter.getKey());
     }
 

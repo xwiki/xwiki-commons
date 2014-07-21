@@ -46,8 +46,7 @@ public interface CMSSignedDataVerifier
      * @return the result of that verification, and information contained in the signed data.
      * @throws java.security.GeneralSecurityException on error.
      */
-    CMSSignedDataVerified verify(byte[] signature)
-        throws GeneralSecurityException;
+    CMSSignedDataVerified verify(byte[] signature) throws GeneralSecurityException;
 
     /**
      * Verify all signature contained in the signature against the embedded data.
@@ -79,8 +78,7 @@ public interface CMSSignedDataVerifier
      * @return the result of that verification, and information contained in the signed data.
      * @throws java.security.GeneralSecurityException on error.
      */
-    CMSSignedDataVerified verify(byte[] signature, byte[] data)
-        throws GeneralSecurityException;
+    CMSSignedDataVerified verify(byte[] signature, byte[] data) throws GeneralSecurityException;
 
     /**
      * Verify all signature contained in the signature against the provided data.

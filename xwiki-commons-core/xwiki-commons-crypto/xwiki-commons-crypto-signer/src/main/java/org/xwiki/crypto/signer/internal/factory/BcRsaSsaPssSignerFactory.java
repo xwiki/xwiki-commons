@@ -27,7 +27,6 @@ import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.RSASSAPSSparams;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.crypto.AsymmetricBlockCipher;
 import org.bouncycastle.crypto.engines.RSABlindedEngine;
 import org.xwiki.component.annotation.Component;
@@ -89,7 +88,6 @@ public class BcRsaSsaPssSignerFactory extends AbstractBcPssSignerFactory
     protected AlgorithmIdentifier getSignerAlgorithmIdentifier(AsymmetricCipherParameters parameters)
     {
         if (parameters instanceof AsymmetricKeyParameters) {
-            AlgorithmIdentifier sha1AlgId = new AlgorithmIdentifier(X509ObjectIdentifiers.id_SHA1);
             return new AlgorithmIdentifier(PKCSObjectIdentifiers.id_RSASSA_PSS, DERNull.INSTANCE);
         } else if (parameters instanceof PssSignerParameters) {
             PssParameters pssParams = ((PssSignerParameters) parameters).getPssParameters();

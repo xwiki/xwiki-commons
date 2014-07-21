@@ -31,8 +31,8 @@ import org.bouncycastle.asn1.pkcs.EncryptionScheme;
 import org.bouncycastle.asn1.pkcs.KeyDerivationFunc;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.crypto.cipher.CipherFactory;
-import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
+import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.password.KeyDerivationFunction;
 import org.xwiki.crypto.password.PasswordBasedCipher;
 import org.xwiki.crypto.password.internal.pbe.AbstractBcPBES2Cipher;
@@ -57,7 +57,7 @@ public class BcPBES2AesCipherFactory extends AbstractBcPBES2CipherFactory
     @Override
     protected CipherFactory getCipherFactory()
     {
-        return cipherFactory;
+        return this.cipherFactory;
     }
 
     @Override
@@ -102,7 +102,7 @@ public class BcPBES2AesCipherFactory extends AbstractBcPBES2CipherFactory
             return 32;
         }
         throw new IllegalArgumentException("Unexpected algorithm identifier used for PBES2 AES encryption scheme: "
-                                            + algId.toString());
+            + algId.toString());
     }
 
     private ASN1ObjectIdentifier getAESAlgoritmIdentifier(int keySize)

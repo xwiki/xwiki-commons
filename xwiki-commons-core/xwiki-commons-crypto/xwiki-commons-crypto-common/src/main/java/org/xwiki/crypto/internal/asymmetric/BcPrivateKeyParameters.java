@@ -31,8 +31,7 @@ import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
  * @version $Id$
  * @since 5.4M1
  */
-public class BcPrivateKeyParameters extends AbstractBcAsymmetricKeyParameters
-                                    implements PrivateKeyParameters
+public class BcPrivateKeyParameters extends AbstractBcAsymmetricKeyParameters implements PrivateKeyParameters
 {
     /**
      * Encapsulate a given Bouncy Castle private key parameter.
@@ -52,7 +51,7 @@ public class BcPrivateKeyParameters extends AbstractBcAsymmetricKeyParameters
     public byte[] getEncoded()
     {
         try {
-            return PrivateKeyInfoFactory.createPrivateKeyInfo(parameters).getEncoded();
+            return PrivateKeyInfoFactory.createPrivateKeyInfo(this.parameters).getEncoded();
         } catch (IOException e) {
             return null;
         }

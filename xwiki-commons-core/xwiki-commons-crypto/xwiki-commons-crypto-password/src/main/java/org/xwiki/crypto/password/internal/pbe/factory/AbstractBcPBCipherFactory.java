@@ -49,7 +49,7 @@ public abstract class AbstractBcPBCipherFactory implements PasswordBasedCipherFa
      */
     protected KeyDerivationFunctionFactory getKDFFactory()
     {
-        return kdfFactory;
+        return this.kdfFactory;
     }
 
     private CipherFactory safeGetCipherFactory()

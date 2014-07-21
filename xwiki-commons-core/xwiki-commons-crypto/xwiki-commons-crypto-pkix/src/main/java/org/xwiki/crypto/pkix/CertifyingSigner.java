@@ -43,6 +43,7 @@ import org.xwiki.stability.Unstable;
 public final class CertifyingSigner implements Signer, ContentSigner
 {
     private final CertifiedPublicKey certifier;
+
     private final Signer signer;
 
     /**
@@ -76,113 +77,115 @@ public final class CertifyingSigner implements Signer, ContentSigner
      */
     public CertifiedPublicKey getCertifier()
     {
-        return certifier;
+        return this.certifier;
     }
 
     @Override
     public String getAlgorithmName()
     {
-        return signer.getAlgorithmName();
+        return this.signer.getAlgorithmName();
     }
 
     @Override
     public boolean isForSigning()
     {
-        return signer.isForSigning();
+        return this.signer.isForSigning();
     }
 
     @Override
     public FilterInputStream getInputStream(InputStream is)
     {
-        return signer.getInputStream(is);
+        return this.signer.getInputStream(is);
     }
 
     @Override
     public OutputStream getOutputStream()
     {
-        return signer.getOutputStream();
+        return this.signer.getOutputStream();
     }
 
     @Override
     public void update(byte input)
     {
-        signer.update(input);
+        this.signer.update(input);
     }
 
     @Override
     public void update(byte[] input)
     {
-        signer.update(input);
+        this.signer.update(input);
     }
 
     @Override
     public void update(byte[] input, int inputOffset, int inputLen)
     {
-        signer.update(input, inputOffset, inputLen);
+        this.signer.update(input, inputOffset, inputLen);
     }
 
     @Override
     public byte[] generate() throws GeneralSecurityException
     {
-        return signer.generate();
+        return this.signer.generate();
     }
 
     @Override
     public byte[] generate(byte[] input) throws GeneralSecurityException
     {
-        return signer.generate(input);
+        return this.signer.generate(input);
     }
 
     @Override
     public byte[] generate(byte[] input, int inputOffset, int inputLen) throws GeneralSecurityException
     {
-        return signer.generate(input, inputOffset, inputLen);
+        return this.signer.generate(input, inputOffset, inputLen);
     }
 
     @Override
     public boolean verify(byte[] signature) throws GeneralSecurityException
     {
-        return signer.verify(signature);
+        return this.signer.verify(signature);
     }
 
     @Override
     public boolean verify(byte[] signature, byte[] input) throws GeneralSecurityException
     {
-        return signer.verify(signature, input);
+        return this.signer.verify(signature, input);
     }
 
     @Override
     public boolean verify(byte[] signature, int signOffset, int signLen, byte[] input, int inputOffset, int inputLen)
         throws GeneralSecurityException
     {
-        return signer.verify(signature, signOffset, signLen, input, inputOffset, inputLen);
+        return this.signer.verify(signature, signOffset, signLen, input, inputOffset, inputLen);
     }
 
     @Override
     public byte[] getEncoded()
     {
-        return signer.getEncoded();
+        return this.signer.getEncoded();
     }
 
     // ContentSigner interface
 
     /**
      * {@inheritDoc}
+     *
      * @since 6.0M1
      */
     @Override
     public AlgorithmIdentifier getAlgorithmIdentifier()
     {
-        return BcUtils.getSignerAlgoritmIdentifier(signer);
+        return BcUtils.getSignerAlgoritmIdentifier(this.signer);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @since 6.0M1
      */
     @Override
     public byte[] getSignature()
     {
-        return ((ContentSigner) signer).getSignature();
+        return ((ContentSigner) this.signer).getSignature();
     }
 }

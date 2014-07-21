@@ -113,7 +113,7 @@ public class RSAKeyGenerationParameters extends GenericKeyGenerationParameters i
      */
     public BigInteger getPublicExponent()
     {
-        return publicExponent;
+        return this.publicExponent;
     }
 
     /**
@@ -121,6 +121,6 @@ public class RSAKeyGenerationParameters extends GenericKeyGenerationParameters i
      */
     public int getCertainty()
     {
-        return certainty;
+        return this.certainty;
     }
 }

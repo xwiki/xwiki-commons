@@ -55,14 +55,18 @@ import org.xwiki.crypto.password.params.PBKDF2Parameters;
 @Singleton
 public class BcPKCS5S2KeyDerivationFunctionFactory extends AbstractBcKDFFactory
 {
-    private static final AlgorithmIdentifier HMAC_SHA1   =
+    private static final AlgorithmIdentifier HMAC_SHA1 =
         new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA1, DERNull.INSTANCE);
+
     private static final AlgorithmIdentifier HMAC_SHA224 =
         new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA224, DERNull.INSTANCE);
+
     private static final AlgorithmIdentifier HMAC_SHA256 =
         new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA256, DERNull.INSTANCE);
+
     private static final AlgorithmIdentifier HMAC_SHA384 =
         new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA384, DERNull.INSTANCE);
+
     private static final AlgorithmIdentifier HMAC_SHA512 =
         new AlgorithmIdentifier(PKCSObjectIdentifiers.id_hmacWithSHA512, DERNull.INSTANCE);
 
@@ -88,22 +92,18 @@ public class BcPKCS5S2KeyDerivationFunctionFactory extends AbstractBcKDFFactory
         }
 
         return new AbstractBcPBKDF2(generator, (PBKDF2Parameters) params,
-                        (factory != null)
-                            ? toHmacAlgId(factory.getAlgorithmIdentifier())
-                            : HMAC_SHA1) {
+            (factory != null) ? toHmacAlgId(factory.getAlgorithmIdentifier()) : HMAC_SHA1)
+        {
             @Override
             public KeyDerivationFunc getKeyDerivationFunction()
             {
                 PBKDF2Parameters parameters = (PBKDF2Parameters) getParameters();
                 AlgorithmIdentifier algId = getPRFAlgorithmIdentifier();
                 return new KeyDerivationFunc(PKCSObjectIdentifiers.id_PBKDF2,
-                    (isKeySizeOverwritten()) ? new PBKDF2Params(parameters.getSalt(),
-                                                                parameters.getIterationCount(),
-                                                                algId)
-                                             : new PBKDF2Params(parameters.getSalt(),
-                                                                parameters.getIterationCount(),
-                                                                parameters.getKeySize(),
-                                                                algId));
+                    (isKeySizeOverwritten())
+                        ? new PBKDF2Params(parameters.getSalt(), parameters.getIterationCount(), algId)
+                        : new PBKDF2Params(parameters.getSalt(), parameters.getIterationCount(),
+                            parameters.getKeySize(), algId));
             }
         };
     }
@@ -131,7 +131,7 @@ public class BcPKCS5S2KeyDerivationFunctionFactory extends AbstractBcKDFFactory
     private BcDigestFactory getDigestFactory(String hint)
     {
         try {
-            DigestFactory factory = manager.getInstance(DigestFactory.class, hint);
+            DigestFactory factory = this.manager.getInstance(DigestFactory.class, hint);
 
             if (!(factory instanceof BcDigestFactory)) {
                 throw new IllegalArgumentException(
@@ -155,7 +155,7 @@ public class BcPKCS5S2KeyDerivationFunctionFactory extends AbstractBcKDFFactory
         } else if (algId.equals(NISTObjectIdentifiers.id_sha224)) {
             hmac = HMAC_SHA224;
         } else if (algId.equals(NISTObjectIdentifiers.id_sha256)) {
-            hmac =  HMAC_SHA256;
+            hmac = HMAC_SHA256;
         } else if (algId.equals(NISTObjectIdentifiers.id_sha384)) {
             hmac = HMAC_SHA384;
         } else if (algId.equals(NISTObjectIdentifiers.id_sha512)) {

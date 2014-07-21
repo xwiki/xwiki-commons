@@ -42,8 +42,7 @@ import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
  * @version $Id$
  * @since 5.4M1
  */
-public class BcPublicKeyParameters extends AbstractBcAsymmetricKeyParameters
-                                   implements PublicKeyParameters
+public class BcPublicKeyParameters extends AbstractBcAsymmetricKeyParameters implements PublicKeyParameters
 {
     /**
      * Encapsulate a given Bouncy Castle public key parameter.
@@ -65,15 +64,14 @@ public class BcPublicKeyParameters extends AbstractBcAsymmetricKeyParameters
      */
     public SubjectPublicKeyInfo getSubjectPublicKeyInfo() throws IOException
     {
-        if (parameters instanceof RSAKeyParameters) {
-            RSAKeyParameters params = (RSAKeyParameters) parameters;
+        if (this.parameters instanceof RSAKeyParameters) {
+            RSAKeyParameters params = (RSAKeyParameters) this.parameters;
 
             return new SubjectPublicKeyInfo(
                 new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE),
-                new RSAPublicKey(params.getModulus(), params.getExponent())
-            );
-        } else if (parameters instanceof DSAPublicKeyParameters) {
-            DSAPublicKeyParameters params = (DSAPublicKeyParameters) parameters;
+                new RSAPublicKey(params.getModulus(), params.getExponent()));
+        } else if (this.parameters instanceof DSAPublicKeyParameters) {
+            DSAPublicKeyParameters params = (DSAPublicKeyParameters) this.parameters;
             DSAParameters dsaParams = params.getParameters();
             DSAParameter algParams = null;
 
@@ -83,11 +81,10 @@ public class BcPublicKeyParameters extends AbstractBcAsymmetricKeyParameters
 
             return new SubjectPublicKeyInfo(
                 new AlgorithmIdentifier(X9ObjectIdentifiers.id_dsa, algParams),
-                new ASN1Integer(params.getY())
-            );
+                new ASN1Integer(params.getY()));
         } else {
             // Fallback to Bouncy Castle, not sure it will do anything useful however.
-            return SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(parameters);
+            return SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(this.parameters);
         }
     }
 

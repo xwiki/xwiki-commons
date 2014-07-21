@@ -30,7 +30,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Calls methods annotated with this annotation right after configured components are registered by
  * {@link org.xwiki.test.TestComponentManager}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

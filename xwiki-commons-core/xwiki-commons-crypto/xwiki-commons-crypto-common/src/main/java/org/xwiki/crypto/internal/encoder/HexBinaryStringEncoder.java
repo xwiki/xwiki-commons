@@ -51,7 +51,8 @@ public class HexBinaryStringEncoder extends AbstractBinaryStringEncoder
     @Override
     InternalBinaryStringEncoder getEncoder()
     {
-        return new AbstractBouncyCastleInternalBinaryStringEncoder(new HexEncoder(), BLOCK_SIZE, CHAR_SIZE) {
+        return new AbstractBouncyCastleInternalBinaryStringEncoder(new HexEncoder(), BLOCK_SIZE, CHAR_SIZE)
+        {
             @Override
             public boolean isValidEncoding(byte b)
             {

@@ -37,15 +37,12 @@ import org.xwiki.crypto.internal.asymmetric.BcAsymmetricKeyParameters;
 @Named("RSA")
 public class BcRSAKeyFactory extends AbstractBcKeyFactory
 {
-    private static final String NOT_RSA_KEY_ERROR = "Not an RSA key.";
-    private static final String KEY_ALGO_IS_ERROR = "Key algorithm is : ";
-
     private AsymmetricKeyInfoConverter keyInfoConverter = new KeyFactorySpi();
 
     @Override
     protected AsymmetricKeyInfoConverter getKeyInfoConverter()
     {
-        return keyInfoConverter;
+        return this.keyInfoConverter;
     }
 
     @Override

@@ -34,11 +34,11 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.crypto.DigestFactory;
 import org.xwiki.crypto.KeyParametersGenerator;
 import org.xwiki.crypto.internal.digest.factory.AbstractBcDigestFactory;
+import org.xwiki.crypto.params.generator.KeyGenerationParameters;
+import org.xwiki.crypto.params.generator.KeyParametersGenerationParameters;
 import org.xwiki.crypto.params.generator.asymmetric.DSAKeyGenerationParameters;
 import org.xwiki.crypto.params.generator.asymmetric.DSAKeyParametersGenerationParameters;
 import org.xwiki.crypto.params.generator.asymmetric.DSAKeyValidationParameters;
-import org.xwiki.crypto.params.generator.KeyGenerationParameters;
-import org.xwiki.crypto.params.generator.KeyParametersGenerationParameters;
 
 /**
  * DSA key parameters generator.
@@ -72,13 +72,13 @@ public class BcDSAKeyParameterGenerator implements KeyParametersGenerator
         }
 
         org.bouncycastle.crypto.params.DSAParameters dsaParams =
-            getDsaParameters(random.get(), (DSAKeyParametersGenerationParameters) parameters);
+            getDsaParameters(this.random.get(), (DSAKeyParametersGenerationParameters) parameters);
 
         org.bouncycastle.crypto.params.DSAValidationParameters dsaValidParams = dsaParams.getValidationParameters();
 
         return new DSAKeyGenerationParameters(dsaParams.getP(), dsaParams.getQ(), dsaParams.getG(),
             new DSAKeyValidationParameters(dsaValidParams.getSeed(), dsaValidParams.getCounter(),
-                                        getUsage(dsaValidParams.getUsageIndex())));
+                getUsage(dsaValidParams.getUsageIndex())));
     }
 
     /**
@@ -109,18 +109,20 @@ public class BcDSAKeyParameterGenerator implements KeyParametersGenerator
 
     /**
      * Create an instance of a DSA parameter generator using the appropriate hash algorithm.
+     *
      * @param hint hint of the hash algorithm to use.
      * @return a DSA parameter generator.
      */
-    private DSAParametersGenerator getGenerator(String hint) {
-        if (hint == null || hint.equals("SHA-1")) {
+    private DSAParametersGenerator getGenerator(String hint)
+    {
+        if (hint == null || "SHA-1".equals(hint)) {
             return new DSAParametersGenerator();
         }
 
         DigestFactory factory;
 
         try {
-            factory = manager.getInstance(DigestFactory.class, hint);
+            factory = this.manager.getInstance(DigestFactory.class, hint);
         } catch (ComponentLookupException e) {
             throw new UnsupportedOperationException("Cryptographic hash (digest) algorithm not found.", e);
         }
@@ -142,7 +144,8 @@ public class BcDSAKeyParameterGenerator implements KeyParametersGenerator
      * @param usage a key usage.
      * @return a BC key usage index.
      */
-    static int getUsageIndex(DSAKeyValidationParameters.Usage usage) {
+    static int getUsageIndex(DSAKeyValidationParameters.Usage usage)
+    {
         if (usage == DSAKeyValidationParameters.Usage.DIGITAL_SIGNATURE) {
             return DSAParameterGenerationParameters.DIGITAL_SIGNATURE_USAGE;
         } else if (usage == DSAKeyValidationParameters.Usage.KEY_ESTABLISHMENT) {
@@ -153,10 +156,12 @@ public class BcDSAKeyParameterGenerator implements KeyParametersGenerator
 
     /**
      * Convert usage index to key usage.
+     *
      * @param usage usage index.
      * @return key usage.
      */
-    private static DSAKeyValidationParameters.Usage getUsage(int usage) {
+    private static DSAKeyValidationParameters.Usage getUsage(int usage)
+    {
         if (usage == DSAParameterGenerationParameters.DIGITAL_SIGNATURE_USAGE) {
             return DSAKeyValidationParameters.Usage.DIGITAL_SIGNATURE;
         } else if (usage == DSAParameterGenerationParameters.KEY_ESTABLISHMENT_USAGE) {

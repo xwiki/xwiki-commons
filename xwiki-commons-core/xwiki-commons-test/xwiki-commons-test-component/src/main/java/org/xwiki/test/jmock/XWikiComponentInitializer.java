@@ -29,7 +29,7 @@ import org.xwiki.test.internal.MockConfigurationSource;
 
 /**
  * Initialize a component manager used in unit tests.
- * 
+ *
  * @version $Id$
  * @deprecated starting with 4.3.1 use {@link org.xwiki.test.ComponentManagerRule} instead
  */
@@ -101,6 +101,6 @@ public class XWikiComponentInitializer
      */
     public MockConfigurationSource getConfigurationSource()
     {
-        return configurationSource;
+        return this.configurationSource;
     }
 }

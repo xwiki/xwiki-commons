@@ -41,6 +41,7 @@ public interface KeyParametersGenerator
 
     /**
      * Generate a new key pair based on given parameters.
+     *
      * @param params the key generation parameters.
      * @return a new key pair based the given parameters.
      */

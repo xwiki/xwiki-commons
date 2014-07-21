@@ -56,6 +56,6 @@ public class X509CertificateParameters implements CertificateParameters
      */
     public X509Extensions getExtensions()
     {
-        return extensions;
+        return this.extensions;
     }
 }

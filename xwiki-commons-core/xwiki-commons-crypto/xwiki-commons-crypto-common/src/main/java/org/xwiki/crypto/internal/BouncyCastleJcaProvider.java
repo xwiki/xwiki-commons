@@ -47,6 +47,6 @@ public class BouncyCastleJcaProvider implements Provider<java.security.Provider>
     @Override
     public java.security.Provider get()
     {
-        return bcProvider;
+        return this.bcProvider;
     }
 }

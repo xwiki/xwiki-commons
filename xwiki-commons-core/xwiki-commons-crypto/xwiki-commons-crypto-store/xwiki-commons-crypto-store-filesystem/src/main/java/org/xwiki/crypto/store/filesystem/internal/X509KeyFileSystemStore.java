@@ -54,6 +54,7 @@ import org.xwiki.crypto.store.StoreReference;
 public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implements KeyStore
 {
     private static final String PRIVATE_KEY = "PRIVATE KEY";
+
     private static final String ENCRYPTED_PRIVATE_KEY = "ENCRYPTED " + PRIVATE_KEY;
 
     /**
@@ -80,7 +81,7 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
         byte[] key;
 
         try {
-            key = encryptor.encrypt(password, keyPair.getPrivateKey());
+            key = this.encryptor.encrypt(password, keyPair.getPrivateKey());
         } catch (Exception e) {
             throw new KeyStoreException(String.format("Error while encrypting private key to store a key pair in [%s]",
                 store), e);
@@ -206,14 +207,15 @@ public class X509KeyFileSystemStore extends AbstractX509FileSystemStore implemen
         return null;
     }
 
+    @Override
     protected Object processObject(BufferedReader in, String line, byte[] password)
         throws IOException, GeneralSecurityException
     {
         if (line.contains(PEM_BEGIN + PRIVATE_KEY + DASHES)) {
-            return keyFactory.fromPKCS8(readBytes(in, PEM_END + PRIVATE_KEY + DASHES));
+            return this.keyFactory.fromPKCS8(readBytes(in, PEM_END + PRIVATE_KEY + DASHES));
         }
         if (line.contains(PEM_BEGIN + ENCRYPTED_PRIVATE_KEY + DASHES)) {
-            return encryptor.decrypt(password, readBytes(in, PEM_END + ENCRYPTED_PRIVATE_KEY + DASHES));
+            return this.encryptor.decrypt(password, readBytes(in, PEM_END + ENCRYPTED_PRIVATE_KEY + DASHES));
         }
         return super.processObject(in, line, password);
     }

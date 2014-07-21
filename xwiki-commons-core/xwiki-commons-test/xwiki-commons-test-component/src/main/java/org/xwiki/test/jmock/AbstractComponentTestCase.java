@@ -31,9 +31,10 @@ import org.xwiki.test.internal.MockConfigurationSource;
  * Tests which needs to have XWiki Components set up should extend this class which makes the Component Manager
  * available. Use this class for JUnit 4.x tests.
  * <p>
- * XWiki 2.2M1 also introduced {@link AbstractMockingComponentTestCase} which provides automatic mocking
- * for injected component dependencies and which is thus better when writing pure unit tests, isolated from the rest.
- * </p><p>
+ * XWiki 2.2M1 also introduced {@link AbstractMockingComponentTestCase} which provides automatic mocking for injected
+ * component dependencies and which is thus better when writing pure unit tests, isolated from the rest.
+ * </p>
+ * <p>
  * Consider using this class only for integration tests.
  * </p>
  *
@@ -95,7 +96,7 @@ public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
     /**
      * @since 3.2M3
      */
-    public void registerComponent(Class< ? > componentClass) throws Exception
+    public void registerComponent(Class<?> componentClass) throws Exception
     {
         if (this.componentLoader == null) {
             this.componentLoader = new ComponentAnnotationLoader();

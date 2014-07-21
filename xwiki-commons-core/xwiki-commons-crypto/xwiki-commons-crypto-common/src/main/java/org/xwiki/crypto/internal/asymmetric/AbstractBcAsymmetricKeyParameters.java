@@ -46,13 +46,13 @@ public abstract class AbstractBcAsymmetricKeyParameters implements AsymmetricKey
     @Override
     public boolean isPrivate()
     {
-        return parameters.isPrivate();
+        return this.parameters.isPrivate();
     }
 
     @Override
     public AsymmetricKeyParameter getParameters()
     {
-        return parameters;
+        return this.parameters;
     }
 
     @Override
@@ -60,12 +60,12 @@ public abstract class AbstractBcAsymmetricKeyParameters implements AsymmetricKey
     {
         return this == obj
             || (obj instanceof BcAsymmetricKeyParameters
-                && EqualsBuilder.reflectionEquals(parameters, ((BcAsymmetricKeyParameters) obj).getParameters()));
+            && EqualsBuilder.reflectionEquals(this.parameters, ((BcAsymmetricKeyParameters) obj).getParameters()));
     }
 
     @Override
     public int hashCode()
     {
-        return parameters.hashCode();
+        return this.parameters.hashCode();
     }
 }

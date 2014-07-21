@@ -39,9 +39,13 @@ import org.bouncycastle.asn1.DERSequence;
 public class ScryptKDFParams extends ASN1Object
 {
     private ASN1OctetString salt;
+
     private ASN1Integer costParameter;
+
     private ASN1Integer blockSize;
+
     private ASN1Integer parallelizationParameter;
+
     private ASN1Integer keyLength;
 
     /**
@@ -77,25 +81,27 @@ public class ScryptKDFParams extends ASN1Object
 
     /**
      * Create a new instance from a ASN.1 sequence.
+     *
      * @param seq the ASN.1 sequence to parse.
      */
     private ScryptKDFParams(ASN1Sequence seq)
     {
-        salt = (ASN1OctetString) seq.getObjectAt(0);
-        costParameter = (ASN1Integer) seq.getObjectAt(1);
-        blockSize = (ASN1Integer) seq.getObjectAt(2);
-        parallelizationParameter = (ASN1Integer) seq.getObjectAt(3);
+        this.salt = (ASN1OctetString) seq.getObjectAt(0);
+        this.costParameter = (ASN1Integer) seq.getObjectAt(1);
+        this.blockSize = (ASN1Integer) seq.getObjectAt(2);
+        this.parallelizationParameter = (ASN1Integer) seq.getObjectAt(3);
         if (seq.size() > 4) {
-            keyLength = (ASN1Integer) seq.getObjectAt(4);
+            this.keyLength = (ASN1Integer) seq.getObjectAt(4);
         }
     }
 
     /**
      * Get an instance from an ASN.1 object.
+     *
      * @param obj an ASN.1 object.
      * @return an instance.
      */
-    public static ScryptKDFParams getInstance(Object  obj)
+    public static ScryptKDFParams getInstance(Object obj)
     {
         if (obj instanceof ScryptKDFParams) {
             return (ScryptKDFParams) obj;
@@ -111,7 +117,7 @@ public class ScryptKDFParams extends ASN1Object
      */
     public byte[] getSalt()
     {
-        return salt.getOctets();
+        return this.salt.getOctets();
     }
 
     /**
@@ -119,7 +125,7 @@ public class ScryptKDFParams extends ASN1Object
      */
     public BigInteger getCostParameter()
     {
-        return costParameter.getValue();
+        return this.costParameter.getValue();
     }
 
     /**
@@ -127,7 +133,7 @@ public class ScryptKDFParams extends ASN1Object
      */
     public BigInteger getBlockSize()
     {
-        return blockSize.getValue();
+        return this.blockSize.getValue();
     }
 
     /**
@@ -135,7 +141,7 @@ public class ScryptKDFParams extends ASN1Object
      */
     public BigInteger getParallelizationParameter()
     {
-        return parallelizationParameter.getValue();
+        return this.parallelizationParameter.getValue();
     }
 
     /**
@@ -143,25 +149,26 @@ public class ScryptKDFParams extends ASN1Object
      */
     public BigInteger getKeyLength()
     {
-        if (keyLength == null) {
+        if (this.keyLength == null) {
             return null;
         }
-        return keyLength.getValue();
+        return this.keyLength.getValue();
     }
 
     /**
      * @return an ASN.1 structure representing these parameters.
      */
+    @Override
     public ASN1Primitive toASN1Primitive()
     {
         ASN1EncodableVector v = new ASN1EncodableVector();
 
-        v.add(salt);
-        v.add(costParameter);
-        v.add(blockSize);
-        v.add(parallelizationParameter);
-        if (keyLength != null) {
-            v.add(keyLength);
+        v.add(this.salt);
+        v.add(this.costParameter);
+        v.add(this.blockSize);
+        v.add(this.parallelizationParameter);
+        if (this.keyLength != null) {
+            v.add(this.keyLength);
         }
 
         return new DERSequence(v);

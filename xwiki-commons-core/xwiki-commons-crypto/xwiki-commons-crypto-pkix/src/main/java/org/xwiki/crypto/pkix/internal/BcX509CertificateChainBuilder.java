@@ -81,7 +81,8 @@ public class BcX509CertificateChainBuilder implements CertificateChainBuilder
         return (issuer != null && !issuer.equals(certificate)) ? build(result, issuer, provider) : result;
     }
 
-    private CertifiedPublicKey getIssuer(X509CertifiedPublicKey cert, CertificateProvider provider) {
+    private CertifiedPublicKey getIssuer(X509CertifiedPublicKey cert, CertificateProvider provider)
+    {
         X509Extensions extensions = cert.getExtensions();
 
         if (extensions != null) {
@@ -109,7 +110,8 @@ public class BcX509CertificateChainBuilder implements CertificateChainBuilder
         return null;
     }
 
-    private CertifiedPublicKey validatedIssuer(X509CertifiedPublicKey cert, CertifiedPublicKey issuerCert) {
+    private CertifiedPublicKey validatedIssuer(X509CertifiedPublicKey cert, CertifiedPublicKey issuerCert)
+    {
         if (issuerCert == null || !(issuerCert instanceof X509CertifiedPublicKey)) {
             return null;
         }
@@ -118,8 +120,7 @@ public class BcX509CertificateChainBuilder implements CertificateChainBuilder
 
         if (issuer.getVersionNumber() == 3) {
             X509Extensions extensions = issuer.getExtensions();
-            if (extensions == null
-                || !extensions.hasCertificateAuthorityBasicConstraints()) {
+            if (extensions == null || !extensions.hasCertificateAuthorityBasicConstraints()) {
                 return null;
             }
 

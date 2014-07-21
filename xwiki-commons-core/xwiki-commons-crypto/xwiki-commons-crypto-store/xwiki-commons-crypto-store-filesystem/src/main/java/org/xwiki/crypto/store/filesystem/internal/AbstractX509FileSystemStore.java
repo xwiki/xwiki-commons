@@ -45,10 +45,15 @@ import org.xwiki.crypto.store.StoreReference;
 public abstract class AbstractX509FileSystemStore
 {
     protected static final String CERTIFICATE = "CERTIFICATE";
+
     protected static final String DASHES = "-----";
+
     protected static final String PEM_BEGIN = DASHES + "BEGIN ";
+
     protected static final String PEM_END = DASHES + "END ";
+
     protected static final String KEY_FILE_EXTENSION = ".key";
+
     protected static final String CERTIFICATE_FILE_EXTENSION = ".cert";
 
     /**
@@ -90,7 +95,7 @@ public abstract class AbstractX509FileSystemStore
     protected void write(BufferedWriter out, String type, byte[] data) throws IOException
     {
         writeHeader(out, type);
-        out.write(base64.encode(data, 64));
+        out.write(this.base64.encode(data, 64));
         out.newLine();
         writeFooter(out, type);
     }
@@ -178,7 +183,7 @@ public abstract class AbstractX509FileSystemStore
     {
         byte[] keyId = publicKey.getSubjectKeyIdentifier();
         if (keyId != null) {
-            return base64.encode(keyId);
+            return this.base64.encode(keyId);
         }
         return publicKey.getSerialNumber().toString() + ", " + publicKey.getIssuer().getName();
     }
@@ -221,7 +226,7 @@ public abstract class AbstractX509FileSystemStore
         throws IOException, GeneralSecurityException
     {
         if (line.contains(PEM_BEGIN + CERTIFICATE + DASHES)) {
-            return certificateFactory.decode(readBytes(in, PEM_END + CERTIFICATE + DASHES));
+            return this.certificateFactory.decode(readBytes(in, PEM_END + CERTIFICATE + DASHES));
         }
         return null;
     }
@@ -246,6 +251,6 @@ public abstract class AbstractX509FileSystemStore
             buf.append(line.trim());
         }
 
-        return base64.decode(buf.toString());
+        return this.base64.decode(buf.toString());
     }
 }

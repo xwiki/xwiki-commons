@@ -66,12 +66,11 @@ public class BcX509CertificateGeneratorFactory implements CertificateGeneratorFa
 
         switch (params.getX509Version()) {
             case V1:
-                return new BcX509v1CertificateGenerator(signer, params, signerFactory, randomProvider.get());
+                return new BcX509v1CertificateGenerator(signer, params, this.signerFactory, this.randomProvider.get());
             case V3:
-                return new BcX509v3CertificateGenerator(signer, params, signerFactory, randomProvider.get());
+                return new BcX509v3CertificateGenerator(signer, params, this.signerFactory, this.randomProvider.get());
             default:
-                throw new IllegalArgumentException("Unknown X.509 certificate version: "
-                    + params.getX509Version());
+                throw new IllegalArgumentException("Unknown X.509 certificate version: " + params.getX509Version());
         }
     }
 }

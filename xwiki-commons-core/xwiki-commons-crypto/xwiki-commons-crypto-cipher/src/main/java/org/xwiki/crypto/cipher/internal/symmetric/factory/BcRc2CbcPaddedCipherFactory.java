@@ -25,8 +25,8 @@ import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.engines.RC2Engine;
 import org.bouncycastle.crypto.params.RC2Parameters;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.crypto.params.cipher.symmetric.RC2KeyParameters;
 import org.xwiki.crypto.params.cipher.symmetric.KeyParameter;
+import org.xwiki.crypto.params.cipher.symmetric.RC2KeyParameters;
 
 /**
  * Cipher factory for the RC2 Cipher.
@@ -42,7 +42,8 @@ public class BcRc2CbcPaddedCipherFactory extends AbstractBcCbcPaddedCipherFactor
     private static final int[] KEY_SIZES = newKeySizeArray(1, 64, 1);
 
     @Override
-    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter) {
+    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter)
+    {
         if (parameter instanceof RC2KeyParameters) {
             return new RC2Parameters(parameter.getKey(), ((RC2KeyParameters) parameter).getEffectiveBits());
         } else {

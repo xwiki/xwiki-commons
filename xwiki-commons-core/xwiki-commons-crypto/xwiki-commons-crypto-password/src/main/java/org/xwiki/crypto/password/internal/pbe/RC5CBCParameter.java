@@ -43,12 +43,16 @@ import org.bouncycastle.asn1.DERSequence;
 public class RC5CBCParameter extends ASN1Object
 {
     private ASN1Integer version;
+
     private ASN1Integer rounds;
+
     private ASN1Integer blockSizeInBits;
+
     private ASN1OctetString iv;
 
     /**
      * Create a new instance without the optional initialization vector.
+     *
      * @param rounds the number of "rounds" in the encryption operation between 8 and 127.
      * @param blockSizeInBits the block size in bits, may be 64 or 128.
      */
@@ -59,6 +63,7 @@ public class RC5CBCParameter extends ASN1Object
 
     /**
      * Create a new instance with the optional initialization vector.
+     *
      * @param rounds the number of "rounds" in the encryption operation between 8 and 127.
      * @param blockSizeInBits the block size in bits, may be 64 or 128.
      * @param iv the initialization vector.
@@ -70,6 +75,7 @@ public class RC5CBCParameter extends ASN1Object
 
     /**
      * Create a new instance with the optional initialization vector and a specific parameter version.
+     *
      * @param parameterVersion the version of this parameter structure, should be v1-0 (16).
      * @param rounds the number of "rounds" in the encryption operation between 8 and 127.
      * @param blockSizeInBits the block size in bits, may be 64 or 128.
@@ -85,24 +91,26 @@ public class RC5CBCParameter extends ASN1Object
 
     /**
      * Create a new instance from a ASN.1 sequence.
+     *
      * @param seq the ASN.1 sequence to parse.
      */
     private RC5CBCParameter(ASN1Sequence seq)
     {
-        version = (ASN1Integer) seq.getObjectAt(0);
-        rounds = (ASN1Integer) seq.getObjectAt(1);
-        blockSizeInBits = (ASN1Integer) seq.getObjectAt(2);
+        this.version = (ASN1Integer) seq.getObjectAt(0);
+        this.rounds = (ASN1Integer) seq.getObjectAt(1);
+        this.blockSizeInBits = (ASN1Integer) seq.getObjectAt(2);
         if (seq.size() > 3) {
-            iv = (ASN1OctetString) seq.getObjectAt(3);
+            this.iv = (ASN1OctetString) seq.getObjectAt(3);
         }
     }
 
     /**
      * Get an instance from an ASN.1 object.
+     *
      * @param obj an ASN.1 object.
      * @return an instance.
      */
-    public static RC5CBCParameter getInstance(Object  obj)
+    public static RC5CBCParameter getInstance(Object obj)
     {
         if (obj instanceof RC5CBCParameter) {
             return (RC5CBCParameter) obj;
@@ -118,7 +126,7 @@ public class RC5CBCParameter extends ASN1Object
      */
     public BigInteger getRC5ParameterVersion()
     {
-        return version.getValue();
+        return this.version.getValue();
     }
 
     /**
@@ -126,7 +134,7 @@ public class RC5CBCParameter extends ASN1Object
      */
     public BigInteger getRounds()
     {
-        return rounds.getValue();
+        return this.rounds.getValue();
     }
 
     /**
@@ -134,7 +142,7 @@ public class RC5CBCParameter extends ASN1Object
      */
     public BigInteger getBlockSizeInBits()
     {
-        return blockSizeInBits.getValue();
+        return this.blockSizeInBits.getValue();
     }
 
     /**
@@ -142,24 +150,25 @@ public class RC5CBCParameter extends ASN1Object
      */
     public byte[] getIV()
     {
-        if (iv == null) {
+        if (this.iv == null) {
             return null;
         }
-        return iv.getOctets();
+        return this.iv.getOctets();
     }
 
     /**
      * @return an ASN.1 structure representing these parameters.
      */
+    @Override
     public ASN1Primitive toASN1Primitive()
     {
-        ASN1EncodableVector  v = new ASN1EncodableVector();
+        ASN1EncodableVector v = new ASN1EncodableVector();
 
-        v.add(version);
-        v.add(rounds);
-        v.add(blockSizeInBits);
-        if (iv != null) {
-            v.add(iv);
+        v.add(this.version);
+        v.add(this.rounds);
+        v.add(this.blockSizeInBits);
+        if (this.iv != null) {
+            v.add(this.iv);
         }
 
         return new DERSequence(v);

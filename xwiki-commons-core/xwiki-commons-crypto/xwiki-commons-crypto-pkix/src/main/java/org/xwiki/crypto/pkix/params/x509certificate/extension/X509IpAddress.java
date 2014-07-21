@@ -99,11 +99,11 @@ public class X509IpAddress implements X509StringGeneralName, BcGeneralName
      */
     public InetAddress getIpAddress() throws UnknownHostException
     {
-        byte[] ip = ipAddress;
+        byte[] ip = this.ipAddress;
 
         if (ip.length == 8 || ip.length == 32) {
             ip = new byte[ip.length / 2];
-            System.arraycopy(ipAddress, 0, ip, 0, ip.length);
+            System.arraycopy(this.ipAddress, 0, ip, 0, ip.length);
         }
 
         return InetAddress.getByAddress(ip);
@@ -115,12 +115,12 @@ public class X509IpAddress implements X509StringGeneralName, BcGeneralName
      */
     public InetAddress getIpMask() throws UnknownHostException
     {
-        if (ipAddress.length != 8 && ipAddress.length != 32) {
+        if (this.ipAddress.length != 8 && this.ipAddress.length != 32) {
             return null;
         }
 
-        byte[] mask = new byte[ipAddress.length / 2];
-        System.arraycopy(ipAddress, mask.length, mask, 0, mask.length);
+        byte[] mask = new byte[this.ipAddress.length / 2];
+        System.arraycopy(this.ipAddress, mask.length, mask, 0, mask.length);
 
         return InetAddress.getByAddress(mask);
     }
@@ -129,18 +129,18 @@ public class X509IpAddress implements X509StringGeneralName, BcGeneralName
     public String getName()
     {
         try {
-            if (ipAddress.length != 8 && ipAddress.length != 32) {
+            if (this.ipAddress.length != 8 && this.ipAddress.length != 32) {
                 return getIpAddress().getHostAddress();
             }
             return getIpAddress().getHostAddress() + "/" + getIpMask().getHostAddress();
         } catch (UnknownHostException e) {
-            return Arrays.toString(ipAddress);
+            return Arrays.toString(this.ipAddress);
         }
     }
 
     @Override
     public GeneralName getGeneralName()
     {
-        return new GeneralName(GeneralName.iPAddress, new DEROctetString(ipAddress));
+        return new GeneralName(GeneralName.iPAddress, new DEROctetString(this.ipAddress));
     }
 }

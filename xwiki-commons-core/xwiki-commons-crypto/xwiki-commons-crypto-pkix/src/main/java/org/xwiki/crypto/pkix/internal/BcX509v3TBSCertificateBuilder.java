@@ -48,56 +48,56 @@ public class BcX509v3TBSCertificateBuilder implements BcX509TBSCertificateBuilde
     @Override
     public BcX509TBSCertificateBuilder setSerialNumber(BigInteger serial)
     {
-        tbsGen.setSerialNumber(new ASN1Integer(serial));
+        this.tbsGen.setSerialNumber(new ASN1Integer(serial));
         return this;
     }
 
     @Override
     public BcX509TBSCertificateBuilder setSubjectPublicKeyInfo(PublicKeyParameters subject)
     {
-        tbsGen.setSubjectPublicKeyInfo(BcUtils.getSubjectPublicKeyInfo(subject));
+        this.tbsGen.setSubjectPublicKeyInfo(BcUtils.getSubjectPublicKeyInfo(subject));
         return this;
     }
 
     @Override
     public BcX509TBSCertificateBuilder setIssuer(PrincipalIndentifier issuer)
     {
-        tbsGen.setIssuer(BcUtils.getX500Name(issuer));
+        this.tbsGen.setIssuer(BcUtils.getX500Name(issuer));
         return this;
     }
 
     @Override
     public BcX509TBSCertificateBuilder setSubject(PrincipalIndentifier subject)
     {
-        tbsGen.setSubject(BcUtils.getX500Name(subject));
+        this.tbsGen.setSubject(BcUtils.getX500Name(subject));
         return this;
     }
 
     @Override
     public BcX509TBSCertificateBuilder setStartDate(Date time)
     {
-        tbsGen.setStartDate(new Time(time));
+        this.tbsGen.setStartDate(new Time(time));
         return this;
     }
 
     @Override
     public BcX509TBSCertificateBuilder setEndDate(Date time)
     {
-        tbsGen.setEndDate(new Time(time));
+        this.tbsGen.setEndDate(new Time(time));
         return this;
     }
 
     @Override
     public BcX509TBSCertificateBuilder setSignature(Signer signer)
     {
-        tbsGen.setSignature(BcUtils.getSignerAlgoritmIdentifier(signer));
+        this.tbsGen.setSignature(BcUtils.getSignerAlgoritmIdentifier(signer));
         return this;
     }
 
     @Override
     public TBSCertificate build()
     {
-        return tbsGen.generateTBSCertificate();
+        return this.tbsGen.generateTBSCertificate();
     }
 
     /**
@@ -124,7 +124,7 @@ public class BcX509v3TBSCertificateBuilder implements BcX509TBSCertificateBuilde
 
         if (!extBuilder.isEmpty())
         {
-            tbsGen.setExtensions(((BcX509Extensions) extBuilder.build()).getExtensions());
+            this.tbsGen.setExtensions(((BcX509Extensions) extBuilder.build()).getExtensions());
         }
         return this;
     }
@@ -145,8 +145,6 @@ public class BcX509v3TBSCertificateBuilder implements BcX509TBSCertificateBuilde
     {
         DefaultX509ExtensionBuilder extBuilder = new DefaultX509ExtensionBuilder();
 
-
-
         extBuilder.addAuthorityKeyIdentifier(issuer)
             .addSubjectKeyIdentifier(subject)
             .addExtensions(extensions1)
@@ -154,7 +152,7 @@ public class BcX509v3TBSCertificateBuilder implements BcX509TBSCertificateBuilde
 
         if (!extBuilder.isEmpty())
         {
-            tbsGen.setExtensions(((BcX509Extensions) extBuilder.build()).getExtensions());
+            this.tbsGen.setExtensions(((BcX509Extensions) extBuilder.build()).getExtensions());
         }
         return this;
     }

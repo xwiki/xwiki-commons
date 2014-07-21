@@ -35,7 +35,8 @@ public class X509CertificateGenerationParameters implements CertificateGeneratio
     /**
      * X.509 version.
      */
-    public static enum Version {
+    public static enum Version
+    {
         /**
          * Request a version 1 X.509 certificate.
          */
@@ -55,7 +56,9 @@ public class X509CertificateGenerationParameters implements CertificateGeneratio
     private static final int DEFAULT_VALIDITY = 500;
 
     private final Version version;
+
     private final int validity;
+
     private final X509Extensions extensions;
 
     /**
@@ -129,7 +132,7 @@ public class X509CertificateGenerationParameters implements CertificateGeneratio
      */
     public Version getX509Version()
     {
-        return version;
+        return this.version;
     }
 
     /**
@@ -137,7 +140,7 @@ public class X509CertificateGenerationParameters implements CertificateGeneratio
      */
     public int getValidity()
     {
-        return validity;
+        return this.validity;
     }
 
     /**
@@ -145,6 +148,6 @@ public class X509CertificateGenerationParameters implements CertificateGeneratio
      */
     public X509Extensions getExtensions()
     {
-        return extensions;
+        return this.extensions;
     }
 }

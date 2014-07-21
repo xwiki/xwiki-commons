@@ -108,19 +108,20 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     @Before
     public void configure() throws Exception
     {
-        encryptor = mocker.getComponentUnderTest();
-        keyParameters = ((AsymmetricKeyFactory)mocker.getInstance(AsymmetricKeyFactory.class)).fromPKCS8(RSAKEY);
+        this.encryptor = this.mocker.getComponentUnderTest();
+        this.keyParameters =
+            ((AsymmetricKeyFactory) this.mocker.getInstance(AsymmetricKeyFactory.class)).fromPKCS8(RSAKEY);
     }
 
     private void testPBES2Conformance(String hint, String iv, int keySize, String salt, byte[] data) throws Exception
     {
-        assertThat(encryptor.decrypt(PASSWORD, data).getEncoded(), equalTo(RSAKEY));
-        assertThat(encryptor.decrypt(PASSWORD, new EncryptedPrivateKeyInfo(data)).getEncoded(), equalTo(RSAKEY));
+        assertThat(this.encryptor.decrypt(PASSWORD, data).getEncoded(), equalTo(RSAKEY));
+        assertThat(this.encryptor.decrypt(PASSWORD, new EncryptedPrivateKeyInfo(data)).getEncoded(), equalTo(RSAKEY));
 
-        assertThat(encryptor.encrypt(hint,
+        assertThat(this.encryptor.encrypt(hint,
             new KeyWithIVParameters(PASSWORD, Hex.decode(iv)),
             new PBKDF2Parameters(keySize, 2048, Hex.decode(salt)),
-            keyParameters), equalTo(data));
+            this.keyParameters), equalTo(data));
     }
 
     @Test
@@ -305,16 +306,15 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     @Test
     public void testEncryptDecryptPBES2AES() throws Exception
     {
-        assertThat(encryptor.decrypt(PASSWORD,
-                encryptor.encrypt("PBES2-AES-CBC-Pad", PASSWORD, new PBKDF2Parameters(), keyParameters)
+        assertThat(this.encryptor.decrypt(PASSWORD,
+            this.encryptor.encrypt("PBES2-AES-CBC-Pad", PASSWORD, new PBKDF2Parameters(), this.keyParameters)
             ).getEncoded(), equalTo(RSAKEY));
     }
 
     @Test
     public void testEncryptDecryptDefault() throws Exception
     {
-        assertThat(encryptor.decrypt(PASSWORD,
-            encryptor.encrypt(PASSWORD, keyParameters)
-        ).getEncoded(), equalTo(RSAKEY));
+        assertThat(this.encryptor.decrypt(PASSWORD, this.encryptor.encrypt(PASSWORD, this.keyParameters)).getEncoded(),
+            equalTo(RSAKEY));
     }
 }

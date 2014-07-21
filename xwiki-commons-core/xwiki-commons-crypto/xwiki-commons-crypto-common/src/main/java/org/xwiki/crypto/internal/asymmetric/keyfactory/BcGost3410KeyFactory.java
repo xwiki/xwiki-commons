@@ -42,7 +42,7 @@ public class BcGost3410KeyFactory extends AbstractBcKeyFactory
     @Override
     protected AsymmetricKeyInfoConverter getKeyInfoConverter()
     {
-        return keyInfoConverter;
+        return this.keyInfoConverter;
     }
 
     @Override

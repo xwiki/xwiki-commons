@@ -33,8 +33,7 @@ import org.xwiki.crypto.params.cipher.symmetric.KeyParameter;
  * @version $Id$
  * @since 5.4M1
  */
-@Component(hints = { "DESede/CBC/PKCS5Padding", "DESede/CBC/PKCS7Padding",
-                     "1.2.840.113549.3.7" })
+@Component(hints = { "DESede/CBC/PKCS5Padding", "DESede/CBC/PKCS7Padding", "1.2.840.113549.3.7" })
 @Singleton
 public class BcDesEdeCbcPaddedCipherFactory extends AbstractBcCbcPaddedCipherFactory
 {
@@ -42,7 +41,8 @@ public class BcDesEdeCbcPaddedCipherFactory extends AbstractBcCbcPaddedCipherFac
     private static final int[] KEY_SIZES = newKeySizeArray(16, 24, 8);
 
     @Override
-    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter) {
+    protected org.bouncycastle.crypto.CipherParameters getBcKeyParameter(KeyParameter parameter)
+    {
         return new DESedeParameters(parameter.getKey());
     }
 

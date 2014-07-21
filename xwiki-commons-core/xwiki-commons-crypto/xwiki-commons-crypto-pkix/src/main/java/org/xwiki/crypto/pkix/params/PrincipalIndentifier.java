@@ -49,5 +49,6 @@ public interface PrincipalIndentifier
      * @param o object to check equality with.
      * @return true if objects are equals.
      */
+    @Override
     boolean equals(Object o);
 }

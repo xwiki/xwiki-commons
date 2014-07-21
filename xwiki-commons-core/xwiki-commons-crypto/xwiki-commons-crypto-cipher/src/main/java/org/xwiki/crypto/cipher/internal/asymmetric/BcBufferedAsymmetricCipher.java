@@ -42,9 +42,10 @@ public class BcBufferedAsymmetricCipher implements AsymmetricCipher
     private static final RuntimeException NO_STREAMING_ERROR =
         new UnsupportedOperationException("Asymmetric cipher does not support being streamed.");
 
-
     private final BufferedAsymmetricBlockCipher cipher;
+
     private final boolean forEncryption;
+
     private final String algorithmName;
 
     /**
@@ -67,25 +68,25 @@ public class BcBufferedAsymmetricCipher implements AsymmetricCipher
     @Override
     public String getAlgorithmName()
     {
-        return algorithmName;
+        return this.algorithmName;
     }
 
     @Override
     public int getInputBlockSize()
     {
-        return cipher.getInputBlockSize();
+        return this.cipher.getInputBlockSize();
     }
 
     @Override
     public int getOutputBlockSize()
     {
-        return cipher.getOutputBlockSize();
+        return this.cipher.getOutputBlockSize();
     }
 
     @Override
     public boolean isForEncryption()
     {
-        return forEncryption;
+        return this.forEncryption;
     }
 
     @Override
@@ -112,7 +113,7 @@ public class BcBufferedAsymmetricCipher implements AsymmetricCipher
     @Override
     public byte[] update(byte[] input, int inputOffset, int inputLen)
     {
-        cipher.processBytes(input, inputOffset, inputLen);
+        this.cipher.processBytes(input, inputOffset, inputLen);
         return null;
     }
 
@@ -136,10 +137,10 @@ public class BcBufferedAsymmetricCipher implements AsymmetricCipher
     public byte[] doFinal(byte[] input, int inputOffset, int inputLen) throws GeneralSecurityException
     {
         if (input != null) {
-            cipher.processBytes(input, inputOffset, inputLen);
+            this.cipher.processBytes(input, inputOffset, inputLen);
         }
         try {
-            return cipher.doFinal();
+            return this.cipher.doFinal();
         } catch (InvalidCipherTextException e) {
             throw new GeneralSecurityException("Cipher failed to process data.", e);
         }

@@ -36,7 +36,8 @@ import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
  */
 public abstract class AbstractBcCbcPaddedCipherFactory extends AbstractBcSymmetricCipherFactory
 {
-    private ParametersWithIV toParametersWithIV(SymmetricCipherParameters parameters) {
+    private ParametersWithIV toParametersWithIV(SymmetricCipherParameters parameters)
+    {
         if (!(parameters instanceof KeyWithIVParameters)) {
             throw new IllegalArgumentException("Invalid parameters for cipher: " + parameters.getClass().getName());
         }

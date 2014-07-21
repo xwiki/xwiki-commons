@@ -31,6 +31,8 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public class CertificateStoreException extends Exception
 {
+    private static final long serialVersionUID = 5289280946901544926L;
+
     /**
      * Constructs a new exception with the specified detail message.
      *

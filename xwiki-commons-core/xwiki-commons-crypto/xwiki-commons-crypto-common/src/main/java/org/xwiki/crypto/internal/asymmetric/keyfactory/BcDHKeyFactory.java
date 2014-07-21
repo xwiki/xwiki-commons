@@ -42,7 +42,7 @@ public class BcDHKeyFactory extends AbstractBcKeyFactory
     @Override
     protected AsymmetricKeyInfoConverter getKeyInfoConverter()
     {
-        return keyInfoConverter;
+        return this.keyInfoConverter;
     }
 
     @Override
@@ -53,5 +53,4 @@ public class BcDHKeyFactory extends AbstractBcKeyFactory
         }
         return "Diffie-Hellman";
     }
-
 }

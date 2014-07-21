@@ -31,6 +31,7 @@ import java.io.File;
 public class FileStoreReference implements StoreReference
 {
     private File file;
+
     private boolean isMulti = true;
 
     /**
@@ -38,7 +39,8 @@ public class FileStoreReference implements StoreReference
      *
      * @param file a file or folder.
      */
-    public FileStoreReference(File file) {
+    public FileStoreReference(File file)
+    {
         this.file = file;
         this.isMulti = file.isDirectory();
     }
@@ -50,7 +52,8 @@ public class FileStoreReference implements StoreReference
      * @param isMulti true to force a multi key store when the file does not exists yet.
      *                Actually, Multi key store are always directory.
      */
-    public FileStoreReference(File file, boolean isMulti) {
+    public FileStoreReference(File file, boolean isMulti)
+    {
         this.file = file;
         this.isMulti = file.exists() ? file.isDirectory() : isMulti;
     }
@@ -58,8 +61,9 @@ public class FileStoreReference implements StoreReference
     /**
      * @return the wrapped file reference.
      */
-    public File getFile() {
-        return file;
+    public File getFile()
+    {
+        return this.file;
     }
 
     /**
@@ -67,6 +71,6 @@ public class FileStoreReference implements StoreReference
      */
     public boolean isMulti()
     {
-        return isMulti;
+        return this.isMulti;
     }
 }

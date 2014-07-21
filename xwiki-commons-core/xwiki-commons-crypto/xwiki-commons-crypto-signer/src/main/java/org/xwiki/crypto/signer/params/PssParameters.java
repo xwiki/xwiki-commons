@@ -31,11 +31,15 @@ import org.xwiki.stability.Unstable;
 public class PssParameters
 {
     private static final String DEFAULT_DIGEST = "SHA-1";
+
     private static final byte TRAILER_1 = (byte) 0xBC;
 
     private final String hashAlgorithm;
+
     private final String maskGenAlgorithm;
+
     private final int saltLength;
+
     private final int trailerField;
 
     /**
@@ -100,7 +104,7 @@ public class PssParameters
      */
     public String getHashAlgorithm()
     {
-        return hashAlgorithm;
+        return this.hashAlgorithm;
     }
 
     /**
@@ -108,7 +112,7 @@ public class PssParameters
      */
     public String getMaskGenAlgorithm()
     {
-        return maskGenAlgorithm;
+        return this.maskGenAlgorithm;
     }
 
     /**
@@ -116,7 +120,7 @@ public class PssParameters
      */
     public int getSaltLength()
     {
-        return saltLength;
+        return this.saltLength;
     }
 
     /**
@@ -124,7 +128,7 @@ public class PssParameters
      */
     public int getTrailerField()
     {
-        return trailerField;
+        return this.trailerField;
     }
 
     /**
@@ -132,7 +136,7 @@ public class PssParameters
      */
     public byte getTrailerByte()
     {
-        if (trailerField == 1) {
+        if (this.trailerField == 1) {
             return TRAILER_1;
         }
 

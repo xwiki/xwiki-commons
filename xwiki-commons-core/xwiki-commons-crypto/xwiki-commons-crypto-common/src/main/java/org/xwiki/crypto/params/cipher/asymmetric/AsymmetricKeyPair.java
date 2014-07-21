@@ -31,6 +31,7 @@ import org.xwiki.stability.Unstable;
 public class AsymmetricKeyPair
 {
     private final PrivateKeyParameters privateKey;
+
     private final PublicKeyParameters publicKey;
 
     /**
@@ -50,7 +51,7 @@ public class AsymmetricKeyPair
      */
     public PrivateKeyParameters getPrivate()
     {
-        return privateKey;
+        return this.privateKey;
     }
 
     /**
@@ -58,6 +59,6 @@ public class AsymmetricKeyPair
      */
     public PublicKeyParameters getPublic()
     {
-        return publicKey;
+        return this.publicKey;
     }
 }

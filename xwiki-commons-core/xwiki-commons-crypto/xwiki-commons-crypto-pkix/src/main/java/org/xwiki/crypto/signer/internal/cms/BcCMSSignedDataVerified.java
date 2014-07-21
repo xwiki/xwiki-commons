@@ -37,8 +37,11 @@ import org.xwiki.crypto.signer.param.CMSSignerVerifiedInformation;
 public class BcCMSSignedDataVerified implements CMSSignedDataVerified
 {
     private final Collection<CMSSignerVerifiedInformation> signatures = new ArrayList<CMSSignerVerifiedInformation>();
+
     private final Collection<CertifiedPublicKey> certificates = new ArrayList<CertifiedPublicKey>();
+
     private final String contentType;
+
     private final byte[] content;
 
     BcCMSSignedDataVerified(String contentType, byte[] content)
@@ -49,43 +52,43 @@ public class BcCMSSignedDataVerified implements CMSSignedDataVerified
 
     void addCertificate(CertifiedPublicKey certificate)
     {
-        certificates.add(certificate);
+        this.certificates.add(certificate);
     }
 
     void addSignature(CMSSignerVerifiedInformation signature)
     {
-        signatures.add(signature);
+        this.signatures.add(signature);
     }
 
     @Override
     public Collection<CMSSignerVerifiedInformation> getSignatures()
     {
-        return Collections.unmodifiableCollection(signatures);
+        return Collections.unmodifiableCollection(this.signatures);
     }
 
     @Override
     public Collection<CertifiedPublicKey> getCertificates()
     {
-        return Collections.unmodifiableCollection(certificates);
+        return Collections.unmodifiableCollection(this.certificates);
     }
 
     @Override
     public String getContentType()
     {
-        return contentType;
+        return this.contentType;
     }
 
     @Override
     public byte[] getContent()
     {
-        return content;
+        return this.content;
     }
 
     @Override
     public boolean isVerified()
     {
-        boolean result = !signatures.isEmpty();
-        for (CMSSignerVerifiedInformation signature : signatures) {
+        boolean result = !this.signatures.isEmpty();
+        for (CMSSignerVerifiedInformation signature : this.signatures) {
             result &= signature.isVerified();
             if (!result) {
                 break;

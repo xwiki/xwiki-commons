@@ -51,6 +51,7 @@ public class BcX509Extensions implements X509Extensions
 
     /**
      * Build an extension set based on a Bouncy Castle one.
+     *
      * @param extensions a Bouncy Castle extensions set.
      */
     public BcX509Extensions(Extensions extensions)
@@ -63,12 +64,13 @@ public class BcX509Extensions implements X509Extensions
      */
     public Extensions getExtensions()
     {
-        return extensions;
+        return this.extensions;
     }
 
     @Override
-    public byte[] getExtensionValue(String oid) {
-        Extension ext = extensions.getExtension(new ASN1ObjectIdentifier(oid));
+    public byte[] getExtensionValue(String oid)
+    {
+        Extension ext = this.extensions.getExtension(new ASN1ObjectIdentifier(oid));
 
         if (ext == null) {
             return null;
@@ -78,8 +80,9 @@ public class BcX509Extensions implements X509Extensions
     }
 
     @Override
-    public boolean isCritical(String oid) {
-        Extension ext = extensions.getExtension(new ASN1ObjectIdentifier(oid));
+    public boolean isCritical(String oid)
+    {
+        Extension ext = this.extensions.getExtension(new ASN1ObjectIdentifier(oid));
 
         return ext != null && ext.isCritical();
     }
@@ -90,7 +93,7 @@ public class BcX509Extensions implements X509Extensions
         List<String> oids = new ArrayList<String>();
 
         @SuppressWarnings("unchecked")
-        Enumeration<ASN1ObjectIdentifier> extOids = extensions.oids();
+        Enumeration<ASN1ObjectIdentifier> extOids = this.extensions.oids();
         while (extOids.hasMoreElements()) {
             oids.add(extOids.nextElement().getId());
         }
@@ -101,14 +104,14 @@ public class BcX509Extensions implements X509Extensions
     @Override
     public String[] getCriticalExtensionOID()
     {
-        ASN1ObjectIdentifier[] asnoids = extensions.getCriticalExtensionOIDs();
+        ASN1ObjectIdentifier[] asnoids = this.extensions.getCriticalExtensionOIDs();
         return toStringArray(asnoids);
     }
 
     @Override
     public String[] getNonCriticalExtensionOID()
     {
-        ASN1ObjectIdentifier[] asnoids = extensions.getNonCriticalExtensionOIDs();
+        ASN1ObjectIdentifier[] asnoids = this.extensions.getNonCriticalExtensionOIDs();
         return toStringArray(asnoids);
     }
 
@@ -126,13 +129,13 @@ public class BcX509Extensions implements X509Extensions
     @Override
     public byte[] getEncoded() throws IOException
     {
-        return extensions.getEncoded();
+        return this.extensions.getEncoded();
     }
 
     @Override
     public boolean hasCertificateAuthorityBasicConstraints()
     {
-        BasicConstraints bc = BasicConstraints.fromExtensions(extensions);
+        BasicConstraints bc = BasicConstraints.fromExtensions(this.extensions);
 
         return bc != null && bc.isCA();
     }
@@ -140,7 +143,7 @@ public class BcX509Extensions implements X509Extensions
     @Override
     public int getBasicConstraintsPathLen()
     {
-        BasicConstraints bc = BasicConstraints.fromExtensions(extensions);
+        BasicConstraints bc = BasicConstraints.fromExtensions(this.extensions);
 
         return (bc != null) ? bc.getPathLenConstraint().intValue() : -1;
     }
@@ -148,40 +151,40 @@ public class BcX509Extensions implements X509Extensions
     @Override
     public EnumSet<KeyUsage> getKeyUsage()
     {
-        return BcExtensionUtils.getSetOfKeyUsage(org.bouncycastle.asn1.x509.KeyUsage.fromExtensions(extensions));
+        return BcExtensionUtils.getSetOfKeyUsage(org.bouncycastle.asn1.x509.KeyUsage.fromExtensions(this.extensions));
     }
 
     @Override
     public ExtendedKeyUsages getExtendedKeyUsage()
     {
-        return BcExtensionUtils.getExtendedKeyUsages(ExtendedKeyUsage.fromExtensions(extensions));
+        return BcExtensionUtils.getExtendedKeyUsages(ExtendedKeyUsage.fromExtensions(this.extensions));
     }
 
     @Override
     public byte[] getAuthorityKeyIdentifier()
     {
-        AuthorityKeyIdentifier id = AuthorityKeyIdentifier.fromExtensions(extensions);
+        AuthorityKeyIdentifier id = AuthorityKeyIdentifier.fromExtensions(this.extensions);
         return (id != null) ? id.getKeyIdentifier() : null;
     }
 
     @Override
     public byte[] getSubjectKeyIdentifier()
     {
-        SubjectKeyIdentifier id = SubjectKeyIdentifier.fromExtensions(extensions);
+        SubjectKeyIdentifier id = SubjectKeyIdentifier.fromExtensions(this.extensions);
         return (id != null) ? id.getKeyIdentifier() : null;
     }
 
     @Override
     public List<X509GeneralName> getSubjectAltName()
     {
-        return BcExtensionUtils.getX509GeneralNames(GeneralNames.fromExtensions(extensions,
+        return BcExtensionUtils.getX509GeneralNames(GeneralNames.fromExtensions(this.extensions,
             X509Extension.subjectAlternativeName));
     }
 
     @Override
     public List<X509GeneralName> getIssuerAltName()
     {
-        return BcExtensionUtils.getX509GeneralNames(GeneralNames.fromExtensions(extensions,
+        return BcExtensionUtils.getX509GeneralNames(GeneralNames.fromExtensions(this.extensions,
             X509Extension.issuerAlternativeName));
     }
 }

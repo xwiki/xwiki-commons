@@ -72,35 +72,37 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
 
         /**
          * Construct an new buffer initialized with the amount of data requested, or less if EOF is reach.
+         *
          * @param blen number of block of input string data to read.
          * @throws IOException on error.
          */
         InputBuffer(int blen) throws IOException
         {
             int rlen = 0;
-            int rbl = blen * charSize;
+            int rbl = blen * BcBinaryStringEncoderInputStream.this.charSize;
             this.buf = new byte[rbl];
 
             // Try to read the number of block requested, read more as needed if some blank char has been read.
             while (rbl > 0 && rlen >= 0) {
                 rlen = read(rbl);
-                rbl = rblank;
+                rbl = this.rblank;
             }
 
-            rlen = bufLen - bcount;
+            rlen = this.bufLen - this.bcount;
 
             // Some non-blank data found ?
             if (rlen > 0) {
                 // Wait until reaching EOF or being aligned on block size
                 // Remember that some input stream may be lazy,
                 // but should at least return one byte, else EOF is reached.
-                int rblen = (rlen + charSize - 1) / charSize;
-                int runder = (rblen * charSize) - rlen;
+                int rblen = (rlen + BcBinaryStringEncoderInputStream.this.charSize - 1)
+                    / BcBinaryStringEncoderInputStream.this.charSize;
+                int runder = (rblen * BcBinaryStringEncoderInputStream.this.charSize) - rlen;
                 int rrlen = 0;
                 while (runder > 0 && rrlen >= 0) {
                     rrlen = read(runder);
                     if (rrlen > 0) {
-                        runder -= rrlen - rblank;
+                        runder -= rrlen - this.rblank;
                     }
                 }
             }
@@ -111,7 +113,7 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
          */
         byte[] getBuffer()
         {
-            return buf;
+            return this.buf;
         }
 
         /**
@@ -119,7 +121,7 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
          */
         int getReadLength()
         {
-            return bufLen;
+            return this.bufLen;
         }
 
         /**
@@ -127,11 +129,12 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
          */
         int getEffectiveLength()
         {
-            return bufLen - bcount;
+            return this.bufLen - this.bcount;
         }
 
         /**
          * Count blanks char in a given area of the buffer.
+         *
          * @param off starting offset
          * @param len length of the area
          * @return number of bytes containing blank characters.
@@ -140,39 +143,42 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
         {
             int blank = 0;
             for (int i = off; i < len; i++) {
-                if (isBlank(buf[i])) {
+                if (isBlank(this.buf[i])) {
                     blank++;
                 }
             }
             return blank;
         }
 
-        private boolean isBlank(byte b) {
+        private boolean isBlank(byte b)
+        {
             return (b == '\n' || b == '\r' || b == '\t' || b == ' ');
         }
 
         /**
          * Ensure the buffer is large enough to contains a given amount of bytes.
+         *
          * @param len the number of bytes the buffer should be able to contains.
          */
         private void ensureSize(int len)
         {
-            if (len > buf.length) {
+            if (len > this.buf.length) {
                 byte[] nbuf = new byte[len];
-                System.arraycopy(buf, 0, nbuf, 0, buf.length);
-                buf = nbuf;
+                System.arraycopy(this.buf, 0, nbuf, 0, this.buf.length);
+                this.buf = nbuf;
             }
         }
 
         /**
          * Appends some data from the input stream to valid data in the buffer.
+         *
          * @param len number of bytes to be read.
          * @return number of bytes effectively read.
          * @throws IOException on error.
          */
         private int read(int len) throws IOException
         {
-            ensureSize(bufLen + len);
+            ensureSize(this.bufLen + len);
             return readBase64(len);
         }
 
@@ -188,15 +194,15 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
         private int readBase64(int len) throws IOException
         {
             int rlen;
-            if (in.markSupported()) {
+            if (BcBinaryStringEncoderInputStream.this.in.markSupported()) {
                 rlen = readBase64WithMark(len);
             } else {
                 rlen = readBase64WithoutMark(len);
             }
             if (rlen > 0) {
-                rblank = countBlank(bufLen, rlen);
-                bufLen += rlen;
-                bcount += rblank;
+                this.rblank = countBlank(this.bufLen, rlen);
+                this.bufLen += rlen;
+                this.bcount += this.rblank;
                 return rlen;
             }
             return -1;
@@ -205,39 +211,39 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
         private int readBase64WithoutMark(int len) throws IOException
         {
             int rlen;
-            rlen = bufLen;
-            while (rlen < (bufLen + len)) {
-                int c = in.read();
+            rlen = this.bufLen;
+            while (rlen < (this.bufLen + len)) {
+                int c = BcBinaryStringEncoderInputStream.this.in.read();
                 if (c < 0) {
                     break;
                 }
                 byte b = (byte) c;
-                if (!isBlank(b) && !encoder.isValidEncoding(b)) {
+                if (!isBlank(b) && !BcBinaryStringEncoderInputStream.this.encoder.isValidEncoding(b)) {
                     break;
                 }
-                buf[rlen++] = b;
+                this.buf[rlen++] = b;
             }
-            rlen -= bufLen;
+            rlen -= this.bufLen;
             return rlen;
         }
 
         private int readBase64WithMark(int len) throws IOException
         {
             int rlen;
-            in.mark(len);
-            rlen = in.read(buf, bufLen, len);
-            int i = bufLen;
-            while (i < (bufLen + rlen)) {
-                byte b = buf[i];
-                if (!isBlank(b) && !encoder.isValidEncoding(b)) {
+            BcBinaryStringEncoderInputStream.this.in.mark(len);
+            rlen = BcBinaryStringEncoderInputStream.this.in.read(this.buf, this.bufLen, len);
+            int i = this.bufLen;
+            while (i < (this.bufLen + rlen)) {
+                byte b = this.buf[i];
+                if (!isBlank(b) && !BcBinaryStringEncoderInputStream.this.encoder.isValidEncoding(b)) {
                     break;
                 }
                 i++;
             }
-            i -= bufLen;
+            i -= this.bufLen;
             if (i < rlen) {
-                in.reset();
-                rlen = (int) in.skip(i);
+                BcBinaryStringEncoderInputStream.this.in.reset();
+                rlen = (int) BcBinaryStringEncoderInputStream.this.in.skip(i);
             }
             return rlen;
         }
@@ -255,26 +261,16 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
         this.encoder = encoder;
         this.blockSize = encoder.getEncodingBlockSize();
         this.charSize = encoder.getDecodingBlockSize();
-        this.ofBuf = new byte[blockSize];
+        this.ofBuf = new byte[this.blockSize];
     }
 
     @Override
     public int read() throws IOException
     {
-        if (read(oneByte, 0, 1) > 0) {
-            return (int) oneByte[0];
+        if (read(this.oneByte, 0, 1) > 0) {
+            return this.oneByte[0];
         }
         return -1;
-    }
-
-    private int copyData(byte[] inBuf, int inOff, int inLen, byte[] outBuf, int outOff, int outLen)
-    {
-        int clen = inLen;
-        if (clen > outLen) {
-            clen = outLen;
-        }
-        System.arraycopy(inBuf, inOff, outBuf, outOff, clen);
-        return clen;
     }
 
     @Override
@@ -294,10 +290,10 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
         int len = length;
 
         // Is some pending data of a previous call available ?
-        if (ofLen > 0) {
-            int clen = copyData(ofBuf, ofOff, ofLen, out, off, len);
-            ofLen -= clen;
-            ofOff += clen;
+        if (this.ofLen > 0) {
+            int clen = copyData(this.ofBuf, this.ofOff, this.ofLen, out, off, len);
+            this.ofLen -= clen;
+            this.ofOff += clen;
             off += clen;
             len -= clen;
             readLen += clen;
@@ -306,24 +302,24 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
         // Still some data to read ?
         if (len > 0) {
             // Try to read the needed block to get -len- bytes decoded
-            int blen = (len + blockSize - 1) / blockSize;
+            int blen = (len + this.blockSize - 1) / this.blockSize;
             InputBuffer inBuf = new InputBuffer(blen);
             int rlen = inBuf.getEffectiveLength();
             if (rlen > 0) {
-                int rblen = (rlen + charSize - 1) / charSize;
+                int rblen = (rlen + this.charSize - 1) / this.charSize;
 
                 // Decode read data
-                ByteArrayOutputStream baos = new ByteArrayOutputStream(rblen * blockSize);
-                encoder.decode(inBuf.getBuffer(), 0, inBuf.getReadLength(), baos);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream(rblen * this.blockSize);
+                this.encoder.decode(inBuf.getBuffer(), 0, inBuf.getReadLength(), baos);
                 baos.close();
 
                 int clen = copyData(baos.toByteArray(), 0, baos.size(), out, off, len);
                 readLen += clen;
-                ofLen = baos.size() - clen;
-                ofOff = 0;
+                this.ofLen = baos.size() - clen;
+                this.ofOff = 0;
 
-                if (ofLen > 0) {
-                    System.arraycopy(baos.toByteArray(), clen, ofBuf, ofOff, ofLen);
+                if (this.ofLen > 0) {
+                    System.arraycopy(baos.toByteArray(), clen, this.ofBuf, this.ofOff, this.ofLen);
                 }
             }
         }
@@ -335,12 +331,22 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
     public int available() throws IOException
     {
         int len = super.available();
-        return ((len + charSize - 1) / charSize) * blockSize;
+        return ((len + this.charSize - 1) / this.charSize) * this.blockSize;
     }
 
     @Override
     public boolean markSupported()
     {
         return false;
+    }
+
+    private int copyData(byte[] inBuf, int inOff, int inLen, byte[] outBuf, int outOff, int outLen)
+    {
+        int clen = inLen;
+        if (clen > outLen) {
+            clen = outLen;
+        }
+        System.arraycopy(inBuf, inOff, outBuf, outOff, clen);
+        return clen;
     }
 }

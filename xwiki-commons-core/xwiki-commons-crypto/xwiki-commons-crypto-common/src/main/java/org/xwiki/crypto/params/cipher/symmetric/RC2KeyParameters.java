@@ -34,6 +34,7 @@ public class RC2KeyParameters extends KeyParameter
 
     /**
      * Initialize parameters.
+     *
      * @param key the key, all bits are considered effective.
      */
     public RC2KeyParameters(byte[] key)
@@ -44,6 +45,7 @@ public class RC2KeyParameters extends KeyParameter
 
     /**
      * Initialize parameters.
+     *
      * @param key the key.
      * @param bits the number of effective bits in the key.
      */
@@ -58,6 +60,6 @@ public class RC2KeyParameters extends KeyParameter
      */
     public int getEffectiveBits()
     {
-        return bits;
+        return this.bits;
     }
 }

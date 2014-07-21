@@ -28,8 +28,8 @@ import org.bouncycastle.asn1.pkcs.EncryptionScheme;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.crypto.cipher.CipherFactory;
-import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
+import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.password.KeyDerivationFunction;
 import org.xwiki.crypto.password.PasswordBasedCipher;
 import org.xwiki.crypto.password.internal.pbe.AbstractBcPBES2Cipher;
@@ -51,7 +51,7 @@ public class BcPBES2DesEdeCipherFactory extends AbstractBcPBES2CipherFactory
     @Override
     protected CipherFactory getCipherFactory()
     {
-        return cipherFactory;
+        return this.cipherFactory;
     }
 
     @Override

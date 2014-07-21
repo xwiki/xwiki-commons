@@ -52,8 +52,10 @@ public class BcRSAKeyPairGenerator extends AbstractBcKeyPairGenerator
     @Inject
     private Provider<SecureRandom> random;
 
-    protected AsymmetricKeyFactory getFactory() {
-        return factory;
+    @Override
+    protected AsymmetricKeyFactory getFactory()
+    {
+        return this.factory;
     }
 
     @Override
@@ -74,7 +76,7 @@ public class BcRSAKeyPairGenerator extends AbstractBcKeyPairGenerator
 
         org.bouncycastle.crypto.params.RSAKeyGenerationParameters genParam =
             new org.bouncycastle.crypto.params.RSAKeyGenerationParameters(
-                params.getPublicExponent(), random.get(), params.getStrength() * 8, params.getCertainty());
+                params.getPublicExponent(), this.random.get(), params.getStrength() * 8, params.getCertainty());
 
         AsymmetricCipherKeyPairGenerator generator = new RSAKeyPairGenerator();
         generator.init(genParam);

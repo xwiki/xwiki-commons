@@ -31,7 +31,10 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public final class PasswordToByteConverter
 {
-    private PasswordToByteConverter() { }
+    private PasswordToByteConverter()
+    {
+        // Utility class, shouldn't be instantiated
+    }
 
     /**
      * Conversion mode of password from String to byte array. Defaults to is to use PKCS5_UTF8.

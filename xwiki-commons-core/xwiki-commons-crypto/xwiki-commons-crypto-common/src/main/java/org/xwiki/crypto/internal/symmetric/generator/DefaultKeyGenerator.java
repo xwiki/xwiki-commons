@@ -28,8 +28,8 @@ import javax.inject.Singleton;
 import org.bouncycastle.crypto.CipherKeyGenerator;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.crypto.KeyGenerator;
-import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
+import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
 
 /**
  * Default key generator, not taking care of specific targeted algorithm.
@@ -61,7 +61,7 @@ public class DefaultKeyGenerator implements KeyGenerator
         GenericKeyGenerationParameters params = (GenericKeyGenerationParameters) parameters;
 
         CipherKeyGenerator generator = getKeyGenerator();
-        generator.init(new org.bouncycastle.crypto.KeyGenerationParameters(random.get(),
+        generator.init(new org.bouncycastle.crypto.KeyGenerationParameters(this.random.get(),
             params.getStrength() * 8));
         return generator.generateKey();
     }

@@ -82,7 +82,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptor implements PrivateKeyPasswo
     private PrivateKeyParameters decrypt(byte[] password, AlgorithmIdentifier algId, byte[] encoded)
         throws GeneralSecurityException, IOException
     {
-        return keyFactory.fromPKCS8(getPBECipher(password, algId).doFinal(encoded));
+        return this.keyFactory.fromPKCS8(getPBECipher(password, algId).doFinal(encoded));
     }
 
     private PasswordBasedCipher getPBECipher(byte[] password, AlgorithmIdentifier algId) throws IOException
@@ -97,9 +97,10 @@ public class DefaultPrivateKeyPasswordBasedEncryptor implements PrivateKeyPasswo
         return factory.getInstance(false, password, algId.getEncoded());
     }
 
-    private PasswordBasedCipherFactory getPBEFactory(String hint) {
+    private PasswordBasedCipherFactory getPBEFactory(String hint)
+    {
         try {
-            return manager.getInstance(PasswordBasedCipherFactory.class, hint);
+            return this.manager.getInstance(PasswordBasedCipherFactory.class, hint);
         } catch (ComponentLookupException e) {
             throw new UnsupportedOperationException("Password based cipher factory not found: " + hint, e);
         }
@@ -132,24 +133,22 @@ public class DefaultPrivateKeyPasswordBasedEncryptor implements PrivateKeyPasswo
 
     @Override
     public byte[] encrypt(String algHint, byte[] password, KeyDerivationFunctionParameters kdfParameters,
-        PrivateKeyParameters privateKey)
-        throws GeneralSecurityException, IOException
+        PrivateKeyParameters privateKey) throws GeneralSecurityException, IOException
     {
         PasswordBasedCipherFactory factory = getPBEFactory(algHint);
         PasswordBasedCipher cipher = factory.getInstance(true,
-            new KeyWithIVParameters(password, factory.getIVSize(), randomProvider.get()),
+            new KeyWithIVParameters(password, factory.getIVSize(), this.randomProvider.get()),
             kdfParameters);
         return encrypt(cipher, privateKey);
     }
 
     @Override
-    public byte[] encrypt(byte[] password, PrivateKeyParameters privateKey)
-        throws GeneralSecurityException, IOException
+    public byte[] encrypt(byte[] password, PrivateKeyParameters privateKey) throws GeneralSecurityException, IOException
     {
         PasswordBasedCipherFactory factory = getPBEFactory("PBES2-AES-CBC-Pad");
         PasswordBasedCipher cipher = factory.getInstance(true,
-            new KeyWithIVParameters(password, factory.getIVSize(), randomProvider.get()),
-            new PBKDF2Parameters(randomProvider.get()));
+            new KeyWithIVParameters(password, factory.getIVSize(), this.randomProvider.get()),
+            new PBKDF2Parameters(this.randomProvider.get()));
         return encrypt(cipher, privateKey);
     }
 

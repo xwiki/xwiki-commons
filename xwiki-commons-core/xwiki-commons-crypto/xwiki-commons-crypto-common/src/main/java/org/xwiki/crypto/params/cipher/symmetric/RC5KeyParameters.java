@@ -35,10 +35,12 @@ import org.xwiki.stability.Unstable;
 public class RC5KeyParameters extends KeyParameter
 {
     private static final int ROUNDS = 12;
+
     private final int rounds;
 
     /**
      * Initialize parameters with a default number of rounds set to {@value #ROUNDS}.
+     *
      * @param key the key.
      */
     public RC5KeyParameters(byte[] key)
@@ -49,6 +51,7 @@ public class RC5KeyParameters extends KeyParameter
 
     /**
      * Initialize parameters.
+     *
      * @param key the key.
      * @param rounds the number of "rounds" in the encryption operation between 8 and 127.
      */
@@ -63,6 +66,6 @@ public class RC5KeyParameters extends KeyParameter
      */
     public int getRounds()
     {
-        return rounds;
+        return this.rounds;
     }
 }

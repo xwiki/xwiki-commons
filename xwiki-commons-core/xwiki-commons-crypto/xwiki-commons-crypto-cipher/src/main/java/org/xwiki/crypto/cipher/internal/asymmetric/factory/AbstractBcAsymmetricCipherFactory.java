@@ -41,7 +41,7 @@ import org.xwiki.crypto.params.cipher.asymmetric.AsymmetricCipherParameters;
  */
 public abstract class AbstractBcAsymmetricCipherFactory implements CipherFactory
 {
-    private static final int[] DEFAULT_SUPPORTED_KEYSIZE = new int[] {32, 48, 64, 96, 128, 256, 384, 512};
+    private static final int[] DEFAULT_SUPPORTED_KEYSIZE = new int[] { 32, 48, 64, 96, 128, 256, 384, 512 };
 
     /**
      * @return a new cipher engine instance.
@@ -61,6 +61,7 @@ public abstract class AbstractBcAsymmetricCipherFactory implements CipherFactory
 
     /**
      * Helper function to create supported key size arrays.
+     *
      * @param minSize minimum size supported.
      * @param maxSize maximum size supported.
      * @param step intermediate step supported.
@@ -123,11 +124,11 @@ public abstract class AbstractBcAsymmetricCipherFactory implements CipherFactory
         return false;
     }
 
-    private ParametersWithRandom toParametersWithRandom(AsymmetricCipherParameters parameters) {
+    private ParametersWithRandom toParametersWithRandom(AsymmetricCipherParameters parameters)
+    {
         return new ParametersWithRandom(
             getBcCipherParameter(parameters),
-            getRandomSource()
-        );
+            getRandomSource());
     }
 
     /**
@@ -158,4 +159,3 @@ public abstract class AbstractBcAsymmetricCipherFactory implements CipherFactory
             forEncryption, toParametersWithRandom((AsymmetricCipherParameters) parameters), getCipherAlgorithmName());
     }
 }
-

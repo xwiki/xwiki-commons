@@ -77,7 +77,7 @@ public class BcStoreX509CertificateProvider implements CertificateProvider
     public X509CertificateHolder getCertificate(Selector selector)
     {
         try {
-            return (X509CertificateHolder) store.getMatches(selector).iterator().next();
+            return (X509CertificateHolder) this.store.getMatches(selector).iterator().next();
         } catch (Throwable t) {
             return null;
         }
@@ -86,19 +86,20 @@ public class BcStoreX509CertificateProvider implements CertificateProvider
     @Override
     public CertifiedPublicKey getCertificate(byte[] keyIdentifier)
     {
-        return BcUtils.convertCertificate(factory, getCertificate(new SignerId(keyIdentifier)));
+        return BcUtils.convertCertificate(this.factory, getCertificate(new SignerId(keyIdentifier)));
     }
 
     @Override
     public CertifiedPublicKey getCertificate(PrincipalIndentifier issuer, BigInteger serial)
     {
-        return BcUtils.convertCertificate(factory, getCertificate(new SignerId(BcUtils.getX500Name(issuer), serial)));
+        return BcUtils.convertCertificate(this.factory,
+            getCertificate(new SignerId(BcUtils.getX500Name(issuer), serial)));
     }
 
     @Override
     public CertifiedPublicKey getCertificate(PrincipalIndentifier issuer, BigInteger serial, byte[] keyIdentifier)
     {
-        return BcUtils.convertCertificate(factory,
+        return BcUtils.convertCertificate(this.factory,
             getCertificate(new SignerId(BcUtils.getX500Name(issuer), serial, keyIdentifier)));
     }
 
@@ -108,11 +109,11 @@ public class BcStoreX509CertificateProvider implements CertificateProvider
         AttributeCertificateHolder selector = new AttributeCertificateHolder(BcUtils.getX500Name(subject));
 
         try {
-            Collection matches = store.getMatches(selector);
+            Collection matches = this.store.getMatches(selector);
             Collection<CertifiedPublicKey> result = new ArrayList<CertifiedPublicKey>(matches.size());
             for (Object holder : matches) {
                 if (holder instanceof X509CertificateHolder) {
-                    result.add(BcUtils.convertCertificate(factory, (X509CertificateHolder) holder));
+                    result.add(BcUtils.convertCertificate(this.factory, (X509CertificateHolder) holder));
                 }
             }
             return (!result.isEmpty()) ? result : null;

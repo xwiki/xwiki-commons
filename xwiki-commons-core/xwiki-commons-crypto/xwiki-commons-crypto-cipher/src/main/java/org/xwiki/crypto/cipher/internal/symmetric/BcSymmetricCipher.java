@@ -53,6 +53,7 @@ public class BcSymmetricCipher implements SymmetricCipher
 
     /**
      * Generic Bouncy Castle based block cipher.
+     *
      * @param cipher the block cipher to encapsulate, it will get buffered.
      * @param forEncryption true if the block cipher is setup for encryption.
      * @param parameters parameters to initialize the cipher.
@@ -66,6 +67,7 @@ public class BcSymmetricCipher implements SymmetricCipher
 
     /**
      * Generic Bouncy Castle based block cipher.
+     *
      * @param cipher the buffered block cipher to encapsulate.
      * @param forEncryption true if the block cipher is setup for encryption.
      * @param parameters parameters to initialize the cipher.
@@ -80,39 +82,39 @@ public class BcSymmetricCipher implements SymmetricCipher
     @Override
     public String getAlgorithmName()
     {
-        return cipher.getUnderlyingCipher().getAlgorithmName();
+        return this.cipher.getUnderlyingCipher().getAlgorithmName();
     }
 
     @Override
     public int getInputBlockSize()
     {
-        return cipher.getBlockSize();
+        return this.cipher.getBlockSize();
     }
 
     @Override
     public int getOutputBlockSize()
     {
-        return cipher.getBlockSize();
+        return this.cipher.getBlockSize();
     }
 
     @Override
     public boolean isForEncryption()
     {
-        return forEncryption;
+        return this.forEncryption;
     }
 
     @Override
     public FilterInputStream getInputStream(InputStream is)
     {
-        cipher.reset();
-        return new CipherInputStream(is, cipher);
+        this.cipher.reset();
+        return new CipherInputStream(is, this.cipher);
     }
 
     @Override
     public FilterOutputStream getOutputStream(OutputStream os)
     {
-        cipher.reset();
-        return new CipherOutputStream(os, cipher);
+        this.cipher.reset();
+        return new CipherOutputStream(os, this.cipher);
     }
 
     @Override
@@ -128,16 +130,15 @@ public class BcSymmetricCipher implements SymmetricCipher
     @Override
     public byte[] update(byte[] input, int inputOffset, int inputLen)
     {
-        int len = cipher.getUpdateOutputSize(inputLen);
+        int len = this.cipher.getUpdateOutputSize(inputLen);
 
         if (input == null || len == 0) {
-            cipher.processBytes(input, inputOffset, inputLen, null, 0);
+            this.cipher.processBytes(input, inputOffset, inputLen, null, 0);
             return null;
         }
 
-
         byte[] out = new byte[len];
-        return shrinkBuffer(out, cipher.processBytes(input, inputOffset, inputLen, out, 0));
+        return shrinkBuffer(out, this.cipher.processBytes(input, inputOffset, inputLen, out, 0));
     }
 
     @Override
@@ -159,15 +160,15 @@ public class BcSymmetricCipher implements SymmetricCipher
     @Override
     public byte[] doFinal(byte[] input, int inputOffset, int inputLen) throws GeneralSecurityException
     {
-        byte[] out = new byte[cipher.getOutputSize(inputLen)];
+        byte[] out = new byte[this.cipher.getOutputSize(inputLen)];
         int len = 0;
 
         if (input != null && inputLen > 0) {
-            len = cipher.processBytes(input, inputOffset, inputLen, out, 0);
+            len = this.cipher.processBytes(input, inputOffset, inputLen, out, 0);
         }
 
         try {
-            len += cipher.doFinal(out, len);
+            len += this.cipher.doFinal(out, len);
         } catch (DataLengthException e) {
             throw new IllegalBlockSizeException(e.getMessage());
         } catch (InvalidCipherTextException e) {
@@ -178,6 +179,7 @@ public class BcSymmetricCipher implements SymmetricCipher
 
     /**
      * Return a buffer of {@code size} bytes containing the {@code size} first byte of {@code buffer}.
+     *
      * @param buffer the buffer.
      * @param size the size.
      * @return null if size is 0, the buffer if it has the right size, or a new truncated copy of buffer.

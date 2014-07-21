@@ -85,7 +85,7 @@ public class DefaultKeyFactory extends AbstractBcKeyFactory
         } else if (DSAUtil.isDsaOid(algId)) {
             hint = "DSA";
         } else if (algId.equals(PKCSObjectIdentifiers.dhKeyAgreement)
-                    || algId.equals(X9ObjectIdentifiers.dhpublicnumber)) {
+            || algId.equals(X9ObjectIdentifiers.dhpublicnumber)) {
             hint = "DH";
         } else if (algId.equals(OIWObjectIdentifiers.elGamalAlgorithm)) {
             hint = "ElGamal";
@@ -114,7 +114,7 @@ public class DefaultKeyFactory extends AbstractBcKeyFactory
     private AsymmetricKeyFactory getKeyFactory(String hint)
     {
         try {
-            return manager.getInstance(AsymmetricKeyFactory.class, hint);
+            return this.manager.getInstance(AsymmetricKeyFactory.class, hint);
         } catch (ComponentLookupException e) {
             throw new UnsupportedOperationException("Asymmetric key algorithm not found.", e);
         }

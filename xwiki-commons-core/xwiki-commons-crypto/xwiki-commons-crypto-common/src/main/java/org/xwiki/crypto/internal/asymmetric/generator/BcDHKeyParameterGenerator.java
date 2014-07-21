@@ -29,11 +29,11 @@ import javax.inject.Singleton;
 import org.bouncycastle.crypto.generators.DHParametersGenerator;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.crypto.KeyParametersGenerator;
+import org.xwiki.crypto.params.generator.KeyGenerationParameters;
+import org.xwiki.crypto.params.generator.KeyParametersGenerationParameters;
 import org.xwiki.crypto.params.generator.asymmetric.DHKeyGenerationParameters;
 import org.xwiki.crypto.params.generator.asymmetric.DHKeyParametersGenerationParameters;
 import org.xwiki.crypto.params.generator.asymmetric.DHKeyValidationParameters;
-import org.xwiki.crypto.params.generator.KeyGenerationParameters;
-import org.xwiki.crypto.params.generator.KeyParametersGenerationParameters;
 
 /**
  * Diffie-Hellman key parameters generator.
@@ -64,7 +64,7 @@ public class BcDHKeyParameterGenerator implements KeyParametersGenerator
         }
 
         org.bouncycastle.crypto.params.DHParameters dhParams =
-            getDhParameters(random.get(), (DHKeyParametersGenerationParameters) parameters);
+            getDhParameters(this.random.get(), (DHKeyParametersGenerationParameters) parameters);
 
         org.bouncycastle.crypto.params.DHValidationParameters dhValidParams = dhParams.getValidationParameters();
 
