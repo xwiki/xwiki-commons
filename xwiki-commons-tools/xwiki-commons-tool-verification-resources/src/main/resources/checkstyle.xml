@@ -255,7 +255,9 @@
 
     <module name="NestedTryDepth"/>
 
-    <module name="NoWhitespaceAfter"/>
+    <module name="NoWhitespaceAfter">
+      <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
+    </module>
 
     <module name="NoWhitespaceBefore"/>
 
