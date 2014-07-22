@@ -23,11 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * 
  * @version $Id$
  * @since 6.2M1
  */
+@Unstable
 public class DefaultURLInputSource extends AbstractInputStreamInputSource implements URLInputSource
 {
     private final URL url;

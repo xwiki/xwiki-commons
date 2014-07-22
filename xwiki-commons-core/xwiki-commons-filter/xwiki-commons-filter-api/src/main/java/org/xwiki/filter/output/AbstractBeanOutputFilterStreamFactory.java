@@ -36,12 +36,14 @@ import org.xwiki.filter.AbstractBeanFilterStreamFactory;
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.input.BeanInputFilterStream;
 import org.xwiki.filter.type.FilterStreamType;
+import org.xwiki.stability.Unstable;
 
 /**
  * @param <P>
  * @version $Id$
  * @since 6.2M1
  */
+@Unstable
 public abstract class AbstractBeanOutputFilterStreamFactory<P, F> extends AbstractBeanFilterStreamFactory<P> implements
     BeanOutputFilterStreamFactory<P>
 {

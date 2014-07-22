@@ -22,10 +22,13 @@ package org.xwiki.filter.input;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * @version $Id$
  * @since 6.2M1
  */
+@Unstable
 public class DefaultInputStreamInputSource implements InputStreamInputSource
 {
     private final InputStream inputStream;

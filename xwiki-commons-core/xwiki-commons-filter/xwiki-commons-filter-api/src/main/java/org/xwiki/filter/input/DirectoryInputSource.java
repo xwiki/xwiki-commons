@@ -22,10 +22,13 @@ package org.xwiki.filter.input;
 import java.io.File;
 import java.io.IOException;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * @version $Id$
  * @since 6.2M1
  */
+@Unstable
 public class DirectoryInputSource implements FileInputSource
 {
     private final File file;

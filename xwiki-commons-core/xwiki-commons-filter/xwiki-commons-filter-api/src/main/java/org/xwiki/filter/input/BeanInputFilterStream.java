@@ -21,6 +21,7 @@ package org.xwiki.filter.input;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.filter.FilterException;
+import org.xwiki.stability.Unstable;
 
 /**
  * @param <P> the type of the properties bean
@@ -28,6 +29,7 @@ import org.xwiki.filter.FilterException;
  * @since 6.2M1
  */
 @Role
+@Unstable
 public interface BeanInputFilterStream<P> extends InputFilterStream
 {
     void setProperties(P properties) throws FilterException;

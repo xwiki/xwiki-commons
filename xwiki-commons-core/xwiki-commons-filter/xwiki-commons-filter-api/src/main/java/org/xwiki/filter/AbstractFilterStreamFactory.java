@@ -21,12 +21,14 @@ package org.xwiki.filter;
 
 import org.xwiki.filter.descriptor.FilterStreamDescriptor;
 import org.xwiki.filter.type.FilterStreamType;
+import org.xwiki.stability.Unstable;
 
 /**
  * 
  * @version $Id$
  * @since 6.2M1
  */
+@Unstable
 public abstract class AbstractFilterStreamFactory implements FilterStreamFactory
 {
     protected final FilterStreamType type;

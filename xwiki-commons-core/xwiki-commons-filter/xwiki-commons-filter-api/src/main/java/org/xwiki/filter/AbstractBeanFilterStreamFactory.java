@@ -30,12 +30,14 @@ import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.descriptor.DefaultFilterStreamBeanDescriptor;
 import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.properties.BeanManager;
+import org.xwiki.stability.Unstable;
 
 /**
  * @param <P>
  * @version $Id$
  * @since 6.2M1
  */
+@Unstable
 public abstract class AbstractBeanFilterStreamFactory<P> extends AbstractFilterStreamFactory implements FilterStreamFactory, Initializable
 {
     /**

@@ -20,12 +20,14 @@
 package org.xwiki.filter.output;
 
 import org.xwiki.filter.FilterException;
+import org.xwiki.stability.Unstable;
 
 /**
  * @param <P> the type of the properties bean
  * @version $Id$
  * @since 6.2M1
  */
+@Unstable
 public abstract class AbstractBeanOutputFilterStream<P> implements BeanOutputFilterStream<P>
 {
     protected P properties;

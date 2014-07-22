@@ -22,10 +22,13 @@ package org.xwiki.filter.output;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * @version $Id$
  * @since 6.2M1
  */
+@Unstable
 public abstract class AbstractWriterOutputTarget implements WriterOutputTarget
 {
     protected Writer writer;
