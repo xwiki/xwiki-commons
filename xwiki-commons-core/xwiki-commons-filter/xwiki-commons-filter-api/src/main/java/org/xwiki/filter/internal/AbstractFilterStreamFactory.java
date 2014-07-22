@@ -28,13 +28,13 @@ import org.xwiki.filter.type.FilterStreamType;
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractFilterStream implements FilterStreamFactory
+public abstract class AbstractFilterStreamFactory implements FilterStreamFactory
 {
     protected final FilterStreamType type;
 
     protected FilterStreamDescriptor descriptor;
 
-    public AbstractFilterStream(FilterStreamType type)
+    public AbstractFilterStreamFactory(FilterStreamType type)
     {
         this.type = type;
     }
