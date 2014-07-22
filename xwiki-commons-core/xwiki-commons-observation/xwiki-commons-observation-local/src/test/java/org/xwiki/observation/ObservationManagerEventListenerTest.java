@@ -22,24 +22,31 @@ package org.xwiki.observation;
 import java.util.Arrays;
 
 import org.junit.Assert;
-
-import org.jmock.Expectations;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.observation.event.Event;
+import org.xwiki.observation.internal.DefaultObservationManager;
 import org.xwiki.observation.test.TestEventListener;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link ObservationManager}.
- * 
+ *
  * @version $Id$
  */
-public class ObservationManagerEventListenerTest extends AbstractComponentTestCase
+public class ObservationManagerEventListenerTest
 {
+    @Rule
+    public final MockitoComponentMockingRule<ObservationManager> mocker =
+        new MockitoComponentMockingRule<ObservationManager>(DefaultObservationManager.class);
+
     private ObservationManager manager;
 
     private EventListener eventListenerMock;
@@ -48,43 +55,32 @@ public class ObservationManagerEventListenerTest extends AbstractComponentTestCa
 
     private DefaultComponentDescriptor<EventListener> componentDescriptor;
 
-    @Override
     @Before
     public void setUp() throws Exception
     {
-        super.setUp();
-
-        this.manager = getComponentManager().getInstance(ObservationManager.class);
+        this.manager = this.mocker.getComponentUnderTest();
         StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
         componentEventManager.shouldStack(false);
         componentEventManager.setObservationManager(this.manager);
-        getComponentManager().setComponentEventManager(componentEventManager);
+        this.mocker.setComponentEventManager(componentEventManager);
 
-        this.eventListenerMock = getMockery().mock(EventListener.class);
-        this.eventMock = getMockery().mock(Event.class);
+        this.eventListenerMock = mock(EventListener.class);
+        this.eventMock = mock(Event.class);
 
         this.componentDescriptor = new DefaultComponentDescriptor<EventListener>();
-        this.componentDescriptor.setImplementation(eventListenerMock.getClass());
-        this.componentDescriptor.setRole(EventListener.class);
+        this.componentDescriptor.setImplementation(this.eventListenerMock.getClass());
+        this.componentDescriptor.setRoleType(EventListener.class);
         this.componentDescriptor.setRoleHint("mylistener");
 
-        getMockery().checking(new Expectations()
-        {
-            {
-                allowing(eventMock).matches(with(same(eventMock)));
-                will(returnValue(true));
-                allowing(eventListenerMock).getName();
-                will(returnValue("mylistener"));
-                allowing(eventListenerMock).getEvents();
-                will(returnValue(Arrays.asList(eventMock)));
-            }
-        });
+        when(this.eventMock.matches(this.eventMock)).thenReturn(true);
+        when(this.eventListenerMock.getName()).thenReturn("mylistener");
+        when(this.eventListenerMock.getEvents()).thenReturn(Arrays.asList(this.eventMock));
     }
 
     @Test
     public void testNewListenerComponent() throws Exception
     {
-        getComponentManager().registerComponent(this.componentDescriptor, this.eventListenerMock);
+        this.mocker.registerComponent(this.componentDescriptor, this.eventListenerMock);
 
         Assert.assertSame(this.eventListenerMock, this.manager.getListener("mylistener"));
     }
@@ -92,16 +88,15 @@ public class ObservationManagerEventListenerTest extends AbstractComponentTestCa
     @Test
     public void testRemovedListenerComponent() throws Exception
     {
-        getComponentManager().registerComponent(this.componentDescriptor, this.eventListenerMock);
-        getComponentManager().unregisterComponent(this.componentDescriptor.getRole(),
-            this.componentDescriptor.getRoleHint());
+        this.mocker.registerComponent(this.componentDescriptor, this.eventListenerMock);
+        this.mocker.unregisterComponent(this.componentDescriptor.getRoleType(), this.componentDescriptor.getRoleHint());
 
         Assert.assertNull(this.manager.getListener("mylistener"));
     }
 
     public void testInjectObservationManagerInAListener() throws ComponentLookupException, Exception
     {
-        TestEventListener listener = getComponentManager().getInstance(EventListener.class, "test");
+        TestEventListener listener = this.mocker.getInstance(EventListener.class, "test");
 
         Assert.assertNotNull(listener);
     }

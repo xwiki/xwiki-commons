@@ -20,76 +20,81 @@
 package org.xwiki.observation;
 
 import org.junit.Assert;
-
-import org.hamcrest.core.IsNot;
-import org.jmock.Expectations;
+import org.junit.Rule;
 import org.junit.Test;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.observation.event.BeginEvent;
 import org.xwiki.observation.event.EndEvent;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.observation.event.Event;
+import org.xwiki.observation.internal.DefaultObservationContext;
+import org.xwiki.observation.internal.DefaultObservationManager;
+import org.xwiki.observation.internal.ObservationContextListener;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Validate {@link DefaultObservationContext}.
- * 
+ *
  * @version $Id$
  */
-public class ObservationContextTest extends AbstractComponentTestCase
+public class ObservationContextTest
 {
-    private ObservationManager manager;
-
-    private ObservationContext observationContext;
-
-    @Override
-    public void setUp() throws Exception
-    {
-        super.setUp();
-
-        this.manager = getComponentManager().getInstance(ObservationManager.class);
-        this.observationContext = getComponentManager().getInstance(ObservationContext.class);
-    }
+    @Rule
+    public final MockitoComponentMockingRule<ObservationContext> mocker =
+    new MockitoComponentMockingRule<ObservationContext>(DefaultObservationContext.class);
 
     @Test
-    public void test()
+    public void test() throws Exception
     {
-        final BeginEvent beginEvent1 = getMockery().mock(BeginEvent.class, "begin1");
-        final BeginEvent beginEvent2 = getMockery().mock(BeginEvent.class, "begin2");
-        final EndEvent endEvent1 = getMockery().mock(EndEvent.class, "end1");
-        final EndEvent endEvent2 = getMockery().mock(EndEvent.class, "end2");
+        this.mocker.registerComponent(ObservationContextListener.class);
+        this.mocker.registerComponent(DefaultObservationManager.class);
 
-        getMockery().checking(new Expectations() {{
-            allowing(beginEvent1).matches(with(same(beginEvent1))); will(returnValue(true));
-            allowing(beginEvent1).matches(with(IsNot.not(same(beginEvent1)))); will(returnValue(false));
+        ObservationManager manager = this.mocker.getInstance(ObservationManager.class);
+        Execution execution = this.mocker.getInstance(Execution.class);
 
-            allowing(beginEvent2).matches(with(same(beginEvent2))); will(returnValue(true));
-            allowing(beginEvent2).matches(with(IsNot.not(same(beginEvent2)))); will(returnValue(false));
+        when(execution.getContext()).thenReturn(new ExecutionContext());
 
-            allowing(endEvent1).matches(with(same(endEvent1))); will(returnValue(true));
-            allowing(endEvent1).matches(with(IsNot.not(same(endEvent1)))); will(returnValue(false));
+        final BeginEvent beginEvent1 = mock(BeginEvent.class, "begin1");
+        final BeginEvent beginEvent2 = mock(BeginEvent.class, "begin2");
+        final EndEvent endEvent1 = mock(EndEvent.class, "end1");
+        final EndEvent endEvent2 = mock(EndEvent.class, "end2");
 
-            allowing(endEvent2).matches(with(same(endEvent2))); will(returnValue(true));
-            allowing(endEvent2).matches(with(IsNot.not(same(endEvent2)))); will(returnValue(false));
-        }});
+        when(beginEvent1.matches(any(Event.class))).thenReturn(false);
+        when(beginEvent1.matches(beginEvent1)).thenReturn(true);
 
-        Assert.assertFalse(this.observationContext.isIn(beginEvent1));
-        Assert.assertFalse(this.observationContext.isIn(beginEvent2));
+        when(beginEvent2.matches(any(Event.class))).thenReturn(false);
+        when(beginEvent2.matches(beginEvent2)).thenReturn(true);
 
-        this.manager.notify(beginEvent1, null);
+        when(endEvent1.matches(any(Event.class))).thenReturn(false);
+        when(endEvent1.matches(endEvent1)).thenReturn(true);
 
-        Assert.assertTrue(this.observationContext.isIn(beginEvent1));
+        when(endEvent2.matches(any(Event.class))).thenReturn(false);
+        when(endEvent2.matches(endEvent2)).thenReturn(true);
 
-        this.manager.notify(beginEvent2, null);
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent1));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent2));
 
-        Assert.assertTrue(this.observationContext.isIn(beginEvent1));
-        Assert.assertTrue(this.observationContext.isIn(beginEvent2));
+        manager.notify(beginEvent1, null);
 
-        this.manager.notify(endEvent2, null);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isIn(beginEvent1));
 
-        Assert.assertTrue(this.observationContext.isIn(beginEvent1));
-        Assert.assertFalse(this.observationContext.isIn(beginEvent2));
+        manager.notify(beginEvent2, null);
 
-        this.manager.notify(endEvent1, null);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isIn(beginEvent1));
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isIn(beginEvent2));
 
-        Assert.assertFalse(this.observationContext.isIn(beginEvent1));
-        Assert.assertFalse(this.observationContext.isIn(beginEvent2));
+        manager.notify(endEvent2, null);
+
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isIn(beginEvent1));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent2));
+
+        manager.notify(endEvent1, null);
+
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent1));
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent2));
     }
 }
