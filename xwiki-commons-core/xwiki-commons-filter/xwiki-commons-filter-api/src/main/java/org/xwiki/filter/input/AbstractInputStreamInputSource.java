@@ -17,25 +17,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter.input;
 
-import java.io.File;
 import java.io.IOException;
-
-import org.xwiki.filter.input.FileInputSource;
+import java.io.InputStream;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-public class DirectoryInputSource implements FileInputSource
+public abstract class AbstractInputStreamInputSource implements InputStreamInputSource
 {
-    private final File file;
-
-    public DirectoryInputSource(File file)
-    {
-        this.file = file;
-    }
+    protected InputStream inputStream;
 
     @Override
     public boolean restartSupported()
@@ -43,14 +36,30 @@ public class DirectoryInputSource implements FileInputSource
         return true;
     }
 
-    public File getFile()
+    @Override
+    public InputStream getInputStream() throws IOException
     {
-        return this.file;
+        if (this.inputStream == null) {
+            this.inputStream = openStream();
+        }
+
+        return this.inputStream;
     }
+
+    protected abstract InputStream openStream() throws IOException;
 
     @Override
     public void close() throws IOException
     {
-        // Can't close a open/directory
+        if (this.inputStream != null) {
+            this.inputStream.close();
+        }
+        this.inputStream = null;
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.inputStream != null ? this.inputStream.toString() : null;
     }
 }

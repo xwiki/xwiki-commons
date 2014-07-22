@@ -17,38 +17,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter.output;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-
-import org.xwiki.filter.input.FileInputSource;
-import org.xwiki.filter.input.InputStreamInputSource;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
- * 
  * @version $Id$
  * @since 6.2M1
  */
-public class DefaultFileInputSource extends AbstractInputStreamInputSource implements FileInputSource, InputStreamInputSource
+public class StringWriterOutputTarget extends AbstractWriterOutputTarget
 {
-    private final File file;
-
-    public DefaultFileInputSource(File file)
+    /**
+     * Return the string buffer itself.
+     * 
+     * @return StringBuffer holding the current buffer value.
+     */
+    public StringBuffer getBuffer()
     {
-        this.file = file;
-    }
-
-    public File getFile()
-    {
-        return this.file;
+        return ((StringWriter) getWriter()).getBuffer();
     }
 
     @Override
-    protected InputStream openStream() throws IOException
+    protected Writer openWriter()
     {
-        return new FileInputStream(this.file);
+        return new StringWriter();
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        // Useless
     }
 }

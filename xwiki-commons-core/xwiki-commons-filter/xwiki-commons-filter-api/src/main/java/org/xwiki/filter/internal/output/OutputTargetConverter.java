@@ -27,7 +27,11 @@ import java.lang.reflect.Type;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.filter.output.DefaultFileOutputTarget;
+import org.xwiki.filter.output.DefaultOutputStreamOutputTarget;
+import org.xwiki.filter.output.DefaultWriterOutputTarget;
 import org.xwiki.filter.output.OutputTarget;
+import org.xwiki.filter.output.StringWriterOutputTarget;
 import org.xwiki.properties.converter.AbstractConverter;
 
 /**

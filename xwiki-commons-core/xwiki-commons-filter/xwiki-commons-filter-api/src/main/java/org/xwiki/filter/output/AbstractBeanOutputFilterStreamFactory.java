@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.output;
+package org.xwiki.filter.output;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
@@ -32,11 +32,9 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.filter.AbstractBeanFilterStreamFactory;
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.internal.AbstractBeanFilterStreamFactory;
-import org.xwiki.filter.internal.input.BeanInputFilterStream;
-import org.xwiki.filter.output.BeanOutputFilterStreamFactory;
-import org.xwiki.filter.output.OutputFilterStream;
+import org.xwiki.filter.input.BeanInputFilterStream;
 import org.xwiki.filter.type.FilterStreamType;
 
 /**

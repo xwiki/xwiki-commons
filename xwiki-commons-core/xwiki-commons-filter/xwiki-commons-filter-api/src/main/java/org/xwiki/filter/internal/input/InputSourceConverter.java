@@ -28,7 +28,12 @@ import java.net.URL;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.filter.input.DefaultFileInputSource;
+import org.xwiki.filter.input.DefaultInputStreamInputSource;
+import org.xwiki.filter.input.DefaultReaderInputSource;
+import org.xwiki.filter.input.DefaultURLInputSource;
 import org.xwiki.filter.input.InputSource;
+import org.xwiki.filter.input.StringInputSource;
 import org.xwiki.properties.converter.AbstractConverter;
 import org.xwiki.properties.converter.ConversionException;
 

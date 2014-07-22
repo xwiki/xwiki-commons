@@ -24,8 +24,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Result;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.internal.output.AbstractBeanOutputFilterStreamFactory;
-import org.xwiki.filter.internal.output.BeanOutputFilterStream;
+import org.xwiki.filter.output.AbstractBeanOutputFilterStreamFactory;
+import org.xwiki.filter.output.BeanOutputFilterStream;
 import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.filter.xml.output.XMLOutputProperties;
 

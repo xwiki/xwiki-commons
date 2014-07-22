@@ -17,45 +17,41 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.output;
+package org.xwiki.filter;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.xwiki.filter.output.OutputStreamOutputTarget;
+import org.xwiki.filter.descriptor.FilterStreamDescriptor;
+import org.xwiki.filter.type.FilterStreamType;
 
 /**
+ * 
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractOutputStreamOutputTarget implements OutputStreamOutputTarget
+public abstract class AbstractFilterStreamFactory implements FilterStreamFactory
 {
-    protected OutputStream outputStream;
+    protected final FilterStreamType type;
 
-    protected abstract OutputStream openStream() throws IOException;
+    protected FilterStreamDescriptor descriptor;
 
-    @Override
-    public boolean restartSupported()
+    public AbstractFilterStreamFactory(FilterStreamType type)
     {
-        return true;
+        this.type = type;
     }
 
     @Override
-    public OutputStream getOutputStream() throws IOException
+    public FilterStreamType getType()
     {
-        if (this.outputStream == null) {
-            this.outputStream = openStream();
-        }
-
-        return this.outputStream;
+        return this.type;
     }
 
     @Override
-    public void close() throws IOException
+    public FilterStreamDescriptor getDescriptor()
     {
-        if (this.outputStream != null) {
-            this.outputStream.close();
-        }
-        this.outputStream = null;
+        return this.descriptor;
+    }
+
+    protected void setDescriptor(FilterStreamDescriptor descriptor)
+    {
+        this.descriptor = descriptor;
     }
 }

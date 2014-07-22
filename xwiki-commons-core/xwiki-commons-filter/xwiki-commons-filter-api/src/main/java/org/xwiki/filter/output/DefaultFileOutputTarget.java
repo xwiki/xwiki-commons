@@ -17,56 +17,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter.output;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-
-import org.xwiki.filter.input.InputStreamInputSource;
+import java.io.OutputStream;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-public class DefaultInputStreamInputSource implements InputStreamInputSource
+public class DefaultFileOutputTarget extends AbstractOutputStreamOutputTarget implements FileOutputTarget
 {
-    private final InputStream inputStream;
+    private File file;
 
-    private final boolean close;
-
-    public DefaultInputStreamInputSource(InputStream inputStream)
+    public DefaultFileOutputTarget(File file)
     {
-        this(inputStream, false);
+        this.file = file;
     }
 
-    public DefaultInputStreamInputSource(InputStream inputStream, boolean close)
+    public File getFile()
     {
-        this.inputStream = inputStream;
-        this.close = close;
+        return this.file;
     }
 
     @Override
-    public boolean restartSupported()
+    protected OutputStream openStream() throws IOException
     {
-        return false;
-    }
-
-    public InputStream getInputStream()
-    {
-        return this.inputStream;
-    }
-
-    @Override
-    public void close() throws IOException
-    {
-        if (this.close) {
-            this.inputStream.close();
-        }
-    }
-
-    @Override
-    public String toString()
-    {
-        return getInputStream().toString();
+        return new FileOutputStream(this.file);
     }
 }

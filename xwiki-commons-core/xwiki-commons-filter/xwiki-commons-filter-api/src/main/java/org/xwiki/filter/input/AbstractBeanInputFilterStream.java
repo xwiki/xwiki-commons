@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter.input;
 
 import java.lang.reflect.ParameterizedType;
 
@@ -29,7 +29,6 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.input.InputFilterStream;
 
 /**
  * @param <F> the type of the filter supported by this {@link InputFilterStream}

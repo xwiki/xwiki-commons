@@ -17,33 +17,44 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter.input;
 
+import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-public class StringInputSource extends AbstractReaderInputSource
+public class DefaultReaderInputSource implements ReaderInputSource
 {
-    private String source;
+    private final Reader reader;
 
-    public StringInputSource(String source)
+    public DefaultReaderInputSource(Reader reader)
     {
-        this.source = source;
+        this.reader = reader;
     }
 
     @Override
-    protected Reader openReader()
+    public boolean restartSupported()
     {
-        return new StringReader(source);
+        return false;
+    }
+
+    public Reader getReader()
+    {
+        return this.reader;
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        // Closing the reader is the responsibility of the caller
     }
 
     @Override
     public String toString()
     {
-        return this.source;
+        return getReader().toString();
     }
 }

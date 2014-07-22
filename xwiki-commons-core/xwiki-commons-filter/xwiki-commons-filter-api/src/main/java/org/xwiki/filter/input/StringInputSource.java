@@ -17,19 +17,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter.input;
 
-import org.xwiki.component.annotation.Role;
-import org.xwiki.filter.FilterException;
-import org.xwiki.filter.input.InputFilterStream;
+import java.io.Reader;
+import java.io.StringReader;
 
 /**
- * @param <P> the type of the properties bean
  * @version $Id$
  * @since 6.2M1
  */
-@Role
-public interface BeanInputFilterStream<P> extends InputFilterStream
+public class StringInputSource extends AbstractReaderInputSource
 {
-    void setProperties(P properties) throws FilterException;
+    private String source;
+
+    public StringInputSource(String source)
+    {
+        this.source = source;
+    }
+
+    @Override
+    protected Reader openReader()
+    {
+        return new StringReader(source);
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.source;
+    }
 }

@@ -17,36 +17,49 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter.output;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
-import org.xwiki.filter.input.URLInputSource;
+import org.xwiki.filter.FilterException;
 
 /**
- * 
+ * @param <P> the type of the properties bean
  * @version $Id$
  * @since 6.2M1
  */
-public class DefaultURLInputSource extends AbstractInputStreamInputSource implements URLInputSource
+public abstract class AbstractBeanOutputFilterStream<P> implements BeanOutputFilterStream<P>
 {
-    private final URL url;
+    protected P properties;
 
-    public DefaultURLInputSource(URL url)
+    protected Object filter;
+
+    public AbstractBeanOutputFilterStream()
     {
-        this.url = url;
+
     }
 
-    public URL getURL()
+    public AbstractBeanOutputFilterStream(P properties) throws FilterException
     {
-        return this.url;
+        setProperties(properties);
     }
 
     @Override
-    protected InputStream openStream() throws IOException
+    public void setProperties(P properties) throws FilterException
     {
-        return this.url.openStream();
+        this.properties = properties;
+    }
+
+    @Override
+    public Object getFilter() throws FilterException
+    {
+        if (this.filter == null) {
+            this.filter = createFilter();
+        }
+
+        return this.filter;
+    }
+
+    protected Object createFilter() throws FilterException
+    {
+        return this;
     }
 }

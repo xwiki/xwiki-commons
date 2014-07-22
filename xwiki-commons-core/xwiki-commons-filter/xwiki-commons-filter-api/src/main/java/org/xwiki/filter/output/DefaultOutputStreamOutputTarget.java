@@ -17,13 +17,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.output;
+package org.xwiki.filter.output;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
-import org.xwiki.filter.output.OutputStreamOutputTarget;
-import org.xwiki.filter.output.OutputTarget;
 
 /**
  * @version $Id$

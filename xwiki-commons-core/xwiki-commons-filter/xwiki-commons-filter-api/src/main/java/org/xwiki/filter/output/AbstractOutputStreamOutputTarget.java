@@ -17,20 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter.output;
 
 import java.io.IOException;
-import java.io.InputStream;
-
-import org.xwiki.filter.input.InputStreamInputSource;
+import java.io.OutputStream;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractInputStreamInputSource implements InputStreamInputSource
+public abstract class AbstractOutputStreamOutputTarget implements OutputStreamOutputTarget
 {
-    protected InputStream inputStream;
+    protected OutputStream outputStream;
+
+    protected abstract OutputStream openStream() throws IOException;
 
     @Override
     public boolean restartSupported()
@@ -39,29 +39,21 @@ public abstract class AbstractInputStreamInputSource implements InputStreamInput
     }
 
     @Override
-    public InputStream getInputStream() throws IOException
+    public OutputStream getOutputStream() throws IOException
     {
-        if (this.inputStream == null) {
-            this.inputStream = openStream();
+        if (this.outputStream == null) {
+            this.outputStream = openStream();
         }
 
-        return this.inputStream;
+        return this.outputStream;
     }
-
-    protected abstract InputStream openStream() throws IOException;
 
     @Override
     public void close() throws IOException
     {
-        if (this.inputStream != null) {
-            this.inputStream.close();
+        if (this.outputStream != null) {
+            this.outputStream.close();
         }
-        this.inputStream = null;
-    }
-
-    @Override
-    public String toString()
-    {
-        return this.inputStream != null ? this.inputStream.toString() : null;
+        this.outputStream = null;
     }
 }

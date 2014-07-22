@@ -17,46 +17,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.output;
+package org.xwiki.filter.input;
 
 import java.io.IOException;
-import java.io.Writer;
-
-import org.xwiki.filter.output.WriterOutputTarget;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
+ * 
  * @version $Id$
  * @since 6.2M1
  */
-public class DefaultWriterOutputTarget implements WriterOutputTarget
+public class DefaultURLInputSource extends AbstractInputStreamInputSource implements URLInputSource
 {
-    private final Writer writer;
+    private final URL url;
 
-    public DefaultWriterOutputTarget(Writer writer)
+    public DefaultURLInputSource(URL url)
     {
-        this.writer = writer;
+        this.url = url;
+    }
+
+    public URL getURL()
+    {
+        return this.url;
     }
 
     @Override
-    public boolean restartSupported()
+    protected InputStream openStream() throws IOException
     {
-        return false;
-    }
-
-    public Writer getWriter()
-    {
-        return this.writer;
-    }
-
-    @Override
-    public void close() throws IOException
-    {
-        // Closing the writer is the responsibility of the caller
-    }
-
-    @Override
-    public String toString()
-    {
-        return getWriter().toString();
+        return this.url.openStream();
     }
 }

@@ -21,7 +21,6 @@ package org.xwiki.filter.input;
 
 import java.io.Closeable;
 
-import org.xwiki.filter.internal.input.DefaultInputStreamInputSource;
 import org.xwiki.stability.Unstable;
 
 /**

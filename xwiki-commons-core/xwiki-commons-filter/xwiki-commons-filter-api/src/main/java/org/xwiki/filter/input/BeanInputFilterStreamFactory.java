@@ -20,7 +20,6 @@
 package org.xwiki.filter.input;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.internal.input.BeanInputFilterStream;
 import org.xwiki.stability.Unstable;
 
 /**

@@ -17,37 +17,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.output;
+package org.xwiki.filter.output;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import org.xwiki.component.annotation.Role;
+import org.xwiki.filter.FilterException;
 
 /**
+ * @param <P> the type of the properties bean
  * @version $Id$
  * @since 6.2M1
  */
-public class StringWriterOutputTarget extends AbstractWriterOutputTarget
+@Role
+public interface BeanOutputFilterStream<P> extends OutputFilterStream
 {
-    /**
-     * Return the string buffer itself.
-     * 
-     * @return StringBuffer holding the current buffer value.
-     */
-    public StringBuffer getBuffer()
-    {
-        return ((StringWriter) getWriter()).getBuffer();
-    }
-
-    @Override
-    protected Writer openWriter()
-    {
-        return new StringWriter();
-    }
-
-    @Override
-    public void close() throws IOException
-    {
-        // Useless
-    }
+    void setProperties(P properties) throws FilterException;
 }

@@ -17,51 +17,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.output;
+package org.xwiki.filter.input;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Writer;
-
-import org.xwiki.filter.output.WriterOutputTarget;
+import java.io.InputStream;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractWriterOutputTarget implements WriterOutputTarget
+public class DefaultByteArrayInputSource extends AbstractInputStreamInputSource
 {
-    protected Writer writer;
+    private final byte[] array;
 
-    protected abstract Writer openWriter();
-
-    @Override
-    public boolean restartSupported()
+    public DefaultByteArrayInputSource(byte[] array)
     {
-        return true;
+        this.array = array;
     }
-
+    
     @Override
-    public Writer getWriter()
+    protected InputStream openStream() throws IOException
     {
-        if (this.writer == null) {
-            this.writer = openWriter();
-        }
-
-        return this.writer;
-    }
-
-    @Override
-    public void close() throws IOException
-    {
-        if (this.writer != null) {
-            this.writer.close();
-        }
-        this.writer = null;
-    }
-
-    @Override
-    public String toString()
-    {
-        return this.writer != null ? this.writer.toString() : "";
+        return new ByteArrayInputStream(this.array);
     }
 }

@@ -17,42 +17,42 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal;
+package org.xwiki.filter.input;
 
-import org.xwiki.filter.FilterStreamFactory;
-import org.xwiki.filter.descriptor.FilterStreamDescriptor;
-import org.xwiki.filter.type.FilterStreamType;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
- * 
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractFilterStreamFactory implements FilterStreamFactory
+public abstract class AbstractReaderInputSource implements ReaderInputSource
 {
-    protected final FilterStreamType type;
-
-    protected FilterStreamDescriptor descriptor;
-
-    public AbstractFilterStreamFactory(FilterStreamType type)
-    {
-        this.type = type;
-    }
+    private Reader reader;
 
     @Override
-    public FilterStreamType getType()
+    public boolean restartSupported()
     {
-        return this.type;
+        return true;
     }
+
+    public Reader getReader()
+    {
+        if (this.reader == null) {
+            this.reader = openReader();
+        }
+
+        return this.reader;
+    }
+
+    protected abstract Reader openReader();
 
     @Override
-    public FilterStreamDescriptor getDescriptor()
+    public void close() throws IOException
     {
-        return this.descriptor;
-    }
-
-    protected void setDescriptor(FilterStreamDescriptor descriptor)
-    {
-        this.descriptor = descriptor;
+        if (this.reader != null) {
+            this.reader.close();
+        }
+        this.reader = null;
     }
 }

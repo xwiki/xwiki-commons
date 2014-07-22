@@ -21,7 +21,6 @@ package org.xwiki.filter.output;
 
 import java.io.Closeable;
 
-import org.xwiki.filter.internal.output.DefaultOutputStreamOutputTarget;
 import org.xwiki.stability.Unstable;
 
 /**

@@ -17,49 +17,44 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.output;
+package org.xwiki.filter.output;
 
-import org.xwiki.filter.FilterException;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
- * @param <P> the type of the properties bean
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractBeanOutputFilterStream<P> implements BeanOutputFilterStream<P>
+public class DefaultWriterOutputTarget implements WriterOutputTarget
 {
-    protected P properties;
+    private final Writer writer;
 
-    protected Object filter;
-
-    public AbstractBeanOutputFilterStream()
+    public DefaultWriterOutputTarget(Writer writer)
     {
-
-    }
-
-    public AbstractBeanOutputFilterStream(P properties) throws FilterException
-    {
-        setProperties(properties);
+        this.writer = writer;
     }
 
     @Override
-    public void setProperties(P properties) throws FilterException
+    public boolean restartSupported()
     {
-        this.properties = properties;
+        return false;
+    }
+
+    public Writer getWriter()
+    {
+        return this.writer;
     }
 
     @Override
-    public Object getFilter() throws FilterException
+    public void close() throws IOException
     {
-        if (this.filter == null) {
-            this.filter = createFilter();
-        }
-
-        return this.filter;
+        // Closing the writer is the responsibility of the caller
     }
 
-    protected Object createFilter() throws FilterException
+    @Override
+    public String toString()
     {
-        return this;
+        return getWriter().toString();
     }
 }

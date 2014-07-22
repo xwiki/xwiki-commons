@@ -22,7 +22,7 @@ package org.xwiki.filter.xml.internal.input;
 import javax.xml.stream.XMLEventWriter;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.internal.input.BeanInputFilterStream;
+import org.xwiki.filter.input.BeanInputFilterStream;
 import org.xwiki.filter.xml.input.XMLInputProperties;
 
 /**

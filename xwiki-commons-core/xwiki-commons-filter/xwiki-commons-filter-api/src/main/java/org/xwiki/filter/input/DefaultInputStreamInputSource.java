@@ -17,44 +17,54 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal.input;
+package org.xwiki.filter.input;
 
 import java.io.IOException;
-import java.io.Reader;
-
-import org.xwiki.filter.input.ReaderInputSource;
+import java.io.InputStream;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractReaderInputSource implements ReaderInputSource
+public class DefaultInputStreamInputSource implements InputStreamInputSource
 {
-    private Reader reader;
+    private final InputStream inputStream;
+
+    private final boolean close;
+
+    public DefaultInputStreamInputSource(InputStream inputStream)
+    {
+        this(inputStream, false);
+    }
+
+    public DefaultInputStreamInputSource(InputStream inputStream, boolean close)
+    {
+        this.inputStream = inputStream;
+        this.close = close;
+    }
 
     @Override
     public boolean restartSupported()
     {
-        return true;
+        return false;
     }
 
-    public Reader getReader()
+    public InputStream getInputStream()
     {
-        if (this.reader == null) {
-            this.reader = openReader();
-        }
-
-        return this.reader;
+        return this.inputStream;
     }
-
-    protected abstract Reader openReader();
 
     @Override
     public void close() throws IOException
     {
-        if (this.reader != null) {
-            this.reader.close();
+        if (this.close) {
+            this.inputStream.close();
         }
-        this.reader = null;
+    }
+
+    @Override
+    public String toString()
+    {
+        return getInputStream().toString();
     }
 }

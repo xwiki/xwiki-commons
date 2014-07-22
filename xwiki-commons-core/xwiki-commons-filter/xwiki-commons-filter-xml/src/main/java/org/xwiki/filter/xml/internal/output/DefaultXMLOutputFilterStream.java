@@ -25,7 +25,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.filter.internal.output.BeanOutputFilterStream;
+import org.xwiki.filter.output.BeanOutputFilterStream;
 import org.xwiki.filter.xml.output.XMLOutputProperties;
 
 /**
