@@ -55,6 +55,7 @@ public abstract class AbstractBeanInputFilterStream<P, F> implements BeanInputFi
         setProperties(properties);
     }
 
+    @Override
     public void setProperties(P properties) throws FilterException
     {
         this.properties = properties;

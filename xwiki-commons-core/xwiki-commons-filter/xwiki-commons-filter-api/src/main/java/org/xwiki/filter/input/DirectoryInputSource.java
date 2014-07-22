@@ -41,6 +41,7 @@ public class DirectoryInputSource implements FileInputSource
         return true;
     }
 
+    @Override
     public File getFile()
     {
         return this.file;

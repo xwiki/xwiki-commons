@@ -38,6 +38,7 @@ public class DefaultFileInputSource extends AbstractInputStreamInputSource imple
         this.file = file;
     }
 
+    @Override
     public File getFile()
     {
         return this.file;

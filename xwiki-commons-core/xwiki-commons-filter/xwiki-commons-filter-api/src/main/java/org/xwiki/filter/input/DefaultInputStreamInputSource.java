@@ -49,6 +49,7 @@ public class DefaultInputStreamInputSource implements InputStreamInputSource
         return false;
     }
 
+    @Override
     public InputStream getInputStream()
     {
         return this.inputStream;

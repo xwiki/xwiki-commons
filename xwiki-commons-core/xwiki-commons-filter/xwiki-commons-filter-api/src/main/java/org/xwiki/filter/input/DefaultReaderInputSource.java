@@ -41,6 +41,7 @@ public class DefaultReaderInputSource implements ReaderInputSource
         return false;
     }
 
+    @Override
     public Reader getReader()
     {
         return this.reader;

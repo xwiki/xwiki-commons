@@ -41,6 +41,7 @@ public class DefaultWriterOutputTarget implements WriterOutputTarget
         return false;
     }
 
+    @Override
     public Writer getWriter()
     {
         return this.writer;

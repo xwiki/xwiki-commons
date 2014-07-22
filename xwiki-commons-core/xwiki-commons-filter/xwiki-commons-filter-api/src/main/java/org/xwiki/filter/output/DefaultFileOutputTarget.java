@@ -37,6 +37,7 @@ public class DefaultFileOutputTarget extends AbstractOutputStreamOutputTarget im
         this.file = file;
     }
 
+    @Override
     public File getFile()
     {
         return this.file;

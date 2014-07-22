@@ -63,6 +63,7 @@ public class DefaultOutputStreamOutputTarget implements OutputStreamOutputTarget
         return false;
     }
 
+    @Override
     public OutputStream getOutputStream()
     {
         return this.outputStream;

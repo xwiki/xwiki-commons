@@ -37,6 +37,7 @@ public class DefaultURLInputSource extends AbstractInputStreamInputSource implem
         this.url = url;
     }
 
+    @Override
     public URL getURL()
     {
         return this.url;

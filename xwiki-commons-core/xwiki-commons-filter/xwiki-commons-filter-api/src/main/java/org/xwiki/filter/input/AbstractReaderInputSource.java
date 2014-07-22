@@ -36,6 +36,7 @@ public abstract class AbstractReaderInputSource implements ReaderInputSource
         return true;
     }
 
+    @Override
     public Reader getReader()
     {
         if (this.reader == null) {
