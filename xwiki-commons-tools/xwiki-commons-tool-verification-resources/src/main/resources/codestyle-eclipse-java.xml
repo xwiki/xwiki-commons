@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Import this file in Window -> Preferences -> Java -> Code Style -> Formatter -> Import... -->
 <profiles version="12">
 <profile kind="CodeFormatterProfile" name="XWiki" version="12">
 <setting id="org.eclipse.jdt.core.formatter.comment.insert_new_line_before_root_tags" value="insert"/>

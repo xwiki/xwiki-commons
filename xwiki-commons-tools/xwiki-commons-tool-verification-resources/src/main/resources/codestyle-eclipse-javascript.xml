@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Import this file in Window -> Preferences -> JavaScript -> Code Style -> Formatter -> Import... -->
 <profiles version="11">
 <profile kind="CodeFormatterProfile" name="XWiki" version="11">
 <setting id="org.eclipse.wst.jsdt.core.formatter.alignment_for_binary_expression" value="16"/>

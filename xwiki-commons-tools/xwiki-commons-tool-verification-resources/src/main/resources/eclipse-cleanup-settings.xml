@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Import this file in Window -> Preferences -> Java -> Code Style -> Clean Up -> Import... -->
 <profiles version="2">
 <profile kind="CleanUpProfile" name="XWiki" version="2">
 <setting id="cleanup.remove_redundant_type_arguments" value="true"/>
