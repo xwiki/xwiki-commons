@@ -20,11 +20,13 @@
 package org.xwiki.extension.repository.aether.internal;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.maven.model.Parent;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.FileModelSource;
 import org.apache.maven.model.building.ModelSource;
@@ -37,9 +39,13 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.impl.ArtifactResolver;
 import org.eclipse.aether.impl.RemoteRepositoryManager;
+import org.eclipse.aether.impl.VersionRangeResolver;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.VersionRangeRequest;
+import org.eclipse.aether.resolution.VersionRangeResolutionException;
+import org.eclipse.aether.resolution.VersionRangeResult;
 
 /**
  * A model resolver to assist building of dependency POMs. This resolver gives priority to those repositories that have
@@ -49,13 +55,19 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
  */
 public class DefaultModelResolver implements ModelResolver
 {
+    private static final String POM = "pom";
+
     private final RepositorySystemSession session;
 
     private final String context;
 
     private List<RemoteRepository> repositories;
 
+    private final List<RemoteRepository> externalRepositories;
+
     private final ArtifactResolver resolver;
+
+    private final VersionRangeResolver versionRangeResolver;
 
     private final RemoteRepositoryManager remoteRepositoryManager;
 
@@ -65,18 +77,22 @@ public class DefaultModelResolver implements ModelResolver
      * @param session the session
      * @param context the context
      * @param resolver the resolver
+     * @param versionRangeResolver the version range resolver
      * @param remoteRepositoryManager the repositories manager
      * @param repositories the initial repositories to search in
      */
     public DefaultModelResolver(RepositorySystemSession session, String context, ArtifactResolver resolver,
-        RemoteRepositoryManager remoteRepositoryManager, List<RemoteRepository> repositories)
+        VersionRangeResolver versionRangeResolver, RemoteRepositoryManager remoteRepositoryManager,
+        List<RemoteRepository> repositories)
     {
         this.session = session;
         this.context = context;
         this.resolver = resolver;
+        this.versionRangeResolver = versionRangeResolver;
         this.remoteRepositoryManager = remoteRepositoryManager;
         this.repositories = repositories;
         this.repositoryIds = new HashSet<String>();
+        this.externalRepositories = Collections.unmodifiableList(new ArrayList<>(repositories));
     }
 
     private DefaultModelResolver(DefaultModelResolver original)
@@ -84,8 +100,10 @@ public class DefaultModelResolver implements ModelResolver
         this.session = original.session;
         this.context = original.context;
         this.resolver = original.resolver;
+        this.versionRangeResolver = original.versionRangeResolver;
         this.remoteRepositoryManager = original.remoteRepositoryManager;
         this.repositories = original.repositories;
+        this.externalRepositories = original.externalRepositories;
         this.repositoryIds = new HashSet<String>(original.repositoryIds);
     }
 
@@ -113,7 +131,7 @@ public class DefaultModelResolver implements ModelResolver
     public ModelSource resolveModel(String groupId, String artifactId, String version)
         throws UnresolvableModelException
     {
-        Artifact pomArtifact = new DefaultArtifact(groupId, artifactId, "", "pom", version);
+        Artifact pomArtifact = new DefaultArtifact(groupId, artifactId, "", POM, version);
 
         try {
             ArtifactRequest request = new ArtifactRequest(pomArtifact, this.repositories, this.context);
@@ -127,4 +145,48 @@ public class DefaultModelResolver implements ModelResolver
         return new FileModelSource(pomFile);
     }
 
+    @Override
+    public ModelSource resolveModel(Parent parent) throws UnresolvableModelException
+    {
+        Artifact artifact =
+            new DefaultArtifact(parent.getGroupId(), parent.getArtifactId(), "", POM, parent.getVersion());
+
+        VersionRangeRequest versionRangeRequest = new VersionRangeRequest(artifact, repositories, context);
+
+        try {
+            VersionRangeResult versionRangeResult =
+                this.versionRangeResolver.resolveVersionRange(session, versionRangeRequest);
+
+            if (versionRangeResult.getHighestVersion() == null) {
+                throw new UnresolvableModelException("No versions matched the requested range '" + parent.getVersion()
+                    + "'", parent.getGroupId(), parent.getArtifactId(), parent.getVersion());
+
+            }
+
+            if (versionRangeResult.getVersionConstraint() != null
+                && versionRangeResult.getVersionConstraint().getRange() != null
+                && versionRangeResult.getVersionConstraint().getRange().getUpperBound() == null) {
+                throw new UnresolvableModelException("The requested version range '" + parent.getVersion()
+                    + "' does not specify an upper bound", parent.getGroupId(), parent.getArtifactId(),
+                    parent.getVersion());
+
+            }
+
+            parent.setVersion(versionRangeResult.getHighestVersion().toString());
+        } catch (VersionRangeResolutionException e) {
+            throw new UnresolvableModelException(e.getMessage(), parent.getGroupId(), parent.getArtifactId(),
+                parent.getVersion(), e);
+
+        }
+
+        return resolveModel(parent.getGroupId(), parent.getArtifactId(), parent.getVersion());
+    }
+
+    @Override
+    public void resetRepositories()
+    {
+        this.repositoryIds.clear();
+        this.repositories.clear();
+        this.repositories.addAll(externalRepositories);
+    }
 }

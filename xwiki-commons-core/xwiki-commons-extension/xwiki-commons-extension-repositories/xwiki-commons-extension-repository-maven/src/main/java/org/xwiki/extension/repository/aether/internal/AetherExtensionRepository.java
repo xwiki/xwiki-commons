@@ -41,7 +41,6 @@ import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.repository.internal.ArtifactDescriptorUtils;
 import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
@@ -287,7 +286,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
         }
 
-        if (commonVersions.isEmpty()) {
+        if (commonVersions == null || commonVersions.isEmpty()) {
             throw new ResolveException("No versions available for id [" + id + "] and version constraint ["
                 + versionConstraint + "]");
         }
@@ -315,7 +314,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     }
 
     List<org.eclipse.aether.version.Version> resolveVersions(Artifact artifact, RepositorySystemSession session)
-        throws VersionRangeResolutionException, ComponentLookupException
+        throws VersionRangeResolutionException
     {
         VersionRangeRequest rangeRequest = new VersionRangeRequest();
         rangeRequest.setArtifact(artifact);
@@ -404,11 +403,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
         }
 
-        artifact =
+        Artifact filerArtifact =
             new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
                 artifactExtension, artifact.getVersion());
 
-        AetherExtension extension = new AetherExtension(artifact, model, this);
+        AetherExtension extension = new AetherExtension(filerArtifact, model, this);
 
         extension.setName(getPropertyString(model, MPNAME_NAME, model.getName()));
         extension.setSummary(getPropertyString(model, MPNAME_SUMMARY, model.getDescription()));
@@ -517,11 +516,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         VersionRequest versionRequest = new VersionRequest(artifact, repositories, "");
         VersionResult versionResult = this.versionResolver.resolveVersion(session, versionRequest);
 
-        artifact = artifact.setVersion(versionResult.getVersion());
-
-        versionRequest = new VersionRequest(pomArtifact, repositories, "");
-        versionResult = this.versionResolver.resolveVersion(session, versionRequest);
-
         return pomArtifact.setVersion(versionResult.getVersion());
     }
 
@@ -554,7 +548,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         modelRequest.setTwoPhaseBuilding(false);
         modelRequest.setSystemProperties(toProperties(session.getUserProperties(), session.getSystemProperties()));
         modelRequest.setModelResolver(new DefaultModelResolver(session, "", this.artifactResolver,
-            this.remoteRepositoryManager, repositories));
+            this.versionRangeResolver, this.remoteRepositoryManager, repositories));
         modelRequest.setPomFile(pomFile);
 
         return this.modelBuilder.build(modelRequest).getEffectiveModel();
@@ -591,7 +585,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return this.repositorySystem.newResolutionRepositories(session, repositories);
     }
 
-    RemoteRepository newResolutionRepository(RepositorySystemSession session) throws ComponentLookupException
+    RemoteRepository newResolutionRepository(RepositorySystemSession session)
     {
         return newResolutionRepositories(session).get(0);
     }

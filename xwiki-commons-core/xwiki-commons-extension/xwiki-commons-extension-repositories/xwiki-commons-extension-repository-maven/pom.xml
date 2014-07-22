@@ -162,6 +162,7 @@
               **/AetherExtensionRepository.java,
               **/AetherExtensionRepositoryFactory.java,
               **/AetherUtils.java,
+              **/DefaultModelResolver.java,
               **/XWikiLogger.java,
               **/XWikiLoggerManager.java,
               **/AetherConfiguration.java,
