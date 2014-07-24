@@ -37,21 +37,20 @@ import org.w3c.dom.NodeList;
 
 /**
  * HTML Utility methods.
- * 
+ *
  * @version $Id$
  * @since 1.8.3
  */
 public final class HTMLUtils
 {
     /**
-     * IE6 doesn't handle XHTML properly and some elements must not be expanded when printed
-     * (for example {@code <br></br>} isn't valid for IE6 but {@code <br/>} is. Thus for the
-     * list of elements below we need special handling.
+     * IE6 doesn't handle XHTML properly and some elements must not be expanded when printed (for example {@code <br>
+     * </br>} isn't valid for IE6 but {@code <br/>} is. Thus for the list of elements below we need special handling.
      */
     // TODO: Remove when we drop IE6 support
     private static final List<String> OMIT_ELEMENT_CLOSE_SET = Arrays.asList(
         "area", "base", "br", "col", "hr", "img", "input", "link", "meta", "p", "param");
-    
+
     /**
      * JDOM's XMLOutputter class converts reserved XML characters (<, >, ' , &, \r and \n) into their entity format
      * (&lt;, &gt; &apos; &amp; &#xD; and \r\n). However since we're using HTML Cleaner
@@ -75,7 +74,7 @@ public final class HTMLUtils
          * Whether to omit the document type when printing the W3C Document or not.
          */
         private boolean omitDocType;
-        
+
         /**
          * @param format the JDOM class used to control output formats, see {@link org.jdom.output.Format}
          * @param omitDocType if true then omit the document type when printing the W3C Document
@@ -129,7 +128,7 @@ public final class HTMLUtils
 
         /**
          * Escape ampersand when it's not defining an entity.
-         * 
+         *
          * @param text the text to escape
          * @return the escaped text
          */
@@ -162,7 +161,7 @@ public final class HTMLUtils
             }
         }
     }
-    
+
     /**
      * Private constructor since this is a utility class that shouldn't be instantiated (all methods are static).
      */
@@ -179,7 +178,7 @@ public final class HTMLUtils
     {
         return HTMLUtils.toString(document, false, false);
     }
-    
+
     /**
      * @param document the W3C Document to transform into a String
      * @param omitDeclaration whether the XML declaration should be printed or not
@@ -197,31 +196,31 @@ public final class HTMLUtils
         // Force newlines to use \n since otherwise the default is \n\r.
         // See http://www.jdom.org/docs/apidocs/org/jdom/output/Format.html#setLineSeparator(java.lang.String)
         format.setLineSeparator("\n");
-        
-        // Make sure all elements are expanded so that they can also be rendered fine in browsers that only support 
+
+        // Make sure all elements are expanded so that they can also be rendered fine in browsers that only support
         // HTML.
         format.setExpandEmptyElements(true);
-        
+
         format.setOmitDeclaration(omitDeclaration);
 
         XMLOutputter outputter = new XWikiXMLOutputter(format, omitDoctype);
         String result = outputter.outputString(jdomDoc);
-        
-        // Since we need to support IE6 we must generate compact form for the following HTML elements (otherwise they 
+
+        // Since we need to support IE6 we must generate compact form for the following HTML elements (otherwise they
         // won't be understood by IE6):
         for (String specialElement : OMIT_ELEMENT_CLOSE_SET) {
             result = result.replaceAll(MessageFormat.format("<{0}></{0}>", specialElement),
                 MessageFormat.format("<{0}/>", specialElement));
         }
-        
-        return result; 
+
+        return result;
     }
-    
+
     /**
      * Strip the HTML envelope if it exists. Precisely this means removing the head tag and move all tags in the body
      * tag directly under the html element. This is useful for example if you wish to insert an HTML fragment into an
      * existing HTML page.
-     * 
+     *
      * @param document the w3c Document to strip
      */
     public static void stripHTMLEnvelope(Document document)
@@ -257,9 +256,8 @@ public final class HTMLUtils
     }
 
     /**
-     * Remove the first element inside a parent element and copy the element's children 
-     * in the parent.
-     * 
+     * Remove the first element inside a parent element and copy the element's children in the parent.
+     *
      * @param document the w3c document from which to remove the top level paragraph
      * @param parentTagName the name of the parent tag to look under
      * @param elementTagName the name of the first element to remove

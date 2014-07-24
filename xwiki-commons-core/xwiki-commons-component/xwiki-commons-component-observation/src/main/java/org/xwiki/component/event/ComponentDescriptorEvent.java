@@ -25,7 +25,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Base interface for all components descriptor events.
- * 
+ *
  * @version $Id$
  * @since 2.6RC2
  */
@@ -36,7 +36,7 @@ public interface ComponentDescriptorEvent extends Event
      * @deprecated since 4.4MA use {@link #getRoleType()} instead
      */
     @Deprecated
-    Class< ? > getRole();
+    Class<?> getRole();
 
     /**
      * @return the role type of the component

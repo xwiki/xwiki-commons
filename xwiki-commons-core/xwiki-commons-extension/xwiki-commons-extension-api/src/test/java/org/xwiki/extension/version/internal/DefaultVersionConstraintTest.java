@@ -22,7 +22,6 @@ package org.xwiki.extension.version.internal;
 import java.util.Arrays;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.xwiki.extension.version.IncompatibleVersionConstraintException;
 import org.xwiki.extension.version.InvalidVersionRangeException;

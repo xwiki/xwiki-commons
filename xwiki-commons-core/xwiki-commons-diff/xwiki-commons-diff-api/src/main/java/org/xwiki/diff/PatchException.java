@@ -21,15 +21,17 @@ package org.xwiki.diff;
 
 /**
  * Any exception raised when failing to apply a patch.
- * 
+ *
  * @version $Id$
  */
 public class PatchException extends DiffException
 {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructs a new exception with the specified detail message. The cause is not initialized, and may subsequently
      * be initialized by a call to {@link #initCause(Throwable)}.
-     * 
+     *
      * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method)
      */
     public PatchException(String message)
@@ -39,7 +41,7 @@ public class PatchException extends DiffException
 
     /**
      * Constructs a new exception with the specified detail message and cause.
-     * 
+     *
      * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method)
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). A null value is
      *            permitted, and indicates that the cause is nonexistent or unknown

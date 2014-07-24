@@ -51,7 +51,7 @@ import org.xwiki.extension.version.Version;
 
 /**
  * Default implementation of {@link CoreExtensionRepository}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -119,7 +119,8 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
                     @Override
                     public void run()
                     {
-                        scanner.updateExtensions(extensions.values());
+                        DefaultCoreExtensionRepository.this.scanner
+                            .updateExtensions(DefaultCoreExtensionRepository.this.extensions.values());
                     }
                 });
 

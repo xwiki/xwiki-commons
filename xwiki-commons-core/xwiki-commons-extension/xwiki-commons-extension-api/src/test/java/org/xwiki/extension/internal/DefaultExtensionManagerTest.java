@@ -19,9 +19,6 @@
  */
 package org.xwiki.extension.internal;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,9 +36,15 @@ import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for {@link DefaultExtensionManager}.
- * 
+ *
  * @version $Id$
  * @since 5.3M1
  */
@@ -60,14 +63,14 @@ public class DefaultExtensionManagerTest
     @Before
     public void setUp() throws Exception
     {
-        coreExtensionRepository = mocker.getInstance(CoreExtensionRepository.class);
-        mockExtensionRepositoryDescriptor(coreExtensionRepository, "core");
+        this.coreExtensionRepository = this.mocker.getInstance(CoreExtensionRepository.class);
+        mockExtensionRepositoryDescriptor(this.coreExtensionRepository, "core");
 
-        localExtensionRepository = mocker.getInstance(LocalExtensionRepository.class);
-        mockExtensionRepositoryDescriptor(localExtensionRepository, "local");
+        this.localExtensionRepository = this.mocker.getInstance(LocalExtensionRepository.class);
+        mockExtensionRepositoryDescriptor(this.localExtensionRepository, "local");
 
-        installedExtensionRepository = mocker.getInstance(InstalledExtensionRepository.class);
-        mockExtensionRepositoryDescriptor(installedExtensionRepository, "installed");
+        this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
+        mockExtensionRepositoryDescriptor(this.installedExtensionRepository, "installed");
     }
 
     private ExtensionRepositoryDescriptor mockExtensionRepositoryDescriptor(ExtensionRepository repository, String id)
@@ -86,10 +89,10 @@ public class DefaultExtensionManagerTest
     {
         ExtensionDependency extensionDependency = mock(ExtensionDependency.class);
 
-        doThrow(ResolveException.class).when(coreExtensionRepository).resolve(extensionDependency);
-        doThrow(ResolveException.class).when(localExtensionRepository).resolve(extensionDependency);
+        doThrow(ResolveException.class).when(this.coreExtensionRepository).resolve(extensionDependency);
+        doThrow(ResolveException.class).when(this.localExtensionRepository).resolve(extensionDependency);
 
-        assertNull(mocker.getComponentUnderTest().resolveExtension(extensionDependency, "wiki:math"));
+        assertNull(this.mocker.getComponentUnderTest().resolveExtension(extensionDependency, "wiki:math"));
     }
 
     /**
@@ -102,11 +105,11 @@ public class DefaultExtensionManagerTest
         String extensionId = "test:extension";
 
         ExtensionDependency extensionDependency = mock(ExtensionDependency.class);
-        doThrow(ResolveException.class).when(coreExtensionRepository).resolve(extensionDependency);
+        doThrow(ResolveException.class).when(this.coreExtensionRepository).resolve(extensionDependency);
 
         InstalledExtension extension = mock(InstalledExtension.class);
         when(extensionDependency.getId()).thenReturn(extensionId);
-        when(installedExtensionRepository.getInstalledExtension(extensionId, namespace)).thenReturn(extension);
+        when(this.installedExtensionRepository.getInstalledExtension(extensionId, namespace)).thenReturn(extension);
 
         Version version = mock(Version.class);
         when(extension.getId()).thenReturn(new ExtensionId(extensionId, version));
@@ -115,7 +118,7 @@ public class DefaultExtensionManagerTest
         when(extensionDependency.getVersionConstraint()).thenReturn(versionConstraint);
         when(versionConstraint.containsVersion(version)).thenReturn(true);
 
-        assertSame(extension, mocker.getComponentUnderTest().resolveExtension(extensionDependency, namespace));
+        assertSame(extension, this.mocker.getComponentUnderTest().resolveExtension(extensionDependency, namespace));
     }
 
     @Test
@@ -123,13 +126,13 @@ public class DefaultExtensionManagerTest
     {
         ExtensionId extensionId = new ExtensionId("extension", "version");
 
-        doThrow(ResolveException.class).when(coreExtensionRepository).resolve(extensionId);
+        doThrow(ResolveException.class).when(this.coreExtensionRepository).resolve(extensionId);
 
         InstalledExtension extension = mock(InstalledExtension.class);
-        when(installedExtensionRepository.resolve(extensionId)).thenReturn(extension);
+        when(this.installedExtensionRepository.resolve(extensionId)).thenReturn(extension);
 
         when(extension.getId()).thenReturn(extensionId);
 
-        assertSame(extension, mocker.getComponentUnderTest().resolveExtension(extensionId));
+        assertSame(extension, this.mocker.getComponentUnderTest().resolveExtension(extensionId));
     }
 }

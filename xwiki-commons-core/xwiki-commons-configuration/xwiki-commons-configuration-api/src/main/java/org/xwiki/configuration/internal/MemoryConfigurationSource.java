@@ -64,6 +64,7 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
         this.properties.remove(key);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getProperty(String key, T defaultValue)
     {
@@ -84,7 +85,7 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
         T value;
 
         if (this.properties.containsKey(key)) {
-            value = (T) this.properties.get(key);
+            value = valueClass.cast(this.properties.get(key));
         } else {
             value = getDefault(valueClass);
         }
@@ -92,6 +93,7 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
         return value;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getProperty(String key)
     {

@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 
 /**
  * Serialize and unserialize {@link Boolean} properties.
- * 
+ *
  * @version $Id$
  */
 public class BooleanExtensionPropertySerializer extends AbstractExtensionPropertySerializer<Boolean>

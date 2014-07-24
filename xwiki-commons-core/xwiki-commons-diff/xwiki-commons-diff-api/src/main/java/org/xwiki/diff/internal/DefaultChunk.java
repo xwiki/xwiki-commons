@@ -28,7 +28,7 @@ import org.xwiki.diff.PatchException;
 
 /**
  * Default implementation of {@link Chunk}.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */
@@ -70,7 +70,7 @@ public class DefaultChunk<E> implements Chunk<E>
         }
 
         for (int i = 0; i < size(); i++) {
-            if (!target.get(index + i).equals(elements.get(i))) {
+            if (!target.get(this.index + i).equals(this.elements.get(i))) {
                 throw new PatchException("Incorrect Chunk: the chunk content doesn't match the target");
             }
         }
@@ -125,7 +125,7 @@ public class DefaultChunk<E> implements Chunk<E>
         }
 
         if (obj instanceof Chunk) {
-            Chunk<E> otherChunk = (Chunk<E>) obj;
+            Chunk<?> otherChunk = (Chunk<?>) obj;
             return getIndex() == otherChunk.getIndex() && Objects.equals(getElements(), otherChunk.getElements());
         }
 

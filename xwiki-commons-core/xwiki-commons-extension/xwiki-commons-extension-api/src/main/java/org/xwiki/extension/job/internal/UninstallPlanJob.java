@@ -32,7 +32,7 @@ import org.xwiki.job.Request;
 
 /**
  * Create an Extension uninstallation plan.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

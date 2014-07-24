@@ -32,7 +32,7 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 
 /**
  * If &lt;li&gt; elements have no &lt;ul&gt; or &lt;ol&gt; parent then add a &lt;ul&gt; parent to make it valid.
- * 
+ *
  * @version $Id$
  * @since 3.2RC1
  */
@@ -45,7 +45,7 @@ public class ListItemFilter extends AbstractHTMLFilter
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
         // Iterate all lists and fix them.
-        for (Element listItem : filterDescendants(document.getDocumentElement(), new String[] {TAG_LI})) {
+        for (Element listItem : filterDescendants(document.getDocumentElement(), new String[] { TAG_LI })) {
             Node parent = listItem.getParentNode();
             if (parent != null && (!parent.getNodeName().equalsIgnoreCase(TAG_UL)
                 && !parent.getNodeName().equalsIgnoreCase(TAG_OL)))

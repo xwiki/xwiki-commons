@@ -102,6 +102,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     private static PublicKeyParameters rsaPublicKey;
     private static PrivateKeyParameters interCaDsaPrivateKey;
     private static PublicKeyParameters interCaDsaPublicKey;
+    @SuppressWarnings("unused")
     private static PrivateKeyParameters dsaPrivateKey;
     private static PublicKeyParameters dsaPublicKey;
 

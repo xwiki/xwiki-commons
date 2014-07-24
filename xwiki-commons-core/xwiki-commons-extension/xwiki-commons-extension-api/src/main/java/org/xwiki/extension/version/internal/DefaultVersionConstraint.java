@@ -45,7 +45,7 @@ import org.xwiki.extension.version.VersionRangeCollection;
  * one.
  * <p>
  * {(,1.0],[2.0,)},{[3.0)}
- * 
+ *
  * @see org.sonatype.aether.util.version.GenericVersionConstraint
  * @version $Id$
  * @since 4.0M1
@@ -87,7 +87,7 @@ public class DefaultVersionConstraint implements VersionConstraint
 
     /**
      * Created a new {@link DefaultVersionConstraint} by cloning the provided version constraint.
-     * 
+     *
      * @param versionConstraint the version constrain to copy
      */
     public DefaultVersionConstraint(VersionConstraint versionConstraint)
@@ -99,7 +99,7 @@ public class DefaultVersionConstraint implements VersionConstraint
      * @param ranges the ranges of versions
      * @param version the recommended version
      */
-    public DefaultVersionConstraint(Collection< ? extends VersionRangeCollection> ranges, Version version)
+    public DefaultVersionConstraint(Collection<? extends VersionRangeCollection> ranges, Version version)
     {
         if (ranges != null && !ranges.isEmpty()) {
             this.ranges = new ArrayList<VersionRangeCollection>(ranges);
@@ -283,7 +283,7 @@ public class DefaultVersionConstraint implements VersionConstraint
     /**
      * Create a new {@link DefaultVersionConstraint} instance which is the combination of the provided version ranges
      * and this version ranges.
-     * 
+     *
      * @param otherRanges the version ranges to merge with this version ranges
      * @return the new {@link DefaultVersionConstraint}
      * @throws IncompatibleVersionConstraintException the provided version and version ranges are not compatible with

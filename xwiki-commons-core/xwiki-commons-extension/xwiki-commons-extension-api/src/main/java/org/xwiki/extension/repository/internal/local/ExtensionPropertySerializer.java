@@ -24,7 +24,7 @@ import org.w3c.dom.Element;
 
 /**
  * Serialize and unserialize a property.
- * 
+ *
  * @param <T>
  * @version $Id$
  */

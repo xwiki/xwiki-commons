@@ -27,27 +27,27 @@ import org.xwiki.diff.DiffResult;
 /**
  * Displays a {@link DiffResult} as an in-line diff. An in-line diff is made of a list of chunks, each marked as added,
  * removed or unmodified. For instance, if changes are computed at word level then you could have this in-line diff:
- * 
+ *
  * <pre>
  * {@code the <del>quick</del><ins>sick</ins> brown fox}
  * </pre>
- * 
+ *
  * At character level the diff looks a bit different:
- * 
+ *
  * <pre>
  * {@code the <del>qu</del><ins>s</ins>ick brown fox}
  * </pre>
- * 
+ *
  * In this case the first chunk is "the ", an unmodified chunk, made of 4 characters and the second chunk is "qu", a
  * removed chunk, made of 2 characters. An in-line diff can be displayed either as you've seen above, mixing added and
  * removed chunks in one line, or it can be displayed on two lines, one showing the removed chunks and the other the
  * added chunks:
- * 
+ *
  * <pre>
  * {@code the <del>quick</del> brown fox
  * the <ins>sick</ins> brown fox}
  * </pre>
- * 
+ *
  * @version $Id$
  * @since 4.1RC1
  */
@@ -65,14 +65,14 @@ public interface InlineDiffDisplayer
      * </ul>
      * If changes are computed at character level, i.e. the type of elements that are compared is {@link Character},
      * then the in-line diff between "the quick fox" and "the sick fox" is:
-     * 
+     *
      * <pre>
      * {@code the <del>qu</del><ins>s</ins>ick fox}
      * </pre>
-     * 
+     *
      * and is made of 4 groups of {@link Character}s: "the " unmodified, "qu" removed, "s" added and "ick fox"
      * unmodified.
-     * 
+     *
      * @param <E> the type of elements that are add/remove/modified in the given diff result (specifies the granularity
      *            level of changes)
      * @param diffResult the diff result to be displayed

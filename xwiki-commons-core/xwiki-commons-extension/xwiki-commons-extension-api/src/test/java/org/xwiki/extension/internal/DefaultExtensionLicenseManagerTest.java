@@ -22,9 +22,8 @@ package org.xwiki.extension.internal;
 import java.io.IOException;
 import java.util.List;
 
-import org.junit.Assert;
-
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -155,7 +155,7 @@ public class ResourceLoader
      */
     public Enumeration<ResourceHandle> getResources(URL source, String name)
     {
-        return new ResourceEnumeration<ResourceHandle>(new URL[] {source}, name, false);
+        return new ResourceEnumeration<ResourceHandle>(new URL[] { source }, name, false);
     }
 
     /**
@@ -307,7 +307,7 @@ public class ResourceLoader
      */
     public Enumeration<URL> findResources(URL source, String name)
     {
-        return new ResourceEnumeration<URL>(new URL[] {source}, name, true);
+        return new ResourceEnumeration<URL>(new URL[] { source }, name, true);
     }
 
     /**

@@ -30,7 +30,7 @@ import org.xwiki.diff.display.Splitter;
 
 /**
  * Splits a string into its characters.
- * 
+ *
  * @version $Id$
  * @since 4.1RC1
  */

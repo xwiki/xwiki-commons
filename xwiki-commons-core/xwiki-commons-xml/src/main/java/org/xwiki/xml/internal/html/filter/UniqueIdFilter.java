@@ -33,7 +33,7 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 
 /**
  * Makes sure HTML element IDs are unique. When a duplicate ID is found it is suffixed with a number to make it unique.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

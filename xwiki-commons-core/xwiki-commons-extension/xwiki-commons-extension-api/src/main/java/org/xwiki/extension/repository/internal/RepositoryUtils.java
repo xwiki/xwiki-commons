@@ -31,7 +31,7 @@ import org.xwiki.extension.repository.result.CollectionIterableResult;
 
 /**
  * A set of Repository related tools.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */
@@ -57,7 +57,7 @@ public final class RepositoryUtils
      * @return the search result
      */
     public static CollectionIterableResult<Extension> searchInCollection(String pattern, int offset, int nb,
-        Collection< ? extends Extension> extensions)
+        Collection<? extends Extension> extensions)
     {
         List<Extension> result;
 
@@ -68,7 +68,7 @@ public final class RepositoryUtils
         }
 
         if (nb == 0 || offset >= result.size()) {
-            return new CollectionIterableResult<Extension>(result.size(), offset, Collections.<Extension> emptyList());
+            return new CollectionIterableResult<Extension>(result.size(), offset, Collections.<Extension>emptyList());
         }
 
         int fromIndex = offset;
@@ -99,7 +99,7 @@ public final class RepositoryUtils
     public static <T> CollectionIterableResult<T> getIterableResult(int offset, int nb, Collection<T> elements)
     {
         if (nb == 0 || offset >= elements.size()) {
-            return new CollectionIterableResult<T>(elements.size(), offset, Collections.<T> emptyList());
+            return new CollectionIterableResult<T>(elements.size(), offset, Collections.<T>emptyList());
         }
 
         List<T> list;
@@ -144,7 +144,7 @@ public final class RepositoryUtils
      * @param extensions the extension collection to search in
      * @return the filtered list of extensions
      */
-    private static List<Extension> filter(String pattern, Collection< ? extends Extension> extensions)
+    private static List<Extension> filter(String pattern, Collection<? extends Extension> extensions)
     {
         List<Extension> result = new ArrayList<Extension>();
 
@@ -162,7 +162,7 @@ public final class RepositoryUtils
 
     /**
      * Matches an extension in a case insensitive way.
-     * 
+     *
      * @param patternMatcher the pattern to match
      * @param extension the extension to match
      * @return true if one of the element is matched
@@ -175,7 +175,7 @@ public final class RepositoryUtils
 
     /**
      * Matches a set of elements in a case insensitive way.
-     * 
+     *
      * @param patternMatcher the pattern to match
      * @param elements the elements to match
      * @return true if one of the element is matched

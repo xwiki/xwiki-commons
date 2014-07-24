@@ -31,7 +31,7 @@ import org.xwiki.job.Request;
 
 /**
  * Used as proxy behind all extension handlers.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -40,7 +40,7 @@ public interface ExtensionHandlerManager
 {
     /**
      * Install the provided local extension.
-     * 
+     *
      * @param localExtension the extension to install
      * @param namespace the namespace where to install the extension
      * @param request extra parameters
@@ -50,7 +50,7 @@ public interface ExtensionHandlerManager
 
     /**
      * Uninstall the provided local extension.
-     * 
+     *
      * @param localExtension the extension to uninstall
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
@@ -62,7 +62,7 @@ public interface ExtensionHandlerManager
 
     /**
      * Uninstall the provided local extension.
-     * 
+     *
      * @param localExtension the extension to uninstall
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
@@ -72,7 +72,7 @@ public interface ExtensionHandlerManager
 
     /**
      * Upgrade the provided local extension.
-     * 
+     *
      * @param previousLocalExtension the previous installed version of the extension
      * @param newLocalExtension the extension to install
      * @param namespace the namespace from where to uninstall the extension
@@ -86,7 +86,7 @@ public interface ExtensionHandlerManager
 
     /**
      * Upgrade the provided local extension.
-     * 
+     *
      * @param previousLocalExtensions the previous installed versions of the extension
      * @param newLocalExtension the extension to install
      * @param namespace the namespace from where to uninstall the extension
@@ -98,7 +98,7 @@ public interface ExtensionHandlerManager
 
     /**
      * Initialize the provided local extension (during application startup, reinitialization...).
-     * 
+     *
      * @param localExtension the extension to install
      * @param namespace the namespace where to install the extension
      * @throws ExtensionException error when trying to initialize the extension

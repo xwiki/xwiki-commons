@@ -30,7 +30,7 @@ import java.lang.reflect.Type;
  * <li>source: the {@link org.xwiki.component.descriptor.ComponentDescriptor} instance</li>
  * <li>data: the {@link org.xwiki.component.manager.ComponentManager} where the component was registered</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 2.6RC2
  */
@@ -49,7 +49,7 @@ public class ComponentDescriptorRemovedEvent extends AbstractComponentDescriptor
      * @deprecated since 4.4RC1 use {@link #ComponentDescriptorRemovedEvent(Type)} instead
      */
     @Deprecated
-    public ComponentDescriptorRemovedEvent(Class< ? > role)
+    public ComponentDescriptorRemovedEvent(Class<?> role)
     {
         super(role);
     }
@@ -69,7 +69,7 @@ public class ComponentDescriptorRemovedEvent extends AbstractComponentDescriptor
      * @deprecated since 4.4RC1 use {@link #ComponentDescriptorRemovedEvent(Type, String)} instead
      */
     @Deprecated
-    public ComponentDescriptorRemovedEvent(Class< ? > role, String roleHint)
+    public ComponentDescriptorRemovedEvent(Class<?> role, String roleHint)
     {
         super(role, roleHint);
     }

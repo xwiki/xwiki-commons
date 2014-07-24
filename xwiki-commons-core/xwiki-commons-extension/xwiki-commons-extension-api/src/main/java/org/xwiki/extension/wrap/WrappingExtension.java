@@ -32,7 +32,7 @@ import org.xwiki.extension.repository.ExtensionRepository;
 
 /**
  * Wrap an extension.
- * 
+ *
  * @param <E> the extension type
  * @version $Id$
  * @since 4.0M1
@@ -104,7 +104,7 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingObje
     }
 
     @Override
-    public Collection< ? extends ExtensionDependency> getDependencies()
+    public Collection<? extends ExtensionDependency> getDependencies()
     {
         return getWrapped().getDependencies();
     }

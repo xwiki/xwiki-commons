@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * Make several iterable results look like one.
- * 
+ *
  * @param <T> the type
  * @version $Id$
  * @since 4.0M1

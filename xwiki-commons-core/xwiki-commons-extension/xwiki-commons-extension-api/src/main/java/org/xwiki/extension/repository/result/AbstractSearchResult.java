@@ -21,7 +21,7 @@ package org.xwiki.extension.repository.result;
 
 /**
  * Utility base class for {@link IterableResult} implementations.
- * 
+ *
  * @param <T> the type
  * @version $Id$
  * @since 4.0M1

@@ -76,6 +76,7 @@ public class DefaultCMSSignedDataTest extends AbstractPKIXTest
 
     private CMSSignedDataGenerator generator;
     private CMSSignedDataVerifier verifier;
+    @SuppressWarnings("unused")
     private static SignerFactory rsaSignerFactory;
     private static SignerFactory dsaSignerFactory;
     private static PrivateKeyParameters rsaPrivateKey;

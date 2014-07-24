@@ -23,7 +23,7 @@ import org.xwiki.extension.wrap.AbstractWrappingObject;
 
 /**
  * Encapsulate an object in a safe way for public scripts.
- * 
+ *
  * @param <T> the type of the wrapped object
  * @version $Id$
  * @since 4.0M2
@@ -44,7 +44,7 @@ public abstract class AbstractSafeObject<T> extends AbstractWrappingObject<T>
      * @param wrapped the wrapped object
      * @param safeProvider the provider of instances safe for public scripts
      */
-    public AbstractSafeObject(T wrapped, ScriptSafeProvider< ? > safeProvider)
+    public AbstractSafeObject(T wrapped, ScriptSafeProvider<?> safeProvider)
     {
         super(wrapped);
 

@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * A snippet of the source list.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */
@@ -31,7 +31,7 @@ public interface Chunk<E>
 {
     /**
      * Verify that the chunk can be found in the provided list.
-     * 
+     *
      * @param target the list where to match the chunk
      * @throws PatchException fail to match the chunk
      */

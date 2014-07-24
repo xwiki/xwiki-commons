@@ -28,7 +28,7 @@ import org.xwiki.extension.LocalExtension;
 
 /**
  * Default implementation of {@link LocalExtension}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -51,7 +51,7 @@ public class DefaultLocalExtension extends AbstractExtension implements LocalExt
 
     /**
      * Create new extension descriptor by copying provided one.
-     * 
+     *
      * @param repository the repository where this extension comes from
      * @param extension the extension to copy
      */

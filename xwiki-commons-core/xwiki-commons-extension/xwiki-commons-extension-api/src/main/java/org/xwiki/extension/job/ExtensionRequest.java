@@ -26,7 +26,7 @@ import org.xwiki.job.Request;
 
 /**
  * Extension manipulation related {@link Request}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

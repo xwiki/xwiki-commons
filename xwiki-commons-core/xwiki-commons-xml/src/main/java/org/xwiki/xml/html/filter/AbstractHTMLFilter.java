@@ -29,7 +29,7 @@ import org.xwiki.xml.html.HTMLConstants;
 
 /**
  * Abstract implementation of {@link HTMLFilter} providing utility methods for various common w3c dom operations.
- * 
+ *
  * @version $Id$
  * @since 1.8M2
  */
@@ -37,7 +37,7 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
 {
     /**
      * Utility method for filtering an element's children with a tagName.
-     * 
+     *
      * @param parent the parent {@link Element}.
      * @param tagName expected tagName of the children elements.
      * @return list of children elements with the provided tagName.
@@ -57,7 +57,7 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
 
     /**
      * Utility method for filtering an element's descendants by their tag names.
-     * 
+     *
      * @param parent the parent {@link Element}.
      * @param tagNames an array of tagNames.
      * @return list of descendants of the parent element having one of given tag names.
@@ -77,7 +77,7 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
 
     /**
      * Utility method for filtering an element's descendants by their tag names and an {@link ElementSelector}.
-     * 
+     *
      * @param parent the parent {@link Element}.
      * @param tagNames an array of tagNames.
      * @param elementSelector an {@link ElementSelector} that allows further filtering of elements.
@@ -101,7 +101,7 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
     /**
      * Utility method for checking if a list of elements have the same attribute set. If the checkValue is true, the
      * values of the given attribute will be checked for equivalency.
-     * 
+     *
      * @param elements the list of elements.
      * @param attributeName Name of the attribute.
      * @param checkValue flag indicating if the value of the attribute should be equal among all the elements.
@@ -126,7 +126,7 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
 
     /**
      * Replaces the given {@link Element} with it's children.
-     * 
+     *
      * @param element the {@link Element} to be replaced.
      */
     protected void replaceWithChildren(Element element)
@@ -140,7 +140,7 @@ public abstract class AbstractHTMLFilter implements HTMLFilter, HTMLConstants
 
     /**
      * Moves all child elements of the parent into destination element.
-     * 
+     *
      * @param parent the parent {@link Element}.
      * @param destination the destination {@link Element}.
      */

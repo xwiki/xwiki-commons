@@ -44,7 +44,7 @@ import org.xwiki.test.mockito.MockitoComponentManagerRule;
  *
  * @version $Id$
  */
-@ComponentList({DefaultExtensionManagerConfiguration.class})
+@ComponentList({ DefaultExtensionManagerConfiguration.class })
 public class DefaultExtensionManagerConfigurationTest
 {
     @Rule

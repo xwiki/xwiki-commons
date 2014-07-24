@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * Default implementation of {@link ExtensionRepositoryDescriptor}.
- * 
+ *
  * @version $Id$
  * @since 4.3M1
  */
@@ -77,19 +77,19 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
     @Override
     public String getId()
     {
-        return id;
+        return this.id;
     }
 
     @Override
     public String getType()
     {
-        return type;
+        return this.type;
     }
 
     @Override
     public URI getURI()
     {
-        return uri;
+        return this.uri;
     }
 
     @Override
@@ -106,7 +106,7 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
 
     /**
      * Set a property.
-     * 
+     *
      * @param key the property key
      * @param value the property value
      * @see #getProperty(String)
@@ -118,7 +118,7 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
 
     /**
      * Replace existing properties with provided properties.
-     * 
+     *
      * @param properties the properties
      */
     public void setProperties(Map<String, String> properties)

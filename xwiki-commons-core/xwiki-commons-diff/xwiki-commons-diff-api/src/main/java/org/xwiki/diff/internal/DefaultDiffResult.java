@@ -27,7 +27,7 @@ import org.xwiki.logging.LogQueue;
 
 /**
  * Default implementation of {@link DiffResult}.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */
@@ -94,7 +94,7 @@ public class DefaultDiffResult<E> implements DiffResult<E>
     {
         this.patch = patch;
     }
-    
+
     @Override
     public String toString()
     {

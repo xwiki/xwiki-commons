@@ -1,4 +1,6 @@
-/*
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,37 +18,12 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-package org.xwiki.extension.version;
+-->
 
-import java.io.Serializable;
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.0//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
-/**
- * A range of versions.
- *
- * @version $Id$
- * @since 4.0M1
- */
-public interface VersionRange extends Serializable
-{
-    /**
-     * Indicate if the provided version is part of this range.
-     *
-     * @param version the version to search
-     * @return true if the version is part of the range, false otherwise
-     */
-    boolean containsVersion(Version version);
-
-    /**
-     * @return the string representation of this version range
-     */
-    String getValue();
-
-    /**
-     * Indicate if the provided version range is compatible with the provided version range.
-     *
-     * @param otherRange the version range to compare
-     * @return true if the two version ranges are compatibles, false otherwise
-     */
-    boolean isCompatible(VersionRange otherRange);
-}
+<suppressions>
+  <suppress checks="ClassFanOutComplexity" files="JarExtensionJobFinishedListener.java"/>
+</suppressions>

@@ -25,7 +25,7 @@ import org.xwiki.extension.version.VersionConstraint;
 
 /**
  * Default implementation of {@link ExtensionDependency}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -52,7 +52,7 @@ public class DefaultExtensionDependency extends AbstractExtensionDependency
 
     /**
      * Create new instance by cloning the provided one with different version constraint.
-     * 
+     *
      * @param dependency the extension dependency to copy
      * @param versionConstraint the version constraint to set
      */

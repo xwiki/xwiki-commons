@@ -20,15 +20,15 @@
 package org.xwiki.component.event;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Base class for events about components descriptors.
- * 
+ *
  * @version $Id$
  * @since 2.6RC2
  */
@@ -56,7 +56,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
      * @deprecated since 4.4RC1 use {@link #AbstractComponentDescriptorEvent(Type)} instead
      */
     @Deprecated
-    public AbstractComponentDescriptorEvent(Class< ? > role)
+    public AbstractComponentDescriptorEvent(Class<?> role)
     {
         this((Type) role);
     }
@@ -76,7 +76,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
      * @deprecated since 4.4RC1 use {@link #AbstractComponentDescriptorEvent(Type, String)} instead
      */
     @Deprecated
-    public AbstractComponentDescriptorEvent(Class< ? > role, String roleHint)
+    public AbstractComponentDescriptorEvent(Class<?> role, String roleHint)
     {
         this((Type) role, roleHint);
     }
@@ -93,7 +93,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
     }
 
     @Override
-    public Class< ? > getRole()
+    public Class<?> getRole()
     {
         return ReflectionUtils.getTypeClass(getRoleType());
     }
@@ -139,7 +139,7 @@ public abstract class AbstractComponentDescriptorEvent implements ComponentDescr
         }
 
         if (obj != null && obj.getClass() == getClass()) {
-            return ObjectUtils.equals(getRoleType(), ((ComponentDescriptorEvent) obj).getRoleType())
+            return Objects.equals(getRoleType(), ((ComponentDescriptorEvent) obj).getRoleType())
                 && StringUtils.equals(getRoleHint(), ((ComponentDescriptorEvent) obj).getRoleHint());
         }
 

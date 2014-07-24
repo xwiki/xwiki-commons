@@ -31,7 +31,7 @@ import org.xwiki.environment.Environment;
 
 /**
  * Makes it easy to implement {@link org.xwiki.environment.Environment}.
- * 
+ *
  * @version $Id$
  * @since 3.5M1
  */
@@ -108,8 +108,8 @@ public abstract class AbstractEnvironment implements Environment
             final String configured = this.configurationProvider.get().getPermanentDirectoryPath();
 
             final String[] locations =
-                new String[] {systemProperty, classSpecified, configured, getTemporaryDirectoryName(),
-                    DEFAULT_TMP_DIRECTORY};
+                new String[] { systemProperty, classSpecified, configured, getTemporaryDirectoryName(),
+                    DEFAULT_TMP_DIRECTORY };
             this.permanentDirectory = initializeDirectory(locations, false);
 
             if (systemProperty == null && classSpecified == null && configured == null) {
@@ -126,7 +126,7 @@ public abstract class AbstractEnvironment implements Environment
      * Get the name of the permanent directory to use. This name will be preferred when choosing the permanent directory
      * and if it is not able to be written to, this class will fail over to the default directory after printing an
      * error in the log file.
-     * 
+     *
      * @return the permanent directory as specified
      */
     protected String getPermanentDirectoryName()
@@ -139,17 +139,17 @@ public abstract class AbstractEnvironment implements Environment
      * because this function does a number of checks to make sure the directory exists, is a directory (not a file) and
      * the XWiki process has permission to write to it. If the directory doesn't exist it is created and if it cannot be
      * written to, an erroris printed in the log and it is passed over for the default temporary directory.
-     * 
+     *
      * @see Environment#getTemporaryDirectory()
      */
     @Override
     public File getTemporaryDirectory()
     {
         if (this.temporaryDirectory == null) {
-            final String[] locations = new String[] {getTemporaryDirectoryName(), DEFAULT_TMP_DIRECTORY};
+            final String[] locations = new String[] { getTemporaryDirectoryName(), DEFAULT_TMP_DIRECTORY };
             this.temporaryDirectory = initializeDirectory(locations, true);
         }
-        
+
         return this.temporaryDirectory;
     }
 
@@ -157,7 +157,7 @@ public abstract class AbstractEnvironment implements Environment
      * Get the name of the temporary directory to use. The path given name will be preferred when choosing the temporary
      * directory and if it is not able to be written to, this class will fail over to the default directory after
      * printing an error in the log file.
-     * 
+     *
      * @return the temporary directory as specified
      */
     protected String getTemporaryDirectoryName()

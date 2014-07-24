@@ -100,7 +100,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testInstallRemoteOnNamespaces() throws Throwable
     {
-        install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, new String[] {"namespace1", "namespace2"});
+        install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, new String[] { "namespace1", "namespace2" });
 
         LocalExtension installedExtension =
             this.installedExtensionRepository.getInstalledExtension(

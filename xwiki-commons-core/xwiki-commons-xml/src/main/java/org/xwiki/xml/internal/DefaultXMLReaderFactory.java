@@ -34,10 +34,10 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.xml.XMLReaderFactory;
 
 /**
- * Verifies if Xerces is on the classpath and if so configures it to cache DTD grammars instead of reparsing 
- * it for every documents, thus greatly improving performances since most XML content handled in XWiki is
- * XHTML using the XHTML DTD. 
- *  
+ * Verifies if Xerces is on the classpath and if so configures it to cache DTD grammars instead of reparsing it for
+ * every documents, thus greatly improving performances since most XML content handled in XWiki is XHTML using the XHTML
+ * DTD.
+ *
  * @version $Id$
  * @since 1.7.1
  */
@@ -46,9 +46,9 @@ import org.xwiki.xml.XMLReaderFactory;
 public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
 {
     /**
-     * We cache the Xerces Grammar Pool (when Xerces has been discovered in the classpath) so that we can
-     * reuse it across creation of XML Readers. Note that don't cache the XML Reader itself since it can
-     * contain chained XML Filters which are usually not stateless. 
+     * We cache the Xerces Grammar Pool (when Xerces has been discovered in the classpath) so that we can reuse it
+     * across creation of XML Readers. Note that don't cache the XML Reader itself since it can contain chained XML
+     * Filters which are usually not stateless.
      */
     private Object xercesGrammarPool;
 
@@ -61,21 +61,21 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
             // There's no Xerces JAR in the classpath, don't do grammar caching for Xerces.
         }
     }
-    
+
     @Override
     public XMLReader createXMLReader() throws SAXException, ParserConfigurationException
     {
         XMLReader xmlReader;
-        
+
         // Try to optimize speed by caching the DTD parsing for Xerces
         // (i.e. if Xerces is available on the classpath).
         try {
             // See http://xerces.apache.org/xerces2-j/faq-grammars.html#faq-1
-            Object xercesConfiguration = 
+            Object xercesConfiguration =
                 Class.forName("org.apache.xerces.parsers.XML11NonValidatingConfiguration").newInstance();
             Method setPropertyMethod = xercesConfiguration.getClass().getMethod(
                 "setProperty", String.class, Object.class);
-            setPropertyMethod.invoke(xercesConfiguration, "http://apache.org/xml/properties/internal/grammar-pool", 
+            setPropertyMethod.invoke(xercesConfiguration, "http://apache.org/xml/properties/internal/grammar-pool",
                 this.xercesGrammarPool);
             xmlReader = (XMLReader) Class.forName("org.apache.xerces.parsers.SAXParser").getConstructor(
                 Class.forName("org.apache.xerces.xni.parser.XMLParserConfiguration")).newInstance(xercesConfiguration);
@@ -86,7 +86,7 @@ public class DefaultXMLReaderFactory implements XMLReaderFactory, Initializable
             SAXParser parser = parserFactory.newSAXParser();
             xmlReader = parser.getXMLReader();
         }
-        
+
         return xmlReader;
     }
 }

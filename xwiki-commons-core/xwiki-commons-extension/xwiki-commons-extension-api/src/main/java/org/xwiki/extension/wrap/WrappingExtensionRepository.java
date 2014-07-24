@@ -31,7 +31,7 @@ import org.xwiki.extension.version.Version;
 
 /**
  * Wrap an {@link ExtensionRepository}.
- * 
+ *
  * @param <T>
  * @version $Id$
  * @since 4.0M1

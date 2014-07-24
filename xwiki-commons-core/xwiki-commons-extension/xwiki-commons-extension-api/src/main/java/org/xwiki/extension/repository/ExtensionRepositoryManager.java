@@ -31,7 +31,7 @@ import org.xwiki.extension.version.Version;
 
 /**
  * Proxy behind remote repositories.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -40,7 +40,7 @@ public interface ExtensionRepositoryManager
 {
     /**
      * Create and add a new repository.
-     * 
+     *
      * @param repositoryId the repository identifier
      * @return the newly created repository
      * @throws ExtensionRepositoryException failed to create {@link ExtensionRepository} for provided identifier
@@ -51,7 +51,7 @@ public interface ExtensionRepositoryManager
 
     /**
      * Create and add a new repository.
-     * 
+     *
      * @param repositoryDescriptor the repository descriptor
      * @return the newly created repository
      * @throws ExtensionRepositoryException failed to create {@link ExtensionRepository} for provided identifier
@@ -67,7 +67,7 @@ public interface ExtensionRepositoryManager
 
     /**
      * Remove a repository form the list.
-     * 
+     *
      * @param repositoryId the repository unique identifier
      * @see ExtensionRepository#getId()
      */
@@ -89,7 +89,7 @@ public interface ExtensionRepositoryManager
      * Get extension descriptor found in one of the repositories.
      * <p>
      * The proxy search in all repositories and return the first extension it could find.
-     * 
+     *
      * @param extensionId the extension identifier
      * @return the found extension descriptor
      * @throws ResolveException failed to find extension in the repository
@@ -104,7 +104,7 @@ public interface ExtensionRepositoryManager
      * This method takes {@link ExtensionDependency} instead of {@link ExtensionId} to allow any implementation of
      * {@link ExtensionRepository} to extension dependencies with filter not supported yet by Extension Manage. As an
      * example Aether implementation add support from classifiers, excludes and version ranges.
-     * 
+     *
      * @param extensionDependency the extension dependency
      * @return the found extension descriptor
      * @throws ResolveException failed to find extension in the repository
@@ -113,7 +113,7 @@ public interface ExtensionRepositoryManager
 
     /**
      * Return ordered (ascendent) versions for the provided extension id.
-     * 
+     *
      * @param id the id of the extensions for which to return versions
      * @param offset the offset from where to start returning versions
      * @param nb the maximum number of versions to return
@@ -124,7 +124,7 @@ public interface ExtensionRepositoryManager
 
     /**
      * Search among all repository implementing {@link org.xwiki.extension.repository.search.Searchable} interface.
-     * 
+     *
      * @param pattern the pattern to search
      * @param offset the offset from where to start returning search results, 0-based
      * @param nb the maximum number of search results to return. -1 indicate no limit. 0 indicate that no result will be

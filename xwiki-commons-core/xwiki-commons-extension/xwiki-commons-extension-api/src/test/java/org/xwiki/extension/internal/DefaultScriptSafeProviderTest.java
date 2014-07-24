@@ -37,7 +37,7 @@ import org.xwiki.extension.internal.safe.ScriptSafeProvider;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-@ComponentList({CollectionScriptSafeProvider.class, MapScriptSafeProvider.class})
+@ComponentList({ CollectionScriptSafeProvider.class, MapScriptSafeProvider.class })
 public class DefaultScriptSafeProviderTest
 {
     @Rule
@@ -52,7 +52,7 @@ public class DefaultScriptSafeProviderTest
         Assert.assertSame(safe, this.mocker.getComponentUnderTest().get(safe));
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void testGetCollection() throws Exception
     {
@@ -77,7 +77,7 @@ public class DefaultScriptSafeProviderTest
         Assert.assertEquals(unsafe.toString(), safe.toString());
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked", "cast"})
+    @SuppressWarnings({ "rawtypes", "unchecked", "cast" })
     @Test
     public void testGetMap() throws Exception
     {

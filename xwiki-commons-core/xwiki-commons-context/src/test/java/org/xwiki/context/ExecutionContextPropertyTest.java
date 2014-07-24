@@ -32,7 +32,6 @@ import org.xwiki.context.internal.ExecutionContextProperty;
  */
 public class ExecutionContextPropertyTest
 {
-
     /**
      * Access the properties via reflection. This method requires ReflectPermission suppressAccessChecks.
      *
@@ -178,5 +177,4 @@ public class ExecutionContextPropertyTest
     public static class SomeSubClass extends SomeClass
     {
     }
-
 }

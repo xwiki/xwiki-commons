@@ -43,7 +43,7 @@ import org.xwiki.extension.version.Version;
  * <p>
  * org.sonatype.aether.util.version.GenericVersion has been rewritten because it's impossible to extends it or even
  * access its details to properly implements {@link #getType()} for example.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -77,7 +77,7 @@ public class DefaultVersion implements Version
 
     /**
      * Used to parse the string representation of the version.
-     * 
+     *
      * @version $Id$
      */
     static final class Tokenizer
@@ -190,7 +190,7 @@ public class DefaultVersion implements Version
 
     /**
      * A peace of the version.
-     * 
+     *
      * @version $Id$
      */
     static final class Element implements Comparable<Element>
@@ -202,7 +202,7 @@ public class DefaultVersion implements Version
 
         /**
          * The kind of element.
-         * 
+         *
          * @version $Id$
          */
         enum ElementType
@@ -396,7 +396,7 @@ public class DefaultVersion implements Version
 
     /**
      * Create a new {@link DefaultVersion} by cloning the provided version.
-     * 
+     *
      * @param version the version to copy
      */
     public DefaultVersion(Version version)
@@ -448,7 +448,7 @@ public class DefaultVersion implements Version
 
     /**
      * Remove empty elements.
-     * 
+     *
      * @param elements the list of clean
      */
     private static void trimPadding(List<Element> elements)
@@ -589,7 +589,7 @@ public class DefaultVersion implements Version
 
     /**
      * Compare the end of the version with 0.
-     * 
+     *
      * @param elements the elements to compare to 0
      * @param index the index where to start comparing with 0
      * @param number indicate of the previous element is a number

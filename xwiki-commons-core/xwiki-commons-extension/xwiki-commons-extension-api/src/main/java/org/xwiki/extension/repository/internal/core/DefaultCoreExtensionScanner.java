@@ -72,7 +72,7 @@ import com.google.common.base.Predicates;
 
 /**
  * Scan jars to find core extensions.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -253,7 +253,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
             // features
             String featuresString = mavenModel.getProperties().getProperty("xwiki.extension.features");
             if (StringUtils.isNotBlank(featuresString)) {
-                coreExtension.setFeatures(this.converter.<Collection<String>> convert(List.class, featuresString));
+                coreExtension.setFeatures(this.converter.<Collection<String>>convert(List.class, featuresString));
             }
 
             // custom properties
@@ -434,12 +434,12 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     }
 
                     if (index != -1) {
-                        fileNames.put(filename, new Object[] {url});
+                        fileNames.put(filename, new Object[] { url });
 
                         String artefactname = filename.substring(0, index);
                         String version = filename.substring(index + 1);
 
-                        guessedArtefacts.put(artefactname, new Object[] {version, url, type});
+                        guessedArtefacts.put(artefactname, new Object[] { version, url, type });
                     }
                 } catch (Exception e) {
                     this.logger.warn("Failed to parse resource name [{}]", url, e);
@@ -592,7 +592,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
     /**
      * Get the extension type from maven packaging.
-     * 
+     *
      * @param packaging the maven packaging
      * @return the extension type
      */

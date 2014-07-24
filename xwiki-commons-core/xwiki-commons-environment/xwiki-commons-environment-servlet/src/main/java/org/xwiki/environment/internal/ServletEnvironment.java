@@ -20,8 +20,8 @@
 package org.xwiki.environment.internal;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -97,7 +97,7 @@ public class ServletEnvironment extends AbstractEnvironment
             }
         } catch (IOException e) {
             this.logger.warn("Unable to get Servlet temporary directory due to error [{}], "
-                 + "falling back on the default System temporary directory.", ExceptionUtils.getMessage(e));
+                + "falling back on the default System temporary directory.", ExceptionUtils.getMessage(e));
         }
         return tmpDirectory;
     }

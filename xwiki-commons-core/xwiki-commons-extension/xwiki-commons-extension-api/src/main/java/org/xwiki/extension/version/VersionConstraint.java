@@ -27,7 +27,7 @@ import java.util.Collection;
  * ranges or a single version. In the first case, the constraint expresses a hard requirement on a version matching one
  * of its ranges. In the second case, the constraint expresses a soft requirement on a specific version (i.e. a
  * recommendation).
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -35,14 +35,14 @@ public interface VersionConstraint extends Serializable
 {
     /**
      * Gets the version ranges of this constraint.
-     * 
+     *
      * @return the version ranges, never null.
      */
     Collection<VersionRangeCollection> getRanges();
 
     /**
      * Gets the version recommended by this constraint.
-     * 
+     *
      * @return the recommended version or null if none.
      */
     Version getVersion();
@@ -54,7 +54,7 @@ public interface VersionConstraint extends Serializable
 
     /**
      * Indicate if the provided {@link Version} satisfies the constraint.
-     * 
+     *
      * @param version the version to test, null is invalid
      * @return true if the provided version satisfies this constraint, false otherwise
      */
@@ -68,7 +68,7 @@ public interface VersionConstraint extends Serializable
      * this constraint. This apply with constraint not defining an exact version range but only a recommended version
      * constraint, in that case the constraint indicate what is the version that would ideally be required but it should
      * work with more recent version.
-     * 
+     *
      * @param version the version to test, null is invalid
      * @return true if the provided version is compatible with this constraint
      * @since 4.1M2
@@ -77,7 +77,7 @@ public interface VersionConstraint extends Serializable
 
     /**
      * Merge too version constraints in one.
-     * 
+     *
      * @param versionConstraint the version constraint to merge with this version constraint
      * @return the merged version constraint
      * @throws IncompatibleVersionConstraintException the provided version constraint is compatible with the provided

@@ -62,7 +62,7 @@ import org.xwiki.extension.version.VersionConstraint;
 
 /**
  * Default implementation of {@link InstalledExtensionRepository}.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */
@@ -146,7 +146,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
     /**
      * Check extension validity and set it as not installed if not.
-     * 
+     *
      * @param localExtension the extension to validate
      * @throws InvalidExtensionException when the passed extension is fond invalid
      */
@@ -243,7 +243,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
     /**
      * Check extension validity against a specific namespace and set it as not installed if not.
-     * 
+     *
      * @param localExtension the extension to validate
      * @param namespace the namespace
      * @return the corresponding {@link DefaultInstalledExtension}
@@ -328,7 +328,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
     /**
      * Uninstall provided extension.
-     * 
+     *
      * @param installedExtension the extension to uninstall
      * @param namespace the namespace
      * @see #uninstallExtension(LocalExtension, String)
@@ -350,7 +350,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
     /**
      * Uninstall provided extension.
-     * 
+     *
      * @param feature the feature to uninstall
      * @param namespace the namespace
      * @see #uninstallExtension(LocalExtension, String)
@@ -370,7 +370,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
     /**
      * Install provided extension.
-     * 
+     *
      * @param localExtension the extension to install
      * @param namespace the namespace
      * @param dependency indicate if the extension is stored as a dependency of another one
@@ -418,7 +418,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
     /**
      * Register a newly installed extension in backward dependencies map.
-     * 
+     *
      * @param localExtension the local extension to register
      * @param namespace the namespace
      * @param valid is the extension valid
@@ -442,7 +442,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
     /**
      * Register a newly installed extension in backward dependencies map.
-     * 
+     *
      * @param installedExtension the installed extension to register
      * @param namespace the namespace
      */
@@ -510,7 +510,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
      * Get extension registered as installed for the provided feature and namespace or can register it if provided.
      * <p>
      * Only look at provide namespace and does take into account inheritance.
-     * 
+     *
      * @param feature the feature provided by the extension
      * @param namespace the namespace where the extension is installed
      * @param localExtension the extension
@@ -549,7 +549,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
 
     /**
      * Get extension registered as installed for the provided feature and namespace (including on root namespace).
-     * 
+     *
      * @param feature the feature provided by the extension
      * @param namespace the namespace where the extension is installed
      * @return the installed extension informations
@@ -595,7 +595,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
     @Override
     public Collection<InstalledExtension> getInstalledExtensions()
     {
-        return Collections.<InstalledExtension> unmodifiableCollection(this.extensions.values());
+        return Collections.<InstalledExtension>unmodifiableCollection(this.extensions.values());
     }
 
     @Override
@@ -706,7 +706,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                 // copy the list to allow use cases like uninstalling all backward dependencies without getting a
                 // concurrent issue on the list
                 return backwardDependencies != null ? new ArrayList<InstalledExtension>(backwardDependencies)
-                    : Collections.<InstalledExtension> emptyList();
+                    : Collections.<InstalledExtension>emptyList();
             }
         }
 

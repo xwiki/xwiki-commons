@@ -26,7 +26,7 @@ import org.xwiki.extension.InstalledExtension;
 
 /**
  * An action to perform as part of an extension plan.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -34,7 +34,7 @@ public interface ExtensionPlanAction
 {
     /**
      * The action to execute.
-     * 
+     *
      * @version $Id$
      */
     public enum Action

@@ -36,7 +36,7 @@ import org.xwiki.job.Request;
 
 /**
  * Make sure to always provide a validator.
- * 
+ *
  * @version $Id$
  * @since 4.2M2
  */

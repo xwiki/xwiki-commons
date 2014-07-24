@@ -30,7 +30,7 @@ import org.xwiki.extension.version.VersionConstraint;
 
 /**
  * Base class for {@link ExtensionDependency} implementations.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -53,7 +53,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
     /**
      * Create new instance by cloning the provided one with different version constraint.
-     * 
+     *
      * @param dependency the extension dependency to copy
      * @param versionConstraint the version constraint to set
      */
@@ -128,7 +128,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
     /**
      * Set a property.
-     * 
+     *
      * @param key the property key
      * @param value the property value
      * @see #getProperty(String)
@@ -140,7 +140,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
     /**
      * Replace existing properties with provided properties.
-     * 
+     *
      * @param properties the properties
      */
     public void setProperties(Map<String, Object> properties)
@@ -149,6 +149,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
         this.properties.putAll(properties);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getProperty(String key, T def)
     {
@@ -185,9 +186,8 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
         if (obj instanceof ExtensionDependency) {
             ExtensionDependency otherDependency = (ExtensionDependency) obj;
-            equals =
-                StringUtils.equals(getId(), otherDependency.getId())
-                    && Objects.equals(getVersionConstraint(), otherDependency.getVersionConstraint());
+            equals = StringUtils.equals(getId(), otherDependency.getId())
+                && Objects.equals(getVersionConstraint(), otherDependency.getVersionConstraint());
         } else {
             equals = false;
         }

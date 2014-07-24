@@ -26,7 +26,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Transforms any HTML content into valid XHTML that can be fed to the XHTML Parser for example.
- * 
+ *
  * @version $Id$
  * @since 1.6M1
  */
@@ -36,7 +36,7 @@ public interface HTMLCleaner
     /**
      * Transforms any HTML content into valid XHTML that can be fed to the XHTML Parser for example.
      * A default configuration is applied for cleaning the original HTML (see {@link #getDefaultConfiguration()}).
-     * 
+     *
      * @param originalHtmlContent the original content (HTML) to clean
      * @return the cleaned HTML as a w3c DOM (this allows further transformations if needed)
      */
@@ -45,7 +45,7 @@ public interface HTMLCleaner
     /**
      * Transforms any HTML content into valid XHTML. A specific cleaning configuration can be passed to control
      * the cleaning process.
-     * 
+     *
      * @param originalHtmlContent the original HTML content to be cleaned.
      * @param configuration the configuration to use for cleaning the HTML content
      * @return the cleaned HTML as a w3c DOM
@@ -54,11 +54,11 @@ public interface HTMLCleaner
     Document clean(Reader originalHtmlContent, HTMLCleanerConfiguration configuration);
 
     /**
-     * Allows getting the default configuration that will be used thus allowing the user to configure it like 
-     * adding some more filters before or after or even remove some filters to completely control what filters will
-     * be executed. This is to be used for very specific use cases. In the majority of cases you should instead use
-     * the clean API that doesn't require passing a configuration.
-     * 
+     * Allows getting the default configuration that will be used thus allowing the user to configure it like adding
+     * some more filters before or after or even remove some filters to completely control what filters will be
+     * executed. This is to be used for very specific use cases. In the majority of cases you should instead use the
+     * clean API that doesn't require passing a configuration.
+     *
      * @return the default configuration that will be used to clean the original HTML
      * @since 1.8.1
      */

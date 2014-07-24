@@ -23,7 +23,7 @@ import org.xwiki.extension.Extension;
 
 /**
  * Implemented by extensions coming from a Maven repository or a pom.xml.
- * 
+ *
  * @version $Id$
  * @since 6.1M1
  */

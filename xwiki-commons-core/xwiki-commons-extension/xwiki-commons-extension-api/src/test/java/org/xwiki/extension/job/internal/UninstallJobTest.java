@@ -20,7 +20,6 @@
 package org.xwiki.extension.job.internal;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.TestResources;

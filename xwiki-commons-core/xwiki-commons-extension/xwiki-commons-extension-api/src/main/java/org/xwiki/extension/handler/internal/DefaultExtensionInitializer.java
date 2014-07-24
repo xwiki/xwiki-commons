@@ -41,7 +41,7 @@ import org.xwiki.extension.repository.InstalledExtensionRepository;
 
 /**
  * Default implementation of {@link org.xwiki.extension.handler.ExtensionInitializer}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -110,7 +110,7 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
 
     /**
      * Initialize extension.
-     * 
+     *
      * @param installedExtension the extension to initialize
      * @param namespaceToLoad the namespace to be initialized, null for all
      * @param initializedExtensions the currently initialized extensions set
@@ -134,7 +134,7 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
 
     /**
      * Initialize an extension in the given namespace.
-     * 
+     *
      * @param installedExtension the extension to initialize
      * @param namespace the namespace in which the extention is initialized, null for global
      * @param initializedExtensions the currently initialized extensions set (to avoid initializing twice a dependency)

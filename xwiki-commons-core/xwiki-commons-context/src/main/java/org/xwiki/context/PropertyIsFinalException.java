@@ -27,7 +27,7 @@ package org.xwiki.context;
  */
 public class PropertyIsFinalException extends RuntimeException
 {
-    /** The serial verion uid. */
+    /** The serial version uid. */
     private static final long serialVersionUID = 1L;
 
     /** @param key The key of the property in question. */
@@ -35,5 +35,4 @@ public class PropertyIsFinalException extends RuntimeException
     {
         super(String.format("The value of property [%s] is final.", key));
     }
-
 }

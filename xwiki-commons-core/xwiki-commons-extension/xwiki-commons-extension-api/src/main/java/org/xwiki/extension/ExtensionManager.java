@@ -24,7 +24,7 @@ import org.xwiki.extension.repository.ExtensionRepository;
 
 /**
  * Main entry point for some extensions management tasks.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -41,7 +41,7 @@ public interface ExtensionManager
      * <li>Is it a remote extension in one of the configured remote repositories ?</li>
      * </ul>
      * The first one found is returned.
-     * 
+     *
      * @param extensionId the extension identifier
      * @return the resolved extension
      * @throws ResolveException error when trying to resolve extension
@@ -59,7 +59,7 @@ public interface ExtensionManager
      * <li>Is it a remote extension in one of the configured remote repositories ?</li>
      * </ul>
      * The first one found is returned.
-     * 
+     *
      * @param extensionDependency the extension as dependency
      * @return the resolved extension
      * @throws ResolveException error when trying to resolve extension
@@ -80,7 +80,7 @@ public interface ExtensionManager
      * <li>Is it a remote extension in one of the configured remote repositories ?</li>
      * </ul>
      * The first one found is returned.
-     * 
+     *
      * @param extensionDependency the extension as dependency
      * @param namespace the namespace where to search for the dependency
      * @return the resolved extension
@@ -93,7 +93,7 @@ public interface ExtensionManager
      * Return a repository based on its id.
      * <p>
      * This method also return <tt>local</tt>, <tt>installed</tt> and <tt>core</tt> repositories.
-     * 
+     *
      * @param repositoryId the id of the repository
      * @return the repository
      * @since 4.0M2

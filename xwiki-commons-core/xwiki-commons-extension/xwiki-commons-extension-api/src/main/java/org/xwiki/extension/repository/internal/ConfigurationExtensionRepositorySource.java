@@ -33,7 +33,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
  * Extensions repositories identifier stored in the configuration.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -53,6 +53,6 @@ public class ConfigurationExtensionRepositorySource extends AbstractExtensionRep
     {
         Collection<ExtensionRepositoryDescriptor> repositories = this.configuration.getExtensionRepositoryDescriptors();
 
-        return repositories != null ? repositories : Collections.<ExtensionRepositoryDescriptor> emptyList();
+        return repositories != null ? repositories : Collections.<ExtensionRepositoryDescriptor>emptyList();
     }
 }

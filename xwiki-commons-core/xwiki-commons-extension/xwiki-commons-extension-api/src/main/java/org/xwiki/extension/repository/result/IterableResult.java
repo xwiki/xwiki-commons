@@ -21,7 +21,7 @@ package org.xwiki.extension.repository.result;
 
 /**
  * The result of a query.
- * 
+ *
  * @param <T> the type
  * @version $Id$
  * @since 4.0M1

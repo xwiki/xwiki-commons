@@ -40,7 +40,7 @@ import org.xwiki.script.service.ScriptService;
 
 /**
  * Provide script oriented APIs to display diff.
- * 
+ *
  * @version $Id$
  * @since 4.1RC1
  */
@@ -88,7 +88,7 @@ public class DiffDisplayerScriptService implements ScriptService
 
     /**
      * Builds an in-line diff between two versions of a list of elements.
-     * 
+     *
      * @param previous the previous version
      * @param next the next version
      * @param <E> the type of elements that are compared to produce the diff
@@ -99,7 +99,7 @@ public class DiffDisplayerScriptService implements ScriptService
         setError(null);
 
         try {
-            return inlineDiffDisplayer.display(diffManager.diff(previous, next, null));
+            return this.inlineDiffDisplayer.display(this.diffManager.diff(previous, next, null));
         } catch (DiffException e) {
             setError(e);
             return null;
@@ -108,7 +108,7 @@ public class DiffDisplayerScriptService implements ScriptService
 
     /**
      * Builds an in-line diff between two versions of a text.
-     * 
+     *
      * @param previous the previous version
      * @param next the next version
      * @return the list of in-line diff chunks
@@ -118,8 +118,8 @@ public class DiffDisplayerScriptService implements ScriptService
         setError(null);
 
         try {
-            return inlineDiffDisplayer.display(diffManager.diff(charSplitter.split(previous), charSplitter.split(next),
-                null));
+            return this.inlineDiffDisplayer
+                .display(this.diffManager.diff(this.charSplitter.split(previous), this.charSplitter.split(next), null));
         } catch (DiffException e) {
             setError(e);
             return null;
@@ -129,7 +129,7 @@ public class DiffDisplayerScriptService implements ScriptService
     /**
      * Builds an unified diff between two versions of a text. The unified diff provides information about both
      * line-level and character-level changes (the later only when a line is modified).
-     * 
+     *
      * @param previous the previous version
      * @param next the next version
      * @return the list of extended diff blocks
@@ -140,10 +140,10 @@ public class DiffDisplayerScriptService implements ScriptService
 
         try {
             DiffResult<String> diffResult =
-                diffManager.diff(lineSplitter.split(previous), lineSplitter.split(next), null);
-            UnifiedDiffConfiguration<String, Character> config = unifiedDiffDisplayer.getDefaultConfiguration();
-            config.setSplitter(charSplitter);
-            return unifiedDiffDisplayer.display(diffResult, config);
+                this.diffManager.diff(this.lineSplitter.split(previous), this.lineSplitter.split(next), null);
+            UnifiedDiffConfiguration<String, Character> config = this.unifiedDiffDisplayer.getDefaultConfiguration();
+            config.setSplitter(this.charSplitter);
+            return this.unifiedDiffDisplayer.display(diffResult, config);
         } catch (DiffException e) {
             setError(e);
             return null;
@@ -154,7 +154,7 @@ public class DiffDisplayerScriptService implements ScriptService
      * Builds an unified diff between two versions of a list of elements. If a splitter is provided through the given
      * configuration object then the unified diff will display changes at two levels of granularity: elements and their
      * sub-elements.
-     * 
+     *
      * @param previous the previous version
      * @param next the next version
      * @param config the configuration object
@@ -168,7 +168,7 @@ public class DiffDisplayerScriptService implements ScriptService
         setError(null);
 
         try {
-            return unifiedDiffDisplayer.display(diffManager.diff(previous, next, null), config);
+            return this.unifiedDiffDisplayer.display(this.diffManager.diff(previous, next, null), config);
         } catch (DiffException e) {
             setError(e);
             return null;
@@ -183,12 +183,12 @@ public class DiffDisplayerScriptService implements ScriptService
      */
     public <E, F> UnifiedDiffConfiguration<E, F> getUnifiedDiffConfiguration()
     {
-        return unifiedDiffDisplayer.getDefaultConfiguration();
+        return this.unifiedDiffDisplayer.getDefaultConfiguration();
     }
 
     /**
      * Get the error generated while performing the previously called action.
-     * 
+     *
      * @return an eventual exception or {@code null} if no exception was thrown
      */
     public Exception getLastError()
@@ -198,7 +198,7 @@ public class DiffDisplayerScriptService implements ScriptService
 
     /**
      * Store a caught exception in the context, so that it can be later retrieved using {@link #getLastError()}.
-     * 
+     *
      * @param e the exception to store, can be {@code null} to clear the previously stored exception
      * @see #getLastError()
      */

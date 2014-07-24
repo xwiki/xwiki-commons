@@ -25,7 +25,7 @@ import org.xwiki.job.event.status.JobStatus;
 
 /**
  * A plan of extensions related actions to perform.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

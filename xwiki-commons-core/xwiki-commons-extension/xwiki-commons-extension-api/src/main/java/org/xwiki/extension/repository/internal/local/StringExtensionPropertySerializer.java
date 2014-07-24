@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 
 /**
  * Serialize and unserialize {@link String} properties.
- * 
+ *
  * @version $Id$
  */
 public class StringExtensionPropertySerializer extends AbstractExtensionPropertySerializer<String>

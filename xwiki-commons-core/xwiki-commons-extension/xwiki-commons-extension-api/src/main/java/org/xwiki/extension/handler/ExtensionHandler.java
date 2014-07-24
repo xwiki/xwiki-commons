@@ -32,7 +32,7 @@ import org.xwiki.job.Request;
 
 /**
  * Handle extension related tasks depending of the type (install, uninstall, etc...).
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -41,7 +41,7 @@ public interface ExtensionHandler
 {
     /**
      * Install the provided local extension.
-     * 
+     *
      * @param localExtension the extension to install
      * @param namespace the namespace where to install the extension
      * @param request extra parameters
@@ -51,7 +51,7 @@ public interface ExtensionHandler
 
     /**
      * Uninstall the provided local extension.
-     * 
+     *
      * @param localExtension the extension to uninstall
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
@@ -63,7 +63,7 @@ public interface ExtensionHandler
 
     /**
      * Uninstall the provided local extension.
-     * 
+     *
      * @param localExtension the extension to uninstall
      * @param namespace the namespace from where to uninstall the extension
      * @param request extra parameters
@@ -74,7 +74,7 @@ public interface ExtensionHandler
 
     /**
      * Upgrade the provided local extension.
-     * 
+     *
      * @param previousLocalExtension the previous installed version of the extension
      * @param newLocalExtension the extension to install
      * @param namespace the namespace from where to uninstall the extension
@@ -88,7 +88,7 @@ public interface ExtensionHandler
 
     /**
      * Upgrade the provided local extension.
-     * 
+     *
      * @param previousLocalExtensions the previous installed versions of the extension
      * @param newLocalExtension the extension to install
      * @param namespace the namespace from where to uninstall the extension
@@ -101,7 +101,7 @@ public interface ExtensionHandler
 
     /**
      * Initialize the provided local extension (during application startup, re-initialization...).
-     * 
+     *
      * @param localExtension the extension to install
      * @param namespace the namespace where to install the extension
      * @throws ExtensionException error when trying to install the extension
@@ -113,7 +113,7 @@ public interface ExtensionHandler
      * <p>
      * It is generally used to do some non generic checking of whether or not it is possible to install the passed
      * extension (not the right environment, not enough rights, etc.).
-     * 
+     *
      * @param extension the extension to install
      * @param namespace the namespace from where to install
      * @param request extra parameters
@@ -127,7 +127,7 @@ public interface ExtensionHandler
      * <p>
      * It is generally used to do some non generic checking of whether or not it is possible to uninstall the passed
      * extension (not the right environment, not enough rights, etc.).
-     * 
+     *
      * @param extension the extension to uninstall
      * @param namespace the namespace from where to uninstall
      * @param request extra parameters

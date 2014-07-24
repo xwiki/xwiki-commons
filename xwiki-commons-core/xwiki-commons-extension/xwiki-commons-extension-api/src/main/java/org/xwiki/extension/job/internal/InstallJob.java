@@ -46,7 +46,7 @@ import org.xwiki.logging.marker.TranslationMarker;
  * Extension installation related task.
  * <p>
  * This task generates related events.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

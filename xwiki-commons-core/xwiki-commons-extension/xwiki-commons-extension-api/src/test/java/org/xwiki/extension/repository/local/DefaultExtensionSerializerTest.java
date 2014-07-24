@@ -111,16 +111,16 @@ public class DefaultExtensionSerializerTest
         extension.putProperty("key3", 42);
         extension.putProperty("key4", Arrays.asList("list1", "list2"));
         extension.putProperty("key5", new HashSet<String>(Arrays.asList("list1", "list2")));
-        extension.putProperty("key6", Collections.<String, Object> singletonMap("key", "value"));
+        extension.putProperty("key6", Collections.<String, Object>singletonMap("key", "value"));
         extension.putProperty(
             "key7",
-            Collections.<String, Object> singletonMap("key",
-                Collections.<String, Object> singletonMap("subkey", "subvalue")));
+            Collections.<String, Object>singletonMap("key",
+                Collections.<String, Object>singletonMap("subkey", "subvalue")));
 
         extension.addAuthor(new DefaultExtensionAuthor("authorname", new URL("http://authorurl")));
         extension.addFeature("feature1");
         extension.addLicense(new ExtensionLicense("licensename", Arrays.asList("license content")));
-        dependency.setProperties(Collections.<String, Object> singletonMap("dependencykey", "dependencyvalue"));
+        dependency.setProperties(Collections.<String, Object>singletonMap("dependencykey", "dependencyvalue"));
 
         // Complete extension
         serializeAndUnserialize(extension);

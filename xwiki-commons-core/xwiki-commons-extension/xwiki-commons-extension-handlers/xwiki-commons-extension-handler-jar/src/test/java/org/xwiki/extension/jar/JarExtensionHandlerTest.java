@@ -136,7 +136,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
     /**
      * Check that the extension is properly reported to be installed in all namespaces.
-     * 
+     *
      * @param installedExtension the local extension to check
      */
     private void checkInstallStatus(InstalledExtension installedExtension)
@@ -146,7 +146,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
     /**
      * Check that the extension is properly reported to be installed in the given namespace.
-     * 
+     *
      * @param installedExtension the local extension to check
      * @param namespace the namespace where it has been installed
      */
@@ -173,10 +173,10 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     private Type getLoadedType(Type role, ClassLoader extensionLoader) throws ClassNotFoundException
     {
         if (role instanceof Class) {
-            return Class.forName(((Class< ? >) role).getName(), true, extensionLoader);
+            return Class.forName(((Class<?>) role).getName(), true, extensionLoader);
         } else if (role instanceof ParameterizedType) {
-            Class< ? > rawType =
-                Class.forName(((Class< ? >) ((ParameterizedType) role).getRawType()).getName(), true, extensionLoader);
+            Class<?> rawType =
+                Class.forName(((Class<?>) ((ParameterizedType) role).getRawType()).getName(), true, extensionLoader);
             return new DefaultParameterizedType(((ParameterizedType) role).getOwnerType(), rawType,
                 ((ParameterizedType) role).getActualTypeArguments());
         }
@@ -187,14 +187,14 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     /**
      * Check that an extension is effectively available in all namespace and that the global component manager provide
      * the expected default implementation.
-     * 
+     *
      * @param role the role expected to be provided by the extension
      * @param implementation the implementation expected for the given role
      * @param <T> the role class
      * @return the effective role class in the extension class loader
      * @throws Exception on error
      */
-    private <T> Type checkJarExtensionAvailability(Type role, Class< ? extends T> implementation) throws Exception
+    private <T> Type checkJarExtensionAvailability(Type role, Class<? extends T> implementation) throws Exception
     {
         return checkJarExtensionAvailability(role, implementation, null);
     }
@@ -202,7 +202,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     /**
      * Check that an extension is effectively available in the given namespace and that the corresponding component
      * manager provide the expected default implementation.
-     * 
+     *
      * @param role the role expected to be provided by the extension
      * @param implementation the implementation expected for the given role
      * @param namespace the namespace where the extension is expected to installed
@@ -210,7 +210,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
      * @return the effective role class in the extension class loader
      * @throws Exception on error
      */
-    private <T> Type checkJarExtensionAvailability(Type role, Class< ? extends T> implementation, String namespace)
+    private <T> Type checkJarExtensionAvailability(Type role, Class<? extends T> implementation, String namespace)
         throws Exception
     {
         ClassLoader extensionLoader = getExtensionClassloader(namespace);
@@ -232,7 +232,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         }
 
         // check components managers
-        Class< ? > componentInstanceClass = null;
+        Class<?> componentInstanceClass = null;
         if (namespace != null) {
             componentInstanceClass = getExtensionComponentManager(namespace).getInstance(loadedRole).getClass();
 
@@ -253,7 +253,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
     /**
      * Check that the extension is properly reported to be not installed in all namespace.
-     * 
+     *
      * @param localExtension the local extension to check
      */
     private void ckeckUninstallStatus(LocalExtension localExtension)
@@ -263,7 +263,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
     /**
      * Check that the extension is properly reported to be not installed in the given namespace.
-     * 
+     *
      * @param localExtension the local extension to check
      * @param namespace the namespace where it should not be installed
      */
@@ -284,7 +284,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     /**
      * Check that an extension is effectively not available in all namespace and that the corresponding component
      * manager does not provide an implementation.
-     * 
+     *
      * @param role the role expected to not be provide
      * @throws Exception on error
      */
@@ -296,7 +296,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     /**
      * Check that an extension is effectively not available in the given namespace and that the corresponding component
      * manager does not provide an implementation.
-     * 
+     *
      * @param role the role expected to not be provide
      * @param namespace the namespace where the extension is not expected to be installed
      * @throws Exception on error
@@ -980,9 +980,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, NAMESPACE);
 
-        Type extensionRole1 =
-            checkJarExtensionAvailability(packagefile.installedextensiononnamespace.TestInstalledComponent.TYPE_STRING,
-                packagefile.installedextensiononnamespace.DefaultTestInstalledComponent.class, NAMESPACE);
+        checkJarExtensionAvailability(packagefile.installedextensiononnamespace.TestInstalledComponent.TYPE_STRING,
+            packagefile.installedextensiononnamespace.DefaultTestInstalledComponent.class, NAMESPACE);
 
         uninstall(extensionId, NAMESPACE);
     }
@@ -996,9 +995,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         checkInstallStatus(installedExtension, null);
 
-        Type extensionRole1 =
-            checkJarExtensionAvailability(packagefile.installedextensiononroot.TestInstalledComponent.TYPE_STRING,
-                packagefile.installedextensiononroot.DefaultTestInstalledComponent.class, null);
+        checkJarExtensionAvailability(packagefile.installedextensiononroot.TestInstalledComponent.TYPE_STRING,
+            packagefile.installedextensiononroot.DefaultTestInstalledComponent.class, null);
 
         uninstall(extensionId, null);
     }

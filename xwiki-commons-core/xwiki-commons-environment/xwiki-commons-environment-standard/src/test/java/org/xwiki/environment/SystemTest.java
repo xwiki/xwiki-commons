@@ -29,7 +29,7 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Unit tests for {@link org.xwiki.environment.System}.
- * 
+ *
  * @version $Id$
  * @since 3.5M1
  */

@@ -27,7 +27,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Unit tests for {@link ComponentDescriptorRemovedEvent}.
- * 
+ *
  * @version $Id$
  */
 public class ComponentDescriptorRemovedEventTest

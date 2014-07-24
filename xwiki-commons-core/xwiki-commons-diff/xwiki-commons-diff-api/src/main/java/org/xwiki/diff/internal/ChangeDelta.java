@@ -27,7 +27,7 @@ import org.xwiki.diff.PatchException;
 /**
  * Implementation of {@link org.xwiki.diff.Delta} representing a chunk which has been modified between previous and next
  * version.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */

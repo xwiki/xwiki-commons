@@ -21,7 +21,7 @@ package org.xwiki.diff;
 
 /**
  * Any exception raised when failing to create a diff.
- * 
+ *
  * @version $Id$
  */
 public class DiffException extends Exception
@@ -34,7 +34,7 @@ public class DiffException extends Exception
     /**
      * Constructs a new exception with the specified detail message. The cause is not initialized, and may subsequently
      * be initialized by a call to {@link #initCause(Throwable)}.
-     * 
+     *
      * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method)
      */
     public DiffException(String message)
@@ -44,7 +44,7 @@ public class DiffException extends Exception
 
     /**
      * Constructs a new exception with the specified detail message and cause.
-     * 
+     *
      * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method)
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). A null value is
      *            permitted, and indicates that the cause is nonexistent or unknown

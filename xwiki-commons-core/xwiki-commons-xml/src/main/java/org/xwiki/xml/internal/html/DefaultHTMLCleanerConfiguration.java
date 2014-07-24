@@ -28,7 +28,7 @@ import org.xwiki.xml.html.filter.HTMLFilter;
 
 /**
  * Default and basic implementation used by the {@link DefaultHTMLCleaner} implementation.
- * 
+ *
  * @version $Id$
  * @since 1.8.1
  */
@@ -43,7 +43,7 @@ public class DefaultHTMLCleanerConfiguration implements HTMLCleanerConfiguration
      * Parameters to apply for the cleaning.
      */
     private Map<String, String> parameters = Collections.emptyMap();
-    
+
     @Override
     public List<HTMLFilter> getFilters()
     {

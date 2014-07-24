@@ -30,7 +30,7 @@ import org.xwiki.diff.PatchException;
 
 /**
  * Default implementation of {@link Patch}.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */
@@ -50,7 +50,7 @@ public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
 
     /**
      * Convert {@link difflib.Patch} into {@link Patch}.
-     * 
+     *
      * @param patch the {@link difflib.Patch} to convert
      * @throws DiffException error when converting the patch
      */
@@ -63,7 +63,7 @@ public class DefaultPatch<E> extends LinkedList<Delta<E>> implements Patch<E>
 
     /**
      * Convert {@link difflib.Delta} into {@link Delta}.
-     * 
+     *
      * @param delta the {@link difflib.Delta} to convert
      * @return the {@link Delta}
      * @throws DiffException error when converting the delta

@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
  * Interface for defining element selections. Element selectors are useful when an operation needs to be performed on a
  * selection of Elements depending on some criterion. In such cases, the operation will be performed only if the
  * provided selector returns true for that particular Element.
- * 
+ *
  * @version $Id$
  * @since 1.8RC2
  */

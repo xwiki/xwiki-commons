@@ -48,7 +48,7 @@ import org.xwiki.extension.ExtensionLicenseManager;
 
 /**
  * Default implementation of {@link ExtensionLicenseManager}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -114,7 +114,7 @@ public class DefaultExtensionLicenseManager implements ExtensionLicenseManager, 
                     content = content.subList(aliases.size() - 1, content.size());
 
                     ExtensionLicense license = new ExtensionLicense(name, content);
-                    
+
                     for (String alias : aliases) {
                         this.licenses.put(alias.toLowerCase(), license);
                     }
@@ -129,7 +129,7 @@ public class DefaultExtensionLicenseManager implements ExtensionLicenseManager, 
 
     /**
      * Decode URL path.
-     * 
+     *
      * @param path the URL path
      * @return the decoded path
      * @throws UnsupportedEncodingException error when unescaping provided path

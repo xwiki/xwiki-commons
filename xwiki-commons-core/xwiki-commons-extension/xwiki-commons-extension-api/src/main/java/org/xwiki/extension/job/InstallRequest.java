@@ -23,7 +23,7 @@ import org.xwiki.job.Request;
 
 /**
  * Request used in {@link org.xwiki.extension.job.internal.InstallJob}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

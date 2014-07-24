@@ -39,6 +39,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import edu.emory.mathcs.util.classloader.ResourceUtils;
 import edu.emory.mathcs.util.io.RedirectibleInput;
@@ -63,6 +64,7 @@ public class JarProxy implements JarURLConnection.JarOpener
 {
     private final Map<URL, CachedJarFile> cache = new HashMap<URL, CachedJarFile>();
 
+    @SuppressWarnings("resource")
     @Override
     public JarFile openJarFile(JarURLConnection conn) throws IOException
     {
@@ -113,17 +115,14 @@ public class JarProxy implements JarURLConnection.JarOpener
 
             jarconn.setUseCaches(conn.getUseCaches());
 
-            final InputStream in = getJarInputStream(jarconn);
-
-            try {
+            try (InputStream in = getJarInputStream(jarconn)) {
                 result = AccessController.doPrivileged(new PrivilegedExceptionAction<CachedJarFile>()
                 {
                     @Override
                     public CachedJarFile run() throws IOException
                     {
                         File file = File.createTempFile("jar_cache", "");
-                        FileOutputStream out = new FileOutputStream(file);
-                        try {
+                        try (FileOutputStream out = new FileOutputStream(file)) {
                             RedirectibleInput r = new RedirectingInputStream(in, false, false);
                             int len = r.redirectAll(out);
                             out.flush();
@@ -131,8 +130,6 @@ public class JarProxy implements JarURLConnection.JarOpener
                                 // e.g. HttpURLConnection: "NOT_MODIFIED"
                                 return null;
                             }
-                        } finally {
-                            out.close();
                         }
                         return new CachedJarFile(file, jarconn.getPermission(), true);
 
@@ -140,8 +137,6 @@ public class JarProxy implements JarURLConnection.JarOpener
                 });
             } catch (PrivilegedActionException pae) {
                 throw (IOException) pae.getException();
-            } finally {
-                in.close();
             }
         }
 
@@ -201,7 +196,7 @@ public class JarProxy implements JarURLConnection.JarOpener
 
         CachedJarFile(File file, Permission perm, boolean tmp) throws IOException
         {
-            super(file, true, JarFile.OPEN_READ | (tmp ? JarFile.OPEN_DELETE : 0));
+            super(file, true, ZipFile.OPEN_READ | (tmp ? ZipFile.OPEN_DELETE : 0));
             this.perm = perm;
         }
 

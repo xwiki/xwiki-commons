@@ -27,7 +27,7 @@ package org.xwiki.context;
  */
 public class PropertyAlreadyExistsException extends RuntimeException
 {
-    /** The serial verion uid. */
+    /** The serial version uid. */
     private static final long serialVersionUID = 1L;
 
     /** @param key The key of the property in question. */

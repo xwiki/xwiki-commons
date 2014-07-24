@@ -40,7 +40,7 @@ import org.xwiki.extension.version.VersionRange;
  * <p>
  * org.sonatype.aether.util.version.GenericVersionRange has been rewritten because it's impossible to extends it or even
  * access its details to properly implements {@link #isCompatible(VersionRange)} for example.
- * 
+ *
  * @see org.sonatype.aether.util.version.GenericVersionRange
  * @version $Id$
  * @since 4.0M1
@@ -276,7 +276,7 @@ public class DefaultVersionRange implements VersionRange
 
     /**
      * Indicate if the provided version range is compatible with the provided version range.
-     * 
+     *
      * @param otherRange the version range to compare
      * @return true if the two version ranges are compatibles, false otherwise
      */

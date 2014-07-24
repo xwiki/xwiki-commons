@@ -58,9 +58,8 @@ public class BcStoreX509CertificateProvider implements CertificateProvider
     private Store store;
 
     /**
-     * Set the store this adapter will delegate to.
+     * Set the store this adapter will delegate to. If no store is set, the adapter does not return any certificates.
      *
-     * If no store is set, the adapter does not return any certificates.
      * @param store the store to wrap.
      */
     public void setStore(Store store)
@@ -109,7 +108,7 @@ public class BcStoreX509CertificateProvider implements CertificateProvider
         AttributeCertificateHolder selector = new AttributeCertificateHolder(BcUtils.getX500Name(subject));
 
         try {
-            Collection matches = this.store.getMatches(selector);
+            Collection<?> matches = this.store.getMatches(selector);
             Collection<CertifiedPublicKey> result = new ArrayList<CertifiedPublicKey>(matches.size());
             for (Object holder : matches) {
                 if (holder instanceof X509CertificateHolder) {

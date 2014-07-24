@@ -43,7 +43,7 @@ import org.xwiki.extension.version.Version;
 /**
  * Base class for {@link org.xwiki.extension.repository.ExtensionRepository} implementations maintaining a cache of all
  * extensions.
- * 
+ *
  * @param <E> the type of the extension
  * @version $Id$
  * @since 5.4M1
@@ -65,7 +65,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
 
     /**
      * Register a new extension.
-     * 
+     *
      * @param extension the new extension
      */
     protected void addCachedExtension(E extension)
@@ -84,7 +84,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
 
     /**
      * Register extension in all caches.
-     * 
+     *
      * @param feature the feature
      * @param extension the extension
      */
@@ -111,7 +111,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
 
     /**
      * Remove extension from all caches.
-     * 
+     *
      * @param extension the extension
      */
     protected void removeCachedExtension(E extension)
@@ -128,7 +128,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
 
     /**
      * Remove passed extension associated to passed feature from the cache.
-     * 
+     *
      * @param feature the feature associated to the extension
      * @param extension the extension
      */
@@ -189,7 +189,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
         }
 
         if (nb == 0 || offset >= versions.size()) {
-            return new CollectionIterableResult<Version>(versions.size(), offset, Collections.<Version> emptyList());
+            return new CollectionIterableResult<Version>(versions.size(), offset, Collections.<Version>emptyList());
         }
 
         int fromId = offset < 0 ? 0 : offset;

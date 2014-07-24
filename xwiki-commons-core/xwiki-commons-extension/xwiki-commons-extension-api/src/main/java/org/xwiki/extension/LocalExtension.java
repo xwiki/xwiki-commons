@@ -19,13 +19,12 @@
  */
 package org.xwiki.extension;
 
-
 /**
  * Represent a local extension.
  * <p>
  * A local extension is an extension generally downloaded from a remote repository and now stored in the local
  * repository.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

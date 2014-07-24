@@ -21,7 +21,7 @@ package org.xwiki.extension;
 
 /**
  * Extension {@link ExtensionFile} with some more informations related local extensions.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -29,7 +29,7 @@ public interface LocalExtensionFile extends ExtensionFile
 {
     /**
      * Returns the name of the file. This is just the last name in the pathname's name sequence.
-     * 
+     *
      * @return the name of the file
      * @see java.io.File#getName()
      */
@@ -37,7 +37,7 @@ public interface LocalExtensionFile extends ExtensionFile
 
     /**
      * Returns the absolute pathname string of this file.
-     * 
+     *
      * @return The absolute pathname string of the file
      * @see java.io.File#getAbsolutePath()
      */

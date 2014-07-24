@@ -25,9 +25,9 @@ import java.util.Map;
 import org.xwiki.xml.html.filter.HTMLFilter;
 
 /**
- * Represents a configuration for the {@link HTMLCleaner} and allows to configure the
- * cleaning parameters and cleaning filters to apply.
- * 
+ * Represents a configuration for the {@link HTMLCleaner} and allows to configure the cleaning parameters and cleaning
+ * filters to apply.
+ *
  * @version $Id$
  * @since 1.8.1
  */
@@ -52,14 +52,13 @@ public interface HTMLCleanerConfiguration
      * @param filters the ordered list of filters to use for cleaning the HTML content
      */
     void setFilters(List<HTMLFilter> filters);
-    
+
     /**
-     * @return the list of cleaning parameters that will be used to clean the HTML content. Note that
-     *         these parameters are implementation dependent and thus depend on the HTML cleaner 
-     *         implementation used.
+     * @return the list of cleaning parameters that will be used to clean the HTML content. Note that these parameters
+     *         are implementation dependent and thus depend on the HTML cleaner implementation used.
      */
     Map<String, String> getParameters();
-    
+
     /**
      * @param cleaningParameters the list of cleaning parameters that will be used to clean the HTML content
      */

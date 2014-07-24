@@ -32,7 +32,7 @@ import org.xwiki.job.Request;
  * Mostly used for default behavior when {@link ExtensionHandler} does not have any special check for its type. The goal
  * is to make easy for any environment using commons-extension module to have a default restriction on all extensions
  * types (for example in XWiki unless the type has special checking you need programming right to install an extension).
- * 
+ *
  * @version $Id$
  * @since 4.2M2
  */
@@ -44,7 +44,7 @@ public interface ExtensionValidator
      * <p>
      * It is generally used to do some non generic checking of whether or not it is possible to install the passed
      * extension (not the right environment, not enough rights, etc.).
-     * 
+     *
      * @param extension the extension to install
      * @param namespace the namespace from where to install
      * @param request extra parameters
@@ -57,7 +57,7 @@ public interface ExtensionValidator
      * <p>
      * It is generally used to do some non generic checking of whether or not it is possible to uninstall the passed
      * extension (not the right environment, not enough rights, etc.).
-     * 
+     *
      * @param extension the extension to uninstall
      * @param namespace the namespace from where to uninstall
      * @param request extra parameters

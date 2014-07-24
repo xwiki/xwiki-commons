@@ -123,6 +123,6 @@ public class ResourceExtensionRepository extends AbstractExtensionRepository imp
     @Override
     public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
     {
-        return new CollectionIterableResult<Version>(0, offset, Collections.<Version> emptyList());
+        return new CollectionIterableResult<Version>(0, offset, Collections.<Version>emptyList());
     }
 }

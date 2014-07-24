@@ -38,7 +38,7 @@ import org.xwiki.extension.version.VersionRangeCollection;
  * Mostly based on AETHER implementation which is itself based on Maven specifications.
  * <p>
  * (,1.0],[2.0,)
- * 
+ *
  * @see org.sonatype.aether.util.version.GenericVersionScheme#parseVersionConstraint(String)
  * @version $Id$
  * @since 4.0M1
@@ -77,7 +77,7 @@ public class DefaultVersionRangeCollection implements VersionRangeCollection
     /**
      * @param ranges the ranges
      */
-    public DefaultVersionRangeCollection(Collection< ? extends VersionRange> ranges)
+    public DefaultVersionRangeCollection(Collection<? extends VersionRange> ranges)
     {
         for (VersionRange range : ranges) {
             this.ranges.add(range);

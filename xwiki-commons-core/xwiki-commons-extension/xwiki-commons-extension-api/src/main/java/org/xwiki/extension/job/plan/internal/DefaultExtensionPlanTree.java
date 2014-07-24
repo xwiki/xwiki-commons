@@ -26,11 +26,11 @@ import org.xwiki.extension.job.plan.ExtensionPlanTree;
 
 /**
  * Default implementation of {@link ExtensionPlanTree}.
- * 
+ *
  * @version $Id$
  * @since 4.1M1
  */
 public class DefaultExtensionPlanTree extends ArrayList<ExtensionPlanNode> implements ExtensionPlanTree
 {
-
+    private static final long serialVersionUID = 1L;
 }

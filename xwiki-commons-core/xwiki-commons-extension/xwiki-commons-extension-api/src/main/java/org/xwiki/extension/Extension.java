@@ -26,7 +26,7 @@ import org.xwiki.extension.repository.ExtensionRepository;
 
 /**
  * Represent an extension.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -40,7 +40,7 @@ public interface Extension
     /**
      * The idea is to indicate in an extension a list of provided "functionalities". Then when resolving extensions
      * dependencies the dependencies id could be matched in this list.
-     * 
+     *
      * @return the extension ids also provided by this extension, an empty collection if there is none
      */
     Collection<String> getFeatures();
@@ -83,11 +83,11 @@ public interface Extension
     /**
      * @return the dependencies of the extension, an empty collection if there is none
      */
-    Collection< ? extends ExtensionDependency> getDependencies();
+    Collection<? extends ExtensionDependency> getDependencies();
 
     /**
      * Return extension file descriptor. Also allows to get the content of the file.
-     * 
+     *
      * @return the file of the extension
      */
     ExtensionFile getFile();
@@ -102,7 +102,7 @@ public interface Extension
      * <p>
      * Theses are generally provided by specific repositories. For example a maven repository will provide group and
      * artifacts ids.
-     * 
+     *
      * @return the properties
      */
     Map<String, Object> getProperties();
@@ -115,7 +115,7 @@ public interface Extension
 
     /**
      * Get a property.
-     * 
+     *
      * @param <T> type of the property value
      * @param key the property key
      * @param def the value to return if no property is associated to the provided key

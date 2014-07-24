@@ -31,7 +31,7 @@ import org.xwiki.extension.job.plan.ExtensionPlanAction;
 
 /**
  * An action to perform as part of an extension plan.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -75,7 +75,7 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
         this.extension = extension;
         this.previousExtensions =
             previousExtensions != null ? new LinkedHashSet<InstalledExtension>(previousExtensions) : Collections
-                .<InstalledExtension> emptyList();
+                .<InstalledExtension>emptyList();
         this.action = action;
         this.namespace = namespace;
         this.dependency = dependency;

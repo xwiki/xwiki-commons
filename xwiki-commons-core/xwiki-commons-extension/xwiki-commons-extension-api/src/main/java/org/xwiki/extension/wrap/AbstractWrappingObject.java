@@ -21,7 +21,7 @@ package org.xwiki.extension.wrap;
 
 /**
  * Wrap an Object.
- * 
+ *
  * @param <T> the type of the wrapped object
  * @version $Id$
  * @since 4.0M1

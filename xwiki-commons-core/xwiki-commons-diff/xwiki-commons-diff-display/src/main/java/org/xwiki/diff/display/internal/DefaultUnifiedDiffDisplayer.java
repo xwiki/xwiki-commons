@@ -49,7 +49,7 @@ import org.xwiki.diff.display.UnifiedDiffElement.Type;
  * ://cvsgrab.cvs.sourceforge.net/viewvc/cvsgrab/cvsgrab/src/java/org/apache/commons/jrcs/diff/print/UnifiedPrint
  * .java">{@code UnifiedPrint}</a> class written by <a href="mailto:ludovicc@users.sourceforge.net">Ludovic Claude</a>
  * for the <a href="http://cvsgrab.sourceforge.net/">CVSGrab</a> project under the Apache Software License version 1.1.
- * 
+ *
  * @version $Id$
  * @since 4.1RC1
  */
@@ -59,7 +59,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
 {
     /**
      * The state of the displayer.
-     * 
+     *
      * @param <E> the type of composite elements that are compared to produce the first level diff
      * @param <F> the type of sub-elements that are compared to produce the second-level diff
      */
@@ -82,7 +82,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
 
         /**
          * Creates a new instance.
-         * 
+         *
          * @param previous the previous version used to take the unmodified elements from
          */
         public State(List<E> previous)
@@ -95,12 +95,12 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
          */
         public Delta<E> getLastDelta()
         {
-            return lastDelta;
+            return this.lastDelta;
         }
 
         /**
          * Sets the last processed change.
-         * 
+         *
          * @param lastDelta the last processed change
          */
         public void setLastDelta(Delta<E> lastDelta)
@@ -113,7 +113,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
          */
         public Stack<UnifiedDiffBlock<E, F>> getBlocks()
         {
-            return blocks;
+            return this.blocks;
         }
 
         /**
@@ -121,7 +121,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
          */
         public List<E> getPrevious()
         {
-            return previous;
+            return this.previous;
         }
     }
 
@@ -146,7 +146,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     @Override
     public <E, F> List<UnifiedDiffBlock<E, F>> display(DiffResult<E> diffResult)
     {
-        return display(diffResult, this.<E, F> getDefaultConfiguration());
+        return display(diffResult, this.<E, F>getDefaultConfiguration());
     }
 
     @Override
@@ -162,13 +162,13 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
             // Add changed elements.
             switch (delta.getType()) {
                 case CHANGE:
-                    state.getBlocks().peek().addAll(this.<E, F> getModifiedElements(delta, config));
+                    state.getBlocks().peek().addAll(this.<E, F>getModifiedElements(delta, config));
                     break;
                 case DELETE:
-                    state.getBlocks().peek().addAll(this.<E, F> getElements(delta.getPrevious(), Type.DELETED));
+                    state.getBlocks().peek().addAll(this.<E, F>getElements(delta.getPrevious(), Type.DELETED));
                     break;
                 case INSERT:
-                    state.getBlocks().peek().addAll(this.<E, F> getElements(delta.getNext(), Type.ADDED));
+                    state.getBlocks().peek().addAll(this.<E, F>getElements(delta.getNext(), Type.ADDED));
                     break;
                 default:
                     break;
@@ -186,7 +186,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
     /**
      * Starts a new {@link UnifiedDiffBlock} if the provided change is in a different context. The distance between two
      * changes inside the same block is less than 2 * context size.
-     * 
+     *
      * @param delta the change
      * @param state the state of the displayer
      * @param contextSize the number of unmodified elements to display before and after each change
@@ -207,7 +207,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         int lastChangeIndex = state.getLastDelta() == null ? -1 : state.getLastDelta().getPrevious().getLastIndex();
         int end = delta.getPrevious().getIndex();
         int start = Math.max(end - count, lastChangeIndex + 1);
-        state.getBlocks().peek().addAll(this.<E, F> getUnmodifiedElements(state.getPrevious(), start, end));
+        state.getBlocks().peek().addAll(this.<E, F>getUnmodifiedElements(state.getPrevious(), start, end));
     }
 
     /**
@@ -216,7 +216,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
      * If a splitter is provided through the given configuration object then we use it to split the changed elements (if
      * the number of removed elements equals the number of added elements) in sub-elements and produce an in-line diff
      * for the changes inside the modified elements.
-     * 
+     *
      * @param delta the change
      * @param config the configuration used to access the splitter
      * @param <E> the type of composite elements that are compared to produce the first level diff
@@ -228,8 +228,8 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         UnifiedDiffConfiguration<E, F> config)
     {
         List<UnifiedDiffElement<E, F>> elements = new ArrayList<UnifiedDiffElement<E, F>>();
-        elements.addAll(this.<E, F> getElements(delta.getPrevious(), Type.DELETED));
-        elements.addAll(this.<E, F> getElements(delta.getNext(), Type.ADDED));
+        elements.addAll(this.<E, F>getElements(delta.getPrevious(), Type.DELETED));
+        elements.addAll(this.<E, F>getElements(delta.getNext(), Type.ADDED));
 
         // Compute the in-line diff if the number of removed elements equals the number of added elements.
         if (config.getSplitter() != null && delta.getPrevious().size() == delta.getNext().size()) {
@@ -280,7 +280,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
 
     /**
      * Ends the last {@link UnifiedDiffBlock} by adding a number of unmodified elements.
-     * 
+     *
      * @param state the state of the displayer
      * @param contextSize the number of unmodified elements to display at the end of a block
      * @param <E> the type of composite elements that are compared to produce the first level diff
@@ -292,14 +292,14 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         if (!state.getBlocks().isEmpty()) {
             int start = state.getLastDelta().getPrevious().getLastIndex() + 1;
             int end = Math.min(start + contextSize, state.getPrevious().size());
-            state.getBlocks().peek().addAll(this.<E, F> getUnmodifiedElements(state.getPrevious(), start, end));
+            state.getBlocks().peek().addAll(this.<E, F>getUnmodifiedElements(state.getPrevious(), start, end));
         }
     }
 
     /**
      * Computes the changes between two versions of an element by splitting the element into sub-elements and displays
      * the result using the in-line format.
-     * 
+     *
      * @param previous the previous version
      * @param next the next version version
      * @param config the configuration for the in-line diff
@@ -313,9 +313,9 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
         try {
             List<F> previousSubElements = config.getSplitter().split(previous.getValue());
             List<F> nextSubElements = config.getSplitter().split(next.getValue());
-            DiffResult<F> diffResult = diffManager.diff(previousSubElements, nextSubElements, config);
+            DiffResult<F> diffResult = this.diffManager.diff(previousSubElements, nextSubElements, config);
 
-            List<InlineDiffChunk<F>> chunks = inlineDisplayer.display(diffResult);
+            List<InlineDiffChunk<F>> chunks = this.inlineDisplayer.display(diffResult);
             previous.setChunks(new ArrayList<InlineDiffChunk<F>>());
             next.setChunks(new ArrayList<InlineDiffChunk<F>>());
             for (InlineDiffChunk<F> chunk : chunks) {

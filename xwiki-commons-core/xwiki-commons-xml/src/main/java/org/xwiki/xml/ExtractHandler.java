@@ -41,7 +41,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * <code>&lt;p&gt;click &lt;a href="realyLongURL" title="Here"&gt;here&lt;/a&gt; to view the result&lt;/p&gt;</code>
  * <br/>is:<br/> <code>&lt;p&gt;ck &lt;a href="realyLongURL" title="Here"&gt;here&lt;/a&gt; to&lt;/p&gt;</code>
  * </p>
- * 
+ *
  * @version $Id$
  * @since 1.6M2
  */
@@ -64,7 +64,7 @@ public class ExtractHandler extends DefaultHandler
 
         /**
          * Constructs a new XML tag with the given qualified name and attributes.
-         * 
+         *
          * @param qName Tag's qualified name.
          * @param atts Tag's attributes.
          */
@@ -125,7 +125,7 @@ public class ExtractHandler extends DefaultHandler
 
     /**
      * Creates a new instance.
-     * 
+     *
      * @param start The character index from where to start the extraction.
      * @param length The number of plain text characters to extract.
      * @throws SAXException if start is less than zero or length is less than or equal to zero.
@@ -161,7 +161,7 @@ public class ExtractHandler extends DefaultHandler
 
     /**
      * Append an open tag with the given specification to the result buffer.
-     * 
+     *
      * @param qName Tag's qualified name.
      * @param atts Tag's attributes.
      */
@@ -176,7 +176,7 @@ public class ExtractHandler extends DefaultHandler
 
     /**
      * Open all pending tags.
-     * 
+     *
      * @see #openTag(String, Attributes)
      */
     private void openTags()
@@ -188,7 +188,7 @@ public class ExtractHandler extends DefaultHandler
 
     /**
      * Close all pending tags.
-     * 
+     *
      * @see #closeTag(String)
      */
     private void closeTags()
@@ -200,7 +200,7 @@ public class ExtractHandler extends DefaultHandler
 
     /**
      * Append a closed tag with the given qualified name to the result buffer.
-     * 
+     *
      * @param qName Tag's qualified name.
      */
     private void closeTag(String qName)

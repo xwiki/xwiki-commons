@@ -28,7 +28,7 @@ import org.xwiki.extension.version.Version;
 
 /**
  * A repository containing extensions.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -43,7 +43,7 @@ public interface ExtensionRepository
     /**
      * Return extension descriptor from the repository. If the extension can't be found a {@link ResolveException} is
      * thrown.
-     * 
+     *
      * @param extensionId the extension identifier
      * @return the found extension descriptor
      * @throws ResolveException failed to find extension in the repository
@@ -53,7 +53,7 @@ public interface ExtensionRepository
     /**
      * Return extension descriptor from the repository. If the extension can't be found a {@link ResolveException} is
      * thrown.
-     * 
+     *
      * @param extensionDependency the target extension as a dependency
      * @return the found extension descriptor
      * @throws ResolveException failed to find extension in the repository
@@ -62,7 +62,7 @@ public interface ExtensionRepository
 
     /**
      * Return ordered (ascendent) versions for the provided extension id.
-     * 
+     *
      * @param id the id of the extensions for which to return versions
      * @param offset the offset from where to start returning versions
      * @param nb the maximum number of versions to return

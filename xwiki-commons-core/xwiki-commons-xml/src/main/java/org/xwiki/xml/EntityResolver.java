@@ -22,9 +22,9 @@ package org.xwiki.xml;
 import org.xwiki.component.annotation.Role;
 
 /**
- * XWiki's wrapping of the {@link org.xml.sax.EntityResolver} interface so that we can create components that
- * implement it.
- * 
+ * XWiki's wrapping of the {@link org.xml.sax.EntityResolver} interface so that we can create components that implement
+ * it.
+ *
  * @version $Id$
  * @since 1.9M2
  */

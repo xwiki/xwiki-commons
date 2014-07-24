@@ -25,7 +25,7 @@ import org.xwiki.logging.LogQueue;
 
 /**
  * The result of the execution of a diff on two lists.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */

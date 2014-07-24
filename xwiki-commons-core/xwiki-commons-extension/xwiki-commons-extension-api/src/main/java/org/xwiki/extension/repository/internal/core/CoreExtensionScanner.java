@@ -26,7 +26,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Scan jars to find core extensions.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -36,14 +36,14 @@ public interface CoreExtensionScanner
     /**
      * Try to get informations as complete as possible using remote repositories. This method can take a long time so it
      * is generally used in a thread started after a short scan to update the list.
-     * 
+     *
      * @param extensions the extensions to update
      */
     void updateExtensions(Collection<DefaultCoreExtension> extensions);
 
     /**
      * Scan environment resources to find core extension.
-     * 
+     *
      * @param repository the repository used to create {@link DefaultCoreExtension}s.
      * @return the found extension. Null if none is declared.
      */
@@ -51,7 +51,7 @@ public interface CoreExtensionScanner
 
     /**
      * Scan classpath to find core extensions.
-     * 
+     *
      * @param repository the repository used to create {@link DefaultCoreExtension}s.
      * @return found extensions. Empty {@link Map} if none can be found.
      */

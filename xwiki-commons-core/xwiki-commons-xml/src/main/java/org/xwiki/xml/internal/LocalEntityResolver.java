@@ -38,7 +38,7 @@ import org.xwiki.xml.EntityResolver;
  * Entity resolver that resolves entities using entity files (like xhtml-symbol.ent, xhtml-special.ent, xhtml-lat1.ent)
  * located on the file system (in the classpath). This allows an XML parser that uses this entity resolver to work even
  * when there's no internet connection. It also speeds up the entity resolution.
- * 
+ *
  * @version $Id$
  */
 @Component

@@ -86,7 +86,7 @@ public class ServletEnvironmentTest
                 + "(The Servlet Context is not set)", expected.getMessage());
         }
     }
-    
+
     @Test
     public void getResourceOk() throws Exception
     {

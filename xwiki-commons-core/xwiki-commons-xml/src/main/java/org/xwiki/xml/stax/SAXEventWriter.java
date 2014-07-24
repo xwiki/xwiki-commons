@@ -21,10 +21,6 @@ package org.xwiki.xml.stax;
 
 import java.util.Iterator;
 
-import javanet.staxutils.BaseXMLEventWriter;
-import javanet.staxutils.DummyLocator;
-import javanet.staxutils.helpers.XMLFilterImplEx;
-
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamConstants;
@@ -46,11 +42,15 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
+import javanet.staxutils.BaseXMLEventWriter;
+import javanet.staxutils.DummyLocator;
+import javanet.staxutils.helpers.XMLFilterImplEx;
+
 /**
  * Receive and convert StAX events to SAX events.
  * <p>
  * Extends {@link SAXEventConsumer} with {@link javax.xml.stream.XMLEventWriter} methods.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -147,21 +147,25 @@ public class SAXEventWriter extends BaseXMLEventWriter
         if (location != null) {
             this.filter.setDocumentLocator(new Locator()
             {
+                @Override
                 public int getColumnNumber()
                 {
                     return location.getColumnNumber();
                 }
 
+                @Override
                 public int getLineNumber()
                 {
                     return location.getLineNumber();
                 }
 
+                @Override
                 public String getPublicId()
                 {
                     return location.getPublicId();
                 }
 
+                @Override
                 public String getSystemId()
                 {
                     return location.getSystemId();
@@ -200,8 +204,8 @@ public class SAXEventWriter extends BaseXMLEventWriter
             this.filter.endElement(qName.getNamespaceURI(), qName.getLocalPart(), rawname);
 
             // end namespace bindings
-            for (Iterator i = event.getNamespaces(); i.hasNext();) {
-                String nsprefix = ((Namespace) i.next()).getPrefix();
+            for (@SuppressWarnings("unchecked") Iterator<Namespace> i = event.getNamespaces(); i.hasNext();) {
+                String nsprefix = i.next().getPrefix();
                 // true for default namespace
                 if (nsprefix == null) {
                     nsprefix = "";
@@ -217,8 +221,8 @@ public class SAXEventWriter extends BaseXMLEventWriter
     {
         try {
             // start namespace bindings
-            for (Iterator i = event.getNamespaces(); i.hasNext();) {
-                String prefix = ((Namespace) i.next()).getPrefix();
+            for (@SuppressWarnings("unchecked") Iterator<Namespace> i = event.getNamespaces(); i.hasNext();) {
+                String prefix = i.next().getPrefix();
                 // true for default namespace
                 if (prefix == null) {
                     prefix = "";
@@ -244,7 +248,7 @@ public class SAXEventWriter extends BaseXMLEventWriter
 
     /**
      * Get the attributes associated with the given START_ELEMENT StAXevent.
-     * 
+     *
      * @param event the StAX start element event
      * @return the StAX attributes converted to an org.xml.sax.Attributes
      */
@@ -258,8 +262,8 @@ public class SAXEventWriter extends BaseXMLEventWriter
 
         // Add namspace declarations if required
         if (this.filter.getNamespacePrefixes()) {
-            for (Iterator i = event.getNamespaces(); i.hasNext();) {
-                Namespace staxNamespace = (javax.xml.stream.events.Namespace) i.next();
+            for (@SuppressWarnings("unchecked") Iterator<Namespace> i = event.getNamespaces(); i.hasNext();) {
+                Namespace staxNamespace = i.next();
                 String uri = staxNamespace.getNamespaceURI();
                 if (uri == null) {
                     uri = "";
@@ -281,8 +285,8 @@ public class SAXEventWriter extends BaseXMLEventWriter
         }
 
         // gather non-namespace attrs
-        for (Iterator i = event.getAttributes(); i.hasNext();) {
-            Attribute staxAttr = (javax.xml.stream.events.Attribute) i.next();
+        for (@SuppressWarnings("unchecked") Iterator<Attribute> i = event.getAttributes(); i.hasNext();) {
+            Attribute staxAttr = i.next();
 
             String uri = staxAttr.getName().getNamespaceURI();
             if (uri == null) {

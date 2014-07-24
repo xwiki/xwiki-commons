@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 /**
  * An extension version.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -31,7 +31,7 @@ public interface Version extends Comparable<Version>, Serializable
 {
     /**
      * The type of version.
-     * 
+     *
      * @version $Id$
      */
     enum Type

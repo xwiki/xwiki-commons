@@ -23,7 +23,7 @@ import org.xwiki.diff.DiffConfiguration;
 
 /**
  * Configuration for {@link UnifiedDiffDisplayer}.
- * 
+ *
  * @param <E> the type of elements that are compared to produce the first level diff
  * @param <F> the type of sub-elements that can be compared to produce the second level diff when an element is modified
  * @version $Id$
@@ -54,12 +54,12 @@ public class UnifiedDiffConfiguration<E, F> extends DiffConfiguration<F>
      */
     public int getContextSize()
     {
-        return contextSize;
+        return this.contextSize;
     }
 
     /**
      * Sets the number of unmodified elements to display before and after a chunk of modified elements.
-     * 
+     *
      * @param contextSize the context size
      */
     public void setContextSize(int contextSize)
@@ -72,12 +72,12 @@ public class UnifiedDiffConfiguration<E, F> extends DiffConfiguration<F>
      */
     public Splitter<E, F> getSplitter()
     {
-        return splitter;
+        return this.splitter;
     }
 
     /**
      * Sets The object used to split the modified elements into sub-elements in order to produce a more detailed diff.
-     * 
+     *
      * @param splitter the splitter
      */
     public void setSplitter(Splitter<E, F> splitter)

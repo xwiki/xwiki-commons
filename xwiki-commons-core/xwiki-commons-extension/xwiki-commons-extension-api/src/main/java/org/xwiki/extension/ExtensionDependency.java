@@ -25,7 +25,7 @@ import org.xwiki.extension.version.VersionConstraint;
 
 /**
  * An extension dependency.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -46,7 +46,7 @@ public interface ExtensionDependency
      * <p>
      * Theses are generally provided by specific repositories. For example a AETHER repository will provide AETHER
      * Dependency representation to avoid conversion when searching for the dependency on a AETHER based repository.
-     * 
+     *
      * @return the properties
      */
     Map<String, Object> getProperties();
@@ -59,7 +59,7 @@ public interface ExtensionDependency
 
     /**
      * Get a property.
-     * 
+     *
      * @param <T> type of the property value
      * @param key the property key
      * @param def the value to return if no property is associated to the provided key

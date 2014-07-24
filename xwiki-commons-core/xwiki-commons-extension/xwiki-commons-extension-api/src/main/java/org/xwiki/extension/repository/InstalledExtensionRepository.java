@@ -39,7 +39,7 @@ import org.xwiki.extension.repository.search.Searchable;
  * A repository containing installed extension.
  * <p>
  * It's generally a virtual repository since the actual extension are generally stored in the local repository.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */
@@ -55,7 +55,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
     /**
      * Return the installed extension associated to the provided feature for the provided namespace (or root namespace
      * since namespaces inherit from root).
-     * 
+     *
      * @param feature the extension id or provided feature (virtual extension)
      * @param namespace the namespace where the extension is installed, null mean installed in all namespaces (root
      *            namespace)
@@ -74,7 +74,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
      * <p>
      * Note that {@link #getInstalledExtensions()} return all the extensions installed in all namespaces while
      * {@link #getInstalledExtensions(String)} with <code>null</code> return only those that are globally available.
-     * 
+     *
      * @param namespace the namespace where to search for installed extensions, null mean installed in all namespaces
      *            (root namespace)
      * @return all the local extensions installed in the provided namespace, an empty collection if none could be found
@@ -83,7 +83,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
 
     /**
      * Indicate that the provided extension is installed in the provided namespace.
-     * 
+     *
      * @param extension the extension to install
      * @param namespace the namespace in which the extension is installed
      * @param dependency indicate if the extension is stored as a dependency of another one
@@ -95,7 +95,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
 
     /**
      * Return extension descriptor from the repository. If the extension can't be found <code>null</code> is returned.
-     * 
+     *
      * @param extensionId the extension identifier
      * @return the found extension descriptor or null if none could be found
      * @since 4.2RC1
@@ -106,7 +106,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
      * Indicate that the provided extension is uninstalled from provided namespace.
      * <p>
      * Extension is never removed form the local repository. It's just namespace related informations.
-     * 
+     *
      * @param extension the extension to uninstall
      * @param namespace the namespace from which the extension is uninstalled
      * @throws UninstallException error when trying to uninstall provided extension
@@ -118,7 +118,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
      * <p>
      * Only look at the backward dependencies in the provided namespace. To get all the dependencies of a root extension
      * (namespace=null) across namespaces use {@link #getBackwardDependencies(ExtensionId)} instead.
-     * 
+     *
      * @param feature the extension unique identifier
      * @param namespace the namespace where to search for backward dependencies
      * @return the backward dependencies, an empty collection of none could be found
@@ -128,7 +128,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
 
     /**
      * Get all backward dependencies by namespace for the provided installed extension.
-     * 
+     *
      * @param extensionId the extension identifier
      * @return the extension backward dependencies in all namespaces
      * @throws ResolveException error when searching for extension backward dependencies
@@ -150,7 +150,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
      * Search installed extensions based of the provided pattern and only in the passed namespace.
      * <p>
      * The pattern is a simple character chain.
-     * 
+     *
      * @param pattern the pattern to search
      * @param namespace the namespace where to search
      * @param offset the offset from where to start returning search results

@@ -19,10 +19,6 @@
  */
 package org.xwiki.extension.repository.internal;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,9 +46,13 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import com.google.common.collect.Lists;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
+
 /**
  * Test {@link DefaultExtensionRepositoryManager}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultExtensionRepositoryManagerTest
@@ -123,10 +123,10 @@ public class DefaultExtensionRepositoryManagerTest
         return new CollectionIterableResult<Extension>(extensions.length, 0, Arrays.asList(extensions));
     }
 
-    private void assertSameElements(Iterable< ? > it1, Iterable< ? > it2)
+    private void assertSameElements(Iterable<?> it1, Iterable<?> it2)
     {
-        Iterator< ? > i1 = it1.iterator();
-        Iterator< ? > i2 = it2.iterator();
+        Iterator<?> i1 = it1.iterator();
+        Iterator<?> i2 = it2.iterator();
 
         while (i1.hasNext() && i2.hasNext()) {
             Object element1 = i1.next();
@@ -190,6 +190,5 @@ public class DefaultExtensionRepositoryManagerTest
         assertSearch("pattern", 0, -1, this.extension1, this.extension2, this.extension3, this.extension4);
         assertSearch("pattern", 0, 1, this.extension1);
         assertSearch("pattern", 1, -1, this.extension2, this.extension3, this.extension4);
-        
     }
 }

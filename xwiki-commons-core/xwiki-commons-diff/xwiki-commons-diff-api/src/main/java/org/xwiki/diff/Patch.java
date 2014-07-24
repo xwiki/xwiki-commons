@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * A list of deltas between two versions.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */
@@ -31,7 +31,7 @@ public interface Patch<E> extends List<Delta<E>>
 {
     /**
      * Apply the patch.
-     * 
+     *
      * @param target the list on which to apply the patch
      * @return the modified list
      * @throws PatchException failed to apply the patch
@@ -40,7 +40,7 @@ public interface Patch<E> extends List<Delta<E>>
 
     /**
      * Invert the patch.
-     * 
+     *
      * @param target the list on which to apply an inverted version of the patch
      * @return the modified list
      * @throws PatchException failed to apply the patch

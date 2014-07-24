@@ -28,7 +28,7 @@ import org.xwiki.environment.internal.StandardEnvironment;
 
 /**
  * Helper class that can be used to easily initialize the full XWiki System (ie Component Manager and Environment).
- * 
+ *
  * @version $Id$
  * @since 3.5M1
  */
@@ -56,7 +56,6 @@ public final class System
         return initialize(null, null, null, classLoader);
     }
 
-    /**
     /**
      * Initialize the full XWiki system (ie Component Manager and Environment), using the class loader that loaded
      * this class, using the "java.io.tmpdir" System property value as the temporary diretory location, without
@@ -89,7 +88,8 @@ public final class System
      * this class and using the "java.io.tmpdir" System property value as the temporary diretory location.
      *
      * @param permanentDirectory see {@link org.xwiki.environment.Environment#getPermanentDirectory()}
-     * @param resourceDirectory see {@link org.xwiki.environment.internal.StandardEnvironment#setResourceDirectory(java.io.File)}
+     * @param resourceDirectory see
+     *            {@link org.xwiki.environment.internal.StandardEnvironment#setResourceDirectory(java.io.File)}
      * @return the initialized Component Manager
      * @see #dispose(ComponentManager)
      */
@@ -103,7 +103,8 @@ public final class System
      * this class.
      *
      * @param permanentDirectory see {@link org.xwiki.environment.Environment#getPermanentDirectory()}
-     * @param resourceDirectory see {@link org.xwiki.environment.internal.StandardEnvironment#setResourceDirectory(java.io.File)}
+     * @param resourceDirectory see
+     *            {@link org.xwiki.environment.internal.StandardEnvironment#setResourceDirectory(java.io.File)}
      * @param temporaryDirectory see {@link org.xwiki.environment.Environment#getTemporaryDirectory()}
      * @return the initialized Component Manager
      * @see #dispose(ComponentManager)
@@ -115,9 +116,10 @@ public final class System
 
     /**
      * Initialize the full XWiki system (ie Component Manager and Environment).
-     * 
+     *
      * @param permanentDirectory see {@link org.xwiki.environment.Environment#getPermanentDirectory()}
-     * @param resourceDirectory see {@link org.xwiki.environment.internal.StandardEnvironment#setResourceDirectory(java.io.File)}
+     * @param resourceDirectory see
+     *            {@link org.xwiki.environment.internal.StandardEnvironment#setResourceDirectory(java.io.File)}
      * @param temporaryDirectory see {@link org.xwiki.environment.Environment#getTemporaryDirectory()}
      * @param classLoader see {@link EmbeddableComponentManager#initialize(ClassLoader)}
      * @return the initialized Component Manager
@@ -146,7 +148,7 @@ public final class System
 
     /**
      * Free resource taken by the Component Manager create by one of the <code>initialize</code> methods.
-     * 
+     *
      * @param componentManager the component manager
      * @since 5.1
      */

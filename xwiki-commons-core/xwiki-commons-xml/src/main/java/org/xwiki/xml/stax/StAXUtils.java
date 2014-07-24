@@ -36,7 +36,7 @@ import javax.xml.transform.stax.StAXSource;
 
 /**
  * Various tools related to StAX API.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -51,7 +51,7 @@ public final class StAXUtils
 
     /**
      * Extract or create an instance of {@link XMLStreamReader} from the provided {@link Source}.
-     * 
+     *
      * @param source the source
      * @return the {@link XMLStreamReader}
      * @throws XMLStreamException when failing to extract xml stream reader
@@ -78,7 +78,7 @@ public final class StAXUtils
 
     /**
      * Extract or create an instance of {@link XMLEventReader} from the provided {@link Source}.
-     * 
+     *
      * @param source the source
      * @return the {@link XMLEventReader}
      * @throws XMLStreamException when failing to extract xml event reader
@@ -104,7 +104,7 @@ public final class StAXUtils
 
     /**
      * Extract or create an instance of {@link XMLStreamWriter} from the provided {@link Result}.
-     * 
+     *
      * @param result the result
      * @return the {@link XMLStreamWriter}
      * @throws XMLStreamException when failing to extract xml stream writer
@@ -133,7 +133,7 @@ public final class StAXUtils
 
     /**
      * Go to the end of the current element. This include skipping any children element.
-     * 
+     *
      * @param xmlReader the XML stream reader
      * @return the type of the new current event
      * @throws XMLStreamException if there is an error processing the underlying XML source

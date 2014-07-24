@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * A group of consecutive elements that are targeted by the same operation (add, remove, keep) in an in-line diff.
- * 
+ *
  * @param <E> the type of elements that form a chunk
  * @version $Id$
  * @since 4.1RC1
@@ -60,7 +60,7 @@ public class InlineDiffChunk<E>
 
     /**
      * Creates a new chunk with the specified type and elements.
-     * 
+     *
      * @param type the chunk type
      * @param elements the list of elements that form the chunk
      */
@@ -75,7 +75,7 @@ public class InlineDiffChunk<E>
      */
     public Type getType()
     {
-        return type;
+        return this.type;
     }
 
     /**
@@ -83,7 +83,7 @@ public class InlineDiffChunk<E>
      */
     public List<E> getElements()
     {
-        return elements;
+        return this.elements;
     }
 
     /**
@@ -91,7 +91,7 @@ public class InlineDiffChunk<E>
      */
     public boolean isAdded()
     {
-        return type == Type.ADDED;
+        return this.type == Type.ADDED;
     }
 
     /**
@@ -99,7 +99,7 @@ public class InlineDiffChunk<E>
      */
     public boolean isDeleted()
     {
-        return type == Type.DELETED;
+        return this.type == Type.DELETED;
     }
 
     /**
@@ -107,14 +107,14 @@ public class InlineDiffChunk<E>
      */
     public boolean isUnmodified()
     {
-        return type == Type.UNMODIFIED;
+        return this.type == Type.UNMODIFIED;
     }
 
     @Override
     public String toString()
     {
-        StringBuilder stringBuilder = new StringBuilder(elements.size());
-        for (E element : elements) {
+        StringBuilder stringBuilder = new StringBuilder(this.elements.size());
+        for (E element : this.elements) {
             stringBuilder.append(element);
         }
         return stringBuilder.toString();

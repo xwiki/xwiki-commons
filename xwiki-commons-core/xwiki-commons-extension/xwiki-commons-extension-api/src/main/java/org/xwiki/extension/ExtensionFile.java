@@ -24,7 +24,7 @@ import java.io.InputStream;
 
 /**
  * Contains the actual file of the extensions and some informations like the size.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -39,7 +39,7 @@ public interface ExtensionFile
      * Open an input stream to allows reading the extensions.
      * <p>
      * Note that it's up to the user of this method to close the stream.
-     * 
+     *
      * @return the stream to read
      * @throws IOException error when opening the stream
      */

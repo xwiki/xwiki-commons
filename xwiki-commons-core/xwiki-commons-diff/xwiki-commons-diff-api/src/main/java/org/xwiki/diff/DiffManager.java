@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Various diff/merge tools.
- * 
+ *
  * @version $Id$
  */
 @Role
@@ -33,7 +33,7 @@ public interface DiffManager
 {
     /**
      * Produce a diff between the two provided versions.
-     * 
+     *
      * @param <E> the type of compared elements
      * @param previous the previous version of the content to compare
      * @param next the next version of the content to compare
@@ -45,7 +45,7 @@ public interface DiffManager
 
     /**
      * Execute a 3-way merge on provided versions.
-     * 
+     *
      * @param <E> the type of compared elements
      * @param commonAncestor the common ancestor of the two versions of the content to compare
      * @param next the next version of the content to compare

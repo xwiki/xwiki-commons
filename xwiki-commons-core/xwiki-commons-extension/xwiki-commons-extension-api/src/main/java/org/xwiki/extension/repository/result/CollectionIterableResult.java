@@ -24,7 +24,7 @@ import java.util.Iterator;
 
 /**
  * A simple collection based {@link IterableResult}.
- * 
+ *
  * @param <T> the type
  * @version $Id$
  * @since 4.0M1

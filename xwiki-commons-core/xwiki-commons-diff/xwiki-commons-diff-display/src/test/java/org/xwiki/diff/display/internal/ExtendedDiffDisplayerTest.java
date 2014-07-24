@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
@@ -45,7 +44,7 @@ import org.xwiki.test.annotation.ComponentList;
 /**
  * Tests how the unified and inline diff displayers can be mixed to generate a diff both at line (unified) and character
  * (inline) level.
- * 
+ *
  * @version $Id$
  * @since 4.1M2
  */
@@ -96,7 +95,7 @@ public class ExtendedDiffDisplayerTest
 
     /**
      * Generates the extended diff between the given versions and asserts if it meets the expectation.
-     * 
+     *
      * @param previous the previous version
      * @param next the next version
      * @param expected the expected extended diff
@@ -106,18 +105,18 @@ public class ExtendedDiffDisplayerTest
     {
         ParameterizedType lineSplitterType =
             new DefaultParameterizedType(null, Splitter.class, String.class, String.class);
-        Splitter<String, String> lineSplitter = componentManager.getInstance(lineSplitterType, "line");
+        Splitter<String, String> lineSplitter = this.componentManager.getInstance(lineSplitterType, "line");
         List<String> previousLines = lineSplitter.split(previous);
         List<String> nextLines = lineSplitter.split(next);
 
-        DiffManager diffManager = componentManager.getInstance(DiffManager.class);
+        DiffManager diffManager = this.componentManager.getInstance(DiffManager.class);
         DiffResult<String> diffResult = diffManager.diff(previousLines, nextLines, null);
 
         ParameterizedType charSplitterType =
             new DefaultParameterizedType(null, Splitter.class, String.class, Character.class);
-        Splitter<String, Character> charSplitter = componentManager.getInstance(charSplitterType);
+        Splitter<String, Character> charSplitter = this.componentManager.getInstance(charSplitterType);
 
-        UnifiedDiffDisplayer unifiedDiffDisplayer = componentManager.getInstance(UnifiedDiffDisplayer.class);
+        UnifiedDiffDisplayer unifiedDiffDisplayer = this.componentManager.getInstance(UnifiedDiffDisplayer.class);
         UnifiedDiffConfiguration<String, Character> config = unifiedDiffDisplayer.getDefaultConfiguration();
         config.setSplitter(charSplitter);
 

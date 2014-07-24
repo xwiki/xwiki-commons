@@ -42,7 +42,7 @@ import org.xwiki.logging.event.LogEvent;
  * Extension uninstallation related task.
  * <p>
  * This task generates related events.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

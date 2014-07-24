@@ -26,7 +26,7 @@ import org.xwiki.logging.LogQueue;
 
 /**
  * Default implementation of {@link MergeResult}.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */

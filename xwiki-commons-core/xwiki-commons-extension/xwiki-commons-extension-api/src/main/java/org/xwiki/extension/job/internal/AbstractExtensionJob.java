@@ -53,7 +53,7 @@ import org.xwiki.logging.marker.TranslationMarker;
 
 /**
  * Base class for any Job dealing with extensions.
- * 
+ *
  * @param <R> the type of the request
  * @param <S> the type of the {@link org.xwiki.job.event.status.JobStatus}
  * @version $Id$

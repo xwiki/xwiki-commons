@@ -40,7 +40,7 @@ import org.xml.sax.ext.LexicalHandler;
 
 /**
  * Convert SAX events into a Document.
- * 
+ *
  * @version $Id$
  */
 public class Sax2Dom implements ContentHandler, LexicalHandler
@@ -87,7 +87,7 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
 
     /**
      * Default constructor.
-     * 
+     *
      * @throws ParserConfigurationException failed to create a new {@link Document}
      */
     public Sax2Dom() throws ParserConfigurationException

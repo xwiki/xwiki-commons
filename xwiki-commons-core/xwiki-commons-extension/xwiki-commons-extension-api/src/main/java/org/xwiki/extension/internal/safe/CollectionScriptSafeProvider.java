@@ -32,7 +32,7 @@ import org.xwiki.component.annotation.Component;
 
 /**
  * Provide safe Collection.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */

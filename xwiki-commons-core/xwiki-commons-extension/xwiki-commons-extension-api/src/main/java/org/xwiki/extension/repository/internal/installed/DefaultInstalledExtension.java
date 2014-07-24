@@ -34,7 +34,7 @@ import org.xwiki.extension.repository.InstalledExtensionRepository;
 
 /**
  * Default implementation of {@link LocalExtension}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultInstalledExtension extends AbstractExtension implements InstalledExtension

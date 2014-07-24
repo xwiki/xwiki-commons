@@ -30,7 +30,7 @@ import org.xwiki.extension.repository.search.Searchable;
 
 /**
  * Virtual extension repository containing core extensions.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -50,7 +50,7 @@ public interface CoreExtensionRepository extends ExtensionRepository, Searchable
     /**
      * Return the extension corresponding to the current environment if any. Generally used to get the current XWiki
      * distribution.
-     * 
+     *
      * @return the core extension associated to the environment
      */
     CoreExtension getEnvironmentExtension();

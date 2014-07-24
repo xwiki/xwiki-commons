@@ -28,7 +28,7 @@ import org.xwiki.diff.DiffResult;
  * Displays a {@link DiffResult} as a <a href="http://en.wikipedia.org/wiki/Diff#Unified_format">unified diff</a>. The
  * unified diff consists in a sequence of blocks, each having elements marked as either added or removed, padded with
  * unmodified elements that put changes in context.
- * 
+ *
  * @version $Id$
  * @since 4.1RC1
  */
@@ -44,7 +44,7 @@ public interface UnifiedDiffDisplayer
 
     /**
      * Displays the given diff result as an unified diff using the default configuration.
-     * 
+     *
      * @param <E> the type of elements that are compared to produce the diff
      * @param <F> the type of sub-elements that can be compared to produce an in-line diff when an element is modified
      * @param diffResult the diff result
@@ -65,7 +65,7 @@ public interface UnifiedDiffDisplayer
      * If changes are computed at the line level in a text, i.e. the elements that are compared to produce the diff are
      * lines of text, and a word splitter is provided through configuration then the following is a block from a unified
      * diff:
-     * 
+     *
      * <pre>
      * {@code @@ -81,5 +85,5 @@
      *  first line of context
@@ -75,7 +75,7 @@ public interface UnifiedDiffDisplayer
      *  close the block with unmodified lines
      *  last line of context}
      * </pre>
-     * 
+     *
      * @param <E> the type of elements that were compared to produce the diff
      * @param <F> the type of sub-elements that can be compared to produce an in-line diff when an element is modified
      * @param diffResult the diff result

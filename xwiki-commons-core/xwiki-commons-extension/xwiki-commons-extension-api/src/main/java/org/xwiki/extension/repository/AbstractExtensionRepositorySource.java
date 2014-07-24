@@ -24,7 +24,7 @@ import java.util.Collection;
 
 /**
  * Base class for {@link ExtensionRepositorySource} implementations.
- * 
+ *
  * @version $Id$
  * @since 4.3M1
  */

@@ -26,7 +26,7 @@ import java.util.List;
  * (added, removed, unmodified) to simplify the process of displaying them in an unified diff. If the wrapped element is
  * a composite element (can be split in sub-elements) and was modified (replaced by another element) then this class can
  * also store information about changes at the level of sub-elements.
- * 
+ *
  * @param <E> the type of elements that are compared to produce the first-level diff
  * @param <F> the type of sub-elements that are compared to produce the second-level diff
  * @version $Id$
@@ -50,14 +50,14 @@ public class UnifiedDiffElement<E, F>
 
         /**
          * The symbol associated with this element type. This is need only for the default string serialization.
-         * 
+         *
          * @see UnifiedDiffElement#toString()
          */
         private final char symbol;
 
         /**
          * Creates a new element type that has the given symbol associated.
-         * 
+         *
          * @param symbol the symbol associated with this element type
          */
         Type(char symbol)
@@ -70,7 +70,7 @@ public class UnifiedDiffElement<E, F>
          */
         public char getSymbol()
         {
-            return symbol;
+            return this.symbol;
         }
     }
 
@@ -96,7 +96,7 @@ public class UnifiedDiffElement<E, F>
 
     /**
      * Creates a new element in a unified diff.
-     * 
+     *
      * @param index the element index
      * @param type the element type
      * @param value the wrapped element
@@ -113,7 +113,7 @@ public class UnifiedDiffElement<E, F>
      */
     public int getIndex()
     {
-        return index;
+        return this.index;
     }
 
     /**
@@ -121,7 +121,7 @@ public class UnifiedDiffElement<E, F>
      */
     public Type getType()
     {
-        return type;
+        return this.type;
     }
 
     /**
@@ -129,7 +129,7 @@ public class UnifiedDiffElement<E, F>
      */
     public E getValue()
     {
-        return value;
+        return this.value;
     }
 
     /**
@@ -137,12 +137,12 @@ public class UnifiedDiffElement<E, F>
      */
     public List<InlineDiffChunk<F>> getChunks()
     {
-        return chunks;
+        return this.chunks;
     }
 
     /**
      * Sets the list of chunks of sub-elements that form this element.
-     * 
+     *
      * @param chunks the list of chunks
      */
     public void setChunks(List<InlineDiffChunk<F>> chunks)
@@ -155,7 +155,7 @@ public class UnifiedDiffElement<E, F>
      */
     public boolean isAdded()
     {
-        return type == Type.ADDED;
+        return this.type == Type.ADDED;
     }
 
     /**
@@ -163,12 +163,12 @@ public class UnifiedDiffElement<E, F>
      */
     public boolean isDeleted()
     {
-        return type == Type.DELETED;
+        return this.type == Type.DELETED;
     }
 
     @Override
     public String toString()
     {
-        return type.getSymbol() + String.valueOf(value) + '\n';
+        return this.type.getSymbol() + String.valueOf(this.value) + '\n';
     }
 }

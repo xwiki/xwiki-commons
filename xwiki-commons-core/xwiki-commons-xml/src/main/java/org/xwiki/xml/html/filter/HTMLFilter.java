@@ -26,7 +26,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Defines an interface for filters that will filter HTML documents.
- * 
+ *
  * @version $Id$
  * @since 1.8RC2
  */
@@ -35,7 +35,7 @@ public interface HTMLFilter
 {
     /**
      * Performs cleaning of the html code stored in {@link Document}.
-     * 
+     *
      * @param document The {@link Document} with html code
      * @param cleaningParameters additional cleaning parameters for the filter.
      */

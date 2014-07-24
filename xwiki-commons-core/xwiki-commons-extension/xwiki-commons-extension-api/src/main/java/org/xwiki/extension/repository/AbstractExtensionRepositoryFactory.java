@@ -21,7 +21,7 @@ package org.xwiki.extension.repository;
 
 /**
  * Base class for all implementations of {@link ExtensionRepositoryFactory}.
- * 
+ *
  * @version $Id$
  * @since 4.3M1
  */

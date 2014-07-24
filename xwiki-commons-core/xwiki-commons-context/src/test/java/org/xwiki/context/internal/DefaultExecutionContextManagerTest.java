@@ -50,7 +50,7 @@ public class DefaultExecutionContextManagerTest
         ExecutionContext context = new ExecutionContext();
         execution.setContext(context);
 
-        Map xwikicontext = new HashMap();
+        Map<Object, Object> xwikicontext = new HashMap<>();
         context.newProperty("property1").initial(xwikicontext).inherited().declare();
         context.newProperty("property2").initial(xwikicontext).inherited().makeFinal().cloneValue().declare();
 

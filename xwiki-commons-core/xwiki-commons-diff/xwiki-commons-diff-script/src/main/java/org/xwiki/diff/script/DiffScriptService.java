@@ -40,7 +40,7 @@ import org.xwiki.script.service.ScriptService;
 
 /**
  * Provide script oriented APIs to do diff and merges.
- * 
+ *
  * @version $Id$
  * @since 4.1RC1
  */
@@ -83,7 +83,7 @@ public class DiffScriptService implements ScriptService
 
     /**
      * Produce a diff between the two provided versions.
-     * 
+     *
      * @param <E> the type of compared elements
      * @param previous the previous version of the content to compare
      * @param next the next version of the content to compare
@@ -105,7 +105,7 @@ public class DiffScriptService implements ScriptService
 
     /**
      * Execute a 3-way merge on provided versions.
-     * 
+     *
      * @param <E> the type of compared elements
      * @param commonAncestor the common ancestor of the two versions of the content to compare
      * @param next the next version of the content to compare
@@ -129,7 +129,7 @@ public class DiffScriptService implements ScriptService
 
     /**
      * Get the error generated while performing the previously called action.
-     * 
+     *
      * @return an eventual exception or {@code null} if no exception was thrown
      */
     public Exception getLastError()

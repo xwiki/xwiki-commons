@@ -48,7 +48,7 @@ public class StandardEnvironment extends AbstractEnvironment
      * @see #setResourceClassLoader(ClassLoader)
      */
     private ClassLoader resourceClassLoader = StandardEnvironment.class.getClassLoader();
-    
+
     /**
      * @param resourceDirectory the directory where resources such as configuration files (actually any content that
      *                          is neither temporary nor permanent data) which will point to the permanent directory
@@ -67,7 +67,7 @@ public class StandardEnvironment extends AbstractEnvironment
     {
         this.resourceClassLoader = classLoader;
     }
-        
+
     @Override
     public InputStream getResourceAsStream(String resourceName)
     {

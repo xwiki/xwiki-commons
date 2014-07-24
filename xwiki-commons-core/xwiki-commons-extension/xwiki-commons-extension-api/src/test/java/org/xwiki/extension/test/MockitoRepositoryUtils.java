@@ -22,6 +22,7 @@ package org.xwiki.extension.test;
 import java.util.Arrays;
 import java.util.List;
 
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -48,6 +49,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         this.componentManager = componentManager;
     }
 
+    @Override
     public void setup() throws Exception
     {
         super.setup();
@@ -59,7 +61,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         final Environment environment = this.componentManager.registerMockComponent(Environment.class);
         Mockito.when(environment.getPermanentDirectory()).thenReturn(getPermanentDirectory());
         Mockito.when(environment.getTemporaryDirectory()).thenReturn(getTemporaryDirectory());
-        Mockito.when(environment.getResourceAsStream(Mockito.any(String.class))).thenReturn(null);
+        Mockito.when(environment.getResourceAsStream(Matchers.any(String.class))).thenReturn(null);
 
         DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
         dcd.setRoleType(Environment.class);
@@ -95,7 +97,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
 
         // init
 
-        this.componentManager.<ExtensionInitializer> getInstance(ExtensionInitializer.class).initialize();
+        this.componentManager.<ExtensionInitializer>getInstance(ExtensionInitializer.class).initialize();
     }
 
     public MockitoComponentManagerRule getComponentManager()
@@ -112,11 +114,11 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         return this.componentLoader;
     }
 
-    private void registerComponent(Class< ? > componentClass) throws Exception
+    private void registerComponent(Class<?> componentClass) throws Exception
     {
         List<ComponentDescriptor> descriptors = getComponentLoader().getComponentsDescriptors(componentClass);
 
-        for (ComponentDescriptor< ? > descriptor : descriptors) {
+        for (ComponentDescriptor<?> descriptor : descriptors) {
             this.componentManager.registerComponent(descriptor);
         }
     }

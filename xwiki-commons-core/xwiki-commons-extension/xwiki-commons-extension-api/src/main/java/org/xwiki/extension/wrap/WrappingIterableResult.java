@@ -28,7 +28,7 @@ import org.xwiki.extension.repository.result.IterableResult;
 
 /**
  * Provide a public script access to a iterable result.
- * 
+ *
  * @param <E> the extension type
  * @version $Id$
  * @since 4.0M2
@@ -40,7 +40,7 @@ public class WrappingIterableResult<E extends Extension> extends AbstractSafeObj
      * @param result the wrapped result
      * @param safeProvider the provider of instances safe for public scripts
      */
-    public WrappingIterableResult(IterableResult<E> result, ScriptSafeProvider< ? > safeProvider)
+    public WrappingIterableResult(IterableResult<E> result, ScriptSafeProvider<?> safeProvider)
     {
         super(result, safeProvider);
     }

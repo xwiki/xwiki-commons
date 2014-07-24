@@ -28,7 +28,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryId;
 
 /**
  * Provide some general extension manager configuration.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

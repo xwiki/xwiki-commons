@@ -36,7 +36,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * An application started listener to initialize extensions.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -48,7 +48,7 @@ public class ExtensionApplicationStartedListener implements EventListener
     /**
      * The list of events observed.
      */
-    private static final List<Event> EVENTS = Collections.<Event> singletonList(new ApplicationStartedEvent());
+    private static final List<Event> EVENTS = Collections.<Event>singletonList(new ApplicationStartedEvent());
 
     /**
      * The extension initializer.

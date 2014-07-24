@@ -23,7 +23,7 @@ import java.util.Iterator;
 
 /**
  * Makes several consecutive {@link Iterator}s look like one.
- * 
+ *
  * @param <T> the type of the iterated values
  * @version $Id$
  * @since 4.0M1

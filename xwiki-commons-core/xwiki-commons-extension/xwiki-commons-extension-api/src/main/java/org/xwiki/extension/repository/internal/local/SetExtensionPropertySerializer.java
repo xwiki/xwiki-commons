@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * Serialize and unserialize {@link Set} properties.
- * 
+ *
  * @version $Id$
  */
 public class SetExtensionPropertySerializer extends CollectionExtensionPropertySerializer<Set>
@@ -35,7 +35,7 @@ public class SetExtensionPropertySerializer extends CollectionExtensionPropertyS
      * @param serializerByClass the serializers by class
      */
     public SetExtensionPropertySerializer(Map<String, ExtensionPropertySerializer> serializerById,
-        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
+        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
     {
         super("set", serializerById, serializerByClass);
     }

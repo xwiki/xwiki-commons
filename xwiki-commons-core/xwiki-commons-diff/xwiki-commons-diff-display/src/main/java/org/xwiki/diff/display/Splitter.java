@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Splits a composite object in multiple parts of the same type.
- * 
+ *
  * @param <E> the type of object being split
  * @param <F> the type of objects created by the split
  * @version $Id$
@@ -36,7 +36,7 @@ public interface Splitter<E, F>
 {
     /**
      * Splits the given composite object in multiple parts of the same type.
-     * 
+     *
      * @param composite the object to split
      * @return the list of objects that make the given composite object
      */

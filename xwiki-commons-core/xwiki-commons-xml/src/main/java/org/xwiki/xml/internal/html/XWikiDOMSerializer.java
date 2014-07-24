@@ -43,13 +43,13 @@ import org.w3c.dom.Element;
  * Generate a W3C Document from a SF's HTML Cleaner TagNode.
  * Original implementation by Vladimir Nikic, under the BSD license
  * (see http://htmlcleaner.sourceforge.net/license.php).
- * 
+ *
  * Modified to bypass following bugs:
  * <ul>
  *   <li>https://sourceforge.net/tracker/?func=detail&aid=2691888&group_id=183053&atid=903696</li>
  *   <li>https://sourceforge.net/tracker/?func=detail&aid=2761963&group_id=183053&atid=903696</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 1.8.2
  */
@@ -113,7 +113,7 @@ public class XWikiDOMSerializer
 
     /**
      * Perform CDATA transformations if the user has specified to use CDATA inside scripts and style elements.
-     * 
+     *
      * @param document the W3C Document to use for creating new DOM elements
      * @param element the W3C element to which we'll add the text content to
      * @param bufferedContent the buffered text content on which we need to perform the CDATA transformations
@@ -143,7 +143,7 @@ public class XWikiDOMSerializer
                     // CSS
                     element.appendChild(document.createTextNode(CSS_COMMENT_START));
                     element.appendChild(document.createCDATASection(CSS_COMMENT_END + StringUtils.chomp(content)
-                            + NEW_LINE + CSS_COMMENT_START));
+                        + NEW_LINE + CSS_COMMENT_START));
                     element.appendChild(document.createTextNode(CSS_COMMENT_END));
                 }
             } else {
@@ -156,7 +156,7 @@ public class XWikiDOMSerializer
 
     /**
      * Remove any existing CDATA section and unencode HTML entities that are not inside a CDATA block.
-     * 
+     *
      * @param content the text input to transform
      * @return the transformed content that will be wrapped inside a CDATA block
      */
@@ -192,7 +192,7 @@ public class XWikiDOMSerializer
 
     /**
      * Serialize a given SF HTML Cleaner node.
-     * 
+     *
      * @param document the W3C Document to use for creating new DOM elements
      * @param element the W3C element to which we'll add the subnodes to
      * @param tagChildren the SF HTML Cleaner nodes to serialize for that node
@@ -233,7 +233,6 @@ public class XWikiDOMSerializer
                 } else if (item instanceof TagNode) {
                     TagNode subTagNode = (TagNode) item;
                     Element subelement = document.createElement(subTagNode.getName());
-                    @SuppressWarnings("unchecked")
                     Map<String, String> attributes = subTagNode.getAttributes();
                     for (Map.Entry<String, String> entry : attributes.entrySet()) {
                         String attrName = entry.getKey();
@@ -248,7 +247,7 @@ public class XWikiDOMSerializer
                     createSubnodes(document, subelement, subTagNode.getAllChildren());
 
                     element.appendChild(subelement);
-                } else if (item instanceof List< ? >) {
+                } else if (item instanceof List<?>) {
                     @SuppressWarnings("unchecked")
                     List<BaseToken> sublist = (List<BaseToken>) item;
                     createSubnodes(document, element, sublist);

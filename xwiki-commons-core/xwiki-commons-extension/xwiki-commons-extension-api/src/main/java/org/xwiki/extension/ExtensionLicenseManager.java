@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Centralize known extension licenses.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -39,7 +39,7 @@ public interface ExtensionLicenseManager
 
     /**
      * Get known license by its name.
-     * 
+     *
      * @param name the name of the license
      * @return the license
      */
@@ -47,7 +47,7 @@ public interface ExtensionLicenseManager
 
     /**
      * Add new license.
-     * 
+     *
      * @param license the license to add
      */
     void addLicense(ExtensionLicense license);

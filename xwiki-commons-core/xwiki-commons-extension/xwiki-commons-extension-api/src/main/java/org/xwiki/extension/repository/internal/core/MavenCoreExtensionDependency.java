@@ -25,7 +25,7 @@ import org.xwiki.extension.version.VersionConstraint;
 
 /**
  * Extends {@link DefaultExtensionDependency} with Maven related informations.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

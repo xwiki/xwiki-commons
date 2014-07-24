@@ -21,7 +21,7 @@ package org.xwiki.extension.version.internal;
 
 /**
  * Contain some Version related toolkit methods.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

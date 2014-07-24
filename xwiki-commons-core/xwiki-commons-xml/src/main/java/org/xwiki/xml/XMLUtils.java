@@ -50,7 +50,7 @@ import org.w3c.dom.ls.LSSerializer;
 
 /**
  * XML Utility methods.
- * 
+ *
  * @version $Id$
  * @since 1.6M1
  */
@@ -122,7 +122,7 @@ public final class XMLUtils
 
     /**
      * Extracts a well-formed XML fragment from the given DOM tree.
-     * 
+     *
      * @param node the root of the DOM tree where the extraction takes place
      * @param start the index of the first character
      * @param length the maximum number of characters in text nodes to include in the returned fragment
@@ -156,7 +156,7 @@ public final class XMLUtils
      * <li>2) Escape --</li>
      * <li>3) Add "\" (unescaped as "") at the end if the last char is -</li>
      * </ul>
-     * 
+     *
      * @param content the XML comment content to escape
      * @return the escaped content.
      * @since 1.9M2
@@ -188,7 +188,7 @@ public final class XMLUtils
     /**
      * XML comment does not support some characters inside its content but there is no official escaping/unescaping for
      * it so we made our own.
-     * 
+     *
      * @param content the XML comment content to unescape
      * @return the unescaped content.
      * @see #escapeXMLComment(String)
@@ -436,7 +436,7 @@ public final class XMLUtils
 
     /**
      * Parse and pretty pint a XML content.
-     * 
+     *
      * @param content the XML content to format
      * @return the formated version of the passed XML content
      * @throws TransformerFactoryConfigurationError when failing to create a

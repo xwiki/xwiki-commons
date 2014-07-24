@@ -40,7 +40,7 @@ import org.xwiki.job.Request;
 
 /**
  * Default implementation of {@link ExtensionHandlerManager}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -61,7 +61,7 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
 
     /**
      * Get the handler corresponding to the provided extension.
-     * 
+     *
      * @param localExtension the extension to handler
      * @return the handler
      * @throws ComponentLookupException failed to find a proper handler for the provided extension

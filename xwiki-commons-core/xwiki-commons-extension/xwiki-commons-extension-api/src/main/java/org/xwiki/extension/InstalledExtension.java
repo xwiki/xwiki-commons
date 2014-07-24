@@ -25,7 +25,7 @@ import java.util.Collection;
  * Represent a local extension.
  * <p>
  * An installed extension.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */
@@ -70,7 +70,7 @@ public interface InstalledExtension extends LocalExtension
 
     /**
      * Indicate if the extension is installed in the provided namespace.
-     * 
+     *
      * @param namespace the namespace to look at, if null it means the extension is installed on the root namespace
      * @return true if the extension is installed in the provided namespace
      */
@@ -81,7 +81,7 @@ public interface InstalledExtension extends LocalExtension
      * <p>
      * An installed extension can be invalid for example when one of the core extensions has been changed and is now
      * incompatible with this installed extension.
-     * 
+     *
      * @param namespace the namespace to look at, if null it means the extension is installed on the root namespace
      * @return true is valid
      * @since 4.2M1
@@ -98,7 +98,7 @@ public interface InstalledExtension extends LocalExtension
      * <p>
      * The idea is to be able to make the difference between extension specifically installed by a user so that it's
      * possible to know which extension are not really required anymore.
-     * 
+     *
      * @param namespace the namespace to look at, null indicate the root namespace
      * @return true if the the extension has been installed only because it was a dependency of another extension
      */
@@ -111,7 +111,7 @@ public interface InstalledExtension extends LocalExtension
      * <p>
      * The idea is to be able to make the difference between extension specifically installed by a user so that it's
      * possible to know which extension are not really required anymore.
-     * 
+     *
      * @return true if the the extension has been installed only because it was a dependency of another extension
      * @deprecated since 4.3M1 use {@link #isDependency(String)} with <code>null</code> namespace instead
      */

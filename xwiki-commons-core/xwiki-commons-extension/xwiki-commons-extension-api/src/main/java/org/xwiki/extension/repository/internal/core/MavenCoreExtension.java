@@ -28,7 +28,7 @@ import org.xwiki.extension.repository.internal.MavenExtension;
 
 /**
  * Extends {@link DefaultCoreExtension} with Maven related informations.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -67,6 +67,7 @@ public class MavenCoreExtension extends DefaultCoreExtension implements MavenExt
     /**
      * @return the Maven artifact id
      */
+    @Override
     public String getMavenArtifactId()
     {
         return (String) getProperty(PKEY_MAVEN_ARTIFACTID);
@@ -75,6 +76,7 @@ public class MavenCoreExtension extends DefaultCoreExtension implements MavenExt
     /**
      * @return the Maven artifact id
      */
+    @Override
     public String getMavenGroupId()
     {
         return (String) getProperty(PKEY_MAVEN_GROUPID);

@@ -27,7 +27,7 @@ import org.xwiki.diff.Delta;
 
 /**
  * Base class used for various types of {@link Delta}s.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */
@@ -126,7 +126,7 @@ public abstract class AbstractDelta<E> implements Delta<E>
         }
 
         if (obj instanceof Delta) {
-            Delta<E> otherDelta = (Delta<E>) obj;
+            Delta<?> otherDelta = (Delta<?>) obj;
 
             return getType() == otherDelta.getType() && Objects.equals(getPrevious(), otherDelta.getPrevious())
                 && Objects.equals(getNext(), otherDelta.getNext());

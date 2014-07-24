@@ -23,7 +23,7 @@ import java.util.Collection;
 
 /**
  * The extension plan tree. Contains all action to execute organized as a dependency tree.
- * 
+ *
  * @version $Id$
  * @since 4.1M1
  */

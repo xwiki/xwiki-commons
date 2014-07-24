@@ -38,7 +38,7 @@ public interface Environment
     /**
      * Gets the directory for storing temporary data. The content of this directory may be deleted across restarts and
      * thus is not a safe place to store permanent/important data.
-     * 
+     *
      * @return a {@link File} object pointing to a directory that the application can use for storing temporary files
      */
     File getTemporaryDirectory();

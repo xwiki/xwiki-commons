@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * Describe a repository.
- * 
+ *
  * @version $Id$
  * @since 4.3M1
  */
@@ -53,7 +53,7 @@ public interface ExtensionRepositoryDescriptor
 
     /**
      * Extends {@link ExtensionRepositoryDescriptor} standard properties.
-     * 
+     *
      * @return the properties
      */
     Map<String, String> getProperties();

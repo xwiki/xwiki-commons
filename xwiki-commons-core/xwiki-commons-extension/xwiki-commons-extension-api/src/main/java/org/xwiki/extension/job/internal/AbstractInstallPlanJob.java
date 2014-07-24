@@ -58,7 +58,7 @@ import org.xwiki.extension.version.VersionConstraint;
 
 /**
  * Create an Extension plan.
- * 
+ *
  * @version $Id$
  * @since 4.1M1
  */
@@ -141,7 +141,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             this.action = action;
         }
 
-        public void setChildren(Collection< ? extends ExtensionPlanNode> children)
+        public void setChildren(Collection<? extends ExtensionPlanNode> children)
         {
             this.children = (Collection) children;
         }
@@ -276,7 +276,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     /**
      * Install provided extension.
-     * 
+     *
      * @param extensionId the identifier of the extension to install
      * @param namespace the namespace where to install the extension
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
@@ -355,7 +355,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     /**
      * Install provided extension.
-     * 
+     *
      * @param extensionId the identifier of the extension to install
      * @param dependency indicate if the extension is installed as a dependency
      * @param namespace the namespace where to install the extension
@@ -412,7 +412,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     /**
      * Check if provided id/version is compatible with provided extensions dependencies constraints.
      */
-    private boolean isCompatible(Collection< ? extends Extension> extensions, String id, Version version)
+    private boolean isCompatible(Collection<? extends Extension> extensions, String id, Version version)
     {
         if (extensions != null) {
             for (Extension extension : extensions) {
@@ -556,7 +556,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     /**
      * Install provided extension dependency.
-     * 
+     *
      * @param extensionDependency the extension dependency to install
      * @param namespace the namespace where to install the extension
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
@@ -604,7 +604,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         ModifableExtensionPlanNode node =
             installExtension(
                 previousExtension != null ? Arrays.asList(previousExtension)
-                    : Collections.<InstalledExtension> emptyList(), targetDependency, true, namespace);
+                    : Collections.<InstalledExtension>emptyList(), targetDependency, true, namespace);
 
         node.versionConstraint = versionConstraint;
 
@@ -614,7 +614,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     /**
      * Install provided extension.
-     * 
+     *
      * @param previousExtension the previous installed version of the extension to install
      * @param targetDependency used to search the extension to install in remote repositories
      * @param dependency indicate if the extension is installed as a dependency
@@ -652,7 +652,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @throws IncompatibleVersionConstraintException the provided version constraint is compatible with the provided
      *             version constraint
      */
-    private VersionConstraint mergeVersionConstraints(Collection< ? extends Extension> extensions, String dependencyId,
+    private VersionConstraint mergeVersionConstraints(Collection<? extends Extension> extensions, String dependencyId,
         VersionConstraint previousMergedVersionContraint) throws IncompatibleVersionConstraintException
     {
         VersionConstraint mergedVersionContraint = previousMergedVersionContraint;
@@ -676,7 +676,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     /**
      * Extract extension with the provided id from the provided extension.
-     * 
+     *
      * @param extension the extension
      * @param dependencyId the id of the dependency
      * @return the extension dependency or null if none has been found
@@ -694,7 +694,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     /**
      * Install provided extension.
-     * 
+     *
      * @param previousExtension the previous installed version of the extension to install
      * @param extensionId the identifier of the extension to install
      * @param dependency indicate if the extension is installed as a dependency
@@ -863,7 +863,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             extensionHandler.checkInstall(extension, namespace, getRequest());
 
             // Check dependencies
-            Collection< ? extends ExtensionDependency> dependencies = extension.getDependencies();
+            Collection<? extends ExtensionDependency> dependencies = extension.getDependencies();
 
             List<ModifableExtensionPlanNode> children = null;
             if (!dependencies.isEmpty()) {

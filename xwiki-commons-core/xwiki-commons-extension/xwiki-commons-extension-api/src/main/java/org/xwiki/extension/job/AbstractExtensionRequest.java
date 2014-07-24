@@ -29,7 +29,7 @@ import org.xwiki.job.Request;
 
 /**
  * Base class for extension manipulation related {@link Request} implementations.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

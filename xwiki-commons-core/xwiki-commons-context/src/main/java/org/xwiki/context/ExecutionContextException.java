@@ -19,13 +19,32 @@
  */
 package org.xwiki.context;
 
+/**
+ * Thrown when manipulating the execution context fails.
+ *
+ * @version $Id$
+ */
 public class ExecutionContextException extends Exception
 {
+    /** The serial version uid. */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Constructs a new exception with the specified detail message, and no specified cause.
+     *
+     * @param message the detail message
+     */
     public ExecutionContextException(String message)
     {
         super(message);
     }
 
+    /**
+     * Constructs a new exception with the specified detail message and cause.
+     *
+     * @param message the detail message
+     * @param throwable the cause of this exception
+     */
     public ExecutionContextException(String message, Throwable throwable)
     {
         super(message, throwable);

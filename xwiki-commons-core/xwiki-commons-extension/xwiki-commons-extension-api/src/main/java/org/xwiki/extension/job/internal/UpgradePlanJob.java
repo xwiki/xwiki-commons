@@ -38,7 +38,7 @@ import org.xwiki.job.Request;
 
 /**
  * Create an Extension installation plan.
- * 
+ *
  * @version $Id$
  * @since 4.1M1
  */
@@ -115,7 +115,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
 
     /**
      * Try to install the provided extension and update the plan if it's working.
-     * 
+     *
      * @param extensionId the extension version to install
      * @param namespace the namespace where to install the extension
      * @return true if the installation would succeed, false otherwise

@@ -42,7 +42,7 @@ import difflib.DiffUtils;
 
 /**
  * Default implementation of {@link DiffManager}.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -59,13 +59,13 @@ public class DefaultDiffManager implements DiffManager
         if (previous == null || previous.isEmpty()) {
             patch = new DefaultPatch<E>();
             if (next != null && !next.isEmpty()) {
-                patch.add(new InsertDelta<E>(new DefaultChunk<E>(0, Collections.<E> emptyList()), new DefaultChunk<E>(
+                patch.add(new InsertDelta<E>(new DefaultChunk<E>(0, Collections.<E>emptyList()), new DefaultChunk<E>(
                     0, next)));
             }
         } else if (next == null || next.isEmpty()) {
             patch = new DefaultPatch<E>();
             patch.add(new DeleteDelta<E>(new DefaultChunk<E>(0, previous), new DefaultChunk<E>(0, Collections
-                .<E> emptyList())));
+                .<E>emptyList())));
         } else {
             patch = new DefaultPatch<E>(DiffUtils.diff(previous, next));
         }

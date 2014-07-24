@@ -26,7 +26,7 @@ import org.xwiki.diff.PatchException;
 
 /**
  * Implementation of {@link org.xwiki.diff.Delta} representing a chunk which does not exist in previous version.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */

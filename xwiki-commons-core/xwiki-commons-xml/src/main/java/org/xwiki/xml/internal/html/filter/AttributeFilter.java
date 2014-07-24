@@ -48,7 +48,7 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
  * <li>{@code align="value"} is replaced with {@code style="text-align:value"}</li>
  * <li>{@code valign="value"} is replaced with {@code style="vertical-align:value"}</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 4.3M1
  */
@@ -91,7 +91,7 @@ public class AttributeFilter extends AbstractHTMLFilter
             attributes = (NodeList) xpath.evaluate(xpathExpression.toString(), document, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             // Shouldn't happen.
-            logger.error("Failed to apply the HTML attribute cleaning filter.", e);
+            this.logger.error("Failed to apply the HTML attribute cleaning filter.", e);
             return;
         }
 

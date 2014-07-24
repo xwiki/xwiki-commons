@@ -30,16 +30,16 @@ public interface HTMLConstants
     /**
      * White space characters.<br/>
      * <p>
-     * \u0020 - Ascii space.<br/>
-     * \u0009 - Ascii tab.<br/>
-     * \u000C - Ascii form feed. <br/>
-     * \u200B - Zero width space.<br/>
-     * \u000A - New line.<br/>
-     * \u000D - Carriage return.<br/>
+     * {@code \u0020} - Ascii space.<br/>
+     * {@code \u0009} - Ascii tab.<br/>
+     * {@code \u000C} - Ascii form feed. <br/>
+     * {@code \u200B} - Zero width space.<br/>
+     * {@code \u000A} - New line.<br/>
+     * {@code \u000D} - Carriage return.<br/>
      * </p>
      */
-    String WHITE_SPACE_CHARS = "\u0020\u0009\u000C\u200B" + "\n\r";
-    
+    String WHITE_SPACE_CHARS = "\u0020\u0009\u000C\u200B\n\r";
+
     /**
      * HTML &lt;html@gt; tag name.
      */
@@ -54,22 +54,22 @@ public interface HTMLConstants
      * HTML &lt;body@gt; tag name.
      */
     String TAG_BODY = "body";
-    
+
     /**
      * HTML &lt;style&gt; tag name.
      */
     String TAG_STYLE = "style";
-    
+
     /**
      * HTML &lt;script&gt; tag name.
      */
     String TAG_SCRIPT = "script";
-    
+
     /**
      * HTML &lt;a&gt; tag name.
      */
     String TAG_A = "a";
-    
+
     /**
      * HTML &lt;del&gt; tag name.
      */
@@ -84,52 +84,52 @@ public interface HTMLConstants
      * HTML &lt;em&gt; tag name.
      */
     String TAG_EM = "em";
-    
+
     /**
      * HTML &lt;dfn&gt; tag name.
      */
     String TAG_DFN = "dfn";
-    
+
     /**
      * HTML &lt;code&gt; tag name.
      */
     String TAG_CODE = "code";
-    
+
     /**
      * HTML &lt;samp&gt; tag name.
      */
     String TAG_SAMP = "samp";
-    
+
     /**
      * HTML &lt;kbd&gt; tag name.
      */
     String TAG_KBD = "kbd";
-    
+
     /**
      * HTML &lt;var&gt; tag name.
      */
     String TAG_VAR = "var";
-    
+
     /**
      * HTML &lt;cite&gt; tag name.
      */
     String TAG_CITE = "cite";
-    
+
     /**
      * HTML &lt;abbr&gt; tag name.
      */
     String TAG_ABBR = "abbr";
-    
+
     /**
      * HTML &lt;acronym&gt; tag name.
      */
     String TAG_ACRONYM = "acronym";
-    
+
     /**
      * HTML &lt;address&gt; tag name.
      */
     String TAG_ADDRESS = "address";
-    
+
     /**
      * HTML &lt;blockquote&gt; tag name.
      */
@@ -139,12 +139,12 @@ public interface HTMLConstants
      * HTML &lt;q&gt; tag name.
      */
     String TAG_Q = "q";
-    
+
     /**
      * HTML &lt;pre&gt; tag name.
      */
     String TAG_PRE = "pre";
-    
+
     /**
      * HTML &lt;u&gt; tag name.
      */
@@ -159,7 +159,7 @@ public interface HTMLConstants
      * HTML &lt;strike&gt; tag name.
      */
     String TAG_STRIKE = "strike";
-    
+
     /**
      * HTML &lt;ins&gt; tag name.
      */
@@ -179,7 +179,7 @@ public interface HTMLConstants
      * HTML &lt;p&gt; tag name.
      */
     String TAG_P = "p";
-    
+
     /**
      * HTML &lt;div&gt; tag name.
      */
@@ -199,7 +199,7 @@ public interface HTMLConstants
      * HTML &lt;font&gt; tag name.
      */
     String TAG_FONT = "font";
-    
+
     /**
      * HTML &lt;h1&gt; tag name.
      */
@@ -229,7 +229,7 @@ public interface HTMLConstants
      * HTML &lt;h6&gt; tag name.
      */
     String TAG_H6 = "h6";
-    
+
     /**
      * HTML &lt;br&gt; tag name.
      */
@@ -244,7 +244,7 @@ public interface HTMLConstants
      * HTML &lt;ol&gt; tag name.
      */
     String TAG_OL = "ol";
-    
+
     /**
      * HTML &lt;li&gt; tag name.
      */
@@ -269,7 +269,7 @@ public interface HTMLConstants
      * HTML &lt;td&gt; tag name.
      */
     String TAG_TD = "td";
-    
+
     /**
      * HTML &lt;th&gt; tag name.
      */
@@ -314,47 +314,47 @@ public interface HTMLConstants
      * HTML src attribute name.
      */
     String ATTRIBUTE_SRC = "src";
-    
+
     /**
      * HTML alt attribute name.
      */
     String ATTRIBUTE_ALT = "alt";
-    
+
     /**
      * HTML href attribute name.
      */
     String ATTRIBUTE_HREF = "href";
-    
+
     /**
      * HTML style attribute name.
      */
     String ATTRIBUTE_STYLE = TAG_STYLE;
-    
+
     /**
      * HTML class attribute name.
      */
     String ATTRIBUTE_CLASS = "class";
-    
+
     /**
      * HTML align attribute name.
      */
     String ATTRIBUTE_ALIGN = "align";
-    
+
     /**
      * HTML rowspan table attribute.
      */
     String ATTRIBUTE_ROWSPAN = "rowspan";
-    
+
     /**
      * HTML font color attribute.
      */
     String ATTRIBUTE_FONTCOLOR = "color";
-    
+
     /**
      * HTML font face attribute.
      */
     String ATTRIBUTE_FONTFACE = "face";
-    
+
     /**
      * HTML font size attribute.
      */

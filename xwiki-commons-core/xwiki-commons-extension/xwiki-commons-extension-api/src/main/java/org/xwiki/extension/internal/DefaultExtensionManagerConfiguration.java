@@ -48,7 +48,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryId;
 
 /**
  * Default implementation of {@link ExtensionManagerConfiguration}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -131,7 +131,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         Collection<ExtensionRepositoryDescriptor> repositories;
 
         List<String> repositoryStrings =
-            this.configuration.get().getProperty(CK_PREFIX + "repositories", Collections.<String> emptyList());
+            this.configuration.get().getProperty(CK_PREFIX + "repositories", Collections.<String>emptyList());
 
         if (repositoryStrings.isEmpty()) {
             repositories = null;
@@ -202,7 +202,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
 
     /**
      * Create a {@link DefaultExtensionRepositoryDescriptor} from a string entry.
-     * 
+     *
      * @param repositoryString the repository configuration entry
      * @return the {@link DefaultExtensionRepositoryDescriptor}
      * @throws URISyntaxException Failed to create an {@link URI} object from the configuration entry

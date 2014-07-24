@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * A delta between two version of a list.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */
@@ -31,7 +31,7 @@ public interface Delta<E>
 {
     /**
      * The kind of modification to apply on the list.
-     * 
+     *
      * @version $Id$
      */
     enum Type
@@ -54,7 +54,7 @@ public interface Delta<E>
 
     /**
      * Try to apply the delta on the provided list.
-     * 
+     *
      * @param target the list to modify
      * @throws PatchException if the delta cannot be applied
      */
@@ -62,7 +62,7 @@ public interface Delta<E>
 
     /**
      * Apply the delta on the provided list.
-     * 
+     *
      * @param target the list to modify
      * @throws PatchException if the delta cannot be applied
      */
@@ -70,7 +70,7 @@ public interface Delta<E>
 
     /**
      * Apply the an inverted version of the delta on the provided list.
-     * 
+     *
      * @param target the list to modify
      * @throws PatchException if the delta cannot be applied
      */

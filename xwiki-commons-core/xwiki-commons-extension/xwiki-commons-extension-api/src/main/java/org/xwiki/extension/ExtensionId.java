@@ -26,7 +26,7 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 
 /**
  * The combination of properties which makes an extension unique.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

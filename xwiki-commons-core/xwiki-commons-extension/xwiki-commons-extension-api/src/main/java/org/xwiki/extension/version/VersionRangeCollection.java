@@ -23,7 +23,7 @@ import java.util.Collection;
 
 /**
  * Extends {@link VersionRange} to as a list of {@link VersionRange}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -31,7 +31,7 @@ public interface VersionRangeCollection extends VersionRange
 {
     /**
      * Gets the version ranges.
-     * 
+     *
      * @return the version ranges, never null.
      */
     Collection<VersionRange> getRanges();

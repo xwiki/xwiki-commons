@@ -23,13 +23,13 @@ package org.xwiki.extension.jar;
 /**
  * A isolation class loader that prevent access to classes loaded in its parent when their class name starts with
  * "packagefile."
- * 
+ *
  * @version $Id$
  */
 public class TestExtensionClassLoader extends ClassLoader
 {
     @Override
-    protected Class< ? > loadClass(String name, boolean resolve) throws ClassNotFoundException
+    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
     {
         if (!name.startsWith("packagefile.") && getParent() != null) {
             return getParent().loadClass(name);

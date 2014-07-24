@@ -34,7 +34,7 @@ import org.xwiki.observation.ObservationManager;
 
 /**
  * A plan of extension related actions to perform.
- * 
+ *
  * @param <R>
  * @version $Id$
  * @since 4.0M1

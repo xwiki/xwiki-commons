@@ -33,7 +33,7 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 
 /**
  * Replaces invalid &lt;font&gt; tags with equivalent &lt;span&gt; tags using inline css rules.
- * 
+ *
  * @version $Id$
  * @since 1.8RC2
  */
@@ -66,13 +66,13 @@ public class FontFilter extends AbstractHTMLFilter
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * <p>The {@link FontFilter} does not use any cleaningParameters passed in.</p>
      */
     @Override
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
-        List<Element> fontTags = filterDescendants(document.getDocumentElement(), new String[] {TAG_FONT});
+        List<Element> fontTags = filterDescendants(document.getDocumentElement(), new String[] { TAG_FONT });
         for (Element fontTag : fontTags) {
             Element span = document.createElement(TAG_SPAN);
             moveChildren(fontTag, span);

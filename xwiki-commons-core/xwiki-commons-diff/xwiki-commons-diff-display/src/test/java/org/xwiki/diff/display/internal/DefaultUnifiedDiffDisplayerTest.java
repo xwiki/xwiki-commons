@@ -29,9 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +45,7 @@ import org.xwiki.test.annotation.ComponentList;
 
 /**
  * Unit tests for {@link DefaultUnifiedDiffDisplayer}.
- * 
+ *
  * @version $Id$
  * @since 4.1M2
  */
@@ -78,7 +77,7 @@ public class DefaultUnifiedDiffDisplayerTest
 
     /**
      * Creates a new test with the given input and the specified expected output.
-     * 
+     *
      * @param previous the previous version
      * @param next the next version
      * @param expected the expected unified diff
@@ -96,16 +95,16 @@ public class DefaultUnifiedDiffDisplayerTest
     @Test
     public void execute() throws Exception
     {
-        DiffManager diffManager = componentManager.getInstance(DiffManager.class);
-        UnifiedDiffDisplayer unifiedDiffDisplayer = componentManager.getInstance(UnifiedDiffDisplayer.class);
+        DiffManager diffManager = this.componentManager.getInstance(DiffManager.class);
+        UnifiedDiffDisplayer unifiedDiffDisplayer = this.componentManager.getInstance(UnifiedDiffDisplayer.class);
         List<UnifiedDiffBlock<String, Object>> blocks =
-            unifiedDiffDisplayer.display(diffManager.diff(previous, next, null));
+            unifiedDiffDisplayer.display(diffManager.diff(this.previous, this.next, null));
 
         StringBuilder actual = new StringBuilder();
-        for (UnifiedDiffBlock<String, ? > block : blocks) {
+        for (UnifiedDiffBlock<String, ?> block : blocks) {
             actual.append(block);
         }
-        Assert.assertEquals(expected, actual.toString());
+        Assert.assertEquals(this.expected, actual.toString());
     }
 
     /**
@@ -121,38 +120,38 @@ public class DefaultUnifiedDiffDisplayerTest
         //
 
         // Both previous and next are empty.
-        data.add(new Object[] {Collections.<String> emptyList(), Collections.<String> emptyList(), ""});
+        data.add(new Object[] { Collections.<String>emptyList(), Collections.<String>emptyList(), "" });
 
         // Previous and next are equal.
         List<String> lines = Arrays.asList("one", "two", "three");
-        data.add(new Object[] {lines, lines, ""});
+        data.add(new Object[] { lines, lines, "" });
 
         // Previous is empty.
-        data.add(new Object[] {Collections.<String> emptyList(), lines, "@@ -1,0 +1,3 @@\n+one\n+two\n+three\n"});
+        data.add(new Object[] { Collections.<String>emptyList(), lines, "@@ -1,0 +1,3 @@\n+one\n+two\n+three\n" });
 
         // Next is empty.
-        data.add(new Object[] {lines, Collections.<String> emptyList(), "@@ -1,3 +1,0 @@\n-one\n-two\n-three\n"});
+        data.add(new Object[] { lines, Collections.<String>emptyList(), "@@ -1,3 +1,0 @@\n-one\n-two\n-three\n" });
 
         // Line removed.
-        data.add(new Object[] {lines, Arrays.asList(lines.get(0), lines.get(2)),
-        "@@ -1,3 +1,2 @@\n one\n-two\n three\n"});
+        data.add(new Object[] { lines, Arrays.asList(lines.get(0), lines.get(2)),
+        "@@ -1,3 +1,2 @@\n one\n-two\n three\n" });
 
         // Line added.
-        data.add(new Object[] {lines, Arrays.asList(lines.get(0), lines.get(1), "between", lines.get(2)),
-        "@@ -1,3 +1,4 @@\n one\n two\n+between\n three\n"});
+        data.add(new Object[] { lines, Arrays.asList(lines.get(0), lines.get(1), "between", lines.get(2)),
+        "@@ -1,3 +1,4 @@\n one\n two\n+between\n three\n" });
 
         // Line changed.
-        data.add(new Object[] {lines, Arrays.asList(lines.get(0), "Two", lines.get(2)),
-        "@@ -1,3 +1,3 @@\n one\n-two\n+Two\n three\n"});
+        data.add(new Object[] { lines, Arrays.asList(lines.get(0), "Two", lines.get(2)),
+        "@@ -1,3 +1,3 @@\n one\n-two\n+Two\n three\n" });
 
         //
         // Add tests from files.
         //
 
         List<String> previous = readLines("previous.txt");
-        String[] testNames = new String[] {"twoContexts", "sharedContext"};
+        String[] testNames = new String[] { "twoContexts", "sharedContext" };
         for (String testName : testNames) {
-            data.add(new Object[] {previous, readLines(testName + ".txt"), readContent(testName + ".diff")});
+            data.add(new Object[] { previous, readLines(testName + ".txt"), readContent(testName + ".diff") });
         }
 
         return data;
@@ -160,7 +159,7 @@ public class DefaultUnifiedDiffDisplayerTest
 
     /**
      * Reads the lines from the specified file.
-     * 
+     *
      * @param fileName the file name
      * @return the lines from the specified file
      * @throws IOException if reading the file fails
@@ -174,7 +173,7 @@ public class DefaultUnifiedDiffDisplayerTest
 
     /**
      * Reads the content of the specified file.
-     * 
+     *
      * @param fileName the file name
      * @return the content of the specified file
      * @throws IOException if reading the fail fails

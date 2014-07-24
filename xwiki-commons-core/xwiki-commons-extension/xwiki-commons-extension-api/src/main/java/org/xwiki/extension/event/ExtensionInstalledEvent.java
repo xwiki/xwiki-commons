@@ -30,7 +30,7 @@ import org.xwiki.extension.ExtensionId;
  * <li>source: the related {@link org.xwiki.extension.InstalledExtension} instance</li>
  * <li>data: null</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -45,7 +45,7 @@ public class ExtensionInstalledEvent extends AbstractExtensionEvent
 
     /**
      * Matches only the specified extension id or/and version.
-     * 
+     *
      * @param extensionId the extension identifier
      * @param namespace the namespace on which the event happened
      */

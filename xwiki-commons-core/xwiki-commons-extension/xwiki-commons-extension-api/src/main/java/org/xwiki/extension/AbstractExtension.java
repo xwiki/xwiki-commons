@@ -33,7 +33,7 @@ import org.xwiki.extension.repository.ExtensionRepository;
 
 /**
  * Base class for {@link Extension} implementations.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -119,7 +119,7 @@ public abstract class AbstractExtension implements Extension
 
     /**
      * Create new extension descriptor by copying provided one.
-     * 
+     *
      * @param repository the repository where this extension comes from
      * @param extension the extension to copy
      */
@@ -132,7 +132,7 @@ public abstract class AbstractExtension implements Extension
 
     /**
      * Update optional informations based on the provided extension.
-     * 
+     *
      * @param extension the extension from which to get informations
      */
     protected void set(Extension extension)
@@ -182,7 +182,7 @@ public abstract class AbstractExtension implements Extension
 
     /**
      * Add a new feature to the extension.
-     * 
+     *
      * @param feature a feature name
      */
     public void addFeature(String feature)
@@ -235,7 +235,7 @@ public abstract class AbstractExtension implements Extension
 
     /**
      * Add a new license to the extension.
-     * 
+     *
      * @param license a license
      */
     public void addLicense(ExtensionLicense license)
@@ -280,14 +280,14 @@ public abstract class AbstractExtension implements Extension
     /**
      * @param authors the authors of the extension
      */
-    public void setAuthors(Collection< ? extends ExtensionAuthor> authors)
+    public void setAuthors(Collection<? extends ExtensionAuthor> authors)
     {
         this.authors = new ArrayList<ExtensionAuthor>(authors);
     }
 
     /**
      * Add a new author to the extension.
-     * 
+     *
      * @param author an author
      */
     public void addAuthor(ExtensionAuthor author)
@@ -311,7 +311,7 @@ public abstract class AbstractExtension implements Extension
 
     /**
      * Add a new dependency to the extension.
-     * 
+     *
      * @param dependency a dependency
      */
     public void addDependency(ExtensionDependency dependency)
@@ -324,17 +324,17 @@ public abstract class AbstractExtension implements Extension
     }
 
     @Override
-    public List< ? extends ExtensionDependency> getDependencies()
+    public List<? extends ExtensionDependency> getDependencies()
     {
         return this.dependencies != null ? Collections.unmodifiableList(this.dependencies) : Collections
-            .<ExtensionDependency> emptyList();
+            .<ExtensionDependency>emptyList();
     }
 
     /**
      * @param dependencies the dependencies of the extension
      * @see #getDependencies()
      */
-    public void setDependencies(Collection< ? extends ExtensionDependency> dependencies)
+    public void setDependencies(Collection<? extends ExtensionDependency> dependencies)
     {
         this.dependencies = new ArrayList<ExtensionDependency>(dependencies);
     }
@@ -380,6 +380,7 @@ public abstract class AbstractExtension implements Extension
         return this.properties.get(key);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getProperty(String key, T def)
     {
@@ -388,7 +389,7 @@ public abstract class AbstractExtension implements Extension
 
     /**
      * Set a property.
-     * 
+     *
      * @param key the property key
      * @param value the property value
      * @see #getProperty(String)
@@ -400,7 +401,7 @@ public abstract class AbstractExtension implements Extension
 
     /**
      * Replace existing properties with provided properties.
-     * 
+     *
      * @param properties the properties
      */
     public void setProperties(Map<String, Object> properties)

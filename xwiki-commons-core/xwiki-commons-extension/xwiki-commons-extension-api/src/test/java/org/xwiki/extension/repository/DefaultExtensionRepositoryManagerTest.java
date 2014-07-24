@@ -24,9 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Assert;
-
 import org.jmock.Expectations;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -37,10 +36,10 @@ import org.xwiki.test.jmock.annotation.MockingRequirement;
 
 /**
  * Unit tests for {@link DefaultExtensionRepositoryManager}.
- * 
+ *
  * @version $Id$
  */
-@MockingRequirement(value = DefaultExtensionRepositoryManager.class, exceptions = {ComponentManager.class})
+@MockingRequirement(value = DefaultExtensionRepositoryManager.class, exceptions = { ComponentManager.class })
 public class DefaultExtensionRepositoryManagerTest extends AbstractMockingComponentTestCase<ExtensionRepositoryManager>
 {
     private ExtensionRepository testRepository;
@@ -68,11 +67,11 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
         getMockery().checking(new Expectations()
         {
             {
-                allowing(factory).createRepository(with(same(descriptor)));
-                will(returnValue(testRepository));
+                allowing(factory).createRepository(with(same(DefaultExtensionRepositoryManagerTest.this.descriptor)));
+                will(returnValue(DefaultExtensionRepositoryManagerTest.this.testRepository));
 
-                allowing(testRepository).getDescriptor();
-                will(returnValue(descriptor));
+                allowing(DefaultExtensionRepositoryManagerTest.this.testRepository).getDescriptor();
+                will(returnValue(DefaultExtensionRepositoryManagerTest.this.descriptor));
             }
         });
     }
@@ -80,9 +79,9 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
     @Test
     public void addRepository() throws ExtensionRepositoryException, ComponentLookupException
     {
-        ExtensionRepository repository = getMockedComponent().addRepository(descriptor);
+        ExtensionRepository repository = getMockedComponent().addRepository(this.descriptor);
 
-        Assert.assertSame(testRepository, repository);
+        Assert.assertSame(this.testRepository, repository);
     }
 
     // Tests
@@ -90,17 +89,17 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
     @Test(expected = ExtensionRepositoryException.class)
     public void addRepository_unsuported() throws ComponentLookupException, ExtensionRepositoryException
     {
-        getMockedComponent().addRepository(unsupportedDescriptor);
+        getMockedComponent().addRepository(this.unsupportedDescriptor);
     }
 
     @Test
     public void getRepository() throws ExtensionRepositoryException, ComponentLookupException
     {
-        getMockedComponent().addRepository(descriptor);
+        getMockedComponent().addRepository(this.descriptor);
 
         ExtensionRepository repository = getMockedComponent().getRepository("id");
 
-        Assert.assertSame(testRepository, repository);
+        Assert.assertSame(this.testRepository, repository);
     }
 
     @Test
@@ -114,9 +113,9 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
     @Test
     public void removeRepository() throws ExtensionRepositoryException, ComponentLookupException
     {
-        getMockedComponent().addRepository(descriptor);
+        getMockedComponent().addRepository(this.descriptor);
 
-        getMockedComponent().removeRepository(descriptor.getId());
+        getMockedComponent().removeRepository(this.descriptor.getId());
 
         ExtensionRepository repository = getMockedComponent().getRepository("id");
 
@@ -126,10 +125,10 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
     @Test
     public void getRepositories() throws ExtensionRepositoryException, ComponentLookupException
     {
-        getMockedComponent().addRepository(descriptor);
+        getMockedComponent().addRepository(this.descriptor);
 
         Collection<ExtensionRepository> repositorties = getMockedComponent().getRepositories();
 
-        Assert.assertEquals(Arrays.asList(testRepository), new ArrayList<ExtensionRepository>(repositorties));
+        Assert.assertEquals(Arrays.asList(this.testRepository), new ArrayList<ExtensionRepository>(repositorties));
     }
 }

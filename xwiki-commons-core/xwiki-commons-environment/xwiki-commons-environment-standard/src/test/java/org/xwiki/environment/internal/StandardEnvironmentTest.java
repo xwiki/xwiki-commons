@@ -23,10 +23,11 @@ import java.io.File;
 import java.net.URL;
 
 import javax.inject.Provider;
+
 import org.apache.commons.io.FileUtils;
 import org.jmock.Expectations;
-import org.junit.Assert;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +49,7 @@ public class StandardEnvironmentTest
 
     @Rule
     public final JMockRule mockery = new JMockRule();
-    
+
     private StandardEnvironment environment;
 
     @Before
@@ -115,8 +116,8 @@ public class StandardEnvironmentTest
 
     private void setPersistentDir(final String dirPath)
     {
-        final Provider<EnvironmentConfiguration> configurationProvider =
-            (Provider<EnvironmentConfiguration>) this.mockery.mock(Provider.class);
+        @SuppressWarnings("unchecked")
+        final Provider<EnvironmentConfiguration> configurationProvider = this.mockery.mock(Provider.class);
         final EnvironmentConfiguration config = this.mockery.mock(EnvironmentConfiguration.class);
         this.mockery.checking(new Expectations() {{
             allowing(configurationProvider).get();
@@ -124,9 +125,7 @@ public class StandardEnvironmentTest
             allowing(config).getPermanentDirectoryPath();
                 will(returnValue(dirPath));
         }});
-        ReflectionUtils.setFieldValue(this.environment,
-                                      "configurationProvider",
-                                      configurationProvider);
+        ReflectionUtils.setFieldValue(this.environment, "configurationProvider", configurationProvider);
     }
 
     @Test
@@ -190,15 +189,19 @@ public class StandardEnvironmentTest
         final File txtFile = new File(TMPDIR, "test.txt");
         FileUtils.write(txtFile, "test");
 
-        final Provider<EnvironmentConfiguration> prov = new Provider<EnvironmentConfiguration>() {
+        final Provider<EnvironmentConfiguration> prov = new Provider<EnvironmentConfiguration>()
+        {
+            @Override
             public EnvironmentConfiguration get()
             {
-            return new EnvironmentConfiguration() {
-                public String getPermanentDirectoryPath()
+                return new EnvironmentConfiguration()
                 {
-                    return txtFile.getAbsolutePath();
-                }
-            };
+                    @Override
+                    public String getPermanentDirectoryPath()
+                    {
+                        return txtFile.getAbsolutePath();
+                    }
+                };
             }
         };
         ReflectionUtils.setFieldValue(this.environment, "configurationProvider", prov);

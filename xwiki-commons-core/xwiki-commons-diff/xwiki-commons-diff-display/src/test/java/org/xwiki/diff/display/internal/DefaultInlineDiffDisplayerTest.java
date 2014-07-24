@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.diff.DiffManager;
@@ -40,7 +39,7 @@ import org.xwiki.test.annotation.ComponentList;
 
 /**
  * Unit tests for {@link DefaultInlineDiffDisplayer}.
- * 
+ *
  * @version $Id$
  * @since 4.1M2
  */
@@ -127,7 +126,7 @@ public class DefaultInlineDiffDisplayerTest
 
     /**
      * Builds the in-line diff between the given versions and asserts if the result meets the expectation.
-     * 
+     *
      * @param previous the previous version
      * @param next the next version
      * @param expected the expected in-line diff

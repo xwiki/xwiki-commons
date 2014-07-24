@@ -47,7 +47,7 @@ import org.xwiki.extension.repository.internal.AbstractCachedExtensionRepository
 
 /**
  * Default implementation of {@link LocalExtensionRepository}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -96,7 +96,7 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
 
     /**
      * Register a new local extension.
-     * 
+     *
      * @param localExtension the new local extension
      */
     protected void addLocalExtension(DefaultLocalExtension localExtension)
@@ -115,7 +115,7 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
     @Override
     public Collection<LocalExtension> getLocalExtensions()
     {
-        return Collections.<LocalExtension> unmodifiableCollection(this.extensions.values());
+        return Collections.<LocalExtension>unmodifiableCollection(this.extensions.values());
     }
 
     @Override
@@ -123,13 +123,13 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
     {
         Collection<DefaultLocalExtension> versions = this.extensionsVersions.get(id);
 
-        return versions != null ? Collections.<LocalExtension> unmodifiableCollection(versions) : Collections
-            .<LocalExtension> emptyList();
+        return versions != null ? Collections.<LocalExtension>unmodifiableCollection(versions) : Collections
+            .<LocalExtension>emptyList();
     }
 
     /**
      * Create a new local extension from a remote extension.
-     * 
+     *
      * @param extension the extension to copy
      * @return the new local extension
      */

@@ -50,7 +50,7 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
  *     &lt;/li&gt;
  *   &lt;/ul&gt;
  * </pre></code>
- * 
+ *
  * @version $Id$
  * @since 1.6M1
  */
@@ -68,7 +68,7 @@ public class ListFilter extends AbstractHTMLFilter
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
         // Iterate all lists and fix them.
-        for (Element list : filterDescendants(document.getDocumentElement(), new String[] {TAG_UL, TAG_OL})) {
+        for (Element list : filterDescendants(document.getDocumentElement(), new String[] { TAG_UL, TAG_OL })) {
             filter(list);
         }
     }
@@ -76,7 +76,7 @@ public class ListFilter extends AbstractHTMLFilter
     /**
      * Transforms the given list in a valid XHTML list by moving the nodes that are not allowed inside &lt;ul&gt; and
      * &lt;ol&gt; in &lt;li&gt; elements.
-     * 
+     *
      * @param list the list to be filtered
      */
     private void filter(Element list)
@@ -109,7 +109,7 @@ public class ListFilter extends AbstractHTMLFilter
 
     /**
      * Checks if a given node is allowed or not as a child of a &lt;ul&gt; or &lt;ol&gt; element.
-     * 
+     *
      * @param node the node to be checked
      * @return {@code true} if the given node is allowed inside an ordered or unordered list, {@code false} otherwise
      */

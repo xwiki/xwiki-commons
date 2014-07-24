@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 /**
  * Setup merge behavior.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */
@@ -34,9 +34,11 @@ public class MergeConfiguration<E> extends HashMap<String, Object>
      */
     public static final String KEY_FALLBACKONCONFLICT = "fallbackonconflict";
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * One of the merged versions.
-     * 
+     *
      * @version $Id$
      */
     public enum Version

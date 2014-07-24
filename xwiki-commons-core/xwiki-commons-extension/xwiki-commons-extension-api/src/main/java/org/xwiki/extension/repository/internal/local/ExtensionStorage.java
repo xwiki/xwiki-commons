@@ -39,7 +39,7 @@ import org.xwiki.extension.InvalidExtensionException;
 
 /**
  * Manipulate the extension filesystem repository storage.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -134,7 +134,7 @@ public class ExtensionStorage
 
     /**
      * Local extension descriptor from a file.
-     * 
+     *
      * @param descriptor the descriptor file
      * @return the extension descriptor
      * @throws InvalidExtensionException error when trying to load extension descriptor
@@ -171,7 +171,7 @@ public class ExtensionStorage
 
     /***
      * Update the extension descriptor in the filesystem repository.
-     * 
+     *
      * @param extension the local extension descriptor to save
      * @throws ParserConfigurationException error when trying to save the descriptor
      * @throws TransformerException error when trying to save the descriptor
@@ -258,7 +258,7 @@ public class ExtensionStorage
 
     /**
      * Get file path in the local extension repository.
-     * 
+     *
      * @param id the extension id
      * @param fileExtension the file extension
      * @return the encoded file path
@@ -275,7 +275,7 @@ public class ExtensionStorage
 
     /**
      * Remove extension from storage.
-     * 
+     *
      * @param extension extension to remove
      * @throws IOException error when deleting the extension
      */

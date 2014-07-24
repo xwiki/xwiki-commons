@@ -31,9 +31,6 @@
   <name>XWiki Commons - Extension - Handler - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Extension - Handler - Parent POM</description>
-  <properties>
-    <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>

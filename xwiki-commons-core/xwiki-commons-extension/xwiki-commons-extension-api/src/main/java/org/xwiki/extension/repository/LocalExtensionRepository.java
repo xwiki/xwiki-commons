@@ -35,7 +35,7 @@ import org.xwiki.extension.repository.search.Searchable;
  * <p>
  * That's were remote extension are stored after being downloaded and from where extension are actually installed by
  * their respective handlers.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -49,7 +49,7 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
 
     /**
      * Return extension descriptor from the repository. If the extension can't be found null is returned.
-     * 
+     *
      * @param extensionId the extension identifier
      * @return the found extension descriptor or null if none could be found
      * @since 4.2RC1
@@ -70,7 +70,7 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
 
     /**
      * Store provided extension (generally a remote extension) in the local repository.
-     * 
+     *
      * @param extension the extension to store
      * @return the new local extension
      * @throws LocalExtensionRepositoryException error when trying store provided extension in the local repository
@@ -87,7 +87,7 @@ public interface LocalExtensionRepository extends ExtensionRepository, Searchabl
 
     /**
      * Remove extension from local repository.
-     * 
+     *
      * @param extension the extension to remove
      * @throws ResolveException error when trying to find provided extension
      */

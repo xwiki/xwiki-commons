@@ -58,7 +58,7 @@ import org.xwiki.extension.version.Version;
 
 /**
  * Default implementation of {@link ExtensionRepositoryManager}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -261,12 +261,12 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
         }
 
         return searchResult != null ? searchResult : new CollectionIterableResult<Extension>(0, offset,
-            Collections.<Extension> emptyList());
+            Collections.<Extension>emptyList());
     }
 
     /**
      * Search one repository.
-     * 
+     *
      * @param repository the repository to search
      * @param pattern the pattern to search
      * @param offset the offset from where to start returning search results

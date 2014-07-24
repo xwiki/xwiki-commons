@@ -36,7 +36,7 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Find the right safe provider for the passed object.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */
@@ -64,7 +64,7 @@ public class DefaultScriptSafeProvider implements ScriptSafeProvider
             return null;
         }
 
-        Object safe = get(unsafe, Arrays.<Type> asList(unsafe.getClass()));
+        Object safe = get(unsafe, Arrays.<Type>asList(unsafe.getClass()));
 
         if (safe == null) {
             safe = unsafe;

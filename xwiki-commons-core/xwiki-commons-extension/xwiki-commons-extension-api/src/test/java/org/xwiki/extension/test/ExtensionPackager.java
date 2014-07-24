@@ -50,7 +50,7 @@ import com.google.common.base.Predicates;
 
 /**
  * Generate package based on information found in <code>packagefile.properties</code> files from the resources.
- * 
+ *
  * @version $Id$
  */
 public class ExtensionPackager
@@ -67,7 +67,7 @@ public class ExtensionPackager
 
     public ExtensionPackager(File workingDirectory, File repository)
     {
-        this(workingDirectory, Collections.<String, File> singletonMap(null, repository));
+        this(workingDirectory, Collections.<String, File>singletonMap(null, repository));
     }
 
     public ExtensionPackager(File workingDirectory, Map<String, File> repositories)

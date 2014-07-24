@@ -31,7 +31,7 @@ import org.xwiki.extension.LocalExtension;
 
 /**
  * Local repository storage serialization tool.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -40,7 +40,7 @@ public interface ExtensionSerializer
 {
     /**
      * Load local extension descriptor.
-     * 
+     *
      * @param repository the repository
      * @param descriptor the descriptor content
      * @return the parsed local extension descriptor
@@ -51,7 +51,7 @@ public interface ExtensionSerializer
 
     /**
      * Save local extension descriptor.
-     * 
+     *
      * @param extension the extension to save
      * @param os the stream where to write the serialized version of the extension descriptor
      * @throws ParserConfigurationException error when serializing

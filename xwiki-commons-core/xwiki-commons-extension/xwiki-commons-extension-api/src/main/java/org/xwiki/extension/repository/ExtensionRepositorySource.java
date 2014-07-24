@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * A repository identifiers source (for example xwiki.properties).
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

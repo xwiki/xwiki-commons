@@ -30,7 +30,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Serialize and unserialize {@link Collection} properties.
- * 
+ *
  * @param <C> the type of the property value
  * @version $Id$
  */
@@ -44,7 +44,7 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
     /**
      * The serializers by class.
      */
-    protected Map<Class< ? >, ExtensionPropertySerializer> serializerByClass;
+    protected Map<Class<?>, ExtensionPropertySerializer> serializerByClass;
 
     /**
      * @param type the type of the property
@@ -53,7 +53,7 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
      */
     protected CollectionExtensionPropertySerializer(String type,
         Map<String, ExtensionPropertySerializer> serializerById,
-        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
+        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
     {
         super(type);
 
@@ -66,7 +66,7 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
      * @param serializerByClass the serializers by class
      */
     public CollectionExtensionPropertySerializer(Map<String, ExtensionPropertySerializer> serializerById,
-        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
+        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
     {
         this("collection", serializerById, serializerByClass);
     }
@@ -90,7 +90,7 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
         if (element != null) {
             String type = element.getAttribute("type");
 
-            ExtensionPropertySerializer< ? > serializer = serializerById.get(type);
+            ExtensionPropertySerializer<?> serializer = serializerById.get(type);
 
             if (serializer != null) {
                 return (T) serializer.toValue(element);
@@ -105,10 +105,10 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
      * @param serializerByClass the serializers by class
      * @return the serializer for the provided class
      */
-    public static ExtensionPropertySerializer getSerializerByClass(Class< ? > valueClass,
-        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
+    public static ExtensionPropertySerializer getSerializerByClass(Class<?> valueClass,
+        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
     {
-        for (Map.Entry<Class< ? >, ExtensionPropertySerializer> entry : serializerByClass.entrySet()) {
+        for (Map.Entry<Class<?>, ExtensionPropertySerializer> entry : serializerByClass.entrySet()) {
             if (entry.getKey().isAssignableFrom(valueClass)) {
                 return entry.getValue();
             }
@@ -125,7 +125,7 @@ public class CollectionExtensionPropertySerializer<C extends Collection> extends
      * @return the serialized property {@link Element}
      */
     public static Element toElement(Object value, Document document, String elementName,
-        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
+        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
     {
         if (value != null) {
             ExtensionPropertySerializer serializer = getSerializerByClass(value.getClass(), serializerByClass);

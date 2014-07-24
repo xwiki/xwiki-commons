@@ -23,11 +23,11 @@ import java.util.HashMap;
 
 /**
  * Setup diff behavior.
- * 
+ *
  * @param <E> the type of compared elements
  * @version $Id$
  */
 public class DiffConfiguration<E> extends HashMap<String, Object>
 {
-
+    private static final long serialVersionUID = 1L;
 }

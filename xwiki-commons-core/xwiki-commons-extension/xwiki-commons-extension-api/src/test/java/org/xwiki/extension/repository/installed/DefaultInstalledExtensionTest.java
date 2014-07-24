@@ -35,7 +35,7 @@ public class DefaultInstalledExtensionTest
     {
         DefaultLocalExtension localExtension =
             new DefaultLocalExtension(null, new ExtensionId("installed", "version"), "type");
-        installedExtension = new DefaultInstalledExtension(localExtension, null);
+        this.installedExtension = new DefaultInstalledExtension(localExtension, null);
     }
 
     @Test

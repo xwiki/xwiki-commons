@@ -24,7 +24,7 @@ import org.xwiki.extension.LocalExtensionFile;
 
 /**
  * Wrap a local extension.
- * 
+ *
  * @param <T> the extension type
  * @version $Id$
  * @since 4.0M1

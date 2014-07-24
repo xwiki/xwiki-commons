@@ -21,8 +21,20 @@ package org.xwiki.context;
 
 import org.xwiki.component.annotation.Role;
 
+/**
+ * Role which allows different components to initialize every new execution context created, by adding, altering, or
+ * removing properties.
+ *
+ * @version $Id$
+ */
 @Role
 public interface ExecutionContextInitializer
 {
+    /**
+     * The method that will be called when a context is created.
+     *
+     * @param context the execution context being created
+     * @throws ExecutionContextException if the context is not in a state valid for an initializer
+     */
     void initialize(ExecutionContext context) throws ExecutionContextException;
 }

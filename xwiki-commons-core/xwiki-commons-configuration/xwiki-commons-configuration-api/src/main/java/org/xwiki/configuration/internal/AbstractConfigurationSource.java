@@ -44,9 +44,9 @@ public abstract class AbstractConfigurationSource implements ConfigurationSource
 
         if (valueClass != null) {
             if (List.class.getName().equals(valueClass.getName())) {
-                result = (T) Collections.emptyList();
+                result = valueClass.cast(Collections.emptyList());
             } else if (Properties.class.getName().equals(valueClass.getName())) {
-                result = (T) new Properties();
+                result = valueClass.cast(new Properties());
             }
         }
 

@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * Represents a list of {@link UnifiedDiffElement}s that share the same context. The context is defined based on the
  * distance between changes. Changes that are close to each other are grouped in a single block. A block can contain
  * both added and removed elements. Blocks also contain unmodified elements that put changes in context.
- * 
+ *
  * @param <E> the type of elements that are compared to produce the first level diff
  * @param <F> the type of sub-element that are compared to produce the second level diff
  * @version $Id$

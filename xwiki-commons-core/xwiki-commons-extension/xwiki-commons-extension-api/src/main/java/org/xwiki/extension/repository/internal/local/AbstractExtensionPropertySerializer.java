@@ -24,7 +24,7 @@ import org.w3c.dom.Element;
 
 /**
  * Base class to help implement {@link ExtensionPropertySerializer}.
- * 
+ *
  * @param <T> the type of the property value
  * @version $Id$
  */

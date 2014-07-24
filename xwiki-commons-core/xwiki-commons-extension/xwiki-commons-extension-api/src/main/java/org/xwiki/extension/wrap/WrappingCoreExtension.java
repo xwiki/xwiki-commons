@@ -26,7 +26,7 @@ import org.xwiki.extension.CoreExtensionFile;
 
 /**
  * Wrap a Core extension.
- * 
+ *
  * @param <T> the extension type
  * @version $Id$
  * @since 4.0M1

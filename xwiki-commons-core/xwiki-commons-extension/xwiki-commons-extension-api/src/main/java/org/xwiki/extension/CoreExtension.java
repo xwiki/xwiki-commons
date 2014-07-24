@@ -25,7 +25,7 @@ import java.net.URL;
  * Represent an extension which can't be modified (uninstalled, upgraded).
  * <p>
  * In practice it's generally all the jars already in the classpath at startup.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

@@ -41,7 +41,7 @@ import org.xwiki.logging.marker.TranslationMarker;
 
 /**
  * Base class for plan calculation jobs.
- * 
+ *
  * @param <R> the type of the request
  * @version $Id$
  * @since 5.4RC1

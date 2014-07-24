@@ -95,7 +95,7 @@ public abstract class AbstractExtensionHandlerTest
 
     protected InstalledExtension install(ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
     {
-        return install(extensionId, namespace != null ? new String[] {namespace} : null, failFrom);
+        return install(extensionId, namespace != null ? new String[] { namespace } : null, failFrom);
     }
 
     protected InstalledExtension install(ExtensionId extensionId, String[] namespaces, LogLevel failFrom)
@@ -118,7 +118,7 @@ public abstract class AbstractExtensionHandlerTest
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String namespace) throws Throwable
     {
-        return installPlan(extensionId, namespace != null ? new String[] {namespace} : null, LogLevel.WARN);
+        return installPlan(extensionId, namespace != null ? new String[] { namespace } : null, LogLevel.WARN);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces, LogLevel failFrom)

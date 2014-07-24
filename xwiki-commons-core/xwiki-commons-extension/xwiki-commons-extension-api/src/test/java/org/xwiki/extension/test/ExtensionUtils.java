@@ -19,9 +19,9 @@
  */
 package org.xwiki.extension.test;
 
-import static org.mockito.Mockito.mock;
-
 import org.xwiki.extension.Extension;
+
+import static org.mockito.Mockito.mock;
 
 public class ExtensionUtils
 {

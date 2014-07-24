@@ -26,11 +26,10 @@ import org.xml.sax.XMLReader;
 import org.xwiki.component.annotation.Role;
 
 /**
- * Factory to create optimised {@link XMLReader}. This gives us a level of indirection versus
- * using directly {@link javax.xml.parsers.SAXParserFactory}. We use that for example to
- * verify if we're using Xerces and if so we configure it to cache parsed DTD grammars for
- * better performance.
- *  
+ * Factory to create optimised {@link XMLReader}. This gives us a level of indirection versus using directly
+ * {@link javax.xml.parsers.SAXParserFactory}. We use that for example to verify if we're using Xerces and if so we
+ * configure it to cache parsed DTD grammars for better performance.
+ *
  * @version $Id$
  * @since 1.7.1
  */

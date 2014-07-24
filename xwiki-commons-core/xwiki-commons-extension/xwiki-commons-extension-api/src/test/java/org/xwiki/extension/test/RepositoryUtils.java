@@ -135,7 +135,7 @@ public class RepositoryUtils
 
     public ExtensionPackager getExtensionPackager()
     {
-        return extensionPackager;
+        return this.extensionPackager;
     }
 
     public void setup() throws Exception

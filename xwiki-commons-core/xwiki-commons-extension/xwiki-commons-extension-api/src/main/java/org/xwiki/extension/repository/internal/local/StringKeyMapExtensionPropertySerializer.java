@@ -30,7 +30,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Serialize and unserialize {@link Map} properties.
- * 
+ *
  * @param <M> the type of the property value
  * @version $Id$
  */
@@ -44,7 +44,7 @@ public class StringKeyMapExtensionPropertySerializer<M extends Map> extends Abst
     /**
      * The serializers by class.
      */
-    protected Map<Class< ? >, ExtensionPropertySerializer> serializerByClass;
+    protected Map<Class<?>, ExtensionPropertySerializer> serializerByClass;
 
     /**
      * @param type the type of the property
@@ -53,7 +53,7 @@ public class StringKeyMapExtensionPropertySerializer<M extends Map> extends Abst
      */
     protected StringKeyMapExtensionPropertySerializer(String type,
         Map<String, ExtensionPropertySerializer> serializerById,
-        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
+        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
     {
         super(type);
 
@@ -66,7 +66,7 @@ public class StringKeyMapExtensionPropertySerializer<M extends Map> extends Abst
      * @param serializerByClass the serializers by class
      */
     public StringKeyMapExtensionPropertySerializer(Map<String, ExtensionPropertySerializer> serializerById,
-        Map<Class< ? >, ExtensionPropertySerializer> serializerByClass)
+        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
     {
         this("strinkeygmap", serializerById, serializerByClass);
     }

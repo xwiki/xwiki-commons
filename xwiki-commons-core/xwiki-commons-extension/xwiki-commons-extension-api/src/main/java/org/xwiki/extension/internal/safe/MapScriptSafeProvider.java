@@ -31,7 +31,7 @@ import org.xwiki.component.annotation.Component;
 
 /**
  * Provide safe Map.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */

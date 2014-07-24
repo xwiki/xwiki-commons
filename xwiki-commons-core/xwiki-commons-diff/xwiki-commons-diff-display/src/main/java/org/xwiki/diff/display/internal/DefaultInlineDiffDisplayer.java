@@ -33,7 +33,7 @@ import org.xwiki.diff.display.InlineDiffDisplayer;
 
 /**
  * Default {@link InlineDiffDisplayer} implementation.
- * 
+ *
  * @version $Id$
  * @since 4.1RC1
  */

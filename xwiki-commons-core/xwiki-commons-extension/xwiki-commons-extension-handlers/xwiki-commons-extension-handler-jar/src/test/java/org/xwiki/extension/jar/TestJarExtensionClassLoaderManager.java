@@ -26,7 +26,7 @@ import org.xwiki.component.annotation.Component;
 /**
  * Override the DefaultJarExtensionClassLoader to prevent access to extension classes available in the classpath of the
  * test and therefore isolate the tested extension properly.
- * 
+ *
  * @version $Id$
  */
 @Component

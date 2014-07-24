@@ -28,7 +28,7 @@ import org.xwiki.extension.CoreExtensionFile;
 
 /**
  * Default implementation of {@link CoreExtensionFile}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -61,7 +61,7 @@ public class DefaultCoreExtensionFile implements CoreExtensionFile
             try {
                 this.connection = this.url.openConnection();
             } catch (IOException e) {
-                throw new RuntimeException("Failed to open URL [" + url + "]", e);
+                throw new RuntimeException("Failed to open URL [" + this.url + "]", e);
             }
         }
 

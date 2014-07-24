@@ -36,8 +36,8 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 
 /**
  * Wraps direct children of the Body tag with paragraphs. For example {@code a <table>...</table> b <p>c</p> d} is
- * transformed into <p>a </p><table>...</table><p> b </p><p>c</p><p> d</p>.
- * 
+ * transformed into {@code <p>a </p><table>...</table><p> b </p><p>c</p><p> d</p>}.
+ *
  * @version $Id$
  * @since 1.8RC3
  */
@@ -47,15 +47,15 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 public class BodyFilter extends AbstractHTMLFilter
 {
     /**
-     * List of valid children elements of the BODY element in XHTML. 
+     * List of valid children elements of the BODY element in XHTML.
      */
-    private static final List<String> ALLOWED_BODY_TAGS = Arrays.asList(HTMLConstants.TAG_ADDRESS, 
-        HTMLConstants.TAG_BLOCKQUOTE, HTMLConstants.TAG_DEL, HTMLConstants.TAG_DIV, HTMLConstants.TAG_FIELDSET,  
-        HTMLConstants.TAG_FORM, HTMLConstants.TAG_HR, HTMLConstants.TAG_INS, HTMLConstants.TAG_NOSCRIPT, 
+    private static final List<String> ALLOWED_BODY_TAGS = Arrays.asList(HTMLConstants.TAG_ADDRESS,
+        HTMLConstants.TAG_BLOCKQUOTE, HTMLConstants.TAG_DEL, HTMLConstants.TAG_DIV, HTMLConstants.TAG_FIELDSET,
+        HTMLConstants.TAG_FORM, HTMLConstants.TAG_HR, HTMLConstants.TAG_INS, HTMLConstants.TAG_NOSCRIPT,
         HTMLConstants.TAG_P, HTMLConstants.TAG_PRE, HTMLConstants.TAG_SCRIPT, HTMLConstants.TAG_TABLE,
         HTMLConstants.TAG_H1, HTMLConstants.TAG_H2, HTMLConstants.TAG_H3, HTMLConstants.TAG_H4, HTMLConstants.TAG_H5,
         HTMLConstants.TAG_H6, HTMLConstants.TAG_DL, HTMLConstants.TAG_OL, HTMLConstants.TAG_UL);
-    
+
     @Override
     public void filter(Document document, Map<String, String> cleaningParameters)
     {
@@ -67,10 +67,10 @@ public class BodyFilter extends AbstractHTMLFilter
             // Note: We ignore comment nodes since there's no need to wrap them.
             if (currentNode.getNodeType() != Node.COMMENT_NODE) {
                 if (!ALLOWED_BODY_TAGS.contains(currentNode.getNodeName())) {
-                    
+
                     // Ensure that we don't wrap elements that contain only spaces or newlines.
                     containsOnlySpaces = containsOnlySpaces(currentNode);
-    
+
                     if (markerNode == null) {
                         markerNode = currentNode;
                     } else {
@@ -87,7 +87,7 @@ public class BodyFilter extends AbstractHTMLFilter
             }
             currentNode = currentNode.getNextSibling();
         }
-        
+
         // If the marker is still set it means we need to wrap all elements between the marker till
         // the end of the body siblings with a paragraph.
         if (markerNode != null && !containsOnlySpaces) {
@@ -112,15 +112,15 @@ public class BodyFilter extends AbstractHTMLFilter
         }
         return result;
     }
-    
+
     /**
      * Surround passed nodes with a paragraph element.
-     * 
+     *
      * @param document the document to use to create the new paragraph element
      * @param body the body under which to wrap non valid elements with paragraphs
      * @param beginNode the first node where to start the wrapping
-     * @param endNode the last node where to stop the wrapping. If null then the wrapping is done till the 
-     *        last element inside the body element
+     * @param endNode the last node where to stop the wrapping. If null then the wrapping is done till the last element
+     *            inside the body element
      */
     private void surroundWithParagraph(Document document, Node body, Node beginNode, Node endNode)
     {
@@ -131,7 +131,7 @@ public class BodyFilter extends AbstractHTMLFilter
         while (child != endNode) {
             Node nextChild = child.getNextSibling();
             paragraph.appendChild(body.removeChild(child));
-            child = nextChild; 
+            child = nextChild;
         }
     }
 }

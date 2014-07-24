@@ -32,7 +32,7 @@ import org.xwiki.diff.display.Splitter;
 
 /**
  * Splits a text into multiple lines.
- * 
+ *
  * @version $Id$
  * @since 4.1RC1
  */

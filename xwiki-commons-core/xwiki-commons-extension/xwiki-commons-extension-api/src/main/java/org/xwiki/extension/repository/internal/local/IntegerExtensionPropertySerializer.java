@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 
 /**
  * Serialize and unserialize {@link Integer} properties.
- * 
+ *
  * @version $Id$
  */
 public class IntegerExtensionPropertySerializer extends AbstractExtensionPropertySerializer<Integer>

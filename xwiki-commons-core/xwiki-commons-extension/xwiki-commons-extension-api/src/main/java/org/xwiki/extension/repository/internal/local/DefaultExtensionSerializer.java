@@ -61,14 +61,14 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.LocalExtension;
-import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
  * Local repository storage serialization tool.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -135,12 +135,12 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     protected Map<String, ExtensionPropertySerializer> serializerById;
 
-    protected Map<Class< ? >, ExtensionPropertySerializer> serializerByClass;
+    protected Map<Class<?>, ExtensionPropertySerializer> serializerByClass;
 
     {
         {
             this.serializerById = new HashMap<String, ExtensionPropertySerializer>();
-            this.serializerByClass = new LinkedHashMap<Class< ? >, ExtensionPropertySerializer>();
+            this.serializerByClass = new LinkedHashMap<Class<?>, ExtensionPropertySerializer>();
 
             StringExtensionPropertySerializer stringSerializer = new StringExtensionPropertySerializer();
             IntegerExtensionPropertySerializer integerSerializer = new IntegerExtensionPropertySerializer();
@@ -306,14 +306,14 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         Node enabledNode = getNode(extensionElement, ELEMENT_INSTALLED);
         if (enabledNode != null) {
-            localExtension.putProperty(DefaultInstalledExtension.PKEY_INSTALLED,
+            localExtension.putProperty(InstalledExtension.PKEY_INSTALLED,
                 Boolean.valueOf(enabledNode.getTextContent()));
         }
 
         // Deprecated Namespaces
         List<String> namespaces = parseList(extensionElement, ELEMENT_NAMESPACES, ELEMENT_NNAMESPACE);
         if (namespaces != null) {
-            localExtension.putProperty(DefaultInstalledExtension.PKEY_NAMESPACES, namespaces);
+            localExtension.putProperty(InstalledExtension.PKEY_NAMESPACES, namespaces);
         }
 
         return localExtension;
@@ -355,7 +355,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
                 if (propertyNode.getNodeType() == Node.ELEMENT_NODE) {
                     Object value =
-                        CollectionExtensionPropertySerializer.toValue((Element) propertyNode, serializerById);
+                        CollectionExtensionPropertySerializer.toValue((Element) propertyNode, this.serializerById);
 
                     if (value != null) {
                         properties.put(propertyNode.getNodeName(), value);

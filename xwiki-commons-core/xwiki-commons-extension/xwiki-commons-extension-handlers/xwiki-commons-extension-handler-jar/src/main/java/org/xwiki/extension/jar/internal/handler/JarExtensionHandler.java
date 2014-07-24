@@ -52,7 +52,7 @@ import org.xwiki.observation.ObservationManager;
 
 /**
  * Add support for JAR extensions.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -102,7 +102,8 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     }
 
     @Override
-    public void uninstall(InstalledExtension installedExtension, String namespace, Request request) throws UninstallException
+    public void uninstall(InstalledExtension installedExtension, String namespace, Request request)
+        throws UninstallException
     {
         if (installedExtension.isValid(namespace)) {
             NamespaceURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, false);
@@ -124,7 +125,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
             List<ComponentDeclaration> componentDeclarations = getDeclaredComponents(jarFile);
 
             if (componentDeclarations == null) {
-                this.logger.debug("[{}] does not contain any component", jarFile.getName());
+                this.logger.debug("[{}] does not contain any components to load", jarFile.getName());
                 return;
             }
 
@@ -151,7 +152,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
                     }
 
                     stackingComponentEventManager.setObservationManager(componentManager
-                        .<ObservationManager> getInstance(ObservationManager.class));
+                        .<ObservationManager>getInstance(ObservationManager.class));
                     stackingComponentEventManager.shouldStack(false);
                     stackingComponentEventManager.flushEvents();
                 }
@@ -179,7 +180,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
             List<ComponentDeclaration> componentDeclarations = getDeclaredComponents(jarFile);
 
             if (componentDeclarations == null) {
-                this.logger.debug("[{}] does not contain any component", jarFile.getName());
+                this.logger.debug("[{}] does not contain any components to unload", jarFile.getName());
                 return;
             }
 
