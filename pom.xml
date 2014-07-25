@@ -28,18 +28,22 @@
   <packaging>pom</packaging>
   <version>6.2-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
-  <!-- This special URL automatically finds the correct documentation page for the module based on the passed id.
+  <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
+       passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
+       added to better support javadoc links.
        It allows to have a single URL definition in this top level POM and still get valid website URLs for all
        modules.
        Note that we're ending the URL with ":::" for the following reasons:
        - Since we don't overwrite the <url> element in children POM, Maven automatically appends the relative path
          to the children modules. For example:
          "/xwiki-commons-pom/xwiki-commons-core/xwiki-commons-component/xwiki-commons-component-api"
+         and the javadoc produce external link using a path like for example:
+         "/xwiki-commons-pom/.../apidocs/org/xwiki/model/reference/DocumentReference.html?is-external=true"
        - Ideally we would use instead a generic URL like:
          "http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}&amp;path="
          However this makes the site plugin fails, see http://jira.codehaus.org/browse/MNG-5242
   -->
-  <url>http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}:::</url>
+  <url>http://extensions.xwiki.org?id=${project.groupId}:${project.artifactId}:${project.version}:::</url>
   <inceptionYear>2004</inceptionYear>
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
