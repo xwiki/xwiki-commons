@@ -552,6 +552,12 @@
         <artifactId>smartgwt</artifactId>
         <version>4.0</version>
       </dependency>
+      <!-- Diff tools used in commons for diff and blame -->
+      <dependency>
+        <groupId>com.googlecode.java-diff-utils</groupId>
+        <artifactId>diffutils</artifactId>
+        <version>1.3.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
