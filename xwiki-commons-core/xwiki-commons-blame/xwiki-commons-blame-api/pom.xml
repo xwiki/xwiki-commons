@@ -24,25 +24,26 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-blame</artifactId>
     <groupId>org.xwiki.commons</groupId>
     <version>6.2-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-blame</artifactId>
-  <name>XWiki Commons - Blame</name>
-  <packaging>pom</packaging>
+  <artifactId>xwiki-commons-blame-api</artifactId>
+  <name>XWiki Commons - Blame - API</name>
+  <packaging>jar</packaging>
   <description>Annotate/Blame/Praise API</description>
+  <properties>
+    <xwiki.jacoco.instructionRatio>0.94</xwiki.jacoco.instructionRatio>
+  </properties>
   <dependencies>
-    <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-component</artifactId>
+      <artifactId>xwiki-commons-component-api</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.java-diff-utils</groupId>
+      <artifactId>diffutils</artifactId>
     </dependency>
   </dependencies>
-  <modules>
-    <module>xwiki-commons-blame-api</module>
-    <module>xwiki-commons-blame-script</module>
-  </modules>
 </project>
