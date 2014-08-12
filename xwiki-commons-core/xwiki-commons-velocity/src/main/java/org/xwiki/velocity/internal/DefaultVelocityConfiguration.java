@@ -30,6 +30,7 @@ import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
 import org.apache.velocity.tools.generic.SortTool;
+import org.apache.velocity.tools.view.CookieTool;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -90,6 +91,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());
         this.defaultTools.setProperty("stringtool", StringUtils.class.getName());
         this.defaultTools.setProperty("jsontool", JSONTool.class.getName());
+        this.defaultTools.setProperty("cookietool", CookieTool.class.getName());
 
         // Default Velocity properties
         this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());
