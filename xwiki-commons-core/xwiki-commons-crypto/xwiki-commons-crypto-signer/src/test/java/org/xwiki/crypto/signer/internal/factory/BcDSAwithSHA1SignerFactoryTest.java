@@ -86,7 +86,7 @@ public class BcDSAwithSHA1SignerFactoryTest
         }
     }
 
-    protected void testSignatureVerification(Signer signer, Signer verifier) throws Exception
+    protected void runTestSignatureVerification(Signer signer, Signer verifier) throws Exception
     {
         byte[] signature = signer.generate(text);
 
@@ -103,7 +103,7 @@ public class BcDSAwithSHA1SignerFactoryTest
     @Test
     public void testDSASignatureVerification() throws Exception
     {
-        testSignatureVerification(
+        runTestSignatureVerification(
             mocker.getComponentUnderTest().getInstance(true, privateKey),
             mocker.getComponentUnderTest().getInstance(false, publicKey)
         );

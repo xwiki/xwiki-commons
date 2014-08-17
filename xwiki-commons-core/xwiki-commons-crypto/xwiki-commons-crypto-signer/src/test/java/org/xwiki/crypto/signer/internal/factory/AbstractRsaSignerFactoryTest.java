@@ -89,7 +89,7 @@ public abstract class AbstractRsaSignerFactoryTest
         }
     }
 
-    protected void testSignatureVerification(Signer signer, Signer verifier) throws Exception
+    protected void runTestSignatureVerification(Signer signer, Signer verifier) throws Exception
     {
         byte[] signature = signer.generate(text);
 

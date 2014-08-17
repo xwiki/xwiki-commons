@@ -113,7 +113,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
             ((AsymmetricKeyFactory) this.mocker.getInstance(AsymmetricKeyFactory.class)).fromPKCS8(RSAKEY);
     }
 
-    private void testPBES2Conformance(String hint, String iv, int keySize, String salt, byte[] data) throws Exception
+    private void runTestPBES2Conformance(String hint, String iv, int keySize, String salt, byte[] data) throws Exception
     {
         assertThat(this.encryptor.decrypt(PASSWORD, data).getEncoded(), equalTo(RSAKEY));
         assertThat(this.encryptor.decrypt(PASSWORD, new EncryptedPrivateKeyInfo(data)).getEncoded(), equalTo(RSAKEY));
@@ -156,7 +156,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
                 + "5Sqd3F7IPtpoBGl9OOgigBJIP6JQWctjYJYjLGnVn4GpXt8pWclmkQ+SsCSCeYnX"
                 + "Hax2rVBqD3yMRpVw225Dzxb84R1hleqx/N6VJpjmk2agYCTwXKsMyd2tMROOJxo=");
 
-        testPBES2Conformance("PBES2-DES-Pad", "0b6d3abc9af43b40", -1, "1817e5a9e645cfcb", data);
+        runTestPBES2Conformance("PBES2-DES-Pad", "0b6d3abc9af43b40", -1, "1817e5a9e645cfcb", data);
     }
 
     @Test
@@ -192,7 +192,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
                 + "8lQrLGp6tSMD6jo31DMLVmKA9qed7Mk4QeZiDTm0/6d2GZ6hO8xwvzFRQ6Qy1ETG"
                 + "W5c=");
 
-        testPBES2Conformance("PBES2-DESede-CBC-Pad", "8462d54539a7e9f4", -1, "aa972c6e61d3c7e8", data);
+        runTestPBES2Conformance("PBES2-DESede-CBC-Pad", "8462d54539a7e9f4", -1, "aa972c6e61d3c7e8", data);
     }
 
     @Test
@@ -228,7 +228,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
                 + "nTAowzDF15LOg+/wXaAnSerzIwB1s9xfYyssGuKd31Rc6FBH+iZTZorVGS+8UARa"
                 + "yLHeQoz3pbRtiA==");
 
-        testPBES2Conformance("PBES2-RC2-CBC-Pad", "6f2ac96cff13f0e8", 16, "e1a450acd963e991", data);
+        runTestPBES2Conformance("PBES2-RC2-CBC-Pad", "6f2ac96cff13f0e8", 16, "e1a450acd963e991", data);
     }
 
     @Test
@@ -264,7 +264,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
                 + "VknhyfXk/85k81dxWLWV3DiXZbW/9gGa8TGRuZxliqTr1YjTRGiUwn+fCVx7YLyw"
                 + "PiNp");
 
-        testPBES2Conformance("PBES2-Blowfish-CBC-Pad", "7b939f8d61c7a403", -1, "f921f22f44e611de", data);
+        runTestPBES2Conformance("PBES2-Blowfish-CBC-Pad", "7b939f8d61c7a403", -1, "f921f22f44e611de", data);
     }
 
     @Test
@@ -300,7 +300,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
                 + "9c7BBsGqGC2agru0qTkvwCKtk8duMg5RWOXnW29tBYuAyT2bmwmco20XOdTgXIUJ"
                 + "qsiX6xrG5S0T7vFExbxBIX2Jhg==");
 
-        testPBES2Conformance("PBES2-AES-CBC-Pad", "7fa067f3959f661de61cfd70d32b9b69", 16, "9978cb1b1ce99a4c", data);
+        runTestPBES2Conformance("PBES2-AES-CBC-Pad", "7fa067f3959f661de61cfd70d32b9b69", 16, "9978cb1b1ce99a4c", data);
     }
 
     @Test

@@ -81,9 +81,9 @@ public class BcDigestWithRsaSignerFactoryTest extends AbstractRsaSignerFactoryTe
         setupTest(mocker);
     }
 
-    private void test(MockitoComponentMockingRule<SignerFactory> mocker) throws Exception
+    private void runTest(MockitoComponentMockingRule<SignerFactory> mocker) throws Exception
     {
-        testSignatureVerification(
+        runTestSignatureVerification(
             mocker.getComponentUnderTest().getInstance(true, privateKey),
             mocker.getComponentUnderTest().getInstance(false, publicKey)
         );
@@ -92,36 +92,36 @@ public class BcDigestWithRsaSignerFactoryTest extends AbstractRsaSignerFactoryTe
     @Test
     public void testSha1SignatureVerification() throws Exception
     {
-        test(mocker);
+        runTest(mocker);
     }
 
     @Test
     public void testSha224SignatureVerification() throws Exception
     {
-        test(mockerSha224);
+        runTest(mockerSha224);
     }
 
     @Test
     public void testSha256SignatureVerification() throws Exception
     {
-        test(mockerSha256);
+        runTest(mockerSha256);
     }
 
     @Test
     public void testSha384SignatureVerification() throws Exception
     {
-        test(mockerSha384);
+        runTest(mockerSha384);
     }
 
     @Test
     public void testSha512SignatureVerification() throws Exception
     {
-        test(mockerSha512);
+        runTest(mockerSha512);
     }
 
     @Test
     public void testMd5SignatureVerification() throws Exception
     {
-        test(mockerMD5);
+        runTest(mockerMD5);
     }
 }

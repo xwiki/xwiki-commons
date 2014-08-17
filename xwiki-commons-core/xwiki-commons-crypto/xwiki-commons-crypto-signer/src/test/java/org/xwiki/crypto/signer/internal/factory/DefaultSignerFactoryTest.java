@@ -90,7 +90,7 @@ public class DefaultSignerFactoryTest extends AbstractRsaSignerFactoryTest
     private void runTest(MockitoComponentMockingRule<SignerFactory> mocker) throws Exception
     {
         Signer signer = mocker.getComponentUnderTest().getInstance(true, privateKey);
-        testSignatureVerification(
+        runTestSignatureVerification(
             signer,
             factory.getInstance(false, publicKey, signer.getEncoded())
         );
