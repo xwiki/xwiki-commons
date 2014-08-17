@@ -35,7 +35,7 @@ import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 /**
- * Please comment here
+ * Unit tests for {@link DefaultSignerFactory}.
  *
  * @version $Id$
  */
@@ -87,7 +87,7 @@ public class DefaultSignerFactoryTest extends AbstractRsaSignerFactoryTest
         setupTest(mocker);
     }
 
-    private void test(MockitoComponentMockingRule<SignerFactory> mocker) throws Exception
+    private void runTest(MockitoComponentMockingRule<SignerFactory> mocker) throws Exception
     {
         Signer signer = mocker.getComponentUnderTest().getInstance(true, privateKey);
         testSignatureVerification(
@@ -99,42 +99,42 @@ public class DefaultSignerFactoryTest extends AbstractRsaSignerFactoryTest
     @Test
     public void testPssSignatureVerification() throws Exception
     {
-        test(mockerPss);
+        runTest(mockerPss);
     }
 
     @Test
     public void testSha1SignatureVerification() throws Exception
     {
-        test(mockerSha1);
+        runTest(mockerSha1);
     }
 
     @Test
     public void testSha224SignatureVerification() throws Exception
     {
-        test(mockerSha224);
+        runTest(mockerSha224);
     }
 
     @Test
     public void testSha256SignatureVerification() throws Exception
     {
-        test(mockerSha256);
+        runTest(mockerSha256);
     }
 
     @Test
     public void testSha384SignatureVerification() throws Exception
     {
-        test(mockerSha384);
+        runTest(mockerSha384);
     }
 
     @Test
     public void testSha512SignatureVerification() throws Exception
     {
-        test(mockerSha512);
+        runTest(mockerSha512);
     }
 
     @Test
     public void testMd5SignatureVerification() throws Exception
     {
-        test(mockerMD5);
+        runTest(mockerMD5);
     }
 }
