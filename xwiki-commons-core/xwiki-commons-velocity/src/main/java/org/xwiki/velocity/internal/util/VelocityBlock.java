@@ -79,7 +79,7 @@ public class VelocityBlock
      */
     public String getName()
     {
-        return name;
+        return this.name;
     }
 
     /**
@@ -95,7 +95,7 @@ public class VelocityBlock
      */
     public VelocityType getType()
     {
-        return type;
+        return this.type;
     }
 
     /**
