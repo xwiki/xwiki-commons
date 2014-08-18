@@ -36,7 +36,7 @@ public class VersionCheck
     /**
      * @see #getAllowedVersionRegex()
      */
-    public String allowedVersionRegex;
+    private String allowedVersionRegex;
 
     /**
      * @param groupIdPrefix see {@link #getGroupIdPrefix()}
