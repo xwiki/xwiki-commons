@@ -92,19 +92,18 @@ public class XARMojo extends AbstractXARMojo
      */
     private void performArchive() throws Exception
     {
-        File xarFile = new File(this.project.getBuild().getDirectory(), this.project.getArtifactId() + ".xar");
-
         // The source dir points to the target/classes directory where the Maven resources plugin
         // has copied the XAR files during the process-resources phase.
         // For package.xml, however, we look in the resources directory (i.e. src/main/resources).
         File sourceDir = new File(this.project.getBuild().getOutputDirectory());
-        File resourcesDir = getResourcesDirectory();
 
         // Check that there are files in the source dir
         if (sourceDir.listFiles() == null) {
             throw new Exception(String.format(
                 "No XAR XML files found in [%s]. Has the Maven Resource plugin be called?", sourceDir));
         }
+
+        File xarFile = new File(this.project.getBuild().getDirectory(), this.project.getArtifactId() + ".xar");
 
         ZipArchiver archiver = new ZipArchiver();
         archiver.setEncoding(this.encoding);
@@ -124,6 +123,7 @@ public class XARMojo extends AbstractXARMojo
 
         // If no package.xml can be found at the top level of the current project, generate one
         // otherwise, try to use the existing one
+        File resourcesDir = getResourcesDirectory();
         FilenameFilter packageXmlFiler = new FilenameFilter()
         {
             @Override
@@ -333,7 +333,6 @@ public class XARMojo extends AbstractXARMojo
      */
     protected static Collection<String> getDocumentNamesFromXML(File file) throws Exception
     {
-        Collection<String> result = new LinkedList<String>();
         SAXReader reader = new SAXReader();
         Document domdoc;
         domdoc = reader.read(file);
@@ -344,6 +343,7 @@ public class XARMojo extends AbstractXARMojo
             throw new Exception("The supplied document contains no document list ");
         }
 
+        Collection<String> result = new LinkedList<>();
         Collection elements = filesElement.elements(FILE_TAG);
         for (Object item : elements) {
             if (item instanceof Element) {
