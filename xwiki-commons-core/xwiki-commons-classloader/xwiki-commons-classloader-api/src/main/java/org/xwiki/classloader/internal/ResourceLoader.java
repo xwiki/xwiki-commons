@@ -379,7 +379,7 @@ public class ResourceLoader
     protected static boolean isDir(URL url)
     {
         String file = url.getFile();
-        return (file != null && file.endsWith("/"));
+        return file != null && file.endsWith("/");
     }
 
     private static class JarInfo
@@ -812,7 +812,7 @@ public class ResourceLoader
         public boolean hasMoreElements()
         {
             fetchNext();
-            return (this.next != null);
+            return this.next != null;
         }
 
         @Override
