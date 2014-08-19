@@ -54,7 +54,6 @@ public class ScriptServiceCheck extends Check
                 // Check if the class name ends with ScriptService and report an error if it does and if we're in an
                 // internal package.
                 String className = ast.findFirstToken(TokenTypes.IDENT).getText();
-                System.out.println("WWWW checking class " + className + " in package " + this.packageName);
                 if (className.endsWith("ScriptService") && this.packageName.contains("internal")) {
                     log(ast.getLineNo(), "Script Service implementation [" + className
                         + "] in package [" + this.packageName + "] should not be located in the internal package");
