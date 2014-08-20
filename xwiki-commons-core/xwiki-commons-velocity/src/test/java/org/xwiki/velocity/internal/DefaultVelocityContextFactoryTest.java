@@ -59,7 +59,8 @@ public class DefaultVelocityContextFactoryTest
     {
         VelocityConfiguration configuration = this.mocker.getInstance(VelocityConfiguration.class);
         Properties properties = new Properties();
-        properties.put("listtool", ListTool.class.getName());
+        properties.put("toolbox", "application");
+        properties.put("application.listtool", ListTool.class.getName());
         when(configuration.getTools()).thenReturn(properties);
 
         this.factory = this.mocker.getInstance(VelocityContextFactory.class);

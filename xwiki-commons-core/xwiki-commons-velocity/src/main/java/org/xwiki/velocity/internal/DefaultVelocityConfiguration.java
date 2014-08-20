@@ -80,24 +80,21 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
     @Override
     public void initialize() throws InitializationException
     {
-        // Default Velocity tools.
-        this.defaultTools.setProperty("listtool", ListTool.class.getName());
-        this.defaultTools.setProperty("numbertool", NumberTool.class.getName());
-        this.defaultTools.setProperty("datetool", ComparisonDateTool.class.getName());
-        this.defaultTools.setProperty("mathtool", MathTool.class.getName());
-        this.defaultTools.setProperty("sorttool", SortTool.class.getName());
-        this.defaultTools.setProperty("escapetool", EscapeTool.class.getName());
-        this.defaultTools.setProperty("regextool", RegexTool.class.getName());
-        this.defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());
-        this.defaultTools.setProperty("stringtool", StringUtils.class.getName());
-        this.defaultTools.setProperty("jsontool", JSONTool.class.getName());
-
-        // Since the Cookie Tool requires the Servlet API and since we don't want to force users of this Velocity
-        // module to add a dependency on the Servlet API we only add it if the Servlet API is available in the
-        // context classloader.
-        if (Thread.currentThread().getContextClassLoader().getResource("javax/servlet/http/Cookie") != null) {
-            this.defaultTools.setProperty("cookietool", CookieTool.class.getName());
-        }
+        // Default Velocity tools and their scopes.
+        // List of defined scopes.
+        this.defaultTools.setProperty("toolbox", "request,application");
+        // List of tools for each scope.
+        this.defaultTools.setProperty("application.listtool", ListTool.class.getName());
+        this.defaultTools.setProperty("application.numbertool", NumberTool.class.getName());
+        this.defaultTools.setProperty("application.datetool", ComparisonDateTool.class.getName());
+        this.defaultTools.setProperty("application.mathtool", MathTool.class.getName());
+        this.defaultTools.setProperty("application.sorttool", SortTool.class.getName());
+        this.defaultTools.setProperty("application.escapetool", EscapeTool.class.getName());
+        this.defaultTools.setProperty("application.regextool", RegexTool.class.getName());
+        this.defaultTools.setProperty("application.collectionstool", CollectionsTool.class.getName());
+        this.defaultTools.setProperty("application.stringtool", StringUtils.class.getName());
+        this.defaultTools.setProperty("application.jsontool", JSONTool.class.getName());
+        this.defaultTools.setProperty("request.cookietool", CookieTool.class.getName());
 
         // Default Velocity properties
         this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());

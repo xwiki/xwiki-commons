@@ -19,15 +19,19 @@
  */
 package org.xwiki.velocity.internal;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections.ExtendedProperties;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.context.Context;
-import org.slf4j.Logger;
+import org.apache.velocity.tools.ToolInfo;
+import org.apache.velocity.tools.ToolManager;
+import org.apache.velocity.tools.config.PropertiesFactoryConfiguration;
+import org.apache.velocity.tools.config.ToolConfiguration;
+import org.apache.velocity.tools.config.ToolboxConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -61,45 +65,84 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
     private VelocityConfiguration velocityConfiguration;
 
     /**
-     * The logger to use for logging.
+     * Velocity-Tools Manager that handles the registered velocity tools and performs per-scope instance caching (when
+     * needed) across all the velocity context created from it.
      */
-    @Inject
-    private Logger logger;
-
-    /**
-     * An internal read-only Velocity Context containing the Tools defined in the component's configuration. We reuse
-     * them across Contexts for better performance.
-     */
-    private Context toolsContext;
+    private ToolManager velocityToolManager;
 
     @Override
     public void initialize() throws InitializationException
     {
-        this.toolsContext = new VelocityContext();
+        velocityToolManager = new ToolManager();
 
-        // Instantiate Velocity tools
-        Properties properties = this.velocityConfiguration.getTools();
-        if (properties != null) {
-            for (Enumeration< ? > props = properties.propertyNames(); props.hasMoreElements();) {
-                String key = props.nextElement().toString();
-                String value = properties.getProperty(key);
-                Object toolInstance;
-                try {
-                    toolInstance = Class.forName(value).newInstance();
-                } catch (Exception e) {
-                    throw new InitializationException("Failed to initialize tool [" + value + "]", e);
-                }
-                this.toolsContext.put(key, toolInstance);
-                this.logger.debug("Setting tool [{}] = [{}]", key, value);
+        PropertiesFactoryConfiguration toolsConfiguration = new PropertiesFactoryConfiguration()
+        {
+            @Override
+            public void validate()
+            {
+                // Do nothing.
             }
-        }
+            
+            protected void readTools(ExtendedProperties tools, ToolboxConfiguration toolbox)
+            {
+                for (Iterator i = tools.getKeys(); i.hasNext();) {
+                    String key = (String) i.next();
+                    // if it contains a period, it can't be a context key;
+                    // it must be a tool property. ignore it for now.
+                    if (key.indexOf('.') >= 0) {
+                        continue;
+                    }
+
+                    String classname = tools.getString(key);
+                    ToolConfiguration tool = new ToolConfiguration() {
+                        public ToolInfo createInfo()
+                        {
+                            ToolInfo info = new ToolInfo(getKey(), getToolClass());
+
+                            info.restrictTo(getRestrictTo());
+                            if (getSkipSetters() != null) {
+                                info.setSkipSetters(getSkipSetters());
+                            }
+                            // it's ok to use this here, because we know it's the
+                            // first time properties have been added to this ToolInfo
+                            info.addProperties(getPropertyMap());
+                            return info;
+                        }
+                    };
+                    tool.setClassname(classname);
+                    tool.setKey(key);
+                    toolbox.addTool(tool);
+
+                    // get tool properties prefixed by 'property'
+                    ExtendedProperties toolProps = tools.subset(key);
+                    readProperties(toolProps, tool);
+
+                    // ok, get tool properties that aren't prefixed by 'property'
+                    for (Iterator j = toolProps.getKeys(); j.hasNext();) {
+                        String name = (String) j.next();
+                        if (!name.equals(tool.getKey())) {
+                            tool.setProperty(name, toolProps.getString(name));
+                        }
+                    }
+
+                    // get special props explicitly
+                    String restrictTo = toolProps.getString("restrictTo");
+                    tool.setRestrictTo(restrictTo);
+                }
+            }
+        };
+
+        // Load the default tool properties and the ones defined in xwiki.properties into a configuration.
+        Properties toolsProperties = this.velocityConfiguration.getTools();
+        toolsConfiguration.read(ExtendedProperties.convertProperties(toolsProperties));
+
+        velocityToolManager.configure(toolsConfiguration);
     }
 
     @Override
     public VelocityContext createContext() throws XWikiVelocityException
     {
-        // Note: This constructor uses the passed context as an internal read-only context.
-        VelocityContext context = new VelocityContext(this.toolsContext);
+        VelocityContext context = new VelocityContext(velocityToolManager.createContext());
 
         // Call all components implementing the VelocityContextInitializer's role.
         try {

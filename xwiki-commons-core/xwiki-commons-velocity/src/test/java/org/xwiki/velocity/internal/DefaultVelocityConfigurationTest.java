@@ -60,7 +60,7 @@ public class DefaultVelocityConfigurationTest
     public void testDefaultToolsPresent() throws Exception
     {
         // Verify for example that the List tool is present.
-        assertEquals(ListTool.class.getName(), this.mocker.getComponentUnderTest().getTools().get("listtool"));
+        assertEquals(ListTool.class.getName(), this.mocker.getComponentUnderTest().getTools().get("application.listtool"));
     }
 
     @Test
