@@ -134,7 +134,7 @@
             <strictCheck>true</strictCheck>
             <headerDefinitions>
               <!-- Our style for XML headers isn't standard so we need to define it in a custom manner.
-                   See xwiki-commons-tool-validation-resources module -->
+                   See xwiki-commons-tool-verification-resources module -->
               <headerDefinition>license-xml-definition.xml</headerDefinition>
               <headerDefinition>license-script-definition.xml</headerDefinition>
               <headerDefinition>license-batch-definition.xml</headerDefinition>
