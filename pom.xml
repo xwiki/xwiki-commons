@@ -1050,6 +1050,27 @@ mm
           <artifactId>jasmine-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.3.1.5</version>
+          <!-- Turn off logging in the console since some non-important errors (duh!) make Jenkins fail the build.
+               For example:
+                   [INFO] Executing Jasmine Specs
+                   [ERROR] Unexpected exception occurred while parsing HTML snippet
+                   [ERROR] runtimeError: message=[Unexpected exception occurred while parsing HTML snippet:
+                     input name="x"] sourceName=[file:/home/hudsonagent/hudson_root/workspace/xwiki-platform/
+                     xwiki-platform-core/xwiki-platform-web/target/jasmine/src/js/prototype/prototype.js] line=[2084]
+                     lineSource=[null] lineOffset=[0]
+          -->
+          <dependencies>
+            <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>jcl-over-slf4j</artifactId>
+              <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.slf4j</groupId>
+              <artifactId>slf4j-nop</artifactId>
+              <version>${slf4j.version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
       </plugins>
     </pluginManagement>
