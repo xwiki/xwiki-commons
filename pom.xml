@@ -89,6 +89,10 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+    <!-- Functional UI tests should not check if an XWiki instance is already running before starting XWiki since
+         performing this check would delay the build and there should be no running instance when the build executes -->
+    <xwiki.test.verifyRunningXWikiAtStart>false</xwiki.test.verifyRunningXWikiAtStart>
+
     <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
          because we want to be to able to execute mvn sonar:sonar without passing a profile -->
     <!-- Tells Sonar to use jacoco for coverage results -->
@@ -768,6 +772,12 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             <includes>
               <include>**/*Test.class</include>
             </includes>
+            <systemProperties>
+              <property>
+                <name>xwiki.test.verifyRunningXWikiAtStart</name>
+                <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
+              </property>
+            </systemProperties>
           </configuration>
         </plugin>
         <plugin>
