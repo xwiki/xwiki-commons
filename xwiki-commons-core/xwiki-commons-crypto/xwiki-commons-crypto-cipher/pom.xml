@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>6.2-SNAPSHOT</version>
+    <version>6.2-milestone-2</version>
   </parent>
   <artifactId>xwiki-commons-crypto-cipher</artifactId>
   <packaging>jar</packaging>
