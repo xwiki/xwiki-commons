@@ -115,7 +115,7 @@
     <dependency>
       <groupId>org.sonatype.sisu</groupId>
       <artifactId>sisu-guice</artifactId>
-      <version>3.2.2</version>
+      <version>3.2.3</version>
       <classifier>no_aop</classifier>
     </dependency>
 
@@ -162,7 +162,6 @@
               **/AetherExtensionRepository.java,
               **/AetherExtensionRepositoryFactory.java,
               **/AetherUtils.java,
-              **/DefaultModelResolver.java,
               **/XWikiLogger.java,
               **/XWikiLoggerManager.java,
               **/AetherConfiguration.java,

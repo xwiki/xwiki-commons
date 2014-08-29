@@ -40,6 +40,7 @@ import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.repository.internal.ArtifactDescriptorUtils;
+import org.apache.maven.repository.internal.PublicDefaultModelResolver;
 import org.codehaus.plexus.PlexusContainer;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -241,7 +242,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         if (nb == 0 || offset >= versions.size()) {
-            return new CollectionIterableResult<Version>(versions.size(), offset, Collections.<Version> emptyList());
+            return new CollectionIterableResult<Version>(versions.size(), offset, Collections.<Version>emptyList());
         }
 
         int fromId = offset < 0 ? 0 : offset;
@@ -437,7 +438,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         String featuresString = getProperty(model, MPNAME_FEATURES);
         if (StringUtils.isNotBlank(featuresString)) {
             featuresString = featuresString.replaceAll("[\r\n]", "");
-            extension.setFeatures(this.converter.<Collection<String>> convert(List.class, featuresString));
+            extension.setFeatures(this.converter.<Collection<String>>convert(List.class, featuresString));
         }
 
         // dependencies
@@ -547,7 +548,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         modelRequest.setProcessPlugins(false);
         modelRequest.setTwoPhaseBuilding(false);
         modelRequest.setSystemProperties(toProperties(session.getUserProperties(), session.getSystemProperties()));
-        modelRequest.setModelResolver(new DefaultModelResolver(session, "", this.artifactResolver,
+        modelRequest.setModelResolver(new PublicDefaultModelResolver(session, null, "", this.artifactResolver,
             this.versionRangeResolver, this.remoteRepositoryManager, repositories));
         modelRequest.setPomFile(pomFile);
 
