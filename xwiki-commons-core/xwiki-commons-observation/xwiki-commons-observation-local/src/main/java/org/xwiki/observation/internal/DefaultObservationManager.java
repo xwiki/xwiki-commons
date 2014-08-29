@@ -175,18 +175,23 @@ public class DefaultObservationManager implements ObservationManager
     @Override
     public void addListener(EventListener eventListener)
     {
-        // Register the listener by name. If already registered, override it.
-        EventListener previousListener = getListenersByName().put(eventListener.getName(), eventListener);
+        Map<String, EventListener> listeners = getListenersByName();
 
-        // If the passed event listener name is already registered, log a warning
+        // Remove previous listener if any
+        EventListener previousListener = listeners.get(eventListener.getName());
         if (previousListener != null) {
+            removeListener(eventListener.getName());
+
             this.logger.warn(
-                "The [{}] listener has overwritten a previously "
+                "The [{}] listener is overwritting a previously "
                     + "registered listener [{}] since they both are registered under the same id [{}]. "
                     + "In the future consider removing a Listener first if you really want to register it again.",
                 new Object[] {eventListener.getClass().getName(), previousListener.getClass().getName(),
                         eventListener.getName()});
         }
+
+        // Register the listener by name. If already registered, override it.
+        listeners.put(eventListener.getName(), eventListener);
 
         // For each event defined for this listener, add it to the Event Map.
         for (Event event : eventListener.getEvents()) {

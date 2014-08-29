@@ -225,7 +225,7 @@ public class ObservationManagerTest
             allowing(listener).getName(); will(returnValue("mylistener"));
             allowing(listener).getEvents(); will(returnValue(Arrays.asList(AllEvent.ALLEVENT)));
             // The check is performed here, we verify that a warning is correctly logged
-            oneOf(logger).warn(with(containsString("listener has overwritten a previously registered listener")),
+            oneOf(logger).warn(with(containsString("listener is overwritting a previously registered listener")),
                 with(any(Object[].class)));
         }});
         
