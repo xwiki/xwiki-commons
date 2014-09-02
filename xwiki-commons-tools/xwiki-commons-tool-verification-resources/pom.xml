@@ -59,7 +59,7 @@
               <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
               <manifestEntries>
                 <Bundle-SymbolicName>${project.groupId}.${project.artifactId};singleton:=true</Bundle-SymbolicName>
-                <Require-Bundle>net.sf.eclipsecs.checkstyle,net.sf.eclipsecs.core</Require-Bundle>
+                <Require-Bundle>net.sf.eclipsecs.core</Require-Bundle>
                 <Eclipse-LazyStart>true</Eclipse-LazyStart>
               </manifestEntries>
             </archive>
