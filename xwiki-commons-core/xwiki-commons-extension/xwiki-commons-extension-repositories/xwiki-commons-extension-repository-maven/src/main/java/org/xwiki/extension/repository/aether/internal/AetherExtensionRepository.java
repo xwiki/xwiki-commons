@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Developer;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Scm;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
@@ -434,13 +435,20 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             extension.addLicense(getExtensionLicense(license));
         }
 
+        // scm
+
+        Scm scm = model.getScm();
+        if (scm != null) {
+            
+        }
+
         // features
         String featuresString = getProperty(model, MPNAME_FEATURES);
         if (StringUtils.isNotBlank(featuresString)) {
             featuresString = featuresString.replaceAll("[\r\n]", "");
             extension.setFeatures(this.converter.<Collection<String>>convert(List.class, featuresString));
         }
-
+        
         // dependencies
         try {
             ArtifactTypeRegistry stereotypes = session.getArtifactTypeRegistry();
