@@ -170,6 +170,18 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/Extension</className>
+              <method>org.xwiki.extension.ExtensionScm getScm()</method>
+              <justification>Add scm informations to extensions descriptors. Should be safe enough since most repository handlers extend AbstractExtension instead of directly implement Extension</justification>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/Extension</className>
+              <method>org.xwiki.extension.ExtensionIssueManagement getIssueManagement()</method>
+              <justification>Add issue management informations to extensions descriptors. Should be safe enough since most repository handlers extend AbstractExtension instead of directly implement Extension</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

@@ -27,7 +27,9 @@ import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionIssueManagement;
 import org.xwiki.extension.ExtensionLicense;
+import org.xwiki.extension.ExtensionScm;
 import org.xwiki.extension.repository.ExtensionRepository;
 
 /**
@@ -119,6 +121,18 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingObje
     public ExtensionRepository getRepository()
     {
         return getWrapped().getRepository();
+    }
+
+    @Override
+    public ExtensionScm getScm()
+    {
+        return getWrapped().getScm();
+    }
+
+    @Override
+    public ExtensionIssueManagement getIssueManagement()
+    {
+        return getWrapped().getIssueManagement();
     }
 
     @Override

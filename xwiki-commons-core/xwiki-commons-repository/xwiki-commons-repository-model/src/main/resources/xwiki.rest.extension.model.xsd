@@ -130,16 +130,20 @@
         <sequence>
           <element name="summary" type="string" minOccurs="0"></element>
           <element name="description" type="string" minOccurs="0"></element>
-          <element name="licenses" type="extension:License" minOccurs="0"
-            maxOccurs="unbounded">
+          <element name="licenses" type="extension:License"
+            minOccurs="0" maxOccurs="unbounded">
           </element>
           <element name="website" type="string" minOccurs="0"></element>
-          <element name="authors" type="extension:ExtensionAuthor" minOccurs="0"
-            maxOccurs="unbounded">
+          <element name="authors" type="extension:ExtensionAuthor"
+            minOccurs="0" maxOccurs="unbounded">
           </element>
           <element name="features" type="string" minOccurs="0"
             maxOccurs="unbounded">
           </element>
+          <element name="scm" type="extension:ExtensionScm"
+            minOccurs="0" maxOccurs="1">
+          </element>
+          <element name="issueManagement" type="extension:ExtensionIssueManagement" minOccurs="0" maxOccurs="1"></element>
         </sequence>
       </extension>
     </complexContent>
@@ -172,4 +176,30 @@
       </extension>
     </complexContent>
   </complexType>
+
+  <complexType name="ExtensionScm">
+    <sequence>
+      <element name="connection"
+        type="extension:ExtensionScmConnection" minOccurs="0" maxOccurs="1">
+      </element>
+      <element name="developerConnection"
+        type="extension:ExtensionScmConnection" minOccurs="0" maxOccurs="1">
+      </element>
+      <element name="url" type="string" minOccurs="0" maxOccurs="1"></element>
+    </sequence>
+  </complexType>
+
+  <complexType name="ExtensionScmConnection">
+    <sequence>
+      <element name="system" type="string"></element>
+      <element name="path" type="string" minOccurs="0" maxOccurs="1"></element>
+    </sequence>
+  </complexType>
+  
+    <complexType name="ExtensionIssueManagement">
+      <sequence>
+        <element name="system" type="string"></element>
+        <element name="url" type="string" minOccurs="0" maxOccurs="1"></element>
+      </sequence>
+    </complexType>
 </schema>

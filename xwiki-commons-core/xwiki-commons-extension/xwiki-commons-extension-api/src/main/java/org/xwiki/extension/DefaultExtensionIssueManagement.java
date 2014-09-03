@@ -20,32 +20,19 @@
 package org.xwiki.extension;
 
 /**
- * Provide informations related to extensions's Source Control Management.
+ * Default implementation of {@link ExtensionIssueManagement}.
  * 
  * @version $Id$
  * @since 6.3M1
  */
-public interface ExtensionScm
+public class DefaultExtensionIssueManagement extends AbstractExtensionIssueManagement
 {
     /**
-     * Get the source control management system connection that describes the repository and how to connect to the
-     * repository. Usually read only.
-     * 
-     * @return the connection
+     * @param system the name of the issue management system (jira, bugzilla, etc.)
+     * @param url the URL of that extension in the issues management system
      */
-    ExtensionScmConnection getConnection();
-
-    /**
-     * Same as {@link #getConnection()}, but for developers, i.e. this scm connection will not be read only.
-     * 
-     * @return the connection
-     */
-    ExtensionScmConnection getDeveloperConnection();
-
-    /**
-     * Get the URL to the project's browsable SCM repository.
-     * 
-     * @return the URL
-     */
-    String getUrl();
+    public DefaultExtensionIssueManagement(String system, String url)
+    {
+        super(system, url);
+    }
 }

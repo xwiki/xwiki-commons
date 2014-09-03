@@ -20,32 +20,20 @@
 package org.xwiki.extension;
 
 /**
- * Provide informations related to extensions's Source Control Management.
+ * Default implementation of {@link ExtensionScmConnection}.
  * 
  * @version $Id$
  * @since 6.3M1
  */
-public interface ExtensionScm
+public class DefaultExtensionScmConnection extends AbstractExtensionScmConnection
 {
     /**
-     * Get the source control management system connection that describes the repository and how to connect to the
-     * repository. Usually read only.
-     * 
-     * @return the connection
+     * @param system the system name
+     * @param path the system specific path
      */
-    ExtensionScmConnection getConnection();
+    public DefaultExtensionScmConnection(String system, String path)
+    {
+        super(system, path);
+    }
 
-    /**
-     * Same as {@link #getConnection()}, but for developers, i.e. this scm connection will not be read only.
-     * 
-     * @return the connection
-     */
-    ExtensionScmConnection getDeveloperConnection();
-
-    /**
-     * Get the URL to the project's browsable SCM repository.
-     * 
-     * @return the URL
-     */
-    String getUrl();
 }

@@ -98,6 +98,20 @@ public interface Extension
     ExtensionRepository getRepository();
 
     /**
+     * @return informations related to extensions's source control management
+     * @since 6.3M1
+     */
+    ExtensionScm getScm();
+
+    /**
+     * @return informations related to extension's issues management
+     * @since 6.3M1
+     */
+    ExtensionIssueManagement getIssueManagement();
+
+    // Custom properties
+
+    /**
      * Extends {@link Extension} standard properties.
      * <p>
      * Theses are generally provided by specific repositories. For example a maven repository will provide group and

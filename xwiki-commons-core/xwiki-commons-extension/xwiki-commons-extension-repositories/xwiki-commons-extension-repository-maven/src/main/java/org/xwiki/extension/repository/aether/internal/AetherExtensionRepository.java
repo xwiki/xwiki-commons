@@ -33,6 +33,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Developer;
+import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Scm;
@@ -76,11 +77,14 @@ import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.DefaultExtensionAuthor;
+import org.xwiki.extension.DefaultExtensionIssueManagement;
+import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
@@ -436,10 +440,20 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         // scm
-
         Scm scm = model.getScm();
         if (scm != null) {
-            
+            ExtensionScmConnection connection = AetherUtils.toExtensionScmConnection(scm.getConnection());
+            ExtensionScmConnection developerConnection =
+                AetherUtils.toExtensionScmConnection(scm.getDeveloperConnection());
+
+            extension.setScm(new DefaultExtensionScm(scm.getUrl(), connection, developerConnection));
+        }
+
+        // issue management
+        IssueManagement issueManagement = model.getIssueManagement();
+        if (issueManagement != null) {
+            extension.setIssueManagement(new DefaultExtensionIssueManagement(issueManagement.getSystem(),
+                issueManagement.getUrl()));
         }
 
         // features
@@ -448,7 +462,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             featuresString = featuresString.replaceAll("[\r\n]", "");
             extension.setFeatures(this.converter.<Collection<String>>convert(List.class, featuresString));
         }
-        
+
         // dependencies
         try {
             ArtifactTypeRegistry stereotypes = session.getArtifactTypeRegistry();

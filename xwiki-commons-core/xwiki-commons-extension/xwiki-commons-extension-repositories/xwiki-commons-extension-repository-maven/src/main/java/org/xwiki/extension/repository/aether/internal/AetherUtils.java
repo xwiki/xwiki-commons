@@ -25,7 +25,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.ResolveException;
 
 /**
@@ -40,7 +42,7 @@ public final class AetherUtils
 
     private static final Pattern PARSER_ID = Pattern.compile("([^: ]+):([^: ]+)(:([^: ]+))?");
 
-    static public DefaultArtifact createArtifact(String id, String version) throws ResolveException
+    public static DefaultArtifact createArtifact(String id, String version) throws ResolveException
     {
         Matcher matcher = PARSER_ID.matcher(id);
         if (!matcher.matches()) {
@@ -51,7 +53,7 @@ public final class AetherUtils
             "jar", version);
     }
 
-    static public ExtensionId createExtensionId(Artifact artifact)
+    public static ExtensionId createExtensionId(Artifact artifact)
     {
         StringBuilder builder = new StringBuilder();
 
@@ -64,5 +66,29 @@ public final class AetherUtils
         }
 
         return new ExtensionId(builder.toString(), artifact.getVersion());
+    }
+
+    public static ExtensionScmConnection toExtensionScmConnection(String connectionURL)
+    {
+        if (connectionURL == null) {
+            return null;
+        }
+
+        String path = connectionURL;
+
+        if (path.startsWith("scm:")) {
+            path = path.substring("scm:".length());
+        }
+
+        String system = "git";
+        int index = path.indexOf(':');
+        if (index >= 0) {
+            if (index != 0) {
+                system = path.substring(0, index);
+            }
+            path = path.substring(index + 1);
+        }
+
+        return new DefaultExtensionScmConnection(system, path);
     }
 }
