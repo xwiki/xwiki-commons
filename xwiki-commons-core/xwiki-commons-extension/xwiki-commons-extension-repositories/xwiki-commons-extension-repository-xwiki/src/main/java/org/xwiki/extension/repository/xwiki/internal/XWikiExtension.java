@@ -29,11 +29,17 @@ import org.apache.commons.io.IOUtils;
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
+import org.xwiki.extension.DefaultExtensionIssueManagement;
+import org.xwiki.extension.DefaultExtensionScm;
+import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionIssueManagement;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.License;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
@@ -92,6 +98,25 @@ public class XWikiExtension extends AbstractExtension
             }
         }
 
+        // Scm
+
+        ExtensionScm scm = extension.getScm();
+        if (scm != null) {
+            DefaultExtensionScmConnection connection = toDefaultExtensionScmConnection(scm.getConnection());
+            DefaultExtensionScmConnection developerConnection =
+                toDefaultExtensionScmConnection(scm.getDeveloperConnection());
+
+            setScm(new DefaultExtensionScm(scm.getUrl(), connection, developerConnection));
+        }
+
+        // Issue management
+
+        ExtensionIssueManagement issueManagement = extension.getIssueManagement();
+        if (issueManagement != null) {
+            setIssueManagement(new DefaultExtensionIssueManagement(issueManagement.getSystem(),
+                issueManagement.getUrl()));
+        }
+
         // Dependencies
 
         for (ExtensionDependency dependency : extension.getDependencies()) {
@@ -102,6 +127,15 @@ public class XWikiExtension extends AbstractExtension
         // File
 
         setFile(new XWikiExtensionFile(repository, getId()));
+    }
+
+    private DefaultExtensionScmConnection toDefaultExtensionScmConnection(ExtensionScmConnection connection)
+    {
+        if (connection != null) {
+            return new DefaultExtensionScmConnection(connection.getSystem(), connection.getPath());
+        } else {
+            return null;
+        }
     }
 
     @Override

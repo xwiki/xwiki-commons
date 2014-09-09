@@ -36,6 +36,9 @@ import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
+import org.xwiki.extension.DefaultExtensionIssueManagement;
+import org.xwiki.extension.DefaultExtensionScm;
+import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.InvalidExtensionException;
@@ -71,8 +74,11 @@ public class DefaultExtensionSerializerTest
         Assert.assertEquals(extension.getAuthors(), unserializedExtension.getAuthors());
         Assert.assertEquals(extension.getFeatures(), unserializedExtension.getFeatures());
         Assert.assertEquals(extension.getLicenses(), unserializedExtension.getLicenses());
+        Assert.assertEquals(extension.getScm(), unserializedExtension.getScm());
+        Assert.assertEquals(extension.getIssueManagement(), unserializedExtension.getIssueManagement());
         Assert.assertEquals(extension.getProperties(), unserializedExtension.getProperties());
-
+        
+        
         for (int i = 0; i < extension.getDependencies().size(); ++i) {
             Assert.assertEquals(extension.getDependencies().get(i), unserializedExtension.getDependencies().get(i));
             Assert.assertEquals(extension.getDependencies().get(i).getProperties(), unserializedExtension
@@ -121,6 +127,10 @@ public class DefaultExtensionSerializerTest
         extension.addFeature("feature1");
         extension.addLicense(new ExtensionLicense("licensename", Arrays.asList("license content")));
         dependency.setProperties(Collections.<String, Object>singletonMap("dependencykey", "dependencyvalue"));
+
+        extension.setScm(new DefaultExtensionScm("url", new DefaultExtensionScmConnection("system", "path"),
+            new DefaultExtensionScmConnection("system2", "path2")));
+        extension.setIssueManagement(new DefaultExtensionIssueManagement("system", "url"));
 
         // Complete extension
         serializeAndUnserialize(extension);

@@ -55,12 +55,18 @@ import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
+import org.xwiki.extension.DefaultExtensionIssueManagement;
+import org.xwiki.extension.DefaultExtensionScm;
+import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionIssueManagement;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.ExtensionScm;
+import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.LocalExtension;
@@ -113,6 +119,24 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private static final String ELEMENT_FEATURES = "features";
 
     private static final String ELEMENT_FFEATURE = "feature";
+
+    private static final String ELEMENT_SCM = "scm";
+
+    private static final String ELEMENT_SCONNECTION = "connection";
+
+    private static final String ELEMENT_SDEVELOPERCONNECTION = "developerconnection";
+
+    private static final String ELEMENT_SCSYSTEM = "system";
+
+    private static final String ELEMENT_SCPATH = "path";
+
+    private static final String ELEMENT_SURL = "url";
+
+    private static final String ELEMENT_ISSUEMANAGEMENT = "issuemanagement";
+
+    private static final String ELEMENT_ISYSTEM = "system";
+
+    private static final String ELEMENT_IURL = "url";
 
     private static final String ELEMENT_PROPERTIES = "properties";
 
@@ -278,6 +302,12 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             localExtension.setFeatures(features);
         }
 
+        // Scm
+        localExtension.setScm(loadlScm(extensionElement));
+
+        // Issue Management
+        localExtension.setIssueManagement(loadIssueManagement(extensionElement));
+
         // Dependencies
         Node dependenciesNode = getNode(extensionElement, ELEMENT_DEPENDENCIES);
         if (dependenciesNode != null) {
@@ -306,8 +336,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         Node enabledNode = getNode(extensionElement, ELEMENT_INSTALLED);
         if (enabledNode != null) {
-            localExtension.putProperty(InstalledExtension.PKEY_INSTALLED,
-                Boolean.valueOf(enabledNode.getTextContent()));
+            localExtension
+                .putProperty(InstalledExtension.PKEY_INSTALLED, Boolean.valueOf(enabledNode.getTextContent()));
         }
 
         // Deprecated Namespaces
@@ -317,6 +347,54 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         }
 
         return localExtension;
+    }
+
+    private ExtensionScm loadlScm(Element extensionElement)
+    {
+        Node node = getNode(extensionElement, ELEMENT_SCM);
+
+        if (node != null) {
+            Node connectionNode = getNode(node, ELEMENT_SCONNECTION);
+            Node developerConnectionNode = getNode(node, ELEMENT_SDEVELOPERCONNECTION);
+            Node urlNode = getNode(node, ELEMENT_SURL);
+
+            return new DefaultExtensionScm(urlNode != null ? urlNode.getTextContent() : null,
+                loadlScmConnection(connectionNode), loadlScmConnection(developerConnectionNode));
+        }
+
+        return null;
+    }
+
+    private ExtensionScmConnection loadlScmConnection(Node scmConnectionElement)
+    {
+        if (scmConnectionElement != null) {
+            Node system = getNode(scmConnectionElement, ELEMENT_SCSYSTEM);
+            Node path = getNode(scmConnectionElement, ELEMENT_SCPATH);
+
+            if (system != null) {
+                return new DefaultExtensionScmConnection(system.getTextContent(), path != null ? path.getTextContent()
+                    : null);
+            }
+        }
+
+        return null;
+    }
+
+    private ExtensionIssueManagement loadIssueManagement(Element extensionElement)
+    {
+        Node node = getNode(extensionElement, ELEMENT_ISSUEMANAGEMENT);
+
+        if (node != null) {
+            Node systemNode = getNode(node, ELEMENT_ISYSTEM);
+            Node urlNode = getNode(node, ELEMENT_IURL);
+
+            if (systemNode != null) {
+                return new DefaultExtensionIssueManagement(systemNode.getTextContent(), urlNode != null
+                    ? urlNode.getTextContent() : null);
+            }
+        }
+
+        return null;
     }
 
     private List<String> parseList(Element extensionElement, String rootElement, String childElement)
@@ -405,6 +483,10 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         addLicenses(document, extensionElement, extension);
 
+        addScm(document, extensionElement, extension);
+
+        addIssueManagement(document, extensionElement, extension);
+
         addDependencies(document, extensionElement, extension);
 
         addProperties(document, extensionElement, extension.getProperties());
@@ -476,6 +558,45 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     addElement(document, authorElement, ELEMENT_AAURL, authorURL.toString());
                 }
             }
+        }
+    }
+
+    private void addScm(Document document, Element extensionElement, Extension extension)
+    {
+        ExtensionScm scm = extension.getScm();
+
+        if (scm != null) {
+            Element scmElement = document.createElement(ELEMENT_SCM);
+            extensionElement.appendChild(scmElement);
+
+            addElement(document, scmElement, ELEMENT_SURL, scm.getUrl());
+            addScmConnection(document, scmElement, scm.getConnection(), ELEMENT_SCONNECTION);
+            addScmConnection(document, scmElement, scm.getDeveloperConnection(), ELEMENT_SDEVELOPERCONNECTION);
+        }
+    }
+
+    private void addScmConnection(Document document, Element scmElement, ExtensionScmConnection connection,
+        String elementName)
+    {
+        if (connection != null) {
+            Element connectionElement = document.createElement(elementName);
+            scmElement.appendChild(connectionElement);
+
+            addElement(document, connectionElement, ELEMENT_SCSYSTEM, connection.getSystem());
+            addElement(document, connectionElement, ELEMENT_SCPATH, connection.getPath());
+        }
+    }
+
+    private void addIssueManagement(Document document, Element extensionElement, Extension extension)
+    {
+        ExtensionIssueManagement issueManagement = extension.getIssueManagement();
+
+        if (issueManagement != null) {
+            Element issuemanagementElement = document.createElement(ELEMENT_ISSUEMANAGEMENT);
+            extensionElement.appendChild(issuemanagementElement);
+
+            addElement(document, issuemanagementElement, ELEMENT_ISYSTEM, issueManagement.getSystem());
+            addElement(document, issuemanagementElement, ELEMENT_IURL, issueManagement.getURL());
         }
     }
 

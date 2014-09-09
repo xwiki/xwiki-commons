@@ -100,6 +100,16 @@ public abstract class AbstractExtension implements Extension
     protected List<ExtensionDependency> dependencies;
 
     /**
+     * @see #getScm()
+     */
+    protected ExtensionScm scm;
+
+    /**
+     * @see #getIssueManagement()
+     */
+    protected ExtensionIssueManagement issueManagement;
+
+    /**
      * The file of the extension.
      */
     protected ExtensionFile file;
@@ -352,6 +362,36 @@ public abstract class AbstractExtension implements Extension
     protected void setRepository(ExtensionRepository repository)
     {
         this.repository = repository;
+    }
+
+    @Override
+    public ExtensionScm getScm()
+    {
+        return this.scm;
+    }
+
+    /**
+     * @param scm informations related to extensions's Source Control Management
+     * @since 6.3M1
+     */
+    public void setScm(ExtensionScm scm)
+    {
+        this.scm = scm;
+    }
+
+    @Override
+    public ExtensionIssueManagement getIssueManagement()
+    {
+        return this.issueManagement;
+    }
+
+    /**
+     * @param issueManagement informations related to extension's issues management
+     * @since 6.3M1
+     */
+    public void setIssueManagement(ExtensionIssueManagement issueManagement)
+    {
+        this.issueManagement = issueManagement;
     }
 
     @Override
