@@ -99,12 +99,7 @@ public class ExecutionContext
     {
         ExecutionContextProperty property = this.properties.get(key);
 
-        if (property == null) {
-            LOGGER.warn("Tried to remove non-existing property [{}] from execution context.", key);
-            return;
-        }
-
-        if (property.isFinal()) {
+        if (property != null && property.isFinal()) {
             throw new PropertyIsFinalException(key);
         }
 
