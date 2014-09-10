@@ -19,18 +19,16 @@
  */
 package org.xwiki.context;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.test.LogRule;
-
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
 
 /**
  * @version $Id$
@@ -38,9 +36,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class ExecutionContextTest
 {
-    @Rule
-    public LogRule logrule = new LogRule();
-
     @Test
     public void inheritance()
     {
@@ -106,5 +101,12 @@ public class ExecutionContextTest
         context.removeProperty("key");
 
         assertNull(context.getProperty("key"));
+    }
+
+    @Test
+    public void removeUnexistingProperty()
+    {
+        ExecutionContext context = new ExecutionContext();
+        context.removeProperty("doesnotexist");
     }
 }
