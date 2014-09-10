@@ -107,17 +107,4 @@ public class ExecutionContextTest
 
         assertNull(context.getProperty("key"));
     }
-
-    @Test
-    public void removeUnexistingProperty()
-    {
-        ExecutionContext context = new ExecutionContext();
-
-        this.logrule.recordLoggingForType(ExecutionContext.class);
-
-        context.removeProperty("doesnotexist");
-
-        assertTrue(this.logrule
-            .contains("Tried to remove non-existing property [doesnotexist] from execution context."));
-    }
 }
