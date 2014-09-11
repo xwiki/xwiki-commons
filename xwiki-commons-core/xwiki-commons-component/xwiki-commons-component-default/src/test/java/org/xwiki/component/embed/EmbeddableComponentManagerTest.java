@@ -19,13 +19,14 @@
  */
 package org.xwiki.component.embed;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import org.jmock.Expectations;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -40,7 +41,6 @@ import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.test.jmock.JMockRule;
 
 /**
  * Unit tests for {@link EmbeddableComponentManager}.
@@ -50,9 +50,6 @@ import org.xwiki.test.jmock.JMockRule;
  */
 public class EmbeddableComponentManagerTest
 {
-    @Rule
-    public final JMockRule mockery = new JMockRule();
-
     public static interface Role
     {
     }
@@ -121,12 +118,12 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> d1 = new DefaultComponentDescriptor<Role>();
-        d1.setRole(Role.class);
+        d1.setRoleType(Role.class);
         d1.setRoleHint("hint1");
         ecm.registerComponent(d1);
 
         DefaultComponentDescriptor<Role> d2 = new DefaultComponentDescriptor<Role>();
-        d2.setRole(Role.class);
+        d2.setRoleType(Role.class);
         d2.setRoleHint("hint2");
         ecm.registerComponent(d2);
 
@@ -190,7 +187,7 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> d1 = new DefaultComponentDescriptor<Role>();
-        d1.setRole(Role.class);
+        d1.setRoleType(Role.class);
         d1.setImplementation(RoleImpl.class);
         ecm.registerComponent(d1);
 
@@ -198,7 +195,7 @@ public class EmbeddableComponentManagerTest
         Assert.assertSame(RoleImpl.class, instance.getClass());
 
         DefaultComponentDescriptor<Role> d2 = new DefaultComponentDescriptor<Role>();
-        d2.setRole(Role.class);
+        d2.setRoleType(Role.class);
         d2.setImplementation(OtherRoleImpl.class);
         ecm.registerComponent(d2);
 
@@ -212,7 +209,7 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> d1 = new DefaultComponentDescriptor<Role>();
-        d1.setRole(Role.class);
+        d1.setRoleType(Role.class);
         d1.setImplementation(RoleImpl.class);
         Role instance = new RoleImpl();
         ecm.registerComponent(d1, instance);
@@ -226,18 +223,18 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> d1 = new DefaultComponentDescriptor<Role>();
-        d1.setRole(Role.class);
+        d1.setRoleType(Role.class);
         d1.setImplementation(RoleImpl.class);
         ecm.registerComponent(d1);
 
         // Verify that the component is properly registered
         Assert.assertSame(RoleImpl.class, ecm.getInstance(Role.class).getClass());
 
-        ecm.unregisterComponent(d1.getRole(), d1.getRoleHint());
+        ecm.unregisterComponent(d1.getRoleType(), d1.getRoleHint());
 
         // Verify that the component is not registered anymore
         try {
-            ecm.getInstance(d1.getRole());
+            ecm.getInstance(d1.getRoleType());
             Assert.fail("Should have thrown a ComponentLookupException");
         } catch (ComponentLookupException expected) {
             // The exception message doesn't matter. All we need to know is that the component descriptor
@@ -263,14 +260,14 @@ public class EmbeddableComponentManagerTest
 
         // Register a component with the same Role and Hint as in the parent
         DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
-        cd1.setRole(Role.class);
+        cd1.setRoleType(Role.class);
         cd1.setImplementation(RoleImpl.class);
         Role roleImpl = new RoleImpl();
         ecm.registerComponent(cd1, roleImpl);
 
         // Register a component with the same Role as in the parent but with a different hint
         DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<Role>();
-        cd2.setRole(Role.class);
+        cd2.setRoleType(Role.class);
         cd2.setRoleHint("hint");
         cd2.setImplementation(RoleImpl.class);
         ecm.registerComponent(cd2);
@@ -293,7 +290,7 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> d1 = new DefaultComponentDescriptor<Role>();
-        d1.setRole(Role.class);
+        d1.setRoleType(Role.class);
         d1.setRoleHint("default");
         ecm.registerComponent(d1);
 
@@ -317,7 +314,7 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> d = new DefaultComponentDescriptor<Role>();
-        d.setRole(Role.class);
+        d.setRoleType(Role.class);
         d.setImplementation(LoggingRoleImpl.class);
 
         DefaultComponentDependency dependencyDescriptor = new DefaultComponentDependency();
@@ -340,7 +337,7 @@ public class EmbeddableComponentManagerTest
     {
         EmbeddableComponentManager parent = new EmbeddableComponentManager();
         DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
+        cd.setRoleType(Role.class);
         cd.setImplementation(RoleImpl.class);
         if (hint != null) {
             cd.setRoleHint(hint);
@@ -355,7 +352,7 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
+        cd.setRoleType(Role.class);
         cd.setImplementation(InitializableRoleImpl.class);
         ecm.registerComponent(cd);
         InitializableRoleImpl instance = (InitializableRoleImpl) ecm.getInstance(Role.class);
@@ -369,7 +366,7 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
+        cd.setRoleType(Role.class);
         cd.setImplementation(DisposableRoleImpl.class);
         cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
 
@@ -378,7 +375,7 @@ public class EmbeddableComponentManagerTest
 
         Assert.assertFalse(instance.isFinalized());
 
-        ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
+        ecm.unregisterComponent(cd.getRoleType(), cd.getRoleHint());
 
         Assert.assertTrue(instance.isFinalized());
     }
@@ -389,7 +386,7 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
+        cd.setRoleType(Role.class);
         cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
 
         DisposableRoleImpl instance = new DisposableRoleImpl();
@@ -397,7 +394,7 @@ public class EmbeddableComponentManagerTest
 
         Assert.assertFalse(instance.isFinalized());
 
-        ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
+        ecm.unregisterComponent(cd.getRoleType(), cd.getRoleHint());
 
         Assert.assertTrue(instance.isFinalized());
     }
@@ -408,24 +405,16 @@ public class EmbeddableComponentManagerTest
         final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         final DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
+        cd.setRoleType(Role.class);
         cd.setImplementation(RoleImpl.class);
         Role roleImpl = new RoleImpl();
         ecm.registerComponent(cd, roleImpl);
 
-        final ComponentEventManager cem = this.mockery.mock(ComponentEventManager.class);
+        final ComponentEventManager cem = mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        this.mockery.checking(new Expectations()
-        {
-            {
-                // Verify that when we release a component an unregistration event is sent followed by a registration
-                // one
-                // see comments in {@link EmbeddableComponentManager#release} code.
-                oneOf(cem).notifyComponentUnregistered(cd, ecm);
-                oneOf(cem).notifyComponentRegistered(cd, ecm);
-            }
-        });
+        verify(cem).notifyComponentUnregistered(cd, ecm);
+        verify(cem).notifyComponentRegistered(cd, ecm);
 
         ecm.release(roleImpl);
 
@@ -439,7 +428,7 @@ public class EmbeddableComponentManagerTest
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
+        cd.setRoleType(Role.class);
         cd.setImplementation(DisposableRoleImpl.class);
         cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
 
@@ -459,18 +448,13 @@ public class EmbeddableComponentManagerTest
         final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         final DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
+        cd.setRoleType(Role.class);
         cd.setImplementation(RoleImpl.class);
 
-        final ComponentEventManager cem = this.mockery.mock(ComponentEventManager.class);
+        final ComponentEventManager cem = mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        this.mockery.checking(new Expectations()
-        {
-            {
-                oneOf(cem).notifyComponentRegistered(cd, ecm);
-            }
-        });
+        verify(cem).notifyComponentRegistered(cd, ecm);
 
         ecm.registerComponent(cd);
     }
@@ -481,21 +465,16 @@ public class EmbeddableComponentManagerTest
         final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         final DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
+        cd.setRoleType(Role.class);
         cd.setImplementation(RoleImpl.class);
         ecm.registerComponent(cd);
 
-        final ComponentEventManager cem = this.mockery.mock(ComponentEventManager.class);
+        final ComponentEventManager cem = mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        this.mockery.checking(new Expectations()
-        {
-            {
-                oneOf(cem).notifyComponentUnregistered(cd, ecm);
-            }
-        });
+        verify(cem).notifyComponentUnregistered(cd, ecm);
 
-        ecm.unregisterComponent(cd.getRole(), cd.getRoleHint());
+        ecm.unregisterComponent(cd.getRoleType(), cd.getRoleHint());
     }
 
     @Test
@@ -504,36 +483,30 @@ public class EmbeddableComponentManagerTest
         final EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         final DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
-        cd1.setRole(Role.class);
+        cd1.setRoleType(Role.class);
         cd1.setImplementation(RoleImpl.class);
         ecm.registerComponent(cd1);
 
         final DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<Role>();
-        cd2.setRole(Role.class);
+        cd2.setRoleType(Role.class);
         cd2.setImplementation(OtherRoleImpl.class);
 
-        final ComponentEventManager cem = this.mockery.mock(ComponentEventManager.class);
+        final ComponentEventManager cem = mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        this.mockery.checking(new Expectations()
-        {
-            {
-                oneOf(cem).notifyComponentUnregistered(cd1, ecm);
-                oneOf(cem).notifyComponentRegistered(cd2, ecm);
-            }
-        });
+        verify(cem).notifyComponentUnregistered(cd1, ecm);
+        verify(cem).notifyComponentRegistered(cd2, ecm);
 
         ecm.registerComponent(cd2);
     }
 
     @Test
-    public void testDispose() throws ComponentRepositoryException, ComponentLookupException,
-        ComponentLifecycleException
+    public void testDispose() throws ComponentRepositoryException, ComponentLookupException
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
         DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRole(Role.class);
+        cd.setRoleType(Role.class);
         cd.setImplementation(DisposableRoleImpl.class);
         cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
 
