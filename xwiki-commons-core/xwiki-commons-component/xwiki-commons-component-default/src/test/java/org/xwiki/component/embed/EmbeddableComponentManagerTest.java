@@ -413,10 +413,10 @@ public class EmbeddableComponentManagerTest
         final ComponentEventManager cem = mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
+        ecm.release(roleImpl);
+
         verify(cem).notifyComponentUnregistered(cd, ecm);
         verify(cem).notifyComponentRegistered(cd, ecm);
-
-        ecm.release(roleImpl);
 
         Assert.assertNotNull(ecm.getInstance(Role.class));
         Assert.assertNotSame(roleImpl, ecm.getInstance(Role.class));
@@ -454,9 +454,9 @@ public class EmbeddableComponentManagerTest
         final ComponentEventManager cem = mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        verify(cem).notifyComponentRegistered(cd, ecm);
-
         ecm.registerComponent(cd);
+
+        verify(cem).notifyComponentRegistered(cd, ecm);
     }
 
     @Test
@@ -472,9 +472,9 @@ public class EmbeddableComponentManagerTest
         final ComponentEventManager cem = mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
-        verify(cem).notifyComponentUnregistered(cd, ecm);
-
         ecm.unregisterComponent(cd.getRoleType(), cd.getRoleHint());
+
+        verify(cem).notifyComponentUnregistered(cd, ecm);
     }
 
     @Test
@@ -494,10 +494,10 @@ public class EmbeddableComponentManagerTest
         final ComponentEventManager cem = mock(ComponentEventManager.class);
         ecm.setComponentEventManager(cem);
 
+        ecm.registerComponent(cd2);
+
         verify(cem).notifyComponentUnregistered(cd1, ecm);
         verify(cem).notifyComponentRegistered(cd2, ecm);
-
-        ecm.registerComponent(cd2);
     }
 
     @Test
