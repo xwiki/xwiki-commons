@@ -34,6 +34,8 @@
     <xwiki.jacoco.instructionRatio>0.76</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services for Authentication</xwiki.extension.name>
+    <!-- Working with cryptography requires a lot of classes, relax the coupling requirements -->
+    <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
   </properties>
   <dependencies>
     <dependency>
@@ -55,16 +57,4 @@
       <artifactId>mail</artifactId>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

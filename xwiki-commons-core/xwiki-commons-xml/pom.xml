@@ -33,6 +33,9 @@
   <description>XWiki Commons - XML</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.51</xwiki.jacoco.instructionRatio>
+    <!-- There's a utility class with lots of features, allow it to have many dependencies;
+         There's a SAX event listener, which requires complex code -->
+    <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
   </properties>
   <dependencies>
     <dependency>
@@ -85,16 +88,6 @@
             <exclude>**/*.ent</exclude>
             <exclude>**/*.dtd</exclude>
           </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <excludes>
-            org/xwiki/xml/stax/SAXEventWriter.java
-          </excludes>
-          <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
         </configuration>
       </plugin>
     </plugins>

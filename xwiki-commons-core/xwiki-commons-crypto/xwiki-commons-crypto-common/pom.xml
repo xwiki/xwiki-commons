@@ -34,6 +34,8 @@
     <xwiki.jacoco.instructionRatio>0.62</xwiki.jacoco.instructionRatio>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services Common API</xwiki.extension.name>
+    <!-- Cryptography requires complex expressions, allow a few such expressions -->
+    <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
   </properties>
   <dependencies>
     <dependency>
@@ -41,16 +43,4 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <suppressionsLocation>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

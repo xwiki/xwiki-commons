@@ -27,4 +27,9 @@
 <suppressions>
   <!-- Utility class with lots of features -->
   <suppress checks="ClassFanOutComplexity" files="XMLUtils.java" />
+
+  <!-- SAX requires fairly complex code -->
+  <suppress checks="ClassFanOutComplexity" files="SAXEventWriter.java" />
+  <suppress checks="CyclomaticComplexity" files="SAXEventWriter.java" />
+  <suppress checks="AnonInnerLength" files="SAXEventWriter.java" />
 </suppressions>
