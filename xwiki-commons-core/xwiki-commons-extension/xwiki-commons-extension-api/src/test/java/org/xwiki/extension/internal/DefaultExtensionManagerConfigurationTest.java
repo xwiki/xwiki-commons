@@ -51,10 +51,13 @@ public class DefaultExtensionManagerConfigurationTest
     public final MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
 
     @Rule
-    public final LogRule logCapture = new LogRule() {{
-        record(LogLevel.WARN);
-        recordLoggingForType(DefaultExtensionManagerConfiguration.class);
-    }};
+    public final LogRule logCapture = new LogRule()
+    {
+        {
+            record(LogLevel.WARN);
+            recordLoggingForType(DefaultExtensionManagerConfiguration.class);
+        }
+    };
 
     private ExtensionManagerConfiguration configuration;
 

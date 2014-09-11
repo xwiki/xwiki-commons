@@ -19,7 +19,9 @@
  */
 package org.xwiki.velocity.internal.jmx;
 
-import org.xwiki.velocity.VelocityEngine;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;
@@ -30,9 +32,8 @@ import javax.management.openmbean.SimpleType;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 import javax.management.openmbean.TabularType;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.xwiki.velocity.VelocityEngine;
 
 /**
  * Uses non-stable (ie might need to be modified when we upgrade the Velocity JAR) introspection to access private
@@ -72,11 +73,11 @@ public class JMXVelocityEngine implements JMXVelocityEngineMBean
             ArrayType macroNameType = new ArrayType(1, SimpleType.STRING);
 
             // Represents one row (template name, macro names) in the returned table data
-            String[] columnNames = new String[] {"templateName", "macroNames"};
-            String[] descriptions = new String[] {"The Template Name (namespace)", "The names of registered Macros"};
+            String[] columnNames = new String[] { "templateName", "macroNames" };
+            String[] descriptions = new String[] { "The Template Name (namespace)", "The names of registered Macros" };
             CompositeType rowType = new CompositeType("template",
                 "Template management data (namespaces, macros) for a row", columnNames, descriptions,
-                new OpenType[]{SimpleType.STRING, macroNameType});
+                new OpenType[] { SimpleType.STRING, macroNameType });
 
             TabularType type = new TabularType("templates", "Template management data (namespaces, macros)", rowType,
                 columnNames);
@@ -87,8 +88,8 @@ public class JMXVelocityEngine implements JMXVelocityEngineMBean
                 String templateName = entry.getKey();
                 String[] macroNames = entry.getValue();
 
-                CompositeData rowData = new CompositeDataSupport(rowType, columnNames, new Object[]{
-                    templateName, macroNames});
+                CompositeData rowData = new CompositeDataSupport(rowType, columnNames, new Object[] {
+                    templateName, macroNames });
                 data.put(rowData);
             }
 
@@ -143,7 +144,7 @@ public class JMXVelocityEngine implements JMXVelocityEngineMBean
     /**
      * Helper method to access a private field.
      *
-     * @param instance the instance containing the field to access 
+     * @param instance the instance containing the field to access
      * @param fieldName the name of the field to access
      * @return the field object
      * @throws NoSuchFieldException in case of an error when accessing the private field

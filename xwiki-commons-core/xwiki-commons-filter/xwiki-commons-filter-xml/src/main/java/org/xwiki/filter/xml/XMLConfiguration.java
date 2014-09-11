@@ -21,7 +21,7 @@ package org.xwiki.filter.xml;
 
 /**
  * Allow to customize the syntax.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

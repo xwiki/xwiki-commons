@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * Customize {@link MapConverter}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

@@ -28,7 +28,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Parse and serialize object to and from XML.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -37,7 +37,7 @@ public interface ParameterManager
 {
     /**
      * Write the passed object on the passed stream writer.
-     * 
+     *
      * @param type the type of the element to serialize
      * @param object the object to convert
      * @param xmlStreamWriter the xml writer
@@ -46,7 +46,7 @@ public interface ParameterManager
 
     /**
      * Convert the passed {@link Element} into an instance of the passed type.
-     * 
+     *
      * @param type the type
      * @param rootElement the source to convert
      * @return the object

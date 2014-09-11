@@ -19,19 +19,17 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.io.StringWriter;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.job.test.CustomObject;
+
+import static org.junit.Assert.assertEquals;
 
 public class SafeXStreamTest
 {
@@ -71,7 +69,7 @@ public class SafeXStreamTest
     private Object assertReadwrite(String resource) throws IOException
     {
         String content = IOUtils.toString(getClass().getResourceAsStream(resource));
-        
+
         Object obj = this.xstream.fromXML(content);
 
         String str = this.xstream.toXML(obj);

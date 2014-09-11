@@ -30,7 +30,7 @@ import org.xwiki.stability.Unstable;
 /**
  * Base class to use for custom {@link Marker}s which contains values (so which are a bit more than {@link Marker} as
  * defined by SLF4J). For "real" marker use {@link org.slf4j.MarkerFactory#getMarker(String)}.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */
@@ -133,7 +133,7 @@ public abstract class AbstractContainerMarker implements ContainerMarker
         if (this.references != null) {
             return this.references.iterator();
         } else {
-            return Collections.<Marker> emptyList().iterator();
+            return Collections.<Marker>emptyList().iterator();
         }
     }
 

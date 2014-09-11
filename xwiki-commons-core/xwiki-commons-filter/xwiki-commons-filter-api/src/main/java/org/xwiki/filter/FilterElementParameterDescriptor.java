@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * A filter element parameter.
- * 
+ *
  * @param <T> the type of the parameter
  * @version $Id$
  * @since 5.2M1
@@ -73,7 +73,7 @@ public class FilterElementParameterDescriptor<T>
      */
     public int getIndex()
     {
-        return index;
+        return this.index;
     }
 
     /**

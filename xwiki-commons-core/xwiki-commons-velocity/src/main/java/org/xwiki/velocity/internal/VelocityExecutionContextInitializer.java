@@ -26,15 +26,15 @@ import javax.inject.Singleton;
 import org.apache.velocity.VelocityContext;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.context.ExecutionContextInitializer;
 import org.xwiki.context.ExecutionContextException;
+import org.xwiki.context.ExecutionContextInitializer;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.XWikiVelocityException;
 
 /**
  * Allow registering the Velocity Context in the Execution Context object since it's shared during the whole execution
  * of the current request.
- * 
+ *
  * @see org.xwiki.context.ExecutionContextInitializer
  * @since 1.5M1
  * @version $Id$

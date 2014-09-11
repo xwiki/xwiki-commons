@@ -22,7 +22,6 @@ package org.xwiki.filter.descriptor;
 import org.xwiki.stability.Unstable;
 
 /**
- * 
  * @version $Id$
  * @since 6.2M1
  */
@@ -32,5 +31,5 @@ public interface FilterStreamBeanDescriptor extends FilterStreamDescriptor
     /**
      * @return the class of the JAVA bean containing.
      */
-    Class< ? > getBeanClass();
+    Class<?> getBeanClass();
 }

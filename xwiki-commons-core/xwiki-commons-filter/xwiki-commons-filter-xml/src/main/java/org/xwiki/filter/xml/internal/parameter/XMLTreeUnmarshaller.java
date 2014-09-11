@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * Customize {@link TreeUnmarshaller}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -55,7 +55,7 @@ public class XMLTreeUnmarshaller extends TreeUnmarshaller
     {
         Type type = (Type) dataHolder.get(XStreamParameterManager.DDEFAULTTYPE_NAME);
 
-        Class< ? > typeClass = ReflectionUtils.getTypeClass(type);
+        Class<?> typeClass = ReflectionUtils.getTypeClass(type);
 
         if (typeClass != null) {
             return convertAnother(null, typeClass);

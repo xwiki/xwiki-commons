@@ -48,7 +48,7 @@ import org.xwiki.velocity.tools.RegexTool;
 
 /**
  * All configuration options for the Velocity subsystem.
- * 
+ *
  * @version $Id$
  * @since 2.0M1
  */
@@ -111,8 +111,8 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // Prevents users from writing dangerous Velocity code like using Class.forName or Java threading APIs.
         this.defaultProperties.setProperty("runtime.introspector.uberspect", ChainingUberspector.class.getName());
         this.defaultProperties.setProperty("runtime.introspector.uberspect.chainClasses", StringUtils.join(
-            new String[] {SecureUberspector.class.getName(), DeprecatedCheckUberspector.class.getName(),
-                MethodArgumentsUberspector.class.getName()}, ','));
+            new String[] { SecureUberspector.class.getName(), DeprecatedCheckUberspector.class.getName(),
+                MethodArgumentsUberspector.class.getName() }, ','));
         // Enable the extra scope variables $template and $macro, similar to $foreach
         this.defaultProperties.setProperty("template.provide.scope.control", Boolean.TRUE.toString());
         this.defaultProperties.setProperty("macro.provide.scope.control", Boolean.TRUE.toString());

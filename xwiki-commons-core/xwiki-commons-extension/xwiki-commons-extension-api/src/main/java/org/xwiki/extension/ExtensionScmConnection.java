@@ -21,7 +21,7 @@ package org.xwiki.extension;
 
 /**
  * Represent a connection to a source control management system.
- * 
+ *
  * @version $Id$
  * @since 6.3M1
  */

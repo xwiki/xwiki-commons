@@ -21,7 +21,7 @@ package org.xwiki.job;
 
 /**
  * Default implementation of {@link Request}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

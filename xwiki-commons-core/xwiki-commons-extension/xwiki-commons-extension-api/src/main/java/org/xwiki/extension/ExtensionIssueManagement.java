@@ -21,7 +21,7 @@ package org.xwiki.extension;
 
 /**
  * Describe the issue management system used for this extension.
- * 
+ *
  * @version $Id$
  * @since 6.3M1
  */

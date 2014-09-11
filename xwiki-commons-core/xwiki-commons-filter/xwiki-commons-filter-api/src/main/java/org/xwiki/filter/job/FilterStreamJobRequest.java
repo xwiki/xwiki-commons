@@ -24,7 +24,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Filter job request.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

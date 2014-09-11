@@ -29,7 +29,7 @@ import org.xwiki.properties.converter.ConversionException;
 
 /**
  * Converter that converts a value into an enumeration class value.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -41,7 +41,7 @@ public class EnumConverter extends AbstractConverter<Enum>
     protected <E extends Enum> E convertToType(Type type, Object value)
     {
         if (value != null) {
-            Object[] enumValues = ((Class< ? >) type).getEnumConstants();
+            Object[] enumValues = ((Class<?>) type).getEnumConstants();
 
             String testValue = value.toString();
             for (Object enumValue : enumValues) {
@@ -59,7 +59,7 @@ public class EnumConverter extends AbstractConverter<Enum>
 
     /**
      * Generate error message to use in the {@link ConversionException}.
-     * 
+     *
      * @param enumValues possible values of the enum.
      * @param testValue the value to convert.
      * @return the generated error message.

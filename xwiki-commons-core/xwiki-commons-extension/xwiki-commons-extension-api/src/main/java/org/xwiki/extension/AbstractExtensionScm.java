@@ -26,7 +26,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Base class or implementations of {@link ExtensionScm}.
- * 
+ *
  * @version $Id$
  * @since 6.3M1
  */

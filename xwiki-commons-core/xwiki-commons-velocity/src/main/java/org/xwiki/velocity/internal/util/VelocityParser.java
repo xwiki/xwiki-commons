@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provide helpers to parse velocity scripts.
- * 
+ *
  * @version $Id$
  */
 public class VelocityParser
@@ -88,7 +88,7 @@ public class VelocityParser
 
     /**
      * Get any valid Velocity block starting with a sharp character (#if, #somemaccro(), ##comment etc.).
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -123,7 +123,7 @@ public class VelocityParser
 
     /**
      * Get any valid Velocity block starting with a sharp character except comments.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -180,7 +180,7 @@ public class VelocityParser
 
     /**
      * Get a valid Velocity identifier used for variable of macro.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -211,7 +211,7 @@ public class VelocityParser
 
     /**
      * Indicate if the provided character is valid in a velocity identifier.
-     * 
+     *
      * @param c the character
      * @return true if the character is valid
      */
@@ -224,7 +224,7 @@ public class VelocityParser
      * Get a Velocity directive name block. It's different from
      * {@link #getVelocityIdentifier(char[], int, StringBuffer, VelocityParserContext)} because is include the optional
      * <code>{</code> and <code>}</code>.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param directiveName the buffer where to append the name of the directive
@@ -261,7 +261,7 @@ public class VelocityParser
 
     /**
      * Get the newline consumed by Velocity directive other than macros.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -291,7 +291,7 @@ public class VelocityParser
 
     /**
      * Get comment single line comment (starting with <code>##</code>).
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -318,7 +318,7 @@ public class VelocityParser
 
     /**
      * Get multilines comment (between <code>#*</code> and <code>*#</code>).
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -345,7 +345,7 @@ public class VelocityParser
 
     /**
      * Get any valid Velocity starting with a <code>$</code>.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -361,7 +361,7 @@ public class VelocityParser
 
     /**
      * Get any valid Velocity starting with a <code>$</code>.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param varName the buffer where to append the name of the variable
@@ -418,7 +418,7 @@ public class VelocityParser
 
     /**
      * Look in previous characters of the array to find if the current var is escaped (like \$var).
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @return the parser context to put some informations
@@ -436,7 +436,7 @@ public class VelocityParser
 
     /**
      * Get the right part of a Velocity variable (the methods and properties starting from the dot).
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param fullSyntax indicate if it's between <code>{</code> and <code>}</code>
@@ -471,7 +471,7 @@ public class VelocityParser
 
     /**
      * Get a velocity method call or a property starting with a <code>.</code>.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -507,7 +507,7 @@ public class VelocityParser
 
     /**
      * Get a Velocity table.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -522,7 +522,7 @@ public class VelocityParser
 
     /**
      * Get the Velocity method parameters (including <code>(</code> and <code>)</code>).
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -539,7 +539,7 @@ public class VelocityParser
      * Get a group of parameters between two characters. Generic version of
      * {@link #getTableElement(char[], int, StringBuffer, VelocityParserContext)} and
      * {@link #getMethodParameters(char[], int, StringBuffer, VelocityParserContext)}.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -626,7 +626,7 @@ public class VelocityParser
 
     /**
      * Match a group of {@link Character#isWhitespace(char)}.
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block
@@ -650,7 +650,7 @@ public class VelocityParser
 
     /**
      * Match a group of space characters (ASCII 32).
-     * 
+     *
      * @param array the source to parse
      * @param currentIndex the current index in the <code>array</code>
      * @param velocityBlock the buffer where to append matched velocity block

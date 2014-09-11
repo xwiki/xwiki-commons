@@ -26,7 +26,7 @@ import org.xwiki.job.event.status.JobStatus;
 
 /**
  * Store and retrieve {@link JobStatus} instances.
- * 
+ *
  * @version $Id$
  * @since 6.1M2
  */

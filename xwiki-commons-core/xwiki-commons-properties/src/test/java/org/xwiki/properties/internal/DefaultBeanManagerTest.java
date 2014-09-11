@@ -38,11 +38,11 @@ import org.xwiki.test.annotation.ComponentList;
 
 /**
  * Validate {@link DefaultBeanManager}.
- * 
+ *
  * @version $Id$
  */
-@ComponentList({DefaultBeanManager.class, DefaultConverterManager.class, EnumConverter.class,
-ConvertUtilsConverter.class})
+@ComponentList({ DefaultBeanManager.class, DefaultConverterManager.class, EnumConverter.class,
+    ConvertUtilsConverter.class })
 public class DefaultBeanManagerTest
 {
     public static class RawPropertiesTest extends HashMap<String, Object> implements RawProperties

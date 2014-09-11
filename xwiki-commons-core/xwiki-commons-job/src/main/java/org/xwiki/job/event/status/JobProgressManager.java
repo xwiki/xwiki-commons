@@ -23,7 +23,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Helper to manipulate current progress.
- * 
+ *
  * @version $Id$
  * @since 6.1M1
  */
@@ -32,7 +32,7 @@ public interface JobProgressManager
 {
     /**
      * Push new progression level.
-     * 
+     *
      * @param steps number of steps in this new level
      * @param source the source to send with the event
      */
@@ -40,14 +40,14 @@ public interface JobProgressManager
 
     /**
      * Next step.
-     * 
+     *
      * @param source the source to send with the event
      */
     void stepPropress(Object source);
 
     /**
      * Pop progression level.
-     * 
+     *
      * @param source the source to send with the event
      */
     void popLevelProgress(Object source);

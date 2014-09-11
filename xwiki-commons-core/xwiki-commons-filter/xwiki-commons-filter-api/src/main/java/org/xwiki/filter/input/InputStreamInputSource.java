@@ -25,7 +25,6 @@ import java.io.InputStream;
 import org.xwiki.stability.Unstable;
 
 /**
- * 
  * @version $Id$
  * @since 6.2M1
  */

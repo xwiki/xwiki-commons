@@ -34,7 +34,7 @@ import org.apache.velocity.util.introspection.VelPropertySet;
  * method has a Deprecated annotation. Because this is a chainable uberspector, it has to re-get the method using a
  * default introspector, which is not safe; future uberspectors might not be able to return a precise method name, or a
  * method of the original target object.
- * 
+ *
  * @since 1.5M1
  * @version $Id$
  * @see ChainableUberspector
@@ -46,7 +46,7 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
     public void init()
     {
         super.init();
-        this.introspector = new Introspector(log);
+        this.introspector = new Introspector(this.log);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
     {
         VelMethod method = super.getMethod(obj, methodName, args, i);
         if (method != null) {
-            Method m = introspector.getMethod(obj.getClass(), method.getMethodName(), args);
+            Method m = this.introspector.getMethod(obj.getClass(), method.getMethodName(), args);
             if (m != null
                 && (m.isAnnotationPresent(Deprecated.class)
                     || m.getDeclaringClass().isAnnotationPresent(Deprecated.class)
@@ -71,7 +71,7 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
     {
         VelPropertyGet method = super.getPropertyGet(obj, identifier, i);
         if (method != null) {
-            Method m = introspector.getMethod(obj.getClass(), method.getMethodName(), new Object[] {});
+            Method m = this.introspector.getMethod(obj.getClass(), method.getMethodName(), new Object[] {});
             if (m != null
                 && (m.isAnnotationPresent(Deprecated.class)
                     || m.getDeclaringClass().isAnnotationPresent(Deprecated.class)
@@ -89,7 +89,7 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
         // TODO Auto-generated method stub
         VelPropertySet method = super.getPropertySet(obj, identifier, arg, i);
         if (method != null) {
-            Method m = introspector.getMethod(obj.getClass(), method.getMethodName(), new Object[] {arg});
+            Method m = this.introspector.getMethod(obj.getClass(), method.getMethodName(), new Object[] { arg });
             if (m != null
                 && (m.isAnnotationPresent(Deprecated.class)
                     || m.getDeclaringClass().isAnnotationPresent(Deprecated.class)
@@ -103,7 +103,7 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
 
     /**
      * Helper method to log a warning when a deprecation has been found.
-     * 
+     *
      * @param deprecationType the type of deprecation (eg "getter", "setter", "method")
      * @param object the object that has a deprecation
      * @param methodName the deprecated method's name
@@ -112,7 +112,7 @@ public class DeprecatedCheckUberspector extends AbstractChainableUberspector imp
      */
     private void logWarning(String deprecationType, Object object, String methodName, Info info)
     {
-        log.warn(String.format("Deprecated usage of %s [%s] in %s@%d,%d", deprecationType, object.getClass()
+        this.log.warn(String.format("Deprecated usage of %s [%s] in %s@%d,%d", deprecationType, object.getClass()
             .getCanonicalName() + "." + methodName, info.getTemplateName(), info.getLine(), info.getColumn()));
     }
 }

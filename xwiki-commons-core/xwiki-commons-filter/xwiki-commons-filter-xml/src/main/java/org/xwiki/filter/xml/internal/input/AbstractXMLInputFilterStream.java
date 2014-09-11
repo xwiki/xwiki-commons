@@ -21,8 +21,6 @@ package org.xwiki.filter.xml.internal.input;
 
 import java.io.IOException;
 
-import javanet.staxutils.XMLStreamUtils;
-
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
@@ -33,6 +31,8 @@ import org.xwiki.filter.input.InputSource;
 import org.xwiki.filter.input.InputStreamInputSource;
 import org.xwiki.filter.input.ReaderInputSource;
 import org.xwiki.filter.xml.input.XMLInputProperties;
+
+import javanet.staxutils.XMLStreamUtils;
 
 /**
  * @param <P>

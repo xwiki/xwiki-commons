@@ -28,7 +28,7 @@ import org.xwiki.extension.repository.internal.MavenExtension;
 
 /**
  * Add support for repositories supported by AETHER (only Maven for now).
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

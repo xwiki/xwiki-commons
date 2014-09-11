@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Custom parameters passed to a filter event.
- * 
+ *
  * @version $Id$
  * @since 5.2M2
  */

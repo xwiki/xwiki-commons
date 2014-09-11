@@ -27,12 +27,12 @@ import java.lang.annotation.Target;
 
 /**
  * Use this annotation to add a description to a property bean method.
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD })
+@Target({ ElementType.METHOD, ElementType.FIELD })
 @Inherited
 public @interface PropertyDescription
 {

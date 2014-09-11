@@ -24,9 +24,9 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
+import org.xwiki.blame.AnnotatedContent;
 import org.xwiki.blame.BlameManager;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.blame.AnnotatedContent;
 
 /**
  * Default implementation of {@link org.xwiki.blame.BlameManager}.

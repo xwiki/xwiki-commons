@@ -19,6 +19,15 @@
  */
 package org.xwiki.velocity.internal.jmx;
 
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.TabularData;
+
 import org.apache.velocity.VelocityContext;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,19 +40,11 @@ import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.internal.DefaultVelocityContextFactory;
 import org.xwiki.velocity.internal.DefaultVelocityEngine;
 
-import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.TabularData;
-import java.io.StringWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link JMXVelocityEngine}.
- * 
+ *
  * @version $Id$
  * @since 2.4M2
  */
@@ -78,7 +79,7 @@ public class JMXVelocityEngineTest
         Assert.assertEquals(1, data.values().size());
         CompositeData cd = ((CompositeData) data.values().iterator().next());
         Assert.assertEquals("<global>", cd.get("templateName"));
-        Assert.assertEquals(0, ((String[])cd.get("macroNames")).length);
+        Assert.assertEquals(0, ((String[]) cd.get("macroNames")).length);
 
         StringWriter out = new StringWriter();
         engine.evaluate(new VelocityContext(), out, "testmacronamespace", "#macro(testmacro)#end");

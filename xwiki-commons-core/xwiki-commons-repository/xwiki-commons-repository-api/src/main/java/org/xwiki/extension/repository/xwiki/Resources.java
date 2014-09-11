@@ -21,7 +21,7 @@ package org.xwiki.extension.repository.xwiki;
 
 /**
  * Resources to use to access Extension Manager REST service.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  * @deprecated since 4.2M1 use {@link org.xwiki.repository.Resources} instead

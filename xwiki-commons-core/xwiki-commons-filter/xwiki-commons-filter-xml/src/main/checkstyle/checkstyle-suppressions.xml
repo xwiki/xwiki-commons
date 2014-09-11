@@ -27,4 +27,6 @@
 <suppressions>
   <!-- This method is supposed to return HashSet, that the type it's handling... -->
   <suppress checks="IllegalType" files="HashSetConverter.java" />
+  <!-- XStream requires instantiating a lot of different classes -->
+  <suppress checks="ClassDataAbstractionCoupling" files="XStreamParameterManager.java"/>
 </suppressions>

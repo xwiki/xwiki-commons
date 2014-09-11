@@ -36,7 +36,7 @@ import org.apache.http.protocol.HttpContext;
 
 /**
  * Used to force preemptive authentication.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

@@ -28,7 +28,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link EscapeTool}.
- * 
+ *
  * @version $Id$
  * @since 2.7RC1
  */
@@ -217,7 +217,7 @@ public class EscapeToolTest
     {
         EscapeTool tool = new EscapeTool();
         HashMap<String, String[]> map = new HashMap<String, String[]>();
-        String[] array = {"M&M", null, "Astronomy&Astrophysics"};
+        String[] array = { "M&M", null, "Astronomy&Astrophysics" };
         map.put("couple", array);
         Assert.assertEquals("couple=M%26M&couple=&couple=Astronomy%26Astrophysics", tool.url(map));
     }

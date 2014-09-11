@@ -23,7 +23,7 @@ import org.xwiki.logging.event.LogEvent;
 
 /**
  * A {@link org.slf4j.Logger} with support for {@link LogEvent}.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

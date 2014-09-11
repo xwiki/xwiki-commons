@@ -30,7 +30,7 @@ import org.xwiki.filter.UnknownFilter;
 
 /**
  * Provide various filter related tools.
- * 
+ *
  * @version $Id$
  */
 public final class FilterUtils
@@ -42,7 +42,7 @@ public final class FilterUtils
 
     /**
      * Call passed begin event if possible.
-     * 
+     *
      * @param event the event to send
      * @param elementDescriptor the descriptor of the event to send
      * @param filter the filter
@@ -53,11 +53,11 @@ public final class FilterUtils
     public static boolean sendEvent(Method event, FilterElementDescriptor elementDescriptor, Object filter,
         FilterEventParameters parameters) throws FilterException
     {
-        FilterElementParameterDescriptor< ? >[] parameterDescriptors = elementDescriptor.getParameters();
+        FilterElementParameterDescriptor<?>[] parameterDescriptors = elementDescriptor.getParameters();
 
         Object[] arguments = new Object[parameterDescriptors.length];
 
-        for (FilterElementParameterDescriptor< ? > parameterDescriptor : parameterDescriptors) {
+        for (FilterElementParameterDescriptor<?> parameterDescriptor : parameterDescriptors) {
             Object value;
             if (parameterDescriptor.getName() != null && parameters.containsKey(parameterDescriptor.getName())) {
                 value = parameters.get(parameterDescriptor.getName());
@@ -82,7 +82,7 @@ public final class FilterUtils
 
     /**
      * Call passed begin event if possible.
-     * 
+     *
      * @param filter the filter
      * @param descriptor the descriptor of the filter
      * @param id the id of the event
@@ -108,7 +108,7 @@ public final class FilterUtils
 
     /**
      * Call passed end event if possible.
-     * 
+     *
      * @param filter the filter
      * @param descriptor the descriptor of the filter
      * @param id the id of the event
@@ -134,7 +134,7 @@ public final class FilterUtils
 
     /**
      * Call passed on event if possible.
-     * 
+     *
      * @param filter the filter
      * @param descriptor the descriptor of the filter
      * @param id the id of the event

@@ -25,7 +25,7 @@ import org.xwiki.velocity.internal.util.VelocityBlock.VelocityType;
 
 /**
  * Provided to {@link VelocityParser} helpers to return some information.
- * 
+ *
  * @version $Id$
  */
 public class VelocityParserContext
@@ -66,7 +66,7 @@ public class VelocityParserContext
 
     /**
      * Enter a Velocity block.
-     * 
+     *
      * @param block the Velocity block in which the process is.
      * @return the Velocity block in which the process is.
      */
@@ -77,7 +77,7 @@ public class VelocityParserContext
 
     /**
      * Go out of a Velocity block.
-     * 
+     *
      * @return the previous Velocity block in which the process was.
      */
     public VelocityBlock popVelocityElement()

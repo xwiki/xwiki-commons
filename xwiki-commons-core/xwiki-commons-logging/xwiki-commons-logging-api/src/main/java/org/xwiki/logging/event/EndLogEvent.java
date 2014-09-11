@@ -25,7 +25,7 @@ import org.xwiki.observation.event.EndEvent;
 
 /**
  * The beginning of a group of logs.
- * 
+ *
  * @version $Id$
  * @since 5.4RC1
  */

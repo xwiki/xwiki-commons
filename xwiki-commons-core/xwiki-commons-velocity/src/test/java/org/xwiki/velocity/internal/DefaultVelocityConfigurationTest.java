@@ -69,8 +69,8 @@ public class DefaultVelocityConfigurationTest
         // Verify that the secure uberspector is set by default
         assertEquals(ChainingUberspector.class.getName(),
             this.mocker.getComponentUnderTest().getProperties().getProperty("runtime.introspector.uberspect"));
-        assertEquals(StringUtils.join(new String[] {SecureUberspector.class.getName(),
-            DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName()}, ','),
+        assertEquals(StringUtils.join(new String[] { SecureUberspector.class.getName(),
+            DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
             this.mocker.getComponentUnderTest().getProperties().getProperty(
                 "runtime.introspector.uberspect.chainClasses"));
 

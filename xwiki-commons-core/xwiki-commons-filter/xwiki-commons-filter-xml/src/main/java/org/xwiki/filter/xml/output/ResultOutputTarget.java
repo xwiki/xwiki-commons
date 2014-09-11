@@ -26,7 +26,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * {@link Result} based {@link OutputTarget}.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

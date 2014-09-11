@@ -46,9 +46,9 @@ import org.xwiki.filter.xml.internal.output.AbstractXMLBeanOutputFilterStreamFac
 import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
 
 /**
- * A generic xml output filter implementation. This class can be used as a test bench to validate various
- * XMLInputStream wiki parsers.
- * 
+ * A generic xml output filter implementation. This class can be used as a test bench to validate various XMLInputStream
+ * wiki parsers.
+ *
  * @version $Id$
  * @since 6.2M1
  */
@@ -76,7 +76,7 @@ public class XMLOutputFilterFactory extends
     }
 
     @Override
-    public Collection<Class< ? >> getFilterInterfaces() throws FilterException
+    public Collection<Class<?>> getFilterInterfaces() throws FilterException
     {
         List<InputFilterStreamFactory> factories;
         try {
@@ -85,7 +85,7 @@ public class XMLOutputFilterFactory extends
             throw new FilterException("Failed to lookup InputFilterFactory components instances", e);
         }
 
-        Set<Class< ? >> filters = new HashSet<Class< ? >>();
+        Set<Class<?>> filters = new HashSet<Class<?>>();
 
         filters.add(UnknownFilter.class);
 

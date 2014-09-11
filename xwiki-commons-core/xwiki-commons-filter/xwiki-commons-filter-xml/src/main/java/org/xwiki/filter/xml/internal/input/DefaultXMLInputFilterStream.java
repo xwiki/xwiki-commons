@@ -30,8 +30,8 @@ import org.xwiki.filter.xml.input.XMLInputProperties;
  * @version $Id$
  * @since 6.2M1
  */
-public class DefaultXMLInputFilterStream<P extends XMLInputProperties, F> extends AbstractXMLInputFilterStream<P> implements
-    BeanInputFilterStream<P>
+public class DefaultXMLInputFilterStream<P extends XMLInputProperties, F> extends AbstractXMLInputFilterStream<P>
+    implements BeanInputFilterStream<P>
 {
     private final AbstractXMLBeanInputFilterStreamFactory<P, F> factory;
 

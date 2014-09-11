@@ -42,7 +42,7 @@ import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
 
 /**
  * Unit tests for {@link org.xwiki.xml.internal.html.DefaultHTMLCleaner}.
- * 
+ *
  * @version $Id$
  * @since 1.6M1
  */
@@ -99,7 +99,7 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\"></img></p>",
             "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />");
         assertHTML("<p>&#xA;</p>", "<p>&#xA;</p>");
-        
+
         // Verify that double quotes are escaped in attribute values
         assertHTML("<p value=\"script:&quot;&quot;\"></p>", "<p value='script:\"\"'");
     }
@@ -117,12 +117,12 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p><em>italic</em></p>", "<i>italic</i>");
         assertHTML("<del>strike</del>", "<strike>strike</strike>");
         assertHTML("<del>strike</del>", "<s>strike</s>");
-        assertHTML("<ins>strike</ins>", "<u>strike</u>");        
+        assertHTML("<ins>strike</ins>", "<u>strike</u>");
         assertHTML("<p style=\"text-align:center\">center</p>", "<center>center</center>");
         assertHTML("<p><span style=\"color:red;font-family:Arial;font-size:1.0em;\">This is some text!</span></p>",
             "<font face=\"Arial\" size=\"3\" color=\"red\">This is some text!</font>");
         assertHTML("<p><span style=\"font-size:1.6em;\">This is some text!</span></p>",
-        "<font size=\"+3\">This is some text!</font>");
+            "<font size=\"+3\">This is some text!</font>");
         assertHTML("<table><tbody><tr><td style=\"text-align:right;background-color:red;vertical-align:top\">"
             + "x</td></tr></tbody></table>", "<table><tr><td align=right valign=top bgcolor=red>x</td></tr></table>");
     }
@@ -131,19 +131,19 @@ public class DefaultHTMLCleanerTest
     public void convertImplicitParagraphs()
     {
         assertHTML("<p>word1</p><p>word2</p><p>word3</p><hr/><p>word4</p>", "word1<p>word2</p>word3<hr />word4");
-        
+
         // Don't convert when there are only spaces or new lines
         assertHTML("<p>word1</p>  \n  <p>word2</p>", "<p>word1</p>  \n  <p>word2</p>");
-        
+
         // Ensure that whitespaces at the end works.
         assertHTML("\n ", "\n ");
 
         // Ensure that comments are not wrapped
-        assertHTML("<!-- comment1 -->\n<p>hello</p>\n<!-- comment2 -->", 
+        assertHTML("<!-- comment1 -->\n<p>hello</p>\n<!-- comment2 -->",
             "<!-- comment1 -->\n<p>hello</p>\n<!-- comment2 -->");
 
         // Ensure that comments don't prevent other elements to be wrapped with paragraphs.
-        assertHTML("<!-- comment --><p><span>hello</span><!-- comment --></p><p>world</p>", 
+        assertHTML("<!-- comment --><p><span>hello</span><!-- comment --></p><p>world</p>",
             "<!-- comment --><span>hello</span><!-- comment --><p>world</p>");
     }
 
@@ -230,6 +230,7 @@ public class DefaultHTMLCleanerTest
         assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
         assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style><></style>");
     }
+
     /**
      * Verify that we can control what filters are used for cleaning.
      */
@@ -256,12 +257,12 @@ public class DefaultHTMLCleanerTest
         parameters.put("restricted", "true");
         configuration.setParameters(parameters);
 
-        String result = HTMLUtils.toString(this.cleaner.clean(new StringReader("<script>alert(\"foo\")</script>"), 
-                                                              configuration));
+        String result = HTMLUtils.toString(this.cleaner.clean(new StringReader("<script>alert(\"foo\")</script>"),
+            configuration));
         Assert.assertEquals(HEADER_FULL + "<pre>alert(\"foo\")</pre>" + FOOTER, result);
 
-        result = HTMLUtils.toString(this.cleaner.clean(new StringReader("<style>p {color:white;}</style>"), 
-                                                              configuration));
+        result = HTMLUtils.toString(this.cleaner.clean(new StringReader("<style>p {color:white;}</style>"),
+            configuration));
         Assert.assertEquals(HEADER_FULL + "<pre>p {color:white;}</pre>" + FOOTER, result);
 
     }

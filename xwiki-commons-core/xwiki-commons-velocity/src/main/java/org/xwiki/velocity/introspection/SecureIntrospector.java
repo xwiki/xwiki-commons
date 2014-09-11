@@ -27,7 +27,7 @@ import org.apache.velocity.util.introspection.SecureIntrospectorImpl;
 
 /**
  * {@link SecureIntrospectorImpl} is way too restrictive with allowed {@link Class} methods.
- * 
+ *
  * @version $Id$
  * @since 5.4RC1
  */

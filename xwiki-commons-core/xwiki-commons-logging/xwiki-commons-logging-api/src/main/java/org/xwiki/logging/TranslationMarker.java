@@ -21,7 +21,7 @@ package org.xwiki.logging;
 
 /**
  * Allows associating a translation key to a log.
- * 
+ *
  * @version $Id$
  * @since 5.0M2
  * @deprecated since 5.4M1, use {@link org.xwiki.logging.marker.TranslationMarker} instead

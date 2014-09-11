@@ -23,7 +23,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Indicate to the progress listener that a new step level is ending.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

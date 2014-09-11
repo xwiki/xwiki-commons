@@ -41,7 +41,7 @@ import ch.qos.logback.core.Appender;
 
 /**
  * Default implementation of {@link LoggerManager}.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  */
@@ -148,7 +148,7 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
 
     /**
      * Isolate all appender from provided thread except the event generator one.
-     * 
+     *
      * @param thread the thread to remove from the log appender
      */
     private void grabLog(Thread thread)
@@ -158,7 +158,7 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
 
     /**
      * Restore all appender for the current provided thread.
-     * 
+     *
      * @param thread the thread to restore in the log appender
      */
     private void ungrabLog(Thread thread)

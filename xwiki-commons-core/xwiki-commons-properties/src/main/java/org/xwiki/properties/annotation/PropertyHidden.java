@@ -28,12 +28,12 @@ import java.lang.annotation.Target;
 /**
  * Use this annotation to indicate a method is not part of the property bean public api. For example this will not be in
  * the generated {@link org.xwiki.properties.BeanDescriptor}.
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD })
+@Target({ ElementType.METHOD, ElementType.FIELD })
 @Inherited
 public @interface PropertyHidden
 {

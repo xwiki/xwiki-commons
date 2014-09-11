@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Combination of supported system and their data types.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */
@@ -46,7 +46,7 @@ public class FilterStreamType implements Comparable<FilterStreamType>
 
     /**
      * The XAR format.
-     * 
+     *
      * @since 6.2M1
      */
     public static final FilterStreamType XWIKI_XAR_11 = new FilterStreamType(SystemType.XWIKI, "xar", "1.1");
@@ -145,7 +145,7 @@ public class FilterStreamType implements Comparable<FilterStreamType>
 
     /**
      * Create a new {@link FilterStreamType} from a {@link String}.
-     * 
+     *
      * @param str the {@link String} to parse
      * @return a {@link FilterStreamType}
      */

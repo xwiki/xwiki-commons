@@ -31,7 +31,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Logs organized as a tree.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */
@@ -209,13 +209,13 @@ public class LogTree extends LogTreeNode implements Logger
     @Override
     public void trace(Marker marker, String format, Object arg)
     {
-        trace(marker, format, new Object[] {arg});
+        trace(marker, format, new Object[] { arg });
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2)
     {
-        trace(marker, format, new Object[] {arg1, arg2});
+        trace(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override
@@ -283,13 +283,13 @@ public class LogTree extends LogTreeNode implements Logger
     @Override
     public void debug(Marker marker, String format, Object arg)
     {
-        debug(marker, format, new Object[] {arg});
+        debug(marker, format, new Object[] { arg });
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg1, Object arg2)
     {
-        debug(marker, format, new Object[] {arg1, arg2});
+        debug(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override
@@ -357,13 +357,13 @@ public class LogTree extends LogTreeNode implements Logger
     @Override
     public void info(Marker marker, String format, Object arg)
     {
-        info(marker, format, new Object[] {arg});
+        info(marker, format, new Object[] { arg });
     }
 
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2)
     {
-        info(marker, format, new Object[] {arg1, arg2});
+        info(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override
@@ -431,13 +431,13 @@ public class LogTree extends LogTreeNode implements Logger
     @Override
     public void warn(Marker marker, String format, Object arg)
     {
-        warn(marker, format, new Object[] {arg});
+        warn(marker, format, new Object[] { arg });
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2)
     {
-        warn(marker, format, new Object[] {arg1, arg2});
+        warn(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override
@@ -505,13 +505,13 @@ public class LogTree extends LogTreeNode implements Logger
     @Override
     public void error(Marker marker, String format, Object arg)
     {
-        error(marker, format, new Object[] {arg});
+        error(marker, format, new Object[] { arg });
     }
 
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2)
     {
-        error(marker, format, new Object[] {arg1, arg2});
+        error(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override

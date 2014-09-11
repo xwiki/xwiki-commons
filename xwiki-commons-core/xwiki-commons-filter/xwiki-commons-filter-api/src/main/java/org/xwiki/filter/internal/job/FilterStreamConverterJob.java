@@ -42,7 +42,7 @@ import org.xwiki.job.internal.DefaultJobStatus;
 
 /**
  * Perform a Filter conversion.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

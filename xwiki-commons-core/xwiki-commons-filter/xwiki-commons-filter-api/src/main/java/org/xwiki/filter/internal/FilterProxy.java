@@ -34,7 +34,7 @@ import org.xwiki.stability.Unstable;
 /**
  * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter} or
  * simply ignores it when the filter does not support it.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -62,7 +62,7 @@ public final class FilterProxy implements InvocationHandler
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
         try {
-            invoke(this.targetFilter, descriptor, method, args);
+            invoke(this.targetFilter, this.descriptor, method, args);
         } catch (InvocationTargetException e) {
             return e.getCause();
         }
@@ -108,7 +108,7 @@ public final class FilterProxy implements InvocationHandler
             if (element != null) {
                 FilterEventParameters metadata = new FilterEventParameters();
 
-                for (FilterElementParameterDescriptor< ? > parameter : element.getParameters()) {
+                for (FilterElementParameterDescriptor<?> parameter : element.getParameters()) {
                     metadata.put(
                         parameter.getName() != null ? parameter.getName() : String.valueOf(parameter.getIndex()),
                         args[parameter.getIndex()]);

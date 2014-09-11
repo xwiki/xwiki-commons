@@ -24,7 +24,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Base Java bean for XML based modules.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

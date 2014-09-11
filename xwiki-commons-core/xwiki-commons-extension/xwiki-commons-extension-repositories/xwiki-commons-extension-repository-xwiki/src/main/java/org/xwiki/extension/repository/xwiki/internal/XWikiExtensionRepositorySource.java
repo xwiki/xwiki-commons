@@ -37,7 +37,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
  * Extensions repositories identifier stored in the configuration.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -59,7 +59,7 @@ public class XWikiExtensionRepositorySource extends AbstractExtensionRepositoryS
 
         try {
             return repositories != null ? repositories : Arrays
-                .<ExtensionRepositoryDescriptor> asList(new DefaultExtensionRepositoryDescriptor(
+                .<ExtensionRepositoryDescriptor>asList(new DefaultExtensionRepositoryDescriptor(
                     "extensions.xwiki.org", "xwiki", new URI("http://extensions.xwiki.org/xwiki/rest/")));
         } catch (URISyntaxException e) {
             // Should never happen

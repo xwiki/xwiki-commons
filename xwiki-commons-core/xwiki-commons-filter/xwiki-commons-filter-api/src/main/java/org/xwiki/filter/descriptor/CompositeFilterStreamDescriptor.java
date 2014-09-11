@@ -50,7 +50,7 @@ public class CompositeFilterStreamDescriptor extends AbstractFilterStreamDescrip
     protected void extractParameters()
     {
         for (FilterStreamDescriptor descriptor : this.descriptors) {
-            for (FilterStreamPropertyDescriptor< ? > propertyDescriptor : descriptor.getProperties()) {
+            for (FilterStreamPropertyDescriptor<?> propertyDescriptor : descriptor.getProperties()) {
                 this.parameterDescriptorMap.put(propertyDescriptor.getId().toLowerCase(), propertyDescriptor);
             }
         }

@@ -38,7 +38,7 @@ public class DefaultByteArrayInputSource extends AbstractInputStreamInputSource
     {
         this.array = array;
     }
-    
+
     @Override
     protected InputStream openStream() throws IOException
     {

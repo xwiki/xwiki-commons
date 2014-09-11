@@ -30,7 +30,6 @@ import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */

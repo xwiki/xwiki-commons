@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * A {@link ReferenceByXPathMarshaller} which never fail whatever value is provided.
- * 
+ *
  * @version $Id$
  */
 public class SafeTreeMarshaller extends ReferenceByXPathMarshaller

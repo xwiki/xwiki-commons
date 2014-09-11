@@ -21,8 +21,6 @@ package org.xwiki.filter.xml.internal.output;
 
 import java.io.IOException;
 
-import javanet.staxutils.IndentingXMLStreamWriter;
-
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -37,6 +35,8 @@ import org.xwiki.filter.output.OutputTarget;
 import org.xwiki.filter.output.WriterOutputTarget;
 import org.xwiki.filter.xml.output.ResultOutputTarget;
 import org.xwiki.filter.xml.output.XMLOutputProperties;
+
+import javanet.staxutils.IndentingXMLStreamWriter;
 
 /**
  * @param <P>

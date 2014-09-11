@@ -30,7 +30,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 
 /**
  * Hack to be able to reuse {@link DefaultModelResolver}.
- * 
+ *
  * @version $Id$
  * @since 6.2RC1
  */

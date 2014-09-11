@@ -31,7 +31,7 @@ import org.xwiki.component.annotation.Role;
  * <li>if the bean implements {@link RawProperties}, the remaining property (the one non populated using setters of
  * public fields) are given to it as custom non converted properties</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -40,18 +40,18 @@ public interface BeanManager
 {
     /**
      * Convert provided values and inject them in the provided java bean.
-     * 
+     *
      * @param bean the java bean to populate
      * @param values the values to convert and inject in the java bean
      * @throws PropertyException error append during the populate
      */
-    void populate(Object bean, Map<String, ? > values) throws PropertyException;
+    void populate(Object bean, Map<String, ?> values) throws PropertyException;
 
     /**
      * Parse provided java bean and return a descriptor with all its public properties.
-     * 
+     *
      * @param beanClass the java bean class to parse.
      * @return the descriptor of the bean class.
      */
-    BeanDescriptor getBeanDescriptor(Class< ? > beanClass);
+    BeanDescriptor getBeanDescriptor(Class<?> beanClass);
 }

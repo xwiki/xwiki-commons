@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 /**
  * Various tools.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -48,7 +48,7 @@ public final class XMLUtils
     /**
      * The default mapping between interface and instance.
      */
-    private static final Map<Class< ? >, Object> DEFAULTS = new HashMap<Class< ? >, Object>();
+    private static final Map<Class<?>, Object> DEFAULTS = new HashMap<Class<?>, Object>();
 
     static {
         DEFAULTS.put(boolean.class, false);
@@ -68,7 +68,7 @@ public final class XMLUtils
     /**
      * The classes of object that can easily be converted to simple String.
      */
-    private static final Set<Class< ? >> SIMPLECLASSES = new HashSet<Class< ? >>(Arrays.<Class< ? >> asList(
+    private static final Set<Class<?>> SIMPLECLASSES = new HashSet<Class<?>>(Arrays.<Class<?>>asList(
         String.class, Character.class, Boolean.class, byte[].class));
 
     /**
@@ -87,7 +87,7 @@ public final class XMLUtils
         boolean simpleType = false;
 
         if (type instanceof Class) {
-            Class< ? > typeClass = (Class< ? >) type;
+            Class<?> typeClass = (Class<?>) type;
 
             simpleType =
                 SIMPLECLASSES.contains(typeClass) || Number.class.isAssignableFrom(typeClass)
@@ -101,7 +101,7 @@ public final class XMLUtils
      * @param type the type
      * @return the default value of the provided type
      */
-    public static Object emptyValue(Class< ? > type)
+    public static Object emptyValue(Class<?> type)
     {
         Object defaultValue = null;
 

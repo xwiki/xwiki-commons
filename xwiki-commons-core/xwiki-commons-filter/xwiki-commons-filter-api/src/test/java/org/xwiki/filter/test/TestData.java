@@ -27,7 +27,7 @@ public class TestData
 
     public int getField1()
     {
-        return field1;
+        return this.field1;
     }
 
     public void setField1(int field1)
@@ -37,7 +37,7 @@ public class TestData
 
     public String getField2()
     {
-        return field2;
+        return this.field2;
     }
 
     public void setField2(String field2)

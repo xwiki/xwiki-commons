@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Describes a filter stream.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */
@@ -44,7 +44,7 @@ public interface FilterStreamDescriptor
 
     /**
      * Return descriptor for the provided property name. The property name is not case sensitive.
-     * 
+     *
      * @param propertyName the name of the property
      * @return the descriptor of the property.
      */
@@ -53,5 +53,5 @@ public interface FilterStreamDescriptor
     /**
      * @return the properties of filter.
      */
-    Collection<FilterStreamPropertyDescriptor< ? >> getProperties();
+    Collection<FilterStreamPropertyDescriptor<?>> getProperties();
 }

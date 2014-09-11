@@ -21,14 +21,14 @@ package org.xwiki.velocity.internal.util;
 
 /**
  * A Velocity element (can be a velocity macro, variable, etc.).
- * 
+ *
  * @version $Id$
  */
 public class VelocityBlock
 {
     /**
      * The type of found Velocity element.
-     * 
+     *
      * @version $Id$
      */
     public enum VelocityType

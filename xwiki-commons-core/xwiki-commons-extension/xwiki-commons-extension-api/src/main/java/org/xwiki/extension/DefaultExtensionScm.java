@@ -21,7 +21,7 @@ package org.xwiki.extension;
 
 /**
  * Default implementation of {@link AbstractExtensionScm}.
- * 
+ *
  * @version $Id$
  * @since 6.3M1
  */

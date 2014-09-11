@@ -36,7 +36,8 @@ public interface FilterStreamConstants
     String PROPERTY_SOURCE = "source";
 
     /**
-     * The standard name of the output stream property containing the {@link org.xwiki.filter.output.OutputTarget} to write to.
+     * The standard name of the output stream property containing the {@link org.xwiki.filter.output.OutputTarget} to
+     * write to.
      */
     String PROPERTY_TARGET = "target";
 

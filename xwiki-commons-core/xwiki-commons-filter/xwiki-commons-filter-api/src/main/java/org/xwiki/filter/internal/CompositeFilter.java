@@ -31,7 +31,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Support any event in input and pass them to a list of filters.
- * 
+ *
  * @version $Id$
  * @since 5.2
  */

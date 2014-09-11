@@ -27,7 +27,7 @@ import org.xwiki.observation.EventListener;
 
 /**
  * Provide some logging management APIs such as the ability to redirect logs to an {@link EventListener}.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  */
@@ -46,7 +46,7 @@ public interface LoggerManager
      * addition, it also overrides any previous call to {@link #pushLogListener(EventListener)} (which will get active
      * again after a call to {@link #popLogListener()}).
      * </p>
-     * 
+     *
      * @param listener the listener that will receive all future logging events
      */
     void pushLogListener(EventListener listener);
@@ -55,14 +55,14 @@ public interface LoggerManager
      * Remove the current listener from the current thread stack.
      * <p>
      * If several listeners have been pushed it makes the previous one active again.
-     * 
+     *
      * @return the previous log events listener for the current thread
      */
     EventListener popLogListener();
 
     /**
      * Associate the passed logger to the passed log level.
-     * 
+     *
      * @param loggerName the logger
      * @param level the level of the logger
      */

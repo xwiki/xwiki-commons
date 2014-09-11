@@ -32,7 +32,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link HashSetConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class SetConverterTest extends AbstractComponentTestCase
@@ -68,7 +68,7 @@ public class SetConverterTest extends AbstractComponentTestCase
         Assert.assertEquals(
             new LinkedHashSet<Set<Integer>>(Arrays.asList(new LinkedHashSet<Integer>(Arrays.asList(1, 2, 3)),
                 new LinkedHashSet<Integer>(Arrays.asList(4, 5, 6)))), this.converterManager.convert(
-                SetConverterTest.class.getField("setField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
+                    SetConverterTest.class.getField("setField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
 
         Assert.assertEquals(new HashSet<String>(Arrays.asList("1:2")), this.converterManager.convert(Set.class, "1:2"));
     }

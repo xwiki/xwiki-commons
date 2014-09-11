@@ -37,10 +37,10 @@ import org.xwiki.test.jmock.annotation.MockingRequirement;
 
 /**
  * Unit tests for {@link DefaultJobManager}.
- * 
+ *
  * @version $Id$
  */
-@MockingRequirement(value = DefaultJobManager.class, exceptions = {ExecutionContextManager.class, Execution.class})
+@MockingRequirement(value = DefaultJobManager.class, exceptions = { ExecutionContextManager.class, Execution.class })
 @ComponentList({
     DefaultExecution.class,
     DefaultExecutionContextManager.class

@@ -41,7 +41,7 @@ import com.google.common.io.Files;
 /**
  * Encapsulate {@link DefaultRepositorySystemSession} to generate and clean a temporary local repository for each
  * sessions.
- * 
+ *
  * @version $Id$
  * @since 6.0
  */
@@ -74,7 +74,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
         this.session.setSystemProperty("groupId", null);
 
         // Add various type descriptors
-        ArtifactTypeRegistry artifactTypeRegistry = session.getArtifactTypeRegistry();
+        ArtifactTypeRegistry artifactTypeRegistry = this.session.getArtifactTypeRegistry();
         if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
             DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
                 (DefaultArtifactTypeRegistry) artifactTypeRegistry;

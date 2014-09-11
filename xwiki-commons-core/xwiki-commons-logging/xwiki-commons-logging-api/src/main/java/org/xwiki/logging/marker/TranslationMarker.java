@@ -23,7 +23,7 @@ import org.slf4j.Marker;
 
 /**
  * Allows associating a translation key to a log.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

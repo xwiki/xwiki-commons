@@ -23,7 +23,7 @@ import com.thoughtworks.xstream.XStream;
 
 /**
  * A {@link XStream} that never fail whatever value is provided.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

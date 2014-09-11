@@ -31,16 +31,16 @@ import org.xwiki.component.annotation.Role;
  * For example:
  * <p>
  * <blockquote>
- * 
+ *
  * <pre>
  * &#064;Component
  * public class IntegerConverter implements Converter&lt;java.lang.Integer&gt;
  * </pre>
- * 
+ *
  * </blockquote>
  * <p>
  * When something goes wrong a Converter can throw a {@link ConversionException}.
- * 
+ *
  * @param <T> the type in which the provided value has to be converted
  * @version $Id$
  * @since 2.0M2

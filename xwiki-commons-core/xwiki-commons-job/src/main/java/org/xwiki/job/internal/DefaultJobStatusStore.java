@@ -52,7 +52,7 @@ import org.xwiki.job.event.status.JobStatus;
 
 /**
  * Default implementation of {@link JobStatusStorage}.
- * 
+ *
  * @version $Id$
  * @since 6.1M2
  */
@@ -136,9 +136,9 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         }
 
         @Override
-        public void putAll(Map< ? extends List<String>, ? extends JobStatus> m)
+        public void putAll(Map<? extends List<String>, ? extends JobStatus> m)
         {
-            for (Map.Entry< ? extends List<String>, ? extends JobStatus> entry : m.entrySet()) {
+            for (Map.Entry<? extends List<String>, ? extends JobStatus> entry : m.entrySet()) {
                 put(entry.getKey(), entry.getValue());
             }
         }
@@ -337,7 +337,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private JobStatus loadJobStatus(File statusFile)
     {
-        return (JobStatus) this.serializer.read(statusFile);
+        return this.serializer.read(statusFile);
     }
 
     // JobStatusStorage

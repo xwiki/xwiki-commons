@@ -28,7 +28,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Common interface for job events.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

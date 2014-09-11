@@ -25,7 +25,7 @@ import org.xwiki.logging.event.LogEvent;
 
 /**
  * Test {@link LogUtils}.
- * 
+ *
  * @version $Id$
  */
 public class LogUtilsTest
@@ -33,31 +33,31 @@ public class LogUtilsTest
     @Test
     public void testTranslate()
     {
-        LogEvent logEvent = new LogEvent(LogLevel.ERROR, "hello {} world {}", new Object[] {"one", "two"}, null);
+        LogEvent logEvent = new LogEvent(LogLevel.ERROR, "hello {} world {}", new Object[] { "one", "two" }, null);
 
         LogEvent translatedLogEvent = LogUtils.translate(logEvent, "hello2 {} world2 {}");
 
         Assert.assertEquals("hello2 {} world2 {}", translatedLogEvent.getMessage());
-        Assert.assertArrayEquals(new Object[] {"one", "two"}, translatedLogEvent.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { "one", "two" }, translatedLogEvent.getArgumentArray());
 
         translatedLogEvent = LogUtils.translate(logEvent, "hello2 {0} world2 {1}");
 
         Assert.assertEquals("hello2 {} world2 {}", translatedLogEvent.getMessage());
-        Assert.assertArrayEquals(new Object[] {"one", "two"}, translatedLogEvent.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { "one", "two" }, translatedLogEvent.getArgumentArray());
 
         translatedLogEvent = LogUtils.translate(logEvent, "hello2 {1} world2 {0}");
 
         Assert.assertEquals("hello2 {} world2 {}", translatedLogEvent.getMessage());
-        Assert.assertArrayEquals(new Object[] {"two", "one"}, translatedLogEvent.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { "two", "one" }, translatedLogEvent.getArgumentArray());
 
         translatedLogEvent = LogUtils.translate(logEvent, "hello2 {0}");
 
         Assert.assertEquals("hello2 {}", translatedLogEvent.getMessage());
-        Assert.assertArrayEquals(new Object[] {"one", "two"}, translatedLogEvent.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { "one", "two" }, translatedLogEvent.getArgumentArray());
 
         translatedLogEvent = LogUtils.translate(logEvent, "hello2 {1}");
 
         Assert.assertEquals("hello2 {}", translatedLogEvent.getMessage());
-        Assert.assertArrayEquals(new Object[] {"two", "two"}, translatedLogEvent.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { "two", "two" }, translatedLogEvent.getArgumentArray());
     }
 }

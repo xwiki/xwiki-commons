@@ -23,7 +23,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Indicate to the progress listener that a new step level is starting.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -61,6 +61,6 @@ public class PushLevelProgressEvent implements Event
      */
     public int getSteps()
     {
-        return steps;
+        return this.steps;
     }
 }

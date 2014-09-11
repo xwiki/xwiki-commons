@@ -28,7 +28,7 @@ import org.xwiki.logging.event.LogEvent;
 
 /**
  * Redirect received log to several {@link Logger}s.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

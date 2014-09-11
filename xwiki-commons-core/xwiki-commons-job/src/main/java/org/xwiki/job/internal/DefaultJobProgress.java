@@ -67,7 +67,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
 
     /**
      * A step.
-     * 
+     *
      * @version $Id$
      */
     static class Level
@@ -160,7 +160,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
 
     /**
      * Adds a new level to the progress stack.
-     * 
+     *
      * @param event the event that was fired
      */
     private void onPushLevelProgress(PushLevelProgressEvent event)

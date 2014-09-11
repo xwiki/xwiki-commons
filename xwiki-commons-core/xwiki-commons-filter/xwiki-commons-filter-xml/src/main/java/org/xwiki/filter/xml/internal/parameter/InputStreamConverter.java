@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
  * Converts an {@link InputStream} to XML.
- * 
+ *
  * @version $Id$
  * @since 5.2RC1
  */
@@ -63,9 +63,9 @@ public class InputStreamConverter implements Converter
             }
             if (readSize > 0) {
                 if (readSize == 4096) {
-                    writer.setValue(this.BASE64.encode(buffer));
+                    writer.setValue(BASE64.encode(buffer));
                 } else {
-                    writer.setValue(this.BASE64.encode(ArrayUtils.subarray(buffer, 0, readSize)));
+                    writer.setValue(BASE64.encode(ArrayUtils.subarray(buffer, 0, readSize)));
                 }
             }
         } while (readSize == 4096);
@@ -74,6 +74,6 @@ public class InputStreamConverter implements Converter
     @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context)
     {
-        return new ByteArrayInputStream(this.BASE64.decode(reader.getValue()));
+        return new ByteArrayInputStream(BASE64.decode(reader.getValue()));
     }
 }

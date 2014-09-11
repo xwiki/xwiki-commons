@@ -19,15 +19,9 @@
  */
 package org.xwiki.logging.logback.internal;
 
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
 import java.util.Iterator;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.event.LogQueueListener;
-import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.internal.DefaultObservationManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -47,13 +40,17 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.spi.FilterReply;
 
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for {@link DefaultLoggerManager}.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  */
-@ComponentList({DefaultLoggerManager.class, DefaultObservationManager.class, LogbackEventGenerator.class})
+@ComponentList({ DefaultLoggerManager.class, DefaultObservationManager.class, LogbackEventGenerator.class })
 public class DefaultLoggerManagerTest
 {
     @Rule
@@ -126,7 +123,7 @@ public class DefaultLoggerManagerTest
             @Override
             public void run()
             {
-                logger.error("[test] other thread");
+                DefaultLoggerManagerTest.this.logger.error("[test] other thread");
             }
         });
         thread.start();

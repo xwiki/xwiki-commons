@@ -28,7 +28,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link ConvertUtilsConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class ConvertUtilsConverterTest extends AbstractComponentTestCase
@@ -55,12 +55,12 @@ public class ConvertUtilsConverterTest extends AbstractComponentTestCase
     @Test
     public void testConvertArrays() throws SecurityException, NoSuchFieldException
     {
-        Assert.assertArrayEquals(new int[] {1, 2, 3}, this.converterManager.<int[]> convert(int[].class, "1, 2, 3"));
+        Assert.assertArrayEquals(new int[] { 1, 2, 3 }, this.converterManager.<int[]>convert(int[].class, "1, 2, 3"));
 
-        Assert.assertArrayEquals(new Integer[] {1, 2, 3},
-            this.converterManager.<Integer[]> convert(Integer[].class, "1, 2, 3"));
+        Assert.assertArrayEquals(new Integer[] { 1, 2, 3 },
+            this.converterManager.<Integer[]>convert(Integer[].class, "1, 2, 3"));
 
-        Assert.assertArrayEquals(new Integer[] {1, 2, 3}, this.converterManager.<Integer[]> convert(
+        Assert.assertArrayEquals(new Integer[] { 1, 2, 3 }, this.converterManager.<Integer[]>convert(
             ConvertUtilsConverterTest.class.getField("field").getGenericType(), "1, 2, 3"));
     }
 

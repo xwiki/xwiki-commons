@@ -32,7 +32,7 @@ import org.xwiki.job.JobManagerConfiguration;
 
 /**
  * Default implementation of {@link JobManagerConfiguration}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

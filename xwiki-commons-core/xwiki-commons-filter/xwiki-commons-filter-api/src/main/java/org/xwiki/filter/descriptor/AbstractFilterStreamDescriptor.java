@@ -49,8 +49,8 @@ public abstract class AbstractFilterStreamDescriptor implements FilterStreamDesc
      * The {@link Map} keys are lower cased for easier case insensitive search, to get the "real" name of the property
      * use {@link FilterStreamPropertyDescriptor#getName()}.
      */
-    protected Map<String, FilterStreamPropertyDescriptor< ? >> parameterDescriptorMap =
-        new LinkedHashMap<String, FilterStreamPropertyDescriptor< ? >>();
+    protected Map<String, FilterStreamPropertyDescriptor<?>> parameterDescriptorMap =
+        new LinkedHashMap<String, FilterStreamPropertyDescriptor<?>>();
 
     /**
      * @param name human readable name of filter input source type.
@@ -83,9 +83,9 @@ public abstract class AbstractFilterStreamDescriptor implements FilterStreamDesc
     }
 
     @Override
-    public Collection<FilterStreamPropertyDescriptor< ? >> getProperties()
+    public Collection<FilterStreamPropertyDescriptor<?>> getProperties()
     {
-        return Collections.<FilterStreamPropertyDescriptor< ? >> unmodifiableCollection(this.parameterDescriptorMap
+        return Collections.<FilterStreamPropertyDescriptor<?>>unmodifiableCollection(this.parameterDescriptorMap
             .values());
     }
 }

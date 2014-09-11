@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Redirects Velocity's LogChute messages to slf4j.
- * 
+ *
  * @version $Id$
  * @since 4.3M2
  */

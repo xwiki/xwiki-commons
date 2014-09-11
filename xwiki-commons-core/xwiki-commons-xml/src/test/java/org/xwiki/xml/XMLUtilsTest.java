@@ -24,7 +24,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link org.xwiki.xml.XMLUtils}.
- * 
+ *
  * @version $Id$
  * @since 1.6M1
  */

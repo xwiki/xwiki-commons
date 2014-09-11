@@ -26,7 +26,7 @@ import org.xwiki.job.event.status.JobStatus;
 
 /**
  * A Job produced from a {@link Request} and exposing a {@link JobStatus}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -63,7 +63,7 @@ public interface Job extends Runnable
 
     /**
      * Causes the current thread to wait until this job has FINSHED state.
-     * 
+     *
      * @throws InterruptedException if any thread has interrupted the current thread. The <i>interrupted status</i> of
      *             the current thread is cleared when this exception is thrown.
      */
@@ -71,7 +71,7 @@ public interface Job extends Runnable
 
     /**
      * Causes the current thread to wait until this job has FINSHED state.
-     * 
+     *
      * @param time the maximum time to wait
      * @param unit the time unit of the {@code time} argument
      * @return {@code false} if the waiting time detectably elapsed before return from the method, else {@code true}

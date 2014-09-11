@@ -55,7 +55,7 @@ import org.xwiki.xml.Sax2Dom;
 
 /**
  * Default implementation of {@link XMLParser}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -192,7 +192,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         private void fireEvent(Method eventMethod, Object listener) throws SAXException
         {
             Object[] parameters = getParametersTable();
-            Class< ? >[] methodParameters = eventMethod.getParameterTypes();
+            Class<?>[] methodParameters = eventMethod.getParameterTypes();
 
             Object[] properParameters;
             // Missing parameters
@@ -214,7 +214,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 Object parameter = properParameters[i];
 
                 if (parameter == null) {
-                    Class< ? > methodParameter = methodParameters[i];
+                    Class<?> methodParameter = methodParameters[i];
 
                     if (methodParameter.isPrimitive()) {
                         properParameters[i] = XMLUtils.emptyValue(methodParameter);
@@ -301,7 +301,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             int parameterIndex = extractParameterIndex(name);
 
             if (block.filterElement != null && block.filterElement.getParameters().length > parameterIndex) {
-                FilterElementParameterDescriptor< ? > filterParameter =
+                FilterElementParameterDescriptor<?> filterParameter =
                     block.filterElement.getParameters()[parameterIndex];
 
                 setParameter(block, filterParameter, value);
@@ -311,7 +311,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 block.setParameter(name, value);
             }
         } else if (!attribute || !isReservedBlockAttribute(name)) {
-            FilterElementParameterDescriptor< ? > filterParameter =
+            FilterElementParameterDescriptor<?> filterParameter =
                 block.filterElement != null ? block.filterElement.getParameter(name) : null;
 
             if (filterParameter != null) {
@@ -324,7 +324,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         }
     }
 
-    private void setParameter(Block block, FilterElementParameterDescriptor< ? > filterParameter, Object value)
+    private void setParameter(Block block, FilterElementParameterDescriptor<?> filterParameter, Object value)
         throws SAXException
     {
         Type type = filterParameter.getType();
@@ -338,7 +338,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         } else if (value instanceof String) {
             String stringValue = (String) value;
 
-            Class< ? > typeClass = ReflectionUtils.getTypeClass(type);
+            Class<?> typeClass = ReflectionUtils.getTypeClass(type);
 
             if (typeClass == String.class || typeClass == Object.class) {
                 block.setParameter(filterParameter.getIndex(), stringValue);

@@ -43,7 +43,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 /**
  * Velocity Tool allowing to create various type of collections.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -53,7 +53,7 @@ public class CollectionsTool
      * Create and return a new {@link ArrayList}, an unbounded list with constant access time and good performance for
      * most additions at the end of the list, but which performs poorly when deleting items, when inserting a new item
      * in the list and when appending a new item requires resizing the allocated space.
-     * 
+     *
      * @param <E> the type of the elements in the list
      * @return a new, empty {@link ArrayList}
      */
@@ -65,7 +65,7 @@ public class CollectionsTool
     /**
      * Create and return a new {@link LinkedList}, optimized for insertion and deletion of items, and for sequential
      * iteration over the items, but not for quick access to random positions in the list.
-     * 
+     *
      * @param <E> the type of the elements in the list
      * @return a new, empty {@link LinkedList}
      */
@@ -77,7 +77,7 @@ public class CollectionsTool
     /**
      * Create and return a new {@link Map}, providing good speed for insertion, retrieval and deletion of items, but
      * with no guarantees on the order of the map.
-     * 
+     *
      * @param <K> the type of keys maintained by this map
      * @param <V> the type of mapped values
      * @return a new, empty {@link HashMap}
@@ -90,7 +90,7 @@ public class CollectionsTool
     /**
      * Create and return a new {@link SortedMap}, which ensures that iterating the map will always return the entries in
      * the natural order of the keys.
-     * 
+     *
      * @param <K> the type of keys maintained by this map
      * @param <V> the type of mapped values
      * @return a new, empty {@link TreeMap}
@@ -103,7 +103,7 @@ public class CollectionsTool
     /**
      * Create and return a new {@link Map}, which ensures that iterating the map will always return the entries in the
      * same order as they were added.
-     * 
+     *
      * @param <K> the type of keys maintained by this map
      * @param <V> the type of mapped values
      * @return a new, empty {@link LinkedHashMap}
@@ -116,7 +116,7 @@ public class CollectionsTool
     /**
      * Create and return a new {@link Set}, providing good speed for insertion, retrieval and deletion of items, but
      * with no guarantees on the order of the set.
-     * 
+     *
      * @param <E> the type of the elements in the set
      * @return a new, empty {@link HashSet}
      */
@@ -128,7 +128,7 @@ public class CollectionsTool
     /**
      * Create and return a new {@link SortedSet}, which ensures that iterating the set will always return the entries in
      * the natural order of the items.
-     * 
+     *
      * @param <E> the type of the elements in the set
      * @return a new, empty {@link TreeSet}
      */
@@ -140,7 +140,7 @@ public class CollectionsTool
     /**
      * Create and return a new {@link Set}, which ensures that iterating the set will always return the entries in the
      * same order as they were added.
-     * 
+     *
      * @param <E> the type of the elements in the set
      * @return a new, empty {@link LinkedHashSet}
      */
@@ -152,7 +152,7 @@ public class CollectionsTool
     /**
      * Create and return a new {@link Queue}, an unbounded list where items are ordered in a FIFO (first-in-first-out)
      * manner.
-     * 
+     *
      * @param <E> the type of the elements in the queue
      * @return a new, empty {@link LinkedList}
      */
@@ -164,7 +164,7 @@ public class CollectionsTool
     /**
      * Create and return a new {@link BlockingQueue}, an unbounded queue that additionally supports operations that wait
      * for the queue to become non-empty when retrieving an element.
-     * 
+     *
      * @param <E> the type of the elements in the queue
      * @return a new, empty {@link BlockingQueue}
      */
@@ -177,7 +177,7 @@ public class CollectionsTool
      * Create and return a new {@link Queue}, which instead of the FIFO ordering uses the natural order of the items
      * added to the queue, so that the retrieved item is always the lowest one. All the items added to this queue must
      * be non-null and be comparable with the other items in the queue.
-     * 
+     *
      * @param <E> the type of the elements in the queue
      * @return a new, empty {@link PriorityQueue}
      */
@@ -188,7 +188,7 @@ public class CollectionsTool
 
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param <E> the type of the elements in the list
      * @param input the list to wrap in an unmodifiable bridge
      * @return an unmodifiable view of the list
@@ -203,7 +203,7 @@ public class CollectionsTool
 
     /**
      * Returns an unmodifiable view of the specified map.
-     * 
+     *
      * @param <K> the type of keys maintained by this map
      * @param <V> the type of mapped values
      * @param input the map to wrap in an unmodifiable bridge
@@ -219,7 +219,7 @@ public class CollectionsTool
 
     /**
      * Returns an unmodifiable view of the specified set.
-     * 
+     *
      * @param <E> the type of the elements in the set
      * @param input the set to wrap in an unmodifiable bridge
      * @return an unmodifiable view of the set
@@ -234,7 +234,7 @@ public class CollectionsTool
 
     /**
      * Returns an unmodifiable view of the specified collection.
-     * 
+     *
      * @param <E> the type of the elements in the collection
      * @param input the collection to wrap in an unmodifiable bridge
      * @return an unmodifiable view of the collection
@@ -249,7 +249,7 @@ public class CollectionsTool
 
     /**
      * Returns a {@link Collection} containing the union of the given {@link Collection}s.
-     * 
+     *
      * @param <E> the type of the elements in the collection
      * @param a the first collection, must be non-null
      * @param b the second collection, must be non-null
@@ -269,7 +269,7 @@ public class CollectionsTool
 
     /**
      * Returns a {@link Collection} containing the intersection of the given {@link Collection}s.
-     * 
+     *
      * @param <E> the type of the elements in the collection
      * @param a the first collection, must be non-null
      * @param b the second collection, must be non-null
@@ -290,7 +290,7 @@ public class CollectionsTool
     /**
      * Returns a {@link Collection} containing the exclusive disjunction (symmetric difference) of the given
      * {@link Collection}s.
-     * 
+     *
      * @param <E> the type of the elements in the collection
      * @param a the first collection, must be non-null
      * @param b the second collection, must be non-null
@@ -312,7 +312,7 @@ public class CollectionsTool
      * Reverse the order of the elements within a list, so that the last element is moved to the beginning of the list,
      * the next-to-last element to the second position, and so on. The input list is modified in place, so this
      * operation will succeed only if the list is modifiable.
-     * 
+     *
      * @param <E> the type of the elements in the list
      * @param input the list to reverse
      * @return {@code true} if the list was successfully reversed, {@code false} otherwise
@@ -333,7 +333,7 @@ public class CollectionsTool
     /**
      * Sort the elements within a list according to their natural order. The input list is modified in place, so this
      * operation will succeed only if the list is modifiable.
-     * 
+     *
      * @param <E> the type of the elements in the list
      * @param input the list to sort
      * @return {@code true} if the list was successfully sorted, {@code false} otherwise

@@ -19,10 +19,6 @@
  */
 package org.xwiki.velocity.internal;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -42,6 +38,10 @@ import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for {@link DefaultVelocityEngine}.
  */
@@ -59,7 +59,7 @@ public class DefaultVelocityEngineTest
         Properties properties = new Properties();
         properties.put("runtime.introspector.uberspect", ChainingUberspector.class.getName());
         properties.put("runtime.introspector.uberspect.chainClasses",
-            SecureUberspector.class.getName() + ","  + DeprecatedCheckUberspector.class.getName());
+            SecureUberspector.class.getName() + "," + DeprecatedCheckUberspector.class.getName());
         properties.put("directive.set.null.allowed", Boolean.TRUE.toString());
         properties.put("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
 

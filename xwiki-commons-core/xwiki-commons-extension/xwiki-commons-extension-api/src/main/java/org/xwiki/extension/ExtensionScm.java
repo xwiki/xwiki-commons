@@ -21,7 +21,7 @@ package org.xwiki.extension;
 
 /**
  * Provide informations related to extensions's Source Control Management.
- * 
+ *
  * @version $Id$
  * @since 6.3M1
  */
@@ -30,21 +30,21 @@ public interface ExtensionScm
     /**
      * Get the source control management system connection that describes the repository and how to connect to the
      * repository. Usually read only.
-     * 
+     *
      * @return the connection
      */
     ExtensionScmConnection getConnection();
 
     /**
      * Same as {@link #getConnection()}, but for developers, i.e. this scm connection will not be read only.
-     * 
+     *
      * @return the connection
      */
     ExtensionScmConnection getDeveloperConnection();
 
     /**
      * Get the URL to the project's browsable SCM repository.
-     * 
+     *
      * @return the URL
      */
     String getUrl();

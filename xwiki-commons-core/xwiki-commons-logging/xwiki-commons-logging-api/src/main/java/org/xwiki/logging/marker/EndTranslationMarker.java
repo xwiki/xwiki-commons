@@ -23,7 +23,7 @@ import org.xwiki.logging.event.LogEvent;
 
 /**
  * A {@link org.xwiki.logging.TranslationMarker} with a {@link LogEvent#MARKER_END} marker.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

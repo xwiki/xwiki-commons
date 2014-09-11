@@ -24,7 +24,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Custom {@link Marker}s which contains values (so which are a bit more than {@link Marker} as defined by SLF4J).
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

@@ -21,7 +21,7 @@ package org.xwiki.properties;
 
 /**
  * A bean can implement this interface to be provided with remaining values as custom properties.
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -32,7 +32,7 @@ public interface RawProperties
      * <p>
      * This method need to be named that way or any other way that don't match property getter/setter naming. We could
      * used {@link org.xwiki.properties.annotation.PropertyHidden} but it's better to avoid it if possible.
-     * 
+     *
      * @param propertyName the name of the custom property
      * @param value the value of the property
      */

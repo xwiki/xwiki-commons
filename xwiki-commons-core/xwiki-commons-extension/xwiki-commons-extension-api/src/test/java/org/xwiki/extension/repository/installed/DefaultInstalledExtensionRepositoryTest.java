@@ -358,8 +358,11 @@ public class DefaultInstalledExtensionRepositoryTest
         Assert.assertEquals(new HashMap<String, Collection<InstalledExtension>>()
         {
             {
-                put(null, Arrays.asList(resources.installedwithfeatureasdependency));
-                put("namespace", Arrays.asList(resources.installedonnemspacewithrootdependency));
+                put(null, Arrays
+                    .asList(DefaultInstalledExtensionRepositoryTest.this.resources.installedwithfeatureasdependency));
+                put("namespace",
+                    Arrays
+                    .asList(DefaultInstalledExtensionRepositoryTest.this.resources.installedonnemspacewithrootdependency));
             }
         }, this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID));
 

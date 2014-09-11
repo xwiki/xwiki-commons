@@ -31,7 +31,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link LinkedHashSetConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class LinkedHashSetConverterTest extends AbstractComponentTestCase

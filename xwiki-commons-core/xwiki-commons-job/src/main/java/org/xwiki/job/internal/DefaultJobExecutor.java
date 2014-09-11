@@ -54,7 +54,7 @@ import org.xwiki.job.Request;
 
 /**
  * Default implementation of {@link JobExecutor}.
- * 
+ *
  * @version $Id$
  * @since 6.1M2
  */
@@ -85,7 +85,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         @Override
         protected void beforeExecute(Thread t, Runnable r)
         {
-            lockTree.lock(this.path);
+            DefaultJobExecutor.this.lockTree.lock(this.path);
 
             this.currentJob = (Job) r;
 
@@ -99,7 +99,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
         {
             Thread.currentThread().setName(this.groupThreadName);
 
-            lockTree.unlock(this.path);
+            DefaultJobExecutor.this.lockTree.unlock(this.path);
 
             this.currentJob = null;
 
@@ -109,8 +109,8 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
-                synchronized (groupedJobs) {
-                    Queue<Job> jobQueue = groupedJobs.get(jobId);
+                synchronized (DefaultJobExecutor.this.groupedJobs) {
+                    Queue<Job> jobQueue = DefaultJobExecutor.this.groupedJobs.get(jobId);
                     if (jobQueue != null) {
                         if (jobQueue.peek() == job) {
                             jobQueue.poll();
@@ -147,10 +147,10 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
             List<String> jobId = job.getRequest().getId();
             if (jobId != null) {
-                synchronized (jobs) {
-                    Job storedJob = jobs.get(jobId);
+                synchronized (DefaultJobExecutor.this.jobs) {
+                    Job storedJob = DefaultJobExecutor.this.jobs.get(jobId);
                     if (storedJob == job) {
-                        jobs.remove(jobId);
+                        DefaultJobExecutor.this.jobs.remove(jobId);
                     }
                 }
             }
@@ -278,7 +278,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
                 List<String> jobId = job.getRequest().getId();
                 if (jobId != null) {
-                    synchronized (jobs) {
+                    synchronized (this.jobs) {
                         this.jobs.put(jobId, job);
                     }
                 }
@@ -291,7 +291,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     private void execute(GroupedJob job)
     {
         synchronized (this.groupExecutors) {
-            JobGroupPath path = ((GroupedJob) job).getGroupPath();
+            JobGroupPath path = job.getGroupPath();
 
             JobGroupExecutor groupExecutor = this.groupExecutors.get(path);
 

@@ -38,11 +38,11 @@ import groovy.lang.GroovyClassLoader;
 /**
  * This class is required since the JSR223 doesn't allow configuring the classloader used by the Script Engine
  * implementation and this is how Groovy supports customizing script compilation.
- * 
+ *
  * @version $Id$
  * @since 4.1M1
  */
-@Component(roles = {ScriptEngineFactory.class })
+@Component(roles = { ScriptEngineFactory.class })
 @Named("groovy")
 @Singleton
 public class GroovyScriptEngineFactory extends org.codehaus.groovy.jsr223.GroovyScriptEngineFactory

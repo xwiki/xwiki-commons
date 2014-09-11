@@ -41,7 +41,7 @@ import org.xwiki.properties.annotation.PropertyName;
 
 /**
  * Default implementation for BeanDescriptor.
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -55,7 +55,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     /**
      * @see #getBeanClass()
      */
-    private Class< ? > beanClass;
+    private Class<?> beanClass;
 
     /**
      * The properties of the bean.
@@ -65,7 +65,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     /**
      * @param beanClass the class of the JAVA bean.
      */
-    public DefaultBeanDescriptor(Class< ? > beanClass)
+    public DefaultBeanDescriptor(Class<?> beanClass)
     {
         this.beanClass = beanClass;
 
@@ -89,7 +89,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
         try {
             // Get public fields
-            for (Class< ? > currentClass = this.beanClass; currentClass != null; currentClass =
+            for (Class<?> currentClass = this.beanClass; currentClass != null; currentClass =
                     currentClass.getSuperclass()) {
                 Field[] fields = currentClass.getFields();
                 for (Field field : fields) {
@@ -116,7 +116,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
     /**
      * Extract provided properties information and insert it in {@link #parameterDescriptorMap}.
-     * 
+     *
      * @param propertyDescriptor the JAVA bean property descriptor.
      * @param defaultInstance the default instance of bean class.
      */
@@ -176,7 +176,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
     /**
      * Extract provided properties informations and insert it in {@link #parameterDescriptorMap}.
-     * 
+     *
      * @param field the JAVA bean property descriptor.
      * @param defaultInstance the default instance of bean class.
      */
@@ -225,7 +225,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
     /**
      * Get the parameter annotation. Try first on the setter then on the getter if no annotation has been found.
-     * 
+     *
      * @param <T> the Class object corresponding to the annotation type.
      * @param writeMethod the method that should be used to write the property value.
      * @param readMethod the method that should be used to read the property value.
@@ -245,7 +245,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     }
 
     @Override
-    public Class< ? > getBeanClass()
+    public Class<?> getBeanClass()
     {
         return this.beanClass;
     }

@@ -31,7 +31,7 @@ import org.xwiki.observation.ObservationManager;
 
 /**
  * Default implementation of {@link JobProgressManager}.
- * 
+ *
  * @version $Id$
  * @since 6.1M1
  */

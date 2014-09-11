@@ -23,7 +23,6 @@ import org.codehaus.plexus.logging.AbstractLoggerManager;
 import org.slf4j.Logger;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */
@@ -66,7 +65,7 @@ public class XWikiLoggerManager extends AbstractLoggerManager
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.plexus.logging.LoggerManager#setThresholds(int)
      */
     @Override

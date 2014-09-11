@@ -135,7 +135,7 @@ public class Utils
         ++index;
 
         event = logs.next();
-        Assert.assertArrayEquals(new Object[] {index}, event.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("msg{}", event.getMessage());
@@ -145,7 +145,7 @@ public class Utils
         ++index;
 
         event = logs.next();
-        Assert.assertArrayEquals(new Object[] {"msg", index}, event.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { "msg", index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("{}{}", event.getMessage());
@@ -155,7 +155,7 @@ public class Utils
         ++index;
 
         event = logs.next();
-        Assert.assertArrayEquals(new Object[] {"m", "s", "g", index}, event.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { "m", "s", "g", index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("{}{}{}{}", event.getMessage());
@@ -185,7 +185,7 @@ public class Utils
         ++index;
 
         event = logs.next();
-        Assert.assertArrayEquals(new Object[] {index}, event.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("msg{}", event.getMessage());
@@ -195,7 +195,7 @@ public class Utils
         ++index;
 
         event = logs.next();
-        Assert.assertArrayEquals(new Object[] {"msg", index}, event.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { "msg", index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("{}{}", event.getMessage());
@@ -205,7 +205,7 @@ public class Utils
         ++index;
 
         event = logs.next();
-        Assert.assertArrayEquals(new Object[] {"m", "s", "g", index}, event.getArgumentArray());
+        Assert.assertArrayEquals(new Object[] { "m", "s", "g", index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("{}{}{}{}", event.getMessage());

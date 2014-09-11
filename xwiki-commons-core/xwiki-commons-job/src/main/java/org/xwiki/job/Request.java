@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * A {@link Job} request.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

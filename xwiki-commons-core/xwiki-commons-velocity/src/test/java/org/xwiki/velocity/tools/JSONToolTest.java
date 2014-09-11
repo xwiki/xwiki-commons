@@ -34,7 +34,7 @@ import net.sf.json.JSONObject;
 
 /**
  * Unit tests for {@link JSONTool}.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */
@@ -92,7 +92,7 @@ public class JSONToolTest
         map.put("int", 13);
         map.put("double", 0.78);
         map.put("string", "foo");
-        map.put("array", new int[] {9, 8});
+        map.put("array", new int[] { 9, 8 });
         map.put("list", Arrays.asList("one", "two"));
         map.put("map", Collections.singletonMap("level2", true));
         map.put("null", "null key value");
@@ -113,7 +113,7 @@ public class JSONToolTest
     public void testSerializeList()
     {
         Assert.assertEquals("[1,2]", this.tool.serialize(Arrays.asList(1, 2)));
-        Assert.assertEquals("[1.3,2.4]", this.tool.serialize(new double[] {1.3, 2.4}));
+        Assert.assertEquals("[1.3,2.4]", this.tool.serialize(new double[] { 1.3, 2.4 }));
     }
 
     @Test

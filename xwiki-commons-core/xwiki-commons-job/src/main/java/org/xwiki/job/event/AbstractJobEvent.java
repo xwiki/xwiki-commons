@@ -25,7 +25,7 @@ import org.xwiki.job.Request;
 
 /**
  * Common implementation for job events.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

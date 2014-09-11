@@ -52,13 +52,13 @@ import org.xwiki.observation.ObservationManager;
 
 /**
  * Base class for {@link Job} implementations.
- * 
+ *
  * @param <R> the request type associated to the job
  * @version $Id$
  * @since 5.0M1
  */
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus< ? super R>> implements Job
+public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus<? super R>> implements Job
 {
     private static final BeginTranslationMarker LOG_BEGIN = new BeginTranslationMarker("job.log.begin");
 
@@ -142,7 +142,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
     /**
      * Condition to wait for finished state.
      */
-    protected final Condition finishedCondition = lock.newCondition();
+    protected final Condition finishedCondition = this.lock.newCondition();
 
     protected boolean initExecutionContext = true;
 
@@ -230,7 +230,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
     {
         this.jobContext.pushCurrentJob(this);
 
-        this.observationManager.notify(new JobStartedEvent(getRequest().getId(), getType(), request), this);
+        this.observationManager.notify(new JobStartedEvent(getRequest().getId(), getType(), this.request), this);
 
         this.status.setStartDate(new Date());
         this.status.setState(JobStatus.State.RUNNING);
@@ -247,7 +247,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     /**
      * Called when the job is done.
-     * 
+     *
      * @param exception the exception throw during execution of the job
      */
     protected void jobFinished(Throwable exception)
@@ -297,7 +297,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     /**
      * Should be overridden if R is not Request.
-     * 
+     *
      * @param request the request
      * @return the request in the proper extended type
      */
@@ -319,7 +319,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     /**
      * Push new progression level.
-     * 
+     *
      * @param steps number of steps in this new level
      * @deprecated since 6.1M1, use {@link #progressManager} instead
      */
@@ -331,7 +331,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     /**
      * Next step.
-     * 
+     *
      * @deprecated since 6.1M1, use {@link #progressManager} instead
      */
     @Deprecated
@@ -342,7 +342,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     /**
      * Pop progression level.
-     * 
+     *
      * @deprecated since 6.1M1, use {@link #progressManager} instead
      */
     @Deprecated
@@ -353,7 +353,7 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     /**
      * Should be implemented by {@link Job} implementations.
-     * 
+     *
      * @throws Exception errors during job execution
      */
     protected abstract void runInternal() throws Exception;

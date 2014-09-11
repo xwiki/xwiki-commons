@@ -32,7 +32,7 @@ import org.xwiki.properties.converter.ConversionException;
 
 /**
  * Converter that converts a value into an {@link FilterEventParameters} object.
- * 
+ *
  * @version $Id$
  * @since 5.2M2
  */

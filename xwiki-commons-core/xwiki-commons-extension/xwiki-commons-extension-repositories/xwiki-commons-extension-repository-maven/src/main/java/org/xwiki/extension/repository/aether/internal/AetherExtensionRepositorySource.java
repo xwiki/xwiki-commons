@@ -37,7 +37,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
  * Extensions repositories identifier stored in the configuration.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -59,7 +59,7 @@ public class AetherExtensionRepositorySource extends AbstractExtensionRepository
 
         try {
             return repositories != null ? repositories : Arrays
-                .<ExtensionRepositoryDescriptor> asList(new DefaultExtensionRepositoryDescriptor("maven-xwiki",
+                .<ExtensionRepositoryDescriptor>asList(new DefaultExtensionRepositoryDescriptor("maven-xwiki",
                     "maven", new URI("http://nexus.xwiki.org/nexus/content/groups/public")));
         } catch (URISyntaxException e) {
             // Should never happen

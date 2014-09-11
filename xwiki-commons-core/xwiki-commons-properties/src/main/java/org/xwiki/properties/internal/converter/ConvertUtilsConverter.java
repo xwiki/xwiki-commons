@@ -37,7 +37,7 @@ import org.xwiki.properties.converter.Converter;
  * <p>
  * It's the default {@link Converter}, the one used when no other Converter could be found by
  * {@link org.xwiki.properties.ConverterManager}.
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -89,11 +89,11 @@ public class ConvertUtilsConverter implements Converter, Initializable
     @Override
     public Object convert(Type targetType, Object sourceValue)
     {
-        Class< ? > clazz;
+        Class<?> clazz;
         if (targetType instanceof Class) {
-            clazz = (Class< ? >) targetType;
+            clazz = (Class<?>) targetType;
         } else if (targetType instanceof ParameterizedType) {
-            clazz = (Class< ? >) ((ParameterizedType) targetType).getRawType();
+            clazz = (Class<?>) ((ParameterizedType) targetType).getRawType();
         } else {
             throw new org.xwiki.properties.converter.ConversionException("Unknown type [" + targetType + "]");
         }

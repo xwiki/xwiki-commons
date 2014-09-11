@@ -28,7 +28,7 @@ import org.xwiki.component.annotation.Role;
  * running in the same JVM but with different configurations. Since global templates in Velocity are part of the
  * configuration the only solution to use different global templates is to use different Velocity engines. As an example
  * we need this in XWiki since we want to allow each Skin to provide its own global macros.
- * 
+ *
  * @version $Id$
  */
 @Role
@@ -36,7 +36,7 @@ public interface VelocityFactory
 {
     /**
      * Check if an engine was already created for a certain key.
-     * 
+     *
      * @param key the key under which the Velocity engine has been saved in cache. This is the key used when the
      *            Velocity engine was created using {@link #createVelocityEngine(String, java.util.Properties)}
      * @return <code>true</code> if there is a cached Velocity Engine matching the passed key, <code>false</code>
@@ -47,7 +47,7 @@ public interface VelocityFactory
     /**
      * Retrieves from the cache the Velocity engine corresponding to a specific key, if such an engine was already
      * created.
-     * 
+     *
      * @param key the key under which the Velocity engine has been saved in cache. This is the key used when the
      *            Velocity engine was created using {@link #createVelocityEngine(String, java.util.Properties)}
      * @return the cached Velocity engine instance corresponding to the passed key or <code>null</code> if not found
@@ -60,7 +60,7 @@ public interface VelocityFactory
      * handy for having different sets of global Velocity libraries (such as for different XWiki Skins for example). If
      * another engine was previously created for the same key, then that instance is returned instead, without creating
      * any other instance.
-     * 
+     *
      * @param key the key used to cache the Velocity engine instance to return
      * @param properties the list of properties that will override the default properties when creating the engine. For
      *            example it's possible to define a list of global velocimacros by passing the

@@ -28,7 +28,8 @@ import org.xwiki.stability.Unstable;
  * @since 6.2M1
  */
 @Unstable
-public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescriptor implements FilterStreamBeanDescriptor
+public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescriptor implements
+    FilterStreamBeanDescriptor
 {
     /**
      * The description of the properties bean.
@@ -52,7 +53,7 @@ public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescr
     protected void extractParameters()
     {
         for (PropertyDescriptor propertyDescriptor : this.propertiesBeanDescriptor.getProperties()) {
-            DefaultFilterStreamBeanParameterDescriptor< ? > desc =
+            DefaultFilterStreamBeanParameterDescriptor<?> desc =
                 new DefaultFilterStreamBeanParameterDescriptor<Object>(propertyDescriptor);
             this.parameterDescriptorMap.put(desc.getId().toLowerCase(), desc);
         }
@@ -61,7 +62,7 @@ public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescr
     // FilterBeanDescriptor
 
     @Override
-    public Class< ? > getBeanClass()
+    public Class<?> getBeanClass()
     {
         return this.propertiesBeanDescriptor.getBeanClass();
     }

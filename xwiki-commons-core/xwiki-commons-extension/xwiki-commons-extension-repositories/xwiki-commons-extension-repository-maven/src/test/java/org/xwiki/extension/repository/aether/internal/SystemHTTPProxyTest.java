@@ -19,11 +19,6 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
-import static com.github.tomakehurst.wiremock.client.RequestPatternBuilder.allRequests;
-import static com.github.tomakehurst.wiremock.client.WireMock.findAll;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,6 +36,11 @@ import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
+import static com.github.tomakehurst.wiremock.client.RequestPatternBuilder.allRequests;
+import static com.github.tomakehurst.wiremock.client.WireMock.findAll;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @AllComponents
 public class SystemHTTPProxyTest

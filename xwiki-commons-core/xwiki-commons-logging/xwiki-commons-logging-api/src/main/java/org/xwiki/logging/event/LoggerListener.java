@@ -24,7 +24,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Redirect all received event to the provided {@link Logger}.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

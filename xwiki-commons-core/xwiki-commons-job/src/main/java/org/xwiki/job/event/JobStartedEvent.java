@@ -34,7 +34,7 @@ import org.xwiki.observation.event.BeginEvent;
  * <li>source: the related {@link org.xwiki.job.Job} instance</li>
  * <li>data: null</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

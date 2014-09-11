@@ -54,7 +54,7 @@ import org.xwiki.velocity.internal.log.AbstractSLF4JLogChute;
  * <p>
  * This class implements {@link org.apache.velocity.runtime.log.LogChute} (through {@link AbstractSLF4JLogChute}) to
  * access to {@link RuntimeServices}.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -141,7 +141,7 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
 
         // Configure Velocity by passing the properties defined in this component's configuration
         if (configurationProperties != null) {
-            for (Enumeration< ? > e = configurationProperties.propertyNames(); e.hasMoreElements();) {
+            for (Enumeration<?> e = configurationProperties.propertyNames(); e.hasMoreElements();) {
                 String key = e.nextElement().toString();
                 // Only set a property if it's not overridden by one of the passed properties
                 if (!overridingProperties.containsKey(key)) {
@@ -154,7 +154,7 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
 
         // Override the component's static properties with the ones passed in parameter
         if (overridingProperties != null) {
-            for (Enumeration< ? > e = overridingProperties.propertyNames(); e.hasMoreElements();) {
+            for (Enumeration<?> e = overridingProperties.propertyNames(); e.hasMoreElements();) {
                 String key = e.nextElement().toString();
                 String value = overridingProperties.getProperty(key);
                 velocityEngine.setProperty(key, value);
@@ -165,7 +165,7 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
 
     /**
      * Restore the previous {@code $template} variable, if any, in the velocity context.
-     * 
+     *
      * @param ica the current velocity context
      * @param currentTemplateScope the current Scope, from which to take the replaced variable
      */

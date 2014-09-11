@@ -21,7 +21,7 @@ package org.xwiki.job.event.status;
 
 /**
  * Give informations about the progress of a job.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

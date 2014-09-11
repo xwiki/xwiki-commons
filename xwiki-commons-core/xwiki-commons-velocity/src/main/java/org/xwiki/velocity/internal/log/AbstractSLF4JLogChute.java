@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 
 /**
  * Based class for all SLF4J based implementation of {@link LogChute}.
- * 
+ *
  * @version $Id$
  * @since 4.3M2
  */

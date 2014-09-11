@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * A {@link ReferenceByXPathMarshallingStrategy} which never fail whatever value is provided.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

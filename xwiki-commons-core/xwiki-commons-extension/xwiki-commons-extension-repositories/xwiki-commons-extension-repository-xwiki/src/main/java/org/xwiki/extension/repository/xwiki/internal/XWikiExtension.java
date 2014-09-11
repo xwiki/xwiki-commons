@@ -46,7 +46,7 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
  * XWiki Repository implementation of {@link org.xwiki.extension.Extension}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

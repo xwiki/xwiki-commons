@@ -25,7 +25,7 @@ import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
 
 /**
  * Validate {@link MessageParser}.
- * 
+ *
  * @version $Id$
  */
 public class MessageParserTest

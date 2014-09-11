@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * A job group path/identifier.
- * 
+ *
  * @version $Id$
  * @since 6.1M2
  */

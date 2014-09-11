@@ -46,7 +46,7 @@ import org.xwiki.xml.stax.StAXUtils;
 
 /**
  * Proxy called as an event filter to produce SAX events.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -111,10 +111,10 @@ public class DefaultXMLSerializer implements InvocationHandler
             Object parameterValue = parameters.get(i);
 
             if (parameterValue != null) {
-                FilterElementParameterDescriptor< ? > filterParameter = element.getParameters()[i];
+                FilterElementParameterDescriptor<?> filterParameter = element.getParameters()[i];
 
                 if (!Objects.equals(filterParameter.getDefaultValue(), parameterValue)) {
-                    Class< ? > typeClass = ReflectionUtils.getTypeClass(filterParameter.getType());
+                    Class<?> typeClass = ReflectionUtils.getTypeClass(filterParameter.getType());
 
                     String attributeName;
 
@@ -135,7 +135,7 @@ public class DefaultXMLSerializer implements InvocationHandler
                             parameters.set(filterParameter.getIndex(), null);
                         } else if (XMLUtils.isSimpleType(typeClass)) {
                             this.xmlStreamWriter.writeAttribute(attributeName,
-                                this.converter.<String> convert(String.class, parameterValue));
+                                this.converter.<String>convert(String.class, parameterValue));
 
                             parameters.set(filterParameter.getIndex(), null);
                         } else if (Objects.equals(XMLUtils.emptyValue(typeClass), parameterValue)) {
@@ -251,7 +251,7 @@ public class DefaultXMLSerializer implements InvocationHandler
         this.xmlStreamWriter.writeEndElement();
     }
 
-    private boolean shouldWriteParameter(Object value, FilterElementParameterDescriptor< ? > filterParameter)
+    private boolean shouldWriteParameter(Object value, FilterElementParameterDescriptor<?> filterParameter)
     {
         boolean write;
 
@@ -261,7 +261,7 @@ public class DefaultXMLSerializer implements InvocationHandler
             Type type = filterParameter.getType();
 
             if (type instanceof Class) {
-                Class< ? > typeClass = (Class< ? >) type;
+                Class<?> typeClass = (Class<?>) type;
                 try {
                     if (typeClass.isPrimitive()) {
                         write = !XMLUtils.emptyValue(typeClass).equals(value);
@@ -296,7 +296,7 @@ public class DefaultXMLSerializer implements InvocationHandler
             for (int i = 0; i < parameters.size(); ++i) {
                 Object parameterValue = parameters.get(i);
 
-                FilterElementParameterDescriptor< ? > filterParameter = descriptor.getParameters()[i];
+                FilterElementParameterDescriptor<?> filterParameter = descriptor.getParameters()[i];
 
                 if (shouldWriteParameter(parameterValue, filterParameter)) {
                     String elementName;

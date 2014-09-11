@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
  * Generate a URI to use to request a REST server.
  * <p>
  * Support javax.ws.rs.Path style URIs.
- * 
+ *
  * @version $Id$
  * @since 4.2M1
  */
@@ -117,8 +117,9 @@ public class UriBuilder implements Cloneable
                 stringBuilder.append(path);
             } else {
                 int i = 0;
-                for (; i < path.length() && path.charAt(i) == '/'; ++i)
-                    ;
+                for (; i < path.length() && path.charAt(i) == '/'; ++i) {
+                    // Nothing to do, the for loop already has all the required code
+                }
 
                 if (i > 0) {
                     stringBuilder.append(path.substring(i));

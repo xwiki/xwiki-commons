@@ -27,7 +27,7 @@ import org.xwiki.component.annotation.Role;
  * Simple API to do universal conversion between two types.
  * <p>
  * To add support for another target type, implements a new {@link org.xwiki.properties.converter.Converter} component
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -36,7 +36,7 @@ public interface ConverterManager
 {
     /**
      * Convert provided value into the provided target type.
-     * 
+     *
      * @param <T> the type in which the provided value has to be converted
      * @param targetType the type in which the provided value has to be converted
      * @param sourceValue the value to convert

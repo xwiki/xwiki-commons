@@ -21,7 +21,7 @@ package org.xwiki.velocity.internal.util;
 
 /**
  * Thrown by Velocity parser methods when it hit invalid Velocity.
- * 
+ *
  * @version $Id$
  */
 public class InvalidVelocityException extends Exception

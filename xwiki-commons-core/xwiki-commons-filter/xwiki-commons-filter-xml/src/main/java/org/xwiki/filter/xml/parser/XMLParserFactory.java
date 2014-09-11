@@ -30,7 +30,7 @@ import org.xwiki.filter.xml.XMLConfiguration;
 
 /**
  * Create XML parsers.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

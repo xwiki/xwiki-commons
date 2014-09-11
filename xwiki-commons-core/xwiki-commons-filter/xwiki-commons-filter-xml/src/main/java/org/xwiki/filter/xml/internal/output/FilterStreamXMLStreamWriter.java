@@ -21,14 +21,14 @@ package org.xwiki.filter.xml.internal.output;
 
 import java.io.OutputStream;
 
-import javanet.staxutils.IndentingXMLStreamWriter;
-
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.xml.output.XMLOutputProperties;
+
+import javanet.staxutils.IndentingXMLStreamWriter;
 
 /**
  * @version $Id$
@@ -46,8 +46,8 @@ public class FilterStreamXMLStreamWriter
         this.printNullValue = printNullValue;
     }
 
-    public FilterStreamXMLStreamWriter(OutputStream outputStream, String encoding, boolean format, boolean printNullValue)
-        throws FilterException
+    public FilterStreamXMLStreamWriter(OutputStream outputStream, String encoding, boolean format,
+        boolean printNullValue) throws FilterException
     {
         try {
             XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream, encoding);
@@ -77,14 +77,14 @@ public class FilterStreamXMLStreamWriter
 
     public XMLStreamWriter getWriter()
     {
-        return writer;
+        return this.writer;
     }
 
     //
 
     /**
      * Write the XML Declaration. Defaults the XML version to 1.0, and the encoding to utf-8.
-     * 
+     *
      * @throws FilterException
      */
     public void writeStartDocument() throws FilterException
@@ -98,7 +98,7 @@ public class FilterStreamXMLStreamWriter
 
     /**
      * Write the XML Declaration.
-     * 
+     *
      * @param encoding the XML version
      * @param version the XML encoding
      * @throws FilterException
@@ -114,7 +114,7 @@ public class FilterStreamXMLStreamWriter
 
     /**
      * Closes any start tags and writes corresponding end tags.
-     * 
+     *
      * @throws FilterException
      */
     public void writeEndDocument() throws FilterException
@@ -200,7 +200,7 @@ public class FilterStreamXMLStreamWriter
     /**
      * Close this writer and free any resources associated with the writer. This must not close the underlying output
      * stream.
-     * 
+     *
      * @throws FilterException
      */
     public void close() throws FilterException
@@ -214,7 +214,7 @@ public class FilterStreamXMLStreamWriter
 
     /**
      * Write any cached data to the underlying output mechanism.
-     * 
+     *
      * @throws FilterException
      */
     public void flush() throws FilterException

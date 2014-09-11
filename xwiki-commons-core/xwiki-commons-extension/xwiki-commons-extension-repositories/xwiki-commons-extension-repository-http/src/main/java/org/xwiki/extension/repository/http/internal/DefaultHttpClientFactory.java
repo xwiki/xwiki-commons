@@ -35,7 +35,7 @@ import org.xwiki.extension.ExtensionManagerConfiguration;
 
 /**
  * Configures user agent, timeouts, proxy and authentication.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

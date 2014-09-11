@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * XML converter for {@link FilterEventParameters}.
- * 
+ *
  * @version $Id$
  * @since 5.2M2
  */

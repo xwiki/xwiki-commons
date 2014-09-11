@@ -21,15 +21,14 @@ package org.xwiki.logging;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.logging.event.LogEvent;
 
 /**
  * Test {@link LogEvent}.
- * 
+ *
  * @version $Id$
  */
 public class LogEventTest
@@ -49,7 +48,7 @@ public class LogEventTest
 
         Assert.assertEquals(logEvent.getMessageElements(), Arrays.asList("message"));
 
-        logEvent = new LogEvent(null, LogLevel.ERROR, "message {}", new Object[] {""}, null);
+        logEvent = new LogEvent(null, LogLevel.ERROR, "message {}", new Object[] { "" }, null);
 
         Assert.assertEquals(logEvent.getMessageElements(), Arrays.asList("message ", ""));
     }

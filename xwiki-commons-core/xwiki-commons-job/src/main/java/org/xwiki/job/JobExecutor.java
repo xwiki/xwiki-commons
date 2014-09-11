@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
 /**
  * By default Jobs are either executed asynchronously whenever there is a free thread in the pool. Jobs can implement
  * {@link GroupedJob} to make sure they con't be executed at the same time than the jobs from the same groups.
- * 
+ *
  * @version $Id$
  * @see GroupedJob
  * @see Job
@@ -39,7 +39,7 @@ public interface JobExecutor
 {
     /**
      * The current job running in the passed jobs group.
-     * 
+     *
      * @param groupPath the group path
      * @return the currently running job in the passed group
      */
@@ -47,7 +47,7 @@ public interface JobExecutor
 
     /**
      * Return job corresponding to the provided id from the current executed or waiting jobs.
-     * 
+     *
      * @param jobId the id of the job
      * @return the job status corresponding to the provided job id, null if none can be found
      */
@@ -55,7 +55,7 @@ public interface JobExecutor
 
     /**
      * Create and add a new job in the queue of jobs to execute.
-     * 
+     *
      * @param jobType the role hint of the job component
      * @param request the request
      * @return the created job
@@ -67,7 +67,7 @@ public interface JobExecutor
 
     /**
      * Add a new job in the queue of jobs to execute.
-     * 
+     *
      * @param job the job to execute
      * @throws java.util.concurrent.RejectedExecutionException if this task cannot be accepted for execution (for
      *             example when the {@link JobExecutor} is disposed).

@@ -22,10 +22,6 @@ package org.xwiki.velocity.tools;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONException;
-import net.sf.json.JSONSerializer;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +30,13 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONException;
+import net.sf.json.JSONSerializer;
+
 /**
  * Velocity tool to facilitate serialization of Java objects to the JSON format.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */
@@ -56,7 +56,7 @@ public class JSONTool
      * <li>maps: {"number": 23, "boolean": false, "string": "value"}</li>
      * <li>beans: {"enabled": true, "name": "XWiki"} for a bean that has #isEnabled() and #getName() getters</li>
      * </ul>
-     * 
+     *
      * @param object the object to be serialized to the JSON format
      * @return the JSON-verified string representation of the given object
      */
@@ -83,7 +83,7 @@ public class JSONTool
     /**
      * Parse a serialized JSON into a real JSON object. Only valid JSON strings can be parsed, and doesn't support
      * JSONP. If the argument is not valid JSON, then {@code null} is returned.
-     * 
+     *
      * @param json the string to parse, must be valid JSON
      * @return the parsed JSON, either a {@link net.sf.json.JSONObject} or a {@link net.sf.json.JSONArray}, or
      *         {@code null} if the argument is not a valid JSON

@@ -24,7 +24,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Provides access to the main XWiki Velocity objects.
- * 
+ *
  * @since 1.5M2
  * @version $Id$
  */
@@ -38,7 +38,7 @@ public interface VelocityManager
 
     /**
      * Get the current Velocity Engine or create one if none has been created.
-     * 
+     *
      * @return the current Velocity Engine retrieved from the Execution Context
      * @throws XWikiVelocityException if the Velocity Engine cannot be created
      * @todo Move the engine creation to some initialization method instead and remove the need for throwing an

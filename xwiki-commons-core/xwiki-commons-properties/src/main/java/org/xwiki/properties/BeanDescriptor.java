@@ -29,7 +29,7 @@ import java.util.Collection;
  * <li>public getters and setters. For example getSomeVar/setSomeVar correspond to "someVar" property name</li>
  * <li>public fields. The name of the property is the name of the field.</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -38,7 +38,7 @@ public interface BeanDescriptor
     /**
      * @return the class of the JAVA bean containing.
      */
-    Class< ? > getBeanClass();
+    Class<?> getBeanClass();
 
     /**
      * @return the properties of the java bean.
@@ -47,7 +47,7 @@ public interface BeanDescriptor
 
     /**
      * Return descriptor for the provided property name. The property name is case sensitive.
-     * 
+     *
      * @param propertyName the name of the property
      * @return the descriptor of the property.
      */

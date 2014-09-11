@@ -21,7 +21,7 @@ package org.xwiki.logging;
 
 /**
  * Defines the set of levels used in logging events.
- * 
+ *
  * @version $Id$
  * @since 3.2M1
  */

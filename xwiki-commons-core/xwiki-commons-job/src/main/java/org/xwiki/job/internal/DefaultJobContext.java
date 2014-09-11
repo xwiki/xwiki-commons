@@ -31,7 +31,7 @@ import org.xwiki.job.JobContext;
 
 /**
  * Default implementation of {@link JobContext}.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */

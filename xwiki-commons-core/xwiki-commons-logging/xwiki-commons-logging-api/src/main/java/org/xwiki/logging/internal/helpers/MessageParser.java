@@ -69,7 +69,7 @@ public class MessageParser
 
         public int getIndex()
         {
-            return index;
+            return this.index;
         }
     }
 

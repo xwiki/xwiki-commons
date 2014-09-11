@@ -38,7 +38,8 @@ import org.xwiki.stability.Unstable;
  * @since 6.2M1
  */
 @Unstable
-public abstract class AbstractBeanFilterStreamFactory<P> extends AbstractFilterStreamFactory implements FilterStreamFactory, Initializable
+public abstract class AbstractBeanFilterStreamFactory<P> extends AbstractFilterStreamFactory implements
+    FilterStreamFactory, Initializable
 {
     /**
      * The {@link BeanManager} component.

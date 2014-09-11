@@ -32,7 +32,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link InputStreamConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class InputStreamConverterTest extends AbstractComponentTestCase
@@ -51,8 +51,8 @@ public class InputStreamConverterTest extends AbstractComponentTestCase
     @Test
     public void testFromString() throws IOException
     {
-        Assert.assertTrue(Arrays.equals(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9},
-            IOUtils.toByteArray(this.converterManager.<InputStream> convert(InputStream.class, "1,2,3,4,5,6,7,8,9"))));
+        Assert.assertTrue(Arrays.equals(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+            IOUtils.toByteArray(this.converterManager.<InputStream>convert(InputStream.class, "1,2,3,4,5,6,7,8,9"))));
     }
 
     @Test

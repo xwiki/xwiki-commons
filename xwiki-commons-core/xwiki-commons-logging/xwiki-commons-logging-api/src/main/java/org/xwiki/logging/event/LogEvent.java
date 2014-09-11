@@ -44,7 +44,7 @@ import org.xwiki.observation.event.Event;
  * <li>source: the name of the associated logger</li>
  * <li>data: null</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 3.2M1
  */
@@ -143,13 +143,13 @@ public class LogEvent implements Event, Serializable
 
     /**
      * Copy the stored log into a passed {@link Logger}.
-     * 
+     *
      * @param targetLogger the logger where to copy the stored log
      * @since 5.3M1
      */
     public void log(Logger targetLogger)
     {
-        switch (level) {
+        switch (this.level) {
             case TRACE:
                 targetLogger.trace(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
                 break;

@@ -33,7 +33,7 @@ import org.xwiki.properties.annotation.PropertyName;
 
 /**
  * Validate {@link DefaultBeanDescriptor}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultBeanDescriptorTest
@@ -125,12 +125,12 @@ public class DefaultBeanDescriptorTest
 
         public String getHiddenProperty()
         {
-            return hiddenProperty;
+            return this.hiddenProperty;
         }
 
         public List<Integer> getGenericProp()
         {
-            return genericProp;
+            return this.genericProp;
         }
 
         public void setGenericProp(List<Integer> genericProp)

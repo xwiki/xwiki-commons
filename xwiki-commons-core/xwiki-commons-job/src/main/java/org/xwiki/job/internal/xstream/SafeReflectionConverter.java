@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * A {@link ReflectionConverter} which never fail whatever value is provided.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */
@@ -93,29 +93,35 @@ public class SafeReflectionConverter extends ReflectionConverter
         final Map defaultFieldDefinition = new HashMap();
 
         // Attributes might be preferred to child elements ...
-        reflectionProvider.visitSerializableFields(source, new ReflectionProvider.Visitor()
+        this.reflectionProvider.visitSerializableFields(source, new ReflectionProvider.Visitor()
         {
             final Set writtenAttributes = new HashSet();
 
+            @Override
             public void visit(String fieldName, Class type, Class definedIn, Object value)
             {
-                if (!mapper.shouldSerializeMember(definedIn, fieldName)) {
+                if (!SafeReflectionConverter.this.mapper.shouldSerializeMember(definedIn, fieldName)) {
                     return;
                 }
                 if (!defaultFieldDefinition.containsKey(fieldName)) {
                     Class lookupType = source.getClass();
                     // See XSTR-457 and OmitFieldsTest
-                    if (definedIn != source.getClass() && !mapper.shouldSerializeMember(lookupType, fieldName)) {
+                    if (definedIn != source.getClass()
+                        && !SafeReflectionConverter.this.mapper.shouldSerializeMember(lookupType, fieldName)) {
                         lookupType = definedIn;
                     }
-                    defaultFieldDefinition.put(fieldName, reflectionProvider.getField(lookupType, fieldName));
+                    defaultFieldDefinition.put(fieldName,
+                        SafeReflectionConverter.this.reflectionProvider.getField(lookupType, fieldName));
                 }
 
-                SingleValueConverter converter = mapper.getConverterFromItemType(fieldName, type, definedIn);
+                SingleValueConverter converter =
+                    SafeReflectionConverter.this.mapper.getConverterFromItemType(fieldName, type, definedIn);
                 if (converter != null) {
-                    final String attribute = mapper.aliasForAttribute(mapper.serializedMember(definedIn, fieldName));
+                    final String attribute =
+                        SafeReflectionConverter.this.mapper.aliasForAttribute(SafeReflectionConverter.this.mapper
+                            .serializedMember(definedIn, fieldName));
                     if (value != null) {
-                        if (writtenAttributes.contains(fieldName)) { // TODO: use attribute
+                        if (this.writtenAttributes.contains(fieldName)) { // TODO: use attribute
                             throw new ConversionException("Cannot write field with name '" + fieldName
                                 + "' twice as attribute for object of type " + source.getClass().getName());
                         }
@@ -124,7 +130,7 @@ public class SafeReflectionConverter extends ReflectionConverter
                             writer.addAttribute(attribute, str);
                         }
                     }
-                    writtenAttributes.add(fieldName); // TODO: use attribute
+                    this.writtenAttributes.add(fieldName); // TODO: use attribute
                 } else {
                     fields.add(new FieldInfo(fieldName, type, definedIn, value));
                 }
@@ -138,7 +144,8 @@ public class SafeReflectionConverter extends ReflectionConverter
                     FieldInfo info = (FieldInfo) fieldIter.next();
                     if (info.value != null) {
                         Mapper.ImplicitCollectionMapping mapping =
-                            mapper.getImplicitCollectionDefForFieldName(source.getClass(), info.fieldName);
+                            SafeReflectionConverter.this.mapper.getImplicitCollectionDefForFieldName(source.getClass(),
+                                info.fieldName);
                         if (mapping != null) {
                             if (context instanceof ReferencingMarshallingContext) {
                                 if (info.value != Collections.EMPTY_LIST && info.value != Collections.EMPTY_SET
@@ -160,11 +167,11 @@ public class SafeReflectionConverter extends ReflectionConverter
                                 final Class itemType;
                                 if (obj == null) {
                                     itemType = Object.class;
-                                    itemName = mapper.serializedClass(null);
+                                    itemName = SafeReflectionConverter.this.mapper.serializedClass(null);
                                 } else if (isEntry) {
                                     final String entryName =
-                                        mapping.getItemFieldName() != null ? mapping.getItemFieldName() : mapper
-                                            .serializedClass(Map.Entry.class);
+                                        mapping.getItemFieldName() != null ? mapping.getItemFieldName()
+                                            : SafeReflectionConverter.this.mapper.serializedClass(Map.Entry.class);
                                     Map.Entry entry = (Map.Entry) obj;
                                     ExtendedHierarchicalStreamWriterHelper.startNode(writer, entryName,
                                         entry.getClass());
@@ -177,7 +184,7 @@ public class SafeReflectionConverter extends ReflectionConverter
                                     itemName = mapping.getItemFieldName();
                                 } else {
                                     itemType = obj.getClass();
-                                    itemName = mapper.serializedClass(itemType);
+                                    itemName = SafeReflectionConverter.this.mapper.serializedClass(itemType);
                                 }
                                 safeWriteField(info.fieldName, itemName, itemType, info.definedIn, obj);
                             }
@@ -196,7 +203,8 @@ public class SafeReflectionConverter extends ReflectionConverter
                 } else if (!XStreamUtils.isComponent(newObj)) {
                     try {
                         // Test the serialization
-                        xstream.marshal(newObj, VoidWriter.WRITER, new DataHolderWrapper(context));
+                        SafeReflectionConverter.this.xstream.marshal(newObj, VoidWriter.WRITER, new DataHolderWrapper(
+                            context));
 
                         // Do the actual serialization
                         writeField(fieldName, aliasName, fieldType, definedIn, newObj);
@@ -210,14 +218,16 @@ public class SafeReflectionConverter extends ReflectionConverter
             {
                 Class actualType = newObj != null ? newObj.getClass() : fieldType;
                 ExtendedHierarchicalStreamWriterHelper.startNode(writer,
-                    aliasName != null ? aliasName : mapper.serializedMember(source.getClass(), fieldName), actualType);
+                    aliasName != null ? aliasName : SafeReflectionConverter.this.mapper.serializedMember(
+                        source.getClass(), fieldName), actualType);
 
                 if (newObj != null) {
-                    Class defaultType = mapper.defaultImplementationOf(fieldType);
+                    Class defaultType = SafeReflectionConverter.this.mapper.defaultImplementationOf(fieldType);
                     if (!actualType.equals(defaultType)) {
-                        String serializedClassName = mapper.serializedClass(actualType);
-                        if (!serializedClassName.equals(mapper.serializedClass(defaultType))) {
-                            String attributeName = mapper.aliasForSystemAttribute("class");
+                        String serializedClassName = SafeReflectionConverter.this.mapper.serializedClass(actualType);
+                        if (!serializedClassName.equals(SafeReflectionConverter.this.mapper
+                            .serializedClass(defaultType))) {
+                            String attributeName = SafeReflectionConverter.this.mapper.aliasForSystemAttribute("class");
                             if (attributeName != null) {
                                 writer.addAttribute(attributeName, serializedClassName);
                             }
@@ -226,13 +236,15 @@ public class SafeReflectionConverter extends ReflectionConverter
 
                     final Field defaultField = (Field) defaultFieldDefinition.get(fieldName);
                     if (defaultField.getDeclaringClass() != definedIn) {
-                        String attributeName = mapper.aliasForSystemAttribute("defined-in");
+                        String attributeName =
+                            SafeReflectionConverter.this.mapper.aliasForSystemAttribute("defined-in");
                         if (attributeName != null) {
-                            writer.addAttribute(attributeName, mapper.serializedClass(definedIn));
+                            writer.addAttribute(attributeName,
+                                SafeReflectionConverter.this.mapper.serializedClass(definedIn));
                         }
                     }
 
-                    Field field = reflectionProvider.getField(definedIn, fieldName);
+                    Field field = SafeReflectionConverter.this.reflectionProvider.getField(definedIn, fieldName);
                     marshallField(context, newObj, field);
                 }
                 writer.endNode();
@@ -241,11 +253,11 @@ public class SafeReflectionConverter extends ReflectionConverter
             void writeItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer)
             {
                 if (item == null) {
-                    String name = mapper.serializedClass(null);
+                    String name = SafeReflectionConverter.this.mapper.serializedClass(null);
                     ExtendedHierarchicalStreamWriterHelper.startNode(writer, name, Mapper.Null.class);
                     writer.endNode();
                 } else {
-                    String name = mapper.serializedClass(item.getClass());
+                    String name = SafeReflectionConverter.this.mapper.serializedClass(item.getClass());
                     ExtendedHierarchicalStreamWriterHelper.startNode(writer, name, item.getClass());
                     context.convertAnother(item);
                     writer.endNode();

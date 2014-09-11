@@ -34,7 +34,7 @@ public class StringWriterOutputTarget extends AbstractWriterOutputTarget
 {
     /**
      * Return the string buffer itself.
-     * 
+     *
      * @return StringBuffer holding the current buffer value.
      */
     public StringBuffer getBuffer()

@@ -31,7 +31,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link LocaleConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class TypeConverterTest extends AbstractComponentTestCase

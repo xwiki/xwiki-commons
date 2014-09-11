@@ -29,7 +29,7 @@ import ch.qos.logback.classic.LoggerContext;
 
 /**
  * Provide several Logback related utility methods.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  */

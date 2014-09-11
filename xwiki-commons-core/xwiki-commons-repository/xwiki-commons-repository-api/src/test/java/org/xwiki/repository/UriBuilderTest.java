@@ -24,7 +24,7 @@ import org.junit.Test;
 
 /**
  * Validate {@link UriBuilder}.
- * 
+ *
  * @version $Id$
  */
 public class UriBuilderTest

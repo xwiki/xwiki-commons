@@ -27,7 +27,7 @@ import org.slf4j.MarkerFactory;
 
 /**
  * Test {@link TranslationMarker}.
- * 
+ *
  * @version $Id$
  */
 public class TranslationMarkerTest

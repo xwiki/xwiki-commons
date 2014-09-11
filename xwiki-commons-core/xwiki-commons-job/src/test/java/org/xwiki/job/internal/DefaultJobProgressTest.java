@@ -20,7 +20,6 @@
 package org.xwiki.job.internal;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;

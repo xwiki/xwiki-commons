@@ -30,7 +30,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * The request used to configure "filter.converter" job.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.XStream;
 
 /**
  * Serialize/unserialize tool for job statuses.
- * 
+ *
  * @version $Id$
  * @since 5.2M2
  */
@@ -57,7 +57,7 @@ public class JobStatusSerializer
 
     /**
      * Default constructor.
-     * 
+     *
      * @throws ParserConfigurationException when failing to initialize
      */
     public JobStatusSerializer() throws ParserConfigurationException

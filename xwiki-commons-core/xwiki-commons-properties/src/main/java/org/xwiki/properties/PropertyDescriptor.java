@@ -25,7 +25,7 @@ import java.lang.reflect.Type;
 
 /**
  * Describe a property in a bean.
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -53,7 +53,7 @@ public interface PropertyDescriptor
      * @deprecated since 3.0M1 use {@link #getPropertyType()} instead
      */
     @Deprecated
-    Class< ? > getPropertyClass();
+    Class<?> getPropertyClass();
 
     /**
      * @return the type of the property.

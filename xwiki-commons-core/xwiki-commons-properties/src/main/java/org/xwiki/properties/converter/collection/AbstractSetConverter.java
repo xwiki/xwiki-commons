@@ -27,7 +27,7 @@ import org.xwiki.component.util.ReflectionUtils;
 
 /**
  * Base class for all {@link java.util.Set} converters.
- * 
+ *
  * @param <S> the type in which the provided value has to be converted
  * @version $Id$
  * @since 5.2M1

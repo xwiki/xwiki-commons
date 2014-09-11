@@ -48,7 +48,7 @@ import org.xwiki.job.event.status.JobStatus;
 
 /**
  * Default implementation of {@link JobManager}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  * @deprecated since 6.1M2, use {@link DefaultJobExecutor} instead

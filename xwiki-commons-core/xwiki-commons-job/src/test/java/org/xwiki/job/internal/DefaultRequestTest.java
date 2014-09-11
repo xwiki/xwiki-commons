@@ -20,7 +20,6 @@
 package org.xwiki.job.internal;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.xwiki.job.DefaultRequest;
 
@@ -30,14 +29,14 @@ public class DefaultRequestTest
     public void createDefaultRequestWithPassedRequest()
     {
         DefaultRequest request = new DefaultRequest();
-        
+
         request.setInteractive(true);
         request.setProperty("property", "value");
         request.setRemote(true);
         request.setId("id");
-        
+
         DefaultRequest request2 = new DefaultRequest(request);
-        
+
         Assert.assertEquals(request.getId(), request2.getId());
         Assert.assertEquals(request.getProperty("property"), request2.getProperty("property"));
         Assert.assertEquals(request.isRemote(), request2.isRemote());

@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Unknown elements related events.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

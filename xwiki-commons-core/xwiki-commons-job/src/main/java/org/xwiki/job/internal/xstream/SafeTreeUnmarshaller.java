@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * A {@link ReferenceByXPathUnmarshaller} which never fail whatever value is provided.
- * 
+ *
  * @version $Id$
  */
 public class SafeTreeUnmarshaller extends ReferenceByXPathUnmarshaller

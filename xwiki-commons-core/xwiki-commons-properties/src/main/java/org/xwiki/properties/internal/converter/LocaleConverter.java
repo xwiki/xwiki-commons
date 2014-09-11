@@ -30,7 +30,7 @@ import org.xwiki.properties.converter.AbstractConverter;
 
 /**
  * Converter that converts a value into an {@link Locale} object.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

@@ -30,7 +30,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link ListConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class ListConverterTest extends AbstractComponentTestCase

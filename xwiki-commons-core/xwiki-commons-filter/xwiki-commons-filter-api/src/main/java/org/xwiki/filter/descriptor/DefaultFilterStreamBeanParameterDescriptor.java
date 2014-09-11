@@ -26,7 +26,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * The default implementation of {@link FilterStreamPropertyDescriptor}.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

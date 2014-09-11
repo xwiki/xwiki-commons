@@ -33,7 +33,7 @@ import org.xwiki.job.event.status.JobStatus;
 
 /**
  * Validate {@link JobStatusSerializer}.
- * 
+ *
  * @version $Id$
  */
 public class JobStatusSerializerTest
@@ -48,7 +48,7 @@ public class JobStatusSerializerTest
 
         public CrossReferenceObjectTest()
         {
-            field = this;
+            this.field = this;
         }
     }
 
@@ -72,7 +72,7 @@ public class JobStatusSerializerTest
     {
         this.serializer.write(status, this.testFile);
 
-        return this.serializer.read(testFile);
+        return this.serializer.read(this.testFile);
     }
 
     // Tests

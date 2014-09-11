@@ -29,7 +29,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link LocaleConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class LocaleConverterTest extends AbstractComponentTestCase

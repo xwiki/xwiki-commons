@@ -27,12 +27,12 @@ import java.io.InputStream;
 import org.xwiki.stability.Unstable;
 
 /**
- * 
  * @version $Id$
  * @since 6.2M1
  */
 @Unstable
-public class DefaultFileInputSource extends AbstractInputStreamInputSource implements FileInputSource, InputStreamInputSource
+public class DefaultFileInputSource extends AbstractInputStreamInputSource implements FileInputSource,
+    InputStreamInputSource
 {
     private final File file;
 

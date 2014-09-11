@@ -30,9 +30,9 @@ import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.filter.xml.output.XMLOutputProperties;
 
 /**
- * A generic xml output filter implementation. This class can be used as a test bench to validate various
- * XMLInputStream wiki parsers.
- * 
+ * A generic xml output filter implementation. This class can be used as a test bench to validate various XMLInputStream
+ * wiki parsers.
+ *
  * @version $Id$
  * @since 6.2M1
  */

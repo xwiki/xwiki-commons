@@ -27,7 +27,7 @@ import java.util.regex.PatternSyntaxException;
 
 /**
  * Velocity Tool offering various Regex-based APIs to make it easy to manipulate regular expressions from Velocity.
- * 
+ *
  * @version $Id$
  * @since 2.0RC2
  */
@@ -111,7 +111,7 @@ public class RegexTool
 
     /**
      * Compiles a regular expression into a java {@code Pattern} object.
-     * 
+     *
      * @param regex the textual representation of the regular expression
      * @return the {@code Pattern} object corresponding to the regular expression, or {@code null} if the expression is
      *         invalid
@@ -133,7 +133,7 @@ public class RegexTool
      * string <code>s</code> as if it were a literal pattern.
      * </p>
      * Metacharacters or escape sequences in the input sequence will be given no special meaning.
-     * 
+     *
      * @param s The string to be literalized
      * @return A literal string replacement
      * @since 2.4M2

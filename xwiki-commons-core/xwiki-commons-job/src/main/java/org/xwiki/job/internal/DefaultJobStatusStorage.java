@@ -31,7 +31,7 @@ import org.xwiki.job.event.status.JobStatus;
 
 /**
  * Default implementation of {@link JobStatusStorage}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

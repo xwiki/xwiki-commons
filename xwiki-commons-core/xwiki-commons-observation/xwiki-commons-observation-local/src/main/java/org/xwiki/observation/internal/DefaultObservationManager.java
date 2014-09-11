@@ -47,7 +47,7 @@ import org.xwiki.observation.event.Event;
  * This component use synchronized for concurrent protection instead of having
  * {@link java.util.concurrent.ConcurrentHashMap} everywhere because it's more efficient since most of methods access to
  * several maps and generally do enumerations.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -57,7 +57,7 @@ public class DefaultObservationManager implements ObservationManager
     /**
      * @see #getListenersByEvent()
      */
-    private volatile Map<Class< ? extends Event>, Map<String, RegisteredListener>> listenersByEvent;
+    private volatile Map<Class<? extends Event>, Map<String, RegisteredListener>> listenersByEvent;
 
     /**
      * @see #getListenersByName()
@@ -125,7 +125,7 @@ public class DefaultObservationManager implements ObservationManager
      * @return the registered listeners indexed on Event classes so that it's fast to find all the listeners registered
      *         for a given event, so that {@link #notify} calls execute fast and in a fixed amount a time.
      */
-    private Map<Class< ? extends Event>, Map<String, RegisteredListener>> getListenersByEvent()
+    private Map<Class<? extends Event>, Map<String, RegisteredListener>> getListenersByEvent()
     {
         if (this.listenersByEvent == null) {
             initializeListeners();
@@ -149,20 +149,20 @@ public class DefaultObservationManager implements ObservationManager
 
     /**
      * Lazily initialized to allow @Inject {@link ObservationManager} in a listener.
-     * 
+     *
      * @todo Should we allow event inheritance ?
      */
     private synchronized void initializeListeners()
     {
         if (this.listenersByName == null) {
-            this.listenersByEvent = new ConcurrentHashMap<Class< ? extends Event>, Map<String, RegisteredListener>>();
+            this.listenersByEvent = new ConcurrentHashMap<Class<? extends Event>, Map<String, RegisteredListener>>();
             this.listenersByName = new ConcurrentHashMap<String, EventListener>();
 
             // Can be null in unit tests
             if (this.componentManager != null) {
                 try {
                     for (EventListener listener : this.componentManager
-                        .<EventListener> getInstanceList(EventListener.class)) {
+                        .<EventListener>getInstanceList(EventListener.class)) {
                         addListener(listener);
                     }
                 } catch (ComponentLookupException e) {
@@ -186,8 +186,8 @@ public class DefaultObservationManager implements ObservationManager
                 "The [{}] listener is overwritting a previously "
                     + "registered listener [{}] since they both are registered under the same id [{}]. "
                     + "In the future consider removing a Listener first if you really want to register it again.",
-                new Object[] {eventListener.getClass().getName(), previousListener.getClass().getName(),
-                        eventListener.getName()});
+                new Object[] { eventListener.getClass().getName(), previousListener.getClass().getName(),
+                        eventListener.getName() });
         }
 
         // Register the listener by name. If already registered, override it.
@@ -219,7 +219,7 @@ public class DefaultObservationManager implements ObservationManager
     public void removeListener(String listenerName)
     {
         getListenersByName().remove(listenerName);
-        for (Map.Entry<Class< ? extends Event>, Map<String, RegisteredListener>> entry : this.listenersByEvent
+        for (Map.Entry<Class<? extends Event>, Map<String, RegisteredListener>> entry : this.listenersByEvent
             .entrySet()) {
             entry.getValue().remove(listenerName);
             if (entry.getValue().isEmpty()) {
@@ -288,7 +288,7 @@ public class DefaultObservationManager implements ObservationManager
     /**
      * Call the provided listeners matching the passed Event. The definition of <em>source</em> and <em>data</em> is
      * purely up to the communicating classes.
-     * 
+     *
      * @param listeners the listeners to notify
      * @param event the event to pass to the registered listeners
      * @param source the source of the event (or <code>null</code>)
@@ -304,8 +304,8 @@ public class DefaultObservationManager implements ObservationManager
                         listener.listener.onEvent(event, source, data);
                     } catch (Exception e) {
                         // protect from bad listeners
-                        this.logger.error("Failed to send event [{}] to listener [{}]", new Object[] {event,
-                            listener.listener, e});
+                        this.logger.error("Failed to send event [{}] to listener [{}]", new Object[] { event,
+                            listener.listener, e });
                     }
 
                     // Only send the first matching event since the listener should only be called once per event.
@@ -324,7 +324,7 @@ public class DefaultObservationManager implements ObservationManager
     /**
      * A Component has been modified (added or removed) and we update our cache of Event Listeners if that Component is
      * an Event Listener.
-     * 
+     *
      * @param componentEvent the event about the Component being added or removed
      * @param componentManager the {@link ComponentManager} where the descriptor is registered
      * @param descriptor the descriptor of the modified component
@@ -347,7 +347,7 @@ public class DefaultObservationManager implements ObservationManager
 
     /**
      * An Event Listener Component has been dynamically registered in the system, add it to our cache.
-     * 
+     *
      * @param event event object containing the new component descriptor
      * @param componentManager the {@link ComponentManager} where the descriptor is registered
      * @param descriptor the component descriptor removed from component manager
@@ -366,20 +366,20 @@ public class DefaultObservationManager implements ObservationManager
             }
         } catch (ComponentLookupException e) {
             this.logger.error("Failed to lookup the Event Listener [{}] corresponding to the Component registration "
-                + "event for [{}]. Ignoring the event", new Object[] {event.getRoleHint(),
-                    descriptor.getImplementation().getName(), e});
+                + "event for [{}]. Ignoring the event", new Object[] { event.getRoleHint(),
+                    descriptor.getImplementation().getName(), e });
         }
     }
 
     /**
      * An Event Listener Component has been dynamically unregistered in the system, remove it from our cache.
-     * 
+     *
      * @param event the event object containing the removed component descriptor
      * @param componentManager the {@link ComponentManager} where the descriptor is registered
      * @param descriptor the component descriptor removed from the component manager
      */
     private void onEventListenerComponentRemoved(ComponentDescriptorRemovedEvent event,
-        ComponentManager componentManager, ComponentDescriptor< ? > descriptor)
+        ComponentManager componentManager, ComponentDescriptor<?> descriptor)
     {
         EventListener removedEventListener = null;
         for (EventListener eventListener : getListenersByName().values()) {

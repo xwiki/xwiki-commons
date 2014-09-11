@@ -44,7 +44,7 @@ public interface VelocityConfiguration
 
     /**
      * @return the list of configured Velocity Tools (the key is the name under which the tool will be available
-     *         in the Velocity Context and the value is the tool's class name) 
+     *         in the Velocity Context and the value is the tool's class name)
      */
     Properties getTools();
 }

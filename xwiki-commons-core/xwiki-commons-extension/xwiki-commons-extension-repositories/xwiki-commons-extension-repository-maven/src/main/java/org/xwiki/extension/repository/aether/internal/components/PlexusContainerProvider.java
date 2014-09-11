@@ -36,7 +36,7 @@ import org.xwiki.component.phase.InitializationException;
 
 /**
  * Provide easy access to singleton {@link PlexusContainer}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -70,6 +70,6 @@ public class PlexusContainerProvider implements Provider<PlexusContainer>, Initi
     @Override
     public PlexusContainer get()
     {
-        return plexusContainer;
+        return this.plexusContainer;
     }
 }

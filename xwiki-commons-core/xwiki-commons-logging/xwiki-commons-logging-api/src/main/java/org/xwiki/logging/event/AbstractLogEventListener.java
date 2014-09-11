@@ -27,7 +27,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Base class to implement {@link LogEvent} listener.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  */
@@ -36,7 +36,7 @@ public abstract class AbstractLogEventListener implements EventListener
     /**
      * The matched events.
      */
-    private static final List<Event> EVENTS = Arrays.<Event> asList(new LogEvent(), new BeginLogEvent(),
+    private static final List<Event> EVENTS = Arrays.<Event>asList(new LogEvent(), new BeginLogEvent(),
         new EndLogEvent());
 
     @Override

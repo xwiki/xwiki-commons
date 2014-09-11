@@ -41,7 +41,7 @@ public class StringInputSource extends AbstractReaderInputSource
     @Override
     protected Reader openReader()
     {
-        return new StringReader(source);
+        return new StringReader(this.source);
     }
 
     @Override

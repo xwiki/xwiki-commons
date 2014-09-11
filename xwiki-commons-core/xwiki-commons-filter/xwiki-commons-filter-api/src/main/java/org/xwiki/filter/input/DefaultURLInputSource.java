@@ -26,7 +26,6 @@ import java.net.URL;
 import org.xwiki.stability.Unstable;
 
 /**
- * 
  * @version $Id$
  * @since 6.2M1
  */

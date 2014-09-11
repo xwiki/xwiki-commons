@@ -39,7 +39,7 @@ public class DefaultOutputStreamOutputTarget implements OutputStreamOutputTarget
      * Create an instance of {@link OutputStreamOutputTarget} returning the passed {@link OutputStream}.
      * <p>
      * The passed {@link OutputStream} is not closed when the {@link OutputTarget} is closed.
-     * 
+     *
      * @param outputStream the {@link OutputStream}
      */
     public DefaultOutputStreamOutputTarget(OutputStream outputStream)
@@ -49,7 +49,7 @@ public class DefaultOutputStreamOutputTarget implements OutputStreamOutputTarget
 
     /**
      * Create an instance of {@link OutputStreamOutputTarget} returning the passed {@link OutputStream}.
-     * 
+     *
      * @param outputStream the {@link OutputStream}
      * @param close indicate of the passer {@link OutputStream} should be closed when the {@link OutputTarget} is closed
      * @since 6.2M1

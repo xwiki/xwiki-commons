@@ -46,7 +46,7 @@ import org.xwiki.properties.converter.ConversionException;
 
 /**
  * Default implementation of {@link FilterDescriptorManager}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -68,12 +68,12 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      */
     public static final String PREFIX_ON = "on";
 
-    private static final Class< ? >[] CLASS_ARRAY = new Class< ? >[0];
+    private static final Class<?>[] CLASS_ARRAY = new Class<?>[0];
 
     /**
      * The descriptors.
      */
-    private Map<Class< ? >, FilterDescriptor> descriptors = new ConcurrentHashMap<Class< ? >, FilterDescriptor>();
+    private Map<Class<?>, FilterDescriptor> descriptors = new ConcurrentHashMap<Class<?>, FilterDescriptor>();
 
     /**
      * Used to convert default values from {@link String}.
@@ -82,11 +82,11 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     private ConverterManager converter;
 
     @Override
-    public FilterDescriptor getFilterDescriptor(Class< ? >... interfaces)
+    public FilterDescriptor getFilterDescriptor(Class<?>... interfaces)
     {
         FilterDescriptor totalDescriptor = null;
 
-        for (Class< ? > i : interfaces) {
+        for (Class<?> i : interfaces) {
             FilterDescriptor descriptor = this.descriptors.get(i);
 
             if (descriptor == null) {
@@ -108,7 +108,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      * @param clazz the class
      * @return the methods of the passed class
      */
-    private Method[] getMethods(Class< ? > clazz)
+    private Method[] getMethods(Class<?> clazz)
     {
         return clazz.getMethods();
     }
@@ -141,7 +141,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      * @param type the class of the filter
      * @return the descriptor of the filter
      */
-    private FilterDescriptor createDescriptor(Class< ? > type)
+    private FilterDescriptor createDescriptor(Class<?> type)
     {
         FilterDescriptor descriptor = new FilterDescriptor();
 
@@ -170,8 +170,8 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
         Type[] methodTypes = method.getGenericParameterTypes();
         // TODO: add support for multiple methods
         if (element == null || methodTypes.length > element.getParameters().length) {
-            FilterElementParameterDescriptor< ? >[] parameters =
-                new FilterElementParameterDescriptor< ? >[methodTypes.length];
+            FilterElementParameterDescriptor<?>[] parameters =
+                new FilterElementParameterDescriptor<?>[methodTypes.length];
 
             for (int i = 0; i < methodTypes.length; ++i) {
                 parameters[i] = createFilterElementParameter(method, i, methodTypes[i]);
@@ -191,7 +191,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      * @param type the method parameter type
      * @return the associated {@link FilterElementParameterDescriptor}
      */
-    private FilterElementParameterDescriptor< ? > createFilterElementParameter(Method method, int index, Type type)
+    private FilterElementParameterDescriptor<?> createFilterElementParameter(Method method, int index, Type type)
     {
         // @Name
         List<Name> nameAnnotations =
@@ -259,15 +259,15 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     }
 
     @Override
-    public <F> F createFilterProxy(Object targetFilter, Class< ? >... interfaces)
+    public <F> F createFilterProxy(Object targetFilter, Class<?>... interfaces)
     {
         return createFilterProxy(targetFilter, Thread.currentThread().getContextClassLoader(), interfaces);
     }
 
     @Override
-    public <F> F createFilterProxy(Object targetFilter, ClassLoader loader, Class< ? >... interfaces)
+    public <F> F createFilterProxy(Object targetFilter, ClassLoader loader, Class<?>... interfaces)
     {
-        for (Class< ? > i : interfaces) {
+        for (Class<?> i : interfaces) {
             if (!i.isInstance(targetFilter)) {
                 return (F) Proxy.newProxyInstance(loader, interfaces,
                     new FilterProxy(targetFilter, getFilterDescriptor(interfaces)));
@@ -286,7 +286,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     @Override
     public <F> F createCompositeFilter(ClassLoader loader, Object... filters)
     {
-        Set<Class< ? >> interfaces = new HashSet<Class< ? >>();
+        Set<Class<?>> interfaces = new HashSet<Class<?>>();
         for (Object filter : filters) {
             interfaces.addAll(ClassUtils.getAllInterfaces(filter.getClass()));
         }

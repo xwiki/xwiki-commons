@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Properties common to most streams.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */
@@ -34,7 +34,7 @@ public interface FilterStreamProperties
 {
     /**
      * The {@link String} name of the <code>verbose</code> property.
-     * 
+     *
      * @since 6.2M1
      */
     String PROPNAME_VERBOSE = "verbose";

@@ -37,7 +37,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for {@link CollectionsTool}.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

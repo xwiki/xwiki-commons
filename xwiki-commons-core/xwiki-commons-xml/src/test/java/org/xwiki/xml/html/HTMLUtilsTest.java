@@ -72,7 +72,7 @@ public class HTMLUtilsTest
         Assert.assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><p>test1</p><p>test2</p></html>\n",
             HTMLUtils.toString(document));
     }
-    
+
     @Test
     public void testStripTopLevelParagraph() throws Exception
     {

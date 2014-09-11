@@ -19,9 +19,6 @@
  */
 package org.xwiki.xml.stax;
 
-import javanet.staxutils.XMLEventStreamWriter;
-import javanet.staxutils.XMLStreamEventReader;
-
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -33,6 +30,9 @@ import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stax.StAXResult;
 import javax.xml.transform.stax.StAXSource;
+
+import javanet.staxutils.XMLEventStreamWriter;
+import javanet.staxutils.XMLStreamEventReader;
 
 /**
  * Various tools related to StAX API.

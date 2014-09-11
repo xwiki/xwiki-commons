@@ -50,7 +50,7 @@ import org.xwiki.properties.RawProperties;
  * <li>add support for {@link java.awt.Color} conversion using "r,g,b" or "#xxxxxx" format. See
  * {@link org.xwiki.properties.internal.converter.ColorConverter}.</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -61,8 +61,8 @@ public class DefaultBeanManager implements BeanManager
     /**
      * Cache the already parsed classes.
      */
-    private Map<Class< ? >, BeanDescriptor> beanDescriptorCache = Collections
-        .synchronizedMap(new HashMap<Class< ? >, BeanDescriptor>());
+    private Map<Class<?>, BeanDescriptor> beanDescriptorCache = Collections
+        .synchronizedMap(new HashMap<Class<?>, BeanDescriptor>());
 
     /**
      * The logger to use for logging.
@@ -98,7 +98,7 @@ public class DefaultBeanManager implements BeanManager
     }
 
     @Override
-    public void populate(Object bean, Map<String, ? > values) throws PropertyException
+    public void populate(Object bean, Map<String, ?> values) throws PropertyException
     {
         Map<String, Object> remainingValues = new HashMap<String, Object>(values);
 
@@ -121,7 +121,7 @@ public class DefaultBeanManager implements BeanManager
      * Populate the provided bean with provided values.
      * <p>
      * <code>values</code> is "consumed": when method executing is finished it only contains not populated properties.
-     * 
+     *
      * @param bean the java bean to populate
      * @param values the values to convert and inject in the java bean
      * @throws PropertyException error when populating the bean
@@ -132,7 +132,7 @@ public class DefaultBeanManager implements BeanManager
 
         // Lower case provided properties to easily ignore properties name case
         Map<String, String> lowerKeyMap = new HashMap<String, String>(values.size());
-        for (Map.Entry<String, ? > entry : values.entrySet()) {
+        for (Map.Entry<String, ?> entry : values.entrySet()) {
             lowerKeyMap.put(entry.getKey().toLowerCase(), entry.getKey());
         }
 
@@ -169,7 +169,7 @@ public class DefaultBeanManager implements BeanManager
 
     /**
      * Validate populated values based on JSR 303.
-     * 
+     *
      * @param bean the bean to validate
      * @throws PropertyException validation error
      */
@@ -186,7 +186,7 @@ public class DefaultBeanManager implements BeanManager
     }
 
     @Override
-    public BeanDescriptor getBeanDescriptor(Class< ? > beanClass)
+    public BeanDescriptor getBeanDescriptor(Class<?> beanClass)
     {
         BeanDescriptor beanDescriptor = null;
 

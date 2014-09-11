@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Default implementation of {@link ResultOutputTarget}.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

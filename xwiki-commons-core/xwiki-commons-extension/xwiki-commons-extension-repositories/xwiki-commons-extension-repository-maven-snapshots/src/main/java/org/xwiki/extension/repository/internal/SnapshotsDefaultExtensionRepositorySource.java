@@ -36,7 +36,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
  * Provides the XWiki snapshots repository as default maven repository.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */
@@ -57,7 +57,7 @@ public class SnapshotsDefaultExtensionRepositorySource extends AbstractExtension
         Collection<ExtensionRepositoryDescriptor> configuredRepositories =
             this.configuration.getExtensionRepositoryDescriptors();
 
-        Collection<ExtensionRepositoryDescriptor> newRepositories = new ArrayList<ExtensionRepositoryDescriptor>();
+        Collection<ExtensionRepositoryDescriptor> newRepositories = new ArrayList<>();
 
         if (CollectionUtils.isEmpty(configuredRepositories)
             && !"true".equals(System.getProperty("skipSnapshotModules"))) {

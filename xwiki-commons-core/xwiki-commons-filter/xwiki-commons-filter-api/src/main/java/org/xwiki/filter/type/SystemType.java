@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Represents various systems.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */
@@ -67,7 +67,7 @@ public class SystemType
 
     /**
      * Create a new {@link SystemType} from a {@link String}.
-     * 
+     *
      * @param str the {@link String} to parse
      * @return a {@link SystemType}
      */

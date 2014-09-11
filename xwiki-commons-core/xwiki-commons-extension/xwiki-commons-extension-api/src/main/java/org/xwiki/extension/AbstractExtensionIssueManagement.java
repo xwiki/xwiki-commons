@@ -24,7 +24,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Base class for implementations of {@link ExtensionIssueManagement}.
- * 
+ *
  * @version $Id$
  * @since 6.3M1
  */

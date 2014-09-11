@@ -30,7 +30,7 @@ import org.xwiki.stability.Unstable;
  * {@link #clone()} is only closing {@link Closeable} created by the {@link OutputTarget} itself. For example
  * {@link DefaultOutputStreamOutputTarget} is not going to close the {@link java.io.OutputStream} passed to its
  * constructor because it did not created it.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

@@ -21,7 +21,7 @@ package org.xwiki.properties;
 
 /**
  * Thrown when a mandatory field is not found in the map of value to populate.
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */

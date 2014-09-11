@@ -45,7 +45,7 @@ public class ObservationContextTest
 {
     @Rule
     public final MockitoComponentMockingRule<ObservationContext> mocker =
-    new MockitoComponentMockingRule<ObservationContext>(DefaultObservationContext.class);
+        new MockitoComponentMockingRule<ObservationContext>(DefaultObservationContext.class);
 
     @Test
     public void test() throws Exception

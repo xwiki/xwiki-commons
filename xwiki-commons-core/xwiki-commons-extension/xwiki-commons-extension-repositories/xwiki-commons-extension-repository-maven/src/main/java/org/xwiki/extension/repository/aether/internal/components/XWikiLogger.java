@@ -22,7 +22,6 @@ package org.xwiki.extension.repository.aether.internal.components;
 import org.slf4j.Logger;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */

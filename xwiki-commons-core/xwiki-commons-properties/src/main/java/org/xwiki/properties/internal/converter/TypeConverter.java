@@ -30,7 +30,7 @@ import org.xwiki.properties.converter.ConversionException;
 
 /**
  * Converter that converts a value into an {@link Type} object.
- * 
+ *
  * @version $Id$
  * @since 6.1M1
  */

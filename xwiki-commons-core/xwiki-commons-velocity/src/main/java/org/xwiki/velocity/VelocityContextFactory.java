@@ -27,7 +27,7 @@ import org.xwiki.component.annotation.Role;
  * and by all the enabled {@link VelocityContextInitializer} components. The returned context is supposed to be used
  * only once, as otherwise data may leak between different requests, and the parsing/rendering process would be affected
  * by previous data.
- * 
+ *
  * @version $Id$
  */
 @Role
@@ -35,7 +35,7 @@ public interface VelocityContextFactory
 {
     /**
      * Creates and initializes a new Velocity Context.
-     * 
+     *
      * @return a new Velocity Context, populated with Tools and data pushed by {@link VelocityContextInitializer}s
      * @throws XWikiVelocityException if the context failed to be created or initialized properly
      */

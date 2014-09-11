@@ -24,7 +24,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Encapsulates WikiType and Filter type based errors.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

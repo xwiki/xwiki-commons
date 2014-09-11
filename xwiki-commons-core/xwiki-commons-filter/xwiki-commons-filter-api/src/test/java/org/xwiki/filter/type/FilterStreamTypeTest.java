@@ -21,12 +21,10 @@ package org.xwiki.filter.type;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xwiki.filter.type.FilterStreamType;
-import org.xwiki.filter.type.SystemType;
 
 /**
  * Validate {@link FilterStreamType}.
- * 
+ *
  * @version $Id$
  */
 public class FilterStreamTypeTest

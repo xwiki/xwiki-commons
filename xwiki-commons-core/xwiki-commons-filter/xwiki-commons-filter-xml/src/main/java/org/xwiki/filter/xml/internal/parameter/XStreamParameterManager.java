@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.io.xml.StaxWriter;
 
 /**
  * XStream based implementation of {@link ParameterManager}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -95,7 +95,7 @@ public class XStreamParameterManager implements ParameterManager, Initializable
     @Override
     public void serialize(Type type, Object object, XMLStreamWriter xmlStreamWriter)
     {
-        Class< ? > typeClass = ReflectionUtils.getTypeClass(type);
+        Class<?> typeClass = ReflectionUtils.getTypeClass(type);
         if (typeClass != null && Objects.equals(XMLUtils.emptyValue(typeClass), object)) {
             return;
         }

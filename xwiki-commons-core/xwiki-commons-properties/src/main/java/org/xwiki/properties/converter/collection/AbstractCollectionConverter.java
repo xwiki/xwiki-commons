@@ -37,7 +37,7 @@ import org.xwiki.properties.converter.ConversionException;
 
 /**
  * Base class for all {@link java.util.Collection} converters.
- * 
+ *
  * @param <T> the type in which the provided value has to be converted
  * @version $Id$
  * @since 5.2M1
@@ -75,7 +75,7 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
 
     /**
      * Set the delimiter to be used for parsing a delimited String.
-     * 
+     *
      * @param delimiter The delimiter [default ", "] since 3.2M3
      */
     public void setDelimiters(String delimiter)
@@ -114,7 +114,7 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
      * <li>Elements in the list may be delimited by single or double quotes. Within a quoted elements, the normal Java
      * escape sequences are valid.</li>
      * </ul>
-     * 
+     *
      * @param <G> the type in which the provided value has to be converted
      * @param targetType Data type to which this value should be converted.
      * @param value String value to be parsed
@@ -194,7 +194,7 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
 
     /**
      * Create and initializer a {@link StreamTokenizer} to parse the value.
-     * 
+     *
      * @param value the string to parse
      * @return the {@link StreamTokenizer} used to parse the string
      */

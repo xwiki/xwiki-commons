@@ -19,11 +19,6 @@
  */
 package org.xwiki.extension.repository.xwiki.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
@@ -52,9 +47,14 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 
 import com.google.common.collect.Iterators;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for {@link XWikiExtensionRepository}.
- * 
+ *
  * @version $Id$
  */
 public class XWikiExtensionRepositoryTest
@@ -73,7 +73,7 @@ public class XWikiExtensionRepositoryTest
         when(repositoryDescriptor.getURI()).thenReturn(new URI("http://extensions.xwiki.org/xwiki/rest"));
 
         XWikiExtensionRepositoryFactory repositoryFactory = mock(XWikiExtensionRepositoryFactory.class);
-        when(repositoryFactory.getUnmarshaller()).thenReturn(unmarshaller);
+        when(repositoryFactory.getUnmarshaller()).thenReturn(this.unmarshaller);
 
         // Simulate a call to the remote URL through HttpClient and a valid answer
         HttpEntity httpEntity = mock(HttpEntity.class);
@@ -104,12 +104,12 @@ public class XWikiExtensionRepositoryTest
 
         List<ExtensionVersionSummary> versionSummaries = Arrays.asList(v1, v2);
         ExtensionVersions restVersions = mock(ExtensionVersions.class);
-        when(unmarshaller.unmarshal(any(InputStream.class))).thenReturn(restVersions);
+        when(this.unmarshaller.unmarshal(any(InputStream.class))).thenReturn(restVersions);
         when(restVersions.getExtensionVersionSummaries()).thenReturn(versionSummaries);
         when(restVersions.getOffset()).thenReturn(5);
         when(restVersions.getTotalHits()).thenReturn(7);
 
-        IterableResult<Version> result = repository.resolveVersions("foo", 0, -1);
+        IterableResult<Version> result = this.repository.resolveVersions("foo", 0, -1);
         // The result must take the offset and total hits number from the REST response.
         assertEquals(5, result.getOffset());
         assertEquals(7, result.getTotalHits());

@@ -57,15 +57,16 @@ public class FilterDescriptorManagerTest
     {
         // Make sure we also support filters through proxies
         Object filter =
-            Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {TestFilter.class}, new InvocationHandler()
-            {
-                @Override
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+            Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { TestFilter.class },
+                new InvocationHandler()
                 {
-                    // Do nothing
-                    return null;
-                }
-            });
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+                    {
+                        // Do nothing
+                        return null;
+                    }
+                });
 
         this.filterDescriptor = this.mocker.getComponentUnderTest().getFilterDescriptor(filter.getClass());
     }
@@ -77,7 +78,7 @@ public class FilterDescriptorManagerTest
 
         Assert.assertNotNull(filterElement);
 
-        FilterElementParameterDescriptor< ? > parameter0 = filterElement.getParameters()[0];
+        FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
 
         Assert.assertNull(parameter0.getName());
         Assert.assertEquals(0, parameter0.getIndex());
@@ -91,7 +92,7 @@ public class FilterDescriptorManagerTest
 
         Assert.assertNotNull(filterElement);
 
-        FilterElementParameterDescriptor< ? > parameter0 = filterElement.getParameters()[0];
+        FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
         parameter0 = filterElement.getParameter("namedParam");
 
         Assert.assertNotNull(parameter0);
@@ -110,7 +111,7 @@ public class FilterDescriptorManagerTest
 
         Assert.assertNotNull(filterElement);
 
-        FilterElementParameterDescriptor< ? > parameter0 = filterElement.getParameters()[0];
+        FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
         parameter0 = filterElement.getParameter("namedParam");
 
         Assert.assertNotNull(parameter0);
@@ -123,13 +124,13 @@ public class FilterDescriptorManagerTest
     @Test
     public void testWithDefaultValue() throws ComponentLookupException
     {
-        ConverterManager converter = mocker.getInstance(ConverterManager.class);
+        ConverterManager converter = this.mocker.getInstance(ConverterManager.class);
 
         Mockito.when(converter.convert(int.class, "42")).thenReturn(42);
         Mockito.when(converter.convert(String.class, "default value")).thenReturn("default value");
         Mockito.when(converter.convert(Color.class, "#ffffff")).thenReturn(Color.WHITE);
         Mockito.when(
-            converter.convert(new DefaultParameterizedType(null, Map.class, new Type[] {String.class, String.class}),
+            converter.convert(new DefaultParameterizedType(null, Map.class, new Type[] { String.class, String.class }),
                 "")).thenThrow(ConversionException.class);
 
         FilterElementDescriptor filterElement =

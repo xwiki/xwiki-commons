@@ -27,7 +27,7 @@ import org.xwiki.logging.event.LogEvent;
 
 /**
  * Test {@link LogTree}.
- * 
+ *
  * @version $Id$
  */
 public class LogTreeTest

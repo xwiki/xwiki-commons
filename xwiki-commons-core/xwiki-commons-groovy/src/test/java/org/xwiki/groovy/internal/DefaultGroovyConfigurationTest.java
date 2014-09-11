@@ -30,6 +30,7 @@ import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.jmock.Expectations;
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
@@ -37,8 +38,6 @@ import org.xwiki.groovy.GroovyCompilationCustomizer;
 import org.xwiki.groovy.GroovyConfiguration;
 import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.jmock.annotation.MockingRequirement;
-
-import org.junit.Assert;
 
 /**
  * Unit tests for {@link DefaultGroovyConfiguration}.

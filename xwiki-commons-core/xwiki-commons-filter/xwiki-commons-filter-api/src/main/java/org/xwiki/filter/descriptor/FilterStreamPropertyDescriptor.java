@@ -25,7 +25,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Defines a filter property.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

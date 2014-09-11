@@ -28,7 +28,7 @@ import org.xwiki.job.JobGroupPath;
 
 /**
  * Helper for hierarchical locking.
- * 
+ *
  * @version $Id$
  * @since 6.1M2
  */

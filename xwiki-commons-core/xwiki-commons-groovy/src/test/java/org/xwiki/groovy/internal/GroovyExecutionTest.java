@@ -41,8 +41,8 @@ import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
 import org.xwiki.test.jmock.annotation.MockingRequirement;
 
 /**
- * Test Groovy Execution with some Compilation Customizers. This test also tests the
- * {@link GroovyScriptEngineFactory} class.
+ * Test Groovy Execution with some Compilation Customizers. This test also tests the {@link GroovyScriptEngineFactory}
+ * class.
  *
  * @version $Id$
  * @since 4.1M1

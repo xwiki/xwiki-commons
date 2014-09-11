@@ -27,7 +27,7 @@ import org.xwiki.observation.ObservationManager;
 
 /**
  * Default implementation of {@link org.xwiki.job.event.status.JobStatus}.
- * 
+ *
  * @param <R>
  * @version $Id$
  * @since 4.0M1

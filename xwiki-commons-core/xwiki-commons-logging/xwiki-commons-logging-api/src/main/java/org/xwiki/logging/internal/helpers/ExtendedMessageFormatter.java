@@ -29,7 +29,7 @@ import org.xwiki.logging.internal.helpers.MessageParser.MessageString;
 
 /**
  * Provide what is missing in {@link org.slf4j.helpers.MessageFormatter}.
- * 
+ *
  * @version $Id$
  * @since 4.2M1
  */

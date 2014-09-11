@@ -28,7 +28,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link EnumConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class EnumConverterTest extends AbstractComponentTestCase

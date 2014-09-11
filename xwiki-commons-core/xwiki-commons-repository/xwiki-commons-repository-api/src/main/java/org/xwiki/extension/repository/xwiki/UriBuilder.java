@@ -25,7 +25,7 @@ import java.net.URI;
  * Generate a URI to use to request a REST server.
  * <p>
  * Support javax.ws.rs.Path style URIs.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  * @deprecated since 4.2M1 use {@link org.xwiki.repository.UriBuilder} instead

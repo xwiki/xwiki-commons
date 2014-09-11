@@ -29,7 +29,7 @@ import ch.qos.logback.core.spi.FilterReply;
 
 /**
  * Filters events not from the provided {@link Thread}.
- * 
+ *
  * @version $Id$
  */
 public class ForbiddenThreadsFilter extends Filter<ILoggingEvent>

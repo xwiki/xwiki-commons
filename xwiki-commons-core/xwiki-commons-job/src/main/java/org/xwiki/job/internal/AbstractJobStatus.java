@@ -37,7 +37,7 @@ import org.xwiki.observation.WrappedThreadEventListener;
 
 /**
  * Base implementation of {@link JobStatus}.
- * 
+ *
  * @param <R>
  * @version $Id$
  * @since 4.0M1

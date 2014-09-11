@@ -33,7 +33,7 @@ import org.xwiki.stability.Unstable;
  * <li>a {@link GroupedJob} from group ["group", "subgroup"] won't be executed at the same time of a {@link GroupedJob}
  * from group ["group"]
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 6.1M2
  */

@@ -36,7 +36,7 @@ import org.xwiki.observation.event.EndEvent;
  * <li>source: the related {@link org.xwiki.job.Job} instance</li>
  * <li>data: an {@link Throwable} if the job execution failed or null otherwise</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

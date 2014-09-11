@@ -50,7 +50,7 @@ public abstract class AbstractBeanOutputFilterStreamFactory<P, F> extends Abstra
     @Inject
     private ComponentManager componentManager;
 
-    private List<Class< ? >> filerInterfaces;
+    private List<Class<?>> filerInterfaces;
 
     public AbstractBeanOutputFilterStreamFactory(FilterStreamType type)
     {
@@ -66,11 +66,11 @@ public abstract class AbstractBeanOutputFilterStreamFactory<P, F> extends Abstra
         ParameterizedType genericType =
             (ParameterizedType) ReflectionUtils.resolveType(AbstractBeanOutputFilterStreamFactory.class, getClass());
         this.filerInterfaces =
-            Arrays.<Class< ? >> asList(ReflectionUtils.getTypeClass(genericType.getActualTypeArguments()[1]));
+            Arrays.<Class<?>>asList(ReflectionUtils.getTypeClass(genericType.getActualTypeArguments()[1]));
     }
 
     @Override
-    public Collection<Class< ? >> getFilterInterfaces() throws FilterException
+    public Collection<Class<?>> getFilterInterfaces() throws FilterException
     {
         return this.filerInterfaces;
     }

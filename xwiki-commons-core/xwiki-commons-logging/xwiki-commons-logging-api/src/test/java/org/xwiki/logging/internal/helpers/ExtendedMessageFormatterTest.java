@@ -26,7 +26,7 @@ import org.junit.Test;
 
 /**
  * Validate {@link ExtendedMessageFormatter}.
- * 
+ *
  * @version $Id$
  */
 public class ExtendedMessageFormatterTest
@@ -60,14 +60,14 @@ public class ExtendedMessageFormatterTest
     public void testPlain()
     {
         Assert.assertEquals(Arrays.asList("message"),
-            ExtendedMessageFormatter.parseMessage("message", new Object[] {"0"}));
+            ExtendedMessageFormatter.parseMessage("message", new Object[] { "0" }));
     }
 
     @Test
     public void testWithArguments()
     {
         Assert.assertEquals(Arrays.asList("hello ", " world"),
-            ExtendedMessageFormatter.parseMessage("hello {} world", new Object[] {"0"}));
+            ExtendedMessageFormatter.parseMessage("hello {} world", new Object[] { "0" }));
     }
 
     @Test
@@ -81,20 +81,20 @@ public class ExtendedMessageFormatterTest
     public void testWithEndingArgument()
     {
         Assert.assertEquals(Arrays.asList("hello ", ""),
-            ExtendedMessageFormatter.parseMessage("hello {}", new Object[] {"0"}));
+            ExtendedMessageFormatter.parseMessage("hello {}", new Object[] { "0" }));
     }
 
     @Test
     public void testWithoutTooMuchArguments()
     {
         Assert.assertEquals(Arrays.asList("hello ", " world"),
-            ExtendedMessageFormatter.parseMessage("hello {} world", new Object[] {"0", "1"}));
+            ExtendedMessageFormatter.parseMessage("hello {} world", new Object[] { "0", "1" }));
     }
 
     @Test
     public void testWithOnlyArguments()
     {
         Assert.assertEquals(Arrays.asList("", "", ""),
-            ExtendedMessageFormatter.parseMessage("{}{}", new Object[] {"0", "1"}));
+            ExtendedMessageFormatter.parseMessage("{}{}", new Object[] { "0", "1" }));
     }
 }

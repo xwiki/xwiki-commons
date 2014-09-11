@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * Base class for {@link Request} implementations.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -100,7 +100,7 @@ public abstract class AbstractRequest implements Request
     @Override
     public boolean isRemote()
     {
-        return this.<Boolean> getProperty(PROPERTY_REMOTE, false);
+        return this.<Boolean>getProperty(PROPERTY_REMOTE, false);
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class AbstractRequest implements Request
     @Override
     public boolean isInteractive()
     {
-        return this.<Boolean> getProperty(PROPERTY_INTERACTIVE, false);
+        return this.<Boolean>getProperty(PROPERTY_INTERACTIVE, false);
     }
 
     /**

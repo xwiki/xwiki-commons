@@ -19,16 +19,17 @@
  */
 package org.xwiki.management.internal;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.management.JMXBeanRegistration;
+import java.lang.management.ManagementFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import java.lang.management.ManagementFactory;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.management.JMXBeanRegistration;
 
 /**
  * Registers MBeans against the default platform MBean Server using a default ObjectName domain of "org.xwiki".

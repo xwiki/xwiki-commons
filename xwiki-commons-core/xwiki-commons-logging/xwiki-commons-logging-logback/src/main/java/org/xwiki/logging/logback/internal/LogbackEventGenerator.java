@@ -57,7 +57,7 @@ import ch.qos.logback.core.AppenderBase;
  * possibility that some logs will not be seen if some Event Listeners do logging in their initialization and it happens
  * that they're initialized before this component...).
  * </p>
- * 
+ *
  * @version $Id$
  * @since 3.2M1
  */

@@ -28,7 +28,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Base properties for XML based serializers.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

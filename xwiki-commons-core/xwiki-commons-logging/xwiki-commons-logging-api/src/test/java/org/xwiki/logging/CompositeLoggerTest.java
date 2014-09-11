@@ -25,7 +25,7 @@ import org.xwiki.logging.test.Utils;
 
 /**
  * Test {@link CompositeLogger}.
- * 
+ *
  * @version $Id$
  */
 public class CompositeLoggerTest

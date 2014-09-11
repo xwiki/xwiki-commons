@@ -24,7 +24,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Manager {@link FilterDescriptor} related to classes.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -37,24 +37,24 @@ public interface FilterDescriptorManager
      * @return the filter descriptor
      * @since 5.2
      */
-    FilterDescriptor getFilterDescriptor(Class< ? >... interfaces);
+    FilterDescriptor getFilterDescriptor(Class<?>... interfaces);
 
     /**
      * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter}
      * or simply ignores it when the filter does not support it.
-     * 
+     *
      * @param <F> the class of the filter
      * @param interfaces the interfaces implemented by the filter
      * @param targetFilter the actual filter to send events to
      * @return the filter proxy
      * @since 5.2
      */
-    <F> F createFilterProxy(Object targetFilter, Class< ? >... interfaces);
+    <F> F createFilterProxy(Object targetFilter, Class<?>... interfaces);
 
     /**
      * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter}
      * or simply ignores it when the filter does not support it.
-     * 
+     *
      * @param <F> the class of the filter
      * @param interfaces the interfaces implemented by the filter
      * @param loader the class loader to define the proxy class
@@ -62,12 +62,12 @@ public interface FilterDescriptorManager
      * @return the filter proxy
      * @since 5.2M3
      */
-    <F> F createFilterProxy(Object targetFilter, ClassLoader loader, Class< ? >... interfaces);
+    <F> F createFilterProxy(Object targetFilter, ClassLoader loader, Class<?>... interfaces);
 
     /**
      * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter}
      * or simply ignores it when the filter does not support it.
-     * 
+     *
      * @param <F> the class of the filter
      * @param filters the actual filters to send events to
      * @return the filter proxy
@@ -78,7 +78,7 @@ public interface FilterDescriptorManager
     /**
      * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter}
      * or simply ignores it when the filter does not support it.
-     * 
+     *
      * @param <F> the class of the filter
      * @param filters the actual filters to send events to
      * @param loader the class loader to define the proxy class

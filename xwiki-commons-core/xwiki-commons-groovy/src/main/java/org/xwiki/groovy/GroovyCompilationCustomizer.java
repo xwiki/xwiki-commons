@@ -23,15 +23,16 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.xwiki.component.annotation.Role;
 
 /**
- * Allow providing Groovy's {@link CompilationCustomizer}s to perform Groovy customization such as: automatically
- * add imports, stop script execution after a certain timeout, prevents using some imports/statements/operators/etc,
- * and more.
+ * Allow providing Groovy's {@link CompilationCustomizer}s to perform Groovy customization such as: automatically add
+ * imports, stop script execution after a certain timeout, prevents using some imports/statements/operators/etc, and
+ * more.
  * <p>
  * Note that we would have liked to not have this interface and instead have our component implementations directly
- * implement {@link CompilationCustomizer} but unfortunately the Groovy guys made the choice(wrong, IMO) to not use
- * an interface for CompilationCustomizer; it's an Abstract class! (yuck, even the name is wrong since a good practice
- * is to have Abstract in the name of Abstract classes...).
+ * implement {@link CompilationCustomizer} but unfortunately the Groovy guys made the choice(wrong, IMO) to not use an
+ * interface for CompilationCustomizer; it's an Abstract class! (yuck, even the name is wrong since a good practice is
+ * to have Abstract in the name of Abstract classes...).
  * </p>
+ *
  * @version $Id$
  * @since 4.1M1
  */

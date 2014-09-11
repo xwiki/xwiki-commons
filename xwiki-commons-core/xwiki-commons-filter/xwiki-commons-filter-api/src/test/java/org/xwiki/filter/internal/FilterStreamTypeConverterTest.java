@@ -29,7 +29,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 /**
  * Unit tests for {@link FilterStreamTypeConverter}.
- * 
+ *
  * @version $Id$
  */
 public class FilterStreamTypeConverterTest
@@ -42,7 +42,8 @@ public class FilterStreamTypeConverterTest
     public void convertToTypeObject() throws Exception
     {
         FilterStreamType type =
-            this.mocker.getComponentUnderTest().convert(FilterStreamType.class, FilterStreamType.XWIKI_XAR_11.serialize());
+            this.mocker.getComponentUnderTest().convert(FilterStreamType.class,
+                FilterStreamType.XWIKI_XAR_11.serialize());
         Assert.assertEquals(FilterStreamType.XWIKI_XAR_11, type);
     }
 

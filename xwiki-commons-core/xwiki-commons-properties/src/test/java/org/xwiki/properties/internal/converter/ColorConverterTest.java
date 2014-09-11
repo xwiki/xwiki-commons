@@ -30,7 +30,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link ColorConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class ColorConverterTest extends AbstractComponentTestCase

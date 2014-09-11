@@ -77,8 +77,7 @@ public class DefaultExtensionSerializerTest
         Assert.assertEquals(extension.getScm(), unserializedExtension.getScm());
         Assert.assertEquals(extension.getIssueManagement(), unserializedExtension.getIssueManagement());
         Assert.assertEquals(extension.getProperties(), unserializedExtension.getProperties());
-        
-        
+
         for (int i = 0; i < extension.getDependencies().size(); ++i) {
             Assert.assertEquals(extension.getDependencies().get(i), unserializedExtension.getDependencies().get(i));
             Assert.assertEquals(extension.getDependencies().get(i).getProperties(), unserializedExtension

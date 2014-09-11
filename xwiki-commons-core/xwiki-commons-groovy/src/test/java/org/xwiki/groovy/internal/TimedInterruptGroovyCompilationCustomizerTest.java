@@ -28,11 +28,10 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.jmock.Expectations;
+import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
-
-import org.junit.Assert;
 
 /**
  * Unit tests for {@link TimedInterruptGroovyCompilationCustomizer}.

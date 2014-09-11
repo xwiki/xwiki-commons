@@ -25,7 +25,7 @@ import com.thoughtworks.xstream.converters.DataHolder;
 
 /**
  * Wrap a {@link DataHolder}.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

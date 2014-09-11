@@ -44,7 +44,7 @@ import org.xwiki.properties.converter.Converter;
  * <li>then it use the default {@link Converter} (which is based on {@link org.apache.commons.beanutils.ConvertUtils} by
  * default)</li>
  * </ul>
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -99,7 +99,7 @@ public class DefaultConverterManager implements ConverterManager
 
     /**
      * Find the right {@link Converter} for the provided {@link Class}.
-     * 
+     *
      * @param <T> the type in which the provided value has to be converted
      * @param targetType the type to convert to
      * @return the {@link Converter} corresponding to the class
@@ -111,12 +111,12 @@ public class DefaultConverterManager implements ConverterManager
 
         // Try with simple class
         if (converter == null && targetType instanceof ParameterizedType) {
-            Class< ? > targetClass = ReflectionUtils.getTypeClass(targetType);
+            Class<?> targetClass = ReflectionUtils.getTypeClass(targetType);
             converter = getConverter(targetClass);
         }
 
         if (converter == null) {
-            if (targetType instanceof Class && Enum.class.isAssignableFrom((Class< ? >) targetType)) {
+            if (targetType instanceof Class && Enum.class.isAssignableFrom((Class<?>) targetType)) {
                 // It's an Enum
                 converter = (Converter<T>) this.enumConverter;
             } else {
@@ -158,7 +158,7 @@ public class DefaultConverterManager implements ConverterManager
 
     /**
      * Get class name without generics.
-     * 
+     *
      * @param type the type
      * @return type name without generics
      */
@@ -166,9 +166,9 @@ public class DefaultConverterManager implements ConverterManager
     {
         String name;
         if (type instanceof Class) {
-            name = ((Class< ? >) type).getName();
+            name = ((Class<?>) type).getName();
         } else if (type instanceof ParameterizedType) {
-            name = ((Class< ? >) ((ParameterizedType) type).getRawType()).getName();
+            name = ((Class<?>) ((ParameterizedType) type).getRawType()).getName();
         } else {
             name = type.toString();
         }
@@ -178,7 +178,7 @@ public class DefaultConverterManager implements ConverterManager
 
     /**
      * Get type name.
-     * 
+     *
      * @param type the type
      * @return type name
      */

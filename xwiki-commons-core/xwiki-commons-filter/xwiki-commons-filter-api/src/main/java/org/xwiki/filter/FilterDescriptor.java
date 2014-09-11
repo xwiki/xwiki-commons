@@ -26,7 +26,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * List all event found in a filter.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

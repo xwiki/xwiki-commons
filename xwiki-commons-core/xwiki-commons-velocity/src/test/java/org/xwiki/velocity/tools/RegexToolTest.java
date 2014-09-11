@@ -29,7 +29,7 @@ import org.xwiki.velocity.tools.RegexTool.RegexResult;
 
 /**
  * Unit tests for {@link RegexTool}.
- * 
+ *
  * @version $Id$
  * @since 2.0RC1
  */

@@ -19,9 +19,6 @@
  */
 package org.xwiki.filter.xml.internal.parser;
 
-import javanet.staxutils.XMLEventStreamWriter;
-import javanet.staxutils.XMLStreamUtils;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.xml.stream.XMLEventWriter;
@@ -40,9 +37,12 @@ import org.xwiki.filter.xml.parser.XMLParserFactory;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.xml.stax.SAXEventWriter;
 
+import javanet.staxutils.XMLEventStreamWriter;
+import javanet.staxutils.XMLStreamUtils;
+
 /**
  * Default implementation of {@link XMLParserFactory}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

@@ -31,7 +31,7 @@ import org.apache.velocity.util.introspection.UberspectImpl;
 /**
  * {@link org.apache.velocity.util.introspection.SecureUberspector} is way too restrictive regarding {@link Class}
  * methods allowed.
- * 
+ *
  * @version $Id$
  * @since 5.4RC1
  */
@@ -43,31 +43,32 @@ public class SecureUberspector extends UberspectImpl implements RuntimeServicesA
     public void init()
     {
         String[] badPackages =
-            runtimeServices.getConfiguration().getStringArray(RuntimeConstants.INTROSPECTOR_RESTRICT_PACKAGES);
+            this.runtimeServices.getConfiguration().getStringArray(RuntimeConstants.INTROSPECTOR_RESTRICT_PACKAGES);
 
         String[] badClasses =
-            runtimeServices.getConfiguration().getStringArray(RuntimeConstants.INTROSPECTOR_RESTRICT_CLASSES);
+            this.runtimeServices.getConfiguration().getStringArray(RuntimeConstants.INTROSPECTOR_RESTRICT_CLASSES);
 
-        introspector = new SecureIntrospector(badClasses, badPackages, log);
+        this.introspector = new SecureIntrospector(badClasses, badPackages, this.log);
     }
 
     /**
      * Get an iterator from the given object. Since the superclass method this secure version checks for execute
      * permission.
-     * 
+     *
      * @param obj object to iterate over
      * @param i line, column, template info
      * @return Iterator for object
      * @throws Exception when failing to get iterator
      */
+    @Override
     public Iterator getIterator(Object obj, Info i) throws Exception
     {
         if (obj != null) {
-            SecureIntrospectorControl sic = (SecureIntrospectorControl) introspector;
+            SecureIntrospectorControl sic = (SecureIntrospectorControl) this.introspector;
             if (sic.checkObjectExecutePermission(obj.getClass(), null)) {
                 return super.getIterator(obj, i);
             } else {
-                log.warn("Cannot retrieve iterator from " + obj.getClass() + " due to security restrictions.");
+                this.log.warn("Cannot retrieve iterator from " + obj.getClass() + " due to security restrictions.");
             }
         }
         return null;

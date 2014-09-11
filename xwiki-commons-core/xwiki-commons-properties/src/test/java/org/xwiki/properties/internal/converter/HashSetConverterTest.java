@@ -31,7 +31,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link HashSetConverter} component.
- * 
+ *
  * @version $Id$
  */
 public class HashSetConverterTest extends AbstractComponentTestCase

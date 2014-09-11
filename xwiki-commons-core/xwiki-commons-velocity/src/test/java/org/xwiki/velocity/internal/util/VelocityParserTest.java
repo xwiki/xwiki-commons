@@ -19,10 +19,10 @@
  */
 package org.xwiki.velocity.internal.util;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.velocity.internal.util.VelocityBlock.VelocityType;
-import org.junit.Assert;
 
 public class VelocityParserTest
 {

@@ -23,7 +23,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Properties common to most streams.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

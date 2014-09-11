@@ -38,7 +38,7 @@ import org.xwiki.velocity.internal.jmx.JMXVelocityEngineMBean;
 
 /**
  * Default implementation for {@link VelocityFactory}.
- * 
+ *
  * @see VelocityFactory
  * @version $Id$
  */

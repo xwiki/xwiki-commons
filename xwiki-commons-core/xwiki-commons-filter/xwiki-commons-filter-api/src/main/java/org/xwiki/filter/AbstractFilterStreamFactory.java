@@ -24,7 +24,6 @@ import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.stability.Unstable;
 
 /**
- * 
  * @version $Id$
  * @since 6.2M1
  */

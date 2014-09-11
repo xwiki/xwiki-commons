@@ -26,7 +26,7 @@ import org.xwiki.properties.converter.AbstractConverter;
 
 /**
  * Convert a Filter type from a {@link String} to a {@link FilterStreamType} object and the other way around.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

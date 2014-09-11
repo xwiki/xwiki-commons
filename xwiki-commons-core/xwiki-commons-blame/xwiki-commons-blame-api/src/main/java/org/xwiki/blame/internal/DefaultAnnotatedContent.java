@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.xwiki.blame.AnnotatedElement;
 import org.xwiki.blame.AnnotatedContent;
+import org.xwiki.blame.AnnotatedElement;
 
 import difflib.Chunk;
 import difflib.Delta;

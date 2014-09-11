@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Some job manager related configuration.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */

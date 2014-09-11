@@ -32,7 +32,7 @@ import org.xwiki.properties.converter.ConversionException;
 
 /**
  * Converter that converts a value into an {@link Color} object.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -66,7 +66,7 @@ public class ColorConverter extends AbstractConverter<Color>
 
     /**
      * Parsers a String in the form "x, y, z" into an SWT RGB class.
-     * 
+     *
      * @param value the color as String
      * @return RGB
      */
@@ -98,7 +98,7 @@ public class ColorConverter extends AbstractConverter<Color>
 
     /**
      * Parsers a String in the form "#xxxxxx" into an SWT RGB class.
-     * 
+     *
      * @param value the color as String
      * @return RGB
      */
@@ -119,7 +119,7 @@ public class ColorConverter extends AbstractConverter<Color>
 
     /**
      * Convert a String in {@link Color}.
-     * 
+     *
      * @param value the String to parse
      * @return the {@link Color}
      */

@@ -33,7 +33,7 @@ import org.xwiki.properties.converter.ConversionException;
 
 /**
  * Converter that converts a value into an {@link InputStream} object.
- * 
+ *
  * @version $Id$
  * @since 5.2RC1
  */
@@ -54,7 +54,7 @@ public class InputStreamConverter extends AbstractConverter<InputStream>
         }
 
         try {
-            return (G) new ByteArrayInputStream((byte[]) this.arrayConverter.convert(byte[].class, value));
+            return (G) new ByteArrayInputStream(this.arrayConverter.convert(byte[].class, value));
         } catch (org.apache.commons.beanutils.ConversionException e) {
             throw new ConversionException(e);
         }

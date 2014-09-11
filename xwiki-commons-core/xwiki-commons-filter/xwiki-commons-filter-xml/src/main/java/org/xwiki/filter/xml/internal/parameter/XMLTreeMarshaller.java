@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 
 /**
  * Customize {@link TreeMarshaller}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -72,7 +72,7 @@ public class XMLTreeMarshaller extends TreeMarshaller
     private Converter getConverter(Type type)
     {
         if (type != null) {
-            Class< ? > typeClass = ReflectionUtils.getTypeClass(type);
+            Class<?> typeClass = ReflectionUtils.getTypeClass(type);
             if (typeClass == null) {
                 throw new ConversionException("Can't find any converter for the type [" + type + "]");
             }

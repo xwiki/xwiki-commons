@@ -23,7 +23,7 @@ import org.xwiki.logging.LogQueue;
 
 /**
  * Fill the provided {@link LogQueue} with received {@link LogEvent}s.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  * @deprecated since 5.4M1, use {@link LoggerListener} instead

@@ -24,7 +24,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
  * {@link ExtendedHierarchicalStreamWriter} doing nothing.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */

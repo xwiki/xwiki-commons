@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.io.xml.DomWriter;
 
 /**
  * A {@link ArrayConverter} which never fail whatever value is provided.
- * 
+ *
  * @version $Id$
  * @since 4.3M1
  */

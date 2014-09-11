@@ -31,7 +31,7 @@ import org.apache.velocity.util.introspection.VelPropertySet;
 /**
  * Default implementation of a {@link ChainableUberspector chainable uberspector} that forwards all calls to the wrapped
  * uberspector (when that is possible). It should be used as the base class for all chainable uberspectors.
- * 
+ *
  * @version $Id$
  * @since 1.5M1
  * @see ChainableUberspector

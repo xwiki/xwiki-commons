@@ -19,8 +19,6 @@
  */
 package org.xwiki.job.internal;
 
-import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -37,9 +35,11 @@ import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for {@link DefaultJobStatusStore}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultJobStatusStorageTest
@@ -108,7 +108,7 @@ public class DefaultJobStatusStorageTest
     @Test
     public void testRemoveJobStatus() throws ComponentLookupException
     {
-        List<String> id = (List<String>) null;
+        List<String> id = null;
 
         JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(id);
 

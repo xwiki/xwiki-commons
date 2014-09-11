@@ -30,7 +30,7 @@ import org.xwiki.stability.Unstable;
  * <p>
  * An element is defined by either an <code>on</code> event of a combination of <code>begin</code> and <code>end</code>
  * events.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -40,8 +40,8 @@ public class FilterElementDescriptor
     /**
      * Empty parameters.
      */
-    private static final FilterElementParameterDescriptor< ? >[] EMPTY_PARAMETERS =
-        new FilterElementParameterDescriptor< ? >[0];
+    private static final FilterElementParameterDescriptor<?>[] EMPTY_PARAMETERS =
+        new FilterElementParameterDescriptor<?>[0];
 
     /**
      * @see #getName()
@@ -51,7 +51,7 @@ public class FilterElementDescriptor
     /**
      * @see #getParameters()
      */
-    private FilterElementParameterDescriptor< ? >[] parameters;
+    private FilterElementParameterDescriptor<?>[] parameters;
 
     /**
      * Used to find parameter index by name.
@@ -85,11 +85,11 @@ public class FilterElementDescriptor
      * @param name the name of the element
      * @param parameters the parameters
      */
-    public FilterElementDescriptor(String name, FilterElementParameterDescriptor< ? >[] parameters)
+    public FilterElementDescriptor(String name, FilterElementParameterDescriptor<?>[] parameters)
     {
         this.name = name;
         this.parameters = parameters;
-        for (FilterElementParameterDescriptor< ? > parameter : parameters) {
+        for (FilterElementParameterDescriptor<?> parameter : parameters) {
             if (parameter.getName() != null) {
                 this.parametersIndex.put(parameter.getName(), parameter.getIndex());
             }
@@ -107,7 +107,7 @@ public class FilterElementDescriptor
     /**
      * @return the parameters of the element
      */
-    public FilterElementParameterDescriptor< ? >[] getParameters()
+    public FilterElementParameterDescriptor<?>[] getParameters()
     {
         return this.parameters;
     }

@@ -29,7 +29,7 @@ import org.xwiki.test.jmock.AbstractComponentTestCase;
 
 /**
  * Validate {@link DefaultConverterManager}.
- * 
+ *
  * @version $Id$
  */
 public class DefaultConverterManagerTest extends AbstractComponentTestCase

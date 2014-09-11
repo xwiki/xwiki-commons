@@ -24,7 +24,6 @@ import java.io.Reader;
 import org.xwiki.stability.Unstable;
 
 /**
- * 
  * @version $Id$
  * @since 6.2M1
  */

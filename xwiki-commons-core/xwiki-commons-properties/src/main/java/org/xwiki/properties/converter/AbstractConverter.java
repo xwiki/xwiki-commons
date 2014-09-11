@@ -28,7 +28,7 @@ import org.xwiki.component.util.ReflectionUtils;
  * <p>
  * Commonly a new component is supposed to implements {@link AbstractConverter#convertToString(Object)} and
  * {@link AbstractConverter#convertToType(Class, Object)}.
- * 
+ *
  * @param <T> the type in which the provided value has to be converted
  * @version $Id$
  * @since 2.0M2
@@ -38,7 +38,7 @@ public abstract class AbstractConverter<T> implements Converter<T>
     @Override
     public <G> G convert(Type targetType, Object sourceValue)
     {
-        Class< ? > sourceType = sourceValue == null ? null : sourceValue.getClass();
+        Class<?> sourceType = sourceValue == null ? null : sourceValue.getClass();
 
         G result;
         if (targetType.equals(String.class)) {
@@ -60,7 +60,7 @@ public abstract class AbstractConverter<T> implements Converter<T>
      * <p>
      * <b>N.B.</b>This implementation simply uses the value's <code>toString()</code> method and should be overridden if
      * a more sophisticated mechanism for <i>conversion to a String</i> is required.
-     * 
+     *
      * @param value The input value to be converted.
      * @return the converted String value.
      */
@@ -73,7 +73,7 @@ public abstract class AbstractConverter<T> implements Converter<T>
      * Convert the input object into an output object of the specified type.
      * <p>
      * Typical implementations will provide a minimum of <code>String --> type</code> conversion.
-     * 
+     *
      * @param <G> the type in which the provided value has o be converted
      * @param targetType Data type to which this value should be converted.
      * @param value The input value to be converted.
@@ -92,7 +92,7 @@ public abstract class AbstractConverter<T> implements Converter<T>
      * Convert the input object into an output object of the specified type.
      * <p>
      * Typical implementations will provide a minimum of <code>String --> type</code> conversion.
-     * 
+     *
      * @param <G> the type in which the provided value has o be converted
      * @param type Data type to which this value should be converted.
      * @param value The input value to be converted.

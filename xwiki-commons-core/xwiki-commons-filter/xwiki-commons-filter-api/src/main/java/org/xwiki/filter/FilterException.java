@@ -23,7 +23,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Encapsulates filters errors.
- * 
+ *
  * @version $Id$
  * @since 5.2M2
  */

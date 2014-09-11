@@ -35,14 +35,14 @@ import org.xwiki.properties.ConverterManager;
  * arguments don't match the method signature. In other words, it looks for a method matching the passed arguments and
  * if none is found then it tries the convert the arguments to match the available method signatures (the available
  * methods with the same name and the same number of parameters but with different parameter types). E.g.:
- * 
+ *
  * <pre>
  * {@code $obj.someMethod('VALUE')
  * // will forward to
  * obj.someMethod(SomeEnum.VALUE)
  * // if obj has someMethod(SomeEnum) and not someMethod(String)}
  * </pre>
- * 
+ *
  * @since 4.1M2
  * @version $Id$
  * @see ChainableUberspector
@@ -86,7 +86,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
     /**
      * Converts the given arguments to match a method with the specified name and the same number of formal parameters
      * as the number of arguments.
-     * 
+     *
      * @param obj the object the method is invoked on, used to retrieve the list of available methods
      * @param methodName the method we're looking for
      * @param args the method arguments
@@ -111,12 +111,12 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
      * Tries to convert the given arguments to match the specified formal parameters types.
      * <p>
      * Throws a runtime exception if the conversion fails.
-     * 
+     *
      * @param arguments the method actual arguments
      * @param parameterTypes the method formal parameter types
      * @return a new array of arguments where some values have been converted to match the formal method parameter types
      */
-    private Object[] convertArguments(Object[] arguments, Class< ? >[] parameterTypes)
+    private Object[] convertArguments(Object[] arguments, Class<?>[] parameterTypes)
     {
         Object[] convertedArguments = Arrays.copyOf(arguments, arguments.length);
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -167,7 +167,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
         }
 
         @Override
-        public Class< ? > getReturnType()
+        public Class<?> getReturnType()
         {
             return this.innerMethod.getReturnType();
         }

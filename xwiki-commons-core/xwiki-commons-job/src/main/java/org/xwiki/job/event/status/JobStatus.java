@@ -29,7 +29,7 @@ import org.xwiki.logging.event.LogEvent;
 
 /**
  * Describe the current status of a job.
- * 
+ *
  * @version $Id$
  * @since 4.0M1
  */
@@ -37,7 +37,7 @@ public interface JobStatus
 {
     /**
      * Job status.
-     * 
+     *
      * @version $Id$
      */
     enum State
@@ -98,7 +98,7 @@ public interface JobStatus
 
     /**
      * Indicate that the question has been answered.
-     * 
+     *
      * @since 4.0M2
      */
     void answered();

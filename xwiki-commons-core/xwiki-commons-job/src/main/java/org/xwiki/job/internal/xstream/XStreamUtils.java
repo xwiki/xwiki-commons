@@ -26,7 +26,7 @@ import org.xwiki.component.annotation.Role;
 
 /**
  * Various XStream related utilities.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */
@@ -54,9 +54,9 @@ public final class XStreamUtils
     public static boolean isComponent(Object item)
     {
         if (item != null) {
-            List<Class< ? >> interfaces = ClassUtils.getAllInterfaces(item.getClass());
+            List<Class<?>> interfaces = ClassUtils.getAllInterfaces(item.getClass());
 
-            for (Class< ? > iface : interfaces) {
+            for (Class<?> iface : interfaces) {
                 if (iface.isAnnotationPresent(Role.class)) {
                     return true;
                 }

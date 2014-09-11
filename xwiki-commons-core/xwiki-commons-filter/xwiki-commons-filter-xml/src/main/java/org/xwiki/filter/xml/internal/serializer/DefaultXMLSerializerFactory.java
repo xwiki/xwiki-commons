@@ -36,7 +36,7 @@ import org.xwiki.properties.ConverterManager;
 
 /**
  * Default implementation of {@link XMLSerializerFactory}.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -66,11 +66,11 @@ public class DefaultXMLSerializerFactory implements XMLSerializerFactory
     public <T> T createSerializer(Class<T> filterInterface, Result xmlResult, XMLConfiguration configuration)
         throws XMLStreamException, FactoryConfigurationError
     {
-        return createSerializer(new Class< ? >[] {filterInterface}, xmlResult, configuration);
+        return createSerializer(new Class<?>[] { filterInterface }, xmlResult, configuration);
     }
 
     @Override
-    public <T> T createSerializer(Class< ? >[] filterInterfaces, Result xmlResult, XMLConfiguration configuration)
+    public <T> T createSerializer(Class<?>[] filterInterfaces, Result xmlResult, XMLConfiguration configuration)
         throws XMLStreamException, FactoryConfigurationError
     {
         DefaultXMLSerializer handler =

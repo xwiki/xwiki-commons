@@ -28,7 +28,7 @@ import org.dom4j.io.SAXReader;
 
 /**
  * Parse XWiki document from XML.
- * 
+ *
  * @version $Id$
  */
 public class XWikiDocument
@@ -95,7 +95,7 @@ public class XWikiDocument
 
     /**
      * Parse XML file to extract document information.
-     * 
+     *
      * @param file the xml file
      * @throws DocumentException error when parsing XML file
      */
@@ -122,7 +122,7 @@ public class XWikiDocument
 
     /**
      * Read an element from the XML.
-     * 
+     *
      * @param rootElement the root XML element under which to find the element
      * @param elementName the name of the element to read
      * @return null or the element value as a String

@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 /**
  * Constructs {@link CloseableHttpClient} objects that can be used to perform request on HTTP-based Extension
  * Repositories.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */

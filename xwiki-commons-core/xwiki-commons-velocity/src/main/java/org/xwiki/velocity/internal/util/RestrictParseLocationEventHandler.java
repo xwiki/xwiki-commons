@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Velocity event handler that filters #parse calls to forbid including files outside the templates directory.
- * 
+ *
  * @version $Id$
  * @since 3.5M1
  */
@@ -46,7 +46,7 @@ public class RestrictParseLocationEventHandler implements IncludeEventHandler
         String directiveName)
     {
         LOGGER.trace("Velocity include event: include [{}] from [{}] using [{}]",
-            new Object[] {includeResourcePath, currentResourcePath, directiveName});
+            new Object[] { includeResourcePath, currentResourcePath, directiveName });
         String template = URI.create(BASE_TEMPLATE_DIRECTORY + includeResourcePath).normalize().toString();
         if (!template.startsWith(BASE_TEMPLATE_DIRECTORY)) {
             LOGGER.warn("Direct access to template file [{}] refused. Possible break-in attempt!", template);

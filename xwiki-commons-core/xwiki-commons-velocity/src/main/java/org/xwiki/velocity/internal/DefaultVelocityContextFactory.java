@@ -40,7 +40,7 @@ import org.xwiki.velocity.XWikiVelocityException;
 
 /**
  * Default implementation for {@link VelocityContextFactory}.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -80,7 +80,7 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
         // Instantiate Velocity tools
         Properties properties = this.velocityConfiguration.getTools();
         if (properties != null) {
-            for (Enumeration< ? > props = properties.propertyNames(); props.hasMoreElements();) {
+            for (Enumeration<?> props = properties.propertyNames(); props.hasMoreElements();) {
                 String key = props.nextElement().toString();
                 String value = properties.getProperty(key);
                 Object toolInstance;

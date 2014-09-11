@@ -56,7 +56,7 @@ import org.apache.velocity.util.introspection.VelPropertySet;
  * property is not defined or contains only wrong classnames, then by default a <code>SecureUberspector</code> is used
  * as the only entry in the array.
  * </p>
- * 
+ *
  * @since 1.5RC1
  * @see ChainingUberspector
  * @version $Id$
@@ -83,7 +83,7 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
      * <p>
      * This implementation initializes the array of uberspectors.
      * </p>
-     * 
+     *
      * @see org.apache.velocity.util.introspection.Uberspect#init()
      */
     @Override
@@ -108,7 +108,7 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
     /**
      * Instantiates and initializes an uberspector class and adds it to the array. Also set the log and runtime
      * services, if the class implements the proper interfaces.
-     * 
+     *
      * @param classname The name of the uberspector class to add to the chain.
      */
     protected void initializeUberspector(String classname)
@@ -142,7 +142,7 @@ public class LinkingUberspector extends UberspectImpl implements Uberspect, Runt
 
     /**
      * Tries to create an uberspector instance using reflection.
-     * 
+     *
      * @param classname The name of the uberspector class to instantiate.
      * @return An instance of the specified Uberspector. If the class cannot be instantiated using the default
      *         constructor, or does not implement {@link Uberspect}, <code>null</code> is returned.

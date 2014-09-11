@@ -24,7 +24,6 @@ import org.xwiki.extension.AbstractExtensionDependency;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
- * 
  * @version $Id$
  * @since 4.0M1
  */

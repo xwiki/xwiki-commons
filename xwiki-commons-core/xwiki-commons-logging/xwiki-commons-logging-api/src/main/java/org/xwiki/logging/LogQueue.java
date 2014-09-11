@@ -30,7 +30,7 @@ import org.xwiki.logging.event.LogEvent;
 
 /**
  * A queue of {@link LogEvent}s.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  */
@@ -43,7 +43,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
 
     /**
      * Copy the stored log into a passed {@link org.slf4j.Logger}.
-     * 
+     *
      * @param targetLogger the logger where to copy the stored log
      * @since 5.3M1
      */
@@ -127,7 +127,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
 
     /**
      * Filter logs of a specific level.
-     * 
+     *
      * @param level the level of the logs to return
      * @return the filtered logs
      * @since 4.1RC1
@@ -147,7 +147,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
 
     /**
      * Filter logs of a specific level.
-     * 
+     *
      * @param level the level of the logs to return
      * @return the filtered logs
      * @since 4.2M1
@@ -167,7 +167,7 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
 
     /**
      * Indicate if the list contains logs of a specific level.
-     * 
+     *
      * @param level the level of the logs to return
      * @return true if log of provided level or less exist
      * @since 6.0M1
@@ -244,13 +244,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void trace(Marker marker, String format, Object arg)
     {
-        trace(marker, format, new Object[] {arg});
+        trace(marker, format, new Object[] { arg });
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2)
     {
-        trace(marker, format, new Object[] {arg1, arg2});
+        trace(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override
@@ -318,13 +318,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void debug(Marker marker, String format, Object arg)
     {
-        debug(marker, format, new Object[] {arg});
+        debug(marker, format, new Object[] { arg });
     }
 
     @Override
     public void debug(Marker marker, String format, Object arg1, Object arg2)
     {
-        debug(marker, format, new Object[] {arg1, arg2});
+        debug(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override
@@ -392,13 +392,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void info(Marker marker, String format, Object arg)
     {
-        info(marker, format, new Object[] {arg});
+        info(marker, format, new Object[] { arg });
     }
 
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2)
     {
-        info(marker, format, new Object[] {arg1, arg2});
+        info(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override
@@ -466,13 +466,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void warn(Marker marker, String format, Object arg)
     {
-        warn(marker, format, new Object[] {arg});
+        warn(marker, format, new Object[] { arg });
     }
 
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2)
     {
-        warn(marker, format, new Object[] {arg1, arg2});
+        warn(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override
@@ -540,13 +540,13 @@ public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
     @Override
     public void error(Marker marker, String format, Object arg)
     {
-        error(marker, format, new Object[] {arg});
+        error(marker, format, new Object[] { arg });
     }
 
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2)
     {
-        error(marker, format, new Object[] {arg1, arg2});
+        error(marker, format, new Object[] { arg1, arg2 });
     }
 
     @Override

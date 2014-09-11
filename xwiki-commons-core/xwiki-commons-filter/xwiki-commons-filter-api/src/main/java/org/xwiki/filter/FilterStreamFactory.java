@@ -26,9 +26,9 @@ import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.stability.Unstable;
 
 /**
- * Filter class should be inherited by all the stream based classes to implement the type and descriptor which
- * describes a filter with list of bean class parameters.
- * 
+ * Filter class should be inherited by all the stream based classes to implement the type and descriptor which describes
+ * a filter with list of bean class parameters.
+ *
  * @version $Id$
  * @since 6.2M1
  */
@@ -49,5 +49,5 @@ public interface FilterStreamFactory
      * @return the filters supported by this stream factory
      * @throws FilterException when failing to get filters interfaces
      */
-    Collection<Class< ? >> getFilterInterfaces() throws FilterException;
+    Collection<Class<?>> getFilterInterfaces() throws FilterException;
 }

@@ -51,7 +51,7 @@ import org.apache.velocity.util.introspection.UberspectLoggable;
  * to forward calls). If a uberspector in the middle of the chain is not chainable, then it will break the chain at that
  * point (all previos uberspectors will be discarded from the chain).
  * </p>
- * 
+ *
  * @since 1.5M1
  * @see ChainableUberspector
  * @version $Id$
@@ -76,7 +76,7 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
      * <p>
      * This implementation initializes the uberspector chain.
      * </p>
-     * 
+     *
      * @see org.apache.velocity.util.introspection.Uberspect#init()
      */
     @Override
@@ -107,7 +107,7 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
     /**
      * Instantiates an uberspector class and adds it to the chain. Also set the log and runtime services, if the class
      * implements the proper interfaces. The {@link Uberspect#init()} method is not called.
-     * 
+     *
      * @param classname The name of the uberspector class to add to the chain.
      */
     protected void initializeUberspector(String classname)
@@ -137,7 +137,7 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
 
     /**
      * Tries to create an uberspector instance using reflection.
-     * 
+     *
      * @param classname The name of the uberspector class to instantiate.
      * @return An instance of the specified Uberspector. If the class cannot be instantiated using the default
      *         constructor, or does not implement {@link Uberspect}, <code>null</code> is returned.

@@ -27,7 +27,7 @@ import org.xwiki.logging.event.LogEvent;
 
 /**
  * Test {@link LogQueue}.
- * 
+ *
  * @version $Id$
  */
 public class LogQueueTest
@@ -63,7 +63,7 @@ public class LogQueueTest
         Assert.assertNotNull(logEvent.getThrowable());
         Assert.assertNull(logEvent.getTranslationKey());
 
-        queue.error("message {}", new Object[] {"param1", new Exception()});
+        queue.error("message {}", new Object[] { "param1", new Exception() });
         logEvent = queue.poll();
         Assert.assertEquals("message param1", logEvent.getFormattedMessage());
         Assert.assertEquals(Arrays.asList("message ", ""), logEvent.getMessageElements());

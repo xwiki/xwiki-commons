@@ -32,7 +32,7 @@ import org.xwiki.observation.event.BeginEvent;
 
 /**
  * Default implementation of {@link ObservationContext}.
- * 
+ *
  * @version $Id$
  * @since 3.2M1
  */
@@ -58,7 +58,7 @@ public class DefaultObservationContext implements ObservationContext
     {
         Stack<BeginEvent> events = null;
 
-        ExecutionContext context = execution.getContext();
+        ExecutionContext context = this.execution.getContext();
         if (context != null) {
             events = (Stack<BeginEvent>) context.getProperty(KEY_EVENTS);
         }

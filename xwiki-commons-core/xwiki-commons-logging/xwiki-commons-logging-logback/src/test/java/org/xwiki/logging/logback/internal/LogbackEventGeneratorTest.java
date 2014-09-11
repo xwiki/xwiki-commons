@@ -21,6 +21,7 @@ package org.xwiki.logging.logback.internal;
 
 import java.util.Arrays;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,14 +37,12 @@ import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.LogRule;
 import org.xwiki.test.annotation.ComponentList;
 
-import org.junit.Assert;
-
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link LogbackEventGenerator}.
- * 
+ *
  * @version $Id$
  * @since 3.2M3
  */

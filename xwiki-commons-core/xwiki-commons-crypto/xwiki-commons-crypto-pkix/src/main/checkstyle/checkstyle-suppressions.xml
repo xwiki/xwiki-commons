@@ -27,4 +27,6 @@
 <suppressions>
   <suppress checks="ClassFanOutComplexity" files="BcExtensionUtils.java"/>
   <suppress checks="ClassFanOutComplexity" files="BcUtils.java"/>
+  <suppress checks="ClassDataAbstractionCoupling" files="BcExtensionUtils.java"/>
+  <suppress checks="ClassDataAbstractionCoupling" files="BcCMSUtils.java"/>
 </suppressions>

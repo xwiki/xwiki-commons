@@ -27,12 +27,12 @@ import java.lang.annotation.Target;
 
 /**
  * Use this annotation to add a display name to a property bean method.
- * 
+ *
  * @version $Id$
  * @since 2.1M1
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD })
+@Target({ ElementType.METHOD, ElementType.FIELD })
 @Inherited
 public @interface PropertyName
 {

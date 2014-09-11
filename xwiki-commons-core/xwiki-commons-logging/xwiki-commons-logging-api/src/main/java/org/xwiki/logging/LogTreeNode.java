@@ -32,7 +32,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Logs organized as a tree.
- * 
+ *
  * @version $Id$
  * @since 5.4M1
  */
@@ -108,7 +108,7 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
     @Override
     public Iterator<LogEvent> iterator()
     {
-        return this.children != null ? this.children.iterator() : Collections.<LogEvent> emptyList().iterator();
+        return this.children != null ? this.children.iterator() : Collections.<LogEvent>emptyList().iterator();
     }
 
     /**
@@ -126,7 +126,7 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
 
     /**
      * The number of logs.
-     * 
+     *
      * @param recurse if true navigate through the whole tree, otherwise only the first level
      * @return the number of log events
      */
@@ -163,7 +163,7 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
 
     /**
      * Filter logs of a specific level.
-     * 
+     *
      * @param level the level of the logs to return
      * @param recurse if one of the {@link LogEvent} is a node look at its children too etc.
      * @return the filtered logs
@@ -187,7 +187,7 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
 
     /**
      * Filter logs of a specific level.
-     * 
+     *
      * @param level the level of the logs to return
      * @param recurse if one of the {@link LogEvent} is a node look at its children too etc.
      * @return the filtered logs

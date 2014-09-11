@@ -37,7 +37,7 @@ import org.xwiki.observation.event.Event;
 
 /**
  * Listen to all events and stack {@link BeginEvent}.
- * 
+ *
  * @version $Id$
  * @since 3.2M1
  */
@@ -73,7 +73,7 @@ public class ObservationContextListener extends AbstractEventListener
     {
         Stack<BeginEvent> events = null;
 
-        ExecutionContext context = execution.getContext();
+        ExecutionContext context = this.execution.getContext();
         if (context != null) {
             events = (Stack<BeginEvent>) context.getProperty(DefaultObservationContext.KEY_EVENTS);
         }
@@ -86,7 +86,7 @@ public class ObservationContextListener extends AbstractEventListener
      */
     private void pushCurrentEvent(BeginEvent event)
     {
-        ExecutionContext context = execution.getContext();
+        ExecutionContext context = this.execution.getContext();
         if (context != null) {
             Stack<BeginEvent> events = (Stack<BeginEvent>) context.getProperty(DefaultObservationContext.KEY_EVENTS);
 

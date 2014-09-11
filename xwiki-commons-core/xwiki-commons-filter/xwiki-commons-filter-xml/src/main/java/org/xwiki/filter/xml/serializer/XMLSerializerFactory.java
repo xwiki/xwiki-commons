@@ -28,7 +28,7 @@ import org.xwiki.filter.xml.XMLConfiguration;
 
 /**
  * Create XML serializers as listeners.
- * 
+ *
  * @version $Id$
  * @since 5.2M1
  */
@@ -57,6 +57,6 @@ public interface XMLSerializerFactory
      * @throws XMLStreamException if the passed result is not supported
      * @since 5.3M1
      */
-    <T> T createSerializer(Class< ? >[] filterInterfaces, Result xmlResult, XMLConfiguration configuration)
+    <T> T createSerializer(Class<?>[] filterInterfaces, Result xmlResult, XMLConfiguration configuration)
         throws XMLStreamException, FactoryConfigurationError;
 }

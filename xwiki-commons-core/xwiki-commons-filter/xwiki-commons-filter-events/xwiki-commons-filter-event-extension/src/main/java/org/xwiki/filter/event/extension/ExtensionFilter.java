@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
 
 /**
  * Extension related events.
- * 
+ *
  * @version $Id$
  * @since 6.2M1
  */

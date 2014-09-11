@@ -28,7 +28,7 @@ import org.xwiki.properties.PropertyDescriptor;
 
 /**
  * Default implementation for {@link PropertyDescriptor}.
- * 
+ *
  * @version $Id$
  * @since 2.0M2
  */
@@ -130,9 +130,9 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
 
     @Override
     @Deprecated
-    public Class< ? > getPropertyClass()
+    public Class<?> getPropertyClass()
     {
-        Class< ? > clazz;
+        Class<?> clazz;
         if (this.propertyType instanceof Class) {
             clazz = (Class) this.propertyType;
         } else if (this.propertyType instanceof ParameterizedType) {
