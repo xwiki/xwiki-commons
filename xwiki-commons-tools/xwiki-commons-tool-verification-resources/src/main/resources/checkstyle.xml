@@ -88,13 +88,18 @@
     <module name="ClassDataAbstractionCoupling"/>
     -->
 
-    <!-- Commented out and replaced by a XWiki version since the following reported bugs/enhancements are still not
-         fixed:
-         - https://sourceforge.net/p/checkstyle/feature-requests/607/
-         - https://sourceforge.net/p/checkstyle/bugs/684/
-    -->
-    <!--module name="ClassFanOutComplexity"/-->
-    <module name="org.xwiki.tool.checkstyle.XWikiClassFanOutComplexityCheck"/>
+    <module name="ClassFanOutComplexity">
+      <property name="excludedClasses" value="boolean, byte, char, double, float, int, long, short, void,
+        Boolean, Byte, Character, Double, Float, Integer, Long, Short, Void,
+        Object, Class, String, StringBuffer, StringBuilder,
+        ArrayIndexOutOfBoundsException, Exception, RuntimeException, IllegalArgumentException, IllegalStateException, IndexOutOfBoundsException, NullPointerException, Throwable, SecurityException, UnsupportedOperationException,
+        List, ArrayList, Deque, Queue, LinkedList, Set, HashSet, SortedSet, TreeSet, Map, HashMap, SortedMap, TreeMap, Collections, Collection, Arrays,
+        ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser, PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue,
+        Logger, LoggerFactory, StringUtils, IOUtils,
+        Inject, Named, Component, Role, Singleton, Unstable"/>
+    </module>
+
+    <module name="ClassTypeParameterName"/>
 
     <module name="ConstantName"/>
 
