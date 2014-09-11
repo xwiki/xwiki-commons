@@ -152,14 +152,6 @@
       <property name="ignoreComments" value="true"/>
     </module>
 
-    <!-- No direct printing to System.out or System.err -->
-    <module name="RegexpSinglelineJava">
-      <!-- . matches any character, so we need to
-           escape it and use \. to match dots. -->
-      <property name="format" value="System\.(out|err)\."/>
-      <property name="ignoreComments" value="true"/>
-    </module>
-
     <module name="HiddenField">
       <property name="tokens" value="VARIABLE_DEF"/>
     </module>
@@ -294,6 +286,14 @@
       <property name="allowUnchecked" value="true"/>
     </module>
 
+    <!-- No direct printing to System.out or System.err -->
+    <module name="RegexpSinglelineJava">
+      <!-- . matches any character, so we need to
+           escape it and use \. to match dots. -->
+      <property name="format" value="System\.(out|err)\."/>
+      <property name="ignoreComments" value="true"/>
+    </module>
+
     <!--module name="Regexp"/-->
 
     <!--module name="RegexpHeader"/-->
@@ -373,5 +373,4 @@
     <module name="org.xwiki.tool.checkstyle.ScriptServiceCheck"/>
 
   </module>
-  
 </module>
