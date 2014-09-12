@@ -77,19 +77,19 @@ public class UninstallPlanJob extends AbstractExtensionPlanJob<UninstallRequest>
                     InstalledExtension installedExtension = this.installedExtensionRepository.resolve(extensionId);
 
                     if (getRequest().hasNamespaces()) {
-                        uninstallExtension(installedExtension, getRequest().getNamespaces(), this.extensionTree);
+                        uninstallExtension(installedExtension, getRequest().getNamespaces(), this.extensionTree, true);
                     } else if (installedExtension.getNamespaces() != null) {
                         // Duplicate the namespace list to avoid ConcurrentModificationException
                         uninstallExtension(installedExtension,
-                            new ArrayList<String>(installedExtension.getNamespaces()), this.extensionTree);
+                            new ArrayList<String>(installedExtension.getNamespaces()), this.extensionTree, true);
                     } else {
-                        uninstallExtension(installedExtension, (String) null, this.extensionTree);
+                        uninstallExtension(installedExtension, (String) null, this.extensionTree, true);
                     }
                 } else {
                     if (getRequest().hasNamespaces()) {
-                        uninstallExtension(extensionId.getId(), getRequest().getNamespaces(), this.extensionTree);
+                        uninstallExtension(extensionId.getId(), getRequest().getNamespaces(), this.extensionTree, true);
                     } else {
-                        uninstallExtension(extensionId.getId(), (String) null, this.extensionTree);
+                        uninstallExtension(extensionId.getId(), (String) null, this.extensionTree, true);
                     }
                 }
 

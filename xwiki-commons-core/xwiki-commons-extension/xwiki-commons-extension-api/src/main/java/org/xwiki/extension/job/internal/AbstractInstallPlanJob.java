@@ -391,7 +391,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
             if (previousExtensions.isEmpty() && namespace == null) {
                 try {
-                    uninstallFromNamespaces(extensionId.getId());
+                    uninstallFromNamespaces(extensionId.getId(), false);
                 } catch (UninstallException e) {
                     throw new InstallException("Failed to uninstall feature [" + extensionId.getId()
                         + "] from namespaces", e);
@@ -773,7 +773,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         return extension;
     }
 
-    private void uninstallFromNamespaces(String feature) throws UninstallException
+    private void uninstallFromNamespaces(String feature, boolean withBackWard) throws UninstallException
     {
         Collection<InstalledExtension> installedExtensions = this.installedExtensionRepository.getInstalledExtensions();
 
@@ -783,7 +783,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             for (InstalledExtension installedExtension : installedExtensions) {
                 if (installedExtension.getId().getId().equals(feature)
                     || installedExtension.getFeatures().contains(feature)) {
-                    uninstallExtension(installedExtension, installedExtension.getNamespaces(), this.extensionTree);
+                    uninstallExtension(installedExtension, installedExtension.getNamespaces(), this.extensionTree,
+                        withBackWard);
                 }
 
                 this.progressManager.stepPropress(this);
@@ -831,7 +832,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                         if (installedExtensions.isEmpty()) {
                             if (namespace == null) {
                                 try {
-                                    uninstallFromNamespaces(feature);
+                                    uninstallFromNamespaces(feature, false);
                                 } catch (UninstallException e) {
                                     throw new InstallException("Failed to uninstall feature [" + feature
                                         + "] from namespaces", e);

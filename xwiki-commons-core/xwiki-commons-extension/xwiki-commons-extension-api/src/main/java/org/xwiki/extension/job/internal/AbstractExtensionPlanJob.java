@@ -86,16 +86,17 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
      * @param extensionId the identifier of the extension to uninstall
      * @param namespaces the namespaces from where to uninstall the extension
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
+     * @param withBackWard uninstall also the backward dependencies
      * @throws UninstallException error when trying to uninstall provided extensions
      */
     protected void uninstallExtension(String extensionId, Collection<String> namespaces,
-        Collection<ExtensionPlanNode> parentBranch) throws UninstallException
+        Collection<ExtensionPlanNode> parentBranch, boolean withBackWard) throws UninstallException
     {
         this.progressManager.pushLevelProgress(namespaces.size(), this);
 
         try {
             for (String namespace : namespaces) {
-                uninstallExtension(extensionId, namespace, parentBranch);
+                uninstallExtension(extensionId, namespace, parentBranch, withBackWard);
 
                 this.progressManager.stepPropress(this);
             }
@@ -108,10 +109,11 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
      * @param extensionId the identifier of the extension to uninstall
      * @param namespace the namespace from where to uninstall the extension
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
+     * @param withBackWard uninstall also the backward dependencies
      * @throws UninstallException error when trying to uninstall provided extension
      */
-    protected void uninstallExtension(String extensionId, String namespace, Collection<ExtensionPlanNode> parentBranch)
-        throws UninstallException
+    protected void uninstallExtension(String extensionId, String namespace, Collection<ExtensionPlanNode> parentBranch,
+        boolean withBackWard) throws UninstallException
     {
         InstalledExtension installedExtension =
             this.installedExtensionRepository.getInstalledExtension(extensionId, namespace);
@@ -121,7 +123,7 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
         }
 
         try {
-            uninstallExtension(installedExtension, namespace, parentBranch);
+            uninstallExtension(installedExtension, namespace, parentBranch, withBackWard);
         } catch (Exception e) {
             throw new UninstallException("Failed to uninstall extension", e);
         }
@@ -131,16 +133,17 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
      * @param installedExtension the extension to uninstall
      * @param namespaces the namespaces from where to uninstall the extension
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
+     * @param withBackWard uninstall also the backward dependencies
      * @throws UninstallException error when trying to uninstall provided extension
      */
     protected void uninstallExtension(InstalledExtension installedExtension, Collection<String> namespaces,
-        Collection<ExtensionPlanNode> parentBranch) throws UninstallException
+        Collection<ExtensionPlanNode> parentBranch, boolean withBackWard) throws UninstallException
     {
         this.progressManager.pushLevelProgress(namespaces.size(), this);
 
         try {
             for (String namespace : namespaces) {
-                uninstallExtension(installedExtension, namespace, parentBranch);
+                uninstallExtension(installedExtension, namespace, parentBranch, withBackWard);
 
                 this.progressManager.stepPropress(this);
             }
@@ -153,16 +156,17 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
      * @param extensions the installed extensions to uninstall
      * @param namespace the namespaces from where to uninstall the extensions
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
+     * @param withBackWard uninstall also the backward dependencies
      * @throws UninstallException error when trying to uninstall provided extensions
      */
     protected void uninstallExtensions(Collection<InstalledExtension> extensions, String namespace,
-        Collection<ExtensionPlanNode> parentBranch) throws UninstallException
+        Collection<ExtensionPlanNode> parentBranch, boolean withBackWard) throws UninstallException
     {
         this.progressManager.pushLevelProgress(extensions.size(), this);
 
         try {
             for (InstalledExtension backardDependency : extensions) {
-                uninstallExtension(backardDependency, namespace, parentBranch);
+                uninstallExtension(backardDependency, namespace, parentBranch, withBackWard);
 
                 this.progressManager.stepPropress(this);
             }
@@ -175,10 +179,11 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
      * @param installedExtension the extension to uninstall
      * @param namespace the namespace from where to uninstall the extension
      * @param parentBranch the children of the parent {@link ExtensionPlanNode}
+     * @param withBackWard uninstall also the backward dependencies
      * @throws UninstallException error when trying to uninstall provided extension
      */
     protected void uninstallExtension(InstalledExtension installedExtension, String namespace,
-        Collection<ExtensionPlanNode> parentBranch) throws UninstallException
+        Collection<ExtensionPlanNode> parentBranch, boolean withBackWard) throws UninstallException
     {
         if (namespace != null) {
             if (installedExtension.getNamespaces() == null || !installedExtension.getNamespaces().contains(namespace)) {
@@ -209,46 +214,57 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
             }
         }
 
-        this.progressManager.pushLevelProgress(2, this);
+        List<ExtensionPlanNode> children = new ArrayList<ExtensionPlanNode>();
 
+        // Uninstall backward dependencies
+        if (withBackWard) {
+            uninstallBackwardDependencies(installedExtension, namespace, children, withBackWard);
+        }
+
+        // Uninstall the extension
+        DefaultExtensionPlanAction action =
+            new DefaultExtensionPlanAction(installedExtension, Collections.singleton(installedExtension),
+                Action.UNINSTALL, namespace, false);
+        parentBranch.add(new DefaultExtensionPlanNode(action, children, null));
+    }
+
+    /**
+     * @param installedExtension the extension to uninstall
+     * @param namespace the namespace from where to uninstall the extension
+     * @param parentBranch the children of the parent {@link ExtensionPlanNode}
+     * @param withBackWard uninstall also the backward dependencies
+     * @throws UninstallException error when trying to uninstall backward dependencies
+     * @throws ResolveException error when trying to resolve backward dependencies
+     */
+    protected void uninstallBackwardDependencies(InstalledExtension installedExtension, String namespace,
+        List<ExtensionPlanNode> parentBranch, boolean withBackWard) throws UninstallException
+    {
         try {
-            // Uninstall backward dependencies
-            List<ExtensionPlanNode> children = new ArrayList<ExtensionPlanNode>();
-            try {
-                if (namespace != null) {
-                    Collection<InstalledExtension> installedExtensions =
-                        this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId().getId(),
-                            namespace);
-                    if (!installedExtensions.isEmpty()) {
-                        uninstallExtensions(installedExtensions, namespace, children);
-                    }
-                } else {
-                    uninstallBackwardDependencies(installedExtension, children);
+            if (namespace != null) {
+                Collection<InstalledExtension> installedExtensions =
+                    this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId().getId(),
+                        namespace);
+                if (!installedExtensions.isEmpty()) {
+                    uninstallExtensions(installedExtensions, namespace, parentBranch, withBackWard);
                 }
-            } catch (ResolveException e) {
-                throw new UninstallException("Failed to resolve backward dependencies of extension ["
-                    + installedExtension + "]", e);
+            } else {
+                uninstallBackwardDependencies(installedExtension, parentBranch, withBackWard);
             }
-
-            this.progressManager.stepPropress(this);
-
-            DefaultExtensionPlanAction action =
-                new DefaultExtensionPlanAction(installedExtension, Collections.singleton(installedExtension),
-                    Action.UNINSTALL, namespace, false);
-            parentBranch.add(new DefaultExtensionPlanNode(action, children, null));
-        } finally {
-            this.progressManager.popLevelProgress(this);
+        } catch (ResolveException e) {
+            throw new UninstallException("Failed to resolve backward dependencies of extension [" + installedExtension
+                + "]", e);
         }
     }
 
     /**
      * @param installedExtension the extension to uninstall
      * @param parentBranch the children of the parent {@link ExtensionPlanNode}
+     * @param withBackWard uninstall also the backward dependencies
      * @throws UninstallException error when trying to uninstall backward dependencies
      * @throws ResolveException error when trying to resolve backward dependencies
      */
     protected void uninstallBackwardDependencies(InstalledExtension installedExtension,
-        List<ExtensionPlanNode> parentBranch) throws UninstallException, ResolveException
+        List<ExtensionPlanNode> parentBranch, boolean withBackWard) throws UninstallException, ResolveException
     {
         Map<String, Collection<InstalledExtension>> backwardDependencies =
             this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId());
@@ -257,7 +273,7 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
 
         try {
             for (Map.Entry<String, Collection<InstalledExtension>> entry : backwardDependencies.entrySet()) {
-                uninstallExtensions(entry.getValue(), entry.getKey(), parentBranch);
+                uninstallExtensions(entry.getValue(), entry.getKey(), parentBranch, withBackWard);
 
                 this.progressManager.stepPropress(this);
             }
