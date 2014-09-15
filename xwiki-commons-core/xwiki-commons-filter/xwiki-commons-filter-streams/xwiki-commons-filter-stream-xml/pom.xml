@@ -29,9 +29,12 @@
   </parent>
   <artifactId>xwiki-commons-filter-stream-xml</artifactId>
   <name>XWiki Commons - Filter - Stream - Generic XML</name>
-  <description>XWiki Commons - Filter - Stream - Generic XML</description>
+  <description>Filter stream extension to read and write any filter event as XML</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
+
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Filter XML module</xwiki.extension.name>
   </properties>
   <dependencies>
     <dependency>
