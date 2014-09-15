@@ -1053,7 +1053,7 @@ mm
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.7.0.201403182114</version>
+          <version>0.7.2.201409121644</version>
         </plugin>
         <plugin>
           <groupId>com.github.searls</groupId>
