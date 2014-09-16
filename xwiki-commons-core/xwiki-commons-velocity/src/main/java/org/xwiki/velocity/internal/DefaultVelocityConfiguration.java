@@ -45,6 +45,7 @@ import org.xwiki.velocity.tools.CollectionsTool;
 import org.xwiki.velocity.tools.EscapeTool;
 import org.xwiki.velocity.tools.JSONTool;
 import org.xwiki.velocity.tools.RegexTool;
+import org.xwiki.velocity.tools.URLTool;
 
 /**
  * All configuration options for the Velocity subsystem.
@@ -91,6 +92,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());
         this.defaultTools.setProperty("stringtool", StringUtils.class.getName());
         this.defaultTools.setProperty("jsontool", JSONTool.class.getName());
+        this.defaultTools.setProperty("urltool", URLTool.class.getName());
 
         // Since the Cookie Tool requires the Servlet API and since we don't want to force users of this Velocity
         // module to add a dependency on the Servlet API we only add it if the Servlet API is available in the
