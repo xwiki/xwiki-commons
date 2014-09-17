@@ -73,7 +73,7 @@
     <mockito.version>1.9.5</mockito.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.7.4</aspectj.version>
+    <aspectj.version>1.8.2</aspectj.version>
 
     <!-- Clover -->
     <clover.version>3.1.12</clover.version>
@@ -836,7 +836,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.6</version>
+          <version>1.7</version>
           <configuration>
             <complianceLevel>1.7</complianceLevel>
             <source>1.7</source>
