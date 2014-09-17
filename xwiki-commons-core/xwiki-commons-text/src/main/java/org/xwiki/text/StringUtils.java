@@ -28,7 +28,8 @@ package org.xwiki.text;
 public class StringUtils extends org.apache.commons.lang3.StringUtils
 {
     /**
-     * An attempt to make doubling a character (usually for escaping purposes) as fast as it can be.
+     * An attempt to make doubling a character (usually for escaping purposes) as fast as it can be. A lot faster than
+     * the usual <code>mystring.replace("a", "aa")</code> for example.
      * 
      * @param str the string to modify
      * @param c the character to double
