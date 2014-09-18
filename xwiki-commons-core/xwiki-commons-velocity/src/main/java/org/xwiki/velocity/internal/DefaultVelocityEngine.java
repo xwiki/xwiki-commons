@@ -46,6 +46,7 @@ import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.XWikiVelocityException;
 import org.xwiki.velocity.internal.log.AbstractSLF4JLogChute;
+import org.xwiki.velocity.introspection.TryCatchDirective;
 
 /**
  * Default implementation of the Velocity service which initializes the Velocity system using configuration values
@@ -113,7 +114,11 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
         // Add the Component Manager to allow Velocity extensions to lookup components.
         velocityEngine.setApplicationAttribute(ComponentManager.class.getName(), this.componentManager);
 
+        // Set up properties
         initializeProperties(velocityEngine, this.velocityConfiguration.getProperties(), overridingProperties);
+
+        // Set up directives
+        velocityEngine.loadDirective(TryCatchDirective.class.getName());
 
         try {
             velocityEngine.init();
