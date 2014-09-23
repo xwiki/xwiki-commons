@@ -58,7 +58,7 @@ public class SystemHTTPProxyTest
     {
         ExtensionRepository repository =
             this.repositoryFactory.getComponentUnderTest().createRepository(
-                new DefaultExtensionRepositoryDescriptor("id", "maven", new URI("http://host")));
+                new DefaultExtensionRepositoryDescriptor("id", "maven", new URI("http://unknownhostforxwikitest")));
 
         try {
             repository.resolveVersions("groupid:artifactid", 0, -1);
