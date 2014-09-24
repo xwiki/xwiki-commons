@@ -50,7 +50,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface DisposePriority
 {
     /**
+     * Default dispose priority.
+     */
+    int DEFAULT_PRIORITY = 1000;
+
+    /**
      * The priority to use, knowing that the smaller the value the higher the priority.
      */
-    int value() default 1000;
+    int value() default DEFAULT_PRIORITY;
 }

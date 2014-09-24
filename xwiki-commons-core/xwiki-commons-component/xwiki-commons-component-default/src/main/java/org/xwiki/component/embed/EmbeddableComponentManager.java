@@ -590,9 +590,15 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
 
             private int getPriority(RoleHint<?> rh)
             {
-                DisposePriority priorityAnnotation =
-                    componentEntries.get(rh).descriptor.getImplementation().getAnnotation(DisposePriority.class);
-                return (priorityAnnotation == null) ? 1000 : priorityAnnotation.value();
+                Object instance = componentEntries.get(rh).instance;
+                if (instance == null) {
+                    // The component has not been instantiated yet. We don't need to dispose it in this case... :)
+                    // Return the default priority since it doesn't matter.
+                    return DisposePriority.DEFAULT_PRIORITY;
+                } else {
+                    DisposePriority priorityAnnotation = instance.getClass().getAnnotation(DisposePriority.class);
+                    return (priorityAnnotation == null) ? DisposePriority.DEFAULT_PRIORITY : priorityAnnotation.value();
+                }
             }
         });
 
