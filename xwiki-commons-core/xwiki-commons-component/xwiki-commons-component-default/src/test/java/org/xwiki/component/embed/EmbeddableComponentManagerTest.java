@@ -29,6 +29,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.DisposePriority;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.descriptor.DefaultComponentDependency;
@@ -37,7 +38,6 @@ import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -61,6 +61,8 @@ public class EmbeddableComponentManagerTest
     public static class OtherRoleImpl implements Role
     {
     }
+
+    private static String lastDisposedComponent;
 
     public static class InitializableRoleImpl implements Role, Initializable
     {
@@ -86,6 +88,25 @@ public class EmbeddableComponentManagerTest
         public void dispose() throws ComponentLifecycleException
         {
             this.finalized = true;
+            lastDisposedComponent = "DisposableRoleImpl";
+        }
+
+        public boolean isFinalized()
+        {
+            return this.finalized;
+        }
+    }
+
+    @DisposePriority(2000)
+    public static class DisposableWithPriorityRoleImpl implements Role, Disposable
+    {
+        private boolean finalized = false;
+
+        @Override
+        public void dispose() throws ComponentLifecycleException
+        {
+            this.finalized = true;
+            lastDisposedComponent = "DisposableWithPriorityRoleImpl";
         }
 
         public boolean isFinalized()
@@ -433,7 +454,7 @@ public class EmbeddableComponentManagerTest
         cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
 
         ecm.registerComponent(cd);
-        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.getInstance(Role.class);
+        DisposableRoleImpl instance = ecm.getInstance(Role.class);
 
         Assert.assertFalse(instance.isFinalized());
 
@@ -501,26 +522,47 @@ public class EmbeddableComponentManagerTest
     }
 
     @Test
-    public void testDispose() throws ComponentRepositoryException, ComponentLookupException
+    public void testDispose() throws Exception
     {
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
 
-        DefaultComponentDescriptor<Role> cd = new DefaultComponentDescriptor<Role>();
-        cd.setRoleType(Role.class);
-        cd.setImplementation(DisposableRoleImpl.class);
-        cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
+        // Register 2 components:
+        // - a first one using a low dispose priority
+        // - a second one using a default dispose priority
 
-        ecm.registerComponent(cd);
+        // First component
+        DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<>();
+        cd1.setRoleType(Role.class);
+        cd1.setRoleHint("instance1");
+        cd1.setImplementation(DisposableWithPriorityRoleImpl.class);
+        cd1.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
+        ecm.registerComponent(cd1);
+        DisposableWithPriorityRoleImpl instance1 = ecm.getInstance(Role.class, "instance1");
 
-        DisposableRoleImpl instance = (DisposableRoleImpl) ecm.getInstance(Role.class, "default");
+        // Second component
+        DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<>();
+        cd2.setRoleType(Role.class);
+        cd2.setRoleHint("instance2");
+        cd2.setImplementation(DisposableRoleImpl.class);
+        cd2.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
+        ecm.registerComponent(cd2);
+        DisposableRoleImpl instance2 = ecm.getInstance(Role.class, "instance2");
 
-        Assert.assertFalse(instance.isFinalized());
+        Assert.assertFalse(instance1.isFinalized());
+        Assert.assertFalse(instance2.isFinalized());
 
         ecm.dispose();
 
-        Assert.assertTrue(instance.isFinalized());
+        Assert.assertTrue(instance1.isFinalized());
+        Assert.assertTrue(instance2.isFinalized());
 
-        Assert.assertNull(ecm.getComponentDescriptor(Role.class, "default"));
+        Assert.assertNull(ecm.getComponentDescriptor(Role.class, "instance1"));
+        Assert.assertNull(ecm.getComponentDescriptor(Role.class, "instance2"));
         Assert.assertNotNull(ecm.getComponentDescriptor(ComponentManager.class, "default"));
+
+        // Verify that dispose() has been called in the right order.
+        // We check that the last component which had its dispose() called is DisposableWithPriorityRoleImpl since
+        // it has the lowest priority.
+        Assert.assertEquals("DisposableWithPriorityRoleImpl", lastDisposedComponent);
     }
 }
