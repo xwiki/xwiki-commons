@@ -22,6 +22,7 @@ package org.xwiki.component.embed;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import javax.inject.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
+import org.xwiki.component.annotation.DisposePriority;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
@@ -576,6 +578,23 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
         for (int i = 0; i < keys.size(); ++i) {
             i = sortEntry(keys, i);
         }
+
+        // Sort component by DisposePriority
+        Collections.sort(keys, new Comparator<RoleHint<?>>()
+        {
+            @Override
+            public int compare(RoleHint<?> rh1, RoleHint<?> rh2)
+            {
+                return getPriority(rh1) - getPriority(rh2);
+            }
+
+            private int getPriority(RoleHint<?> rh)
+            {
+                DisposePriority priorityAnnotation =
+                    componentEntries.get(rh).descriptor.getImplementation().getAnnotation(DisposePriority.class);
+                return (priorityAnnotation == null) ? 1000 : priorityAnnotation.value();
+            }
+        });
 
         // Dispose old components
         for (RoleHint<?> key : keys) {
