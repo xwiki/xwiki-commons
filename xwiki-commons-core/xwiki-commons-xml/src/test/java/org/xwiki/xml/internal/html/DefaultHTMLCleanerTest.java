@@ -345,6 +345,14 @@ public class DefaultHTMLCleanerTest
         assertHTML(input, HEADER_FULL + input + FOOTER);
     }
 
+    @Test
+    @Ignore("See http://jira.xwiki.org/browse/XWIKI-11118")
+    public void verifyLegendTagNotStripped() throws Exception
+    {
+        String input = "<fieldset><legend>test</legend><div>content</div></fieldset>";
+        assertHTML(input, HEADER_FULL + input + FOOTER);
+    }
+
     private void assertHTML(String expected, String actual)
     {
         Assert.assertEquals(HEADER_FULL + expected + FOOTER,
