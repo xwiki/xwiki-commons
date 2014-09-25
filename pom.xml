@@ -392,7 +392,7 @@
       <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
-        <version>0.9.9-RC2</version>
+        <version>0.9.9</version>
       </dependency>
 
       <!-- netcdf 4.2-min wrongly embbeds jcip classes -->
