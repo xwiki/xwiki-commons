@@ -58,6 +58,11 @@ import org.xwiki.component.util.ReflectionUtils;
  */
 public class EmbeddableComponentManager implements ComponentManager, Disposable
 {
+    /**
+     * Logger to use to log shutdown information (opposite of initialization).
+     */
+    private static final Logger SHUTDOWN_LOGGER = LoggerFactory.getLogger("org.xwiki.shutdown");
+
     private ComponentEventManager eventManager;
 
     /**
@@ -611,7 +616,9 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
 
                 if (instance instanceof Disposable) {
                     try {
+                        SHUTDOWN_LOGGER.debug("Disposing component [{}]...", instance.getClass().getName());
                         ((Disposable) instance).dispose();
+                        SHUTDOWN_LOGGER.debug("Component [{}] has been disposed", instance.getClass().getName());
                     } catch (ComponentLifecycleException e) {
                         this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
                             componentEntry.descriptor.getRoleType(), componentEntry.descriptor.getRoleHint(), e);
