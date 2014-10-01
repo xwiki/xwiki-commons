@@ -65,6 +65,8 @@ public class TryCatchDirective extends Directive
         throws IOException, ResourceNotFoundException, ParseErrorException, MethodInvocationException
     {
         try {
+            // Make sure to clear any previous exception
+            context.remove("exception");
             return node.jjtGetChild(0).render(context, writer);
         } catch (Exception e) {
             // Save the exception in the $exception velocity context variable
