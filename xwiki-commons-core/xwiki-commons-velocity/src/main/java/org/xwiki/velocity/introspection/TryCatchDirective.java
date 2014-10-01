@@ -48,6 +48,8 @@ import org.apache.velocity.runtime.parser.node.Node;
  */
 public class TryCatchDirective extends Directive
 {
+    private static final String EXCEPTION_KEY_NAME = "exception";
+
     @Override
     public String getName()
     {
@@ -66,11 +68,11 @@ public class TryCatchDirective extends Directive
     {
         try {
             // Make sure to clear any previous exception
-            context.remove("exception");
+            context.remove(EXCEPTION_KEY_NAME);
             return node.jjtGetChild(0).render(context, writer);
         } catch (Exception e) {
             // Save the exception in the $exception velocity context variable
-            context.put("exception", e);
+            context.put(EXCEPTION_KEY_NAME, e);
             return true;
         }
     }
