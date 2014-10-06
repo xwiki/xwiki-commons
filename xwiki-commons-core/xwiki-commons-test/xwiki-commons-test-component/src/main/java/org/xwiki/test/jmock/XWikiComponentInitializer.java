@@ -19,9 +19,7 @@
  */
 package org.xwiki.test.jmock;
 
-import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.StackingComponentEventManager;
-import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextManager;
@@ -45,16 +43,12 @@ public class XWikiComponentInitializer
         // Register the mock configuration source for different roles so that tests always use the mock
         this.configurationSource = new MockConfigurationSource();
 
-        DefaultComponentDescriptor<ConfigurationSource> descriptor;
-
-        descriptor = new DefaultComponentDescriptor<ConfigurationSource>();
-        descriptor.setRole(ConfigurationSource.class);
-        getComponentManager().registerComponent(descriptor, this.configurationSource);
-
-        descriptor = new DefaultComponentDescriptor<ConfigurationSource>();
-        descriptor.setRole(ConfigurationSource.class);
-        descriptor.setRoleHint("xwikiproperties");
-        getComponentManager().registerComponent(descriptor, this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor(null), this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("xwikiproperties"), this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("wiki"), this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("space"), this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("user"), this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("all"), this.configurationSource);
     }
 
     public void initializeExecution() throws Exception
