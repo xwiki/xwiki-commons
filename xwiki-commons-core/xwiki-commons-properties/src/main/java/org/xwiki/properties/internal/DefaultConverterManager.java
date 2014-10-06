@@ -80,6 +80,11 @@ public class DefaultConverterManager implements ConverterManager
     @Override
     public <T> T convert(Type targetType, Object value)
     {
+        // If the value is already of the right type return it
+        if (targetType instanceof Class && ((Class<?>) targetType).isInstance(value)) {
+            return (T) value;
+        }
+
         // Converter type
         Type converterType = targetType;
         if (converterType == String.class && value != null) {
