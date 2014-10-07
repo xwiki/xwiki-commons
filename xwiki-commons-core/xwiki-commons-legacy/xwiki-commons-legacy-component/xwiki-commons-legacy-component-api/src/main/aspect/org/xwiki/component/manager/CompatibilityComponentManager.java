@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.component.manager.ComponentLookupException;
 
 /**
  * Add a backward compatibility layer to the {@link ComponentManager} class.
