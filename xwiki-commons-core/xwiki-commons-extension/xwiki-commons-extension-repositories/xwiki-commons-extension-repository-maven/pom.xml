@@ -115,7 +115,7 @@
     <dependency>
       <groupId>org.sonatype.sisu</groupId>
       <artifactId>sisu-guice</artifactId>
-      <version>3.2.3</version>
+      <version>3.2.4</version>
       <classifier>no_aop</classifier>
     </dependency>
 
