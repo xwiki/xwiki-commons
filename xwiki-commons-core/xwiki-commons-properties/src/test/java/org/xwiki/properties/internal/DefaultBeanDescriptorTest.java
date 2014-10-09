@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyHidden;
+import org.xwiki.properties.annotation.PropertyId;
 import org.xwiki.properties.annotation.PropertyMandatory;
 import org.xwiki.properties.annotation.PropertyName;
 
@@ -56,11 +57,16 @@ public class DefaultBeanDescriptorTest
 
         private List<Integer> genericProp;
 
+        public String propertyWithDifferentId;
+
         @PropertyName("Public Field")
         @PropertyDescription("a public field")
         public String publicField;
 
         public List<Integer> genericField;
+
+        @PropertyId("impossible.field.name")
+        public String publicFieldWithDifferentId;
 
         public void setLowerprop(String lowerprop)
         {
@@ -136,6 +142,17 @@ public class DefaultBeanDescriptorTest
         public void setGenericProp(List<Integer> genericProp)
         {
             this.genericProp = genericProp;
+        }
+
+        @PropertyId("impossible.method.name")
+        public String getPropertyWithDifferentId()
+        {
+            return this.propertyWithDifferentId;
+        }
+
+        public void setPropertyWithDifferentId(String propertyWithDifferentId)
+        {
+            this.propertyWithDifferentId = propertyWithDifferentId;
         }
     }
 
@@ -293,5 +310,37 @@ public class DefaultBeanDescriptorTest
         Assert.assertNull(genericFieldPropertyDescriptor.getWriteMethod());
         Assert.assertNull(genericFieldPropertyDescriptor.getReadMethod());
         Assert.assertNotNull(genericFieldPropertyDescriptor.getField());
+    }
+
+    @Test
+    public void testPropertyDescriptorFieldWithDifferentId()
+    {
+        PropertyDescriptor propertyDescriptor = this.beanDescriptor.getProperty("impossible.field.name");
+
+        Assert.assertNotNull(propertyDescriptor);
+        Assert.assertEquals("impossible.field.name", propertyDescriptor.getId());
+        Assert.assertEquals("impossible.field.name", propertyDescriptor.getName());
+        Assert.assertEquals("impossible.field.name", propertyDescriptor.getDescription());
+        Assert.assertSame(String.class, propertyDescriptor.getPropertyType());
+        Assert.assertEquals(false, propertyDescriptor.isMandatory());
+        Assert.assertNull(propertyDescriptor.getWriteMethod());
+        Assert.assertNull(propertyDescriptor.getReadMethod());
+        Assert.assertNotNull(propertyDescriptor.getField());
+    }
+
+    @Test
+    public void testPropertyDescriptorMethodWithDifferentId()
+    {
+        PropertyDescriptor propertyDescriptor = this.beanDescriptor.getProperty("impossible.method.name");
+
+        Assert.assertNotNull(propertyDescriptor);
+        Assert.assertEquals("impossible.method.name", propertyDescriptor.getId());
+        Assert.assertEquals("impossible.method.name", propertyDescriptor.getName());
+        Assert.assertEquals("propertyWithDifferentId", propertyDescriptor.getDescription());
+        Assert.assertSame(String.class, propertyDescriptor.getPropertyType());
+        Assert.assertEquals(false, propertyDescriptor.isMandatory());
+        Assert.assertNotNull(propertyDescriptor.getWriteMethod());
+        Assert.assertNotNull(propertyDescriptor.getReadMethod());
+        Assert.assertNull(propertyDescriptor.getField());
     }
 }

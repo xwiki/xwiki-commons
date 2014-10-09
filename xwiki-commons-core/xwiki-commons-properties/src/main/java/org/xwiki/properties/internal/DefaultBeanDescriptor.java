@@ -36,6 +36,7 @@ import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyHidden;
+import org.xwiki.properties.annotation.PropertyId;
 import org.xwiki.properties.annotation.PropertyMandatory;
 import org.xwiki.properties.annotation.PropertyName;
 
@@ -82,9 +83,8 @@ public class DefaultBeanDescriptor implements BeanDescriptor
         try {
             defaultInstance = getBeanClass().newInstance();
         } catch (Exception e) {
-            LOGGER.error(
-                "Failed to create a new default instance for class " + this.beanClass
-                    + ". The BeanDescriptor will not contains any default value information.", e);
+            LOGGER.debug("Failed to create a new default instance for class " + this.beanClass
+                + ". The BeanDescriptor will not contains any default value information.", e);
         }
 
         try {
@@ -123,7 +123,6 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     protected void extractPropertyDescriptor(java.beans.PropertyDescriptor propertyDescriptor, Object defaultInstance)
     {
         DefaultPropertyDescriptor desc = new DefaultPropertyDescriptor();
-        desc.setId(propertyDescriptor.getName());
 
         Method writeMethod = propertyDescriptor.getWriteMethod();
 
@@ -134,12 +133,17 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             PropertyHidden parameterHidden = extractPropertyAnnotation(writeMethod, readMethod, PropertyHidden.class);
 
             if (parameterHidden == null) {
+                // get parameter id
+                PropertyId propertyId = extractPropertyAnnotation(writeMethod, readMethod, PropertyId.class);
+                desc.setId(propertyId != null ? propertyId.value() : propertyDescriptor.getName());
+
+                // set parameter type
                 desc.setPropertyType(readMethod.getGenericReturnType());
 
-                // get parameter description
+                // get parameter display name
                 PropertyName parameterName = extractPropertyAnnotation(writeMethod, readMethod, PropertyName.class);
 
-                desc.setName(parameterName != null ? parameterName.value() : propertyDescriptor.getName());
+                desc.setName(parameterName != null ? parameterName.value() : desc.getId());
 
                 // get parameter description
                 PropertyDescription parameterDescription =
@@ -159,9 +163,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                     try {
                         desc.setDefaultValue(readMethod.invoke(defaultInstance));
                     } catch (Exception e) {
-                        LOGGER.error(
-                            MessageFormat.format("Failed to get default property value from getter {0} in class {1}",
-                                readMethod.getName(), this.beanClass), e);
+                        LOGGER.error(MessageFormat.format(
+                            "Failed to get default property value from getter {0} in class {1}", readMethod.getName(),
+                            this.beanClass), e);
                     }
                 }
 
@@ -183,23 +187,27 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     protected void extractPropertyDescriptor(Field field, Object defaultInstance)
     {
         DefaultPropertyDescriptor desc = new DefaultPropertyDescriptor();
-        desc.setId(field.getName());
 
         // is parameter hidden
         PropertyHidden parameterHidden = field.getAnnotation(PropertyHidden.class);
 
         if (parameterHidden == null) {
+            // get parameter id
+            PropertyId propertyId = field.getAnnotation(PropertyId.class);
+            desc.setId(propertyId != null ? propertyId.value() : field.getName());
+
+            // set parameter type
             desc.setPropertyType(field.getGenericType());
 
             // get parameter name
             PropertyName parameterName = field.getAnnotation(PropertyName.class);
 
-            desc.setName(parameterName != null ? parameterName.value() : field.getName());
+            desc.setName(parameterName != null ? parameterName.value() : desc.getId());
 
             // get parameter description
             PropertyDescription parameterDescription = field.getAnnotation(PropertyDescription.class);
 
-            desc.setDescription(parameterDescription != null ? parameterDescription.value() : field.getName());
+            desc.setDescription(parameterDescription != null ? parameterDescription.value() : desc.getId());
 
             // is parameter mandatory
             PropertyMandatory parameterMandatory = field.getAnnotation(PropertyMandatory.class);
