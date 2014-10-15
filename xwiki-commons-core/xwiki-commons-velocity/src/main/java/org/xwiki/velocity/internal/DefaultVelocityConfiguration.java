@@ -24,7 +24,6 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.velocity.tools.generic.ComparisonDateTool;
 import org.apache.velocity.tools.generic.ListTool;
@@ -36,6 +35,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.text.StringUtils;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.internal.util.RestrictParseLocationEventHandler;
 import org.xwiki.velocity.introspection.ChainingUberspector;
