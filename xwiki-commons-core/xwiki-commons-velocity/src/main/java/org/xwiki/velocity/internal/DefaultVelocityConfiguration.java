@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.velocity.tools.generic.ComparisonDateTool;
 import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.tools.generic.MathTool;
@@ -91,6 +92,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());
         this.defaultTools.setProperty("stringtool", StringUtils.class.getName());
         this.defaultTools.setProperty("jsontool", JSONTool.class.getName());
+        this.defaultTools.setProperty("exceptiontool", ExceptionUtils.class.getName());
 
         // Since the Cookie Tool requires the Servlet API and since we don't want to force users of this Velocity
         // module to add a dependency on the Servlet API we only add it if the Servlet API is available in the
