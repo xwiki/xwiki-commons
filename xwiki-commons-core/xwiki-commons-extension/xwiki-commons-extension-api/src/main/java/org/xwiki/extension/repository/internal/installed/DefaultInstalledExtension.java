@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
@@ -47,7 +48,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     /**
      * @see #isValid(String)
      */
-    private Map<String, Boolean> valid = new HashMap<String, Boolean>();
+    private Map<String, Boolean> valid;
 
     /**
      * Cache namespaces since they are used a lot.
@@ -145,7 +146,6 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     public void setNamespaces(Collection<String> namespaces)
     {
         if (namespaces == null) {
-            this.namespacesCache = null;
             putProperty(PKEY_NAMESPACES, null);
         } else {
             Map<String, Map<String, Object>> installedNamespaces = new HashMap<String, Map<String, Object>>();
@@ -156,6 +156,8 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                 putProperty(PKEY_NAMESPACES, installedNamespaces);
             }
         }
+
+        this.namespacesCache = null;
     }
 
     /**
@@ -224,6 +226,13 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         }
 
         if (!installed) {
+            removeValid(namespace);
+        }
+    }
+
+    private void removeValid(String namespace)
+    {
+        if (this.valid != null) {
             this.valid.remove(namespace);
         }
     }
@@ -231,7 +240,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     @Override
     public boolean isValid(String namespace)
     {
-        Boolean isvalid = this.valid.get(namespace);
+        Boolean isvalid = this.valid != null ? this.valid.get(namespace) : null;
 
         return isvalid != null ? isvalid : true;
     }
@@ -242,7 +251,11 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setValid(String namespace, boolean valid)
     {
-        this.valid.put(namespace, valid);
+        Map<String, Boolean> validMap =
+            this.valid != null ? new HashMap<String, Boolean>(this.valid) : new HashMap<String, Boolean>();
+        validMap.put(namespace, valid);
+
+        this.valid = validMap;
     }
 
     /**
@@ -264,7 +277,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         }
 
         if (installedNamespaces == null && create) {
-            installedNamespaces = new HashMap<String, Map<String, Object>>();
+            installedNamespaces = Collections.emptyMap();
             putProperty(PKEY_NAMESPACES, installedNamespaces);
         }
 
@@ -287,8 +300,12 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         Map<String, Object> installedNamespace = namespaces.get(namespace);
 
         if (installedNamespace == null && create) {
-            installedNamespace = new HashMap<String, Object>();
+            namespaces = new HashMap<String, Map<String, Object>>(namespaces);
+            putProperty(PKEY_NAMESPACES, namespaces);
+            installedNamespace = new ConcurrentHashMap<String, Object>();
             namespaces.put(namespace, installedNamespace);
+
+            this.namespacesCache = null;
         }
 
         return installedNamespace;

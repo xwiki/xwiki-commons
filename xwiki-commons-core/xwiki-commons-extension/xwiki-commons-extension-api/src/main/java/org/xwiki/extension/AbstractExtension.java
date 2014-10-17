@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +46,7 @@ public abstract class AbstractExtension implements Extension
     /**
      * @see #getFeatures()
      */
-    protected Set<String> features = new HashSet<String>();
+    protected Set<String> features;
 
     /**
      * @see #getType()
@@ -62,7 +61,7 @@ public abstract class AbstractExtension implements Extension
     /**
      * @see #getLicenses()
      */
-    protected List<ExtensionLicense> licenses = new ArrayList<ExtensionLicense>();
+    protected List<ExtensionLicense> licenses;
 
     /**
      * @see #getSummary()
@@ -77,7 +76,7 @@ public abstract class AbstractExtension implements Extension
     /**
      * @see #getAuthors()
      */
-    protected List<ExtensionAuthor> authors = new ArrayList<ExtensionAuthor>();
+    protected List<ExtensionAuthor> authors;
 
     /**
      * @see #getWebSite()
@@ -92,7 +91,7 @@ public abstract class AbstractExtension implements Extension
     /**
      * @see #getProperties()
      */
-    protected Map<String, Object> properties = new HashMap<String, Object>();
+    protected Map<String, Object> properties;
 
     /**
      * @see #getDependencies()
@@ -179,7 +178,7 @@ public abstract class AbstractExtension implements Extension
     @Override
     public Collection<String> getFeatures()
     {
-        return this.features;
+        return this.features != null ? this.features : Collections.<String>emptyList();
     }
 
     /**
@@ -187,7 +186,7 @@ public abstract class AbstractExtension implements Extension
      */
     public void setFeatures(Collection<String> features)
     {
-        this.features = new LinkedHashSet<String>(features);
+        this.features = Collections.unmodifiableSet(new HashSet<String>(features));
     }
 
     /**
@@ -197,7 +196,10 @@ public abstract class AbstractExtension implements Extension
      */
     public void addFeature(String feature)
     {
-        this.features.add(feature);
+        Set<String> newFeatures = new HashSet<String>(getFeatures());
+        newFeatures.add(feature);
+
+        this.features = Collections.unmodifiableSet(newFeatures);
     }
 
     @Override
@@ -232,7 +234,7 @@ public abstract class AbstractExtension implements Extension
     @Override
     public Collection<ExtensionLicense> getLicenses()
     {
-        return this.licenses;
+        return this.licenses != null ? this.licenses : Collections.<ExtensionLicense>emptyList();
     }
 
     /**
@@ -240,7 +242,7 @@ public abstract class AbstractExtension implements Extension
      */
     public void setLicenses(Collection<ExtensionLicense> licenses)
     {
-        this.licenses = new ArrayList<ExtensionLicense>(licenses);
+        this.licenses = Collections.unmodifiableList(new ArrayList<ExtensionLicense>(licenses));
     }
 
     /**
@@ -250,7 +252,10 @@ public abstract class AbstractExtension implements Extension
      */
     public void addLicense(ExtensionLicense license)
     {
-        this.licenses.add(license);
+        List<ExtensionLicense> newLicenses = new ArrayList<ExtensionLicense>(getLicenses());
+        newLicenses.add(license);
+
+        this.licenses = Collections.unmodifiableList(newLicenses);
     }
 
     @Override
@@ -284,7 +289,7 @@ public abstract class AbstractExtension implements Extension
     @Override
     public List<ExtensionAuthor> getAuthors()
     {
-        return this.authors;
+        return this.authors != null ? this.authors : Collections.<ExtensionAuthor>emptyList();
     }
 
     /**
@@ -292,7 +297,7 @@ public abstract class AbstractExtension implements Extension
      */
     public void setAuthors(Collection<? extends ExtensionAuthor> authors)
     {
-        this.authors = new ArrayList<ExtensionAuthor>(authors);
+        this.authors = Collections.unmodifiableList(new ArrayList<ExtensionAuthor>(authors));
     }
 
     /**
@@ -302,7 +307,10 @@ public abstract class AbstractExtension implements Extension
      */
     public void addAuthor(ExtensionAuthor author)
     {
-        this.authors.add(author);
+        List<ExtensionAuthor> newAuthors = new ArrayList<ExtensionAuthor>(getAuthors());
+        newAuthors.add(author);
+
+        this.authors = Collections.unmodifiableList(newAuthors);
     }
 
     @Override
@@ -326,18 +334,16 @@ public abstract class AbstractExtension implements Extension
      */
     public void addDependency(ExtensionDependency dependency)
     {
-        if (this.dependencies == null) {
-            this.dependencies = new ArrayList<ExtensionDependency>();
-        }
+        List<ExtensionDependency> newDependencies = new ArrayList<ExtensionDependency>(getDependencies());
+        newDependencies.add(dependency);
 
-        this.dependencies.add(dependency);
+        this.dependencies = Collections.unmodifiableList(newDependencies);
     }
 
     @Override
     public List<? extends ExtensionDependency> getDependencies()
     {
-        return this.dependencies != null ? Collections.unmodifiableList(this.dependencies) : Collections
-            .<ExtensionDependency>emptyList();
+        return this.dependencies != null ? this.dependencies : Collections.<ExtensionDependency>emptyList();
     }
 
     /**
@@ -346,7 +352,7 @@ public abstract class AbstractExtension implements Extension
      */
     public void setDependencies(Collection<? extends ExtensionDependency> dependencies)
     {
-        this.dependencies = new ArrayList<ExtensionDependency>(dependencies);
+        this.dependencies = Collections.unmodifiableList(new ArrayList<ExtensionDependency>(dependencies));
     }
 
     @Override
@@ -411,20 +417,19 @@ public abstract class AbstractExtension implements Extension
     @Override
     public Map<String, Object> getProperties()
     {
-        return Collections.unmodifiableMap(this.properties);
+        return this.properties != null ? this.properties : Collections.<String, Object>emptyMap();
     }
 
     @Override
     public Object getProperty(String key)
     {
-        return this.properties.get(key);
+        return getProperties().get(key);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T getProperty(String key, T def)
     {
-        return this.properties.containsKey(key) ? (T) this.properties.get(key) : def;
+        return getProperties().containsKey(key) ? (T) getProperties().get(key) : def;
     }
 
     /**
@@ -436,7 +441,10 @@ public abstract class AbstractExtension implements Extension
      */
     public void putProperty(String key, Object value)
     {
-        this.properties.put(key, value);
+        Map<String, Object> newProperties = new HashMap<String, Object>(getProperties());
+        newProperties.put(key, value);
+
+        this.properties = Collections.unmodifiableMap(newProperties);
     }
 
     /**
@@ -446,8 +454,7 @@ public abstract class AbstractExtension implements Extension
      */
     public void setProperties(Map<String, Object> properties)
     {
-        this.properties.clear();
-        this.properties.putAll(properties);
+        this.properties = Collections.unmodifiableMap(new HashMap<String, Object>(properties));
     }
 
     // Object

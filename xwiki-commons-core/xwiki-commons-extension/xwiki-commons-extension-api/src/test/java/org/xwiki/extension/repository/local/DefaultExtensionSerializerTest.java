@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -72,8 +73,10 @@ public class DefaultExtensionSerializerTest
         Assert.assertEquals(extension.getSummary(), unserializedExtension.getSummary());
         Assert.assertEquals(extension.getWebSite(), unserializedExtension.getWebSite());
         Assert.assertEquals(extension.getAuthors(), unserializedExtension.getAuthors());
-        Assert.assertEquals(extension.getFeatures(), unserializedExtension.getFeatures());
-        Assert.assertEquals(extension.getLicenses(), unserializedExtension.getLicenses());
+        Assert.assertEquals(new ArrayList<String>(extension.getFeatures()),
+            new ArrayList<String>(unserializedExtension.getFeatures()));
+        Assert.assertEquals(new ArrayList<ExtensionLicense>(extension.getLicenses()), new ArrayList<ExtensionLicense>(
+            unserializedExtension.getLicenses()));
         Assert.assertEquals(extension.getScm(), unserializedExtension.getScm());
         Assert.assertEquals(extension.getIssueManagement(), unserializedExtension.getIssueManagement());
         Assert.assertEquals(extension.getProperties(), unserializedExtension.getProperties());

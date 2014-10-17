@@ -19,6 +19,10 @@
  */
 package org.xwiki.extension.repository.installed;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +65,18 @@ public class DefaultInstalledExtensionTest
     }
 
     @Test
+    public void testIsValid()
+    {
+        Assert.assertTrue(this.installedExtension.isValid(null));
+        Assert.assertTrue(this.installedExtension.isValid("namespace"));
+
+        this.installedExtension.setValid(null, false);
+
+        Assert.assertFalse(this.installedExtension.isValid(null));
+        Assert.assertTrue(this.installedExtension.isValid("namespace"));
+    }
+
+    @Test
     public void testIsDependency()
     {
         Assert.assertFalse(this.installedExtension.isDependency());
@@ -92,5 +108,27 @@ public class DefaultInstalledExtensionTest
         this.installedExtension.setDependency(true, "namespace");
 
         Assert.assertTrue(this.installedExtension.isDependency("namespace"));
+    }
+
+    @Test
+    public void testGetNamespaces()
+    {
+        Assert.assertEquals(null, this.installedExtension.getNamespaces());
+
+        this.installedExtension.setInstalled(true, "namespace1");
+
+        Assert
+            .assertEquals(Arrays.asList("namespace1"), new ArrayList<String>(this.installedExtension.getNamespaces()));
+
+        this.installedExtension.setInstalled(true, "namespace2");
+
+        Assert.assertEquals(new HashSet<String>(Arrays.asList("namespace1", "namespace2")), new HashSet<String>(
+            this.installedExtension.getNamespaces()));
+
+        this.installedExtension.setNamespaces(Arrays.asList("namespace3"));
+
+        Assert
+            .assertEquals(Arrays.asList("namespace3"), new ArrayList<String>(this.installedExtension.getNamespaces()));
+
     }
 }
