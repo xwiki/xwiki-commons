@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -129,8 +130,8 @@ public class AetherDefaultRepositoryManagerTest
         Assert.assertEquals("http://website", extension.getWebSite());
         Assert.assertEquals(Arrays.asList(new DefaultExtensionAuthor("Full Name", new URL("http://profile"))),
             new ArrayList<ExtensionAuthor>(extension.getAuthors()));
-        Assert.assertEquals(Arrays.asList("groupid1:feature1", "groupid2:feature2"),
-            new ArrayList<String>(extension.getFeatures()));
+        Assert.assertEquals(new HashSet<String>(Arrays.asList("groupid1:feature1", "groupid2:feature2")),
+            new HashSet<String>(extension.getFeatures()));
         Assert.assertSame(this.extensionLicenseManager.getLicense("GNU Lesser General Public License 2.1"), extension
             .getLicenses().iterator().next());
 
