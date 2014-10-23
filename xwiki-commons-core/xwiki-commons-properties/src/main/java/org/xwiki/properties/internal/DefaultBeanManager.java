@@ -19,6 +19,7 @@
  */
 package org.xwiki.properties.internal;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -151,6 +152,18 @@ public class DefaultBeanManager implements BeanManager
                     Object convertedValue = this.converterManager.convert(propertyDescriptor.getPropertyClass(), value);
 
                     if (propertyDescriptor.getWriteMethod() != null) {
+                        Method writerMethod = propertyDescriptor.getWriteMethod();
+
+                        try {
+                            // Support nested private classes with public setters. Workaround for java reflections:
+                            // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4533479
+                            // We do this in a try/catch to avoid false positives caused by existing SecurityManagers.
+                            writerMethod.setAccessible(true);
+                        } catch (SecurityException se) {
+                            logger.debug("Failed to call setAccessible for method [{}]", writerMethod.getName(), se);
+                        }
+
+                        // Invoke the method
                         propertyDescriptor.getWriteMethod().invoke(bean, convertedValue);
                     } else if (propertyDescriptor.getField() != null) {
                         propertyDescriptor.getField().set(bean, convertedValue);
