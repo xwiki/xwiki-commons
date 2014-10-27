@@ -19,6 +19,8 @@
  */
 package org.xwiki.properties.internal;
 
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -154,19 +156,17 @@ public class DefaultBeanManager implements BeanManager
                     if (propertyDescriptor.getWriteMethod() != null) {
                         Method writerMethod = propertyDescriptor.getWriteMethod();
 
-                        try {
-                            // Support nested private classes with public setters. Workaround for java reflections:
-                            // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4533479
-                            // We do this in a try/catch to avoid false positives caused by existing SecurityManagers.
-                            writerMethod.setAccessible(true);
-                        } catch (SecurityException se) {
-                            logger.debug("Failed to call setAccessible for method [{}]", writerMethod.getName(), se);
-                        }
+                        setAccessibleSafely(writerMethod);
 
                         // Invoke the method
-                        propertyDescriptor.getWriteMethod().invoke(bean, convertedValue);
+                        writerMethod.invoke(bean, convertedValue);
                     } else if (propertyDescriptor.getField() != null) {
-                        propertyDescriptor.getField().set(bean, convertedValue);
+                        Field field = propertyDescriptor.getField();
+
+                        setAccessibleSafely(field);
+
+                        // Set the field
+                        field.set(bean, convertedValue);
                     }
                 } catch (Exception e) {
                     throw new PropertyException("Failed to populate property [" + propertyId + "]", e);
@@ -177,6 +177,22 @@ public class DefaultBeanManager implements BeanManager
             } else if (propertyDescriptor.isMandatory()) {
                 throw new PropertyMandatoryException(propertyId);
             }
+        }
+    }
+
+    /**
+     * Support nested private classes with public setters. Workaround for <a
+     * href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4533479">java reflections bug JDK-4533479</a>.
+     * 
+     * @param classMember the class member to make accessible.
+     */
+    private void setAccessibleSafely(AccessibleObject classMember)
+    {
+        try {
+            // We do this in a try/catch to avoid false positives caused by existing SecurityManagers.
+            classMember.setAccessible(true);
+        } catch (SecurityException se) {
+            logger.debug("Failed to call setAccessible for [{}]", classMember.toString(), se);
         }
     }
 
