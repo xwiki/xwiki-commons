@@ -26,7 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.xml.html.HTMLCleaner;
@@ -125,6 +129,16 @@ public class DefaultHTMLCleanerTest
             "<font size=\"+3\">This is some text!</font>");
         assertHTML("<table><tbody><tr><td style=\"text-align:right;background-color:red;vertical-align:top\">"
             + "x</td></tr></tbody></table>", "<table><tr><td align=right valign=top bgcolor=red>x</td></tr></table>");
+    }
+
+    @Test
+    public void convertImageAlignment()
+    {
+        assertHTML("<p><img style=\"float:left\"></img></p>", "<img align=\"left\"/>");
+        assertHTML("<p><img style=\"float:right\"></img></p>", "<img align=\"right\"/>");
+        assertHTML("<p><img style=\"vertical-align:top\"></img></p>", "<img align=\"top\"/>");
+        assertHTML("<p><img style=\"vertical-align:middle\"></img></p>", "<img align=\"middle\"/>");
+        assertHTML("<p><img style=\"vertical-align:bottom\"></img></p>", "<img align=\"bottom\"/>");
     }
 
     @Test

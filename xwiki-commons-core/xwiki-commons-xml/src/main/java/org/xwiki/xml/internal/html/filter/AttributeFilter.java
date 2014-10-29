@@ -36,6 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.xml.html.HTMLConstants;
 import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 
 /**
@@ -48,7 +49,7 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
  * <li>{@code align="value"} is replaced with {@code style="text-align:value"}</li>
  * <li>{@code valign="value"} is replaced with {@code style="vertical-align:value"}</li>
  * </ul>
- *
+ * 
  * @version $Id$
  * @since 4.3M1
  */
@@ -63,6 +64,11 @@ public class AttributeFilter extends AbstractHTMLFilter
     private static final Map<String, String> ATTRIBUTE_TO_CSS_PROPERTY = new HashMap<String, String>();
 
     /**
+     * The 'vertical-align' CSS property.
+     */
+    private static final String VERTICAL_ALIGN = "vertical-align";
+
+    /**
      * The logger.
      */
     @Inject
@@ -70,7 +76,7 @@ public class AttributeFilter extends AbstractHTMLFilter
 
     {
         ATTRIBUTE_TO_CSS_PROPERTY.put("align", "text-align");
-        ATTRIBUTE_TO_CSS_PROPERTY.put("valign", "vertical-align");
+        ATTRIBUTE_TO_CSS_PROPERTY.put("valign", VERTICAL_ALIGN);
         ATTRIBUTE_TO_CSS_PROPERTY.put("bgcolor", "background-color");
     }
 
@@ -96,16 +102,26 @@ public class AttributeFilter extends AbstractHTMLFilter
         }
 
         for (int i = 0; i < attributes.getLength(); i++) {
-            Attr attribute = (Attr) attributes.item(i);
-            Element element = attribute.getOwnerElement();
-            StringBuilder style = new StringBuilder(element.getAttribute(ATTRIBUTE_STYLE).trim());
-            if (style.length() > 0 && style.charAt(style.length() - 1) != ';') {
-                style.append(';');
-            }
-            style.append(ATTRIBUTE_TO_CSS_PROPERTY.get(attribute.getName()));
-            style.append(':').append(attribute.getValue());
-            element.setAttribute(ATTRIBUTE_STYLE, style.toString());
-            element.removeAttributeNode(attribute);
+            filterAttribute((Attr) attributes.item(i));
         }
+    }
+
+    private void filterAttribute(Attr attribute)
+    {
+        Element element = attribute.getOwnerElement();
+        String property = ATTRIBUTE_TO_CSS_PROPERTY.get(attribute.getName());
+        String value = attribute.getValue();
+        if (HTMLConstants.TAG_IMG.equals(element.getTagName())
+            && HTMLConstants.ATTRIBUTE_ALIGN.equals(attribute.getName())) {
+            // We need to transform the align attribute differently when it is used on an image element.
+            property = "left".equals(value) || "right".equals(value) ? "float" : VERTICAL_ALIGN;
+        }
+        StringBuilder style = new StringBuilder(element.getAttribute(ATTRIBUTE_STYLE).trim());
+        if (style.length() > 0 && style.charAt(style.length() - 1) != ';') {
+            style.append(';');
+        }
+        style.append(property).append(':').append(value);
+        element.setAttribute(ATTRIBUTE_STYLE, style.toString());
+        element.removeAttributeNode(attribute);
     }
 }
