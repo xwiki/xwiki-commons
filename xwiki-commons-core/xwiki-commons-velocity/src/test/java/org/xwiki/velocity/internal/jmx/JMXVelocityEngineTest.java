@@ -90,7 +90,10 @@ public class JMXVelocityEngineTest
             retrievedData.put((String) cdata.get("templateName"), (String[]) cdata.get("macroNames"));
         }
         Assert.assertEquals(0, retrievedData.get("<global>").length);
-        Assert.assertEquals(1, retrievedData.get("testmacronamespace").length);
-        Assert.assertEquals("testmacro", retrievedData.get("testmacronamespace")[0]);
+
+        String[] namespace = retrievedData.get(Thread.currentThread().getId() + ":testmacronamespace");
+        Assert.assertNotNull(namespace);
+        Assert.assertEquals(1, namespace.length);
+        Assert.assertEquals("testmacro", namespace[0]);
     }
 }

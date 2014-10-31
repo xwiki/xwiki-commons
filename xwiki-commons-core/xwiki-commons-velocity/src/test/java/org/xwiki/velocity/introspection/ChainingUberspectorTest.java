@@ -259,14 +259,16 @@ public class ChainingUberspectorTest
         context.put("date", d);
         context.put("dobject", new DeprecatedObject());
 
+        final String threadIdPrefix = Thread.currentThread().getId() + ":";
+
         // Define expectations on the Logger
         this.loggingVerification.become("on");
         this.mockery.checking(new Expectations()
         {{
-            oneOf(mockLogger).warn("Deprecated usage of method [java.util.Date.getYear] in mytemplate@1,19");
-            oneOf(mockLogger).warn("Deprecated usage of getter [java.util.Date.getMonth] in mytemplate@1,40");
-            oneOf(mockLogger).warn("Deprecated usage of method [org.xwiki.velocity.introspection.DeprecatedObject.foo] in mytemplate@1,55");
-            oneOf(mockLogger).warn("Deprecated usage of method [org.xwiki.velocity.introspection.DeprecatedObject.size] in mytemplate@1,70");
+            oneOf(mockLogger).warn("Deprecated usage of method [java.util.Date.getYear] in " + threadIdPrefix + "mytemplate@1,19");
+            oneOf(mockLogger).warn("Deprecated usage of getter [java.util.Date.getMonth] in " + threadIdPrefix + "mytemplate@1,40");
+            oneOf(mockLogger).warn("Deprecated usage of method [org.xwiki.velocity.introspection.DeprecatedObject.foo] in " + threadIdPrefix + "mytemplate@1,55");
+            oneOf(mockLogger).warn("Deprecated usage of method [org.xwiki.velocity.introspection.DeprecatedObject.size] in " + threadIdPrefix + "mytemplate@1,70");
         }});
 
         this.engine.evaluate(context, writer, "mytemplate",
