@@ -23,12 +23,13 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.context.InternalContextAdapterImpl;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -104,7 +105,7 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
     private RuntimeServices rsvc;
 
     /** Counter for the number of active rendering processes using each namespace. */
-    private final Map<String, Integer> namespaceUsageCount = new HashMap<String, Integer>();
+    private final Map<String, Integer> namespaceUsageCount = new ConcurrentHashMap<String, Integer>();
 
     @Override
     public void initialize(Properties overridingProperties) throws XWikiVelocityException
@@ -185,6 +186,11 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
         }
     }
 
+    private String toThreadSafeNamespace(String namespace)
+    {
+        return StringUtils.isNotEmpty(namespace) ? Thread.currentThread().getId() + ":" + namespace : namespace;
+    }
+
     @Override
     public boolean evaluate(Context context, Writer out, String templateName, String source)
         throws XWikiVelocityException
@@ -202,6 +208,10 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
                 + " You must call its initialize() method before you can use it.");
         }
 
+        // Velocity macros handling is all but thread safe. We try to make sure that the same namespace is not going to
+        // be manipulated by several threads at the same time
+        String namespace = toThreadSafeNamespace(templateName);
+
         // We override the default implementation here. See #init(RuntimeServices)
         // for explanations.
         try {
@@ -209,23 +219,23 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
 
             // The trick is done here: We use the signature that allows
             // passing a boolean and we pass false, thus preventing Velocity
-            // from cleaning the context of its velocimacros even though the
+            // from cleaning the namespace of its velocimacros even though the
             // config property velocimacro.permissions.allow.inline.local.scope
             // is set to true.
-            nodeTree = this.rsvc.parse(source, templateName, false);
+            nodeTree = this.rsvc.parse(source, namespace, false);
 
             if (nodeTree != null) {
                 InternalContextAdapterImpl ica =
                     new InternalContextAdapterImpl(context != null ? context
                         : this.velocityContextFactory.createContext());
-                ica.pushCurrentTemplateName(templateName);
+                ica.pushCurrentTemplateName(namespace);
                 boolean provideTemplateScope = this.rsvc.getBoolean("template.provide.scope.control", true);
                 Object templateScopeMarker = new Object();
                 Scope templateScope = null;
                 if (provideTemplateScope) {
                     Object previous = ica.get(TEMPLATE_SCOPE_NAME);
                     templateScope = new Scope(templateScopeMarker, previous);
-                    templateScope.put("templateName", templateName);
+                    templateScope.put("templateName", namespace);
                     ica.put(TEMPLATE_SCOPE_NAME, templateScope);
                 }
                 try {
@@ -256,39 +266,39 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
     @Override
     public void clearMacroNamespace(String templateName)
     {
-        this.rsvc.dumpVMNamespace(templateName);
+        this.rsvc.dumpVMNamespace(toThreadSafeNamespace(templateName));
     }
 
     @Override
     public void startedUsingMacroNamespace(String namespace)
     {
-        synchronized (this.namespaceUsageCount) {
-            Integer count = this.namespaceUsageCount.get(namespace);
-            if (count == null) {
-                count = Integer.valueOf(0);
-            }
-            count = count + 1;
-            this.namespaceUsageCount.put(namespace, count);
+        String threadSafeNamespace = toThreadSafeNamespace(namespace);
+
+        Integer count = this.namespaceUsageCount.get(threadSafeNamespace);
+        if (count == null) {
+            count = Integer.valueOf(0);
         }
+        count = count + 1;
+        this.namespaceUsageCount.put(threadSafeNamespace, count);
     }
 
     @Override
     public void stoppedUsingMacroNamespace(String namespace)
     {
-        synchronized (this.namespaceUsageCount) {
-            Integer count = this.namespaceUsageCount.get(namespace);
-            if (count == null) {
-                // This shouldn't happen
-                this.logger.warn("Wrong usage count for namespace [{}]", namespace);
-                return;
-            }
-            count = count - 1;
-            if (count <= 0) {
-                this.namespaceUsageCount.remove(namespace);
-                clearMacroNamespace(namespace);
-            } else {
-                this.namespaceUsageCount.put(namespace, count);
-            }
+        String threadSafeNamespace = toThreadSafeNamespace(namespace);
+
+        Integer count = this.namespaceUsageCount.get(threadSafeNamespace);
+        if (count == null) {
+            // This shouldn't happen
+            this.logger.warn("Wrong usage count for namespace [{}]", threadSafeNamespace);
+            return;
+        }
+        count = count - 1;
+        if (count <= 0) {
+            this.namespaceUsageCount.remove(threadSafeNamespace);
+            this.rsvc.dumpVMNamespace(threadSafeNamespace);
+        } else {
+            this.namespaceUsageCount.put(threadSafeNamespace, count);
         }
     }
 
