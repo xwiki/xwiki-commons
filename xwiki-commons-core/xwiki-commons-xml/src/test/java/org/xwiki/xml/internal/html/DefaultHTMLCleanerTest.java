@@ -360,7 +360,6 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    @Ignore("See http://jira.xwiki.org/browse/XWIKI-11118")
     public void verifyLegendTagNotStripped() throws Exception
     {
         String input = "<fieldset><legend>test</legend><div>content</div></fieldset>";
