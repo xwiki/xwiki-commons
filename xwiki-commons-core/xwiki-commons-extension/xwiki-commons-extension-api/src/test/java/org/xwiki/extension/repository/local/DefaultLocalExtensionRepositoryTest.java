@@ -86,32 +86,42 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testResolveDependency() throws ResolveException
+    public void testResolveExistingDependency() throws ResolveException
     {
-        try {
-            this.localExtensionRepository.resolve(new DefaultExtensionDependency("unexistingextension",
-                new DefaultVersionConstraint("version")));
-
-            Assert.fail("Resolve should have failed");
-        } catch (ResolveException expected) {
-            // expected
-        }
-
-        try {
-            this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
-                new DefaultVersionConstraint("wrongversion")));
-
-            Assert.fail("Resolve should have failed");
-        } catch (ResolveException expected) {
-            // expected
-        }
-
         Extension extension =
             this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
                 new DefaultVersionConstraint(TestResources.INSTALLED_ID.getVersion().getValue())));
 
         Assert.assertNotNull(extension);
         Assert.assertEquals(TestResources.INSTALLED_ID, extension.getId());
+    }
+
+    @Test(expected = ResolveException.class)
+    public void testResolveUnexistingDependencyId() throws ResolveException
+    {
+        this.localExtensionRepository.resolve(new DefaultExtensionDependency("unexistingextension",
+            new DefaultVersionConstraint("version")));
+    }
+
+    @Test(expected = ResolveException.class)
+    public void testResolveIncompatibleDependencyVersion() throws ResolveException
+    {
+        this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
+            new DefaultVersionConstraint("wrongversion")));
+    }
+
+    @Test(expected = ResolveException.class)
+    public void testResolveUnexistingButFeatureCompatibleDependency() throws ResolveException
+    {
+        this.localExtensionRepository.resolve(new DefaultExtensionDependency("installedextension-feature",
+            new DefaultVersionConstraint(TestResources.INSTALLED_ID.getVersion().getValue())));
+    }
+
+    @Test(expected = ResolveException.class)
+    public void testResolveUnexistingButSmalerVersionDependency() throws ResolveException
+    {
+        this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
+            new DefaultVersionConstraint("0.9")));
     }
 
     @Test

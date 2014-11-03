@@ -64,6 +64,21 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     protected Map<String, List<E>> extensionsVersions = new ConcurrentHashMap<String, List<E>>();
 
     /**
+     * Indicate features should be used map key at the same levels than the actual ids.
+     */
+    private boolean strictId;
+
+    protected AbstractCachedExtensionRepository()
+    {
+        this(false);
+    }
+
+    protected AbstractCachedExtensionRepository(boolean strict)
+    {
+        this.strictId = strict;
+    }
+
+    /**
      * Register a new extension.
      *
      * @param extension the new extension
@@ -76,8 +91,10 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
 
             // versions
             addCachedExtensionVersion(extension.getId().getId(), extension);
-            for (String feature : extension.getFeatures()) {
-                addCachedExtensionVersion(feature, extension);
+            if (!this.strictId) {
+                for (String feature : extension.getFeatures()) {
+                    addCachedExtensionVersion(feature, extension);
+                }
             }
         }
     }
@@ -121,8 +138,10 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
 
         // versions
         removeCachedExtensionVersion(extension.getId().getId(), extension);
-        for (String feature : extension.getFeatures()) {
-            removeCachedExtensionVersion(feature, extension);
+        if (!this.strictId) {
+            for (String feature : extension.getFeatures()) {
+                removeCachedExtensionVersion(feature, extension);
+            }
         }
     }
 

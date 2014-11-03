@@ -80,6 +80,14 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
      */
     private transient ExtensionStorage storage;
 
+    /**
+     * Make the repository ignore features.
+     */
+    public DefaultLocalExtensionRepository()
+    {
+        super(true);
+    }
+
     @Override
     public void initialize() throws InitializationException
     {
