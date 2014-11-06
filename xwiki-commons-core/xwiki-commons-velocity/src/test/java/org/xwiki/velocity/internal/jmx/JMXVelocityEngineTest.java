@@ -48,10 +48,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 2.4M2
  */
-@ComponentList({
-    DefaultVelocityEngine.class,
-    DefaultVelocityContextFactory.class
-})
+@ComponentList({DefaultVelocityEngine.class, DefaultVelocityContextFactory.class})
 public class JMXVelocityEngineTest
 {
     @Rule
@@ -81,20 +78,26 @@ public class JMXVelocityEngineTest
         Assert.assertEquals("<global>", cd.get("templateName"));
         Assert.assertEquals(0, ((String[]) cd.get("macroNames")).length);
 
-        StringWriter out = new StringWriter();
-        engine.evaluate(new VelocityContext(), out, "testmacronamespace", "#macro(testmacro)#end");
-        data = jmxBean.getTemplates();
+        engine.startedUsingMacroNamespace("testmacronamespace");
 
-        Assert.assertEquals(2, data.values().size());
-        Map<String, String[]> retrievedData = new HashMap<String, String[]>();
-        for (CompositeData cdata : (Collection<CompositeData>) data.values()) {
-            retrievedData.put((String) cdata.get("templateName"), (String[]) cdata.get("macroNames"));
+        try {
+            StringWriter out = new StringWriter();
+            engine.evaluate(new VelocityContext(), out, "testmacronamespace", "#macro(testmacro)#end");
+            data = jmxBean.getTemplates();
+
+            Assert.assertEquals(2, data.values().size());
+            Map<String, String[]> retrievedData = new HashMap<String, String[]>();
+            for (CompositeData cdata : (Collection<CompositeData>) data.values()) {
+                retrievedData.put((String) cdata.get("templateName"), (String[]) cdata.get("macroNames"));
+            }
+            Assert.assertEquals(0, retrievedData.get("<global>").length);
+
+            String[] namespace = retrievedData.get(Thread.currentThread().getId() + ":testmacronamespace");
+            Assert.assertNotNull(namespace);
+            Assert.assertEquals(1, namespace.length);
+            Assert.assertEquals("testmacro", namespace[0]);
+        } finally {
+            engine.stoppedUsingMacroNamespace("testmacronamespace");
         }
-        Assert.assertEquals(0, retrievedData.get("<global>").length);
-
-        String[] namespace = retrievedData.get(Thread.currentThread().getId() + ":testmacronamespace");
-        Assert.assertNotNull(namespace);
-        Assert.assertEquals(1, namespace.length);
-        Assert.assertEquals("testmacro", namespace[0]);
     }
 }
