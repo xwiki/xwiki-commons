@@ -65,7 +65,7 @@ public interface VelocityEngine
      * @param templateName the string to be used as the template name for log messages in case of error. Also used
      *            internally by Velocity as a cache index key for caching macros.
      * @param source the input containing the VTL to be rendered, as a Reader
-     * @return true if successful, false otherwise. If false, see the Velocity runtime log
+     * @return false if empty, true otherwise
      * @throws XWikiVelocityException in case of error
      */
     boolean evaluate(Context context, Writer out, String templateName, Reader source) throws XWikiVelocityException;
