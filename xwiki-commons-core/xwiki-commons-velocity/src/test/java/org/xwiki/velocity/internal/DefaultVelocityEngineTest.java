@@ -186,16 +186,27 @@ public class DefaultVelocityEngineTest
      * Verify namespace is properly cleared when not needed anymore.
      */
     @Test
-    public void macroNamespaceCleanup() throws Exception
+    public void testMacroNamespaceCleanup() throws Exception
     {
         this.engine.initialize(new Properties());
+
+        // Unprotected namespace
+
+        assertEvaluate("#mymacro", "#mymacro", "namespace");
+
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), new StringWriter(), "namespace",
+            "#macro(mymacro)test#end");
+
+        assertEvaluate("#mymacro", "#mymacro", "namespace");
+
+        // Protected namespace
 
         // Start using namespace "namespace"
         this.engine.startedUsingMacroNamespace("namespace");
 
         // Register macro
-        Context context = new org.apache.velocity.VelocityContext();
-        this.engine.evaluate(context, new StringWriter(), "namespace", "#macro(mymacro)test#end");
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), new StringWriter(), "namespace",
+            "#macro(mymacro)test#end");
 
         assertEvaluate("test", "#mymacro", "namespace");
 
@@ -210,10 +221,10 @@ public class DefaultVelocityEngineTest
      * 
      * @throws XWikiVelocityException
      * @throws InterruptedException
-     * @throws ExecutionException 
+     * @throws ExecutionException
      */
     @Test
-    public void threadsafeNamespaces() throws XWikiVelocityException, InterruptedException, ExecutionException
+    public void testThreadsafeNamespaces() throws XWikiVelocityException, InterruptedException, ExecutionException
     {
         this.engine.initialize(new Properties());
 
