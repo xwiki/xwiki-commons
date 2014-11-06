@@ -215,7 +215,9 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
         // We override the default implementation here. See #init(RuntimeServices)
         // for explanations.
         try {
-            startedUsingMacroNamespaceInternal(namespace);
+            if (StringUtils.isNotEmpty(namespace)) {
+                startedUsingMacroNamespaceInternal(namespace);
+            }
 
             // The trick is done here: We use the signature that allows
             // passing a boolean and we pass false, thus preventing Velocity
@@ -261,7 +263,9 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
         } catch (Exception e) {
             throw new XWikiVelocityException("Failed to evaluate content with id [" + templateName + "]", e);
         } finally {
-            stoppedUsingMacroNamespaceInternal(namespace);
+            if (StringUtils.isNotEmpty(namespace)) {
+                stoppedUsingMacroNamespaceInternal(namespace);
+            }
         }
     }
 
