@@ -215,14 +215,14 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
         // We override the default implementation here. See #init(RuntimeServices)
         // for explanations.
         try {
-            SimpleNode nodeTree = null;
+            startedUsingMacroNamespaceInternal(namespace);
 
             // The trick is done here: We use the signature that allows
             // passing a boolean and we pass false, thus preventing Velocity
             // from cleaning the namespace of its velocimacros even though the
             // config property velocimacro.permissions.allow.inline.local.scope
             // is set to true.
-            nodeTree = this.rsvc.parse(source, namespace, false);
+            SimpleNode nodeTree = this.rsvc.parse(source, namespace, false);
 
             if (nodeTree != null) {
                 InternalContextAdapterImpl ica =
@@ -260,6 +260,8 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
             return false;
         } catch (Exception e) {
             throw new XWikiVelocityException("Failed to evaluate content with id [" + templateName + "]", e);
+        } finally {
+            stoppedUsingMacroNamespaceInternal(namespace);
         }
     }
 
@@ -272,33 +274,39 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
     @Override
     public void startedUsingMacroNamespace(String namespace)
     {
-        String threadSafeNamespace = toThreadSafeNamespace(namespace);
+        startedUsingMacroNamespaceInternal(toThreadSafeNamespace(namespace));
+    }
 
-        Integer count = this.namespaceUsageCount.get(threadSafeNamespace);
+    private void startedUsingMacroNamespaceInternal(String namespace)
+    {
+        Integer count = this.namespaceUsageCount.get(namespace);
         if (count == null) {
             count = Integer.valueOf(0);
         }
         count = count + 1;
-        this.namespaceUsageCount.put(threadSafeNamespace, count);
+        this.namespaceUsageCount.put(namespace, count);
     }
 
     @Override
     public void stoppedUsingMacroNamespace(String namespace)
     {
-        String threadSafeNamespace = toThreadSafeNamespace(namespace);
+        stoppedUsingMacroNamespaceInternal(toThreadSafeNamespace(namespace));
+    }
 
-        Integer count = this.namespaceUsageCount.get(threadSafeNamespace);
+    private void stoppedUsingMacroNamespaceInternal(String namespace)
+    {
+        Integer count = this.namespaceUsageCount.get(namespace);
         if (count == null) {
             // This shouldn't happen
-            this.logger.warn("Wrong usage count for namespace [{}]", threadSafeNamespace);
+            this.logger.warn("Wrong usage count for namespace [{}]", namespace);
             return;
         }
         count = count - 1;
         if (count <= 0) {
-            this.namespaceUsageCount.remove(threadSafeNamespace);
-            this.rsvc.dumpVMNamespace(threadSafeNamespace);
+            this.namespaceUsageCount.remove(namespace);
+            this.rsvc.dumpVMNamespace(namespace);
         } else {
-            this.namespaceUsageCount.put(threadSafeNamespace, count);
+            this.namespaceUsageCount.put(namespace, count);
         }
     }
 
