@@ -219,47 +219,7 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
                 startedUsingMacroNamespaceInternal(namespace);
             }
 
-            // The trick is done here: We use the signature that allows
-            // passing a boolean and we pass false, thus preventing Velocity
-            // from cleaning the namespace of its velocimacros even though the
-            // config property velocimacro.permissions.allow.inline.local.scope
-            // is set to true.
-            SimpleNode nodeTree = this.rsvc.parse(source, namespace, false);
-
-            if (nodeTree != null) {
-                InternalContextAdapterImpl ica =
-                    new InternalContextAdapterImpl(context != null ? context
-                        : this.velocityContextFactory.createContext());
-                ica.pushCurrentTemplateName(namespace);
-                boolean provideTemplateScope = this.rsvc.getBoolean("template.provide.scope.control", true);
-                Object templateScopeMarker = new Object();
-                Scope templateScope = null;
-                if (provideTemplateScope) {
-                    Object previous = ica.get(TEMPLATE_SCOPE_NAME);
-                    templateScope = new Scope(templateScopeMarker, previous);
-                    templateScope.put("templateName", namespace);
-                    ica.put(TEMPLATE_SCOPE_NAME, templateScope);
-                }
-                try {
-                    nodeTree.init(ica, this.rsvc);
-                    nodeTree.render(ica, out);
-                } catch (StopCommand stop) {
-                    // Check if we're supposed to stop here or not:
-                    // - stop if the template is breaking explicitly on the provided $template
-                    // - or stop if this is the topmost evaluation
-                    if (!stop.isFor(templateScopeMarker) && ica.getTemplateNameStack().length > 1) {
-                        throw stop;
-                    }
-                } finally {
-                    ica.popCurrentTemplateName();
-                    if (provideTemplateScope) {
-                        restoreTemplateScope(ica, templateScope);
-                    }
-                }
-                return true;
-            }
-
-            return false;
+            return evaluateInternal(context, out, namespace, source);
         } catch (Exception e) {
             throw new XWikiVelocityException("Failed to evaluate content with id [" + templateName + "]", e);
         } finally {
@@ -267,6 +227,50 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
                 stoppedUsingMacroNamespaceInternal(namespace);
             }
         }
+    }
+
+    private boolean evaluateInternal(Context context, Writer out, String namespace, Reader source) throws Exception
+    {
+        // The trick is done here: We use the signature that allows
+        // passing a boolean and we pass false, thus preventing Velocity
+        // from cleaning the namespace of its velocimacros even though the
+        // config property velocimacro.permissions.allow.inline.local.scope
+        // is set to true.
+        SimpleNode nodeTree = this.rsvc.parse(source, namespace, false);
+
+        if (nodeTree != null) {
+            InternalContextAdapterImpl ica =
+                new InternalContextAdapterImpl(context != null ? context : this.velocityContextFactory.createContext());
+            ica.pushCurrentTemplateName(namespace);
+            boolean provideTemplateScope = this.rsvc.getBoolean("template.provide.scope.control", true);
+            Object templateScopeMarker = new Object();
+            Scope templateScope = null;
+            if (provideTemplateScope) {
+                Object previous = ica.get(TEMPLATE_SCOPE_NAME);
+                templateScope = new Scope(templateScopeMarker, previous);
+                templateScope.put("templateName", namespace);
+                ica.put(TEMPLATE_SCOPE_NAME, templateScope);
+            }
+            try {
+                nodeTree.init(ica, this.rsvc);
+                nodeTree.render(ica, out);
+            } catch (StopCommand stop) {
+                // Check if we're supposed to stop here or not:
+                // - stop if the template is breaking explicitly on the provided $template
+                // - or stop if this is the topmost evaluation
+                if (!stop.isFor(templateScopeMarker) && ica.getTemplateNameStack().length > 1) {
+                    throw stop;
+                }
+            } finally {
+                ica.popCurrentTemplateName();
+                if (provideTemplateScope) {
+                    restoreTemplateScope(ica, templateScope);
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
 
     @Override
