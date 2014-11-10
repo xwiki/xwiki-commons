@@ -93,15 +93,9 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("collectionstool", CollectionsTool.class.getName());
         this.defaultTools.setProperty("stringtool", StringUtils.class.getName());
         this.defaultTools.setProperty("jsontool", JSONTool.class.getName());
+        this.defaultTools.setProperty("cookietool", CookieTool.class.getName());
         this.defaultTools.setProperty("urltool", URLTool.class.getName());
         this.defaultTools.setProperty("exceptiontool", ExceptionUtils.class.getName());
-
-        // Since the Cookie Tool requires the Servlet API and since we don't want to force users of this Velocity
-        // module to add a dependency on the Servlet API we only add it if the Servlet API is available in the
-        // context classloader.
-        if (Thread.currentThread().getContextClassLoader().getResource("javax/servlet/http/Cookie") != null) {
-            this.defaultTools.setProperty("cookietool", CookieTool.class.getName());
-        }
 
         // Default Velocity properties
         this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());
