@@ -77,8 +77,7 @@ public class DefaultVelocityFactory implements VelocityFactory
     }
 
     @Override
-    public VelocityEngine createVelocityEngine(String key, Properties properties)
-        throws XWikiVelocityException
+    public VelocityEngine createVelocityEngine(String key, Properties properties) throws XWikiVelocityException
     {
         VelocityEngine engine;
         try {
@@ -95,5 +94,11 @@ public class DefaultVelocityFactory implements VelocityFactory
         this.jmxRegistration.registerMBean(mbean, "type=Velocity,domain=Engines,name=" + key);
 
         return engine;
+    }
+
+    @Override
+    public VelocityEngine removeVelocityEngine(String key)
+    {
+        return this.velocityEngines.remove(key);
     }
 }

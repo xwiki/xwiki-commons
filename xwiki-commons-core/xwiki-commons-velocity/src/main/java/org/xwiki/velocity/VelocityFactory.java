@@ -72,4 +72,14 @@ public interface VelocityFactory
      *       and create a new one, instead?
      */
     VelocityEngine createVelocityEngine(String key, Properties properties) throws XWikiVelocityException;
+
+    /**
+     * Remove from the cache a Velocity engine corresponding to a specific key, if such an engine was already created.
+     * 
+     * @param key the key under which the Velocity engine has been saved in cache. This is the key used when the
+     *            Velocity engine was created using {@link #createVelocityEngine(String, java.util.Properties)}
+     * @return the cached Velocity engine instance corresponding to the passed key or <code>null</code> if not found
+     * @since 6.4M1
+     */
+    VelocityEngine removeVelocityEngine(String key);
 }

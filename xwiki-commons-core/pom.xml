@@ -182,6 +182,13 @@
               <method>org.xwiki.extension.ExtensionIssueManagement getIssueManagement()</method>
               <justification>Add issue management informations to extensions descriptors. Should be safe enough since most repository handlers extend AbstractExtension instead of directly implement Extension</justification>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/velocity/VelocityFactory</className>
+              <method>org.xwiki.velocity.VelocityEngine removeVelocityEngine(java.lang.String)</method>
+              <justification>It's very unlikely that this class is implemented by anything else and it does not make much sense to not have this method, since this is not really a cache behind it but a Map that keep 
+              engines forever it may create a memory leak on a big farm running for a long time</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
