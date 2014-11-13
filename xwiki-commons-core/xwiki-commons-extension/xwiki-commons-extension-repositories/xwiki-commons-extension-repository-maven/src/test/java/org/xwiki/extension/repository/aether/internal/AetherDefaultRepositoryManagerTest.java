@@ -135,10 +135,19 @@ public class AetherDefaultRepositoryManagerTest
         Assert.assertSame(this.extensionLicenseManager.getLicense("GNU Lesser General Public License 2.1"), extension
             .getLicenses().iterator().next());
 
+        Assert.assertEquals("http://url", extension.getIssueManagement().getURL());
+        Assert.assertEquals("system", extension.getIssueManagement().getSystem());
+
+        Assert.assertEquals("http://url", extension.getScm().getUrl());
+        Assert.assertEquals("git", extension.getScm().getConnection().getSystem());
+        Assert.assertEquals("git://url.git", extension.getScm().getConnection().getPath());
+        Assert.assertEquals("git", extension.getScm().getDeveloperConnection().getSystem());
+        Assert.assertEquals("git@url.git", extension.getScm().getDeveloperConnection().getPath());
+
         ExtensionDependency dependency = extension.getDependencies().iterator().next();
         Assert.assertEquals(this.dependencyExtensionId.getId(), dependency.getId());
         Assert.assertEquals(this.dependencyExtensionId.getVersionConstraint(), dependency.getVersionConstraint());
-
+        
         // check that a new resolve of an already resolved extension provide the proper repository
         extension = this.repositoryManager.resolve(this.extensionId);
         Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor()
@@ -322,7 +331,7 @@ public class AetherDefaultRepositoryManagerTest
     }
 
     @Test
-    public void testResolveWithExternalParent() throws ResolveException, IOException
+    public void testResolveWithExternalParent() throws ResolveException
     {
         ExtensionId extensionId = new ExtensionId("lgroupid:lartifactid", "version");
 
@@ -336,5 +345,23 @@ public class AetherDefaultRepositoryManagerTest
             .getId());
 
         Assert.assertEquals("parent description", extension.getSummary());
+    }
+
+    @Test
+    public void testResolveWithEmptyScmAndIssueManagement() throws ResolveException
+    {
+        ExtensionId extensionId = new ExtensionId("groupid:emptyscmandissuemanagement", "version");
+
+        Extension extension = this.repositoryManager.resolve(extensionId);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(extensionId.getId(), extension.getId().getId());
+        Assert.assertEquals(extensionId.getVersion(), extension.getId().getVersion());
+        Assert.assertEquals("type", extension.getType());
+        Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor()
+            .getId());
+
+        Assert.assertNull(extension.getIssueManagement());
+        Assert.assertNull(extension.getScm());
     }
 }

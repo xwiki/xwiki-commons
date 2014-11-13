@@ -441,7 +441,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         // scm
         Scm scm = model.getScm();
-        if (scm != null) {
+        if (scm != null
+            && (scm.getConnection() != null || scm.getDeveloperConnection() != null || scm.getUrl() != null)) {
             ExtensionScmConnection connection = AetherUtils.toExtensionScmConnection(scm.getConnection());
             ExtensionScmConnection developerConnection =
                 AetherUtils.toExtensionScmConnection(scm.getDeveloperConnection());
@@ -451,7 +452,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         // issue management
         IssueManagement issueManagement = model.getIssueManagement();
-        if (issueManagement != null) {
+        if (issueManagement != null && issueManagement.getUrl() != null) {
             extension.setIssueManagement(new DefaultExtensionIssueManagement(issueManagement.getSystem(),
                 issueManagement.getUrl()));
         }
