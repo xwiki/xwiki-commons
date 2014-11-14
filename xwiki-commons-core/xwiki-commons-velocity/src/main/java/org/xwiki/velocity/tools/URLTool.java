@@ -21,7 +21,7 @@ package org.xwiki.velocity.tools;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +30,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 
 /**
  * Velocity tool to parse URL parts.
- *
+ * 
  * @version $Id$
  * @since 6.3M1
  */
@@ -38,13 +38,13 @@ public class URLTool
 {
     /**
      * Parse a query string into a map of key-value pairs.
-     *
+     * 
      * @param query query string to be parsed
      * @return a mapping of parameter names to values suitable e.g. to pass into {@link EscapeTool#url(Map)}
      */
     public Map<String, List<String>> parseQuery(String query)
     {
-        Map<String, List<String>> queryParams = new HashMap<>();
+        Map<String, List<String>> queryParams = new LinkedHashMap<>();
         for (NameValuePair params : URLEncodedUtils.parse(query, StandardCharsets.UTF_8)) {
             String name = params.getName();
             List<String> values = queryParams.get(name);

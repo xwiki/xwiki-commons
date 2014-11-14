@@ -24,50 +24,59 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link URLTool}.
- *
+ * 
  * @version $Id$
  * @since 6.3M1
  */
 public class URLToolTest
 {
     private URLTool tool = new URLTool();
-    
+
     @Test
     public void testSimpleUrlParse()
     {
         Map<String, ?> query = tool.parseQuery("a=b%26c");
-        Assert.assertEquals("should have one parameter", Collections.singleton("a"), query.keySet() );
-        Assert.assertEquals("should have one parameter value", Collections.singletonList("b&c"), query.get("a") );
+        assertEquals("should have one parameter", Collections.singleton("a"), query.keySet());
+        assertEquals("should have one parameter value", Collections.singletonList("b&c"), query.get("a"));
     }
 
     @Test
     public void testUrlParseMultipleValues()
     {
         Map<String, ?> query = tool.parseQuery("a=b+c&a=b%3Dc&ab=a+%26+b");
-        Assert.assertEquals("should have two parameter", 2, query.size() );
-        Assert.assertEquals("should have one parameter value for ab", Collections.singletonList("a & b"), query.get("ab") );
-        Assert.assertEquals("should have two parameter values for a", Arrays.asList(new String[]{"b c", "b=c"}), query.get("a"));
+        assertEquals("should have two parameter", 2, query.size());
+        assertEquals("should have one parameter value for ab", Collections.singletonList("a & b"), query.get("ab"));
+        assertEquals("should have two parameter values for a", Arrays.asList(new String[] {"b c", "b=c"}),
+            query.get("a"));
     }
 
     @Test
     public void testInvalidUrlParse()
     {
         Map<String, ?> query = tool.parseQuery("a=b ' onclick='foo");
-        Assert.assertEquals("should have one parameter", Collections.singleton("a"), query.keySet());
-        Assert.assertEquals("should have one parameter", Collections.singletonList("b ' onclick='foo"), query.get("a"));
+        assertEquals("should have one parameter", Collections.singleton("a"), query.keySet());
+        assertEquals("should have one parameter", Collections.singletonList("b ' onclick='foo"), query.get("a"));
     }
 
     @Test
     public void testHandleNull()
     {
         Map<String, ?> query = tool.parseQuery(null);
-        Assert.assertNotNull("null query results in empty map", query);
-        Assert.assertTrue("null query results in empty map", query.isEmpty());
+        assertNotNull("null query results in empty map", query);
+        assertTrue("null query results in empty map", query.isEmpty());
     }
 
+    @Test
+    public void preserveParameterOrder()
+    {
+        EscapeTool escapeTool = new EscapeTool();
+        String queryString = "x=5&x=4&r=3&a=2";
+        assertEquals(queryString, escapeTool.url(tool.parseQuery(queryString)));
+    }
 }
