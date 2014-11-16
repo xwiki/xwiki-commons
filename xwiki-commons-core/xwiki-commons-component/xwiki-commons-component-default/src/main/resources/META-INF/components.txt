@@ -1,3 +1,0 @@
-org.xwiki.component.internal.ContextComponentManagerProvider
-org.xwiki.component.internal.RootComponentManager
-org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory
