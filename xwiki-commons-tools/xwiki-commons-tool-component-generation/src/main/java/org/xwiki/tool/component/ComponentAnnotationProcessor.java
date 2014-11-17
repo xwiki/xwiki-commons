@@ -72,25 +72,16 @@ public class ComponentAnnotationProcessor extends AbstractProcessor
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment environment)
     {
-        if (this.skip || annotations.size() == 0) {
+        if (this.skip) {
             return false;
         }
 
-        // Important: We use reflection to load the Component annotation class since otherwise we would need to
-        // depend on the xwiki-commons-component-api module and this would create a dependency cycle in
-        // xwiki-commons-core, preventing the build of the Commons reactor project.
-        Class<? extends Annotation> componentClass;
         try {
-            componentClass = getClass().getClassLoader().loadClass(
+            // Important: We use reflection to load the Component annotation class since otherwise we would need to
+            // depend on the xwiki-commons-component-api module and this would create a dependency cycle in
+            // xwiki-commons-core, preventing the build of the Commons reactor project.
+            Class<? extends Annotation> componentClass = getClass().getClassLoader().loadClass(
                 "org.xwiki.component.annotation.Component").asSubclass(Annotation.class);
-        } catch (Exception e) {
-            this.processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, String.format(
-                "Failed to load Component Annotation class. Not components.txt file was generated. Reason: [%s]",
-                getThrowableString(e)));
-            return false;
-        }
-
-        try {
 
             for (Element element : environment.getElementsAnnotatedWith(componentClass)) {
                 if (element.getKind() == ElementKind.CLASS) {
@@ -127,16 +118,11 @@ public class ComponentAnnotationProcessor extends AbstractProcessor
 
     private void handleException(Throwable t)
     {
-        this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(
-            "Failure to generate components.txt file. Reason: [%s]", getThrowableString(t)));
-    }
-
-    private String getThrowableString(Throwable t)
-    {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw, true);
         t.printStackTrace(pw);
-        return sw.getBuffer().toString();
+        this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(
+            "Failure to generate components.txt file. Reason: [%s]", sw.getBuffer().toString()));
     }
 
     private boolean shouldExecute(ProcessingEnvironment processingEnvironment)
