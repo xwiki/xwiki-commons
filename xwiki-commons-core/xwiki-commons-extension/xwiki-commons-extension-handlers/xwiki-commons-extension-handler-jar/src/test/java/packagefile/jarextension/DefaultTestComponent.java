@@ -21,7 +21,7 @@ package packagefile.jarextension;
 
 import org.xwiki.component.annotation.Component;
 
-@Component
+@Component(staticRegistration = false)
 public class DefaultTestComponent implements TestComponent<String>
 {
 

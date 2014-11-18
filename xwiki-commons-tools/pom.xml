@@ -33,6 +33,7 @@
   <description>XWiki Commons - Tools - Parent POM</description>
   <modules>
     <!-- Sorted Alphabetically -->
+    <module>xwiki-commons-tool-component-generation</module>
     <module>xwiki-commons-tool-enforcers</module>
     <module>xwiki-commons-tool-license-resources</module>
     <module>xwiki-commons-tool-verification-resources</module>
@@ -41,6 +42,15 @@
   <build>
     <pluginManagement>
       <plugins>
+        <!-- Don't run Annotation Processing for tools. This is for example to prevent executing the Component
+            Annotation Processor on itself... -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <compilerArgument>-proc:none</compilerArgument>
+          </configuration>
+        </plugin>
         <plugin>
           <!-- Exclude Tools from being Clovered since 1) we don't really care getting TPC for our tools and
                2) it's a bit involved to configure the various Maven poms using those plugins to have the Clover JAR

@@ -65,7 +65,7 @@ public class ComponentAnnotationLoaderTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public class RoleImpl implements ExtendedRole
     {
     }
@@ -74,34 +74,34 @@ public class ComponentAnnotationLoaderTest
      * Note that even though it's not necessary we implement Role to ensure that the SuperRoleImpl component will only
      * be registered once.
      */
-    @Component
+    @Component(staticRegistration = false)
     public class SuperRoleImpl extends RoleImpl implements NotGenericRole<String>
     {
     }
 
     // Test overrides with priorities (see components.txt file)
-    @Component("test")
+    @Component(value = "test")
     public class SimpleRole implements NotGenericRole<String>
     {
     }
 
-    @Component("test")
+    @Component(value = "test")
     public class OverrideRole implements NotGenericRole<String>
     {
     }
 
     // Verify backward compatibility for deprecated component-overrides.txt file
-    @Component("deprecated")
+    @Component(value = "deprecated")
     public class DeprecatedSimpleRole implements NotGenericRole<String>
     {
     }
 
-    @Component("deprecated")
+    @Component(value = "deprecated")
     public class DeprecatedOverrideRole implements NotGenericRole<String>
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     @Named("customprovider")
     public class ProviderImpl implements Provider<NotGenericRole<String>>
     {
@@ -117,12 +117,12 @@ public class ComponentAnnotationLoaderTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public class GenericComponent implements GenericRole<String>
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     @SuppressWarnings("rawtypes")
     public class NonGenericComponent implements GenericRole
     {
@@ -132,12 +132,12 @@ public class ComponentAnnotationLoaderTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public class ExtendingGenericComponent extends AbstractGenericComponent<String>
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     @SuppressWarnings("rawtypes")
     public class ExtendingNonGenericComponent extends AbstractGenericComponent
     {

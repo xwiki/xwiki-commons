@@ -44,12 +44,12 @@ public class ComponentDescriptorFactoryTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public class FieldroleImpl implements FieldRole
     {
     }
     
-    @Component("special")
+    @Component(value = "special", staticRegistration = false)
     public class SpecialFieldRoleImpl implements FieldRole
     {
     }
@@ -64,7 +64,7 @@ public class ComponentDescriptorFactoryTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public class RoleImpl implements ExtendedRole
     {
         @SuppressWarnings("unused")
@@ -97,7 +97,7 @@ public class ComponentDescriptorFactoryTest
         private Map<String, FieldRole> mapRoles;
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public class SuperRoleImpl extends RoleImpl
     {
         @SuppressWarnings("unused")
@@ -105,7 +105,7 @@ public class ComponentDescriptorFactoryTest
         private FieldRole fieldRole;
     }
 
-    @Component
+    @Component(staticRegistration = false)
     @InstantiationStrategy(ComponentInstantiationStrategy.SINGLETON)
     public class SingletonImpl implements Role
     {

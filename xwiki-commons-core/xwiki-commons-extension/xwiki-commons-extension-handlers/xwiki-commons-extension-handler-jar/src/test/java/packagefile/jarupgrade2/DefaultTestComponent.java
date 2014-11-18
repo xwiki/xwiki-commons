@@ -21,7 +21,7 @@ package packagefile.jarupgrade2;
 
 import org.xwiki.component.annotation.Component;
 
-@Component
+@Component(staticRegistration = false)
 public class DefaultTestComponent implements TestComponent
 {
 

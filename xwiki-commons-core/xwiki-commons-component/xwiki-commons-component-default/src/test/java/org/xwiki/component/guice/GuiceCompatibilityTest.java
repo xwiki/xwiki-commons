@@ -53,14 +53,14 @@ public class GuiceCompatibilityTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     @Named("name")
     @Singleton
     public static class FieldRoleImpl1 implements FieldRole
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public static class FieldRoleImpl2 implements FieldRole
     {
     }
@@ -70,7 +70,7 @@ public class GuiceCompatibilityTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public static class ProviderImpl implements Provider<FieldRole>
     {
         @Override
@@ -85,13 +85,13 @@ public class GuiceCompatibilityTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     @Singleton
     public static class GenericFieldRoleImpl<String> implements GenericFieldRole<String>
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     @Named("whatever")
     public static class RoleImpl implements RoleClass
     {

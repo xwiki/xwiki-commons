@@ -20,7 +20,6 @@
 package org.xwiki.component.annotation;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -36,7 +35,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Target(TYPE)
-@Inherited
 public @interface Component
 {
     /**
@@ -59,4 +57,11 @@ public @interface Component
      * roles found.
      */
     Class<?>[] roles() default { };
+
+    /**
+     * Whether the Component should be registered in a {@code components.txt} file or not (this can happen for example
+     * when using a component in a test and registering it dynamically without going through a {@code components.txt}
+     * file).
+     */
+    boolean staticRegistration() default true;
 }

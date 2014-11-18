@@ -29,7 +29,7 @@ import org.xwiki.component.annotation.Component;
  *
  * @version $Id$
  */
-@Component
+@Component(staticRegistration = false)
 public class TestJarExtensionClassLoaderManager extends DefaultClassLoaderManager
 {
     @Override

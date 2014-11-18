@@ -1,4 +1,6 @@
-/*
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,29 +18,21 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+-->
 
-package packagefile.jarextensionwithdeps;
-
-import javax.inject.Inject;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
-
-import packagefile.jarextension.TestComponent;
-
-@Component(staticRegistration = false)
-public class DefaultTestComponentWithDeps implements TestComponentWithDeps, Initializable
-{
-    @Inject
-    private TestComponent<String> testComponent;
-
-    @Override
-    public void initialize() throws InitializationException
-    {
-        if (this.testComponent == null) {
-            throw new InitializationException("Injection of dependency failed");
-        }
-    }
-}
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.xwiki.commons</groupId>
+    <artifactId>xwiki-commons-tools</artifactId>
+    <version>6.4-SNAPSHOT</version>
+  </parent>
+  <artifactId>xwiki-commons-tool-component-generation</artifactId>
+  <name>XWiki Commons - Tools - Component Generation Annotation Processor</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Tools - Component Generation Annotation Processor</description>
+  <properties>
+    <!-- Don't run CLIRR since we don't care to break backward compatibility here -->
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+  </properties>
+</project>

@@ -29,7 +29,7 @@ import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
 import org.xwiki.extension.version.Version;
 
-@Component
+@Component(staticRegistration = false)
 @Singleton
 public class ConfigurableDefaultCoreExtensionRepository extends DefaultCoreExtensionRepository
 {

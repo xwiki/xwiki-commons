@@ -53,12 +53,12 @@ public class ComponentDescriptorFactoryTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public class FieldroleImpl implements NonGenericFieldRole<String>
     {
     }
 
-    @Component("special")
+    @Component(value = "special", staticRegistration = false)
     public class SpecialFieldRoleImpl implements NonGenericFieldRole<String>
     {
     }
@@ -73,7 +73,7 @@ public class ComponentDescriptorFactoryTest
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public class RoleImpl implements ExtendedRole
     {
         @Inject
@@ -102,7 +102,7 @@ public class ComponentDescriptorFactoryTest
         private Map<String, NonGenericFieldRole<String>> mapRoles;
     }
 
-    @Component
+    @Component(staticRegistration = false)
     public class SuperRoleImpl extends RoleImpl
     {
         @Inject
@@ -113,18 +113,18 @@ public class ComponentDescriptorFactoryTest
     /**
      * Test that we can have a component implementing several roles.
      */
-    @Component(hints = { "hint1", "hint2" })
+    @Component(hints = { "hint1", "hint2" }, staticRegistration = false)
     public class MultipleRolesImpl implements NonGenericRole
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     @Singleton
     public class SingletonImpl implements NonGenericRole
     {
     }
 
-    @Component
+    @Component(staticRegistration = false)
     @Named("special")
     public class SpecialImpl implements NonGenericRole
     {

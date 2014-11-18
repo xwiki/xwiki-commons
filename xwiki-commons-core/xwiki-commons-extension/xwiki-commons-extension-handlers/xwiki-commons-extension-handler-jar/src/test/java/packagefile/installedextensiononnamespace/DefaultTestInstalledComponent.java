@@ -21,7 +21,7 @@ package packagefile.installedextensiononnamespace;
 
 import org.xwiki.component.annotation.Component;
 
-@Component
+@Component(staticRegistration = false)
 public class DefaultTestInstalledComponent implements TestInstalledComponent<String>
 {
 

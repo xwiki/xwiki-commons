@@ -29,7 +29,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
-@Component
+@Component(staticRegistration = false)
 @Named("TestListener")
 @Singleton
 public class TestListener implements EventListener

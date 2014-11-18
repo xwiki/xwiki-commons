@@ -21,9 +21,7 @@ package org.xwiki.configuration.internal;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 
-import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
@@ -34,8 +32,6 @@ import org.xwiki.configuration.ConfigurationSource;
  * @version $Id$
  * @since 4.1M2
  */
-@Component
-@Singleton
 public abstract class AbstractConfigurationSourceProvider implements Provider<ConfigurationSource>
 {
     /**

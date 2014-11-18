@@ -27,13 +27,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import javax.inject.Singleton;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 
-import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterElementDescriptor;
@@ -50,8 +48,6 @@ import org.xwiki.xml.stax.StAXUtils;
  * @version $Id$
  * @since 5.2M1
  */
-@Component
-@Singleton
 public class DefaultXMLSerializer implements InvocationHandler
 {
     private static final Pattern VALID_ELEMENTNAME = Pattern.compile("[A-Za-z][A-Za-z0-9:_.-]*");

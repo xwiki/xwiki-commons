@@ -32,7 +32,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 
-@Component
+@Component(staticRegistration = false)
 @Singleton
 public class FixedSecureRandomProvider implements Provider<SecureRandom>, Initializable
 {
