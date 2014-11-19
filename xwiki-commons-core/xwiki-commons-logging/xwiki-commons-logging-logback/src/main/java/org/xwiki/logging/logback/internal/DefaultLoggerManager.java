@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Stack;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -46,6 +47,7 @@ import ch.qos.logback.core.Appender;
  * @since 3.2M3
  */
 @Component
+@Singleton
 public class DefaultLoggerManager implements LoggerManager, Initializable
 {
     /**

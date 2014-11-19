@@ -19,11 +19,14 @@
  */
 package org.xwiki.environment;
 
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.phase.Disposable;
 
 @Component
+@Singleton
 public class TestComponent implements TestRole, Disposable
 {
     private boolean disposed;

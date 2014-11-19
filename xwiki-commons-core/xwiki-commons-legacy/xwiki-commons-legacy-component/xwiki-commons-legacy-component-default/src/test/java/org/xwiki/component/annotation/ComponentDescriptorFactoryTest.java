@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Singleton;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.component.descriptor.ComponentDependency;
@@ -45,11 +47,13 @@ public class ComponentDescriptorFactoryTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public class FieldroleImpl implements FieldRole
     {
     }
     
     @Component(value = "special", staticRegistration = false)
+    @Singleton
     public class SpecialFieldRoleImpl implements FieldRole
     {
     }
@@ -65,6 +69,7 @@ public class ComponentDescriptorFactoryTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public class RoleImpl implements ExtendedRole
     {
         @SuppressWarnings("unused")
@@ -98,6 +103,7 @@ public class ComponentDescriptorFactoryTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public class SuperRoleImpl extends RoleImpl
     {
         @SuppressWarnings("unused")

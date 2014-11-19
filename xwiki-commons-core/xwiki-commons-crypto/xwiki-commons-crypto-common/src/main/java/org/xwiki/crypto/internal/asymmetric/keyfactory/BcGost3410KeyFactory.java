@@ -20,6 +20,7 @@
 package org.xwiki.crypto.internal.asymmetric.keyfactory;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.bouncycastle.crypto.params.GOST3410KeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.gost.KeyFactorySpi;
@@ -35,6 +36,7 @@ import org.xwiki.crypto.internal.asymmetric.BcAsymmetricKeyParameters;
  */
 @Component
 @Named("GOST3410")
+@Singleton
 public class BcGost3410KeyFactory extends AbstractBcKeyFactory
 {
     private AsymmetricKeyInfoConverter keyInfoConverter = new KeyFactorySpi();

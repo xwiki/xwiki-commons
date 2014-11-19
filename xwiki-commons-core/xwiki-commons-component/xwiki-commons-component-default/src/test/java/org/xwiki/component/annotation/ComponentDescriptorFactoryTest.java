@@ -54,11 +54,13 @@ public class ComponentDescriptorFactoryTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public class FieldroleImpl implements NonGenericFieldRole<String>
     {
     }
 
     @Component(value = "special", staticRegistration = false)
+    @Singleton
     public class SpecialFieldRoleImpl implements NonGenericFieldRole<String>
     {
     }
@@ -74,6 +76,7 @@ public class ComponentDescriptorFactoryTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public class RoleImpl implements ExtendedRole
     {
         @Inject
@@ -103,6 +106,7 @@ public class ComponentDescriptorFactoryTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public class SuperRoleImpl extends RoleImpl
     {
         @Inject
@@ -114,6 +118,7 @@ public class ComponentDescriptorFactoryTest
      * Test that we can have a component implementing several roles.
      */
     @Component(hints = { "hint1", "hint2" }, staticRegistration = false)
+    @Singleton
     public class MultipleRolesImpl implements NonGenericRole
     {
     }
@@ -126,6 +131,7 @@ public class ComponentDescriptorFactoryTest
 
     @Component(staticRegistration = false)
     @Named("special")
+    @Singleton
     public class SpecialImpl implements NonGenericRole
     {
     }

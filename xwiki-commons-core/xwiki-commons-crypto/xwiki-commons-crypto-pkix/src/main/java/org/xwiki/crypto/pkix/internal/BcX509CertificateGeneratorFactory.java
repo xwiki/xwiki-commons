@@ -24,6 +24,7 @@ import java.security.SecureRandom;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.crypto.pkix.CertificateGenerator;
@@ -41,6 +42,7 @@ import org.xwiki.crypto.signer.SignerFactory;
  */
 @Component
 @Named("X509")
+@Singleton
 public class BcX509CertificateGeneratorFactory implements CertificateGeneratorFactory
 {
 

@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,6 +55,7 @@ public class ProviderTest
     }
 
     @Component
+    @Singleton
     public static class TestComponentWithProviders implements TestComponentRole
     {
         @Inject
@@ -103,6 +105,7 @@ public class ProviderTest
 
     @Component
     @Named("exception")
+    @Singleton
     public static class TestComponentWithProviderInException implements TestComponentRole
     {
         @Inject

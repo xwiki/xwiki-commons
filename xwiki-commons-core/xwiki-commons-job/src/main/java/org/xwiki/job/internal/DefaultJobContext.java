@@ -22,6 +22,7 @@ package org.xwiki.job.internal;
 import java.util.Stack;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
@@ -36,6 +37,7 @@ import org.xwiki.job.JobContext;
  * @since 4.0M2
  */
 @Component
+@Singleton
 public class DefaultJobContext implements JobContext
 {
     /**

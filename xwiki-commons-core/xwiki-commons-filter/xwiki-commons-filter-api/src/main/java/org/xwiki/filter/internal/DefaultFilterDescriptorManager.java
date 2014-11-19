@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.xwiki.component.annotation.Component;
@@ -51,6 +52,7 @@ import org.xwiki.properties.converter.ConversionException;
  * @since 5.2M1
  */
 @Component
+@Singleton
 public class DefaultFilterDescriptorManager implements FilterDescriptorManager
 {
     /**

@@ -19,9 +19,12 @@
  */
 package packagefile.jarupgrade2;
 
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 
 @Component(staticRegistration = false)
+@Singleton
 public class DefaultTestComponent implements TestComponent
 {
 

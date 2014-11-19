@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Objects;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -51,6 +52,7 @@ import com.thoughtworks.xstream.io.xml.StaxWriter;
  * @since 5.2M1
  */
 @Component
+@Singleton
 public class XStreamParameterManager implements ParameterManager, Initializable
 {
     /**

@@ -20,6 +20,8 @@
 
 package org.xwiki.extension.jar;
 
+import javax.inject.Singleton;
+
 import org.xwiki.classloader.internal.DefaultClassLoaderManager;
 import org.xwiki.component.annotation.Component;
 
@@ -30,6 +32,7 @@ import org.xwiki.component.annotation.Component;
  * @version $Id$
  */
 @Component(staticRegistration = false)
+@Singleton
 public class TestJarExtensionClassLoaderManager extends DefaultClassLoaderManager
 {
     @Override

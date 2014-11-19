@@ -19,9 +19,12 @@
  */
 package packagefile.installedextensiononnamespace;
 
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 
 @Component(staticRegistration = false)
+@Singleton
 public class DefaultTestInstalledComponent implements TestInstalledComponent<String>
 {
 

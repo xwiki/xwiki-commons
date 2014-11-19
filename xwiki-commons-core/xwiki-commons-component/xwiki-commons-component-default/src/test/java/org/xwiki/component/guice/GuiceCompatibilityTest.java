@@ -61,6 +61,7 @@ public class GuiceCompatibilityTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public static class FieldRoleImpl2 implements FieldRole
     {
     }
@@ -71,6 +72,7 @@ public class GuiceCompatibilityTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public static class ProviderImpl implements Provider<FieldRole>
     {
         @Override
@@ -93,6 +95,7 @@ public class GuiceCompatibilityTest
 
     @Component(staticRegistration = false)
     @Named("whatever")
+    @Singleton
     public static class RoleImpl implements RoleClass
     {
         // Test a named component injection

@@ -21,6 +21,7 @@ package org.xwiki.observation.test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.AbstractEventListener;
@@ -30,6 +31,7 @@ import org.xwiki.observation.event.Event;
 
 @Component
 @Named("test")
+@Singleton
 public class TestEventListener extends AbstractEventListener
 {
     @Inject

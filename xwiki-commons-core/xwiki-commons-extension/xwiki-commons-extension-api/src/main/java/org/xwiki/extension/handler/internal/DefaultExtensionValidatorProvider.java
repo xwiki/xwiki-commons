@@ -21,6 +21,7 @@ package org.xwiki.extension.handler.internal;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -41,6 +42,7 @@ import org.xwiki.job.Request;
  * @since 4.2M2
  */
 @Component
+@Singleton
 public class DefaultExtensionValidatorProvider implements Provider<ExtensionValidator>, Initializable
 {
     /**

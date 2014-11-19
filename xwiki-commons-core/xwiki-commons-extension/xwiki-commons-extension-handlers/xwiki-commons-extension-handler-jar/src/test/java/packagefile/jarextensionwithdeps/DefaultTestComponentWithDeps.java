@@ -21,6 +21,7 @@
 package packagefile.jarextensionwithdeps;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -29,6 +30,7 @@ import org.xwiki.component.phase.InitializationException;
 import packagefile.jarextension.TestComponent;
 
 @Component(staticRegistration = false)
+@Singleton
 public class DefaultTestComponentWithDeps implements TestComponentWithDeps, Initializable
 {
     @Inject

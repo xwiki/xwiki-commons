@@ -20,6 +20,7 @@
 package org.xwiki.crypto.internal.asymmetric.keyfactory;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.bouncycastle.crypto.params.DSAKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.dsa.KeyFactorySpi;
@@ -35,6 +36,7 @@ import org.xwiki.crypto.internal.asymmetric.BcAsymmetricKeyParameters;
  */
 @Component
 @Named("DSA")
+@Singleton
 public class BcDSAKeyFactory extends AbstractBcKeyFactory
 {
     private AsymmetricKeyInfoConverter keyInfoConverter = new KeyFactorySpi();

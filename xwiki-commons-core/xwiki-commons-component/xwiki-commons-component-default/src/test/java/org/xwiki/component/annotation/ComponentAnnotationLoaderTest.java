@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.jmock.Expectations;
 import org.junit.After;
@@ -66,6 +67,7 @@ public class ComponentAnnotationLoaderTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public class RoleImpl implements ExtendedRole
     {
     }
@@ -75,34 +77,40 @@ public class ComponentAnnotationLoaderTest
      * be registered once.
      */
     @Component(staticRegistration = false)
+    @Singleton
     public class SuperRoleImpl extends RoleImpl implements NotGenericRole<String>
     {
     }
 
     // Test overrides with priorities (see components.txt file)
     @Component(value = "test")
+    @Singleton
     public class SimpleRole implements NotGenericRole<String>
     {
     }
 
     @Component(value = "test")
+    @Singleton
     public class OverrideRole implements NotGenericRole<String>
     {
     }
 
     // Verify backward compatibility for deprecated component-overrides.txt file
     @Component(value = "deprecated")
+    @Singleton
     public class DeprecatedSimpleRole implements NotGenericRole<String>
     {
     }
 
     @Component(value = "deprecated")
+    @Singleton
     public class DeprecatedOverrideRole implements NotGenericRole<String>
     {
     }
 
     @Component(staticRegistration = false)
     @Named("customprovider")
+    @Singleton
     public class ProviderImpl implements Provider<NotGenericRole<String>>
     {
         @Override
@@ -118,11 +126,13 @@ public class ComponentAnnotationLoaderTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public class GenericComponent implements GenericRole<String>
     {
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     @SuppressWarnings("rawtypes")
     public class NonGenericComponent implements GenericRole
     {
@@ -133,11 +143,13 @@ public class ComponentAnnotationLoaderTest
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     public class ExtendingGenericComponent extends AbstractGenericComponent<String>
     {
     }
 
     @Component(staticRegistration = false)
+    @Singleton
     @SuppressWarnings("rawtypes")
     public class ExtendingNonGenericComponent extends AbstractGenericComponent
     {
