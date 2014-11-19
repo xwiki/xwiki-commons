@@ -33,7 +33,6 @@
   <description>XWiki Commons - Tools - Parent POM</description>
   <modules>
     <!-- Sorted Alphabetically -->
-    <module>xwiki-commons-tool-component-generation</module>
     <module>xwiki-commons-tool-enforcers</module>
     <module>xwiki-commons-tool-license-resources</module>
     <module>xwiki-commons-tool-verification-resources</module>
