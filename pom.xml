@@ -760,11 +760,16 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             <target>1.7</target>
           </configuration>
           <executions>
+            <!-- We need custom sourcepaths for our Component Annotation Process work
+                (See ComponentCheckerAnnotationProcessor.java). This is required because of
+                http://jira.codehaus.org/browse/MCOMPILER-122.
+
+                However note that IntelliJ IDEA doesn't honor custom sourcepaths, see
+                https://youtrack.jetbrains.com/issue/IDEA-133120, which means that you need to turn off
+                Annotation Processing in IDEA or IDEA will generate errors while building modules -->
             <execution>
               <id>default-compile</id>
               <configuration>
-                <!-- Required so that our Component Annotation Process work (See ComponentAnnotationProcessor.java).
-                     This is required because of http://jira.codehaus.org/browse/MCOMPILER-122 -->
                 <compilerArguments>
                   <sourcepath>${project.basedir}/src/main/java:${project.basedir}/src/main/resources</sourcepath>
                 </compilerArguments>
@@ -773,8 +778,6 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             <execution>
               <id>default-testCompile</id>
               <configuration>
-                <!-- Required so that our Component Annotation Process work (See ComponentAnnotationProcessor.java).
-                     This is required because of http://jira.codehaus.org/browse/MCOMPILER-122 -->
                 <compilerArguments>
                   <sourcepath>${project.basedir}/src/test/java:${project.basedir}/src/test/resources</sourcepath>
                 </compilerArguments>
