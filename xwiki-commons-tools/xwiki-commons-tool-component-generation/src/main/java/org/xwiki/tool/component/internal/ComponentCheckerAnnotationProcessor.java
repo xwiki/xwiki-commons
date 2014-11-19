@@ -54,6 +54,11 @@ import javax.tools.StandardLocation;
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ComponentCheckerAnnotationProcessor extends AbstractProcessor
 {
+    private static final String SINGLETON_CLASS_NAME = "javax.inject.Singleton";
+
+    private static final String INSTANTIATION_STRATEGY_CLASS_NAME =
+        "org.xwiki.component.annotation.InstantiationStrategy";
+
     private List<String> declarations;
 
     private URI componentsDeclarationLocation;
@@ -101,14 +106,9 @@ public class ComponentCheckerAnnotationProcessor extends AbstractProcessor
         // Important: We use reflection to load the Component annotation class since otherwise we would need to
         // depend on the xwiki-commons-component-api module and this would create a dependency cycle in
         // xwiki-commons-core, preventing the build of the Commons reactor project.
-        Class<? extends Annotation> componentAnnotationClass;
-        try {
-            componentAnnotationClass = getClass().getClassLoader().loadClass(
-                "org.xwiki.component.annotation.Component").asSubclass(Annotation.class);
-        } catch (Exception e) {
-            this.processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, String.format(
-                "Failed to load Component Annotation class. No check was done. Reason: [%s]",
-                getThrowableString(e)));
+        Class<? extends Annotation> componentAnnotationClass =
+            loadAnnotationClass("org.xwiki.component.annotation.Component");
+        if (componentAnnotationClass == null) {
             return false;
         }
 
@@ -118,6 +118,12 @@ public class ComponentCheckerAnnotationProcessor extends AbstractProcessor
             // Check if the element is present in the declarations and if not raise a warning, unless
             // the Component annotation has staticRegistration set to false.
             boolean isStaticRegistration = isStaticRegistration(classElement, componentAnnotationClass);
+
+            // Check 1:
+            // - Verify that Classes annotated with @Component are defined in components.txt (unless the
+            //   staticRegistration = false annotation parameter is specified)
+            // - Verify that if the staticRegistration = false annotation parameter is specified then the Component
+            //   must not be declared in components.txt
             if (!this.declarations.contains(binaryName) && isStaticRegistration) {
                 if (this.componentsDeclarationLocation == null) {
                     this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(
@@ -136,10 +142,42 @@ public class ComponentCheckerAnnotationProcessor extends AbstractProcessor
                     + "parameter with a [false] value, e.g. \"@Component(staticRegistration = false\". "
                     + "You need to fix that!", binaryName, this.componentsDeclarationLocation));
             }
+
+            // Check 2:
+            // - Verify that either @Singleton or @InstantiationStrategy are used on any class annotated with @Component
+            Class<? extends Annotation> singletonAnnotationClass =
+                loadAnnotationClass(SINGLETON_CLASS_NAME);
+            Class<? extends Annotation> instantationStrategyAnnotationClass =
+                loadAnnotationClass(INSTANTIATION_STRATEGY_CLASS_NAME);
+            if (singletonAnnotationClass == null || instantationStrategyAnnotationClass == null) {
+                return false;
+            }
+            Annotation singletonAnnotation = classElement.getAnnotation(singletonAnnotationClass);
+            Annotation instantationStrategyAnnotation = classElement.getAnnotation(instantationStrategyAnnotationClass);
+            if (singletonAnnotation == null && instantationStrategyAnnotation == null) {
+                this.processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, String.format(
+                    "Component class [%s] must have either the [%s] or the [%s] annotation defined on it.",
+                    binaryName, SINGLETON_CLASS_NAME, INSTANTIATION_STRATEGY_CLASS_NAME));
+            }
         }
 
         // No further processing of this annotation type
         return true;
+    }
+
+    private Class<? extends Annotation> loadAnnotationClass(String annotationClassAsString)
+    {
+        Class<? extends Annotation> annotationClass;
+        try {
+            annotationClass = getClass().getClassLoader().loadClass(
+                annotationClassAsString).asSubclass(Annotation.class);
+        } catch (Exception e) {
+            this.processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, String.format(
+                "Failed to load Annotation class [%s]. No check was done on it. Reason: [%s]", annotationClassAsString,
+                getThrowableString(e)));
+            annotationClass = null;
+        }
+        return annotationClass;
     }
 
     private boolean isStaticRegistration(TypeElement classElement, Class<? extends Annotation> componentAnnotationClass)
