@@ -41,6 +41,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.component.util.DefaultParameterizedType;
 
 /**
  * Unit tests for {@link EmbeddableComponentManager}.
@@ -565,4 +566,36 @@ public class EmbeddableComponentManagerTest
         // it has the lowest priority.
         Assert.assertEquals("DisposableWithPriorityRoleImpl", lastDisposedComponent);
     }
+
+    public static class ComponentDescriptorRoleImpl implements Role
+    {
+        private ComponentDescriptor<ComponentDescriptorRoleImpl> descriptor;
+
+        public ComponentDescriptor<ComponentDescriptorRoleImpl> getComponentDescriptor()
+        {
+            return this.descriptor;
+        }
+    }
+
+    @Test
+    public void testComponentDescriptorInjection() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<Role> d = new DefaultComponentDescriptor<>();
+        d.setRoleType(Role.class);
+        d.setImplementation(ComponentDescriptorRoleImpl.class);
+
+        DefaultComponentDependency dependencyDescriptor = new DefaultComponentDependency();
+        dependencyDescriptor.setRoleType(
+            new DefaultParameterizedType(null, ComponentDescriptor.class, ComponentDescriptorRoleImpl.class));
+        dependencyDescriptor.setName("descriptor");
+
+        d.addComponentDependency(dependencyDescriptor);
+        ecm.registerComponent(d);
+
+        ComponentDescriptorRoleImpl impl = ecm.getInstance(Role.class);
+        Assert.assertNotNull(impl.getComponentDescriptor());
+    }
+
 }

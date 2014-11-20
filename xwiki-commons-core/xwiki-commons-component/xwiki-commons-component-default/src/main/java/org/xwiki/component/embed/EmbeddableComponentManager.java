@@ -315,6 +315,8 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
                             ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()),
                             dependency.getRoleHint()));
                 }
+            } else if (dependencyRoleClass.isAssignableFrom(ComponentDescriptor.class)) {
+                fieldValue = new DefaultComponentDescriptor(descriptor);
             } else {
                 fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
             }
