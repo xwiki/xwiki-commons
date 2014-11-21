@@ -19,10 +19,10 @@
  */
 package org.xwiki.job.internal.xstream;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.io.StringWriter;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,12 +49,12 @@ public class SafeXStreamTest
     private SafeXStream xstream;
 
     @Before
-    public void before() throws ParserConfigurationException
+    public void before()
     {
         this.xstream = new SafeXStream();
     }
 
-    private Object writeread(Object obj) throws IOException
+    private Object writeread(Object obj)
     {
         StringWriter writer = new StringWriter();
 
@@ -66,7 +66,7 @@ public class SafeXStreamTest
     // Tests
 
     @Test
-    public void testRecursiveObject() throws IOException
+    public void testRecursiveObject()
     {
         RecursiveObject obj = (RecursiveObject) writeread(new RecursiveObject());
 
