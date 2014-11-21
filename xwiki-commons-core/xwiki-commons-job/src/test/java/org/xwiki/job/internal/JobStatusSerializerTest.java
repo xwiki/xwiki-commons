@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.test.TestStandaloneComponent;
 
 /**
  * Validate {@link JobStatusSerializer}.
@@ -142,6 +143,20 @@ public class JobStatusSerializerTest
     }
 
     @Test
+    public void testLogWithStandaloneComponentArgument() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new TestStandaloneComponent());
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertEquals("error message", status.getLog().peek().getMessage());
+        Assert.assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
+    }
+
+    @Test
     public void testLogWithCrossReference() throws IOException
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
@@ -160,6 +175,19 @@ public class JobStatusSerializerTest
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
 
         status.getLog().error("error message", new ObjectTest(new DefaultJobStatusStore()));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+    }
+
+    @Test
+    public void testLogWithStandaloneComponentField() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new ObjectTest(new TestStandaloneComponent()));
 
         status = writeread(status);
 
