@@ -23,9 +23,9 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 
-@Component(roles = TestStandaloneComponent.class, staticRegistration = false)
+@Component(roles = StandaloneComponent.class, staticRegistration = false)
 @Singleton
-public class TestStandaloneComponent
+public class StandaloneComponent
 {
 
 }

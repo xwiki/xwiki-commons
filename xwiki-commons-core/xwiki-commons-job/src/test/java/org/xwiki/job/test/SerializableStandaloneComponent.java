@@ -17,45 +17,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.job.internal.xstream;
+package org.xwiki.job.test;
+
+import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.job.annotation.Serializable;
 
-/**
- * Various XStream related utilities.
- *
- * @version $Id$
- * @since 5.4M1
- */
-public final class XStreamUtils
+@Component(roles = SerializableStandaloneComponent.class, staticRegistration = false)
+@Singleton
+@Serializable
+public class SerializableStandaloneComponent
 {
-    private XStreamUtils()
-    {
 
-    }
-
-    /**
-     * @param obj the value to check
-     * @return true if the type serialization cannot fail
-     */
-    public static boolean isSafeType(Object obj)
-    {
-        return obj == null || obj instanceof String || obj instanceof Number || obj.getClass().isArray()
-            || obj instanceof Enum;
-    }
-
-    /**
-     * @param item the item to serialize
-     * @return true of the item looks like a component
-     */
-    public static boolean isSerializable(Object item)
-    {
-        if (item != null) {
-            return item.getClass().isAnnotationPresent(Serializable.class)
-                || !item.getClass().isAnnotationPresent(Component.class);
-        }
-
-        return false;
-    }
 }

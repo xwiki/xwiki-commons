@@ -30,7 +30,8 @@ import org.junit.Test;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.job.test.TestStandaloneComponent;
+import org.xwiki.job.test.SerializableStandaloneComponent;
+import org.xwiki.job.test.StandaloneComponent;
 
 /**
  * Validate {@link JobStatusSerializer}.
@@ -147,13 +148,27 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
 
-        status.getLog().error("error message", new TestStandaloneComponent());
+        status.getLog().error("error message", new StandaloneComponent());
 
         status = writeread(status);
 
         Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
         Assert.assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
+    }
+
+    @Test
+    public void testLogWithSerializableStandaloneComponentArgument() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new SerializableStandaloneComponent());
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertEquals("error message", status.getLog().peek().getMessage());
+        Assert.assertEquals(SerializableStandaloneComponent.class, status.getLog().peek().getArgumentArray()[0].getClass());
     }
 
     @Test
@@ -187,7 +202,7 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
 
-        status.getLog().error("error message", new ObjectTest(new TestStandaloneComponent()));
+        status.getLog().error("error message", new ObjectTest(new StandaloneComponent()));
 
         status = writeread(status);
 

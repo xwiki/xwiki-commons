@@ -101,7 +101,7 @@ public class SafeArrayConverter extends ArrayConverter
     {
         if (XStreamUtils.isSafeType(item) || this.docBuilder == null) {
             super.writeItem(item, context, writer);
-        } else if (XStreamUtils.isComponent(item)) {
+        } else if (!XStreamUtils.isSerializable(item)) {
             super.writeItem(item.toString(), context, writer);
         } else {
             try {
