@@ -51,15 +51,33 @@ public final class LogUtils
     public static LogEvent newLogEvent(Marker marker, LogLevel level, String message, Object[] argumentArray,
         Throwable throwable)
     {
+        return newLogEvent(marker, level, message, argumentArray, throwable, System.currentTimeMillis());
+    }
+
+    /**
+     * Create and return a new {@link LogEvent} instance based on the passed parameters.
+     *
+     * @param marker the log marker
+     * @param level the log level
+     * @param message the log message
+     * @param argumentArray the event arguments to insert in the message
+     * @param throwable the throwable associated to the event
+     * @param timeStamp the number of milliseconds elapsed from 1/1/1970 until logging event was created.
+     * @return the {@link LogEvent}
+     * @since 6.4M1
+     */
+    public static LogEvent newLogEvent(Marker marker, LogLevel level, String message, Object[] argumentArray,
+        Throwable throwable, long timeStamp)
+    {
         if (marker != null) {
             if (marker.contains(LogEvent.MARKER_BEGIN)) {
-                return new BeginLogEvent(marker, level, message, argumentArray, throwable);
+                return new BeginLogEvent(marker, level, message, argumentArray, throwable, timeStamp);
             } else if (marker.contains(LogEvent.MARKER_END)) {
-                return new EndLogEvent(marker, level, message, argumentArray, throwable);
+                return new EndLogEvent(marker, level, message, argumentArray, throwable, timeStamp);
             }
         }
 
-        return new LogEvent(marker, level, message, argumentArray, throwable);
+        return new LogEvent(marker, level, message, argumentArray, throwable, timeStamp);
     }
 
     /**
@@ -97,7 +115,7 @@ public final class LogUtils
             }
 
             return new LogEvent(logEvent.getMarker(), logEvent.getLevel(), message.toString(), arguments,
-                logEvent.getThrowable());
+                logEvent.getThrowable(), logEvent.getTimeStamp());
         }
 
         return logEvent;

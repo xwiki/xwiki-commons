@@ -63,4 +63,19 @@ public class EndLogEvent extends LogEvent implements EndEvent
     {
         super(marker, level, message, argumentArray, throwable);
     }
+
+    /**
+     * @param marker the log marker
+     * @param level the log level
+     * @param message the log message
+     * @param argumentArray the event arguments to insert in the message
+     * @param throwable the throwable associated to the event
+     * @param timeStamp the number of milliseconds elapsed from 1/1/1970 until logging event was created.
+     * @since 6.4M1
+     */
+    public EndLogEvent(Marker marker, LogLevel level, String message, Object[] argumentArray, Throwable throwable,
+        long timeStamp)
+    {
+        super(marker, level, message, argumentArray, throwable, timeStamp);
+    }
 }

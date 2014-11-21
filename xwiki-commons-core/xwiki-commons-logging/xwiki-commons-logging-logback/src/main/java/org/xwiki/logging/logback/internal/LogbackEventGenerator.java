@@ -144,7 +144,7 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
 
             LogEvent logevent =
                 LogUtils.newLogEvent(event.getMarker(), logLevel, event.getMessage(), event.getArgumentArray(),
-                    throwable);
+                    throwable, event.getTimeStamp());
 
             getObservationManager().notify(logevent, event.getLoggerName(), null);
         } catch (IllegalArgumentException e) {

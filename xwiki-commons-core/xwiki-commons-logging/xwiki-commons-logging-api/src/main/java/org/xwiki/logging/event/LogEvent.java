@@ -96,6 +96,11 @@ public class LogEvent implements Event, Serializable
     private transient String formattedMessage;
 
     /**
+     * The number of milliseconds elapsed from 1/1/1970 until logging event was created.
+     */
+    private long timeStamp;
+
+    /**
      * Matches any {@link LogEvent}.
      */
     public LogEvent()
@@ -110,7 +115,7 @@ public class LogEvent implements Event, Serializable
     public LogEvent(LogEvent logEvent)
     {
         this(logEvent.getMarker(), logEvent.getLevel(), logEvent.getMessage(), logEvent.getArgumentArray(), logEvent
-            .getThrowable());
+            .getThrowable(), logEvent.getTimeStamp());
     }
 
     /**
@@ -134,11 +139,27 @@ public class LogEvent implements Event, Serializable
      */
     public LogEvent(Marker marker, LogLevel level, String message, Object[] argumentArray, Throwable throwable)
     {
+        this(marker, level, message, argumentArray, throwable, System.currentTimeMillis());
+    }
+
+    /**
+     * @param marker the log marker
+     * @param level the log level
+     * @param message the log message
+     * @param argumentArray the event arguments to insert in the message
+     * @param throwable the throwable associated to the event
+     * @param timeStamp the number of milliseconds elapsed from 1/1/1970 until logging event was created.
+     * @since 6.4M1
+     */
+    public LogEvent(Marker marker, LogLevel level, String message, Object[] argumentArray, Throwable throwable,
+        long timeStamp)
+    {
         this.marker = marker;
         this.level = level;
         this.message = message;
         this.argumentArray = argumentArray;
         this.throwable = throwable;
+        this.timeStamp = timeStamp;
     }
 
     /**
@@ -209,6 +230,14 @@ public class LogEvent implements Event, Serializable
     public Throwable getThrowable()
     {
         return this.throwable;
+    }
+
+    /**
+     * @return the number of milliseconds elapsed from 1/1/1970 until logging event was created
+     */
+    public long getTimeStamp()
+    {
+        return this.timeStamp;
     }
 
     /**
