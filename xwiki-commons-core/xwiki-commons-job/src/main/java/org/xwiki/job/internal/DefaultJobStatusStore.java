@@ -21,7 +21,6 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
@@ -48,6 +47,7 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.JobStatusStore;
 import org.xwiki.job.Request;
+import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
 
 /**
@@ -421,7 +421,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             }
 
             // Only store Serializable job status on file system
-            if (status instanceof Serializable) {
+            if (status.getClass().isAnnotationPresent(Serializable.class) || status instanceof java.io.Serializable) {
                 if (async) {
                     this.executorService.execute(new JobStatusSerializerRunnable(status));
                 } else {

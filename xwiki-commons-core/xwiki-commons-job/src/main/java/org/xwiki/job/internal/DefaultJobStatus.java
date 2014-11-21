@@ -19,9 +19,8 @@
  */
 package org.xwiki.job.internal;
 
-import java.io.Serializable;
-
 import org.xwiki.job.Request;
+import org.xwiki.job.annotation.Serializable;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 
@@ -32,13 +31,9 @@ import org.xwiki.observation.ObservationManager;
  * @version $Id$
  * @since 4.0M1
  */
-public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R> implements Serializable
+@Serializable
+public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R>
 {
-    /**
-     * Serialization identifier.
-     */
-    private static final long serialVersionUID = 1L;
-
     /**
      * @param request the request provided when started the job
      * @param observationManager the observation manager component
