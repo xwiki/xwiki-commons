@@ -38,12 +38,22 @@ public interface Extension
     ExtensionId getId();
 
     /**
-     * The idea is to indicate in an extension a list of provided "functionalities". Then when resolving extensions
-     * dependencies the dependencies id could be matched in this list.
+     * Indicate in an extension a list of provided "functionalities". Then when resolving extensions dependencies they
+     * can be matched in this list.
      *
      * @return the extension ids also provided by this extension, an empty collection if there is none
+     * @deprecated since 6.4M1, use {@link #getExtensionFEatures()} instead
      */
+    @Deprecated
     Collection<String> getFeatures();
+
+    /**
+     * Indicate in an extension a list of provided "functionalities". Then when resolving extensions dependencies they
+     * can be matched in this list.
+     * 
+     * @return the {@link ExtensionFeature}s also provided by this extension, an empty collection if there is none
+     */
+    Collection<ExtensionFeature> getExtensionFeatures();
 
     /**
      * @return the type of the extension

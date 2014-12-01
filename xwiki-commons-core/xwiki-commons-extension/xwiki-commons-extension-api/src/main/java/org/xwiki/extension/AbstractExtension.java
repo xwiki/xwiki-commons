@@ -44,9 +44,9 @@ public abstract class AbstractExtension implements Extension
     protected ExtensionId id;
 
     /**
-     * @see #getFeatures()
+     * @see #getExtensionFeatures()
      */
-    protected Set<String> features;
+    protected Set<ExtensionFeature> features;
 
     /**
      * @see #getType()
@@ -193,10 +193,39 @@ public abstract class AbstractExtension implements Extension
      * Add a new feature to the extension.
      *
      * @param feature a feature name
+     * @deprecated since 6.4M1, use {@link #addExtensionFeature(ExtensionFeature)} instead
      */
+    @Deprecated
     public void addFeature(String feature)
     {
         Set<String> newFeatures = new HashSet<String>(getFeatures());
+        newFeatures.add(feature);
+
+        this.features = Collections.unmodifiableSet(newFeatures);
+    }
+
+    @Override
+    public Collection<ExtensionFeature> getExtensionFeatures()
+    {
+        return this.features != null ? this.features : Collections.<ExtensionFeature>emptyList();
+    }
+
+    /**
+     * @param features the {@link ExtensionFeature}s also provided by this extension
+     */
+    public void setExtensionFeatures(Collection<ExtensionFeature> features)
+    {
+        this.features = Collections.unmodifiableSet(new HashSet<ExtensionFeature>(features));
+    }
+
+    /**
+     * Add a new feature to the extension.
+     *
+     * @param feature a feature name
+     */
+    public void addExtensionFeature(ExtensionFeature feature)
+    {
+        Set<ExtensionFeature> newFeatures = new HashSet<ExtensionFeature>(getExtensionFeatures());
         newFeatures.add(feature);
 
         this.features = Collections.unmodifiableSet(newFeatures);
