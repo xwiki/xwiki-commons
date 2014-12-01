@@ -43,9 +43,9 @@ import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.InvalidExtensionException;
-import org.xwiki.extension.repository.internal.local.DefaultExtensionSerializer;
+import org.xwiki.extension.repository.internal.DefaultExtensionSerializer;
+import org.xwiki.extension.repository.internal.ExtensionSerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
-import org.xwiki.extension.repository.internal.local.ExtensionSerializer;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -60,12 +60,12 @@ public class DefaultExtensionSerializerTest
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        this.componentManager.getComponentUnderTest().saveDescriptor(extension, os);
+        this.componentManager.getComponentUnderTest().saveExtensionDescriptor(extension, os);
 
         ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
 
         DefaultLocalExtension unserializedExtension =
-            this.componentManager.getComponentUnderTest().loadDescriptor(null, is);
+            this.componentManager.getComponentUnderTest().loadLocalExtensionDescriptor(null, is);
 
         Assert.assertEquals(extension, unserializedExtension);
         Assert.assertEquals(extension.getDescription(), unserializedExtension.getDescription());

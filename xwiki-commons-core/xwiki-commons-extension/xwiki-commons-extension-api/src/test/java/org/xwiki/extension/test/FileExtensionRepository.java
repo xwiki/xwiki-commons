@@ -39,8 +39,8 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.internal.ExtensionSerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
-import org.xwiki.extension.repository.internal.local.ExtensionSerializer;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
@@ -104,7 +104,7 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
         }
 
         try {
-            DefaultLocalExtension localExtension = this.extensionSerializer.loadDescriptor(null, descriptor);
+            DefaultLocalExtension localExtension = this.extensionSerializer.loadLocalExtensionDescriptor(null, descriptor);
 
             return new FileExtension(this, localExtension);
         } catch (Exception e) {
@@ -147,7 +147,7 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
                 try {
                     fis = new FileInputStream(file);
 
-                    DefaultLocalExtension localExtension = this.extensionSerializer.loadDescriptor(null, fis);
+                    DefaultLocalExtension localExtension = this.extensionSerializer.loadLocalExtensionDescriptor(null, fis);
 
                     versions.add(localExtension.getId().getVersion());
                 } finally {

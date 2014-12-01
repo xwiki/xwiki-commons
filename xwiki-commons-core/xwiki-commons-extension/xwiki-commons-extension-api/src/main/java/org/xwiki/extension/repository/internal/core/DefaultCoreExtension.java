@@ -44,9 +44,7 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
     {
         super(repository, id, type);
 
-        setFile(new DefaultCoreExtensionFile(url));
-
-        putProperty(PKEY_URL, url);
+        setURL(url);
     }
 
     // Extension
@@ -60,9 +58,7 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
     {
         super(repository, extension);
 
-        setFile(new DefaultCoreExtensionFile(url));
-
-        putProperty(PKEY_URL, url);
+        setURL(url);
     }
 
     @Override
@@ -90,6 +86,8 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
      */
     public void setURL(URL url)
     {
+        setFile(new DefaultCoreExtensionFile(url));
+
         putProperty(PKEY_URL, url);
     }
 

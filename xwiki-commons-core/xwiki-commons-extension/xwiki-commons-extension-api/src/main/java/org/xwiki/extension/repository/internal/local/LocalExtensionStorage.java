@@ -24,8 +24,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -36,6 +34,8 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InvalidExtensionException;
+import org.xwiki.extension.internal.PathUtils;
+import org.xwiki.extension.repository.internal.ExtensionSerializer;
 
 /**
  * Manipulate the extension filesystem repository storage.
@@ -43,12 +43,12 @@ import org.xwiki.extension.InvalidExtensionException;
  * @version $Id$
  * @since 4.0M1
  */
-public class ExtensionStorage
+public class LocalExtensionStorage
 {
     /**
      * Logging tool.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionStorage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalExtensionStorage.class);
 
     /**
      * The extension of the descriptor files.
@@ -81,7 +81,7 @@ public class ExtensionStorage
      * @param componentManager used to lookup needed components
      * @throws ComponentLookupException can't find ExtensionSerializer
      */
-    public ExtensionStorage(DefaultLocalExtensionRepository repository, File rootFolder,
+    public LocalExtensionStorage(DefaultLocalExtensionRepository repository, File rootFolder,
         ComponentManager componentManager) throws ComponentLookupException
     {
         this.repository = repository;
@@ -149,7 +149,7 @@ public class ExtensionStorage
         }
 
         try {
-            DefaultLocalExtension localExtension = this.extensionSerializer.loadDescriptor(this.repository, fis);
+            DefaultLocalExtension localExtension = this.extensionSerializer.loadLocalExtensionDescriptor(this.repository, fis);
 
             localExtension.setDescriptorFile(descriptor);
             localExtension.setFile(getFile(descriptor, DESCRIPTOR_EXT, localExtension.getType()));
@@ -190,7 +190,7 @@ public class ExtensionStorage
         FileOutputStream fos = new FileOutputStream(file);
 
         try {
-            this.extensionSerializer.saveDescriptor(extension, fos);
+            this.extensionSerializer.saveExtensionDescriptor(extension, fos);
         } finally {
             fos.close();
         }
@@ -225,7 +225,7 @@ public class ExtensionStorage
     {
         String baseName = getBaseName(baseFile.getName(), baseType);
 
-        return new File(baseFile.getParent(), baseName + '.' + encode(type));
+        return new File(baseFile.getParent(), baseName + '.' + PathUtils.encode(type));
     }
 
     /**
@@ -235,25 +235,7 @@ public class ExtensionStorage
      */
     private String getBaseName(String fileName, String type)
     {
-        return fileName.substring(0, fileName.length() - encode(type).length() - 1);
-    }
-
-    /**
-     * @param name the file or directory name to encode
-     * @return the encoding name
-     */
-    private String encode(String name)
-    {
-        String encoded;
-        try {
-            encoded = URLEncoder.encode(name, "UTF-8").replace(".", "%2E").replace("*", "%2A");
-        } catch (UnsupportedEncodingException e) {
-            // Should never happen
-
-            encoded = name;
-        }
-
-        return encoded;
+        return fileName.substring(0, fileName.length() - PathUtils.encode(type).length() - 1);
     }
 
     /**
@@ -265,9 +247,9 @@ public class ExtensionStorage
      */
     private String getFilePath(ExtensionId id, String fileExtension)
     {
-        String encodedId = encode(id.getId());
-        String encodedVersion = encode(id.getVersion().toString());
-        String encodedType = encode(fileExtension);
+        String encodedId = PathUtils.encode(id.getId());
+        String encodedVersion = PathUtils.encode(id.getVersion().toString());
+        String encodedType = PathUtils.encode(fileExtension);
 
         return encodedId + File.separator + encodedVersion + File.separator + encodedId + '-' + encodedVersion + '.'
             + encodedType;
