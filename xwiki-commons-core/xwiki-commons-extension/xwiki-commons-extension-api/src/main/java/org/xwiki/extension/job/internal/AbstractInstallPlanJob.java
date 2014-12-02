@@ -575,15 +575,22 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         // Check installed extensions
         InstalledExtension previousExtension =
             this.installedExtensionRepository.getInstalledExtension(extensionDependency.getId(), namespace);
+
+        // If the extension is installed on root it should be upgraded on root
+        String targetNamespace = namespace;
+        if (previousExtension != null && previousExtension.isInstalled(null)) {
+            targetNamespace = null;
+        }
+
         ExtensionDependency targetDependency =
-            checkInstalledExtension(previousExtension, extensionDependency, versionConstraint, namespace, parentBranch);
+            checkInstalledExtension(previousExtension, extensionDependency, versionConstraint, targetNamespace, parentBranch);
         if (targetDependency == null) {
             // Already exists and added to the tree by #checkInstalledExtension
             return;
         }
 
         // Not found locally, search it remotely
-        ModifableExtensionPlanNode node = installExtension(previousExtension, targetDependency, true, namespace);
+        ModifableExtensionPlanNode node = installExtension(previousExtension, targetDependency, true, targetNamespace);
 
         node.versionConstraint = versionConstraint;
 
