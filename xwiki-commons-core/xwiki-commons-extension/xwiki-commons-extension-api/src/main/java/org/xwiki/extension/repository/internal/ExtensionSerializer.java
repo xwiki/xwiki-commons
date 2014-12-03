@@ -63,8 +63,8 @@ public interface ExtensionSerializer
      * @return the {@link Extension} instance
      * @throws InvalidExtensionException error when trying to parse extension descriptor
      */
-    DefaultCoreExtension loadCoreExtensionDescriptor(DefaultCoreExtensionRepository repository, URL url, InputStream descriptor)
-        throws InvalidExtensionException;
+    DefaultCoreExtension loadCoreExtensionDescriptor(DefaultCoreExtensionRepository repository, URL url,
+        InputStream descriptor) throws InvalidExtensionException;
 
     /**
      * Save local extension descriptor.

@@ -46,7 +46,6 @@ import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -132,6 +131,9 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     @Inject
     private Environment environment;
 
+    @Inject
+    private CoreExtensionCache cache;
+
     private Dependency toDependency(String id, String version, String type) throws ResolveException
     {
         Matcher matcher = PARSER_ID.matcher(id);
@@ -191,11 +193,11 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         return builder.toString();
     }
 
-    private URL getExtensionURL(URL descriptorUrl) throws MalformedURLException
+    private URL getExtensionURL(URL descriptorURL) throws MalformedURLException
     {
-        String extensionURLStr = descriptorUrl.toString();
+        String extensionURLStr = descriptorURL.toString();
         extensionURLStr =
-            extensionURLStr.substring(0, descriptorUrl.toString().indexOf(MAVENPACKAGE.replace('.', '/')));
+            extensionURLStr.substring(0, descriptorURL.toString().indexOf(MAVENPACKAGE.replace('.', '/')));
 
         if (extensionURLStr.startsWith("jar:")) {
             int start = "jar:".length();
@@ -210,12 +212,16 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         return new URL(extensionURLStr);
     }
 
-    private DefaultCoreExtension parseMavenPom(URL descriptorUrl, DefaultCoreExtensionRepository repository)
-        throws IOException, XmlPullParserException
+    private DefaultCoreExtension parseMavenPom(URL descriptorURL, DefaultCoreExtensionRepository repository)
+        throws Exception
     {
-        DefaultCoreExtension coreExtension = null;
+        DefaultCoreExtension coreExtension = this.cache.getExtension(repository, descriptorURL);
 
-        InputStream descriptorStream = descriptorUrl.openStream();
+        if (coreExtension != null && coreExtension.getDescriptorURL().equals(descriptorURL)) {
+            return coreExtension;
+        }
+
+        InputStream descriptorStream = descriptorURL.openStream();
         try {
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model mavenModel = reader.read(descriptorStream);
@@ -223,11 +229,13 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
             String version = resolveVersion(mavenModel.getVersion(), mavenModel, false);
             String groupId = resolveGroupId(mavenModel.getGroupId(), mavenModel, false);
 
-            URL extensionURL = getExtensionURL(descriptorUrl);
+            URL extensionURL = getExtensionURL(descriptorURL);
 
             coreExtension =
                 new MavenCoreExtension(repository, extensionURL, new ExtensionId(groupId + ':'
                     + mavenModel.getArtifactId(), version), packagingToType(mavenModel.getPackaging()), mavenModel);
+
+            coreExtension.setDescriptorURL(descriptorURL);
 
             coreExtension.setName(mavenModel.getName());
             coreExtension.setSummary(mavenModel.getDescription());
@@ -278,6 +286,12 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     coreExtension.addDependency(extensionDependency);
                 }
             }
+
+            // If no parent is provided no need to resolve it to get more details
+            if (mavenModel.getParent() != null) {
+                this.cache.store(coreExtension);
+                coreExtension.setCached(true);
+            }
         } finally {
             IOUtils.closeQuietly(descriptorStream);
         }
@@ -289,15 +303,23 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     public void updateExtensions(Collection<DefaultCoreExtension> extensions)
     {
         for (DefaultCoreExtension extension : extensions) {
-            try {
-                Extension remoteExtension = this.repositoryManager.resolve(extension.getId());
+            if (!extension.isCached()) {
+                try {
+                    Extension remoteExtension = this.repositoryManager.resolve(extension.getId());
 
-                extension.set(remoteExtension);
-            } catch (ResolveException e) {
-                this.logger.debug("Can't find remote extension with id [{}]", extension.getId(), e);
-            } catch (Exception e) {
-                this.logger.warn("Failed to update core extension [{}]: [{}]", extension.getId(),
-                    ExceptionUtils.getRootCauseMessage(e));
+                    extension.set(remoteExtension);
+
+                    // Cache it
+                    if (extension.getDescriptorURL() != null) {
+                        this.cache.store(extension);
+                        extension.setCached(true);
+                    }
+                } catch (ResolveException e) {
+                    this.logger.debug("Can't find remote extension with id [{}]", extension.getId(), e);
+                } catch (Exception e) {
+                    this.logger.warn("Failed to update core extension [{}]: [{}]", extension.getId(),
+                        ExceptionUtils.getRootCauseMessage(e), e);
+                }
             }
         }
     }
@@ -313,7 +335,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     }
 
     @Override
-    public DefaultCoreExtension loadEnvironmentExtensions(DefaultCoreExtensionRepository repository)
+    public DefaultCoreExtension loadEnvironmentExtension(DefaultCoreExtensionRepository repository)
     {
         InputStream is = this.environment.getResourceAsStream("/META-INF/MANIFEST.MF");
 
@@ -330,15 +352,15 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
                     String descriptorPath = String.format("/META-INF/maven/%s/%s/pom.xml", mavenId[0], mavenId[1]);
 
-                    URL descriptorUrl = this.environment.getResource(descriptorPath);
+                    URL descriptorURL = this.environment.getResource(descriptorPath);
 
-                    if (descriptorUrl != null) {
+                    if (descriptorURL != null) {
                         try {
-                            DefaultCoreExtension coreExtension = parseMavenPom(descriptorUrl, repository);
+                            DefaultCoreExtension coreExtension = parseMavenPom(descriptorURL, repository);
 
                             return coreExtension;
                         } catch (Exception e) {
-                            this.logger.warn("Failed to parse extension descriptor [{}]", descriptorUrl, e);
+                            this.logger.warn("Failed to parse extension descriptor [{}]", descriptorURL, e);
                         }
                     } else {
                         this.logger.warn("Can't find resource file [{}] which contains distribution informations.",
@@ -372,15 +394,15 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         Set<String> descriptors = reflections.getResources(Predicates.equalTo("pom.xml"));
 
         for (String descriptor : descriptors) {
-            URL descriptorUrl = getClass().getClassLoader().getResource(descriptor);
+            URL descriptorURL = getClass().getClassLoader().getResource(descriptor);
 
-            if (descriptorUrl != null) {
+            if (descriptorURL != null) {
                 try {
-                    DefaultCoreExtension coreExtension = parseMavenPom(descriptorUrl, repository);
+                    DefaultCoreExtension coreExtension = parseMavenPom(descriptorURL, repository);
 
                     extensions.put(coreExtension.getId().getId(), coreExtension);
                 } catch (Exception e) {
-                    this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorUrl, descriptor, e);
+                    this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorURL, descriptor, e);
                 }
             } else {
                 this.logger.error("Could not find resource URL for descriptor [{}]", descriptor);
@@ -434,12 +456,12 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     }
 
                     if (index != -1) {
-                        fileNames.put(filename, new Object[] { url });
+                        fileNames.put(filename, new Object[] {url});
 
                         String artefactname = filename.substring(0, index);
                         String version = filename.substring(index + 1);
 
-                        guessedArtefacts.put(artefactname, new Object[] { version, url, type });
+                        guessedArtefacts.put(artefactname, new Object[] {version, url, type});
                     }
                 } catch (Exception e) {
                     this.logger.warn("Failed to parse resource name [{}]", url, e);

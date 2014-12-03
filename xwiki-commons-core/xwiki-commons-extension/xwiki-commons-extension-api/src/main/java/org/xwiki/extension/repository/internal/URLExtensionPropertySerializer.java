@@ -17,41 +17,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal;
+package org.xwiki.extension.repository.internal;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URL;
+
+import org.w3c.dom.Element;
 
 /**
- * Various path utilities.
- * 
+ * Serialize and unserialize {@link URL} properties.
+ *
  * @version $Id$
- * @since 6.4M1
  */
-public final class PathUtils
+public class URLExtensionPropertySerializer extends AbstractExtensionPropertySerializer<URL>
 {
-    private PathUtils()
+    /**
+     * Default constructor.
+     */
+    public URLExtensionPropertySerializer()
     {
-        // Utility class
+        super("url");
     }
 
-    /**
-     * Protect passed String to work with as much filesystems as possible.
-     * 
-     * @param str the file or directory name to encode
-     * @return the encoded name
-     */
-    public static String encode(String str)
+    @Override
+    public URL toValue(Element element)
     {
-        String encoded;
         try {
-            encoded = URLEncoder.encode(str, "UTF-8").replace(".", "%2E").replace("*", "%2A");
-        } catch (UnsupportedEncodingException e) {
-            // Should never happen
-
-            encoded = str;
+            return new URL(element.getTextContent());
+        } catch (Exception e) {
+            // TODO: should maybe log something
+            return null;
         }
-
-        return encoded;
     }
 }

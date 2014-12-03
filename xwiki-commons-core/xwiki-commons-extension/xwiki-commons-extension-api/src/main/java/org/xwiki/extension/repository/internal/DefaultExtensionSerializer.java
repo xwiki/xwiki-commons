@@ -72,15 +72,8 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
-import org.xwiki.extension.repository.internal.local.BooleanExtensionPropertySerializer;
-import org.xwiki.extension.repository.internal.local.CollectionExtensionPropertySerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtensionRepository;
-import org.xwiki.extension.repository.internal.local.ExtensionPropertySerializer;
-import org.xwiki.extension.repository.internal.local.IntegerExtensionPropertySerializer;
-import org.xwiki.extension.repository.internal.local.SetExtensionPropertySerializer;
-import org.xwiki.extension.repository.internal.local.StringExtensionPropertySerializer;
-import org.xwiki.extension.repository.internal.local.StringKeyMapExtensionPropertySerializer;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
@@ -180,6 +173,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             StringExtensionPropertySerializer stringSerializer = new StringExtensionPropertySerializer();
             IntegerExtensionPropertySerializer integerSerializer = new IntegerExtensionPropertySerializer();
             BooleanExtensionPropertySerializer booleanSerializer = new BooleanExtensionPropertySerializer();
+            URLExtensionPropertySerializer urlSerializer = new URLExtensionPropertySerializer();
             CollectionExtensionPropertySerializer collectionSerializer =
                 new CollectionExtensionPropertySerializer(this.serializerById, this.serializerByClass);
             SetExtensionPropertySerializer setSerializer =
@@ -191,6 +185,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             this.serializerById.put("", stringSerializer);
             this.serializerById.put(integerSerializer.getType(), integerSerializer);
             this.serializerById.put(booleanSerializer.getType(), booleanSerializer);
+            this.serializerById.put(urlSerializer.getType(), urlSerializer);
             this.serializerById.put(collectionSerializer.getType(), collectionSerializer);
             this.serializerById.put(setSerializer.getType(), setSerializer);
             this.serializerById.put(mapSerializer.getType(), mapSerializer);
@@ -198,6 +193,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             this.serializerByClass.put(String.class, stringSerializer);
             this.serializerByClass.put(Integer.class, integerSerializer);
             this.serializerByClass.put(Boolean.class, booleanSerializer);
+            this.serializerByClass.put(URL.class, urlSerializer);
             this.serializerByClass.put(Set.class, setSerializer);
             this.serializerByClass.put(Collection.class, collectionSerializer);
             this.serializerByClass.put(Map.class, mapSerializer);

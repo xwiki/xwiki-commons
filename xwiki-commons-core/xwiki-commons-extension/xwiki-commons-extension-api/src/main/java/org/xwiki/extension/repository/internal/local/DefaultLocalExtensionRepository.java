@@ -92,7 +92,8 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
     public void initialize() throws InitializationException
     {
         try {
-            this.storage = new LocalExtensionStorage(this, this.configuration.getLocalRepository(), this.componentManager);
+            this.storage =
+                new LocalExtensionStorage(this, this.configuration.getLocalRepository(), this.componentManager);
         } catch (ComponentLookupException e) {
             throw new InitializationException("Failed to intialize local extension storage", e);
         }

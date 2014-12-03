@@ -47,7 +47,7 @@ public interface CoreExtensionScanner
      * @param repository the repository used to create {@link DefaultCoreExtension}s.
      * @return the found extension. Null if none is declared.
      */
-    DefaultCoreExtension loadEnvironmentExtensions(DefaultCoreExtensionRepository repository);
+    DefaultCoreExtension loadEnvironmentExtension(DefaultCoreExtensionRepository repository);
 
     /**
      * Scan classpath to find core extensions.

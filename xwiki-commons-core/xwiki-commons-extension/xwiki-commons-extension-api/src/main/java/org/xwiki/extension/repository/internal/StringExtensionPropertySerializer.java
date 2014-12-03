@@ -17,28 +17,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.repository.internal;
 
 import org.w3c.dom.Element;
 
 /**
- * Serialize and unserialize {@link Boolean} properties.
+ * Serialize and unserialize {@link String} properties.
  *
  * @version $Id$
  */
-public class BooleanExtensionPropertySerializer extends AbstractExtensionPropertySerializer<Boolean>
+public class StringExtensionPropertySerializer extends AbstractExtensionPropertySerializer<String>
 {
     /**
      * Default constructor.
      */
-    public BooleanExtensionPropertySerializer()
+    public StringExtensionPropertySerializer()
     {
-        super("boolean");
+        super(null);
     }
 
     @Override
-    public Boolean toValue(Element element)
+    public String toValue(Element element)
     {
-        return Boolean.valueOf(element.getTextContent());
+        return element.getTextContent();
     }
 }

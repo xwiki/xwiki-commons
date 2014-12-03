@@ -149,7 +149,8 @@ public class LocalExtensionStorage
         }
 
         try {
-            DefaultLocalExtension localExtension = this.extensionSerializer.loadLocalExtensionDescriptor(this.repository, fis);
+            DefaultLocalExtension localExtension =
+                this.extensionSerializer.loadLocalExtensionDescriptor(this.repository, fis);
 
             localExtension.setDescriptorFile(descriptor);
             localExtension.setFile(getFile(descriptor, DESCRIPTOR_EXT, localExtension.getType()));

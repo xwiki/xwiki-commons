@@ -17,28 +17,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.repository.internal;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Serialize and unserialize {@link String} properties.
+ * Serialize and unserialize a property.
  *
+ * @param <T>
  * @version $Id$
  */
-public class StringExtensionPropertySerializer extends AbstractExtensionPropertySerializer<String>
+public interface ExtensionPropertySerializer<T>
 {
     /**
-     * Default constructor.
+     * @param element the XML element
+     * @return the unserialized property value
      */
-    public StringExtensionPropertySerializer()
-    {
-        super(null);
-    }
+    T toValue(Element element);
 
-    @Override
-    public String toValue(Element element)
-    {
-        return element.getTextContent();
-    }
+    /**
+     * @param document the document used to create new elements
+     * @param elementName the name of the property
+     * @param elementValue the value of the property
+     * @return the serialized property {@link Element}
+     */
+    Element toElement(Document document, String elementName, T elementValue);
 }

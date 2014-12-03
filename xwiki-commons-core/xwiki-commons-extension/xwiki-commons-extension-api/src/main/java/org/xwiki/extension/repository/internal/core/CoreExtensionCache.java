@@ -25,13 +25,13 @@ import java.io.FileOutputStream;
 import java.net.URL;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.environment.Environment;
-import org.xwiki.extension.CoreExtension;
-import org.xwiki.extension.internal.PathUtils;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
 
 /**
@@ -41,6 +41,7 @@ import org.xwiki.extension.repository.internal.ExtensionSerializer;
  * @since 6.4M1
  */
 @Component(roles = CoreExtensionCache.class)
+@Singleton
 public class CoreExtensionCache implements Initializable
 {
     @Inject
@@ -49,21 +50,35 @@ public class CoreExtensionCache implements Initializable
     @Inject
     private ExtensionSerializer serializer;
 
+    @Inject
+    private Logger logger;
+
     private File folder;
 
     @Override
     public void initialize() throws InitializationException
     {
-        this.folder = new File(this.environment.getTemporaryDirectory(), "cache/extension/core/");
+        File permanentDirectory = this.environment.getPermanentDirectory();
+        if (permanentDirectory != null) {
+            this.folder = new File(permanentDirectory, "cache/extension/core/");
+        }
     }
 
-    public void store(CoreExtension extension) throws Exception
+    /**
+     * @param extension the extension to store
+     * @throws Exception when failing to store the extension
+     */
+    public void store(DefaultCoreExtension extension) throws Exception
     {
-        File file = getFile(extension.getURL());
+        if (this.folder == null) {
+            return;
+        }
+
+        File file = getFile(extension.getDescriptorURL());
 
         // Make sure the file parents exist
         if (!file.exists()) {
-            file.mkdirs();
+            file.getParentFile().mkdirs();
         }
 
         try (FileOutputStream stream = new FileOutputStream(file)) {
@@ -71,22 +86,39 @@ public class CoreExtensionCache implements Initializable
         }
     }
 
-    public DefaultCoreExtension getExtension(DefaultCoreExtensionRepository repository, URL url) throws Exception
+    /**
+     * @param repository the repository to set in the new extension instance
+     * @param descriptorURL the extension descriptor URL
+     * @return the extension corresponding to the passed descriptor URL, null if none could be found
+     */
+    public DefaultCoreExtension getExtension(DefaultCoreExtensionRepository repository, URL descriptorURL)
     {
-        File file = getFile(url);
-
-        if (!file.exists()) {
+        if (this.folder == null) {
             return null;
         }
 
-        try (FileInputStream stream = new FileInputStream(file)) {
-            return this.serializer.loadCoreExtensionDescriptor(repository, url, stream);
+        File file = getFile(descriptorURL);
+
+        if (file.exists()) {
+            try (FileInputStream stream = new FileInputStream(file)) {
+                DefaultCoreExtension coreExtension =
+                    this.serializer.loadCoreExtensionDescriptor(repository, descriptorURL, stream);
+
+                coreExtension.setCached(true);
+
+                return coreExtension;
+            } catch (Exception e) {
+                this.logger.warn("Failed to parse cached core extension", e);
+            }
         }
+
+        return null;
     }
 
-    public File getFile(URL url)
+    private File getFile(URL url)
     {
-        String fileName = PathUtils.encode(url.toExternalForm());
+        // FIXME: make it more unique
+        String fileName = String.valueOf(url.toExternalForm().hashCode());
 
         return new File(this.folder, fileName + ".xed");
     }

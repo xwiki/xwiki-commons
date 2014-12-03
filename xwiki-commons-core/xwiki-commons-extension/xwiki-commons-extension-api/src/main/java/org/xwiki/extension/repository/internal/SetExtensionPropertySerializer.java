@@ -17,30 +17,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.repository.internal;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Serialize and unserialize a property.
+ * Serialize and unserialize {@link Set} properties.
  *
- * @param <T>
  * @version $Id$
  */
-public interface ExtensionPropertySerializer<T>
+public class SetExtensionPropertySerializer extends CollectionExtensionPropertySerializer<Set>
 {
     /**
-     * @param element the XML element
-     * @return the unserialized property value
+     * @param serializerById the serializers by type id
+     * @param serializerByClass the serializers by class
      */
-    T toValue(Element element);
+    public SetExtensionPropertySerializer(Map<String, ExtensionPropertySerializer> serializerById,
+        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
+    {
+        super("set", serializerById, serializerByClass);
+    }
 
     /**
-     * @param document the document used to create new elements
-     * @param elementName the name of the property
-     * @param elementValue the value of the property
-     * @return the serialized property {@link Element}
+     * @return a new collection
      */
-    Element toElement(Document document, String elementName, T elementValue);
+    @Override
+    protected Set createCollection()
+    {
+        return new HashSet();
+    }
 }
