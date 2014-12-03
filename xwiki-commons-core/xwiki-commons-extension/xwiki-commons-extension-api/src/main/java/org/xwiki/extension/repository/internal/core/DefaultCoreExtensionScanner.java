@@ -288,7 +288,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
             }
 
             // If no parent is provided no need to resolve it to get more details
-            if (mavenModel.getParent() != null) {
+            if (mavenModel.getParent() == null) {
                 this.cache.store(coreExtension);
                 coreExtension.setCached(true);
             }
