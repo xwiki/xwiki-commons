@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.util.Map;
+
 import org.apache.maven.model.Model;
 import org.eclipse.aether.artifact.Artifact;
 import org.xwiki.extension.AbstractExtension;
@@ -45,6 +47,13 @@ public class AetherExtension extends AbstractExtension implements MavenExtension
         // custom properties
         putProperty(PKEY_AETHER_ATIFACT, artifact);
         putProperty(PKEY_MAVEN_MODEL, mavenModel);
+
+        for (Map.Entry<Object, Object> entry : mavenModel.getProperties().entrySet()) {
+            String key = (String) entry.getKey();
+            if (key.startsWith("xwiki.extension.")) {
+                putProperty(key, entry.getValue());
+            }
+        }
     }
 
     /**

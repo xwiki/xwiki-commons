@@ -20,6 +20,7 @@
 package org.xwiki.extension.repository.internal.core;
 
 import java.net.URL;
+import java.util.Map;
 
 import org.apache.maven.model.Model;
 import org.xwiki.extension.ExtensionId;
@@ -57,6 +58,13 @@ public class MavenCoreExtension extends DefaultCoreExtension implements MavenExt
 
         putProperty(PKEY_MAVEN_ARTIFACTID, mavenModel.getArtifactId());
         putProperty(PKEY_MAVEN_GROUPID, mavenModel.getGroupId());
+
+        for (Map.Entry<Object, Object> entry : mavenModel.getProperties().entrySet()) {
+            String key = (String) entry.getKey();
+            if (key.startsWith("xwiki.extension.")) {
+                putProperty(key, entry.getValue());
+            }
+        }
     }
 
     /**
