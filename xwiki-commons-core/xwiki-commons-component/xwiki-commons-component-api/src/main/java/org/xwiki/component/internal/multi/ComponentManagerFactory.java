@@ -40,8 +40,17 @@ public interface ComponentManagerFactory
 {
     /**
      * @param parentComponentManager the parent Component Manager of the Component Manager to create. Can be null to
-     *        create a Root Component Manager. See also {@link ComponentManager#getParent()}
+     *            create a Root Component Manager. See also {@link ComponentManager#getParent()}
      * @return a {@link ComponentManager} implementation
      */
     ComponentManager createComponentManager(ComponentManager parentComponentManager);
+
+    /**
+     * @param namespace the namespace associated to the new {@link ComponentManager}
+     * @param parentComponentManager the parent Component Manager of the Component Manager to create. Can be null to
+     *            create a Root Component Manager. See also {@link ComponentManager#getParent()}
+     * @return a {@link ComponentManager} implementation
+     * @since 6.4M2
+     */
+    ComponentManager createComponentManager(String namespace, ComponentManager parentComponentManager);
 }

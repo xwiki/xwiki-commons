@@ -91,7 +91,7 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
             componentManagerFactory = this.defaultComponentManagerFactory;
         }
 
-        return componentManagerFactory.createComponentManager(this.rootComponentManager);
+        return componentManagerFactory.createComponentManager(id, this.rootComponentManager);
     }
 
     /**

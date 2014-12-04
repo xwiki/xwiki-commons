@@ -47,6 +47,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.manager.ComponentManagerInitializer;
 import org.xwiki.component.manager.ComponentRepositoryException;
+import org.xwiki.component.manager.NamespacedComponentManager;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.util.ReflectionUtils;
 
@@ -56,12 +57,17 @@ import org.xwiki.component.util.ReflectionUtils;
  * @version $Id$
  * @since 2.0M1
  */
-public class EmbeddableComponentManager implements ComponentManager, Disposable
+public class EmbeddableComponentManager implements NamespacedComponentManager, Disposable
 {
     /**
      * Logger to use to log shutdown information (opposite of initialization).
      */
     private static final Logger SHUTDOWN_LOGGER = LoggerFactory.getLogger("org.xwiki.shutdown");
+
+    /**
+     * @see #getNamespace()
+     */
+    private String namespace;
 
     private ComponentEventManager eventManager;
 
@@ -104,6 +110,23 @@ public class EmbeddableComponentManager implements ComponentManager, Disposable
     public EmbeddableComponentManager()
     {
         registerThis();
+    }
+
+    /**
+     * @param namespace the namespace associated with this component manager
+     * @since 6.4M2
+     */
+    public EmbeddableComponentManager(String namespace)
+    {
+        registerThis();
+
+        this.namespace = namespace;
+    }
+
+    @Override
+    public String getNamespace()
+    {
+        return this.namespace;
     }
 
     /**
