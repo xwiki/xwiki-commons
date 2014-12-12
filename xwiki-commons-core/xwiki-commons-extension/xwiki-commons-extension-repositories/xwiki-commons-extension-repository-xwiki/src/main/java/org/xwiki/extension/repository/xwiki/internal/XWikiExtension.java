@@ -30,6 +30,7 @@ import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
+import org.xwiki.extension.DefaultExtensionRating;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
@@ -38,6 +39,7 @@ import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionIssueManagement;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRating;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
@@ -63,6 +65,12 @@ public class XWikiExtension extends AbstractExtension
         setWebsite(extension.getWebsite());
 
         setFeatures(extension.getFeatures());
+
+        // Rating
+        ExtensionRating rating = extension.getRating();
+        if (rating != null) {
+            setRating(new DefaultExtensionRating(rating.getTotalVotes(), rating.getAverageVote()));
+        }
 
         // Authors
         for (ExtensionAuthor author : extension.getAuthors()) {

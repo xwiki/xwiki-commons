@@ -39,11 +39,13 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.ExtensionRating;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.http.internal.HttpClientFactory;
+import org.xwiki.extension.repository.rating.Ratable;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
@@ -62,7 +64,7 @@ import org.xwiki.repository.UriBuilder;
  * @version $Id$
  * @since 4.0M1
  */
-public class XWikiExtensionRepository extends AbstractExtensionRepository implements Searchable
+public class XWikiExtensionRepository extends AbstractExtensionRepository implements Searchable, Ratable
 {
     private final transient XWikiExtensionRepositoryFactory repositoryFactory;
 
@@ -268,5 +270,30 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
         return new CollectionIterableResult<Extension>(restExtensions.getTotalHits(), restExtensions.getOffset(),
             extensions);
+    }
+
+    // Ratable
+
+    @Override
+    public ExtensionRating getRating(ExtensionId extensionId) throws ResolveException
+    {
+        return getRating(extensionId.getId(), extensionId.getVersion());
+    }
+
+    @Override
+    public ExtensionRating getRating(String extensionId, Version extensionVersion) throws ResolveException
+    {
+        return getRating(extensionId, extensionVersion.getValue());
+    }
+
+    @Override
+    public ExtensionRating getRating(String extensionId, String extensionVersion) throws ResolveException
+    {
+        try {
+            return new XWikiExtension(this, (ExtensionVersion) this.repositoryFactory.getUnmarshaller().unmarshal(
+                getRESTResourceAsStream(this.extensionVersionUriBuider, extensionId, extensionVersion)), this.licenseManager).getRating();
+        } catch (Exception e) {
+            throw new ResolveException("Failed to create extension object for extension [" + extensionId + ":" + extensionVersion + "]", e);
+        }
     }
 }

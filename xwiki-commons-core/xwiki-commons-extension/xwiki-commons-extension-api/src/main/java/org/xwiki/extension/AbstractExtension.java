@@ -36,7 +36,7 @@ import org.xwiki.extension.repository.ExtensionRepository;
  * @version $Id$
  * @since 4.0M1
  */
-public abstract class AbstractExtension implements Extension
+public abstract class AbstractExtension implements Extension, Rating
 {
     /**
      * @see #getId()
@@ -62,6 +62,11 @@ public abstract class AbstractExtension implements Extension
      * @see #getLicenses()
      */
     protected List<ExtensionLicense> licenses;
+
+    /**
+     * @see #getRating()
+     */
+    protected ExtensionRating rating;
 
     /**
      * @see #getSummary()
@@ -256,6 +261,20 @@ public abstract class AbstractExtension implements Extension
         newLicenses.add(license);
 
         this.licenses = Collections.unmodifiableList(newLicenses);
+    }
+
+    @Override
+    public ExtensionRating getRating()
+    {
+        return this.rating;
+    }
+
+    /**
+     * @param rating an extension's rating
+     */
+    public void setRating(ExtensionRating rating)
+    {
+        this.rating = rating;
     }
 
     @Override
