@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension;
 
+import org.xwiki.extension.repository.ExtensionRepository;
+
 /**
  * The rating information for a extension.
  *
@@ -36,4 +38,9 @@ public interface ExtensionRating
      * @return the average vote
      */
     float getAverageVote();
+
+    /**
+     * @return the repository from which the rating was fetched
+     */
+    ExtensionRepository getRepository();
 }

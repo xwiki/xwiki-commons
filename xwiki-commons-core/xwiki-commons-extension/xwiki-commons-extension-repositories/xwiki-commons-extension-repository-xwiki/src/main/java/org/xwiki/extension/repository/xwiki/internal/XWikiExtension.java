@@ -69,7 +69,7 @@ public class XWikiExtension extends AbstractExtension
         // Rating
         ExtensionRating rating = extension.getRating();
         if (rating != null) {
-            setRating(new DefaultExtensionRating(rating.getTotalVotes(), rating.getAverageVote()));
+            setRating(new DefaultExtensionRating(rating.getTotalVotes(), rating.getAverageVote(), super.getRepository()));
         }
 
         // Authors

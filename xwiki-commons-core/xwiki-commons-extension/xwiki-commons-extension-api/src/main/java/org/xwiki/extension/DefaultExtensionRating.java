@@ -20,6 +20,7 @@
 package org.xwiki.extension;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.xwiki.extension.repository.ExtensionRepository;
 
 /**
  * Default implementation of ExtensionRating.
@@ -40,13 +41,20 @@ public class DefaultExtensionRating implements ExtensionRating
     private float averageVote;
 
     /**
+     * @see #getRepository()
+     */
+    private ExtensionRepository repository;
+
+    /**
      * @param totalVotes the total number of votes
      * @param averageVote the average of all votes
+     * @param repository the repository from which the rating comes from
      */
-    public DefaultExtensionRating(int totalVotes, float averageVote)
+    public DefaultExtensionRating(int totalVotes, float averageVote, ExtensionRepository repository)
     {
         this.totalVotes = totalVotes;
         this.averageVote = averageVote;
+        this.repository = repository;
     }
 
     @Override
@@ -61,6 +69,12 @@ public class DefaultExtensionRating implements ExtensionRating
         return this.averageVote;
     }
 
+    @Override
+    public ExtensionRepository getRepository()
+    {
+        return this.repository;
+    }
+
     // Object
 
     @Override
@@ -72,7 +86,8 @@ public class DefaultExtensionRating implements ExtensionRating
 
         if (obj instanceof ExtensionRating) {
             ExtensionRating rating = (ExtensionRating) obj;
-            return this.totalVotes == rating.getTotalVotes() && this.averageVote == rating.getAverageVote();
+            return this.totalVotes == rating.getTotalVotes() && this.averageVote == rating.getAverageVote()
+                && this.repository == rating.getRepository();
         } else {
             return false;
         }
@@ -85,6 +100,7 @@ public class DefaultExtensionRating implements ExtensionRating
 
         builder.append(this.totalVotes);
         builder.append(this.averageVote);
+        builder.append(this.repository);
 
         return builder.toHashCode();
     }
