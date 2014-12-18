@@ -26,7 +26,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto-store</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>6.4-SNAPSHOT</version>
+    <version>6.4-milestone-2</version>
   </parent>
   <artifactId>xwiki-commons-crypto-store-filesystem</artifactId>
   <packaging>jar</packaging>
