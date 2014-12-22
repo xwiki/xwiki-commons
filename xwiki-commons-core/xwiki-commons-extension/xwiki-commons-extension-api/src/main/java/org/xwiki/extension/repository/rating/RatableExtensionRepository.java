@@ -17,30 +17,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension;
+package org.xwiki.extension.repository.rating;
 
-import org.xwiki.extension.repository.rating.RatableExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepository;
 
 /**
- * The rating information for a extension.
- *
+ * See {@link ExtensionRepository} and {@link Ratable}.
+ * 
  * @version $Id$
- * @since 6.2M2
+ * @since 6.4M3
  */
-public interface ExtensionRating
+public interface RatableExtensionRepository extends ExtensionRepository, Ratable
 {
-    /**
-     * @return the total number of votes
-     */
-    int getTotalVotes();
 
-    /**
-     * @return the average vote
-     */
-    float getAverageVote();
-
-    /**
-     * @return the repository from which the rating was fetched
-     */
-    RatableExtensionRepository getRepository();
 }

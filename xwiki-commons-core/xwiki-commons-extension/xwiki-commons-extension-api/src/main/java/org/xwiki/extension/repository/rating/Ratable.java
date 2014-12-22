@@ -28,7 +28,7 @@ import org.xwiki.extension.version.Version;
  * A repository can implement it to provide rating capabilities.
  *
  * @version $Id$
- * @since 6.4M2
+ * @since 6.4M3
  */
 public interface Ratable
 {

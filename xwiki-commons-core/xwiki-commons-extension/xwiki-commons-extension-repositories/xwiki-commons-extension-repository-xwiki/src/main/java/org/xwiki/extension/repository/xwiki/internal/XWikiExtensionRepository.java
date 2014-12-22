@@ -45,7 +45,7 @@ import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.http.internal.HttpClientFactory;
-import org.xwiki.extension.repository.rating.Ratable;
+import org.xwiki.extension.repository.rating.RatableExtensionRepository;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
@@ -64,7 +64,8 @@ import org.xwiki.repository.UriBuilder;
  * @version $Id$
  * @since 4.0M1
  */
-public class XWikiExtensionRepository extends AbstractExtensionRepository implements Searchable, Ratable
+public class XWikiExtensionRepository extends AbstractExtensionRepository implements Searchable,
+    RatableExtensionRepository
 {
     private final transient XWikiExtensionRepositoryFactory repositoryFactory;
 
@@ -130,8 +131,9 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
             throw new IOException("Failed to build REST URL", e);
         }
 
-        CloseableHttpClient httpClient = this.httpClientFactory.createClient(
-            getDescriptor().getProperty("auth.user"), getDescriptor().getProperty("auth.password"));
+        CloseableHttpClient httpClient =
+            this.httpClientFactory.createClient(getDescriptor().getProperty("auth.user"),
+                getDescriptor().getProperty("auth.password"));
 
         HttpGet getMethod = new HttpGet(url);
         getMethod.addHeader("Accept", "application/xml");
@@ -147,8 +149,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         }
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
-                response.getStatusLine().getStatusCode(), getMethod.getURI()));
+            throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]", response
+                .getStatusLine().getStatusCode(), getMethod.getURI()));
         }
 
         return response;
@@ -291,9 +293,11 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
     {
         try {
             return new XWikiExtension(this, (ExtensionVersion) this.repositoryFactory.getUnmarshaller().unmarshal(
-                getRESTResourceAsStream(this.extensionVersionUriBuider, extensionId, extensionVersion)), this.licenseManager).getRating();
+                getRESTResourceAsStream(this.extensionVersionUriBuider, extensionId, extensionVersion)),
+                this.licenseManager).getRating();
         } catch (Exception e) {
-            throw new ResolveException("Failed to create extension object for extension [" + extensionId + ":" + extensionVersion + "]", e);
+            throw new ResolveException("Failed to create extension object for extension [" + extensionId + ":"
+                + extensionVersion + "]", e);
         }
     }
 }

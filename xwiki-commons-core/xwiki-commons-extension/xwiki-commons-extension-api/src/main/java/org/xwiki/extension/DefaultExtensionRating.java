@@ -20,7 +20,7 @@
 package org.xwiki.extension;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.rating.RatableExtensionRepository;
 
 /**
  * Default implementation of ExtensionRating.
@@ -43,14 +43,14 @@ public class DefaultExtensionRating implements ExtensionRating
     /**
      * @see #getRepository()
      */
-    private ExtensionRepository repository;
+    private RatableExtensionRepository repository;
 
     /**
      * @param totalVotes the total number of votes
      * @param averageVote the average of all votes
      * @param repository the repository from which the rating comes from
      */
-    public DefaultExtensionRating(int totalVotes, float averageVote, ExtensionRepository repository)
+    public DefaultExtensionRating(int totalVotes, float averageVote, RatableExtensionRepository repository)
     {
         this.totalVotes = totalVotes;
         this.averageVote = averageVote;
@@ -70,7 +70,7 @@ public class DefaultExtensionRating implements ExtensionRating
     }
 
     @Override
-    public ExtensionRepository getRepository()
+    public RatableExtensionRepository getRepository()
     {
         return this.repository;
     }
