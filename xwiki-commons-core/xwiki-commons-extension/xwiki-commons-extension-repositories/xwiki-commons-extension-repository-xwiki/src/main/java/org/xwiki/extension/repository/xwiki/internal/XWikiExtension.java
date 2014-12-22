@@ -30,14 +30,17 @@ import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
+import org.xwiki.extension.DefaultExtensionRating;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.Rating;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionIssueManagement;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRating;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
@@ -50,8 +53,13 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
  * @version $Id$
  * @since 4.0M1
  */
-public class XWikiExtension extends AbstractExtension
+public class XWikiExtension extends AbstractExtension implements Rating
 {
+    /**
+     * @see #getRating()
+     */
+    protected org.xwiki.extension.ExtensionRating rating;
+
     public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion extension,
         ExtensionLicenseManager licenseManager)
     {
@@ -63,6 +71,12 @@ public class XWikiExtension extends AbstractExtension
         setWebsite(extension.getWebsite());
 
         setFeatures(extension.getFeatures());
+
+        // Rating
+        ExtensionRating rating = extension.getRating();
+        if (rating != null) {
+            setRating(new DefaultExtensionRating(rating.getTotalVotes(), rating.getAverageVote(), super.getRepository()));
+        }
 
         // Authors
         for (ExtensionAuthor author : extension.getAuthors()) {
@@ -142,5 +156,21 @@ public class XWikiExtension extends AbstractExtension
     public XWikiExtensionRepository getRepository()
     {
         return (XWikiExtensionRepository) super.getRepository();
+    }
+
+    // Rating
+
+    @Override
+    public org.xwiki.extension.ExtensionRating getRating()
+    {
+        return this.rating;
+    }
+
+    /**
+     * @param rating an extension's rating
+     */
+    public void setRating(org.xwiki.extension.ExtensionRating rating)
+    {
+        this.rating = rating;
     }
 }
