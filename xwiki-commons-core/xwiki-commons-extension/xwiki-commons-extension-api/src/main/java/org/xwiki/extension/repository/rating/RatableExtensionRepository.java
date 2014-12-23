@@ -20,6 +20,7 @@
 package org.xwiki.extension.repository.rating;
 
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.stability.Unstable;
 
 /**
  * See {@link ExtensionRepository} and {@link Ratable}.
@@ -27,6 +28,7 @@ import org.xwiki.extension.repository.ExtensionRepository;
  * @version $Id$
  * @since 6.4M3
  */
+@Unstable
 public interface RatableExtensionRepository extends ExtensionRepository, Ratable
 {
 
