@@ -59,7 +59,8 @@ public final class HTMLUtils
      * escaping for it and thus we need to perform selective escaping here.
      *
      * Moreover, since we support HTML5, we need to expand empty elements on some elements and not on the others.
-     * See: http://jira.xwiki.org/browse/XCOMMONS-709
+     * For example: {@code <span></span>} is valid meanwhile {@code <br></br>} is not.
+     * See {@code OMIT_ELEMENT_EXPANDING_SET} for the list of elements to not expand.
      */
     // TODO: Remove the complex escaping code when SF HTML Cleaner will do proper escaping
     public static class XWikiXMLOutputter extends XMLOutputter
