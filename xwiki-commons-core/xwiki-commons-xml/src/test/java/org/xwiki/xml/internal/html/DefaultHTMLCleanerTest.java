@@ -366,6 +366,12 @@ public class DefaultHTMLCleanerTest
         assertHTML(input, HEADER_FULL + input + FOOTER);
     }
 
+    @Test
+    public void verifySpanIsExpanded() throws Exception
+    {
+        assertHTML("<p><span class=\"fa fa-icon\"></span></p>", "<span class=\"fa fa-icon\" />");
+    }
+
     private void assertHTML(String expected, String actual)
     {
         Assert.assertEquals(HEADER_FULL + expected + FOOTER,
