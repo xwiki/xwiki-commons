@@ -19,6 +19,7 @@
  */
 package org.xwiki.velocity.introspection;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -69,18 +70,63 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
     @Override
     public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i) throws Exception
     {
-        VelMethod method = super.getMethod(obj, methodName, args, i);
-        if (method == null && this.converterManager != null) {
-            // Try to convert method arguments to formal parameter types.
-            Object[] convertedArguments = this.convertArguments(obj, methodName, args);
-            if (convertedArguments != null) {
-                method = super.getMethod(obj, methodName, convertedArguments, i);
-                if (method != null) {
-                    method = new ConvertingVelMethod(method);
+        // Let Velocity find a matching method. However, Velocity finds the closest matching method.
+        // According to the JavaDoc of MethodMap:
+        // "Attempts to find the most specific applicable method using the algorithm described in the JLS section
+        // 15.12.2 (with the exception that it can't distinguish a primitive type argument from an object type
+        // argument, since in reflection primitive type arguments are represented by their object counterparts, so for
+        // an argument of type (say) java.lang.Integer, it will not be able to decide between a method that takes int
+        // and a method that takes java.lang.Integer as a parameter."
+        // Thus we need to apply the following logic:
+        // - if the returned VelMethod has a different number of parameters than the signature asked for, then go into
+        //   our conversion code
+        // - if our conversion code doesn't find any match, then return the VelMethod found by Velocity.
+
+        VelMethod initialVelMethod = super.getMethod(obj, methodName, args, i);
+        VelMethod velMethod = initialVelMethod;
+
+        boolean shouldConvert = false;
+        if (this.converterManager != null) {
+            if (velMethod == null) {
+                shouldConvert = true;
+            } else {
+                Method method = getPrivateMethod(velMethod);
+                boolean sameParameterNumbers = method.getParameterTypes().length == args.length;
+                if (!sameParameterNumbers) {
+                    shouldConvert = true;
                 }
             }
         }
-        return method;
+
+        if (shouldConvert) {
+            // Try to convert method arguments to formal parameter types.
+            Object[] convertedArguments = this.convertArguments(obj, methodName, args);
+            if (convertedArguments != null) {
+                velMethod = super.getMethod(obj, methodName, convertedArguments, i);
+                if (velMethod != null) {
+                    velMethod = new ConvertingVelMethod(velMethod);
+                } else {
+                    velMethod = initialVelMethod;
+                }
+            }
+        }
+
+        return velMethod;
+    }
+
+    /**
+     * This is hackish but there's no way in Velocity to get access to the underlying Method from a VelMethod instance.
+     */
+    private Method getPrivateMethod(VelMethod velMethod) throws Exception
+    {
+        Field methodField = velMethod.getClass().getDeclaredField("method");
+        boolean isAccessible = methodField.isAccessible();
+        try {
+            methodField.setAccessible(true);
+            return (Method) methodField.get(velMethod);
+        } finally {
+            methodField.setAccessible(isAccessible);
+        }
     }
 
     /**
