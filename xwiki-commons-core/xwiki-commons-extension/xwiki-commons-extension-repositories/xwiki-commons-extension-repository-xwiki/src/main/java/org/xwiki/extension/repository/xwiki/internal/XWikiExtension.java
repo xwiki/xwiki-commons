@@ -30,13 +30,13 @@ import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
-import org.xwiki.extension.DefaultExtensionRating;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
-import org.xwiki.extension.Rating;
+import org.xwiki.extension.rating.DefaultExtensionRating;
+import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionIssueManagement;
@@ -53,12 +53,12 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
  * @version $Id$
  * @since 4.0M1
  */
-public class XWikiExtension extends AbstractExtension implements Rating
+public class XWikiExtension extends AbstractExtension implements RatingExtension
 {
     /**
      * @see #getRating()
      */
-    protected org.xwiki.extension.ExtensionRating rating;
+    protected org.xwiki.extension.rating.ExtensionRating rating;
 
     public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion extension,
         ExtensionLicenseManager licenseManager)
@@ -161,7 +161,7 @@ public class XWikiExtension extends AbstractExtension implements Rating
     // Rating
 
     @Override
-    public org.xwiki.extension.ExtensionRating getRating()
+    public org.xwiki.extension.rating.ExtensionRating getRating()
     {
         return this.rating;
     }
@@ -169,7 +169,7 @@ public class XWikiExtension extends AbstractExtension implements Rating
     /**
      * @param rating an extension's rating
      */
-    public void setRating(org.xwiki.extension.ExtensionRating rating)
+    public void setRating(org.xwiki.extension.rating.ExtensionRating rating)
     {
         this.rating = rating;
     }

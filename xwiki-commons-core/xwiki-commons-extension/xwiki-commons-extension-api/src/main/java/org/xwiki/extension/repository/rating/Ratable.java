@@ -20,8 +20,8 @@
 package org.xwiki.extension.repository.rating;
 
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.ExtensionRating;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.rating.ExtensionRating;
 import org.xwiki.extension.version.Version;
 import org.xwiki.stability.Unstable;
 
