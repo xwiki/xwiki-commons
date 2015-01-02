@@ -53,11 +53,13 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
@@ -261,7 +263,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
             // features
             String featuresString = mavenModel.getProperties().getProperty("xwiki.extension.features");
             if (StringUtils.isNotBlank(featuresString)) {
-                coreExtension.setFeatures(this.converter.<Collection<String>>convert(List.class, featuresString));
+                coreExtension.setExtensionFeatures(this.converter.<Collection<ExtensionFeature>>convert(
+                    new DefaultParameterizedType(null, List.class, ExtensionFeature.class), featuresString));
             }
 
             // custom properties

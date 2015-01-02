@@ -39,6 +39,7 @@ import org.xwiki.extension.rating.DefaultExtensionRating;
 import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionFeature;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionIssueManagement;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRating;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm;
@@ -70,7 +71,11 @@ public class XWikiExtension extends AbstractExtension implements RatingExtension
         setDescription(extension.getDescription());
         setWebsite(extension.getWebsite());
 
-        setFeatures(extension.getFeatures());
+        // Features
+        for (ExtensionFeature feature : extension.getExtensionFeatures()) {
+            addExtensionFeature(new org.xwiki.extension.ExtensionFeature(feature.getId(), new DefaultVersionConstraint(
+                feature.getVersion())));
+        }
 
         // Rating
         ExtensionRating rating = extension.getRating();

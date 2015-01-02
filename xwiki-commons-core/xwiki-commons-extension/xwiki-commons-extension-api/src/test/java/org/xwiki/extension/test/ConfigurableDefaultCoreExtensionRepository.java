@@ -24,6 +24,7 @@ import java.util.Collection;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
@@ -43,19 +44,19 @@ public class ConfigurableDefaultCoreExtensionRepository extends DefaultCoreExten
         addExtensions(id, version, null);
     }
 
-    public void addExtensions(String id, Version version, Collection<String> features)
+    public void addExtensions(String id, Version version, Collection<ExtensionFeature> features)
     {
         DefaultCoreExtension coreExtension =
             new DefaultCoreExtension(null, null, new ExtensionId(id, version), "unknown");
 
         if (features != null) {
-            coreExtension.setFeatures(features);
+            coreExtension.setExtensionFeatures(features);
         }
 
         this.extensions.put(id, coreExtension);
 
-        for (String feature : coreExtension.getFeatures()) {
-            this.extensions.put(feature, coreExtension);
+        for (ExtensionFeature feature : coreExtension.getExtensionFeatures()) {
+            this.extensions.put(feature.getId(), coreExtension);
         }
     }
 }

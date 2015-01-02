@@ -42,7 +42,7 @@ public interface Extension
      * can be matched in this list.
      *
      * @return the extension ids also provided by this extension, an empty collection if there is none
-     * @deprecated since 6.4M1, use {@link #getExtensionFEatures()} instead
+     * @deprecated since 7.0M1, use {@link #getExtensionFEatures()} instead
      */
     @Deprecated
     Collection<String> getFeatures();
@@ -52,6 +52,7 @@ public interface Extension
      * can be matched in this list.
      * 
      * @return the {@link ExtensionFeature}s also provided by this extension, an empty collection if there is none
+     * @since 7.0M1
      */
     Collection<ExtensionFeature> getExtensionFeatures();
 

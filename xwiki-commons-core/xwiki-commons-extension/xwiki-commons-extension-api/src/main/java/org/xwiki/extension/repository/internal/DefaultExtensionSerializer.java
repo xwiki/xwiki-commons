@@ -62,6 +62,7 @@ import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionIssueManagement;
 import org.xwiki.extension.ExtensionLicense;
@@ -120,9 +121,13 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_DDEPENDENCY = "dependency";
 
-    private static final String ELEMENT_FEATURES = "features";
+    private static final String ELEMENT_EXTENSIONFEATURES = "extensionfeatures";
 
-    private static final String ELEMENT_FFEATURE = "feature";
+    private static final String ELEMENT_EFFEATURE = "feature";
+
+    private static final String ELEMENT_EFFID = "feature";
+
+    private static final String ELEMENT_EFFVERSION = "version";
 
     private static final String ELEMENT_SCM = "scm";
 
@@ -143,6 +148,12 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private static final String ELEMENT_IURL = "url";
 
     private static final String ELEMENT_PROPERTIES = "properties";
+
+    @Deprecated
+    private static final String ELEMENT_FEATURES = "features";
+
+    @Deprecated
+    private static final String ELEMENT_FFEATURE = "feature";
 
     @Deprecated
     private static final String ELEMENT_INSTALLED = "installed";
@@ -207,7 +218,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         Element extensionElement = getExtensionElement(descriptor);
 
         DefaultCoreExtension coreExtension =
-            new DefaultCoreExtension(repository, url, getExtensionId(extensionElement), getExtensionType(extensionElement));
+            new DefaultCoreExtension(repository, url, getExtensionId(extensionElement),
+                getExtensionType(extensionElement));
 
         loadExtensionDescriptor(coreExtension, extensionElement);
 
@@ -341,10 +353,28 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             }
         }
 
-        // Features
-        List<String> features = parseList(extensionElement, ELEMENT_FEATURES, ELEMENT_FFEATURE);
-        if (features != null) {
-            extension.setFeatures(features);
+        // Extension features
+        Node featuresNode = getNode(extensionElement, ELEMENT_EXTENSIONFEATURES);
+        if (featuresNode != null) {
+            NodeList extensionFeatures = featuresNode.getChildNodes();
+            for (int i = 0; i < extensionFeatures.getLength(); ++i) {
+                Node featureNode = extensionFeatures.item(i);
+
+                if (featureNode.getNodeName().equals(ELEMENT_EFFEATURE)) {
+                    Node idNode = getNode(featureNode, ELEMENT_EFFID);
+                    Node versionNode = getNode(featureNode, ELEMENT_EFFVERSION);
+
+                    String id = idNode != null ? idNode.getTextContent() : null;
+                    String version = versionNode != null ? versionNode.getTextContent() : null;
+
+                    extension.addExtensionFeature(new ExtensionFeature(id, new DefaultVersionConstraint(version)));
+                }
+            }
+        }
+        // @Deprecated Features
+        List<String> legacyFeatures = parseList(extensionElement, ELEMENT_FEATURES, ELEMENT_FFEATURE);
+        if (legacyFeatures != null) {
+            extension.setFeatures(legacyFeatures);
         }
 
         // Scm
@@ -377,14 +407,14 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             extension.setProperties(properties);
         }
 
-        // Deprecated Install fields
+        // @Deprecated Install fields
 
         Node enabledNode = getNode(extensionElement, ELEMENT_INSTALLED);
         if (enabledNode != null) {
             extension.putProperty(InstalledExtension.PKEY_INSTALLED, Boolean.valueOf(enabledNode.getTextContent()));
         }
 
-        // Deprecated Namespaces
+        // @Deprecated Namespaces
         List<String> namespaces = parseList(extensionElement, ELEMENT_NAMESPACES, ELEMENT_NNAMESPACE);
         if (namespaces != null) {
             extension.putProperty(InstalledExtension.PKEY_NAMESPACES, namespaces);
@@ -519,6 +549,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         addElement(document, extensionElement, ELEMENT_DESCRIPTION, extension.getDescription());
         addElement(document, extensionElement, ELEMENT_WEBSITE, extension.getWebSite());
 
+        addExtensionFeatures(document, extensionElement, extension);
         addFeatures(document, extensionElement, extension);
 
         addAuthors(document, extensionElement, extension);
@@ -569,6 +600,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         }
     }
 
+    @Deprecated
     private void addFeatures(Document document, Element parentElement, Extension extension)
     {
         Collection<String> features = extension.getFeatures();
@@ -578,6 +610,23 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
             for (String feature : features) {
                 addElement(document, featuresElement, ELEMENT_FFEATURE, feature);
+            }
+        }
+    }
+
+    private void addExtensionFeatures(Document document, Element parentElement, Extension extension)
+    {
+        Collection<ExtensionFeature> features = extension.getExtensionFeatures();
+        if (!features.isEmpty()) {
+            Element featuresElement = document.createElement(ELEMENT_EXTENSIONFEATURES);
+            parentElement.appendChild(featuresElement);
+
+            for (ExtensionFeature feature : features) {
+                Element authorElement = document.createElement(ELEMENT_EFFEATURE);
+                featuresElement.appendChild(authorElement);
+
+                addElement(document, authorElement, ELEMENT_EFFID, feature.getId());
+                addElement(document, authorElement, ELEMENT_EFFVERSION, feature.getVersionConstraint());
             }
         }
     }

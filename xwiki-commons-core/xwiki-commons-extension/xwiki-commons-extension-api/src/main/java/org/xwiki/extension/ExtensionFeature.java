@@ -19,13 +19,16 @@
  */
 package org.xwiki.extension;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.version.VersionConstraint;
+
+import com.google.common.base.Objects;
 
 /**
  * A feature associated to an extension.
  * 
  * @version $Id$
- * @since 6.4M1
+ * @since 7.0M1
  */
 public class ExtensionFeature
 {
@@ -44,6 +47,14 @@ public class ExtensionFeature
     }
 
     /**
+     * @param id the identifier of this feature
+     */
+    public ExtensionFeature(String id)
+    {
+        this(id, null);
+    }
+
+    /**
      * @return the identifier of this feature
      */
     public String getId()
@@ -57,5 +68,42 @@ public class ExtensionFeature
     public VersionConstraint getVersionConstraint()
     {
         return this.version;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof ExtensionFeature) {
+            ExtensionFeature otherExtensionFeature = (ExtensionFeature) obj;
+            return Objects.equal(otherExtensionFeature.getId(), getId())
+                && Objects.equal(otherExtensionFeature.getVersionConstraint(), getVersionConstraint());
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        HashCodeBuilder builder = new HashCodeBuilder();
+
+        builder.append(getId());
+        builder.append(getVersionConstraint());
+
+        return builder.toHashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(getId());
+
+        if (getVersionConstraint() != null) {
+            builder.append(getVersionConstraint());
+        }
+
+        return builder.toString();
     }
 }

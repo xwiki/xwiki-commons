@@ -25,6 +25,7 @@ import java.util.Map;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionIssueManagement;
@@ -58,9 +59,16 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingObje
     }
 
     @Override
+    @Deprecated
     public Collection<String> getFeatures()
     {
         return getWrapped().getFeatures();
+    }
+
+    @Override
+    public Collection<ExtensionFeature> getExtensionFeatures()
+    {
+        return getWrapped().getExtensionFeatures();
     }
 
     @Override

@@ -25,6 +25,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.TestResources;
@@ -250,7 +251,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     public void testInstallPlanWithFeatureAsCoreExtensionFeature() throws Throwable
     {
         this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
-            Arrays.asList("rsimple-feature"));
+            Arrays.asList(new ExtensionFeature("rsimple-feature")));
 
         installPlan(TestResources.REMOTE_SIMPLE_ID);
     }
@@ -259,7 +260,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     public void testInstallPlanWithCoreExtensionFeature() throws Throwable
     {
         this.coreRepository.addExtensions("coreextension", new DefaultVersion("version"),
-            Arrays.asList(TestResources.REMOTE_SIMPLE_ID.getId()));
+            Arrays.asList(new ExtensionFeature(TestResources.REMOTE_SIMPLE_ID.getId())));
 
         installPlan(TestResources.REMOTE_SIMPLE_ID);
     }
