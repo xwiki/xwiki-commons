@@ -17,39 +17,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.classloader;
+package org.xwiki.extension.repository.internal;
 
-import org.xwiki.component.annotation.Role;
+import java.net.URL;
+
+import org.w3c.dom.Element;
 
 /**
- * Store and create automatically class loaders by namespace.
- * <p>
- * All classloaders inherit from root classloader which is associated to null namespace.
+ * Serialize and unserialize {@link URL} properties.
  *
  * @version $Id$
- * @since 4.0M1
  */
-@Role
-public interface ClassLoaderManager
+public class URLExtensionPropertySerializer extends AbstractExtensionPropertySerializer<URL>
 {
     /**
-     * Create and get classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
-     * @param create true if the class loader should be created if it does not exists
-     * @return the class loader, if none can be found and <code>create</code> is false return root classloader
+     * Default constructor.
      */
-    NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create);
+    public URLExtensionPropertySerializer()
+    {
+        super("url");
+    }
 
-    /**
-     * Remove all classloaders.
-     */
-    void dropURLClassLoaders();
-
-    /**
-     * Remove the classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
-     */
-    void dropURLClassLoader(String namespace);
+    @Override
+    public URL toValue(Element element)
+    {
+        try {
+            return new URL(element.getTextContent());
+        } catch (Exception e) {
+            // TODO: should maybe log something
+            return null;
+        }
+    }
 }

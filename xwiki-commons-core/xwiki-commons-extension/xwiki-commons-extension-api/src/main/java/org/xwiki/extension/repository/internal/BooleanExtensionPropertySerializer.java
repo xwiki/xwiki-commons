@@ -17,35 +17,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.repository.internal;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.w3c.dom.Element;
 
 /**
- * Serialize and unserialize {@link Set} properties.
+ * Serialize and unserialize {@link Boolean} properties.
  *
  * @version $Id$
  */
-public class SetExtensionPropertySerializer extends CollectionExtensionPropertySerializer<Set>
+public class BooleanExtensionPropertySerializer extends AbstractExtensionPropertySerializer<Boolean>
 {
     /**
-     * @param serializerById the serializers by type id
-     * @param serializerByClass the serializers by class
+     * Default constructor.
      */
-    public SetExtensionPropertySerializer(Map<String, ExtensionPropertySerializer> serializerById,
-        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
+    public BooleanExtensionPropertySerializer()
     {
-        super("set", serializerById, serializerByClass);
+        super("boolean");
     }
 
-    /**
-     * @return a new collection
-     */
     @Override
-    protected Set createCollection()
+    public Boolean toValue(Element element)
     {
-        return new HashSet();
+        return Boolean.valueOf(element.getTextContent());
     }
 }

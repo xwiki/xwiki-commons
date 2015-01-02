@@ -17,39 +17,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.classloader;
+package org.xwiki.extension.repository.internal;
 
-import org.xwiki.component.annotation.Role;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Store and create automatically class loaders by namespace.
- * <p>
- * All classloaders inherit from root classloader which is associated to null namespace.
+ * Serialize and unserialize {@link Set} properties.
  *
  * @version $Id$
- * @since 4.0M1
  */
-@Role
-public interface ClassLoaderManager
+public class SetExtensionPropertySerializer extends CollectionExtensionPropertySerializer<Set>
 {
     /**
-     * Create and get classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
-     * @param create true if the class loader should be created if it does not exists
-     * @return the class loader, if none can be found and <code>create</code> is false return root classloader
+     * @param serializerById the serializers by type id
+     * @param serializerByClass the serializers by class
      */
-    NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create);
+    public SetExtensionPropertySerializer(Map<String, ExtensionPropertySerializer> serializerById,
+        Map<Class<?>, ExtensionPropertySerializer> serializerByClass)
+    {
+        super("set", serializerById, serializerByClass);
+    }
 
     /**
-     * Remove all classloaders.
+     * @return a new collection
      */
-    void dropURLClassLoaders();
-
-    /**
-     * Remove the classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
-     */
-    void dropURLClassLoader(String namespace);
+    @Override
+    protected Set createCollection()
+    {
+        return new HashSet();
+    }
 }

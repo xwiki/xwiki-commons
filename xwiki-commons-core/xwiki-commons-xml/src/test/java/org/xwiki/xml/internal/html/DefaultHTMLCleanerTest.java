@@ -86,8 +86,8 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p><textarea></textarea></p>", "<textarea/>");
 
         // Verify exceptions (by default elements are expanded).
-        assertHTML("<p><br/></p>", "<p><br></p>");
-        assertHTML("<hr/>", "<hr>");
+        assertHTML("<p><br /></p>", "<p><br></p>");
+        assertHTML("<hr />", "<hr>");
     }
 
     @Test
@@ -100,7 +100,7 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>",
             "<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>");
         assertHTML("<p>\"&amp;</p>", "<p>\"&</p>");
-        assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\"></img></p>",
+        assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" /></p>",
             "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />");
         assertHTML("<p>&#xA;</p>", "<p>&#xA;</p>");
 
@@ -111,7 +111,7 @@ public class DefaultHTMLCleanerTest
     @Test
     public void closeUnbalancedTags()
     {
-        assertHTML("<hr/><p>hello</p>", "<hr><p>hello");
+        assertHTML("<hr /><p>hello</p>", "<hr><p>hello");
     }
 
     @Test
@@ -134,17 +134,17 @@ public class DefaultHTMLCleanerTest
     @Test
     public void convertImageAlignment()
     {
-        assertHTML("<p><img style=\"float:left\"></img></p>", "<img align=\"left\"/>");
-        assertHTML("<p><img style=\"float:right\"></img></p>", "<img align=\"right\"/>");
-        assertHTML("<p><img style=\"vertical-align:top\"></img></p>", "<img align=\"top\"/>");
-        assertHTML("<p><img style=\"vertical-align:middle\"></img></p>", "<img align=\"middle\"/>");
-        assertHTML("<p><img style=\"vertical-align:bottom\"></img></p>", "<img align=\"bottom\"/>");
+        assertHTML("<p><img style=\"float:left\" /></p>", "<img align=\"left\"/>");
+        assertHTML("<p><img style=\"float:right\" /></p>", "<img align=\"right\"/>");
+        assertHTML("<p><img style=\"vertical-align:top\" /></p>", "<img align=\"top\"/>");
+        assertHTML("<p><img style=\"vertical-align:middle\" /></p>", "<img align=\"middle\"/>");
+        assertHTML("<p><img style=\"vertical-align:bottom\" /></p>", "<img align=\"bottom\"/>");
     }
 
     @Test
     public void convertImplicitParagraphs()
     {
-        assertHTML("<p>word1</p><p>word2</p><p>word3</p><hr/><p>word4</p>", "word1<p>word2</p>word3<hr />word4");
+        assertHTML("<p>word1</p><p>word2</p><p>word3</p><hr /><p>word4</p>", "word1<p>word2</p>word3<hr />word4");
 
         // Don't convert when there are only spaces or new lines
         assertHTML("<p>word1</p>  \n  <p>word2</p>", "<p>word1</p>  \n  <p>word2</p>");
@@ -222,7 +222,7 @@ public class DefaultHTMLCleanerTest
 
         // Verify that CDATA not inside SCRIPT or STYLE elements are considered comments in HTML and thus stripped
         // when cleaned.
-        assertHTML("<p/>", "<p><![CDATA[&]]></p>");
+        assertHTML("<p></p>", "<p><![CDATA[&]]></p>");
         assertHTML("<p>&amp;&amp;</p>", "<p>&<![CDATA[&]]>&</p>");
     }
 
@@ -364,6 +364,12 @@ public class DefaultHTMLCleanerTest
     {
         String input = "<fieldset><legend>test</legend><div>content</div></fieldset>";
         assertHTML(input, HEADER_FULL + input + FOOTER);
+    }
+
+    @Test
+    public void verifySpanIsExpanded() throws Exception
+    {
+        assertHTML("<p><span class=\"fa fa-icon\"></span></p>", "<span class=\"fa fa-icon\" />");
     }
 
     private void assertHTML(String expected, String actual)

@@ -78,7 +78,7 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
     /**
      * Used to manipulate filesystem repository storage.
      */
-    private transient ExtensionStorage storage;
+    private transient LocalExtensionStorage storage;
 
     /**
      * Make the repository ignore features.
@@ -92,7 +92,8 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
     public void initialize() throws InitializationException
     {
         try {
-            this.storage = new ExtensionStorage(this, this.configuration.getLocalRepository(), this.componentManager);
+            this.storage =
+                new LocalExtensionStorage(this, this.configuration.getLocalRepository(), this.componentManager);
         } catch (ComponentLookupException e) {
             throw new InitializationException("Failed to intialize local extension storage", e);
         }

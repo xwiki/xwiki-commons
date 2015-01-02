@@ -35,6 +35,16 @@ import org.xwiki.extension.ExtensionId;
 public class DefaultCoreExtension extends AbstractExtension implements CoreExtension
 {
     /**
+     * @see #getDescriptorURL()
+     */
+    private static final String PKEY_DESCRIPTORURL = "core.descriptorurl";
+
+    /**
+     * @see #isCached()
+     */
+    private boolean cached;
+
+    /**
      * @param repository the core extension repository
      * @param url the core extension URL
      * @param id the id/version combination which makes the extension unique
@@ -44,9 +54,7 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
     {
         super(repository, id, type);
 
-        setFile(new DefaultCoreExtensionFile(url));
-
-        putProperty(PKEY_URL, url);
+        setURL(url);
     }
 
     // Extension
@@ -60,9 +68,23 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
     {
         super(repository, extension);
 
-        setFile(new DefaultCoreExtensionFile(url));
+        setURL(url);
+    }
 
-        putProperty(PKEY_URL, url);
+    /**
+     * @return true if the extension come from the cache
+     */
+    public boolean isCached()
+    {
+        return this.cached;
+    }
+
+    /**
+     * @param cached true if the extension come from the cache
+     */
+    public void setCached(boolean cached)
+    {
+        this.cached = cached;
     }
 
     @Override
@@ -90,7 +112,26 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
      */
     public void setURL(URL url)
     {
+        setFile(new DefaultCoreExtensionFile(url));
+
         putProperty(PKEY_URL, url);
+    }
+
+    /**
+     * @return the {@link URL} pointing to the core extension descriptor (usually inside the extension file)
+     */
+    public URL getDescriptorURL()
+    {
+        return getProperty(PKEY_DESCRIPTORURL, null);
+    }
+
+    /**
+     * @param descriptorURL the {@link URL} pointing to the core extension descriptor (usually inside the extension
+     *            file)
+     */
+    public void setDescriptorURL(URL descriptorURL)
+    {
+        putProperty(PKEY_DESCRIPTORURL, descriptorURL);
     }
 
     @Override
@@ -118,6 +159,12 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
     @Override
     public void set(Extension extension)
     {
+        URL url = getURL();
+        URL descriptorURL = getDescriptorURL();
+
         super.set(extension);
+
+        setURL(url);
+        setDescriptorURL(descriptorURL);
     }
 }

@@ -17,39 +17,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.classloader;
+package org.xwiki.extension.wrap;
 
-import org.xwiki.component.annotation.Role;
+import org.xwiki.extension.rating.ExtensionRating;
+import org.xwiki.extension.rating.RatingExtension;
 
 /**
- * Store and create automatically class loaders by namespace.
- * <p>
- * All classloaders inherit from root classloader which is associated to null namespace.
+ * Wrap a rating extension.
  *
+ * @param <T> the extension type
  * @version $Id$
- * @since 4.0M1
+ * @since 6.4M3
  */
-@Role
-public interface ClassLoaderManager
+public class WrappingRatingExtension<T extends RatingExtension> extends WrappingExtension<T> implements RatingExtension
 {
     /**
-     * Create and get classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
-     * @param create true if the class loader should be created if it does not exists
-     * @return the class loader, if none can be found and <code>create</code> is false return root classloader
+     * @param localExtension the wrapped local extension
      */
-    NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create);
+    public WrappingRatingExtension(T localExtension)
+    {
+        super(localExtension);
+    }
 
-    /**
-     * Remove all classloaders.
-     */
-    void dropURLClassLoaders();
+    // RatingExtension
 
-    /**
-     * Remove the classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
-     */
-    void dropURLClassLoader(String namespace);
+    @Override
+    public ExtensionRating getRating()
+    {
+        return getWrapped().getRating();
+    }
 }

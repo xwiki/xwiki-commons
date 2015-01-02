@@ -17,39 +17,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.classloader;
+package org.xwiki.extension.rating;
 
-import org.xwiki.component.annotation.Role;
+import org.xwiki.extension.repository.rating.RatableExtensionRepository;
 
 /**
- * Store and create automatically class loaders by namespace.
- * <p>
- * All classloaders inherit from root classloader which is associated to null namespace.
+ * The rating information for a extension.
  *
  * @version $Id$
- * @since 4.0M1
+ * @since 6.2M2
  */
-@Role
-public interface ClassLoaderManager
+public interface ExtensionRating
 {
     /**
-     * Create and get classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
-     * @param create true if the class loader should be created if it does not exists
-     * @return the class loader, if none can be found and <code>create</code> is false return root classloader
+     * @return the total number of votes
      */
-    NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create);
+    int getTotalVotes();
 
     /**
-     * Remove all classloaders.
+     * @return the average vote
      */
-    void dropURLClassLoaders();
+    float getAverageVote();
 
     /**
-     * Remove the classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
+     * @return the repository from which the rating was fetched
      */
-    void dropURLClassLoader(String namespace);
+    RatableExtensionRepository getRepository();
 }

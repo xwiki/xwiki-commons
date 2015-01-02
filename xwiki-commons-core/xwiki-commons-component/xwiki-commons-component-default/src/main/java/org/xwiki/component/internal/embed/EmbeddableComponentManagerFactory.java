@@ -48,7 +48,13 @@ public class EmbeddableComponentManagerFactory implements ComponentManagerFactor
     @Override
     public ComponentManager createComponentManager(ComponentManager parentComponentManager)
     {
-        ComponentManager cm = new EmbeddableComponentManager();
+        return createComponentManager(null, parentComponentManager);
+    }
+
+    @Override
+    public ComponentManager createComponentManager(String namespace, ComponentManager parentComponentManager)
+    {
+        ComponentManager cm = new EmbeddableComponentManager(namespace);
 
         // Set the parent
         cm.setParent(parentComponentManager);

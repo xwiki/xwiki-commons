@@ -60,7 +60,10 @@ public class MavenCoreExtension extends DefaultCoreExtension implements MavenExt
         putProperty(PKEY_MAVEN_GROUPID, mavenModel.getGroupId());
 
         for (Map.Entry<Object, Object> entry : mavenModel.getProperties().entrySet()) {
-            putProperty((String) entry.getKey(), entry.getValue());
+            String key = (String) entry.getKey();
+            if (key.startsWith("xwiki.extension.")) {
+                putProperty(key, entry.getValue());
+            }
         }
     }
 

@@ -123,11 +123,19 @@
 
   <element name="extensionsSearchResult" type="extension:ExtensionsSearchResult">
   </element>
+  
+  <complexType name="ExtensionRating">
+    <sequence>
+      <element name="totalVotes" type="int" maxOccurs="1" minOccurs="1"></element>
+      <element name="averageVote" type="float" maxOccurs="1" minOccurs="1"></element>
+    </sequence>
+  </complexType>
 
   <complexType name="AbstractExtension">
     <complexContent>
       <extension base="extension:ExtensionSummary">
         <sequence>
+          <element name="rating" type="extension:ExtensionRating" minOccurs="0" maxOccurs="1"></element>
           <element name="summary" type="string" minOccurs="0"></element>
           <element name="description" type="string" minOccurs="0"></element>
           <element name="licenses" type="extension:License"

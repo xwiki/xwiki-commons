@@ -49,7 +49,10 @@ public class AetherExtension extends AbstractExtension implements MavenExtension
         putProperty(PKEY_MAVEN_MODEL, mavenModel);
 
         for (Map.Entry<Object, Object> entry : mavenModel.getProperties().entrySet()) {
-            putProperty((String) entry.getKey(), entry.getValue());
+            String key = (String) entry.getKey();
+            if (key.startsWith("xwiki.extension.")) {
+                putProperty(key, entry.getValue());
+            }
         }
     }
 

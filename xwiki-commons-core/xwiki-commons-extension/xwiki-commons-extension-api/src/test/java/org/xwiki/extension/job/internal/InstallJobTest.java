@@ -100,7 +100,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testInstallRemoteOnNamespaces() throws Throwable
     {
-        install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, new String[] { "namespace1", "namespace2" });
+        install(TestResources.REMOTE_WITHRANDCDEPENDENCIES_ID, new String[] {"namespace1", "namespace2"});
 
         LocalExtension installedExtension =
             this.installedExtensionRepository.getInstalledExtension(
@@ -274,14 +274,54 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     {
         install(TestResources.REMOTE_WITHRDEPENDENCY_ID, "namespace");
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_WITHRDEPENDENCY_ID.getId(), "namespace"));
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace"));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_WITHRDEPENDENCY_ID.getId(), "namespace"));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_SIMPLE_ID.getId(), "namespace"));
 
         install(TestResources.REMOTE_SIMPLE_ID);
 
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), "namespace"));
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_SIMPLE_ID.getId(), null));
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_WITHRDEPENDENCY_ID.getId(), "namespace"));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_WITHRDEPENDENCY_ID.getId(), null));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_SIMPLE_ID.getId(), "namespace"));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_SIMPLE_ID.getId(), null));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_WITHRDEPENDENCY_ID.getId(), "namespace"));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_WITHRDEPENDENCY_ID.getId(), null));
+    }
+
+    @Test
+    public void testUpgradeOnNameSpaceWithDependencyOnRoot() throws Throwable
+    {
+        // Install dependency on root
+        install(TestResources.REMOTE_UPGRADE10_ID);
+        // Install extension on namespace
+        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID, "namespace");
+
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADE10_ID.getId(), "namespace"));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADE10_ID.getId(), null));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID.getId(), "namespace"));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID.getId(), null));
+
+        // Upgrade extension on namespace
+        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace");
+
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
+        Assert.assertNull(this.installedExtensionRepository
+            .getInstalledExtension(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID));
+
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADE20_ID.getId(), "namespace"));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADE20_ID.getId(), null));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID.getId(), "namespace"));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID.getId(), null));
     }
 }

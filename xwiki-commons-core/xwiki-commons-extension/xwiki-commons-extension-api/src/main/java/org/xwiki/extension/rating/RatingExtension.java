@@ -17,28 +17,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.rating;
 
-import org.w3c.dom.Element;
+import org.xwiki.extension.Extension;
 
 /**
- * Serialize and unserialize {@link Integer} properties.
- *
+ * Combine {@link Extension} and {@link Rating}.
+ * 
  * @version $Id$
+ * @since 6.4M3
  */
-public class IntegerExtensionPropertySerializer extends AbstractExtensionPropertySerializer<Integer>
+public interface RatingExtension extends Extension, Rating
 {
-    /**
-     * Default constructor.
-     */
-    public IntegerExtensionPropertySerializer()
-    {
-        super("integer");
-    }
 
-    @Override
-    public Integer toValue(Element element)
-    {
-        return Integer.valueOf(element.getTextContent());
-    }
 }

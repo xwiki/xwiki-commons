@@ -17,39 +17,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.classloader;
+package org.xwiki.extension.repository.internal;
 
-import org.xwiki.component.annotation.Role;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
- * Store and create automatically class loaders by namespace.
- * <p>
- * All classloaders inherit from root classloader which is associated to null namespace.
+ * Serialize and unserialize a property.
  *
+ * @param <T>
  * @version $Id$
- * @since 4.0M1
  */
-@Role
-public interface ClassLoaderManager
+public interface ExtensionPropertySerializer<T>
 {
     /**
-     * Create and get classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
-     * @param create true if the class loader should be created if it does not exists
-     * @return the class loader, if none can be found and <code>create</code> is false return root classloader
+     * @param element the XML element
+     * @return the unserialized property value
      */
-    NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create);
+    T toValue(Element element);
 
     /**
-     * Remove all classloaders.
+     * @param document the document used to create new elements
+     * @param elementName the name of the property
+     * @param elementValue the value of the property
+     * @return the serialized property {@link Element}
      */
-    void dropURLClassLoaders();
-
-    /**
-     * Remove the classloader associated to the provided namespace.
-     *
-     * @param namespace the namespace
-     */
-    void dropURLClassLoader(String namespace);
+    Element toElement(Document document, String elementName, T elementValue);
 }

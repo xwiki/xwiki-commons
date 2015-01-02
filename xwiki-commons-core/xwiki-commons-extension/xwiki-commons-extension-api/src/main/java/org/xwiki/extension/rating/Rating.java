@@ -17,30 +17,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+package org.xwiki.extension.rating;
 
 /**
- * Serialize and unserialize a property.
+ * Represent a rating.
  *
- * @param <T>
  * @version $Id$
+ * @since 6.2M2
  */
-public interface ExtensionPropertySerializer<T>
+public interface Rating
 {
     /**
-     * @param element the XML element
-     * @return the unserialized property value
+     * @return the total votes/average vote combination which represents an extension's rating
      */
-    T toValue(Element element);
-
-    /**
-     * @param document the document used to create new elements
-     * @param elementName the name of the property
-     * @param elementValue the value of the property
-     * @return the serialized property {@link Element}
-     */
-    Element toElement(Document document, String elementName, T elementValue);
+    ExtensionRating getRating();
 }

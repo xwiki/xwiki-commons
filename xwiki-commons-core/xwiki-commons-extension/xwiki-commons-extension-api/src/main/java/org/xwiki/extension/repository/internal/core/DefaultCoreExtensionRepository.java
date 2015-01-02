@@ -99,7 +99,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
         try {
             this.extensions = new ConcurrentHashMap<String, DefaultCoreExtension>(this.scanner.loadExtensions(this));
 
-            this.environmentExtension = this.scanner.loadEnvironmentExtensions(this);
+            this.environmentExtension = this.scanner.loadEnvironmentExtension(this);
             if (this.environmentExtension != null) {
                 this.extensions.put(this.environmentExtension.getId().getId(), this.environmentExtension);
             }

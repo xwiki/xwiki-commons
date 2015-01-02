@@ -19,8 +19,9 @@
  */
 package org.xwiki.extension.repository.core;
 
-import org.jmock.Expectations;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
@@ -29,39 +30,25 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
 import org.xwiki.extension.version.internal.DefaultVersion;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-public class DefaultCoreExtensionRepositoryTest extends AbstractComponentTestCase
+@AllComponents
+public class DefaultCoreExtensionRepositoryTest
 {
+    @Rule
+    public MockitoComponentMockingRule<CoreExtensionRepository> mocker =
+        new MockitoComponentMockingRule<CoreExtensionRepository>(ConfigurableDefaultCoreExtensionRepository.class);
+
     private ConfigurableDefaultCoreExtensionRepository coreExtensionRepository;
 
-    @Override
-    public void setUp() throws Exception
+    @Before
+    public void before() throws Exception
     {
-        super.setUp();
-
-        // Mock Environment
-        final Environment environment = registerMockComponent(Environment.class);
-
-        getMockery().checking(new Expectations()
-        {
-            {
-                allowing(environment).getResourceAsStream(with(any(String.class)));
-                will(returnValue(null));
-            }
-        });
+        this.mocker.registerMockComponent(Environment.class);
 
         this.coreExtensionRepository =
-            (ConfigurableDefaultCoreExtensionRepository) getComponentManager().getInstance(
-                CoreExtensionRepository.class);
-    }
-
-    @Override
-    protected void registerComponents() throws Exception
-    {
-        super.registerComponents();
-
-        registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
+            (ConfigurableDefaultCoreExtensionRepository) this.mocker.getInstance(CoreExtensionRepository.class);
     }
 
     /**

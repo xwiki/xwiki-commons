@@ -17,28 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.repository.rating;
 
-import org.w3c.dom.Element;
+import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.stability.Unstable;
 
 /**
- * Serialize and unserialize {@link Boolean} properties.
- *
+ * See {@link ExtensionRepository} and {@link Ratable}.
+ * 
  * @version $Id$
+ * @since 6.4M3
  */
-public class BooleanExtensionPropertySerializer extends AbstractExtensionPropertySerializer<Boolean>
+@Unstable
+public interface RatableExtensionRepository extends ExtensionRepository, Ratable
 {
-    /**
-     * Default constructor.
-     */
-    public BooleanExtensionPropertySerializer()
-    {
-        super("boolean");
-    }
 
-    @Override
-    public Boolean toValue(Element element)
-    {
-        return Boolean.valueOf(element.getTextContent());
-    }
 }

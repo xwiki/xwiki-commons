@@ -21,13 +21,13 @@ package org.xwiki.xml.html;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jdom.DocType;
+import org.jdom.Element;
 import org.jdom.input.DOMBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -41,23 +41,28 @@ import org.w3c.dom.NodeList;
  * @version $Id$
  * @since 1.8.3
  */
+// TODO: Create a separate class for each HTML version (XHTML 1.0, HTML5, etc...)
 public final class HTMLUtils
 {
     /**
-     * IE6 doesn't handle XHTML properly and some elements must not be expanded when printed (for example {@code <br>
-     * </br>} isn't valid for IE6 but {@code <br/>} is. Thus for the list of elements below we need special handling.
+     * In HTML5, some elements must be expanded (for example {@code <span></span>} instead of {@code <span />}), and
+     * some others must not (for example {@code <br />} instead of {@code <br></br>}. Thus for the list of elements
+     * below we need special handling (not expanding).
      */
-    // TODO: Remove when we drop IE6 support
-    private static final List<String> OMIT_ELEMENT_CLOSE_SET = Arrays.asList(
-        "area", "base", "br", "col", "hr", "img", "input", "link", "meta", "p", "param");
+    private static final List<String> OMIT_ELEMENT_EXPANDING_SET = Arrays.asList(
+        "area", "base", "br", "col", "hr", "img", "input", "link", "meta", "param");
 
     /**
      * JDOM's XMLOutputter class converts reserved XML characters (<, >, ' , &, \r and \n) into their entity format
      * (&lt;, &gt; &apos; &amp; &#xD; and \r\n). However since we're using HTML Cleaner
      * (http://htmlcleaner.sourceforge.net/) and since it's buggy for character escapes we have turned off character
      * escaping for it and thus we need to perform selective escaping here.
+     *
+     * Moreover, since we support HTML5, we need to expand empty elements on some elements and not on the others.
+     * For example: {@code <span></span>} is valid meanwhile {@code <br></br>} is not.
+     * See {@code OMIT_ELEMENT_EXPANDING_SET} for the list of elements to not expand.
      */
-    // TODO: Remove this complex escaping code when SF HTML Cleaner will do proper escaping
+    // TODO: Remove the complex escaping code when SF HTML Cleaner will do proper escaping
     public static class XWikiXMLOutputter extends XMLOutputter
     {
         /**
@@ -160,6 +165,31 @@ public final class HTMLUtils
                 super.printDocType(out, docType);
             }
         }
+
+        @Override
+        protected void printElement(Writer out, Element element, int level, NamespaceStack namespaces)
+            throws IOException
+        {
+            // We override the code from the super class to not expand some empty elements.
+            boolean currentFormatPolicy = currentFormat.getExpandEmptyElements();
+            try {
+                String elementName = element.getName();
+                for (String name : OMIT_ELEMENT_EXPANDING_SET) {
+                    if (name.equals(elementName)) {
+                        // We do not expand this empty element
+                        currentFormat.setExpandEmptyElements(false);
+                        break;
+                    }
+                }
+
+                // Call the method from the super class
+                super.printElement(out, element, level, namespaces);
+
+            } finally {
+                // Reset the format
+                currentFormat.setExpandEmptyElements(currentFormatPolicy);
+            }
+        }
     }
 
     /**
@@ -205,13 +235,6 @@ public final class HTMLUtils
 
         XMLOutputter outputter = new XWikiXMLOutputter(format, omitDoctype);
         String result = outputter.outputString(jdomDoc);
-
-        // Since we need to support IE6 we must generate compact form for the following HTML elements (otherwise they
-        // won't be understood by IE6):
-        for (String specialElement : OMIT_ELEMENT_CLOSE_SET) {
-            result = result.replaceAll(MessageFormat.format("<{0}></{0}>", specialElement),
-                MessageFormat.format("<{0}/>", specialElement));
-        }
 
         return result;
     }

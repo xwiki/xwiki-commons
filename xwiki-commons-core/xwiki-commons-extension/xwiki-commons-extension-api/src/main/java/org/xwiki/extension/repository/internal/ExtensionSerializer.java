@@ -17,37 +17,54 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.repository.internal;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.InvalidExtensionException;
-import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
+import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
+import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
+import org.xwiki.extension.repository.internal.local.DefaultLocalExtensionRepository;
 
 /**
  * Local repository storage serialization tool.
  *
  * @version $Id$
- * @since 4.0M1
+ * @since 6.4M1
  */
 @Role
 public interface ExtensionSerializer
 {
     /**
-     * Load local extension descriptor.
+     * Load an extension descriptor as local extension instance.
      *
      * @param repository the repository
      * @param descriptor the descriptor content
-     * @return the parsed local extension descriptor
+     * @return the {@link Extension} instance
      * @throws InvalidExtensionException error when trying to parse extension descriptor
      */
-    DefaultLocalExtension loadDescriptor(DefaultLocalExtensionRepository repository, InputStream descriptor)
-        throws InvalidExtensionException;
+    DefaultLocalExtension loadLocalExtensionDescriptor(DefaultLocalExtensionRepository repository,
+        InputStream descriptor) throws InvalidExtensionException;
+
+    /**
+     * Load an extension descriptor as core extension instance.
+     *
+     * @param repository the repository
+     * @param url the core extension {@link URL}
+     * @param descriptor the descriptor content
+     * @return the {@link Extension} instance
+     * @throws InvalidExtensionException error when trying to parse extension descriptor
+     */
+    DefaultCoreExtension loadCoreExtensionDescriptor(DefaultCoreExtensionRepository repository, URL url,
+        InputStream descriptor) throws InvalidExtensionException;
 
     /**
      * Save local extension descriptor.
@@ -57,6 +74,6 @@ public interface ExtensionSerializer
      * @throws ParserConfigurationException error when serializing
      * @throws TransformerException error when serializing
      */
-    void saveDescriptor(LocalExtension extension, OutputStream os) throws ParserConfigurationException,
+    void saveExtensionDescriptor(Extension extension, OutputStream os) throws ParserConfigurationException,
         TransformerException;
 }

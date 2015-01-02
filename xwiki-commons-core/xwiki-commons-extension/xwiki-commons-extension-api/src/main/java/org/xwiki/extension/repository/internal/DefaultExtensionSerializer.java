@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.local;
+package org.xwiki.extension.repository.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,6 +53,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
@@ -69,14 +70,17 @@ import org.xwiki.extension.ExtensionScm;
 import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.InvalidExtensionException;
-import org.xwiki.extension.LocalExtension;
+import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
+import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
+import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
+import org.xwiki.extension.repository.internal.local.DefaultLocalExtensionRepository;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
  * Local repository storage serialization tool.
  *
  * @version $Id$
- * @since 4.0M1
+ * @since 6.4M1
  */
 @Component
 @Singleton
@@ -169,6 +173,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             StringExtensionPropertySerializer stringSerializer = new StringExtensionPropertySerializer();
             IntegerExtensionPropertySerializer integerSerializer = new IntegerExtensionPropertySerializer();
             BooleanExtensionPropertySerializer booleanSerializer = new BooleanExtensionPropertySerializer();
+            URLExtensionPropertySerializer urlSerializer = new URLExtensionPropertySerializer();
             CollectionExtensionPropertySerializer collectionSerializer =
                 new CollectionExtensionPropertySerializer(this.serializerById, this.serializerByClass);
             SetExtensionPropertySerializer setSerializer =
@@ -180,6 +185,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             this.serializerById.put("", stringSerializer);
             this.serializerById.put(integerSerializer.getType(), integerSerializer);
             this.serializerById.put(booleanSerializer.getType(), booleanSerializer);
+            this.serializerById.put(urlSerializer.getType(), urlSerializer);
             this.serializerById.put(collectionSerializer.getType(), collectionSerializer);
             this.serializerById.put(setSerializer.getType(), setSerializer);
             this.serializerById.put(mapSerializer.getType(), mapSerializer);
@@ -187,6 +193,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             this.serializerByClass.put(String.class, stringSerializer);
             this.serializerByClass.put(Integer.class, integerSerializer);
             this.serializerByClass.put(Boolean.class, booleanSerializer);
+            this.serializerByClass.put(URL.class, urlSerializer);
             this.serializerByClass.put(Set.class, setSerializer);
             this.serializerByClass.put(Collection.class, collectionSerializer);
             this.serializerByClass.put(Map.class, mapSerializer);
@@ -194,8 +201,34 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     }
 
     @Override
-    public DefaultLocalExtension loadDescriptor(DefaultLocalExtensionRepository repository, InputStream descriptor)
-        throws InvalidExtensionException
+    public DefaultCoreExtension loadCoreExtensionDescriptor(DefaultCoreExtensionRepository repository, URL url,
+        InputStream descriptor) throws InvalidExtensionException
+    {
+        Element extensionElement = getExtensionElement(descriptor);
+
+        DefaultCoreExtension coreExtension =
+            new DefaultCoreExtension(repository, url, getExtensionId(extensionElement), getExtensionType(extensionElement));
+
+        loadExtensionDescriptor(coreExtension, extensionElement);
+
+        return coreExtension;
+    }
+
+    @Override
+    public DefaultLocalExtension loadLocalExtensionDescriptor(DefaultLocalExtensionRepository repository,
+        InputStream descriptor) throws InvalidExtensionException
+    {
+        Element extensionElement = getExtensionElement(descriptor);
+
+        DefaultLocalExtension localExtension =
+            new DefaultLocalExtension(repository, getExtensionId(extensionElement), getExtensionType(extensionElement));
+
+        loadExtensionDescriptor(localExtension, extensionElement);
+
+        return localExtension;
+    }
+
+    private Element getExtensionElement(InputStream descriptor) throws InvalidExtensionException
     {
         DocumentBuilder documentBuilder;
         try {
@@ -211,35 +244,42 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             throw new InvalidExtensionException("Failed to parse descriptor", e);
         }
 
-        Element extensionElement = document.getDocumentElement();
+        return document.getDocumentElement();
+    }
 
-        // Mandatory fields
-
+    private ExtensionId getExtensionId(Element extensionElement)
+    {
         Node idNode = extensionElement.getElementsByTagName(ELEMENT_ID).item(0);
         Node versionNode = extensionElement.getElementsByTagName(ELEMENT_VERSION).item(0);
+
+        return new ExtensionId(idNode.getTextContent(), versionNode.getTextContent());
+    }
+
+    private String getExtensionType(Element extensionElement)
+    {
         Node typeNode = extensionElement.getElementsByTagName(ELEMENT_TYPE).item(0);
 
-        DefaultLocalExtension localExtension =
-            new DefaultLocalExtension(repository,
-                new ExtensionId(idNode.getTextContent(), versionNode.getTextContent()), typeNode.getTextContent());
+        return typeNode.getTextContent();
+    }
 
-        // Optional fields
-
+    private void loadExtensionDescriptor(AbstractExtension extension, Element extensionElement)
+        throws InvalidExtensionException
+    {
         Node nameNode = getNode(extensionElement, ELEMENT_NAME);
         if (nameNode != null) {
-            localExtension.setName(nameNode.getTextContent());
+            extension.setName(nameNode.getTextContent());
         }
         Node summaryNode = getNode(extensionElement, ELEMENT_SUMMARY);
         if (summaryNode != null) {
-            localExtension.setSummary(summaryNode.getTextContent());
+            extension.setSummary(summaryNode.getTextContent());
         }
         Node descriptionNode = getNode(extensionElement, ELEMENT_DESCRIPTION);
         if (descriptionNode != null) {
-            localExtension.setDescription(descriptionNode.getTextContent());
+            extension.setDescription(descriptionNode.getTextContent());
         }
         Node websiteNode = getNode(extensionElement, ELEMENT_WEBSITE);
         if (websiteNode != null) {
-            localExtension.setWebsite(websiteNode.getTextContent());
+            extension.setWebsite(websiteNode.getTextContent());
         }
 
         // Licenses
@@ -266,7 +306,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                         }
                     }
 
-                    localExtension.addLicense(license);
+                    extension.addLicense(license);
                 }
             }
         }
@@ -284,14 +324,19 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
                     String authorName = authorNameNode != null ? authorNameNode.getTextContent() : null;
                     URL authorURL;
-                    try {
-                        authorURL = authorURLNode != null ? new URL(authorURLNode.getTextContent()) : null;
-                    } catch (MalformedURLException e) {
-                        // That should never happen
-                        throw new InvalidExtensionException("Malformed URL [" + authorURLNode.getTextContent() + "]", e);
+                    if (authorURLNode != null) {
+                        try {
+                            authorURL = new URL(authorURLNode.getTextContent());
+                        } catch (MalformedURLException e) {
+                            // That should never happen
+                            throw new InvalidExtensionException("Malformed URL [" + authorURLNode.getTextContent()
+                                + "]", e);
+                        }
+                    } else {
+                        authorURL = null;
                     }
 
-                    localExtension.addAuthor(new DefaultExtensionAuthor(authorName, authorURL));
+                    extension.addAuthor(new DefaultExtensionAuthor(authorName, authorURL));
                 }
             }
         }
@@ -299,14 +344,14 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         // Features
         List<String> features = parseList(extensionElement, ELEMENT_FEATURES, ELEMENT_FFEATURE);
         if (features != null) {
-            localExtension.setFeatures(features);
+            extension.setFeatures(features);
         }
 
         // Scm
-        localExtension.setScm(loadlScm(extensionElement));
+        extension.setScm(loadlScm(extensionElement));
 
         // Issue Management
-        localExtension.setIssueManagement(loadIssueManagement(extensionElement));
+        extension.setIssueManagement(loadIssueManagement(extensionElement));
 
         // Dependencies
         Node dependenciesNode = getNode(extensionElement, ELEMENT_DEPENDENCIES);
@@ -319,7 +364,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     Node dependencyIdNode = getNode(dependency, ELEMENT_ID);
                     Node dependencyVersionNode = getNode(dependency, ELEMENT_VERSION);
 
-                    localExtension.addDependency(new DefaultExtensionDependency(dependencyIdNode.getTextContent(),
+                    extension.addDependency(new DefaultExtensionDependency(dependencyIdNode.getTextContent(),
                         new DefaultVersionConstraint(dependencyVersionNode.getTextContent()),
                         parseProperties((Element) dependency)));
                 }
@@ -329,24 +374,21 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         // Properties
         Map<String, Object> properties = parseProperties(extensionElement);
         if (properties != null) {
-            localExtension.setProperties(properties);
+            extension.setProperties(properties);
         }
 
         // Deprecated Install fields
 
         Node enabledNode = getNode(extensionElement, ELEMENT_INSTALLED);
         if (enabledNode != null) {
-            localExtension
-                .putProperty(InstalledExtension.PKEY_INSTALLED, Boolean.valueOf(enabledNode.getTextContent()));
+            extension.putProperty(InstalledExtension.PKEY_INSTALLED, Boolean.valueOf(enabledNode.getTextContent()));
         }
 
         // Deprecated Namespaces
         List<String> namespaces = parseList(extensionElement, ELEMENT_NAMESPACES, ELEMENT_NNAMESPACE);
         if (namespaces != null) {
-            localExtension.putProperty(InstalledExtension.PKEY_NAMESPACES, namespaces);
+            extension.putProperty(InstalledExtension.PKEY_NAMESPACES, namespaces);
         }
-
-        return localExtension;
     }
 
     private ExtensionScm loadlScm(Element extensionElement)
@@ -460,7 +502,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     }
 
     @Override
-    public void saveDescriptor(LocalExtension extension, OutputStream fos) throws ParserConfigurationException,
+    public void saveExtensionDescriptor(Extension extension, OutputStream fos) throws ParserConfigurationException,
         TransformerException
     {
         DocumentBuilder documentBuilder = this.documentBuilderFactory.newDocumentBuilder();
