@@ -21,9 +21,8 @@ package org.xwiki.extension.repository.xwiki.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -55,15 +54,20 @@ public class XWikiExtensionRepositorySource extends AbstractExtensionRepositoryS
     @Override
     public Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors()
     {
-        Collection<ExtensionRepositoryDescriptor> repositories = this.configuration.getExtensionRepositoryDescriptors();
+        Collection<ExtensionRepositoryDescriptor> configuredRepositories =
+            this.configuration.getExtensionRepositoryDescriptors();
 
-        try {
-            return repositories != null ? repositories : Arrays
-                .<ExtensionRepositoryDescriptor>asList(new DefaultExtensionRepositoryDescriptor(
-                    "extensions.xwiki.org", "xwiki", new URI("http://extensions.xwiki.org/xwiki/rest/")));
-        } catch (URISyntaxException e) {
-            // Should never happen
-            return Collections.emptyList();
+        Collection<ExtensionRepositoryDescriptor> repositories = new ArrayList<ExtensionRepositoryDescriptor>();
+
+        if (configuredRepositories == null) {
+            try {
+                repositories.add(new DefaultExtensionRepositoryDescriptor("extensions.xwiki.org", "xwiki", new URI(
+                    "http://extensions.xwiki.org/xwiki/rest/")));
+            } catch (URISyntaxException e) {
+                // Should never happen
+            }
         }
+
+        return repositories;
     }
 }
