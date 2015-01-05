@@ -21,7 +21,7 @@ package org.xwiki.extension.repository.aether.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -55,15 +55,21 @@ public class AetherExtensionRepositorySource extends AbstractExtensionRepository
     @Override
     public Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors()
     {
-        Collection<ExtensionRepositoryDescriptor> repositories = this.configuration.getExtensionRepositoryDescriptors();
+        Collection<ExtensionRepositoryDescriptor> configuredRepositories =
+            this.configuration.getExtensionRepositoryDescriptors();
 
-        try {
-            return repositories != null ? repositories : Arrays
-                .<ExtensionRepositoryDescriptor>asList(new DefaultExtensionRepositoryDescriptor("maven-xwiki",
-                    "maven", new URI("http://nexus.xwiki.org/nexus/content/groups/public")));
-        } catch (URISyntaxException e) {
-            // Should never happen
-            return Collections.emptyList();
+        Collection<ExtensionRepositoryDescriptor> repositories = new ArrayList<ExtensionRepositoryDescriptor>();
+
+        if (configuredRepositories == null) {
+            try {
+                repositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki", "maven", new URI(
+                    "http://nexus.xwiki.org/nexus/content/groups/public")));
+            } catch (URISyntaxException e) {
+                // Should never happen
+                return Collections.emptyList();
+            }
         }
+
+        return repositories;
     }
 }
