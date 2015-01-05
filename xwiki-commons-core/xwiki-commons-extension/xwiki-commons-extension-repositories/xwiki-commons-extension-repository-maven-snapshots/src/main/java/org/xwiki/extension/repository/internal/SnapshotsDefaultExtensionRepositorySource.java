@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
@@ -59,7 +58,7 @@ public class SnapshotsDefaultExtensionRepositorySource extends AbstractExtension
 
         Collection<ExtensionRepositoryDescriptor> newRepositories = new ArrayList<>();
 
-        if (CollectionUtils.isEmpty(configuredRepositories)
+        if (configuredRepositories == null
             && !"true".equals(System.getProperty("skipSnapshotModules"))) {
             newRepositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki-snapshot", "maven", URI
                 .create("http://nexus.xwiki.org/nexus/content/groups/public-snapshots")));
