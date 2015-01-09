@@ -19,16 +19,22 @@
  */
 package org.xwiki.job.internal;
 
+import static org.mockito.Mockito.mock;
+
 import java.io.File;
 import java.io.IOException;
 
+import javax.inject.Provider;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Request;
+import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.test.SerializableStandaloneComponent;
 import org.xwiki.job.test.StandaloneComponent;
@@ -61,6 +67,27 @@ public class JobStatusSerializerTest
         public ObjectTest(Object field)
         {
             this.field = field;
+        }
+    }
+
+    @Serializable
+    private static class SerializableProvider implements Provider<String>
+    {
+        @Override
+        public String get()
+        {
+            return null;
+        }
+    }
+
+    private static class SerializableImplementationProvider implements Provider<String>, java.io.Serializable
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String get()
+        {
+            return null;
         }
     }
 
@@ -209,5 +236,74 @@ public class JobStatusSerializerTest
 
         Assert.assertNotNull(status.getLog());
         Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+    }
+
+    @Test
+    public void testLogWithLoggerField() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new ObjectTest(mock(Logger.class)));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+    }
+
+    @Test
+    public void testLogWithProviderField() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new ObjectTest(mock(Provider.class)));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+    }
+
+    @Test
+    public void testLogWithComponentManagerField() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new ObjectTest(mock(ComponentManager.class)));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+    }
+
+    @Test
+    public void testLogWithSerializableProviderField() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new ObjectTest(new SerializableProvider()));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertEquals("error message", status.getLog().peek().getMessage());
+        Assert.assertEquals(SerializableProvider.class,
+            ((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field.getClass());
+    }
+
+    @Test
+    public void testLogWithSerializableImplementationProviderField() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new ObjectTest(new SerializableImplementationProvider()));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertEquals("error message", status.getLog().peek().getMessage());
+        Assert.assertEquals(SerializableImplementationProvider.class,
+            ((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field.getClass());
     }
 }

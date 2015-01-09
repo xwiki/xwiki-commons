@@ -19,7 +19,14 @@
  */
 package org.xwiki.job.internal.xstream;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Provider;
+
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.annotation.Serializable;
 
 /**
@@ -30,6 +37,13 @@ import org.xwiki.job.annotation.Serializable;
  */
 public final class XStreamUtils
 {
+    /**
+     * Some famous unserializable classes. Fields with this classes are supposed to be made <code>transient</code> in
+     * placed that may end up serialized but never too careful...
+     */
+    private final static List<Class<?>> UNSERIALIZABLE_CLASSES = Arrays.<Class<?>>asList(Logger.class, Provider.class,
+        ComponentManager.class);
+
     private XStreamUtils()
     {
 
@@ -52,8 +66,19 @@ public final class XStreamUtils
     public static boolean isSerializable(Object item)
     {
         if (item != null) {
-            return item.getClass().isAnnotationPresent(Serializable.class) || item instanceof java.io.Serializable
-                || !item.getClass().isAnnotationPresent(Component.class);
+            if (item.getClass().isAnnotationPresent(Serializable.class) || item instanceof java.io.Serializable) {
+                return true;
+            }
+
+            if (!item.getClass().isAnnotationPresent(Component.class)) {
+                for (Class<?> clazz : UNSERIALIZABLE_CLASSES) {
+                    if (clazz.isInstance(item)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
         }
 
         return false;
