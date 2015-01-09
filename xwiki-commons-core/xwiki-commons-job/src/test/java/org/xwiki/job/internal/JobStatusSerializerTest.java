@@ -19,14 +19,19 @@
  */
 package org.xwiki.job.internal;
 
+import static org.mockito.Mockito.mock;
+
 import java.io.File;
 import java.io.IOException;
 
+import javax.inject.Provider;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
@@ -188,6 +193,32 @@ public class JobStatusSerializerTest
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
 
         status.getLog().error("error message", new ObjectTest(new TestStandaloneComponent()));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+    }
+
+    @Test
+    public void testLogWithProviderField() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new ObjectTest(mock(Provider.class)));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+    }
+
+    @Test
+    public void testLogWithComponentManagerField() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new ObjectTest(mock(ComponentManager.class)));
 
         status = writeread(status);
 

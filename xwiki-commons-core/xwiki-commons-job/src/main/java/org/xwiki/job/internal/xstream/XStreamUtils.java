@@ -19,7 +19,14 @@
  */
 package org.xwiki.job.internal.xstream;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Provider;
+
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentManager;
 
 /**
  * Various XStream related utilities.
@@ -29,6 +36,13 @@ import org.xwiki.component.annotation.Component;
  */
 public final class XStreamUtils
 {
+    /**
+     * Some famous unserializable classes. Fields with this classes are supposed to be made <code>transient</code> in
+     * placed that may end up serialized but never too careful...
+     */
+    private final static List<Class<?>> UNSERIALIZABLE_CLASSES = Arrays.<Class<?>>asList(Provider.class,
+        ComponentManager.class);
+
     private XStreamUtils()
     {
 
@@ -51,7 +65,15 @@ public final class XStreamUtils
     public static boolean isComponent(Object item)
     {
         if (item != null) {
-            return item.getClass().isAnnotationPresent(Component.class);
+            if (item.getClass().isAnnotationPresent(Component.class)) {
+                return true;
+            }
+
+            for (Class<?> clazz : UNSERIALIZABLE_CLASSES) {
+                if (clazz.isInstance(item)) {
+                    return true;
+                }
+            }
         }
 
         return false;
