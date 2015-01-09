@@ -39,7 +39,7 @@ import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * Velocity Tool allowing to create various type of collections.
@@ -262,9 +262,7 @@ public class CollectionsTool
         } else if (b == null) {
             return a;
         }
-        @SuppressWarnings("unchecked")
-        Collection<E> result = CollectionUtils.union(a, b);
-        return result;
+        return CollectionUtils.union(a, b);
     }
 
     /**
@@ -282,9 +280,7 @@ public class CollectionsTool
         } else if (b == null) {
             return a;
         }
-        @SuppressWarnings("unchecked")
-        Collection<E> result = CollectionUtils.intersection(a, b);
-        return result;
+        return CollectionUtils.intersection(a, b);
     }
 
     /**
@@ -303,9 +299,7 @@ public class CollectionsTool
         } else if (b == null) {
             return a;
         }
-        @SuppressWarnings("unchecked")
-        Collection<E> result = CollectionUtils.disjunction(a, b);
-        return result;
+        return CollectionUtils.disjunction(a, b);
     }
 
     /**

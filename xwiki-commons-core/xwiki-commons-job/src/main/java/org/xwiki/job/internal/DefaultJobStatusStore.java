@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
         public Cache(int size)
         {
-            this.cache = new LRUMap(size);
+            this.cache = new LRUMap<>(size);
             this.noStatusCache = new HashSet<List<String>>();
         }
 
