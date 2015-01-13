@@ -195,6 +195,12 @@
               <method>boolean staticRegistration()</method>
               <justification>This shouldn't be a backward incompatible change since it's a method addition on an Annotation.</justification>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/management/JMXBeanRegistration</className>
+              <method>void unregisterMBean(java.lang.String)</method>
+              <justification>Does not make much sense allowing to register a JMX bean and not to unregister it.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
