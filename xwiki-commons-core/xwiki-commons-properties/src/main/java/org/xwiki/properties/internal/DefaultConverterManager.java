@@ -23,6 +23,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -56,7 +58,8 @@ public class DefaultConverterManager implements ConverterManager
      * Use to find the proper {@link Converter} component for provided target type.
      */
     @Inject
-    private ComponentManager componentManager;
+    @Named("context")
+    private Provider<ComponentManager> componentManagerProvider;
 
     /**
      * Used when no direct {@link Converter} can be found for provided target type and the target type is an
@@ -139,15 +142,17 @@ public class DefaultConverterManager implements ConverterManager
     private <T> Converter<T> getConverter(Type targetType)
     {
         try {
+            ComponentManager componentManager = this.componentManagerProvider.get();
+
             ParameterizedType converterType = new DefaultParameterizedType(null, Converter.class, targetType);
-            if (this.componentManager.hasComponent(converterType)) {
-                return this.componentManager.getInstance(converterType);
+            if (componentManager.hasComponent(converterType)) {
+                return componentManager.getInstance(converterType);
             }
 
             // Old way of registering converters
             String typeGenericName = getTypeGenericName(targetType);
-            if (this.componentManager.hasComponent(Converter.class, typeGenericName)) {
-                return this.componentManager.getInstance(Converter.class, typeGenericName);
+            if (componentManager.hasComponent(Converter.class, typeGenericName)) {
+                return componentManager.getInstance(Converter.class, typeGenericName);
             }
         } catch (ComponentLookupException e) {
             throw new ConversionException("Failed to initialize converter for target type [" + targetType + "]", e);
