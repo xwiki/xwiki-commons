@@ -26,6 +26,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.PropertyException;
 import org.xwiki.properties.PropertyMandatoryException;
@@ -41,8 +42,8 @@ import org.xwiki.test.annotation.ComponentList;
  * 
  * @version $Id$
  */
-@ComponentList({DefaultBeanManager.class, DefaultConverterManager.class, EnumConverter.class,
-ConvertUtilsConverter.class})
+@ComponentList({ DefaultBeanManager.class, DefaultConverterManager.class, EnumConverter.class,
+    ConvertUtilsConverter.class, ContextComponentManagerProvider.class })
 public class DefaultBeanManagerTest
 {
     public static class RawPropertiesTest extends HashMap<String, Object> implements RawProperties
