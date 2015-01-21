@@ -27,8 +27,8 @@ import java.lang.reflect.Type;
  * The event also send the following parameters:
  * </p>
  * <ul>
- * <li>source: the {@link org.xwiki.component.descriptor.ComponentDescriptor} instance</li>
- * <li>data: the {@link org.xwiki.component.manager.ComponentManager} where the component was registered</li>
+ * <li>source: the {@link org.xwiki.component.manager.ComponentManager} where the component was registered</li>
+ * <li>data: the {@link org.xwiki.component.descriptor.ComponentDescriptor} instance</li>
  * </ul>
  *
  * @version $Id$
