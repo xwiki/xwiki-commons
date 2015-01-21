@@ -182,25 +182,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/velocity/VelocityFactory</className>
-              <method>org.xwiki.velocity.VelocityEngine removeVelocityEngine(java.lang.String)</method>
-              <justification>It's very unlikely that this class is implemented by anything else and it does not make much sense to not have this method, since this is not really a cache behind it but a Map that keep 
-              engines forever it may create a memory leak on a big farm running for a long time</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/component/annotation/Component</className>
-              <method>boolean staticRegistration()</method>
-              <justification>This shouldn't be a backward incompatible change since it's a method addition on an Annotation.</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/management/JMXBeanRegistration</className>
-              <method>void unregisterMBean(java.lang.String)</method>
-              <justification>Does not make much sense allowing to register a JMX bean and not to unregister it.</justification>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
