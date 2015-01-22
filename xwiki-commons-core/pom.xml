@@ -182,6 +182,12 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/job/annotation/Serializable</className>
+              <method>boolean value()</method>
+              <justification>Adding an new optionnal property in an annotation is not a breakage</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

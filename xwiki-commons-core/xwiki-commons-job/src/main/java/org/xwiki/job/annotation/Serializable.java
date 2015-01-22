@@ -29,7 +29,8 @@ import java.lang.annotation.Target;
 
 /**
  * Force the Job serializer to serialize the objects of that class (for example when a @Component should be serialized
- * despite the fact that they are skipped by default).
+ * despite the fact that they are skipped by default). It can also be used to force NOT serialize a class that would
+ * otherwise be serialized (like a huge instance that don't make any sense to spend time serialize).
  * 
  * @version $Id$
  * @since 6.4M1
@@ -40,5 +41,8 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Serializable
 {
-
+    /**
+     * True if the objects of that class should be serialized during Job status serialization.
+     */
+    boolean value() default true;
 }

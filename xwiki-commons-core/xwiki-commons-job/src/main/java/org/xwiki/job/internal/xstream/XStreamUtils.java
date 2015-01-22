@@ -66,8 +66,13 @@ public final class XStreamUtils
     public static boolean isSerializable(Object item)
     {
         if (item != null) {
-            if (item.getClass().isAnnotationPresent(Serializable.class) || item instanceof java.io.Serializable) {
-                return true;
+            Serializable serializable = item.getClass().getAnnotation(Serializable.class);
+            if (serializable != null) {
+                return serializable.value();
+            } else {
+                if (item instanceof java.io.Serializable) {
+                    return true;
+                }
             }
 
             if (!item.getClass().isAnnotationPresent(Component.class)) {
