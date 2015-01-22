@@ -46,6 +46,8 @@ public class SecureIntrospector extends SecureIntrospectorImpl
 
         this.secureClassMethods.add("getName");
         this.secureClassMethods.add("name");
+        this.secureClassMethods.add("getSimpleName");
+        this.secureClassMethods.add("simpleName");
 
         this.secureClassMethods.add("isArray");
         this.secureClassMethods.add("isAssignableFrom");
