@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.inject.Provider;
 import javax.xml.parsers.ParserConfigurationException;
@@ -67,6 +68,62 @@ public class JobStatusSerializerTest
         public ObjectTest(Object field)
         {
             this.field = field;
+        }
+    }
+
+    private static class CustomObject
+    {
+        public String field;
+
+        public CustomObject(String field)
+        {
+            this.field = field;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return Objects.equals(((CustomObject) obj).field, this.field);
+        }
+    }
+
+    @Serializable
+    private static class SerializableCustomObject
+    {
+        public String field;
+
+        public SerializableCustomObject(String field)
+        {
+            this.field = field;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return Objects.equals(((SerializableCustomObject) obj).field, this.field);
+        }
+    }
+
+    @Serializable(false)
+    private static class NotSerializableCustomObject
+    {
+        public String field;
+
+        public NotSerializableCustomObject(String field)
+        {
+            this.field = field;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return Objects.equals(((NotSerializableCustomObject) obj).field, this.field);
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.field;
         }
     }
 
@@ -303,7 +360,49 @@ public class JobStatusSerializerTest
 
         Assert.assertNotNull(status.getLog());
         Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals(SerializableImplementationProvider.class,
-            ((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field.getClass());
+        Assert.assertEquals(SerializableImplementationProvider.class, ((ObjectTest) status.getLog().peek()
+            .getArgumentArray()[0]).field.getClass());
+    }
+
+    @Test
+    public void testLogWithCustomObjectArgument() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new CustomObject("value"));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertEquals("error message", status.getLog().peek().getMessage());
+        Assert.assertEquals(new CustomObject("value"), status.getLog().peek().getArgumentArray()[0]);
+    }
+
+    @Test
+    public void testLogWithSerializableCustomObjectArgument() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new SerializableCustomObject("value"));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertEquals("error message", status.getLog().peek().getMessage());
+        Assert.assertEquals(new SerializableCustomObject("value"), status.getLog().peek().getArgumentArray()[0]);
+    }
+
+    @Test
+    public void testLogWithNotSerializableCustomObjectArgument() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+
+        status.getLog().error("error message", new NotSerializableCustomObject("value"));
+
+        status = writeread(status);
+
+        Assert.assertNotNull(status.getLog());
+        Assert.assertEquals("error message", status.getLog().peek().getMessage());
+        Assert.assertEquals("value", status.getLog().peek().getArgumentArray()[0]);
     }
 }
