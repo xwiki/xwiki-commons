@@ -19,6 +19,9 @@
  */
 package org.xwiki.tool.checkstyle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.puppycrawl.tools.checkstyle.api.AnnotationUtility;
 import com.puppycrawl.tools.checkstyle.api.Check;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
@@ -48,7 +51,7 @@ public class UnstableAnnotationCheck extends Check
     public int[] getDefaultTokens()
     {
         return new int[]{
-            TokenTypes.PACKAGE_DEF, TokenTypes.INTERFACE_DEF, TokenTypes.CLASS_DEF, TokenTypes.METHOD_DEF
+            TokenTypes.PACKAGE_DEF, TokenTypes.INTERFACE_DEF, TokenTypes.CLASS_DEF, TokenTypes.METHOD_DEF,
         };
     }
 
@@ -79,27 +82,31 @@ public class UnstableAnnotationCheck extends Check
 
         if (AnnotationUtility.containsAnnotation(ast)) {
             DetailAST holder = AnnotationUtility.getAnnotationHolder(ast);
-            DetailAST annotation = getAnnotationAst(holder);
-            String annotationName = annotation.findFirstToken(TokenTypes.IDENT).getText();
-            if (annotationName.equals("Unstable")) {
-                FileContents contents = getFileContents();
-                TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
-                String annotatedElementName = ast.findFirstToken(TokenTypes.IDENT).getText();
-                String sinceVersion = extractSinceVersionFromJavadoc(cmt.getText());
-                int sinceMajor = extractMajor(sinceVersion);
-                if (sinceMajor == -1) {
-                    log(annotation.getLineNo(), annotation.getColumnNo(), String.format("The @since version [%s] "
-                        + "] must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
-                    return;
-                } else {
-                    // Log an error the @Unstable annotation has been there for more than a full cycle!
-                    if (this.currentVersionMajor - 2 >= sinceMajor) {
-                        log(annotation.getLineNo(), annotation.getColumnNo(), String.format("The @Unstable annotation "
-                            + "for [%s.%s%s] must be removed since it's been there for more than a full "
-                            + "development cycle (was introduced in [%s] and current version is [%s])",
-                            this.packageName, this.classOrInterfaceName,
-                            annotatedElementName.equals(this.classOrInterfaceName) ? "" : "." + annotatedElementName
-                            + "()", sinceVersion, this.currentVersion));
+            for (DetailAST annotation : findAllTokens(holder, TokenTypes.ANNOTATION)) {
+                String annotationName = annotation.findFirstToken(TokenTypes.IDENT).getText();
+                if (annotationName.equals("Unstable")) {
+                    System.out.println("YYY " + ast.findFirstToken(TokenTypes.IDENT).getText());
+                    FileContents contents = getFileContents();
+                    TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
+                    String annotatedElementName = ast.findFirstToken(TokenTypes.IDENT).getText();
+                    String sinceVersion = extractSinceVersionFromJavadoc(cmt.getText());
+                    int sinceMajor = extractMajor(sinceVersion);
+                    if (sinceMajor == -1) {
+                        log(annotation.getLineNo(), annotation.getColumnNo(), String.format("The @since version [%s] "
+                            + "] must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
+                        return;
+                    } else {
+                        // Log an error the @Unstable annotation has been there for more than a full cycle!
+                        if (this.currentVersionMajor - 2 >= sinceMajor) {
+                            log(annotation.getLineNo(), annotation.getColumnNo(),
+                                String.format("The @Unstable annotation "
+                                        + "for [%s.%s%s] must be removed since it's been there for more than a full "
+                                        + "development cycle (was introduced in [%s] and current version is [%s])",
+                                    this.packageName, this.classOrInterfaceName,
+                                    annotatedElementName.equals(this.classOrInterfaceName) ? "" :
+                                        "." + annotatedElementName
+                                            + "()", sinceVersion, this.currentVersion));
+                        }
                     }
                 }
             }
@@ -119,17 +126,6 @@ public class UnstableAnnotationCheck extends Check
         return sinceVersion;
     }
 
-    private static DetailAST getAnnotationAst(DetailAST aHolderAst)
-    {
-        if (aHolderAst.getType() == TokenTypes.ANNOTATIONS) {
-            return aHolderAst;
-        } else if (aHolderAst.getType() == TokenTypes.MODIFIERS) {
-            return aHolderAst.findFirstToken(TokenTypes.ANNOTATION);
-        }
-        throw new AssertionError("aHolder must be one of TokenTypes.ANNOTATIONS or TokenTypes.MODIFIERS but was "
-            + aHolderAst);
-    }
-
     private int extractMajor(String version)
     {
         if (version == null) {
@@ -137,7 +133,6 @@ public class UnstableAnnotationCheck extends Check
         }
 
         int major;
-        boolean hasError = false;
         int pos = version.indexOf(".");
         if (pos > -1) {
             try {
@@ -150,4 +145,20 @@ public class UnstableAnnotationCheck extends Check
         }
         return major;
     }
+
+    public List<DetailAST> findAllTokens(DetailAST ast, int aType)
+    {
+        List<DetailAST> results = new ArrayList<>();
+        DetailAST firstToken = ast.findFirstToken(aType);
+        DetailAST token = firstToken;
+        while (token != null) {
+            results.add(token);
+            token = token.getNextSibling();
+            if (token.getType() != aType) {
+                break;
+            }
+        }
+        return results;
+    }
+
 }
