@@ -115,6 +115,7 @@
           </dependencies>
           <configuration>
             <configLocation>checkstyle.xml</configLocation>
+            <propertyExpansion>currentVersion=${project.version}</propertyExpansion>
           </configuration>
           <executions>
             <execution>

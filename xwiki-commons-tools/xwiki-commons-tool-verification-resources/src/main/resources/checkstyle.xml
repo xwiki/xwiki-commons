@@ -372,5 +372,11 @@
          see http://jira.xwiki.org/browse/XWIKI-9482 -->
     <module name="org.xwiki.tool.checkstyle.ScriptServiceCheck"/>
 
+    <!-- Verify that we always add a @since javadoc annotation when we add an @Unstable annotation and that when one
+         full dev cycle has passed the @Unstable annotation is removed -->
+    <module name="org.xwiki.tool.checkstyle.UnstableAnnotationCheck">
+      <property name="currentVersion" value="${currentVersion}"/>
+    </module>
+
   </module>
 </module>
