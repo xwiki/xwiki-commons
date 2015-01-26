@@ -90,27 +90,36 @@ public class UnstableAnnotationCheck extends Check
                     TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
                     String annotatedElementName = ast.findFirstToken(TokenTypes.IDENT).getText();
                     String sinceVersion = extractSinceVersionFromJavadoc(cmt.getText());
+                    if (sinceVersion == null) {
+                        log(annotation.getLineNo(), annotation.getColumnNo(), String.format("There's an @Unstable "
+                            + "annotation for [%s] but the @since javadoc tag is missing, you must add it!",
+                            computeElementName(annotatedElementName)));
+                        return;
+                    }
                     int sinceMajor = extractMajor(sinceVersion);
                     if (sinceMajor == -1) {
                         log(annotation.getLineNo(), annotation.getColumnNo(), String.format("The @since version [%s] "
-                            + "] must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
+                            + "must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
                         return;
                     } else {
                         // Log an error the @Unstable annotation has been there for more than a full cycle!
                         if (this.currentVersionMajor - 2 >= sinceMajor) {
                             log(annotation.getLineNo(), annotation.getColumnNo(),
                                 String.format("The @Unstable annotation "
-                                        + "for [%s.%s%s] must be removed since it's been there for more than a full "
-                                        + "development cycle (was introduced in [%s] and current version is [%s])",
-                                    this.packageName, this.classOrInterfaceName,
-                                    annotatedElementName.equals(this.classOrInterfaceName) ? "" :
-                                        "." + annotatedElementName
-                                            + "()", sinceVersion, this.currentVersion));
+                                + "for [%s] must be removed since it's been there for more than a full "
+                                + "development cycle (was introduced in [%s] and current version is [%s])",
+                                computeElementName(annotatedElementName), this.currentVersion));
                         }
                     }
                 }
             }
         }
+    }
+
+    private String computeElementName(String annotatedElementName)
+    {
+        return String.format("%s.%s%s", this.packageName, this.classOrInterfaceName,
+            annotatedElementName.equals(this.classOrInterfaceName) ? "" : "." + annotatedElementName + "()");
     }
 
     private String extractSinceVersionFromJavadoc(String[] javadocLines)
