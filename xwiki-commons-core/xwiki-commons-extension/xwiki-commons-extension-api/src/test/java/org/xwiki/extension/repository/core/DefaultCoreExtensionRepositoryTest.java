@@ -19,14 +19,20 @@
  */
 package org.xwiki.extension.repository.core;
 
-import org.jmock.Expectations;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+
 import org.junit.Assert;
+import org.jmock.Expectations;
 import org.junit.Test;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.CoreExtensionRepository;
+import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
 import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
@@ -119,5 +125,22 @@ public class DefaultCoreExtensionRepositoryTest extends AbstractComponentTestCas
         Assert.assertNotNull(extension);
         Assert.assertEquals("existingextension", extension.getId().getId());
         Assert.assertEquals("version", extension.getId().getVersion().getValue());
+    }
+
+    /**
+     * Make sure only one result is returned for an extension having several features.
+     * 
+     * @throws SearchException
+     */
+    @Test
+    public void testSearchWithSeveralFeatures() throws SearchException
+    {
+        this.coreExtensionRepository.addExtensions("extension", new DefaultVersion("version"),
+            Arrays.asList("feature1", "feature2"));
+
+        IterableResult<Extension> result = this.coreExtensionRepository.search("feature", 0, -1);
+
+        assertEquals(1, result.getTotalHits());
+        assertEquals(1, result.getSize());
     }
 }

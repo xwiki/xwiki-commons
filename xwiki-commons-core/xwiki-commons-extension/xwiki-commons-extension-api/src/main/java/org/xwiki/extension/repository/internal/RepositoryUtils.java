@@ -22,6 +22,7 @@ package org.xwiki.extension.repository.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -59,12 +60,27 @@ public final class RepositoryUtils
     public static CollectionIterableResult<Extension> searchInCollection(String pattern, int offset, int nb,
         Collection<? extends Extension> extensions)
     {
+        return searchInCollection(pattern, offset, nb, extensions, false);
+    }
+
+    /**
+     * @param pattern the pattern to match
+     * @param offset the offset where to start returning elements
+     * @param nb the number of maximum element to return
+     * @param extensions the extension collection to search in
+     * @param forceUnique make sure returned elements are unique
+     * @return the search result
+     * @since 6.4.1
+     */
+    public static CollectionIterableResult<Extension> searchInCollection(String pattern, int offset, int nb,
+        Collection<? extends Extension> extensions, boolean forceUnique)
+    {
         List<Extension> result;
 
         if (StringUtils.isEmpty(pattern)) {
             result = extensions instanceof List ? (List<Extension>) extensions : new ArrayList<Extension>(extensions);
         } else {
-            result = filter(pattern, extensions);
+            result = filter(pattern, extensions, forceUnique);
         }
 
         if (nb == 0 || offset >= result.size()) {
@@ -142,11 +158,13 @@ public final class RepositoryUtils
     /**
      * @param pattern the pattern to match
      * @param extensions the extension collection to search in
+     * @param forceUnique make sure returned elements are unique
      * @return the filtered list of extensions
      */
-    private static List<Extension> filter(String pattern, Collection<? extends Extension> extensions)
+    private static List<Extension> filter(String pattern, Collection<? extends Extension> extensions,
+        boolean forceUnique)
     {
-        List<Extension> result = new ArrayList<Extension>();
+        List<Extension> result = new ArrayList<Extension>(extensions.size());
 
         Pattern patternMatcher =
             Pattern.compile(SEARCH_PATTERN_SUFFIXNPREFIX + pattern.toLowerCase() + SEARCH_PATTERN_SUFFIXNPREFIX);
@@ -155,6 +173,11 @@ public final class RepositoryUtils
             if (matches(patternMatcher, extension)) {
                 result.add(extension);
             }
+        }
+
+        // Make sure all the elements of the list are unique
+        if (forceUnique && result.size() > 1) {
+            result = new ArrayList<>(new LinkedHashSet<>(result));
         }
 
         return result;
