@@ -159,6 +159,7 @@
         </dependencies>
         <configuration>
           <configLocation>checkstyle.xml</configLocation>
+          <propertyExpansion>currentVersion=${project.version}</propertyExpansion>
           <excludes>
               **/AbstractXARMojo.java,
               **/UnXARMojo.java,
