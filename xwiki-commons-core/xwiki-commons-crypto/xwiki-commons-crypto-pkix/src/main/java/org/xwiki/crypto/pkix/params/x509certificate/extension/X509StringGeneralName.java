@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.pkix.params.x509certificate.extension;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Common interface for printable X.509 general name.
  *
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public interface X509StringGeneralName extends X509GeneralName
 {
     /**

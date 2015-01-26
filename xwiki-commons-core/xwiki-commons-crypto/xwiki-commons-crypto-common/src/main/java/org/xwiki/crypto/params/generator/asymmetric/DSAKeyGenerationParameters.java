@@ -22,14 +22,12 @@ package org.xwiki.crypto.params.generator.asymmetric;
 import java.math.BigInteger;
 
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Shared DSA parameters for key generation.
  *
  * @version $Id$
  */
-@Unstable
 public class DSAKeyGenerationParameters implements KeyGenerationParameters
 {
     private final BigInteger p;

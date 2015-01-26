@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.password.params;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Key derivation function parameters.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class KeyDerivationFunctionParameters
 {
     private int keySize;

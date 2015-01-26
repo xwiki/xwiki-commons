@@ -24,15 +24,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Interface on a signer engines ready to process data for signing or verification.
  *
  * @version $Id$
  * @since 5.4RC1
  */
-@Unstable
 public interface Signer
 {
     /**

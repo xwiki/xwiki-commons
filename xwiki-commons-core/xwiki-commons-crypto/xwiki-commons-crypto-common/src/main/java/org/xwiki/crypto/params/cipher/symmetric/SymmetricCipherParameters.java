@@ -20,7 +20,6 @@
 package org.xwiki.crypto.params.cipher.symmetric;
 
 import org.xwiki.crypto.params.cipher.CipherParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Marker interface for symmetric cipher parameters.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public interface SymmetricCipherParameters extends CipherParameters
 {
 }

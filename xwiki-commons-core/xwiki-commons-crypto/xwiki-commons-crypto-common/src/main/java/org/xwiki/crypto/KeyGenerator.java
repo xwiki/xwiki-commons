@@ -21,7 +21,6 @@ package org.xwiki.crypto;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Component role for a key pair generator.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4M1
  */
 @Role
-@Unstable
 public interface KeyGenerator
 {
     /**

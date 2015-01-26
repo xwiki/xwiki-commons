@@ -26,7 +26,6 @@ import java.security.PublicKey;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Component role for creating key instances and key parameters instances.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4M1
  */
 @Role
-@Unstable
 public interface AsymmetricKeyFactory
 {
     /**

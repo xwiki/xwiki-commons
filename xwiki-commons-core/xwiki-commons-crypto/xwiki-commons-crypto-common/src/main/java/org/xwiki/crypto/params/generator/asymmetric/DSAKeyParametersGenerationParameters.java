@@ -22,7 +22,6 @@ package org.xwiki.crypto.params.generator.asymmetric;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyParametersGenerationParameters;
 import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Parameters for RSA key pair generation using either FIPS186.2 or FIPS186.3.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class DSAKeyParametersGenerationParameters extends GenericKeyGenerationParameters
     implements KeyParametersGenerationParameters, KeyGenerationParameters
 {

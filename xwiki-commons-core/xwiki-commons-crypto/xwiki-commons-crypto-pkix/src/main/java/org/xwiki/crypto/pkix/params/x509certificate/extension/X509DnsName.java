@@ -22,7 +22,6 @@ package org.xwiki.crypto.pkix.params.x509certificate.extension;
 import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.xwiki.crypto.pkix.internal.extension.BcGeneralName;
-import org.xwiki.stability.Unstable;
 
 /**
  * DNS domain general name.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public class X509DnsName implements X509StringGeneralName, BcGeneralName
 {
     private final String domain;

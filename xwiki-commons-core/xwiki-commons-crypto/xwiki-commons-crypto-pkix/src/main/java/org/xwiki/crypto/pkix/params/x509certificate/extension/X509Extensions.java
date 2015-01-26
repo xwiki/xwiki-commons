@@ -24,7 +24,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.bouncycastle.asn1.x509.Extension;
-import org.xwiki.stability.Unstable;
 
 /**
  * X509 Extensions set.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public interface X509Extensions
 {
     /**

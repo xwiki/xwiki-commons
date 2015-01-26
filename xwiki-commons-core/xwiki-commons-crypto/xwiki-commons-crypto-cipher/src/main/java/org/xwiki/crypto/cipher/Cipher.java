@@ -25,15 +25,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Interface on a Block cipher engines ready to process data for encryption and decryption.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public interface Cipher
 {
     /**

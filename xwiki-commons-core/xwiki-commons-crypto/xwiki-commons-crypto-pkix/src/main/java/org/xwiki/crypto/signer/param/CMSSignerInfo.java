@@ -23,7 +23,6 @@ package org.xwiki.crypto.signer.param;
 import java.math.BigInteger;
 
 import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
-import org.xwiki.stability.Unstable;
 
 /**
  * Signer information, including an already computed signature.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.0M1
  */
-@Unstable
 public interface CMSSignerInfo
 {
     /**

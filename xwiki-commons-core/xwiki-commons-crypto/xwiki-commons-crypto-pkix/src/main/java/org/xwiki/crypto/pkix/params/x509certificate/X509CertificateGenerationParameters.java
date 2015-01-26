@@ -21,7 +21,6 @@ package org.xwiki.crypto.pkix.params.x509certificate;
 
 import org.xwiki.crypto.pkix.params.CertificateGenerationParameters;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509Extensions;
-import org.xwiki.stability.Unstable;
 
 /**
  * X.509 common certificate parameters.
@@ -29,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public class X509CertificateGenerationParameters implements CertificateGenerationParameters
 {
     /**

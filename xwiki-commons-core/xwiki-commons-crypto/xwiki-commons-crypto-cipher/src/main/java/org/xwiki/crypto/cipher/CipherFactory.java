@@ -21,7 +21,6 @@ package org.xwiki.crypto.cipher;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.params.cipher.CipherParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Factory creating block ciphers for encryption and decryption.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4M1
  */
 @Role
-@Unstable
 public interface CipherFactory extends CipherSpecifications
 {
     /**

@@ -24,7 +24,6 @@ import java.io.IOException;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.xwiki.crypto.pkix.internal.extension.BcGeneralName;
-import org.xwiki.stability.Unstable;
 
 /**
  * Generic holder for general name not supported by specific class.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public class X509GenericName implements X509GeneralName, BcGeneralName
 {
     private final GeneralName name;

@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.pkix.params;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Marker interface for common certificate parameters.
  *
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public interface CertificateGenerationParameters
 {
 }

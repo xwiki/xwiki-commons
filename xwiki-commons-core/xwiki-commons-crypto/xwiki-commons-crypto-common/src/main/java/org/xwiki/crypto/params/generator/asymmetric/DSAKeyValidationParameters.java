@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.params.generator.asymmetric;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Validation parameters for DSA key.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class DSAKeyValidationParameters extends DHKeyValidationParameters
 {
     /** Definition of the usage of the key for FIPS186.3. */

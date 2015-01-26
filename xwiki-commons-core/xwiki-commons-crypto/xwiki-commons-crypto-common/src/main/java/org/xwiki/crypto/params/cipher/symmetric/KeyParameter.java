@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.params.cipher.symmetric;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Cipher parameters for cipher requiring a key and an initialization vector.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class KeyParameter implements SymmetricCipherParameters
 {
     /** A encryption key. */

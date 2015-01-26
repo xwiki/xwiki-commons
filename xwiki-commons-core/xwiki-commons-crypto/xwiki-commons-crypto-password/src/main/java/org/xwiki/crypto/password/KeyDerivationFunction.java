@@ -24,7 +24,6 @@ import java.io.IOException;
 import org.xwiki.crypto.params.cipher.symmetric.KeyParameter;
 import org.xwiki.crypto.params.cipher.symmetric.KeyWithIVParameters;
 import org.xwiki.crypto.password.params.KeyDerivationFunctionParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Key derivation function from password interface.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public interface KeyDerivationFunction
 {
     /**

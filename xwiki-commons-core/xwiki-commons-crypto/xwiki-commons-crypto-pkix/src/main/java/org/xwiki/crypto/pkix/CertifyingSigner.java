@@ -31,7 +31,6 @@ import org.xwiki.crypto.pkix.params.CertifiedKeyPair;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.signer.Signer;
 import org.xwiki.crypto.signer.SignerFactory;
-import org.xwiki.stability.Unstable;
 
 /**
  * A signer for certifying certificate.
@@ -39,7 +38,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public final class CertifyingSigner implements Signer, ContentSigner
 {
     private final CertifiedPublicKey certifier;

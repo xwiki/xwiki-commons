@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.signer.params;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * PSS parameters.
  *
  * @version $Id$
  * @since 5.4RC1
  */
-@Unstable
 public class PssParameters
 {
     private static final String DEFAULT_DIGEST = "SHA-1";

@@ -23,7 +23,6 @@ package org.xwiki.crypto.store;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.pkix.params.CertifiedKeyPair;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
-import org.xwiki.stability.Unstable;
 
 /**
  * Store and retrieve private key from a key store.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @since 6.1M2
  */
 @Role
-@Unstable
 public interface KeyStore
 {
     /**

@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.cipher;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Interface on an Asymmetric Block cipher engines ready to process data for encryption and decryption.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public interface AsymmetricCipher extends Cipher
 {
 }

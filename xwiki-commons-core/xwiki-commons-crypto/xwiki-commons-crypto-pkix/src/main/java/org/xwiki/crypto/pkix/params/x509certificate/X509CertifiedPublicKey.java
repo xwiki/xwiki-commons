@@ -24,7 +24,6 @@ import java.util.Date;
 
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509Extensions;
-import org.xwiki.stability.Unstable;
 
 /**
  * Certified binding of a principal to a public key using an X.509 Certificate.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public interface X509CertifiedPublicKey extends CertifiedPublicKey
 {
     /**

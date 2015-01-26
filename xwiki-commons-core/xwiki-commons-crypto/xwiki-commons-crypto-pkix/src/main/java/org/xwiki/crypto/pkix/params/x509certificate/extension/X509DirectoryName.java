@@ -23,7 +23,6 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.xwiki.crypto.pkix.internal.extension.BcGeneralName;
 import org.xwiki.crypto.pkix.params.x509certificate.DistinguishedName;
-import org.xwiki.stability.Unstable;
 
 /**
  * X.509 Directory name general name.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public class X509DirectoryName extends DistinguishedName implements X509StringGeneralName, BcGeneralName
 {
     /**

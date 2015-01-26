@@ -27,7 +27,6 @@ import java.net.URL;
 import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.xwiki.crypto.pkix.internal.extension.BcGeneralName;
-import org.xwiki.stability.Unstable;
 
 /**
  * Uniform Resource Identifier general name.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public class X509URI implements X509StringGeneralName, BcGeneralName
 {
     private final String str;

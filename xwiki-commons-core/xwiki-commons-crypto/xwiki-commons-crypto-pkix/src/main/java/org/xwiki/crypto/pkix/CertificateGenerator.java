@@ -26,7 +26,6 @@ import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
 import org.xwiki.crypto.pkix.params.CertificateParameters;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
-import org.xwiki.stability.Unstable;
 
 /**
  * Generator of certified public key.
@@ -34,7 +33,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public interface CertificateGenerator
 {
     /**

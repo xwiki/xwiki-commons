@@ -21,14 +21,12 @@ package org.xwiki.crypto.pkix.params.x509certificate;
 
 import org.xwiki.crypto.pkix.params.CertificateParameters;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509Extensions;
-import org.xwiki.stability.Unstable;
 
 /**
  * X.509 subject certificate parameters.
  *
  * @version $Id$
  */
-@Unstable
 public class X509CertificateParameters implements CertificateParameters
 {
     private X509Extensions extensions;

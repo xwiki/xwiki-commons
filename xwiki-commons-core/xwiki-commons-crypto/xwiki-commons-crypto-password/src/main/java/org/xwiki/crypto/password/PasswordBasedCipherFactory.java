@@ -23,7 +23,6 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.cipher.CipherSpecifications;
 import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.password.params.KeyDerivationFunctionParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Factory creating block ciphers for encryption and decryption that use a password to derive their keys
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4M1
  */
 @Role
-@Unstable
 public interface PasswordBasedCipherFactory extends CipherSpecifications
 {
     /**
