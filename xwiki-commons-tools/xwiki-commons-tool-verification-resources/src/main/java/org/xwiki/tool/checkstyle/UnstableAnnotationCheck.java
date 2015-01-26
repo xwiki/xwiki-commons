@@ -154,7 +154,7 @@ public class UnstableAnnotationCheck extends Check
         while (token != null) {
             results.add(token);
             token = token.getNextSibling();
-            if (token.getType() != aType) {
+            if (token == null || token.getType() != aType) {
                 break;
             }
         }
