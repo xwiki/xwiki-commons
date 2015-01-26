@@ -27,7 +27,6 @@ import org.slf4j.Marker;
 import org.xwiki.logging.event.LogEvent;
 import org.xwiki.observation.event.BeginEvent;
 import org.xwiki.observation.event.EndEvent;
-import org.xwiki.stability.Unstable;
 
 /**
  * Logs organized as a tree.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class LogTree extends LogTreeNode implements Logger
 {
     /**

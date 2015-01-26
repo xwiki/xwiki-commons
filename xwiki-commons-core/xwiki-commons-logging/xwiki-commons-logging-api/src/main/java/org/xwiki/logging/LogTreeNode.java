@@ -28,7 +28,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.xwiki.logging.event.BeginLogEvent;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.stability.Unstable;
 
 /**
  * Logs organized as a tree.
@@ -36,7 +35,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Serializable
 {
     private static class LogTreeNodeIterator implements Iterator<LogEvent>

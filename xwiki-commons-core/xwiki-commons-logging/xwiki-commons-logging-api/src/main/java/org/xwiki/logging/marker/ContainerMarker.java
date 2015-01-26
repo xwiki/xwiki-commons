@@ -28,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public interface ContainerMarker extends Marker
 {
     /**

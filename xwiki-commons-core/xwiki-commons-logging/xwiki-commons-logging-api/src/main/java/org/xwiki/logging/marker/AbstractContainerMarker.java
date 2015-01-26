@@ -34,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public abstract class AbstractContainerMarker implements ContainerMarker
 {
     private static final long serialVersionUID = 1L;
