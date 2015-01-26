@@ -21,7 +21,6 @@ package org.xwiki.filter;
 
 import org.xwiki.filter.annotation.Default;
 import org.xwiki.filter.annotation.Name;
-import org.xwiki.stability.Unstable;
 
 /**
  * Unknown elements related events.
@@ -29,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.2M1
  */
-@Unstable
 public interface UnknownFilter
 {
     /**

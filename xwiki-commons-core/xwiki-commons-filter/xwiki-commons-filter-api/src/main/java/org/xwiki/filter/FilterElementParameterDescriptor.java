@@ -21,8 +21,6 @@ package org.xwiki.filter;
 
 import java.lang.reflect.Type;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * A filter element parameter.
  *
@@ -30,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.2M1
  */
-@Unstable
 public class FilterElementParameterDescriptor<T>
 {
     /**
