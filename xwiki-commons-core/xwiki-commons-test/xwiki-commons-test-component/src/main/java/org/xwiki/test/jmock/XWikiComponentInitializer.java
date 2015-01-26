@@ -45,6 +45,7 @@ public class XWikiComponentInitializer
 
         getComponentManager().registerComponent(MockConfigurationSource.getDescriptor(null), this.configurationSource);
         getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("xwikiproperties"), this.configurationSource);
+        getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("xwikicfg"), this.configurationSource);
         getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("wiki"), this.configurationSource);
         getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("space"), this.configurationSource);
         getComponentManager().registerComponent(MockConfigurationSource.getDescriptor("user"), this.configurationSource);
