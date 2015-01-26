@@ -85,7 +85,6 @@ public class UnstableAnnotationCheck extends Check
             for (DetailAST annotation : findAllTokens(holder, TokenTypes.ANNOTATION)) {
                 String annotationName = annotation.findFirstToken(TokenTypes.IDENT).getText();
                 if (annotationName.equals("Unstable")) {
-                    System.out.println("YYY " + ast.findFirstToken(TokenTypes.IDENT).getText());
                     FileContents contents = getFileContents();
                     TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
                     String annotatedElementName = ast.findFirstToken(TokenTypes.IDENT).getText();
@@ -108,7 +107,7 @@ public class UnstableAnnotationCheck extends Check
                                 String.format("The @Unstable annotation "
                                 + "for [%s] must be removed since it's been there for more than a full "
                                 + "development cycle (was introduced in [%s] and current version is [%s])",
-                                computeElementName(annotatedElementName), this.currentVersion));
+                                computeElementName(annotatedElementName), sinceVersion, this.currentVersion));
                         }
                     }
                 }
