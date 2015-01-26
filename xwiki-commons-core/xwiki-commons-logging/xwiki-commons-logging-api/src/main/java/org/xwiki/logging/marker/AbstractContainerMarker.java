@@ -25,7 +25,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.slf4j.Marker;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class to use for custom {@link Marker}s which contains values (so which are a bit more than {@link Marker} as
