@@ -26,7 +26,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>6.2.5-SNAPSHOT</version>
+  <version>6.2.6-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -48,10 +48,10 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>6.2.5-SNAPSHOT</commons.version>
+    <commons.version>6.2.6-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>6.2.4</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>6.2.5</xwiki.clirr.previous.version>
 
     <!-- REST -->
     <restlet.version>2.0.14</restlet.version>
