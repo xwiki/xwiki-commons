@@ -19,12 +19,16 @@
  */
 package org.xwiki.test.mockito;
 
+import static org.mockito.Mockito.mock;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Provider;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -37,8 +41,6 @@ import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * Unit tests for Components should extend this class instead of using {@link MockitoComponentManagerRule} or
@@ -312,7 +314,8 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
             // in an override of #setupDependencies().
             // TODO: Handle multiple roles/hints.
             if (!this.excludedComponentRoleDependencies.contains(roleTypeClass)
-                && Logger.class != roleTypeClass && !roleTypeClass.isAssignableFrom(List.class)
+                && Logger.class != roleTypeClass && Provider.class != roleTypeClass
+                && !roleTypeClass.isAssignableFrom(List.class)
                 && !roleTypeClass.isAssignableFrom(Map.class)
                 && !hasComponent(dependencyDescriptor.getRoleType(),
                     dependencyDescriptor.getRoleHint()))
