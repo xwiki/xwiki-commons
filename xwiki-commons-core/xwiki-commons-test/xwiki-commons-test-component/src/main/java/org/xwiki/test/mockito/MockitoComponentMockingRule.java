@@ -309,6 +309,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
             // - Already registered
             // - An explicit exception specified by the user
             // - A logger
+            // - A provider
             // - A collection of components, we want to keep them as Java collections. Those collections are later
             // filled by the component manager with available components. Developers can register mocked components
             // in an override of #setupDependencies().
