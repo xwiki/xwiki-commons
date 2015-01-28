@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
-import org.xwiki.stability.Unstable;
 
 /**
  * Support any event in input and pass them to a list of filters.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.2
  */
-@Unstable
 public class CompositeFilter implements InvocationHandler
 {
     private FilterDescriptorManager filterManager;
