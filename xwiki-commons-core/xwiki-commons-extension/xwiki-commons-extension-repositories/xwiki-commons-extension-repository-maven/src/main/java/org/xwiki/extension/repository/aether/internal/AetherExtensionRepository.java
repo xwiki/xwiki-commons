@@ -20,11 +20,8 @@
 package org.xwiki.extension.repository.aether.internal;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -32,11 +29,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Developer;
-import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.Scm;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
@@ -76,16 +70,13 @@ import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionIssueManagement;
-import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
-import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
@@ -102,16 +93,6 @@ import org.xwiki.properties.ConverterManager;
  */
 public class AetherExtensionRepository extends AbstractExtensionRepository
 {
-    public static final String MPKEYPREFIX = "xwiki.extension.";
-
-    public static final String MPNAME_NAME = "name";
-
-    public static final String MPNAME_SUMMARY = "summary";
-
-    public static final String MPNAME_WEBSITE = "website";
-
-    public static final String MPNAME_FEATURES = "features";
-
     /**
      * Used to parse the version.
      */
@@ -333,7 +314,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private String getProperty(Model model, String propertyName)
     {
-        return model.getProperties().getProperty(MPKEYPREFIX + propertyName);
+        return model.getProperties().getProperty(MavenUtils.MPKEYPREFIX + propertyName);
     }
 
     private String getPropertyString(Model model, String propertyName, String def)
@@ -409,62 +390,16 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
         }
 
+        Extension mavenExtension = this.converter.convert(Extension.class, model);
+
         Artifact filerArtifact =
             new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
                 artifactExtension, artifact.getVersion());
 
-        AetherExtension extension = new AetherExtension(filerArtifact, model, this);
-
-        extension.setName(getPropertyString(model, MPNAME_NAME, model.getName()));
-        extension.setSummary(getPropertyString(model, MPNAME_SUMMARY, model.getDescription()));
-        extension.setWebsite(getPropertyString(model, MPNAME_WEBSITE, model.getUrl()));
-
-        // authors
-        for (Developer developer : model.getDevelopers()) {
-            URL authorURL = null;
-            if (developer.getUrl() != null) {
-                try {
-                    authorURL = new URL(developer.getUrl());
-                } catch (MalformedURLException e) {
-                    // TODO: log ?
-                }
-            }
-
-            extension.addAuthor(new DefaultExtensionAuthor(StringUtils.defaultIfBlank(developer.getName(),
-                developer.getId()), authorURL));
-        }
-
-        // licenses
-        for (License license : model.getLicenses()) {
-            extension.addLicense(getExtensionLicense(license));
-        }
-
-        // scm
-        Scm scm = model.getScm();
-        if (scm != null
-            && (scm.getConnection() != null || scm.getDeveloperConnection() != null || scm.getUrl() != null)) {
-            ExtensionScmConnection connection = AetherUtils.toExtensionScmConnection(scm.getConnection());
-            ExtensionScmConnection developerConnection =
-                AetherUtils.toExtensionScmConnection(scm.getDeveloperConnection());
-
-            extension.setScm(new DefaultExtensionScm(scm.getUrl(), connection, developerConnection));
-        }
-
-        // issue management
-        IssueManagement issueManagement = model.getIssueManagement();
-        if (issueManagement != null && issueManagement.getUrl() != null) {
-            extension.setIssueManagement(new DefaultExtensionIssueManagement(issueManagement.getSystem(),
-                issueManagement.getUrl()));
-        }
-
-        // features
-        String featuresString = getProperty(model, MPNAME_FEATURES);
-        if (StringUtils.isNotBlank(featuresString)) {
-            featuresString = featuresString.replaceAll("[\r\n]", "");
-            extension.setFeatures(this.converter.<Collection<String>>convert(List.class, featuresString));
-        }
+        AetherExtension extension = new AetherExtension(mavenExtension, filerArtifact, this);
 
         // dependencies
+        extension.setDependencies(Collections.<ExtensionDependency>emptyList());
         try {
             ArtifactTypeRegistry stereotypes = session.getArtifactTypeRegistry();
 

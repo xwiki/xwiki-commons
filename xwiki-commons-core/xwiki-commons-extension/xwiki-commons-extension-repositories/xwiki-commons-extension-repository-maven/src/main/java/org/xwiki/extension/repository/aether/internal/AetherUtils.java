@@ -25,10 +25,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
-import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.internal.maven.MavenUtils;
 
 /**
  * @version $Id$
@@ -36,10 +35,6 @@ import org.xwiki.extension.ResolveException;
  */
 public final class AetherUtils
 {
-    public static final String JAR_EXTENSION = "jar";
-
-    public static final String JAVA_LANGUAGE = "java";
-
     private static final Pattern PARSER_ID = Pattern.compile("([^: ]+):([^: ]+)(:([^: ]+))?");
 
     public static DefaultArtifact createArtifact(String id, String version) throws ResolveException
@@ -55,40 +50,9 @@ public final class AetherUtils
 
     public static ExtensionId createExtensionId(Artifact artifact)
     {
-        StringBuilder builder = new StringBuilder();
+        String extensionId =
+            MavenUtils.toExtensionId(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier());
 
-        builder.append(artifact.getGroupId());
-        builder.append(':');
-        builder.append(artifact.getArtifactId());
-        if (StringUtils.isNotEmpty(artifact.getClassifier())) {
-            builder.append(':');
-            builder.append(artifact.getClassifier());
-        }
-
-        return new ExtensionId(builder.toString(), artifact.getVersion());
-    }
-
-    public static ExtensionScmConnection toExtensionScmConnection(String connectionURL)
-    {
-        if (connectionURL == null) {
-            return null;
-        }
-
-        String path = connectionURL;
-
-        if (path.startsWith("scm:")) {
-            path = path.substring("scm:".length());
-        }
-
-        String system = "git";
-        int index = path.indexOf(':');
-        if (index >= 0) {
-            if (index != 0) {
-                system = path.substring(0, index);
-            }
-            path = path.substring(index + 1);
-        }
-
-        return new DefaultExtensionScmConnection(system, path);
+        return new ExtensionId(extensionId, artifact.getBaseVersion());
     }
 }

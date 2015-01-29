@@ -26,13 +26,11 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,10 +39,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Developer;
-import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
@@ -54,17 +49,13 @@ import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.environment.Environment;
-import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.ExtensionLicense;
-import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.internal.MavenExtension;
-import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.properties.ConverterManager;
 
 import com.google.common.base.Predicates;
@@ -79,31 +70,6 @@ import com.google.common.base.Predicates;
 @Singleton
 public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 {
-    /**
-     * The package containing maven informations in a jar file.
-     */
-    private static final String MAVENPACKAGE = "META-INF.maven";
-
-    /**
-     * Unknown.
-     */
-    private static final String UNKNOWN = "unknown";
-
-    /**
-     * SNAPSHOT suffix in versions.
-     */
-    private static final String SNAPSHOTSUFFIX = "-SNAPSHOT";
-
-    /**
-     * Used to parse extension id into maven informations.
-     */
-    private static final Pattern PARSER_ID = Pattern.compile("([^: ]+):([^: ]+)(:([^: ]+))?");
-
-    /**
-     * MANIFEST.MF attribute containing extension identifier.
-     */
-    private static final String MF_EXTENSION_ID = "XWiki-Extension-Id";
-
     /**
      * The logger to log.
      */
@@ -122,12 +88,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     @Inject
     private ConverterManager converter;
 
-    /**
-     * Used to find proper {@link ExtensionLicense}.
-     */
-    @Inject
-    private ExtensionLicenseManager licenseManager;
-
     @Inject
     private Environment environment;
 
@@ -136,7 +96,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
     private Dependency toDependency(String id, String version, String type) throws ResolveException
     {
-        Matcher matcher = PARSER_ID.matcher(id);
+        Matcher matcher = MavenUtils.PARSER_ID.matcher(id);
         if (!matcher.matches()) {
             throw new ResolveException("Bad id " + id + ", expected format is <groupId>:<artifactId>[:<classifier>]");
         }
@@ -167,7 +127,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         if (extension instanceof MavenExtension) {
             artifactId = ((MavenExtension) extension).getMavenArtifactId();
         } else {
-            Matcher matcher = PARSER_ID.matcher(extension.getId().getId());
+            Matcher matcher = MavenUtils.PARSER_ID.matcher(extension.getId().getId());
             if (!matcher.matches()) {
                 throw new ResolveException("Bad id " + extension.getId().getId()
                     + ", expected format is <groupId>:<artifactId>[:<classifier>]");
@@ -178,26 +138,11 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         return artifactId;
     }
 
-    private String toExtensionId(String groupId, String artifactId, String classifier)
-    {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append(groupId);
-        builder.append(':');
-        builder.append(artifactId);
-        if (StringUtils.isNotEmpty(classifier)) {
-            builder.append(':');
-            builder.append(classifier);
-        }
-
-        return builder.toString();
-    }
-
     private URL getExtensionURL(URL descriptorURL) throws MalformedURLException
     {
         String extensionURLStr = descriptorURL.toString();
         extensionURLStr =
-            extensionURLStr.substring(0, descriptorURL.toString().indexOf(MAVENPACKAGE.replace('.', '/')));
+            extensionURLStr.substring(0, descriptorURL.toString().indexOf(MavenUtils.MAVENPACKAGE.replace('.', '/')));
 
         if (extensionURLStr.startsWith("jar:")) {
             int start = "jar:".length();
@@ -226,66 +171,12 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model mavenModel = reader.read(descriptorStream);
 
-            String version = resolveVersion(mavenModel.getVersion(), mavenModel, false);
-            String groupId = resolveGroupId(mavenModel.getGroupId(), mavenModel, false);
-
             URL extensionURL = getExtensionURL(descriptorURL);
 
-            coreExtension =
-                new MavenCoreExtension(repository, extensionURL, new ExtensionId(groupId + ':'
-                    + mavenModel.getArtifactId(), version), packagingToType(mavenModel.getPackaging()), mavenModel);
+            Extension mavenExtension = this.converter.convert(Extension.class, mavenModel);
 
+            coreExtension = new MavenCoreExtension(repository, extensionURL, mavenExtension);
             coreExtension.setDescriptorURL(descriptorURL);
-
-            coreExtension.setName(mavenModel.getName());
-            coreExtension.setSummary(mavenModel.getDescription());
-            for (Developer developer : mavenModel.getDevelopers()) {
-                URL authorURL = null;
-                if (developer.getUrl() != null) {
-                    try {
-                        authorURL = new URL(developer.getUrl());
-                    } catch (MalformedURLException e) {
-                        // TODO: log ?
-                    }
-                }
-
-                coreExtension.addAuthor(new DefaultExtensionAuthor(developer.getId(), authorURL));
-            }
-            coreExtension.setWebsite(mavenModel.getUrl());
-
-            // licenses
-            for (License license : mavenModel.getLicenses()) {
-                coreExtension.addLicense(getExtensionLicense(license));
-            }
-
-            // features
-            String featuresString = mavenModel.getProperties().getProperty("xwiki.extension.features");
-            if (StringUtils.isNotBlank(featuresString)) {
-                coreExtension.setFeatures(this.converter.<Collection<String>>convert(List.class, featuresString));
-            }
-
-            // custom properties
-            coreExtension.putProperty("maven.groupId", groupId);
-            coreExtension.putProperty("maven.artifactId", mavenModel.getArtifactId());
-
-            // dependencies
-            for (Dependency mavenDependency : mavenModel.getDependencies()) {
-                if (!mavenDependency.isOptional()
-                    && (mavenDependency.getScope() == null || mavenDependency.getScope().equals("compile") || mavenDependency
-                        .getScope().equals("runtime"))) {
-
-                    String dependencyGroupId = resolveGroupId(mavenDependency.getGroupId(), mavenModel, true);
-                    String dependencyArtifactId = mavenDependency.getArtifactId();
-                    String dependencyClassifier = mavenDependency.getClassifier();
-                    String dependencyVersion = resolveVersion(mavenDependency.getVersion(), mavenModel, true);
-
-                    DefaultExtensionDependency extensionDependency =
-                        new MavenCoreExtensionDependency(toExtensionId(dependencyGroupId, dependencyArtifactId,
-                            dependencyClassifier), new DefaultVersionConstraint(dependencyVersion), mavenDependency);
-
-                    coreExtension.addDependency(extensionDependency);
-                }
-            }
 
             // If no parent is provided no need to resolve it to get more details
             if (mavenModel.getParent() == null) {
@@ -345,7 +236,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                 Manifest manifest = new Manifest(is);
 
                 Attributes manifestAttributes = manifest.getMainAttributes();
-                String extensionId = manifestAttributes.getValue(MF_EXTENSION_ID);
+                String extensionId = manifestAttributes.getValue(MavenUtils.MF_EXTENSION_ID);
 
                 if (extensionId != null) {
                     String[] mavenId = StringUtils.split(extensionId, ':');
@@ -382,12 +273,12 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     private void loadExtensionsFromClassloaders(Map<String, DefaultCoreExtension> extensions,
         DefaultCoreExtensionRepository repository)
     {
-        Collection<URL> mavenURLs = ClasspathHelper.forPackage(MAVENPACKAGE);
+        Collection<URL> mavenURLs = ClasspathHelper.forPackage(MavenUtils.MAVENPACKAGE);
 
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.setScanners(new ResourcesScanner());
         configurationBuilder.setUrls(mavenURLs);
-        configurationBuilder.filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(MAVENPACKAGE)));
+        configurationBuilder.filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(MavenUtils.MAVENPACKAGE)));
 
         Reflections reflections = new Reflections(configurationBuilder);
 
@@ -449,10 +340,10 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     }
 
                     int index;
-                    if (!filename.endsWith(SNAPSHOTSUFFIX)) {
+                    if (!filename.endsWith(MavenUtils.SNAPSHOTSUFFIX)) {
                         index = filename.lastIndexOf('-');
                     } else {
-                        index = filename.lastIndexOf('-', filename.length() - SNAPSHOTSUFFIX.length());
+                        index = filename.lastIndexOf('-', filename.length() - MavenUtils.SNAPSHOTSUFFIX.length());
                     }
 
                     if (index != -1) {
@@ -516,12 +407,14 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     if (filenameArtifact != null) {
                         coreExtension =
                             new DefaultCoreExtension(repository, (URL) filenameArtifact[0], new ExtensionId(
-                                dependencyId, dependency.getVersion()), packagingToType(dependency.getType()));
+                                dependencyId, dependency.getVersion()),
+                                MavenUtils.packagingToType(dependency.getType()));
                         coreExtension.setGuessed(true);
                     } else if (guessedArtefact != null) {
                         coreExtension =
                             new DefaultCoreExtension(repository, (URL) guessedArtefact[1], new ExtensionId(
-                                dependencyId, (String) guessedArtefact[0]), packagingToType(dependency.getType()));
+                                dependencyId, (String) guessedArtefact[0]), MavenUtils.packagingToType(dependency
+                                .getType()));
                         coreExtension.setGuessed(true);
                     }
 
@@ -533,98 +426,5 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         } catch (Exception e) {
             this.logger.warn("Failed to guess extra information about some extensions", e);
         }
-    }
-
-    private String resolveVersion(String modelVersion, Model mavenModel, boolean dependency)
-    {
-        String version = modelVersion;
-
-        // TODO: download parents and resolve pom.xml properties using aether ? could be pretty expensive for
-        // the init
-        if (version == null) {
-            if (!dependency) {
-                Parent parent = mavenModel.getParent();
-
-                if (parent != null) {
-                    version = parent.getVersion();
-                }
-            }
-        } else if (version.startsWith("$")) {
-            String propertyName = version.substring(2, version.length() - 1);
-
-            if (propertyName.equals("project.version") || propertyName.equals("pom.version")
-                || propertyName.equals("version")) {
-                version = resolveVersion(mavenModel.getVersion(), mavenModel, false);
-            } else {
-                String value = mavenModel.getProperties().getProperty(propertyName);
-                if (value != null) {
-                    version = value;
-                }
-            }
-        }
-
-        if (version == null) {
-            version = UNKNOWN;
-        }
-
-        return version;
-    }
-
-    private String resolveGroupId(String modelGroupId, Model mavenModel, boolean dependency)
-    {
-        String groupId = modelGroupId;
-
-        // TODO: download parents and resolve pom.xml properties using aether ? could be pretty expensive for
-        // the init
-        if (groupId == null) {
-            if (!dependency) {
-                Parent parent = mavenModel.getParent();
-
-                if (parent != null) {
-                    groupId = parent.getGroupId();
-                }
-            }
-        } else if (groupId.startsWith("$")) {
-            String propertyName = groupId.substring(2, groupId.length() - 1);
-
-            String value = mavenModel.getProperties().getProperty(propertyName);
-            if (value != null) {
-                groupId = value;
-            }
-        }
-
-        if (groupId == null) {
-            groupId = UNKNOWN;
-        }
-
-        return groupId;
-    }
-
-    // TODO: download custom licenses content
-    private ExtensionLicense getExtensionLicense(License license)
-    {
-        if (license.getName() == null) {
-            return new ExtensionLicense("noname", null);
-        }
-
-        ExtensionLicense extensionLicense = this.licenseManager.getLicense(license.getName());
-
-        return extensionLicense != null ? extensionLicense : new ExtensionLicense(license.getName(), null);
-    }
-
-    /**
-     * Get the extension type from maven packaging.
-     *
-     * @param packaging the maven packaging
-     * @return the extension type
-     */
-    private String packagingToType(String packaging)
-    {
-        // support bundle packaging
-        if (packaging.equals("bundle")) {
-            return "jar";
-        }
-
-        return packaging;
     }
 }

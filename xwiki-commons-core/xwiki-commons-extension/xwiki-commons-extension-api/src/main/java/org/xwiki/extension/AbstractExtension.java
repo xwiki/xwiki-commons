@@ -154,6 +154,8 @@ public abstract class AbstractExtension implements Extension
         setWebsite(extension.getWebSite());
         setLicenses(extension.getLicenses());
         setSummary(extension.getSummary());
+        setIssueManagement(extension.getIssueManagement());
+        setScm(extension.getScm());
 
         setDependencies(extension.getDependencies());
 
