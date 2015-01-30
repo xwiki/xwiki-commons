@@ -550,12 +550,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- SmartGWT -->
-      <dependency>
-        <groupId>com.smartgwt</groupId>
-        <artifactId>smartgwt</artifactId>
-        <version>4.0</version>
-      </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
         <groupId>com.googlecode.java-diff-utils</groupId>
