@@ -24,16 +24,16 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-tools</artifactId>
     <version>7.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-test</artifactId>
-  <name>XWiki Commons - Test Framework - Parent POM</name>
+  <artifactId>xwiki-commons-tool-test</artifactId>
+  <name>XWiki Commons - Tools - Test Framework - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Test framework</description>
   <modules>
     <!-- Sorted Alphabetically -->
-    <module>xwiki-commons-test-component</module>
-    <module>xwiki-commons-test-simple</module>
+    <module>xwiki-commons-tool-test-component</module>
+    <module>xwiki-commons-tool-test-simple</module>
   </modules>
 </project>

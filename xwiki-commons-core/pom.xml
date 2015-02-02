@@ -52,7 +52,6 @@
     <module>xwiki-commons-properties</module>
     <module>xwiki-commons-script</module>
     <module>xwiki-commons-stability</module>
-    <module>xwiki-commons-test</module>
     <module>xwiki-commons-text</module>
     <module>xwiki-commons-velocity</module>
     <module>xwiki-commons-xml</module>

@@ -24,11 +24,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-test</artifactId>
+    <artifactId>xwiki-commons-tool-test</artifactId>
     <version>7.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-test-component</artifactId>
-  <name>XWiki Commons - Test Framework - Component</name>
+  <artifactId>xwiki-commons-tool-test-component</artifactId>
+  <name>XWiki Commons - Tools - Test Framework - Component</name>
   <packaging>jar</packaging>
   <description>For testing XWiki Components</description>
   <properties>
@@ -37,7 +37,7 @@
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-simple</artifactId>
+      <artifactId>xwiki-commons-tool-test-simple</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- To be removed as soon as we get rid of AbstractXWikiComponentTestCase -->

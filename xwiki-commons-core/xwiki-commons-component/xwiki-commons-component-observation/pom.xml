@@ -43,7 +43,7 @@
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-simple</artifactId>
+      <artifactId>xwiki-commons-tool-test-simple</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

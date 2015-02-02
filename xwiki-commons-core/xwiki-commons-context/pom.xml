@@ -40,11 +40,12 @@
       <artifactId>xwiki-commons-component-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- Note: We cannot depend on xwiki-commons-test-component since that would create a cyclic dependency since
-         xwiki-commons-test-component depends on xwiki-commons-context (to set up the Execution Context in tests) -->
+    <!-- Note: We cannot depend on xwiki-commons-tool-test-component since that would create a cyclic dependency since
+         xwiki-commons-tool-test-component depends on xwiki-commons-context (to set up the Execution Context in tests)
+    -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-simple</artifactId>
+      <artifactId>xwiki-commons-tool-test-simple</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
