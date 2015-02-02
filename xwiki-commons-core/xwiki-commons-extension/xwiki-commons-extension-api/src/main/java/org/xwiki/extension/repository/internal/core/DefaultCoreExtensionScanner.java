@@ -291,7 +291,25 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                 try {
                     DefaultCoreExtension coreExtension = parseMavenPom(descriptorURL, repository);
 
-                    extensions.put(coreExtension.getId().getId(), coreExtension);
+                    DefaultCoreExtension existingCoreExtension = extensions.get(coreExtension.getId().getId());
+
+                    if (existingCoreExtension == null) {
+                        extensions.put(coreExtension.getId().getId(), coreExtension);
+                    } else {
+                        this.logger.warn("Collision between core extension [{} ({})] and [{} ({})]",
+                            coreExtension.getId(), coreExtension.getDescriptorURL(), existingCoreExtension.getId(),
+                            existingCoreExtension.getDescriptorURL());
+
+                        if (coreExtension.getId().getVersion().compareTo(existingCoreExtension.getId().getVersion()) > 0) {
+                            extensions.put(coreExtension.getId().getId(), coreExtension);
+
+                            this.logger.warn("[{} ({})] is selected", coreExtension.getId(),
+                                coreExtension.getDescriptorURL());
+                        } else {
+                            this.logger.warn("[{} ({})] is selected", existingCoreExtension.getId(),
+                                existingCoreExtension.getDescriptorURL());
+                        }
+                    }
                 } catch (Exception e) {
                     this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorURL, descriptor, e);
                 }
