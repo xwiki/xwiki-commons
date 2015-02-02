@@ -55,7 +55,6 @@
       <artifactId>xwiki-commons-extension-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <!-- Aether -->
     <dependency>
       <groupId>org.eclipse.aether</groupId>
@@ -92,7 +91,6 @@
       <artifactId>aether-transport-wagon</artifactId>
       <version>${aether.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-aether-provider</artifactId>
@@ -106,7 +104,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
@@ -118,7 +115,6 @@
       <version>3.2.4</version>
       <classifier>no_aop</classifier>
     </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -147,7 +143,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -169,6 +164,14 @@
               **/DefaultPlexusComponentManager.java,
               **/PlexusComponentManager.java
           </excludes>
+        </configuration>
+      </plugin>
+      <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <properties combine.self="override"/>
         </configuration>
       </plugin>
     </plugins>

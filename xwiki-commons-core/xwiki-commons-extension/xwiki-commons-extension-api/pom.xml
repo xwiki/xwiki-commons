@@ -77,7 +77,6 @@
       <artifactId>xwiki-commons-job</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -90,7 +89,6 @@
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
     </dependency>
-
     <!-- Core extensions -->
     <dependency>
       <groupId>org.reflections</groupId>
@@ -101,7 +99,6 @@
       <artifactId>maven-model</artifactId>
       <version>${maven.version}</version>
     </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -116,7 +113,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
   <build>
     <plugins>
       <plugin>
@@ -154,6 +150,14 @@
               **/AbstractInstallPlanJob.java,
               **/UnmodifiableUtils.java
           </excludes>
+        </configuration>
+      </plugin>
+      <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <properties combine.self="override"/>
         </configuration>
       </plugin>
     </plugins>

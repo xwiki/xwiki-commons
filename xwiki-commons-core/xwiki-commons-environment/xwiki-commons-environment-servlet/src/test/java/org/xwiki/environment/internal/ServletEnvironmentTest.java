@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
-import org.xwiki.test.LogRule;
+import org.xwiki.test.AllLogRule;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -53,10 +53,7 @@ public class ServletEnvironmentTest
      * Capture logs.
      */
     @Rule
-    public LogRule logRule = new LogRule() {{
-        record(LogLevel.WARN);
-        recordLoggingForType(ServletEnvironment.class);
-    }};
+    public AllLogRule logRule = new AllLogRule();
 
     @Before
     public void setUp() throws Exception
@@ -66,7 +63,7 @@ public class ServletEnvironmentTest
 
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
         ecm.initialize(getClass().getClassLoader());
-        this.environment = (ServletEnvironment) ecm.getInstance(Environment.class);
+        this.environment = ecm.getInstance(Environment.class);
     }
 
     @After
