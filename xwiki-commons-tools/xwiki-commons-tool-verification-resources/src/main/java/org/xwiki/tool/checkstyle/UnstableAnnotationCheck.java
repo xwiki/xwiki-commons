@@ -57,17 +57,25 @@ public class UnstableAnnotationCheck extends Check
 
     public void setCurrentVersion(String currentVersion) throws CheckstyleException
     {
-        this.currentVersion = currentVersion;
-        this.currentVersionMajor = extractMajor(currentVersion);
-        if (this.currentVersionMajor == -1) {
-            throw new CheckstyleException("The passed version [" + this.currentVersionMajor
-                + "] must be of the type Major.* (e.g. 7.0-SNAPSHOT)");
+        if (currentVersion != null && !currentVersion.isEmpty()) {
+            this.currentVersion = currentVersion;
+            this.currentVersionMajor = extractMajor(currentVersion);
+            if (this.currentVersionMajor == -1) {
+                throw new CheckstyleException("The passed version [" + this.currentVersionMajor
+                    + "] must be of the type Major.* (e.g. 7.0-SNAPSHOT)");
+            }
         }
     }
 
     @Override
     public void visitToken(DetailAST ast)
     {
+        if (this.currentVersion == null) {
+            log(0, "No currentVersion property set. Skipping @Unstable validation.");
+
+            return ;
+        }
+
         switch (ast.getType()) {
             case TokenTypes.PACKAGE_DEF:
                 // Save the package

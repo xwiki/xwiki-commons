@@ -375,7 +375,7 @@
     <!-- Verify that we always add a @since javadoc annotation when we add an @Unstable annotation and that when one
          full dev cycle has passed the @Unstable annotation is removed -->
     <module name="org.xwiki.tool.checkstyle.UnstableAnnotationCheck">
-      <property name="currentVersion" value="${currentVersion}"/>
+      <property name="currentVersion" value="${currentVersion}" default=""/>
     </module>
 
   </module>
