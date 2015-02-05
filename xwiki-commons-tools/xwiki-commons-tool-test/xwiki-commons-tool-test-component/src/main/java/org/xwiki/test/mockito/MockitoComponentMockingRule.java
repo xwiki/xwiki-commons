@@ -368,6 +368,18 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
         return getInstance(this.mockedComponentHint.getRoleType(), this.mockedComponentHint.getHint());
     }
 
+    @Override
+    protected Provider<?> createGenericProvider(ComponentDependency<?> dependency)
+    {
+        if (dependency.getRoleType().equals(this.mockedComponentHint.getRoleType())
+            && dependency.getRoleHint().equals(this.mockedComponentHint.getHint())) {
+            return new GenericMockerProvider<>(this, new RoleHint<>(
+                ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()), dependency.getRoleHint()));
+        } else {
+            return super.createGenericProvider(dependency);
+        }
+    }
+
     /**
      * @return the mocked Logger if the Component under Test has requested an Injection of a Logger or null otherwise
      */
