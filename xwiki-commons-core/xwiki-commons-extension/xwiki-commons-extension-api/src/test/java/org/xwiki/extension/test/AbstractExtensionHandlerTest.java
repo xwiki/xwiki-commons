@@ -133,7 +133,6 @@ public abstract class AbstractExtensionHandlerTest
         throws Throwable
     {
         InstallRequest installRequest = new InstallRequest();
-        installRequest.setId(extensionId.getId());
         installRequest.addExtension(extensionId);
         if (namespaces != null) {
             for (String namespace : namespaces) {
