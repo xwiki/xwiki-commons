@@ -22,7 +22,10 @@ package org.xwiki.test;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import org.apache.commons.io.output.TeeOutputStream;
 import org.junit.runner.Description;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
 /**
@@ -33,39 +36,66 @@ import org.junit.runner.notification.RunListener;
  */
 public class CaptureConsoleRunListener extends RunListener
 {
+    private static final boolean SKIP =
+        Boolean.parseBoolean(System.getProperty("xwiki.surefire.captureconsole.skip", "false"));
+
     private PrintStream savedOut;
 
     private PrintStream savedErr;
 
     private ByteArrayOutputStream collectingContentStream;
 
+    private boolean isInErrorAlready;
+
     @Override
-    public void testStarted(Description description) throws Exception
+    public void testFailure(Failure failure) throws Exception
     {
-        this.collectingContentStream = new ByteArrayOutputStream();
-        PrintStream collectingPrintStream = new PrintStream(this.collectingContentStream);
-
-        // Capture stdout
-        this.savedOut = System.out;
-        System.setOut(collectingPrintStream);
-
-        // Capture stderr
-        this.savedErr = System.err;
-        System.setErr(collectingPrintStream);
+        // There was a failure, skip the check at the end since Junit will stop already!
+        this.isInErrorAlready = true;
     }
 
     @Override
-    public void testFinished(Description description) throws Exception
+    public void testAssumptionFailure(Failure failure)
     {
+        // There was a failure, skip the check at the end since Junit will stop already!
+        this.isInErrorAlready = true;
+    }
+
+    @Override
+    public void testRunStarted(Description description) throws Exception
+    {
+        if (SKIP) {
+            return;
+        }
+
+        this.savedOut = System.out;
+        this.savedErr = System.err;
+        this.collectingContentStream = new ByteArrayOutputStream();
+
+        // Capture stdout but continue sending data to it at the same time
+        System.setOut(new PrintStream(new TeeOutputStream(this.collectingContentStream, this.savedOut)));
+
+        // Capture stderr but continue sending data to it at the same time
+        System.setErr(new PrintStream(new TeeOutputStream(this.collectingContentStream, this.savedErr)));
+    }
+
+    @Override
+    public void testRunFinished(Result result) throws Exception
+    {
+        if (SKIP) {
+            return;
+        }
+
         // Put back stdout
         System.setOut(this.savedOut);
 
         // Put back stderr
         System.setOut(this.savedErr);
 
-        // If there is stdout or stderr content then fail the test
+        // If there is stdout or stderr content then fail the test, unless there was already some error, in which
+        // case we let junit fail in a classical way and we don't interfere...
         String outputContent = this.collectingContentStream.toString();
-        if (!outputContent.isEmpty()) {
+        if (!outputContent.isEmpty() && !this.isInErrorAlready) {
             throw new AssertionError("There should be no content output to the console by the test! Instead we got ["
                 + outputContent + "]");
         }
