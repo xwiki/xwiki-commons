@@ -355,7 +355,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
                 fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
             } else {
-                fieldValue = createGenericProvider(dependency);
+                fieldValue = createGenericProvider(descriptor, dependency);
             }
         } else if (dependencyRoleClass.isAssignableFrom(ComponentDescriptor.class)) {
             fieldValue = new DefaultComponentDescriptor(descriptor);
@@ -366,7 +366,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         return fieldValue;
     }
 
-    protected Provider<?> createGenericProvider(ComponentDependency<?> dependency)
+    protected Provider<?> createGenericProvider(ComponentDescriptor<?> descriptor, ComponentDependency<?> dependency)
     {
         return new GenericProvider<>(this, new RoleHint<>(ReflectionUtils.getLastTypeGenericArgument(dependency
             .getRoleType()), dependency.getRoleHint()));

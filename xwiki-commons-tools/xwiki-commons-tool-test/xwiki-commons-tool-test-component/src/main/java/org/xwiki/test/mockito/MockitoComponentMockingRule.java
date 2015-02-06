@@ -369,14 +369,14 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     }
 
     @Override
-    protected Provider<?> createGenericProvider(ComponentDependency<?> dependency)
+    protected Provider<?> createGenericProvider(ComponentDescriptor<?> descriptor, ComponentDependency<?> dependency)
     {
-        if (dependency.getRoleType().equals(this.mockedComponentHint.getRoleType())
-            && dependency.getRoleHint().equals(this.mockedComponentHint.getHint())) {
+        if (descriptor.getRoleType().equals(this.mockedComponentHint.getRoleType())
+            && descriptor.getRoleHint().equals(this.mockedComponentHint.getHint())) {
             return new GenericMockerProvider<>(this, new RoleHint<>(
                 ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()), dependency.getRoleHint()));
         } else {
-            return super.createGenericProvider(dependency);
+            return super.createGenericProvider(descriptor, dependency);
         }
     }
 
