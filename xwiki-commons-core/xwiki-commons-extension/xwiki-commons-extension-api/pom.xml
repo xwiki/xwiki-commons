@@ -35,6 +35,8 @@
     <xwiki.jacoco.instructionRatio>0.71</xwiki.jacoco.instructionRatio>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-api</xwiki.extension.features>
+    <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
+    <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
   </properties>
   <dependencies>
     <dependency>
@@ -150,14 +152,6 @@
               **/AbstractInstallPlanJob.java,
               **/UnmodifiableUtils.java
           </excludes>
-        </configuration>
-      </plugin>
-      <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <properties combine.self="override"/>
         </configuration>
       </plugin>
     </plugins>

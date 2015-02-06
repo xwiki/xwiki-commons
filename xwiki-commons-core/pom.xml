@@ -32,6 +32,10 @@
   <name>XWiki Commons - Core - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Core - Parent POM</description>
+  <properties>
+    <!-- By default check that unit tests don't output anything to the console -->
+    <xwiki.surefire.captureconsole.skip>false</xwiki.surefire.captureconsole.skip>
+  </properties>
   <modules>
     <!-- Sorted Alphabetically -->
     <module>xwiki-commons-blame</module>
@@ -200,6 +204,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <systemProperties combine.children="append">
+            <!-- This property makes it simple for some module to exclude the check (for example for functional
+                 tests) -->
+            <property>
+              <name>xwiki.surefire.captureconsole.skip</name>
+              <value>${xwiki.surefire.captureconsole.skip}</value>
+            </property>
+          </systemProperties>
           <properties>
             <property>
               <name>listener</name>
