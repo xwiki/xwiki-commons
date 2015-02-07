@@ -21,7 +21,11 @@ package org.xwiki.filter.xml.internal.parameter;
 
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -84,8 +88,10 @@ public class XStreamParameterManager implements ParameterManager, Initializable
 
         this.xstream.setMarshallingStrategy(new XMLTreeMarshallingStrategy());
 
-        this.xstream.registerConverter(new XMLCollectionConverter(this.xstream.getMapper()));
-        this.xstream.registerConverter(new XMLMapConverter(this.xstream.getMapper()));
+        this.xstream.addDefaultImplementation(LinkedHashMap.class, Map.class);
+        this.xstream.addDefaultImplementation(ArrayList.class, Collection.class);
+        this.xstream.addDefaultImplementation(ArrayList.class, List.class);
+
         this.xstream.registerConverter(new XMLFilterElementParametersConverter(this.xstream.getMapper()));
         this.xstream.registerConverter(new InputStreamConverter());
 
