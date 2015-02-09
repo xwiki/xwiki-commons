@@ -64,7 +64,7 @@ public final class FilterProxy implements InvocationHandler
         try {
             invoke(this.targetFilter, this.descriptor, method, args);
         } catch (InvocationTargetException e) {
-            return e.getCause();
+            throw e.getCause();
         }
 
         return null;
