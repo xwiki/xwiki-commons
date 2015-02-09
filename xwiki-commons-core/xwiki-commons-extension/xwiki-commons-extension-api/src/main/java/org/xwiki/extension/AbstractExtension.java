@@ -109,6 +109,11 @@ public abstract class AbstractExtension implements Extension
     protected ExtensionIssueManagement issueManagement;
 
     /**
+     * @see #getCategory()
+     */
+    protected String category;
+
+    /**
      * The file of the extension.
      */
     protected ExtensionFile file;
@@ -414,6 +419,20 @@ public abstract class AbstractExtension implements Extension
     protected void setFile(ExtensionFile file)
     {
         this.file = file;
+    }
+
+    @Override
+    public String getCategory()
+    {
+        return this.category;
+    }
+
+    /**
+     * @param categrory the category of the extension
+     */
+    public void setCategory(String categrory)
+    {
+        this.category = categrory;
     }
 
     @Override

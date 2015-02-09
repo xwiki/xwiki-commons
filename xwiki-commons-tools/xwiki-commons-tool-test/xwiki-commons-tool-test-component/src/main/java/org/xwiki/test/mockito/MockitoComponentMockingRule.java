@@ -326,7 +326,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
 
                     // If the target is registered don't mock anything
                     if (hasComponent(providedType, dependencyDescriptor.getRoleHint())) {
-                        return ;
+                        return;
                     }
 
                     Class providedClass = ReflectionUtils.getTypeClass(providedType);

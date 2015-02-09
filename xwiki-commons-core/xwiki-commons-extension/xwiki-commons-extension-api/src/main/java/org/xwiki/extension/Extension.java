@@ -109,6 +109,12 @@ public interface Extension
      */
     ExtensionIssueManagement getIssueManagement();
 
+    /**
+     * @return the category of the extension
+     * @since 7.0M1
+     */
+    String getCategory();
+
     // Custom properties
 
     /**
