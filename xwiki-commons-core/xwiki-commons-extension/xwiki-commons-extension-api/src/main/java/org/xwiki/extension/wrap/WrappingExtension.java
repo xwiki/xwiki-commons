@@ -136,12 +136,6 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingObje
     }
 
     @Override
-    public String getCategory()
-    {
-        return getWrapped().getCategory();
-    }
-
-    @Override
     public Map<String, Object> getProperties()
     {
         return getWrapped().getProperties();

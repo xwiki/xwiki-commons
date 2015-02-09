@@ -135,9 +135,7 @@
     <complexContent>
       <extension base="extension:ExtensionSummary">
         <sequence>
-          <element name="rating" type="extension:ExtensionRating"
-            minOccurs="0" maxOccurs="1">
-          </element>
+          <element name="rating" type="extension:ExtensionRating" minOccurs="0" maxOccurs="1"></element>
           <element name="summary" type="string" minOccurs="0"></element>
           <element name="description" type="string" minOccurs="0"></element>
           <element name="licenses" type="extension:License"
@@ -153,11 +151,7 @@
           <element name="scm" type="extension:ExtensionScm"
             minOccurs="0" maxOccurs="1">
           </element>
-          <element name="issueManagement"
-            type="extension:ExtensionIssueManagement" minOccurs="0"
-            maxOccurs="1">
-          </element>
-          <element name="category" type="string" minOccurs="0" maxOccurs="1"></element>
+          <element name="issueManagement" type="extension:ExtensionIssueManagement" minOccurs="0" maxOccurs="1"></element>
         </sequence>
       </extension>
     </complexContent>

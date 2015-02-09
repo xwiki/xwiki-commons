@@ -43,8 +43,6 @@ public class MavenUtils
 
     public static final String MPNAME_FEATURES = "features";
 
-    public static final String MPNAME_CATEGORY = "category";
-
     public static final String PKEY_MAVEN_MODEL = "maven.Model";
 
     public static final String JAR_EXTENSION = "jar";
