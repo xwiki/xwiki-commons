@@ -319,8 +319,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
                 cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
                 
-                Object dependencyMock = mock(roleTypeClass,
-                    dependencyDescriptor.getName());
+                Object dependencyMock = mock(roleTypeClass, dependencyDescriptor.getName());
 
                 if (Provider.class == roleTypeClass) {
                     Type providedType = ReflectionUtils.getLastTypeGenericArgument(dependencyDescriptor.getRoleType());
@@ -337,9 +336,8 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
                     } else {
                         // If the dependency is a Provider not targeting a @Role register a mock Provider which provide
                         // a mock
-                        Provider provider = mock(Provider.class, dependencyDescriptor.getName());
+                        Provider provider = (Provider) dependencyMock;
                         when(provider.get()).thenReturn(mock(providedClass, providedType.toString()));
-                        dependencyMock = provider;
                     }
                 }
 
