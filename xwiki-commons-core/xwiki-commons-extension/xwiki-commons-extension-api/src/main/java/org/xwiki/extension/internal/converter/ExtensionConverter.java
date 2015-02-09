@@ -144,6 +144,12 @@ public class ExtensionConverter extends AbstractConverter<Extension>
             extension.setFeatures(this.converter.<Collection<String>>convert(List.class, featuresString));
         }
 
+        // category
+        String category = getProperty(model, MavenUtils.MPNAME_CATEGORY);
+        if (StringUtils.isNotBlank(featuresString)) {
+            extension.setCategory(category);
+        }
+
         // dependencies
         for (Dependency mavenDependency : model.getDependencies()) {
             if (!mavenDependency.isOptional()

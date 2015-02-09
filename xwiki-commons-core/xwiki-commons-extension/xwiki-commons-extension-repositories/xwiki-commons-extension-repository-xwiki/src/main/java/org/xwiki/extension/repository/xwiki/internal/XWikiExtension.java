@@ -131,6 +131,9 @@ public class XWikiExtension extends AbstractExtension implements RatingExtension
                 issueManagement.getUrl()));
         }
 
+        // Category
+        setCategory(extension.getCategory());
+
         // Dependencies
 
         for (ExtensionDependency dependency : extension.getDependencies()) {
