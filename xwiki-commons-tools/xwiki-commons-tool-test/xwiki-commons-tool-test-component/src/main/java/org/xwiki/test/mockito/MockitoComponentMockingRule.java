@@ -330,9 +330,10 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
                     }
 
                     Class providedClass = ReflectionUtils.getTypeClass(providedType);
-                    if (providedClass.getAnnotation(Role.class) == null) {
+                    if (providedClass.getAnnotation(Role.class) != null) {
                         // If the dependency is a Provider for a @Role mock the @Role instead of the Provider
                         cd.setRoleType(providedType);
+                        dependencyMock = mock(providedClass, dependencyDescriptor.getName());
                     } else {
                         // If the dependency is a Provider not targeting a @Role register a mock Provider which provide
                         // a mock
