@@ -30,4 +30,5 @@
   <suppress checks="IllegalThrows" files="ComponentManagerRule.java" />
   <suppress checks="IllegalThrows" files="MockitoComponentMockingRule.java" />
   <suppress checks="BooleanExpressionComplexity" files="MockitoComponentMockingRule.java" />
+  <suppress checks="CyclomaticComplexity" files="MockitoComponentMockingRule.java" />
 </suppressions>
