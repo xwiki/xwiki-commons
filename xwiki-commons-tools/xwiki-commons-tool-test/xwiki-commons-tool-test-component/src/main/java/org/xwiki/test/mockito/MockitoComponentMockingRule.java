@@ -20,6 +20,7 @@
 package org.xwiki.test.mockito;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.annotation.ComponentDescriptorFactory;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.component.descriptor.ComponentDependency;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
@@ -50,14 +52,13 @@ import org.xwiki.component.util.ReflectionUtils;
  * mocked for you. Then in your test code, do a lookup of your component under test and you'll get a component instance
  * which has all its injected dependencies mocked automatically.
  * <p>
- * For example:
- * <code><pre>
+ * For example: <code><pre>
  * public class MyComponentTest
  * {
  *     &#64;Rule
  *     public final MockitoComponentMockingRule&lt;MyComponent&gt; mocker =
  *         new MockitoComponentMockingRule(MyImplementation.class);
- *
+ * 
  *     &#64;Test
  *     public void someTest() throws Exception
  *     {
@@ -69,8 +70,7 @@ import org.xwiki.component.util.ReflectionUtils;
  * Note that by default there are no component registered against the component manager except those mocked
  * automatically by the Rule (except for the MockitoComponentMockingRule itself, which means that if your component
  * under test is injected a default ComponentManager, it'll be the MockitoComponentMockingRule which will get injected.
- * See more below).
- * This has 2 advantages:
+ * See more below). This has 2 advantages:
  * <ul>
  * <li>This is the spirit of this Rule since it's for unit testing and this testing your component in isolation from the
  * rest</li>
@@ -81,17 +81,16 @@ import org.xwiki.component.util.ReflectionUtils;
  * and if you really really need to register all components (it takes time) then use
  * {@link org.xwiki.test.annotation.AllComponents}.
  * <p>
- * In addition, you can perform some action before any component is registered in the Component Manager by having one
- * or several methods annotated with {@link org.xwiki.test.annotation.BeforeComponent}. Similarly, you can perform an
+ * In addition, you can perform some action before any component is registered in the Component Manager by having one or
+ * several methods annotated with {@link org.xwiki.test.annotation.BeforeComponent}. Similarly, you can perform an
  * action after all components have been registered in the Component Manager by having one or several methods annotated
  * with {@link org.xwiki.test.annotation.AfterComponent}.
  * <p>
  * This can be useful (for example) in the case you wish to register a mock ComponentManager in your component under
- * test. You would write:
- * <code><pre>
+ * test. You would write: <code><pre>
  * &#64;Rule
  * public final MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
- *
+ * 
  * &#64;AfterComponent
  * public void overrideComponents() throws Exception
  * {
@@ -284,8 +283,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
         Object logger;
 
         if (!this.excludedComponentRoleDependencies.contains(Logger.class)
-            && this.componentImplementationClass == instanceClass)
-        {
+            && this.componentImplementationClass == instanceClass) {
             logger = mock(Logger.class, instanceClass.getName());
             this.mockLogger = (Logger) logger;
         } else {
@@ -309,25 +307,37 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
             // - Already registered
             // - An explicit exception specified by the user
             // - A logger
-            // - A provider
             // - A collection of components, we want to keep them as Java collections. Those collections are later
             // filled by the component manager with available components. Developers can register mocked components
             // in an override of #setupDependencies().
             // TODO: Handle multiple roles/hints.
-            if (!this.excludedComponentRoleDependencies.contains(roleTypeClass)
-                && Logger.class != roleTypeClass && Provider.class != roleTypeClass
-                && !roleTypeClass.isAssignableFrom(List.class)
-                && !roleTypeClass.isAssignableFrom(Map.class)
-                && !hasComponent(dependencyDescriptor.getRoleType(),
-                    dependencyDescriptor.getRoleHint()))
-            {
-                DefaultComponentDescriptor cd = new DefaultComponentDescriptor();
+            if (!this.excludedComponentRoleDependencies.contains(roleTypeClass) && Logger.class != roleTypeClass
+                && !roleTypeClass.isAssignableFrom(List.class) && !roleTypeClass.isAssignableFrom(Map.class)
+                && !hasComponent(dependencyDescriptor.getRoleType(), dependencyDescriptor.getRoleHint())) {
+                DefaultComponentDescriptor cd = new DefaultComponentDescriptor<>();
+
                 cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
-                registerComponent(
-                    cd,
-                    mock(ReflectionUtils.getTypeClass(dependencyDescriptor.getRoleType()),
-                        dependencyDescriptor.getName()));
+                
+                Object dependencyMock = mock(roleTypeClass,
+                    dependencyDescriptor.getName());
+
+                if (Provider.class == roleTypeClass) {
+                    Type providedType = ReflectionUtils.getLastTypeGenericArgument(dependencyDescriptor.getRoleType());
+                    Class providedClass = ReflectionUtils.getTypeClass(providedType);
+                    if (providedClass.getAnnotation(Role.class) == null) {
+                        // If the dependency is a Provider for a @Role mock the @Role instead of the Provider
+                        cd.setRoleType(providedType);
+                    } else {
+                        // If the dependency is a Provider not targeting a @Role register a mock Provider which provide
+                        // a mock
+                        Provider provider = mock(Provider.class, dependencyDescriptor.getName());
+                        when(provider.get()).thenReturn(mock(providedClass, providedType.toString()));
+                        dependencyMock = provider;
+                    }
+                }
+
+                registerComponent(cd, dependencyMock);
             }
         }
     }
@@ -366,18 +376,6 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     public T getComponentUnderTest() throws ComponentLookupException
     {
         return getInstance(this.mockedComponentHint.getRoleType(), this.mockedComponentHint.getHint());
-    }
-
-    @Override
-    protected Provider<?> createGenericProvider(ComponentDescriptor<?> descriptor, ComponentDependency<?> dependency)
-    {
-        if (descriptor.getRoleType().equals(this.mockedComponentHint.getRoleType())
-            && descriptor.getRoleHint().equals(this.mockedComponentHint.getHint())) {
-            return new GenericMockerProvider<>(this, new RoleHint<>(
-                ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()), dependency.getRoleHint()));
-        } else {
-            return super.createGenericProvider(descriptor, dependency);
-        }
     }
 
     /**
