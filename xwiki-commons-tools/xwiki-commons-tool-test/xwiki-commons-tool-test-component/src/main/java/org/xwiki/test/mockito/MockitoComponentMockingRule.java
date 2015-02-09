@@ -323,13 +323,14 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
 
                 if (Provider.class == roleTypeClass) {
                     Type providedType = ReflectionUtils.getLastTypeGenericArgument(dependencyDescriptor.getRoleType());
+                    Class providedClass = ReflectionUtils.getTypeClass(providedType);
 
-                    // If the target is registered don't mock anything
-                    if (hasComponent(providedType, dependencyDescriptor.getRoleHint())) {
-                        return;
+                    // If the target is registered or if a list or a map are asked don't mock anything
+                    if (hasComponent(providedType, dependencyDescriptor.getRoleHint())
+                        || providedClass.isAssignableFrom(List.class) || providedClass.isAssignableFrom(Map.class)) {
+                        continue;
                     }
 
-                    Class providedClass = ReflectionUtils.getTypeClass(providedType);
                     if (providedClass.getAnnotation(Role.class) != null) {
                         // If the dependency is a Provider for a @Role mock the @Role instead of the Provider
                         cd.setRoleType(providedType);
