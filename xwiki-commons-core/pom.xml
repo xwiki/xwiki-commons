@@ -191,6 +191,13 @@
               <method>boolean value()</method>
               <justification>Adding an new optionnal property in an annotation is not a breakage</justification>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/Extension</className>
+              <method>java.lang.String getCategory()</method>
+              <justification>Add support for catagories to extension.
+              It should not be an issue for more Extension implementation whish are supposed to extend AbstractExtension</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
