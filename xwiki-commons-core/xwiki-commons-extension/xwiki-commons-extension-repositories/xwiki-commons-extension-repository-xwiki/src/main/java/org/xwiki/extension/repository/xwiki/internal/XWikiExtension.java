@@ -45,6 +45,7 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.License;
+import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
@@ -133,6 +134,11 @@ public class XWikiExtension extends AbstractExtension implements RatingExtension
 
         // Category
         setCategory(extension.getCategory());
+
+        // Properties
+        for (Property property : extension.getProperties()) {
+            putProperty(property.getKey(), property.getStringValue());
+        }
 
         // Dependencies
 

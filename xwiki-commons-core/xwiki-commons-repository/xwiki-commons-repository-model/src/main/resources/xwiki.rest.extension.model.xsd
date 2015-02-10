@@ -157,7 +157,10 @@
             type="extension:ExtensionIssueManagement" minOccurs="0"
             maxOccurs="1">
           </element>
-          <element name="category" type="string" minOccurs="0" maxOccurs="1"></element>
+          <element name="category" type="string" minOccurs="0"
+            maxOccurs="1">
+          </element>
+          <element name="properties" type="extension:Property" minOccurs="0" maxOccurs="unbounded"></element>
         </sequence>
       </extension>
     </complexContent>
@@ -214,6 +217,16 @@
       <sequence>
         <element name="system" type="string"></element>
         <element name="url" type="string" minOccurs="0" maxOccurs="1"></element>
+      </sequence>
+    </complexType>
+
+
+
+    <complexType name="Property">
+      <sequence>
+        <element name="key" type="string"></element>
+        <!-- TODO: add support for any type -->
+        <element name="stringValue" type="string"></element>
       </sequence>
     </complexType>
 </schema>
