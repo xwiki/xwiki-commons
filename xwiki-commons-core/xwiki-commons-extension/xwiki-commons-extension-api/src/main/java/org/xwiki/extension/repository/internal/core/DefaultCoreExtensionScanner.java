@@ -212,7 +212,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         return new URL(extensionURLStr);
     }
 
-    private DefaultCoreExtension parseMavenPom(URL descriptorURL, DefaultCoreExtensionRepository repository)
+    private DefaultCoreExtension getCoreExtension(URL descriptorURL, DefaultCoreExtensionRepository repository)
         throws Exception
     {
         DefaultCoreExtension coreExtension = this.cache.getExtension(repository, descriptorURL);
@@ -220,6 +220,13 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         if (coreExtension != null && coreExtension.getDescriptorURL().equals(descriptorURL)) {
             return coreExtension;
         }
+
+        return parseMavenPom(descriptorURL, repository);
+    }
+
+    private DefaultCoreExtension parseMavenPom(URL descriptorURL, DefaultCoreExtensionRepository repository)
+        throws Exception
+    {
 
         InputStream descriptorStream = descriptorURL.openStream();
         try {
@@ -231,7 +238,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
             URL extensionURL = getExtensionURL(descriptorURL);
 
-            coreExtension =
+            DefaultCoreExtension coreExtension =
                 new MavenCoreExtension(repository, extensionURL, new ExtensionId(groupId + ':'
                     + mavenModel.getArtifactId(), version), packagingToType(mavenModel.getPackaging()), mavenModel);
 
@@ -292,11 +299,11 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                 this.cache.store(coreExtension);
                 coreExtension.setCached(true);
             }
+
+            return coreExtension;
         } finally {
             IOUtils.closeQuietly(descriptorStream);
         }
-
-        return coreExtension;
     }
 
     @Override
@@ -398,7 +405,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
             if (descriptorURL != null) {
                 try {
-                    DefaultCoreExtension coreExtension = parseMavenPom(descriptorURL, repository);
+                    DefaultCoreExtension coreExtension = getCoreExtension(descriptorURL, repository);
 
                     extensions.put(coreExtension.getId().getId(), coreExtension);
                 } catch (Exception e) {
