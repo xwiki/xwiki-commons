@@ -20,10 +20,14 @@
 
 package org.xwiki.extension.jar;
 
+import java.net.URI;
+
 import javax.inject.Singleton;
 
+import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.classloader.internal.DefaultClassLoaderManager;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.InitializationException;
 
 /**
  * Override the DefaultJarExtensionClassLoader to prevent access to extension classes available in the classpath of the
@@ -35,9 +39,19 @@ import org.xwiki.component.annotation.Component;
 @Singleton
 public class TestJarExtensionClassLoaderManager extends DefaultClassLoaderManager
 {
+    public TestExtensionClassLoader testExtensionClassLoader = new TestExtensionClassLoader();
+
     @Override
-    protected ClassLoader getSystemClassLoader()
+    public void initialize() throws InitializationException
     {
-        return new TestExtensionClassLoader();
+        this.rootClassLoader = new NamespaceURLClassLoader(new URI[] {}, this.testExtensionClassLoader, null);
+    }
+    
+    @Override
+    public void dropURLClassLoaders()
+    {
+        super.dropURLClassLoaders();
+
+        this.rootClassLoader = new NamespaceURLClassLoader(new URI[] {}, this.testExtensionClassLoader, null);
     }
 }

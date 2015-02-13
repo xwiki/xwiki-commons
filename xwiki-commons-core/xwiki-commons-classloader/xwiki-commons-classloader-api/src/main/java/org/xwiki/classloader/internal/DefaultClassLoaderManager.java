@@ -44,7 +44,7 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
     /**
      * The class loader corresponding to null namespace.
      */
-    private NamespaceURLClassLoader rootClassLoader;
+    protected NamespaceURLClassLoader rootClassLoader;
 
     /**
      * The classloaders stored by namespace.
@@ -87,8 +87,6 @@ public class DefaultClassLoaderManager implements ClassLoaderManager, Initializa
             for (String namespace : this.wikiClassLoaderMap.keySet()) {
                 dropURLClassLoader(namespace);
             }
-
-            this.rootClassLoader = null;
         }
     }
 
