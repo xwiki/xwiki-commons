@@ -28,6 +28,8 @@ import javax.inject.Singleton;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 
 /**
  * Default implementation of {@link ClassLoaderManager}.
@@ -37,7 +39,7 @@ import org.xwiki.component.annotation.Component;
  */
 @Component
 @Singleton
-public class DefaultClassLoaderManager implements ClassLoaderManager
+public class DefaultClassLoaderManager implements ClassLoaderManager, Initializable
 {
     /**
      * The class loader corresponding to null namespace.
@@ -50,23 +52,16 @@ public class DefaultClassLoaderManager implements ClassLoaderManager
     private Map<String, NamespaceURLClassLoader> wikiClassLoaderMap =
         new ConcurrentHashMap<String, NamespaceURLClassLoader>();
 
-    /**
-     * Allow overriding the system classloader during tests.
-     *
-     * @return a ClassLoader to be used as the system parent
-     */
-    protected ClassLoader getSystemClassLoader()
+    @Override
+    public void initialize() throws InitializationException
     {
-        return getClass().getClassLoader();
+        this.rootClassLoader =
+            new NamespaceURLClassLoader(new URI[] {}, Thread.currentThread().getContextClassLoader(), null);
     }
 
     @Override
     public NamespaceURLClassLoader getURLClassLoader(String namespace, boolean create)
     {
-        if (this.rootClassLoader == null) {
-            this.rootClassLoader = new NamespaceURLClassLoader(new URI[] {}, getSystemClassLoader(), null);
-        }
-
         NamespaceURLClassLoader wikiClassLoader = this.rootClassLoader;
 
         if (namespace != null) {
