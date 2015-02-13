@@ -168,7 +168,6 @@ public abstract class AbstractExtensionHandlerTest
         throws Throwable
     {
         UninstallRequest uninstallRequest = new UninstallRequest();
-        uninstallRequest.setId(extensionId.getId());
         uninstallRequest.addExtension(extensionId);
         if (namespace != null) {
             uninstallRequest.addNamespace(namespace);

@@ -54,5 +54,4 @@ public final class VersionUtils
     {
         return str.length() > 0 && str.charAt(str.length() - 1) == c;
     }
-
 }
