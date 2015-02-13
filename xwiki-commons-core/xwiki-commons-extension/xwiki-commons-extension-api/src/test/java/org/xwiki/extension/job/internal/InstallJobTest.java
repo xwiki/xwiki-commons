@@ -270,7 +270,7 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testInstallOnRootAnInstalledDependency() throws Throwable
+    public void testInstallOnNamespaceThenMoveDependencyOnRoot() throws Throwable
     {
         install(TestResources.REMOTE_WITHRDEPENDENCY_ID, "namespace");
 
@@ -292,36 +292,31 @@ public class InstallJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
-    public void testUpgradeOnNameSpaceWithDependencyOnRoot() throws Throwable
+    public void testInstallOnNamespaceThenOnRootWithLowerDependency() throws Throwable
     {
-        // Install dependency on root
-        install(TestResources.REMOTE_UPGRADE10_ID);
         // Install extension on namespace
         install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID, "namespace");
-
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
-            TestResources.REMOTE_UPGRADE10_ID.getId(), "namespace"));
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
-            TestResources.REMOTE_UPGRADE10_ID.getId(), null));
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
-            TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID.getId(), "namespace"));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(
-            TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID.getId(), null));
-
-        // Upgrade extension on namespace
-        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace");
+        // Upgrade dependency
+        install(TestResources.REMOTE_OTHERUPGRADEWITHDEPENDENCY20_ID, "namespace");
 
         Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
         Assert.assertNull(this.installedExtensionRepository
-            .getInstalledExtension(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID));
+            .getInstalledExtension(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID));
+
+        // Install extension on root
+        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID);
+
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(TestResources.REMOTE_UPGRADE10_ID));
+        Assert.assertNull(this.installedExtensionRepository
+            .getInstalledExtension(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID));
 
         Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
             TestResources.REMOTE_UPGRADE20_ID.getId(), "namespace"));
         Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
             TestResources.REMOTE_UPGRADE20_ID.getId(), null));
         Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
-            TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID.getId(), "namespace"));
-        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(
-            TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID.getId(), null));
+            TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID.getId(), "namespace"));
+        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
+            TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID.getId(), null));
     }
 }
