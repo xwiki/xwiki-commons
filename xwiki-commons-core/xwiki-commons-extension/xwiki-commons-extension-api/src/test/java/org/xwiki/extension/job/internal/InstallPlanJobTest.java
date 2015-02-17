@@ -20,6 +20,7 @@
 package org.xwiki.extension.job.internal;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -176,12 +177,24 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_NOTINSTALLED_ID);
 
-        Assert.assertEquals(1, plan.getTree().size());
+        Iterator<ExtensionPlanNode> it = plan.getTree().iterator();
 
-        ExtensionPlanNode node = plan.getTree().iterator().next();
-
+        ExtensionPlanNode node = it.next();
         ExtensionPlanAction action = node.getAction();
+        Assert.assertEquals(TestResources.INSTALLED_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UNINSTALL, action.getAction());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
 
+        node = it.next();
+        action = node.getAction();
+        Assert.assertEquals(TestResources.INSTALLED_DEPENDENCY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UNINSTALL, action.getAction());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+
+        node = it.next();
+        action = node.getAction();
         Assert.assertEquals(TestResources.REMOTE_NOTINSTALLED_ID, action.getExtension().getId());
         Assert.assertEquals(Action.UPGRADE, action.getAction());
         Assert.assertEquals(TestResources.INSTALLED_ID, action.getPreviousExtension().getId());
@@ -189,9 +202,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(1, node.getChildren().size());
 
         node = node.getChildren().iterator().next();
-
         action = node.getAction();
-
         Assert.assertEquals(TestResources.REMOTE_NOTINSTALLED_DEPENDENCY_ID, action.getExtension().getId());
         Assert.assertEquals(Action.UPGRADE, action.getAction());
         Assert.assertEquals(TestResources.INSTALLED_DEPENDENCY_ID, action.getPreviousExtension().getId());
@@ -222,6 +233,68 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(0, node.getChildren().size());
     }
 
+    @Test
+    public void testInstallOnNamespaceThenOnRoot() throws Throwable
+    {
+        // Install 1.0 on namespace
+        install(TestResources.REMOTE_UPGRADE10_ID, "namespace");
+
+        // Move 1.0 on root
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE10_ID);
+
+        Assert.assertEquals(2, plan.getTree().size());
+
+        Iterator<ExtensionPlanNode> it = plan.getTree().iterator();
+        
+        ExtensionPlanNode node = it.next();
+        ExtensionPlanAction action = node.getAction();
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UNINSTALL, action.getAction());
+        Assert.assertEquals(1, action.getPreviousExtensions().size());
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getPreviousExtension().getId());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+        
+        node = it.next();
+        action = node.getAction();
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals(null, action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallOnNamespaceThenUnpgradeOnRoot() throws Throwable
+    {
+        // Install 1.0 on namespace
+        install(TestResources.REMOTE_UPGRADE10_ID, "namespace");
+
+        // Upgrade 2.0 on namespace
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE20_ID);
+
+        Assert.assertEquals(2, plan.getTree().size());
+
+        Iterator<ExtensionPlanNode> it = plan.getTree().iterator();
+        
+        ExtensionPlanNode node = it.next();
+        ExtensionPlanAction action = node.getAction();
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UNINSTALL, action.getAction());
+        Assert.assertEquals(1, action.getPreviousExtensions().size());
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getPreviousExtension().getId());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+        
+        node = it.next();
+        action = node.getAction();
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals(null, action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+    
     // Errors
 
     @Test(expected = InstallException.class)
@@ -262,5 +335,32 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
             Arrays.asList(TestResources.REMOTE_SIMPLE_ID.getId()));
 
         installPlan(TestResources.REMOTE_SIMPLE_ID);
+    }
+
+    @Test(expected = InstallException.class)
+    public void testInstallLowerVersionOfDependencyOnRoot() throws Throwable
+    {
+        // Install extension 2.0 on namespace
+        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace");
+        // Install dependendy 1.0 on root
+        installPlan(TestResources.REMOTE_UPGRADE10_ID);
+    }
+
+    @Test(expected = InstallException.class)
+    public void testInstallNameSpaceExtensionWithExistingRootExtension() throws Throwable
+    {
+        // Install 1.0 on root
+        install(TestResources.REMOTE_UPGRADE10_ID);
+        // Try to upgrade 2.0 on namespace
+        installPlan(TestResources.REMOTE_UPGRADE20_ID, "namespace");
+    }
+
+    @Test(expected = InstallException.class)
+    public void testInstallNameSpaceExtensionWithIncompatibleRootDependency() throws Throwable
+    {
+        // Install 1.0 on root
+        install(TestResources.REMOTE_UPGRADE10_ID);
+        // Install extension 2.0 on namespace
+        installPlan(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace");
     }
 }

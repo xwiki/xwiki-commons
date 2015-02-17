@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -165,7 +166,14 @@ public class ExtensionPackager
             }
 
             try {
+                // Order files
+                TreeMap<String, Vfs.File> files = new TreeMap<>();
                 for (Vfs.File resourceFile : Vfs.fromURL(new URL(descriptorFolderURL)).getFiles()) {
+                    files.put(resourceFile.getRelativePath(), resourceFile);
+                }
+
+                // Add files to zip
+                for (Vfs.File resourceFile : files.values()) {
                     if (!resourceFile.getRelativePath().equals(PACKAGEFILE_DESCRIPTOR)) {
                         addZipEntry(classPackageFolder, resourceFile, zos, type);
                     }

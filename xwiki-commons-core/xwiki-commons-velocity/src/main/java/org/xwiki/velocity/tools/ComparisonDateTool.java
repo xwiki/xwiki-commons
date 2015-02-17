@@ -17,41 +17,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.version.internal;
+package org.xwiki.velocity.tools;
+
+import java.text.DateFormatSymbols;
+import java.util.Locale;
 
 /**
- * Contain some Version related toolkit methods.
- *
+ * Extends the default DateTool from velocity-tools with some useful methods.
+ * 
  * @version $Id$
- * @since 4.0M1
+ * @since 6.2.6, 6.4.2, 7.0M2
  */
-public final class VersionUtils
+public class ComparisonDateTool extends org.apache.velocity.tools.generic.ComparisonDateTool
 {
     /**
-     * Toolkit class.
+     * @param locale a locale object
+     * @return the {@link DateFormatSymbols} instance corresponding to the given locale
      */
-    private VersionUtils()
+    public DateFormatSymbols getDateFormatSymbols(Locale locale)
     {
-        // Toolkit class
-    }
-
-    /**
-     * @param str the string to look at
-     * @param c the character to search in the provided string
-     * @return true if the provided character is the first character of the provided string
-     */
-    public static boolean startsWith(String str, char c)
-    {
-        return str.length() > 0 && str.charAt(0) == c;
-    }
-
-    /**
-     * @param str the string to look at
-     * @param c the character to search in the provided string
-     * @return true if the provided character is the last character of the provided string
-     */
-    public static boolean endsWith(String str, char c)
-    {
-        return str.length() > 0 && str.charAt(str.length() - 1) == c;
+        return DateFormatSymbols.getInstance(locale);
     }
 }

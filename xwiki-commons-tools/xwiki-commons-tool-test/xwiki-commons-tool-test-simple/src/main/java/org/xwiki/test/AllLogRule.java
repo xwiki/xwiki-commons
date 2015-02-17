@@ -29,6 +29,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.xwiki.test.LogRule.LogLevel;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -67,6 +69,8 @@ public class AllLogRule implements TestRule
     private List<Appender<ILoggingEvent>> savedAppenders = new ArrayList<>();
 
     private Level savedLevel;
+
+    private LogLevel level;
 
     /**
      * The actual code that executes our capturing logic before the test runs and removes it after it has run.
@@ -121,10 +125,40 @@ public class AllLogRule implements TestRule
         }
     }
 
+    /**
+     * Capture INFO log.
+     */
+    public AllLogRule()
+    {
+        this(LogLevel.INFO);
+    }
+
+    /**
+     * Caputure passed log level.
+     * 
+     * @param level the level of log to capture
+     */
+    public AllLogRule(LogLevel level)
+    {
+        this.level = level;
+    }
+    
     @Override
     public Statement apply(Statement statement, Description description)
     {
         return new LogStatement(statement);
+    }
+
+    private ILoggingEvent getLogEvent(int position)
+    {
+        List<ILoggingEvent> list = this.listAppender.list;
+        if (list.size() <= position) {
+            throw new RuntimeException(String.format("There are only %s messages in the captured logs", list.size()));
+        }
+
+        this.assertedMessages.add(position);
+
+        return list.get(position);
     }
 
     /**
@@ -133,13 +167,17 @@ public class AllLogRule implements TestRule
      */
     public String getMessage(int position)
     {
-        List<ILoggingEvent> list = this.listAppender.list;
-        if (list.size() >= position + 1) {
-            this.assertedMessages.add(position);
-            return list.get(position).getFormattedMessage();
-        } else {
-            throw new RuntimeException(String.format("There are only %s messages in the captured logs", list.size()));
-        }
+        return getLogEvent(position).getFormattedMessage();
+    }
+
+    /**
+     * @param position the message number in the list of captured logs
+     * @return the marker at the specified position
+     * @since 7.0M2
+     */
+    public Marker getMarker(int position)
+    {
+        return getLogEvent(position).getMarker();
     }
 
     /**
@@ -166,7 +204,7 @@ public class AllLogRule implements TestRule
 
         // Save the logging level
         this.savedLevel = logger.getLevel();
-        logger.setLevel(Level.TRACE);
+        logger.setLevel(this.level.getLevel());
     }
 
     private void uninitializeLogger()
