@@ -28,6 +28,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -237,6 +238,20 @@ public class LogRule implements TestRule
         List<ILoggingEvent> list = this.listAppender.list;
         if (list.size() >= position + 1) {
             return list.get(position).getFormattedMessage();
+        } else {
+            throw new RuntimeException(String.format("There are only %s messages in the captured logs", list.size()));
+        }
+    }
+
+    /**
+     * @param position the message number in the list of captured logs
+     * @return the marker at the specified position
+     */
+    public Marker getMaker(int position)
+    {
+        List<ILoggingEvent> list = this.listAppender.list;
+        if (list.size() >= position + 1) {
+            return list.get(position).getMarker();
         } else {
             throw new RuntimeException(String.format("There are only %s messages in the captured logs", list.size()));
         }
