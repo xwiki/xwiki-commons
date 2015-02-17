@@ -30,6 +30,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.xwiki.test.LogRule.LogLevel;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -68,6 +69,8 @@ public class AllLogRule implements TestRule
     private List<Appender<ILoggingEvent>> savedAppenders = new ArrayList<>();
 
     private Level savedLevel;
+
+    private LogLevel level;
 
     /**
      * The actual code that executes our capturing logic before the test runs and removes it after it has run.
@@ -122,6 +125,16 @@ public class AllLogRule implements TestRule
         }
     }
 
+    public AllLogRule()
+    {
+        this(LogLevel.INFO);
+    }
+
+    public AllLogRule(LogLevel level)
+    {
+        this.level = level;
+    }
+    
     @Override
     public Statement apply(Statement statement, Description description)
     {
@@ -183,7 +196,7 @@ public class AllLogRule implements TestRule
 
         // Save the logging level
         this.savedLevel = logger.getLevel();
-        logger.setLevel(Level.TRACE);
+        logger.setLevel(this.level.getLevel());
     }
 
     private void uninitializeLogger()
