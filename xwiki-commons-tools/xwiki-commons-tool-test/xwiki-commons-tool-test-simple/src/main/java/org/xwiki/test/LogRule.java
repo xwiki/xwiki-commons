@@ -229,32 +229,33 @@ public class LogRule implements TestRule
         return false;
     }
 
+    private ILoggingEvent getLogEvent(int position)
+    {
+        List<ILoggingEvent> list = this.listAppender.list;
+        if (list.size() <= position) {
+            throw new RuntimeException(String.format("There are only %s messages in the captured logs", list.size()));
+        }
+
+        return list.get(position);
+    }
+
     /**
      * @param position the message number in the list of captured logs
      * @return the message at the specified position
      */
     public String getMessage(int position)
     {
-        List<ILoggingEvent> list = this.listAppender.list;
-        if (list.size() >= position + 1) {
-            return list.get(position).getFormattedMessage();
-        } else {
-            throw new RuntimeException(String.format("There are only %s messages in the captured logs", list.size()));
-        }
+        return getLogEvent(position).getFormattedMessage();
     }
 
     /**
      * @param position the message number in the list of captured logs
      * @return the marker at the specified position
+     * @since 7.0M2
      */
-    public Marker getMaker(int position)
+    public Marker getMarker(int position)
     {
-        List<ILoggingEvent> list = this.listAppender.list;
-        if (list.size() >= position + 1) {
-            return list.get(position).getMarker();
-        } else {
-            throw new RuntimeException(String.format("There are only %s messages in the captured logs", list.size()));
-        }
+        return getLogEvent(position).getMarker();
     }
 
     /**
