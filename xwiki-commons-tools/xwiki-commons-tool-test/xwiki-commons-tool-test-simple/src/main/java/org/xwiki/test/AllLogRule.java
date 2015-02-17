@@ -125,11 +125,19 @@ public class AllLogRule implements TestRule
         }
     }
 
+    /**
+     * Capture INFO log.
+     */
     public AllLogRule()
     {
         this(LogLevel.INFO);
     }
 
+    /**
+     * Caputure passed log level.
+     * 
+     * @param level the level of log to capture
+     */
     public AllLogRule(LogLevel level)
     {
         this.level = level;
