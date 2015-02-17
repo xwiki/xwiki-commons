@@ -56,7 +56,10 @@ import ch.qos.logback.core.read.ListAppender;
  *
  * @version $Id$
  * @since 4.2RC1
+ * @deprecated starting with 7.0M1 you should use {@link AllLogRule} instead since we want tests to not output anything
+ *             to the console
  */
+@Deprecated
 public class LogRule implements TestRule
 {
     /**
