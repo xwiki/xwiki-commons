@@ -36,6 +36,8 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
+import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.version.Version;
@@ -49,7 +51,7 @@ import org.xwiki.extension.version.Version;
  * @since 5.4M1
  */
 public abstract class AbstractCachedExtensionRepository<E extends Extension> extends AbstractExtensionRepository
-    implements Searchable
+    implements AdvancedSearchable
 {
     /**
      * The cached extensions.
@@ -252,5 +254,12 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
         }
 
         return RepositoryUtils.getIterableResult(offset, nb, result);
+    }
+
+    @Override
+    public ExtensionQuery createQuery(String query)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

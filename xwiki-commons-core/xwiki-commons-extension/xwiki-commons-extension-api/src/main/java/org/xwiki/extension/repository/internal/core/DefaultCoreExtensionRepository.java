@@ -45,6 +45,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.internal.RepositoryUtils;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.version.Version;
@@ -58,7 +59,7 @@ import org.xwiki.extension.version.Version;
 @Component
 @Singleton
 public class DefaultCoreExtensionRepository extends AbstractExtensionRepository implements CoreExtensionRepository,
-    Initializable, Searchable
+    Initializable
 {
     /**
      * The core extensions.

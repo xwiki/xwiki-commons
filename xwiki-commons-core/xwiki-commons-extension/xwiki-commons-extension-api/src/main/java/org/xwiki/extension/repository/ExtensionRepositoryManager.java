@@ -123,7 +123,7 @@ public interface ExtensionRepositoryManager
     IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException;
 
     /**
-     * Search among all repository implementing {@link org.xwiki.extension.repository.search.Searchable} interface.
+     * Search among all repositories implementing {@link org.xwiki.extension.repository.search.Searchable} interface.
      *
      * @param pattern the pattern to search
      * @param offset the offset from where to start returning search results, 0-based

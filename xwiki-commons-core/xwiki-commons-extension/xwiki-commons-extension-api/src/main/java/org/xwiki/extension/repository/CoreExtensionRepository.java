@@ -26,7 +26,7 @@ import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
-import org.xwiki.extension.repository.search.Searchable;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
 
 /**
  * Virtual extension repository containing core extensions.
@@ -35,7 +35,7 @@ import org.xwiki.extension.repository.search.Searchable;
  * @since 4.0M1
  */
 @Role
-public interface CoreExtensionRepository extends ExtensionRepository, Searchable
+public interface CoreExtensionRepository extends ExtensionRepository, AdvancedSearchable
 {
     /**
      * @return the number of core extensions

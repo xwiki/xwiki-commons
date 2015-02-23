@@ -23,12 +23,12 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.repository.result.IterableResult;
 
 /**
- * A repository can implements it to provide search capabilities.
+ * A repository can implements it to provide basic search capabilities.
  *
  * @version $Id$
  * @since 4.0M1
+ * @see AdvancedSearchable
  */
-// TODO: add more complete query support
 public interface Searchable
 {
     /**

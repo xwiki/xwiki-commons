@@ -28,7 +28,7 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
-import org.xwiki.extension.repository.search.Searchable;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
 
 /**
  * A repository containing local extension.
@@ -40,7 +40,7 @@ import org.xwiki.extension.repository.search.Searchable;
  * @since 4.0M1
  */
 @Role
-public interface LocalExtensionRepository extends ExtensionRepository, Searchable
+public interface LocalExtensionRepository extends ExtensionRepository, AdvancedSearchable
 {
     /**
      * @return the number of local extensions

@@ -19,13 +19,20 @@
  */
 package org.xwiki.extension.repository.search;
 
+import org.xwiki.extension.Extension;
+import org.xwiki.extension.repository.result.IterableResult;
+
 /**
  * A repository can implements it to provide search capabilities.
  * 
  * @version $Id$
  * @since 7.0M2
  */
-public interface AdvancedSearchable
+public interface AdvancedSearchable extends Searchable
 {
-    ExtensionQuery createQuery(String query);
+    boolean isFilterable();
+
+    boolean isOrderable();
+
+    IterableResult<Extension> search(ExtensionQuery query);
 }

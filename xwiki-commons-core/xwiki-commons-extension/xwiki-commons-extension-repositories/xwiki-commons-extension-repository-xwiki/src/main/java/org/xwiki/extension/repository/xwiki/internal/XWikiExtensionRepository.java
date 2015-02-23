@@ -48,6 +48,7 @@ import org.xwiki.extension.repository.http.internal.HttpClientFactory;
 import org.xwiki.extension.repository.rating.RatableExtensionRepository;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
@@ -64,7 +65,7 @@ import org.xwiki.repository.UriBuilder;
  * @version $Id$
  * @since 4.0M1
  */
-public class XWikiExtensionRepository extends AbstractExtensionRepository implements Searchable,
+public class XWikiExtensionRepository extends AbstractExtensionRepository implements AdvancedSearchable,
     RatableExtensionRepository
 {
     private final transient XWikiExtensionRepositoryFactory repositoryFactory;

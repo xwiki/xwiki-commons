@@ -19,35 +19,147 @@
  */
 package org.xwiki.extension.repository.search;
 
-import org.xwiki.extension.Extension;
-import org.xwiki.extension.repository.result.IterableResult;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.xwiki.stability.Unstable;
 
-public interface ExtensionQuery
+/**
+ * A query to an extension repository.
+ * 
+ * @version $Id$
+ * @since 7.0M2
+ */
+@Unstable
+public class ExtensionQuery
 {
+    public enum ORDER
+    {
+        DESC,
+        ASC;
+    }
+
+    public enum COMPARISON
+    {
+        EQUAL,
+        MATCH;
+    }
+
+    public static class SortClause
+    {
+        private final String field;
+
+        private final ORDER order;
+
+        public SortClause(String field, ORDER order)
+        {
+            this.field = field;
+            this.order = order;
+        }
+    }
+
+    public static class Filter
+    {
+        private final String field;
+
+        private final Object value;
+
+        private final COMPARISON comparison;
+
+        public Filter(String field, Object value, COMPARISON comparison)
+        {
+            this.field = field;
+            this.value = value;
+            this.comparison = comparison;
+        }
+    }
+
+    private String query;
+
+    private int limit = -1;
+
+    private int offset = 0;
+
+    private List<SortClause> sort;
+
+    private List<Filter> filters;
+
+    public ExtensionQuery()
+    {
+    }
+
+    public ExtensionQuery(String query)
+    {
+        this.query = query;
+    }
+
+    /**
+     * @return the query statement
+     */
+    public String getQuery()
+    {
+        return this.query;
+    }
+
     /**
      * @param limit limit of result list to set (so {@link #execute()}.size() will be <= limit).
      * @return this query.
      */
-    ExtensionQuery setLimit(int limit);
+    public ExtensionQuery setLimit(int limit)
+    {
+        this.limit = limit;
+
+        return this;
+    }
 
     /**
      * @param offset offset of query result to set (skip first "offset" rows).
      * @return this query.
      */
-    ExtensionQuery setOffset(int offset);
+    public ExtensionQuery setOffset(int offset)
+    {
+        this.offset = offset;
+
+        return this;
+    }
+
+    public ExtensionQuery addFilter(String field, Object value, COMPARISON comparizon)
+    {
+        if (this.filters == null) {
+            this.filters = new ArrayList<>();
+        }
+
+        this.filters.add(new Filter(field, value, comparizon));
+
+        return this;
+    }
+
+    public ExtensionQuery addSort(String field, ORDER order)
+    {
+        if (this.sort == null) {
+            this.sort = new ArrayList<>();
+        }
+
+        this.sort.add(new SortClause(field, order));
+
+        return this;
+    }
 
     /**
      * @return limit limit of result list.
      * @see #setLimit(int)
      */
-    int getLimit();
+    public int getLimit()
+    {
+        return this.limit;
+    }
 
     /**
      * @return offset offset of query result.
      * @see #setOffset(int)
      */
-    int getOffset();
-
-    IterableResult<Extension> execute();
+    public int getOffset()
+    {
+        return this.offset;
+    }
 }

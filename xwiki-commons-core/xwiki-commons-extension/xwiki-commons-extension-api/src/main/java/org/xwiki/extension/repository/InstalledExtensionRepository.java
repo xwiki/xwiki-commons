@@ -32,8 +32,8 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.repository.search.Searchable;
 
 /**
  * A repository containing installed extension.
@@ -45,7 +45,7 @@ import org.xwiki.extension.repository.search.Searchable;
  */
 @Role
 // TODO: move all installation related code from local repository to here
-public interface InstalledExtensionRepository extends ExtensionRepository, Searchable
+public interface InstalledExtensionRepository extends ExtensionRepository, AdvancedSearchable
 {
     /**
      * @return the number of local extensions
