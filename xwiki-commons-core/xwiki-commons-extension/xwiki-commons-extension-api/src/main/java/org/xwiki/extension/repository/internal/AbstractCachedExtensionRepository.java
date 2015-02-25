@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
@@ -39,7 +38,6 @@ import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.version.Version;
 
 /**
@@ -78,6 +76,18 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     protected AbstractCachedExtensionRepository(boolean strict)
     {
         this.strictId = strict;
+    }
+
+    @Override
+    public boolean isFilterable()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isSortable()
+    {
+        return false;
     }
 
     /**
@@ -228,17 +238,21 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
 
     // Searchable
 
-    protected Pattern createPatternMatcher(String pattern)
-    {
-        return StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
-            + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
-
-    }
-
     @Override
     public IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException
     {
-        Pattern patternMatcher = createPatternMatcher(pattern);
+        ExtensionQuery query = new ExtensionQuery(pattern);
+
+        query.setOffset(offset);
+        query.setLimit(nb);
+
+        return search(query);
+    }
+
+    @Override
+    public IterableResult<Extension> search(ExtensionQuery query)
+    {
+        Pattern patternMatcher = RepositoryUtils.createPatternMatcher(query.getQuery());
 
         Set<Extension> set = new HashSet<Extension>();
         List<Extension> result = new ArrayList<Extension>(this.extensionsVersions.size());
@@ -246,20 +260,16 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
         for (List<E> versions : this.extensionsVersions.values()) {
             E extension = versions.get(0);
 
-            if ((patternMatcher == null || RepositoryUtils.matches(patternMatcher, extension))
+            if ((patternMatcher == null || RepositoryUtils.matches(patternMatcher, query.getFilters(), extension))
                 && !set.contains(extension)) {
                 result.add(extension);
                 set.add(extension);
             }
         }
 
-        return RepositoryUtils.getIterableResult(offset, nb, result);
-    }
+        // Sort
+        RepositoryUtils.sort(result, query.getSortClauses());
 
-    @Override
-    public ExtensionQuery createQuery(String query)
-    {
-        // TODO Auto-generated method stub
-        return null;
+        return RepositoryUtils.getIterableResult(query.getOffset(), query.getLimit(), result);
     }
 }

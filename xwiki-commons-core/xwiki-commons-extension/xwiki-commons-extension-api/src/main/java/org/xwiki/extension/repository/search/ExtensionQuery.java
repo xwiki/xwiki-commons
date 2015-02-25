@@ -20,6 +20,7 @@
 package org.xwiki.extension.repository.search;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.xwiki.stability.Unstable;
@@ -56,6 +57,16 @@ public class ExtensionQuery
             this.field = field;
             this.order = order;
         }
+
+        public String getField()
+        {
+            return this.field;
+        }
+
+        public ORDER getOrder()
+        {
+            return this.order;
+        }
     }
 
     public static class Filter
@@ -72,6 +83,21 @@ public class ExtensionQuery
             this.value = value;
             this.comparison = comparison;
         }
+
+        public String getField()
+        {
+            return this.field;
+        }
+
+        public Object getValue()
+        {
+            return this.value;
+        }
+
+        public COMPARISON getComparison()
+        {
+            return this.comparison;
+        }
     }
 
     private String query;
@@ -80,7 +106,7 @@ public class ExtensionQuery
 
     private int offset = 0;
 
-    private List<SortClause> sort;
+    private List<SortClause> sortClauses;
 
     private List<Filter> filters;
 
@@ -123,6 +149,16 @@ public class ExtensionQuery
         return this;
     }
 
+    public List<Filter> getFilters()
+    {
+        return this.filters;
+    }
+
+    public void setFilters(Collection<Filter> filters)
+    {
+        this.filters = new ArrayList<>(filters);
+    }
+
     public ExtensionQuery addFilter(String field, Object value, COMPARISON comparizon)
     {
         if (this.filters == null) {
@@ -134,13 +170,23 @@ public class ExtensionQuery
         return this;
     }
 
+    public List<SortClause> getSortClauses()
+    {
+        return this.sortClauses;
+    }
+
+    public void setSortClauses(Collection<SortClause> sortClauses)
+    {
+        this.sortClauses = new ArrayList<>(sortClauses);
+    }
+
     public ExtensionQuery addSort(String field, ORDER order)
     {
-        if (this.sort == null) {
-            this.sort = new ArrayList<>();
+        if (this.sortClauses == null) {
+            this.sortClauses = new ArrayList<>();
         }
 
-        this.sort.add(new SortClause(field, order));
+        this.sortClauses.add(new SortClause(field, order));
 
         return this;
     }

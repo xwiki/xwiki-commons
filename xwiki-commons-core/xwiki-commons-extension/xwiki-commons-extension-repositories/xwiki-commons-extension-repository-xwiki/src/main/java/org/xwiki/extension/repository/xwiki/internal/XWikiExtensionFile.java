@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.repository.xwiki.internal;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -37,6 +38,24 @@ public class XWikiExtensionFile implements ExtensionFile
     private XWikiExtensionRepository repository;
 
     private ExtensionId id;
+
+    static class XWikiExtensionFileInputStream extends FilterInputStream
+    {
+        private CloseableHttpResponse response;
+
+        public XWikiExtensionFileInputStream(CloseableHttpResponse response) throws IllegalStateException, IOException
+        {
+            super(response.getEntity().getContent());
+        }
+
+        @Override
+        public void close() throws IOException
+        {
+            super.close();
+
+            this.response.close();
+        }
+    }
 
     public XWikiExtensionFile(XWikiExtensionRepository repository, ExtensionId id)
     {
@@ -68,7 +87,10 @@ public class XWikiExtensionFile implements ExtensionFile
     @Override
     public InputStream openStream() throws IOException
     {
-        return this.repository.getRESTResourceAsStream(this.repository.getExtensionFileUriBuider(), this.id.getId(),
-            this.id.getVersion().getValue());
+        CloseableHttpResponse response =
+            this.repository.getRESTResource(this.repository.getExtensionFileUriBuider(), this.id.getId(), this.id
+                .getVersion().getValue());
+
+        return new XWikiExtensionFileInputStream(response);
     }
 }

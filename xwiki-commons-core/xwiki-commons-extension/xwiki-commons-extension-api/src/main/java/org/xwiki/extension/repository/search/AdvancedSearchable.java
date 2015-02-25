@@ -32,7 +32,7 @@ public interface AdvancedSearchable extends Searchable
 {
     boolean isFilterable();
 
-    boolean isOrderable();
+    boolean isSortable();
 
-    IterableResult<Extension> search(ExtensionQuery query);
+    IterableResult<Extension> search(ExtensionQuery query) throws SearchException;
 }

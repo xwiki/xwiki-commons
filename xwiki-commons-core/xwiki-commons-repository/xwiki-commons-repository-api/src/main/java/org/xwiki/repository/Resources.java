@@ -27,6 +27,10 @@ package org.xwiki.repository;
  */
 public interface Resources
 {
+    String VERSION10 = "1.0";
+
+    String VERSION11 = "1.1";
+
     // Entry point
 
     /**

@@ -45,9 +45,8 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.internal.RepositoryUtils;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
-import org.xwiki.extension.repository.search.AdvancedSearchable;
+import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.version.Version;
 
 /**
@@ -92,6 +91,18 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     public DefaultCoreExtensionRepository()
     {
         super(new DefaultExtensionRepositoryDescriptor("core", "xwiki-core", null));
+    }
+
+    @Override
+    public boolean isFilterable()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isSortable()
+    {
+        return false;
     }
 
     @Override
@@ -233,5 +244,11 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     public IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException
     {
         return RepositoryUtils.searchInCollection(pattern, offset, nb, this.extensions.values(), true);
+    }
+
+    @Override
+    public IterableResult<Extension> search(ExtensionQuery query) throws SearchException
+    {
+        return RepositoryUtils.searchInCollection(query, this.extensions.values(), true);
     }
 }

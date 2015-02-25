@@ -25,6 +25,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -35,6 +37,8 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
@@ -49,12 +53,13 @@ import org.xwiki.extension.repository.rating.RatableExtensionRepository;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
+import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersionSummary;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersions;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionsSearchResult;
+import org.xwiki.extension.repository.xwiki.model.jaxb.Repository;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.internal.DefaultVersion;
@@ -68,11 +73,15 @@ import org.xwiki.repository.UriBuilder;
 public class XWikiExtensionRepository extends AbstractExtensionRepository implements AdvancedSearchable,
     RatableExtensionRepository
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(XWikiExtensionRepository.class);
+
     private final transient XWikiExtensionRepositoryFactory repositoryFactory;
 
     private final transient ExtensionLicenseManager licenseManager;
 
     private final transient HttpClientFactory httpClientFactory;
+
+    private final transient UriBuilder rootUriBuider;
 
     private final transient UriBuilder extensionVersionUriBuider;
 
@@ -83,6 +92,12 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
     private final transient UriBuilder searchUriBuider;
 
     private HttpClientContext localContext;
+
+    private Version version;
+
+    private boolean filterable;
+
+    private boolean sortable;
 
     public XWikiExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,
@@ -97,6 +112,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         this.httpClientFactory = httpClientFactory;
 
         // Uri builders
+        this.rootUriBuider = createUriBuilder(Resources.ENTRYPOINT);
         this.extensionVersionUriBuider = createUriBuilder(Resources.EXTENSION_VERSION);
         this.extensionVersionFileUriBuider = createUriBuilder(Resources.EXTENSION_VERSION_FILE);
         this.extensionVersionsUriBuider = createUriBuilder(Resources.EXTENSION_VERSIONS);
@@ -116,6 +132,56 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
             this.localContext = HttpClientContext.create();
             this.localContext.setAuthCache(authCache);
         }
+    }
+
+    /**
+     * Check what is supported by the remote repository.
+     */
+    private void initRepositoryFeatures()
+    {
+        if (this.version == null) {
+            // Default features
+
+            this.version = new DefaultVersion(Resources.VERSION10);
+            this.filterable = false;
+            this.sortable = false;
+
+            // Get remote features
+
+            CloseableHttpResponse response;
+            try {
+                response = getRESTResource(this.rootUriBuider);
+            } catch (IOException e) {
+                // Assume it's a 1.0 repository
+                return;
+            }
+
+            try {
+                Repository repository = getRESTObject(response);
+
+                this.version = new DefaultVersion(repository.getVersion());
+                this.filterable = repository.isFilterable() == Boolean.TRUE;
+                this.sortable = repository.isSortable() == Boolean.TRUE;
+            } catch (Exception e) {
+                LOGGER.error("Failed to get repository features", e);
+            }
+        }
+    }
+
+    @Override
+    public boolean isFilterable()
+    {
+        initRepositoryFeatures();
+
+        return this.filterable;
+    }
+
+    @Override
+    public boolean isSortable()
+    {
+        initRepositoryFeatures();
+
+        return this.sortable;
     }
 
     protected UriBuilder getExtensionFileUriBuider()
@@ -157,9 +223,22 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         return response;
     }
 
-    protected InputStream getRESTResourceAsStream(UriBuilder builder, Object... values) throws IOException
+    protected Object getRESTObject(UriBuilder builder, Object... values) throws IllegalStateException, IOException,
+        JAXBException
     {
-        return getRESTResource(builder, values).getEntity().getContent();
+        return getRESTObject(getRESTResource(builder, values));
+    }
+
+    protected <T> T getRESTObject(CloseableHttpResponse response) throws IllegalStateException, IOException,
+        JAXBException
+    {
+        try {
+            try (InputStream inputStream = response.getEntity().getContent()) {
+                return (T) this.repositoryFactory.getUnmarshaller().unmarshal(inputStream);
+            }
+        } finally {
+            response.close();
+        }
     }
 
     private UriBuilder createUriBuilder(String path)
@@ -173,9 +252,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
     public Extension resolve(ExtensionId extensionId) throws ResolveException
     {
         try {
-            return new XWikiExtension(this, (ExtensionVersion) this.repositoryFactory.getUnmarshaller().unmarshal(
-                getRESTResourceAsStream(this.extensionVersionUriBuider, extensionId.getId(), extensionId.getVersion()
-                    .getValue())), this.licenseManager);
+            return new XWikiExtension(this, (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider,
+                extensionId.getId(), extensionId.getVersion().getValue()), this.licenseManager);
         } catch (Exception e) {
             throw new ResolveException("Failed to create extension object for extension [" + extensionId + "]", e);
         }
@@ -203,9 +281,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
                 version = constraint.getVersion();
             }
 
-            return new XWikiExtension(this, (ExtensionVersion) this.repositoryFactory.getUnmarshaller().unmarshal(
-                getRESTResourceAsStream(this.extensionVersionUriBuider, extensionDependency.getId(), version)),
-                this.licenseManager);
+            return new XWikiExtension(this, (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider,
+                extensionDependency.getId(), version), this.licenseManager);
         } catch (Exception e) {
             throw new ResolveException("Failed to create extension object for extension dependency ["
                 + extensionDependency + "]", e);
@@ -225,8 +302,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         }
 
         try {
-            return (ExtensionVersions) this.repositoryFactory.getUnmarshaller().unmarshal(
-                getRESTResourceAsStream(builder, id));
+            return (ExtensionVersions) getRESTObject(builder, id);
         } catch (Exception e) {
             throw new ResolveException("Failed to find version for extension id [" + id + "]", e);
         }
@@ -251,19 +327,24 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
     @Override
     public IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException
     {
-        UriBuilder builder = this.searchUriBuider.clone();
+        ExtensionQuery query = new ExtensionQuery(pattern);
 
-        builder.queryParam(Resources.QPARAM_LIST_START, offset);
-        builder.queryParam(Resources.QPARAM_LIST_NUMBER, nb);
-        builder.queryParam(Resources.QPARAM_SEARCH_QUERY, pattern);
+        query.setOffset(offset);
+        query.setLimit(nb);
+
+        return search(query);
+    }
+
+    @Override
+    public IterableResult<Extension> search(ExtensionQuery query) throws SearchException
+    {
+        UriBuilder builder = this.searchUriBuider.clone();
 
         ExtensionsSearchResult restExtensions;
         try {
-            restExtensions =
-                (ExtensionsSearchResult) this.repositoryFactory.getUnmarshaller().unmarshal(
-                    getRESTResourceAsStream(builder));
+            restExtensions = (ExtensionsSearchResult) getRESTObject(builder);
         } catch (Exception e) {
-            throw new SearchException("Failed to search extensions based on pattern [" + pattern + "]", e);
+            throw new SearchException("Failed to search extensions based on pattern [" + query.getQuery() + "]", e);
         }
 
         List<Extension> extensions = new ArrayList<Extension>(restExtensions.getExtensions().size());
@@ -293,9 +374,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
     public ExtensionRating getRating(String extensionId, String extensionVersion) throws ResolveException
     {
         try {
-            return new XWikiExtension(this, (ExtensionVersion) this.repositoryFactory.getUnmarshaller().unmarshal(
-                getRESTResourceAsStream(this.extensionVersionUriBuider, extensionId, extensionVersion)),
-                this.licenseManager).getRating();
+            return new XWikiExtension(this, (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider,
+                extensionId, extensionVersion), this.licenseManager).getRating();
         } catch (Exception e) {
             throw new ResolveException("Failed to create extension object for extension [" + extensionId + ":"
                 + extensionVersion + "]", e);

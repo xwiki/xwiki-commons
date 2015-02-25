@@ -33,6 +33,7 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
+import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
 
 /**
@@ -161,4 +162,15 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      */
     IterableResult<Extension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
         throws SearchException;
+
+    /**
+     * Search installed extensions based of the provided query and only in the passed namespace.
+     *
+     * @param namespace the namespace where to search
+     * @param query the extension query used to filter and order the result
+     * @return the found extensions descriptors, empty list if nothing could be found
+     * @throws SearchException error when trying to search provided pattern
+     * @since 7.0M2
+     */
+    IterableResult<Extension> searchInstalledExtensions(String namespace, ExtensionQuery query) throws SearchException;
 }

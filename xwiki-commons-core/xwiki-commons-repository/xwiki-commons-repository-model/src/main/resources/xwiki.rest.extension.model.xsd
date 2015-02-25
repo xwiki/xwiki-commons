@@ -229,4 +229,18 @@
         <element name="stringValue" type="string"></element>
       </sequence>
     </complexType>
+
+    <complexType name="Repository">
+      <sequence>
+        <element name="filterable" type="boolean" minOccurs="0"
+          maxOccurs="1">
+        </element>
+        <element name="sortable" type="boolean" minOccurs="0"
+          maxOccurs="1">
+        </element>
+        <element name="version" type="string" minOccurs="1" maxOccurs="1"></element>
+      </sequence>
+    </complexType>
+
+    <element name="repository" type="extension:Repository"></element>
 </schema>

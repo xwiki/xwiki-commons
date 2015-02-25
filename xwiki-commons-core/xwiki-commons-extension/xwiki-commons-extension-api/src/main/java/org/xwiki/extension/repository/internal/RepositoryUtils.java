@@ -29,6 +29,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
+import org.xwiki.extension.repository.search.ExtensionQuery;
+import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
+import org.xwiki.extension.repository.search.ExtensionQuery.Filter;
+import org.xwiki.extension.repository.search.ExtensionQuery.SortClause;
 
 /**
  * A set of Repository related tools.
@@ -75,34 +79,40 @@ public final class RepositoryUtils
     public static CollectionIterableResult<Extension> searchInCollection(String pattern, int offset, int nb,
         Collection<? extends Extension> extensions, boolean forceUnique)
     {
+        ExtensionQuery query = new ExtensionQuery(pattern);
+
+        query.setOffset(offset);
+        query.setLimit(nb);
+
+        return searchInCollection(query, extensions, forceUnique);
+    }
+
+    /**
+     * @param pattern the pattern to match
+     * @param offset the offset where to start returning elements
+     * @param nb the number of maximum element to return
+     * @param extensions the extension collection to search in
+     * @param forceUnique make sure returned elements are unique
+     * @return the search result
+     * @since 6.4.1
+     */
+    public static CollectionIterableResult<Extension> searchInCollection(ExtensionQuery query,
+        Collection<? extends Extension> extensions, boolean forceUnique)
+    {
         List<Extension> result;
 
-        if (StringUtils.isEmpty(pattern)) {
+        // Filter
+        if (StringUtils.isEmpty(query.getQuery())) {
             result = extensions instanceof List ? (List<Extension>) extensions : new ArrayList<Extension>(extensions);
         } else {
-            result = filter(pattern, extensions, forceUnique);
+            result = filter(query.getQuery(), query.getFilters(), extensions, forceUnique);
         }
 
-        if (nb == 0 || offset >= result.size()) {
-            return new CollectionIterableResult<Extension>(result.size(), offset, Collections.<Extension>emptyList());
-        }
+        // Sort
+        sort(result, query.getSortClauses());
 
-        int fromIndex = offset;
-        if (fromIndex < 0) {
-            fromIndex = 0;
-        }
-
-        int toIndex;
-        if (nb > 0) {
-            toIndex = nb + fromIndex;
-            if (toIndex > result.size()) {
-                toIndex = result.size();
-            }
-        } else {
-            toIndex = result.size();
-        }
-
-        return new CollectionIterableResult<Extension>(result.size(), offset, result.subList(fromIndex, toIndex));
+        // Create result
+        return RepositoryUtils.getIterableResult(query.getOffset(), query.getLimit(), result);
     }
 
     /**
@@ -161,8 +171,8 @@ public final class RepositoryUtils
      * @param forceUnique make sure returned elements are unique
      * @return the filtered list of extensions
      */
-    private static List<Extension> filter(String pattern, Collection<? extends Extension> extensions,
-        boolean forceUnique)
+    private static List<Extension> filter(String pattern, Collection<Filter> filters,
+        Collection<? extends Extension> extensions, boolean forceUnique)
     {
         List<Extension> result = new ArrayList<Extension>(extensions.size());
 
@@ -170,7 +180,7 @@ public final class RepositoryUtils
             Pattern.compile(SEARCH_PATTERN_SUFFIXNPREFIX + pattern.toLowerCase() + SEARCH_PATTERN_SUFFIXNPREFIX);
 
         for (Extension extension : extensions) {
-            if (matches(patternMatcher, extension)) {
+            if (matches(patternMatcher, filters, extension)) {
                 result.add(extension);
             }
         }
@@ -190,10 +200,119 @@ public final class RepositoryUtils
      * @param extension the extension to match
      * @return true if one of the element is matched
      */
-    public static boolean matches(Pattern patternMatcher, Extension extension)
+    public static boolean matches(Pattern patternMatcher, Collection<Filter> filters, Extension extension)
     {
-        return matches(patternMatcher, extension.getId().getId(), extension.getDescription(), extension.getSummary(),
-            extension.getName(), extension.getFeatures());
+        if (matches(patternMatcher, extension.getId().getId(), extension.getDescription(), extension.getSummary(),
+            extension.getName(), extension.getFeatures())) {
+            for (Filter filter : filters) {
+                if (!matches(filter, extension)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean matches(Filter filter, Extension extension)
+    {
+        switch (filter.getField().toLowerCase()) {
+            case "id":
+                if (!matches(filter, extension.getId().getId())) {
+                    return false;
+                }
+                break;
+            case "version":
+                if (!matches(filter, extension.getId().getVersion().toString())) {
+                    return false;
+                }
+                break;
+            case "feature":
+            case "features":
+                if (!matches(filter, extension.getFeatures())) {
+                    return false;
+                }
+                break;
+            case "summary":
+                if (!matches(filter, extension.getSummary())) {
+                    return false;
+                }
+                break;
+            case "description":
+                if (!matches(filter, extension.getDescription())) {
+                    return false;
+                }
+                break;
+            case "author":
+            case "authors":
+                if (!matches(filter, extension.getAuthors())) {
+                    return false;
+                }
+                break;
+            case "category":
+                if (!matches(filter, extension.getCategory())) {
+                    return false;
+                }
+                break;
+            case "license":
+            case "licenses":
+                if (!matches(filter, extension.getLicenses())) {
+                    return false;
+                }
+                break;
+            case "name":
+                if (!matches(filter, extension.getName())) {
+                    return false;
+                }
+                break;
+            case "type":
+                if (!matches(filter, extension.getType())) {
+                    return false;
+                }
+                break;
+            case "website":
+                if (!matches(filter, extension.getWebSite())) {
+                    return false;
+                }
+                break;
+            case "scm":
+                if (!matches(filter, extension.getScm())) {
+                    return false;
+                }
+                break;
+
+            default:
+                // Unknown field
+                // FIXME: not sure if it's should be true or false in this case
+                break;
+        }
+
+        return true;
+    }
+
+    public static boolean matches(Filter filter, Object element)
+    {
+        // TODO: add support for more than String
+        if (filter.getValue() instanceof String) {
+            String value = (String) filter.getValue();
+            if (filter.getComparison() == COMPARISON.MATCH) {
+                Pattern patternMatcher = createPatternMatcher(value);
+
+                if (matches(patternMatcher, element)) {
+                    return true;
+                }
+            } else if (filter.getComparison() == COMPARISON.EQUAL) {
+                if (element != null && value.toLowerCase().equals(element.toString().toLowerCase())) {
+                    return true;
+                }
+            }
+        } else {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -206,13 +325,40 @@ public final class RepositoryUtils
     public static boolean matches(Pattern patternMatcher, Object... elements)
     {
         for (Object element : elements) {
-            if (element != null) {
-                if (patternMatcher.matcher(element.toString().toLowerCase()).matches()) {
-                    return true;
-                }
+            if (matches(patternMatcher, element)) {
+                return true;
             }
         }
 
         return false;
+    }
+
+    public static boolean matches(Pattern patternMatcher, Object element)
+    {
+        if (element != null) {
+            if (patternMatcher.matcher(element.toString().toLowerCase()).matches()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static Pattern createPatternMatcher(String pattern)
+    {
+        return StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
+            + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
+    }
+
+    public static void sort(List<? extends Extension> extensions, Collection<SortClause> sortClauses)
+    {
+        for (SortClause sortClause : sortClauses) {
+            sort(extensions, sortClause);
+        }
+    }
+
+    public static void sort(List<? extends Extension> extensions, SortClause sortClause)
+    {
+        // TODO
     }
 }

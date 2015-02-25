@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +34,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -56,6 +56,7 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.internal.AbstractCachedExtensionRepository;
 import org.xwiki.extension.repository.internal.RepositoryUtils;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
@@ -812,23 +813,45 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
     public IterableResult<Extension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
         throws SearchException
     {
-        Pattern patternMatcher =
-            StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
-                + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
+        ExtensionQuery query = new ExtensionQuery(pattern);
 
-        Set<Extension> set = new HashSet<Extension>();
-        List<Extension> result = new ArrayList<Extension>(this.extensionsVersions.size());
+        query.setOffset(offset);
+        query.setLimit(nb);
 
-        for (InstalledExtension installedExtension : this.extensions.values()) {
+        return search(query);
+    }
+
+    @Override
+    public IterableResult<Extension> searchInstalledExtensions(String namespace, ExtensionQuery query)
+        throws SearchException
+    {
+        return searchInstalledExtensions(namespace, query, this.extensions.values());
+    }
+
+    public static IterableResult<Extension> searchInstalledExtensions(String namespace, ExtensionQuery query,
+        Collection<? extends InstalledExtension> extensions)
+    {
+        Pattern patternMatcher = RepositoryUtils.createPatternMatcher(query.getQuery());
+
+        List<Extension> result = new ArrayList<Extension>(extensions.size());
+
+        for (InstalledExtension installedExtension : extensions) {
             if (installedExtension.isInstalled(namespace)) {
-                if ((patternMatcher == null || RepositoryUtils.matches(patternMatcher, installedExtension))
-                    && !set.contains(installedExtension)) {
+                if ((patternMatcher == null || RepositoryUtils.matches(patternMatcher, query.getFilters(),
+                    installedExtension))) {
                     result.add(installedExtension);
-                    set.add(installedExtension);
                 }
             }
         }
 
-        return RepositoryUtils.getIterableResult(offset, nb, result);
+        // Make sure all the elements of the list are unique
+        if (result.size() > 1) {
+            result = new ArrayList<>(new LinkedHashSet<>(result));
+        }
+
+        // Sort
+        RepositoryUtils.sort(result, query.getSortClauses());
+
+        return RepositoryUtils.getIterableResult(query.getOffset(), query.getLimit(), result);
     }
 }

@@ -22,8 +22,8 @@ package org.xwiki.extension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -462,7 +462,7 @@ public abstract class AbstractExtension implements Extension
      */
     public void putProperty(String key, Object value)
     {
-        Map<String, Object> newProperties = new HashMap<String, Object>(getProperties());
+        Map<String, Object> newProperties = new LinkedHashMap<String, Object>(getProperties());
         newProperties.put(key, value);
 
         this.properties = Collections.unmodifiableMap(newProperties);
@@ -475,7 +475,7 @@ public abstract class AbstractExtension implements Extension
      */
     public void setProperties(Map<String, Object> properties)
     {
-        this.properties = Collections.unmodifiableMap(new HashMap<String, Object>(properties));
+        this.properties = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(properties));
     }
 
     // Object
