@@ -27,6 +27,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -173,6 +174,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             StringExtensionPropertySerializer stringSerializer = new StringExtensionPropertySerializer();
             IntegerExtensionPropertySerializer integerSerializer = new IntegerExtensionPropertySerializer();
             BooleanExtensionPropertySerializer booleanSerializer = new BooleanExtensionPropertySerializer();
+            DateExtensionPropertySerializer dateSerializer = new DateExtensionPropertySerializer();
             URLExtensionPropertySerializer urlSerializer = new URLExtensionPropertySerializer();
             CollectionExtensionPropertySerializer collectionSerializer =
                 new CollectionExtensionPropertySerializer(this.serializerById, this.serializerByClass);
@@ -185,6 +187,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             this.serializerById.put("", stringSerializer);
             this.serializerById.put(integerSerializer.getType(), integerSerializer);
             this.serializerById.put(booleanSerializer.getType(), booleanSerializer);
+            this.serializerById.put(dateSerializer.getType(), dateSerializer);
             this.serializerById.put(urlSerializer.getType(), urlSerializer);
             this.serializerById.put(collectionSerializer.getType(), collectionSerializer);
             this.serializerById.put(setSerializer.getType(), setSerializer);
@@ -193,6 +196,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             this.serializerByClass.put(String.class, stringSerializer);
             this.serializerByClass.put(Integer.class, integerSerializer);
             this.serializerByClass.put(Boolean.class, booleanSerializer);
+            this.serializerByClass.put(Date.class, dateSerializer);
             this.serializerByClass.put(URL.class, urlSerializer);
             this.serializerByClass.put(Set.class, setSerializer);
             this.serializerByClass.put(Collection.class, collectionSerializer);

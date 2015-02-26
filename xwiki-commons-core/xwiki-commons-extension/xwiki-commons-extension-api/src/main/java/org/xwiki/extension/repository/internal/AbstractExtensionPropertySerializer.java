@@ -67,13 +67,25 @@ public abstract class AbstractExtensionPropertySerializer<T> implements Extensio
         return element;
     }
 
+    /**
+     * Creates a new {@link Element} with the given name and text content.
+     * 
+     * @param document the document used to create the new {@link Element}.
+     * @param elementName the name of the element to create
+     * @param elementTextContent the text content of the element
+     * @return the new element
+     * @since 7.0M2
+     */
+    protected Element createRootElement(Document document, String elementName, String elementTextContent)
+    {
+        Element element = createRootElement(document, elementName);
+        element.setTextContent(elementTextContent);
+        return element;
+    }
+
     @Override
     public Element toElement(Document document, String elementName, T elementValue)
     {
-        Element element = createRootElement(document, elementName);
-
-        element.setTextContent(elementValue.toString());
-
-        return element;
+        return createRootElement(document, elementName, elementValue.toString());
     }
 }
