@@ -35,7 +35,6 @@ import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -188,5 +187,6 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @throws SearchException error when trying to search provided pattern
      * @since 7.0M2
      */
+    @Unstable
     IterableResult<Extension> searchInstalledExtensions(String namespace, ExtensionQuery query) throws SearchException;
 }

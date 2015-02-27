@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link Extension} implementations.
@@ -429,7 +430,9 @@ public abstract class AbstractExtension implements Extension
 
     /**
      * @param categrory the category of the extension
+     * @since 7.0M2
      */
+    @Unstable
     public void setCategory(String categrory)
     {
         this.category = categrory;

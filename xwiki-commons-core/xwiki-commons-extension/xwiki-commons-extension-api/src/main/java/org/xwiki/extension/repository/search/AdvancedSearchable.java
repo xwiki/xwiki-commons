@@ -30,9 +30,22 @@ import org.xwiki.extension.repository.result.IterableResult;
  */
 public interface AdvancedSearchable extends Searchable
 {
+    /**
+     * @return true if the searched extensions can be filtered
+     */
     boolean isFilterable();
 
+    /**
+     * @return true if the searched extensions can be ordered
+     */
     boolean isSortable();
 
+    /**
+     * Search extension based of the provided query.
+     * 
+     * @param query the query
+     * @return the found extensions descriptors, empty list if nothing could be found
+     * @throws SearchException error when trying to search provided query
+     */
     IterableResult<Extension> search(ExtensionQuery query) throws SearchException;
 }

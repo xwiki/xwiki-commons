@@ -218,6 +218,12 @@
               <justification>Added support for associating custom install properties (e.g. the user that triggers the
                 install) to the namespace where the extension is installed.</justification>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/repository/InstalledExtensionRepository</className>
+              <method>org.xwiki.extension.repository.result.IterableResult searchInstalledExtensions(java.lang.String, org.xwiki.extension.repository.search.ExtensionQuery)</method>
+              <justification>Added support for advanced installed extensions search.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

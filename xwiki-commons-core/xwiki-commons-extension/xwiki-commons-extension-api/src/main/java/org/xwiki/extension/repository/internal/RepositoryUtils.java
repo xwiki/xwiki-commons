@@ -88,13 +88,11 @@ public final class RepositoryUtils
     }
 
     /**
-     * @param pattern the pattern to match
-     * @param offset the offset where to start returning elements
-     * @param nb the number of maximum element to return
+     * @param query the query
      * @param extensions the extension collection to search in
      * @param forceUnique make sure returned elements are unique
      * @return the search result
-     * @since 6.4.1
+     * @since 7.0M2
      */
     public static CollectionIterableResult<Extension> searchInCollection(ExtensionQuery query,
         Collection<? extends Extension> extensions, boolean forceUnique)
@@ -167,9 +165,11 @@ public final class RepositoryUtils
 
     /**
      * @param pattern the pattern to match
+     * @param filters the filters
      * @param extensions the extension collection to search in
      * @param forceUnique make sure returned elements are unique
      * @return the filtered list of extensions
+     * @since 7.0M2
      */
     private static List<Extension> filter(String pattern, Collection<Filter> filters,
         Collection<? extends Extension> extensions, boolean forceUnique)
@@ -197,8 +197,10 @@ public final class RepositoryUtils
      * Matches an extension in a case insensitive way.
      *
      * @param patternMatcher the pattern to match
+     * @param filters the filters
      * @param extension the extension to match
      * @return true if one of the element is matched
+     * @since 7.0M2
      */
     public static boolean matches(Pattern patternMatcher, Collection<Filter> filters, Extension extension)
     {
@@ -216,82 +218,76 @@ public final class RepositoryUtils
         return false;
     }
 
-    public static boolean matches(Filter filter, Extension extension)
+    /**
+     * Extract the value of an extension field.
+     * 
+     * @param extension the extension
+     * @param field the name of the field
+     * @return the field value or null if no field by the passed name could be found
+     * @since 7.0M2
+     */
+    public static Object getValue(Extension extension, String field)
     {
-        switch (filter.getField().toLowerCase()) {
+        switch (field.toLowerCase()) {
             case "id":
-                if (!matches(filter, extension.getId().getId())) {
-                    return false;
-                }
-                break;
+                return extension.getId().getId();
             case "version":
-                if (!matches(filter, extension.getId().getVersion().toString())) {
-                    return false;
-                }
-                break;
+                return extension.getId().getVersion();
             case "feature":
             case "features":
-                if (!matches(filter, extension.getFeatures())) {
-                    return false;
-                }
-                break;
+                return extension.getFeatures();
             case "summary":
-                if (!matches(filter, extension.getSummary())) {
-                    return false;
-                }
-                break;
+                return extension.getSummary();
             case "description":
-                if (!matches(filter, extension.getDescription())) {
-                    return false;
-                }
-                break;
+                return extension.getDescription();
             case "author":
             case "authors":
-                if (!matches(filter, extension.getAuthors())) {
-                    return false;
-                }
-                break;
+                return extension.getAuthors();
             case "category":
-                if (!matches(filter, extension.getCategory())) {
-                    return false;
-                }
-                break;
+                return extension.getCategory();
             case "license":
             case "licenses":
-                if (!matches(filter, extension.getLicenses())) {
-                    return false;
-                }
-                break;
+                return extension.getLicenses();
             case "name":
-                if (!matches(filter, extension.getName())) {
-                    return false;
-                }
-                break;
+                return extension.getName();
             case "type":
-                if (!matches(filter, extension.getType())) {
-                    return false;
-                }
-                break;
+                return extension.getType();
             case "website":
-                if (!matches(filter, extension.getWebSite())) {
-                    return false;
-                }
-                break;
+                return extension.getWebSite();
             case "scm":
-                if (!matches(filter, extension.getScm())) {
-                    return false;
-                }
-                break;
+                return extension.getScm();
 
             default:
-                // Unknown field
-                // FIXME: not sure if it's should be true or false in this case
-                break;
+                // Unknown field, probably a property
+                return extension.getProperty(field);
+        }
+    }
+
+    /**
+     * @param filter the filter
+     * @param extension the extension to match
+     * @return true if the extension is matched by the filer
+     * @since 7.0M2
+     */
+    public static boolean matches(Filter filter, Extension extension)
+    {
+        Object value = getValue(extension, filter.getField());
+
+        if (value != null) {
+            return matches(filter, value);
         }
 
+        // Unknown field
+        // FIXME: not sure if it's should be true or false in this case
         return true;
     }
 
+    /**
+     * @param filter the filter
+     * @param element the element to match
+     * @return true if the element is matched by the filer
+     * @since 7.0M2
+     */
     public static boolean matches(Filter filter, Object element)
     {
         // TODO: add support for more than String
@@ -333,6 +329,11 @@ public final class RepositoryUtils
         return false;
     }
 
+    /**
+     * @param patternMatcher the pattern to match
+     * @param element the element to match with the pattern
+     * @return true of the element is matched by the pattern
+     */
     public static boolean matches(Pattern patternMatcher, Object element)
     {
         if (element != null) {
@@ -344,21 +345,25 @@ public final class RepositoryUtils
         return false;
     }
 
+    /**
+     * @param pattern the pattern to match
+     * @return a {@link Pattern} used to search the passed pattern inside a {@link String}
+     */
     public static Pattern createPatternMatcher(String pattern)
     {
         return StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
             + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
     }
 
+    /**
+     * Sort the passed extensions list based on the passed sort clauses.
+     * 
+     * @param extensions the list of extensions to sort
+     * @param sortClauses the sort clauses
+     * @since 7.0M2
+     */
     public static void sort(List<? extends Extension> extensions, Collection<SortClause> sortClauses)
     {
-        for (SortClause sortClause : sortClauses) {
-            sort(extensions, sortClause);
-        }
-    }
-
-    public static void sort(List<? extends Extension> extensions, SortClause sortClause)
-    {
-        // TODO
+        Collections.sort(extensions, new SortClauseComparator(sortClauses));
     }
 }

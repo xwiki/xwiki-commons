@@ -87,7 +87,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     @Override
     public boolean isSortable()
     {
-        return false;
+        return true;
     }
 
     /**

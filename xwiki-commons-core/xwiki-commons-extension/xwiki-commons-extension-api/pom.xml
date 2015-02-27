@@ -150,7 +150,8 @@
               **/DefaultInstalledExtensionRepository.java,
               **/DefaultVersion.java,
               **/AbstractInstallPlanJob.java,
-              **/UnmodifiableUtils.java
+              **/UnmodifiableUtils.java,
+              **/RepositoryUtils.java
           </excludes>
         </configuration>
       </plugin>

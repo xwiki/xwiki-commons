@@ -102,7 +102,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     @Override
     public boolean isSortable()
     {
-        return false;
+        return true;
     }
 
     @Override

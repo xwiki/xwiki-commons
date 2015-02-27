@@ -34,41 +34,85 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public class ExtensionQuery
 {
+    /**
+     * The order in which extensions should be sorted.
+     * 
+     * @version $Id$
+     */
     public enum ORDER
     {
+        /**
+         * Descending order.
+         */
         DESC,
+
+        /**
+         * Ascending order.
+         */
         ASC;
     }
 
+    /**
+     * The comparison to apply.
+     * 
+     * @version $Id$
+     */
     public enum COMPARISON
     {
+        /**
+         * The value is the same than the filter one.
+         */
         EQUAL,
+
+        /**
+         * The value contains what is in the filter.
+         */
         MATCH;
     }
 
+    /**
+     * The sort criteria.
+     * 
+     * @version $Id$
+     */
     public static class SortClause
     {
         private final String field;
 
         private final ORDER order;
 
+        /**
+         * @param field the name of the field
+         * @param order the order in which extensions should be sorted
+         */
         public SortClause(String field, ORDER order)
         {
             this.field = field;
             this.order = order;
         }
 
+        /**
+         * @return the name of the field
+         */
         public String getField()
         {
             return this.field;
         }
 
+        /**
+         * @return the order in which extensions should be sorted.
+         */
         public ORDER getOrder()
         {
             return this.order;
         }
     }
 
+    /**
+     * A filter to apply on an extension field.
+     * 
+     * @version $Id$
+     */
     public static class Filter
     {
         private final String field;
@@ -77,6 +121,11 @@ public class ExtensionQuery
 
         private final COMPARISON comparison;
 
+        /**
+         * @param field the name of the field
+         * @param value the value to compare to
+         * @param comparison the comparison to apply
+         */
         public Filter(String field, Object value, COMPARISON comparison)
         {
             this.field = field;
@@ -84,16 +133,25 @@ public class ExtensionQuery
             this.comparison = comparison;
         }
 
+        /**
+         * @return the name of the field
+         */
         public String getField()
         {
             return this.field;
         }
 
+        /**
+         * @return the value to compare to
+         */
         public Object getValue()
         {
             return this.value;
         }
 
+        /**
+         * @return the comparison to apply
+         */
         public COMPARISON getComparison()
         {
             return this.comparison;
@@ -104,16 +162,22 @@ public class ExtensionQuery
 
     private int limit = -1;
 
-    private int offset = 0;
+    private int offset;
 
-    private List<SortClause> sortClauses;
+    private List<SortClause> sortClauses = new ArrayList<>();
 
-    private List<Filter> filters;
+    private List<Filter> filters = new ArrayList<>();
 
+    /**
+     * No filtering. Usually return everything.
+     */
     public ExtensionQuery()
     {
     }
 
+    /**
+     * @param query the query to execute
+     */
     public ExtensionQuery(String query)
     {
         this.query = query;
@@ -149,43 +213,64 @@ public class ExtensionQuery
         return this;
     }
 
+    /**
+     * @return the filters
+     */
     public List<Filter> getFilters()
     {
         return this.filters;
     }
 
-    public void setFilters(Collection<Filter> filters)
+    /**
+     * @param filters the filters
+     * @return this
+     */
+    public ExtensionQuery setFilters(Collection<Filter> filters)
     {
         this.filters = new ArrayList<>(filters);
-    }
-
-    public ExtensionQuery addFilter(String field, Object value, COMPARISON comparizon)
-    {
-        if (this.filters == null) {
-            this.filters = new ArrayList<>();
-        }
-
-        this.filters.add(new Filter(field, value, comparizon));
 
         return this;
     }
 
+    /**
+     * @param field the name of the field
+     * @param value the value to compare to
+     * @param comparison the comparison to apply
+     * @return this
+     */
+    public ExtensionQuery addFilter(String field, Object value, COMPARISON comparison)
+    {
+        this.filters.add(new Filter(field, value, comparison));
+
+        return this;
+    }
+
+    /**
+     * @return the criteria used to sort the result
+     */
     public List<SortClause> getSortClauses()
     {
         return this.sortClauses;
     }
 
-    public void setSortClauses(Collection<SortClause> sortClauses)
+    /**
+     * @param sortClauses the criteria used to sort the result
+     * @return this
+     */
+    public ExtensionQuery setSortClauses(Collection<SortClause> sortClauses)
     {
         this.sortClauses = new ArrayList<>(sortClauses);
+
+        return this;
     }
 
+    /**
+     * @param field the name of the field
+     * @param order the order in which extensions should be sorted
+     * @return this
+     */
     public ExtensionQuery addSort(String field, ORDER order)
     {
-        if (this.sortClauses == null) {
-            this.sortClauses = new ArrayList<>();
-        }
-
         this.sortClauses.add(new SortClause(field, order));
 
         return this;

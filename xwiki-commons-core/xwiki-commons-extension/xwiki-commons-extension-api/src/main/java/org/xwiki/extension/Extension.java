@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.stability.Unstable;
 
 /**
  * Represent an extension.
@@ -111,8 +112,9 @@ public interface Extension
 
     /**
      * @return the category of the extension
-     * @since 7.0M1
+     * @since 7.0M2
      */
+    @Unstable
     String getCategory();
 
     // Custom properties
