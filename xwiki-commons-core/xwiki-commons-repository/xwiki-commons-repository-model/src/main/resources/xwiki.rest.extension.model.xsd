@@ -243,4 +243,33 @@
     </complexType>
 
     <element name="repository" type="extension:Repository"></element>
+
+    <complexType name="ExtensionQuery">
+      <sequence>
+        <element name="query" type="string" minOccurs="0" maxOccurs="1"></element>
+            <element name="offset" type="int" minOccurs="0" maxOccurs="1"></element>
+            <element name="limit" type="int" minOccurs="0" maxOccurs="1"></element>
+            <element name="filters" type="extension:Filter" minOccurs="0" maxOccurs="unbounded"></element>
+            <element name="sortClauses" type="extension:SortClause" minOccurs="0" maxOccurs="unbounded"></element>
+      </sequence>
+    </complexType>
+
+    <element name="extensionQuery" type="extension:ExtensionQuery"></element>
+
+    <complexType name="SortClause">
+      <sequence>
+        <element name="field" type="string" minOccurs="1"
+          maxOccurs="1">
+        </element>
+        <element name="order" type="string" minOccurs="0" maxOccurs="1"></element>
+      </sequence>
+    </complexType>
+
+    <complexType name="Filter">
+      <sequence>
+        <element name="field" type="string" minOccurs="1" maxOccurs="1"></element>
+            <element name="valueString" type="string" minOccurs="1" maxOccurs="1"></element>
+            <element name="comparison" type="string" minOccurs="0" maxOccurs="1"></element>
+      </sequence>
+    </complexType>
 </schema>
