@@ -198,6 +198,26 @@
               <justification>Add support for catagories to extension.
               It should not be an issue for more Extension implementation whish are supposed to extend AbstractExtension</justification>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/InstalledExtension</className>
+              <method>java.util.Date getInstallDate(java.lang.String)</method>
+              <justification>Added a method to get the date when an extension was installed.</justification>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/InstalledExtension</className>
+              <method>java.lang.Object getNamespaceProperty(java.lang.String, java.lang.String)</method>
+              <justification>Added support for associating custom install properties (e.g. the user that triggers the
+                install) to the namespace where the extension is installed.</justification>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/repository/InstalledExtensionRepository</className>
+              <method>org.xwiki.extension.InstalledExtension installExtension(org.xwiki.extension.LocalExtension, java.lang.String, boolean, java.util.Map)</method>
+              <justification>Added support for associating custom install properties (e.g. the user that triggers the
+                install) to the namespace where the extension is installed.</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

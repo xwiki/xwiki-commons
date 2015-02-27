@@ -22,6 +22,7 @@ package org.xwiki.extension.repository.internal.installed;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -437,17 +438,23 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
      * @param localExtension the extension to install
      * @param namespace the namespace
      * @param dependency indicate if the extension is stored as a dependency of another one
+     * @param properties the custom properties to set on the installed extension for the specified namespace
      * @throws InstallException error when trying to uninstall extension
      * @see #installExtension(LocalExtension, String)
      */
     private void applyInstallExtension(DefaultInstalledExtension installedExtension, String namespace,
-        boolean dependency) throws InstallException
+        boolean dependency, Map<String, Object> properties) throws InstallException
     {
         // INSTALLED
         installedExtension.setInstalled(true, namespace);
+        installedExtension.setInstallDate(new Date(), namespace);
 
         // DEPENDENCY
         installedExtension.setDependency(dependency, namespace);
+
+        // Add custom install properties for the specified namespace. The map holding the namespace properties should
+        // not be null because it is initialized by the InstalledExtension#setInstalled(true, namespace) call above.
+        installedExtension.getNamespaceProperties(namespace).putAll(properties);
 
         // Save properties
         try {
@@ -688,6 +695,13 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
     public InstalledExtension installExtension(LocalExtension extension, String namespace, boolean dependency)
         throws InstallException
     {
+        return installExtension(extension, namespace, dependency, Collections.<String, Object>emptyMap());
+    }
+
+    @Override
+    public InstalledExtension installExtension(LocalExtension extension, String namespace, boolean dependency,
+        Map<String, Object> properties) throws InstallException
+    {
         DefaultInstalledExtension installedExtension = this.extensions.get(extension.getId());
 
         if (installedExtension != null && installedExtension.isInstalled(namespace)) {
@@ -716,7 +730,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                 installedExtension = new DefaultInstalledExtension(localExtension, this);
             }
 
-            applyInstallExtension(installedExtension, namespace, dependency);
+            applyInstallExtension(installedExtension, namespace, dependency, properties);
         }
 
         return installedExtension;

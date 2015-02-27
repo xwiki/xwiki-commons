@@ -21,6 +21,7 @@ package org.xwiki.extension.repository.internal.installed;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +41,17 @@ import org.xwiki.extension.repository.InstalledExtensionRepository;
  */
 public class DefaultInstalledExtension extends AbstractExtension implements InstalledExtension
 {
+    /**
+     * Custom property key containing the properties associated with the root namespace (when the extension is installed
+     * on all namespaces).
+     */
+    private static final String PKEY_ROOT_NAMESPACE = PKEY_PREFIX + "root";
+
+    /**
+     * Custom property key containing {@link #getInstallDate(String)}.
+     */
+    private static final String PKEY_DATE = "date";
+
     /**
      * @see #getLocalExtension()
      */
@@ -146,14 +158,16 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     public void setNamespaces(Collection<String> namespaces)
     {
         if (namespaces == null) {
+            putProperty(PKEY_ROOT_NAMESPACE, isInstalled() ? new HashMap<String, Object>() : null);
             putProperty(PKEY_NAMESPACES, null);
         } else {
+            putProperty(PKEY_ROOT_NAMESPACE, null);
             Map<String, Map<String, Object>> installedNamespaces = new HashMap<String, Map<String, Object>>();
+            putProperty(PKEY_NAMESPACES, installedNamespaces);
             for (String namespace : namespaces) {
                 Map<String, Object> namespaceData = new HashMap<String, Object>();
                 namespaceData.put(PKEY_NAMESPACES_NAMESPACE, namespace);
                 installedNamespaces.put(namespace, namespaceData);
-                putProperty(PKEY_NAMESPACES, installedNamespaces);
             }
         }
 
@@ -361,6 +375,75 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
             if (installedNamespace != null) {
                 installedNamespace.put(PKEY_NAMESPACES_DEPENDENCY, dependency);
             }
+        }
+    }
+
+    @Override
+    public Date getInstallDate(String namespace)
+    {
+        return (Date) getNamespaceProperty(PKEY_DATE, namespace);
+    }
+
+    /**
+     * Sets the date when this extension has been installed on the specified namespace.
+     * 
+     * @param date the install date
+     * @param namespace the namespace for which to set the install date
+     * @since 7.0M2
+     */
+    public void setInstallDate(Date date, String namespace)
+    {
+        setNamespaceProperty(PKEY_DATE, date, namespace);
+    }
+
+    @Override
+    public Object getNamespaceProperty(String key, String namespace)
+    {
+        Object value = null;
+        if (namespace != null) {
+            Map<String, Object> installedNamespace = getInstalledNamespace(namespace, false);
+            if (installedNamespace != null) {
+                value = installedNamespace.get(key);
+            }
+        }
+        if (value == null) {
+            // Fallback on the root namespace.
+            // Note that we don't pass an empty map as default value because the value mapped to the key can be null.
+            Map<String, Object> rootNamespace = getProperty(PKEY_ROOT_NAMESPACE, (Map<String, Object>) null);
+            if (rootNamespace != null) {
+                value = rootNamespace.get(key);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * Sets the value of the specified extension property on the given namespace.
+     * 
+     * @param key the extension property to set
+     * @param value the property value
+     * @param namespace the namespace to associate the property with, {@code null} for the root namespace
+     * @since 7.0M2
+     */
+    public void setNamespaceProperty(String key, Object value, String namespace)
+    {
+        Map<String, Object> namespaceProperties = getNamespaceProperties(namespace);
+        if (namespaceProperties != null) {
+            namespaceProperties.put(key, value);
+        }
+    }
+
+    /**
+     * @param namespace the namespace to look for
+     * @return the custom extension properties associated with the specified namespace
+     * @since 7.0M2
+     */
+    public Map<String, Object> getNamespaceProperties(String namespace)
+    {
+        if (namespace == null) {
+            return getProperty(PKEY_ROOT_NAMESPACE, (Map<String, Object>) null);
+        } else {
+            return getInstalledNamespace(namespace, false);
         }
     }
 

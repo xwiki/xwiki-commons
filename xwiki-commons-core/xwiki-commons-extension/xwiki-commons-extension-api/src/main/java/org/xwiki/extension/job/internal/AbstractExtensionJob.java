@@ -22,7 +22,9 @@ package org.xwiki.extension.job.internal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -38,6 +40,7 @@ import org.xwiki.extension.event.ExtensionUninstalledEvent;
 import org.xwiki.extension.event.ExtensionUpgradedEvent;
 import org.xwiki.extension.handler.ExtensionHandlerManager;
 import org.xwiki.extension.job.ExtensionRequest;
+import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
@@ -244,11 +247,14 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     private void installExtension(LocalExtension extension, Collection<InstalledExtension> previousExtensions,
         String namespace, boolean dependency) throws InstallException
     {
+        Map<String, Object> properties =
+            getRequest().getProperty(InstallRequest.PROPERTY_EXTENSION_PROPERTIES,
+                Collections.<String, Object>emptyMap());
         if (previousExtensions.isEmpty()) {
             this.extensionHandlerManager.install(extension, namespace, getRequest());
 
             InstalledExtension installedExtension =
-                this.installedExtensionRepository.installExtension(extension, namespace, dependency);
+                this.installedExtensionRepository.installExtension(extension, namespace, dependency, properties);
 
             this.observationManager.notify(new ExtensionInstalledEvent(extension.getId(), namespace),
                 installedExtension);
@@ -264,7 +270,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             }
 
             InstalledExtension installedExtension =
-                this.installedExtensionRepository.installExtension(extension, namespace, dependency);
+                this.installedExtensionRepository.installExtension(extension, namespace, dependency, properties);
 
             this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace),
                 installedExtension, previousExtensions);

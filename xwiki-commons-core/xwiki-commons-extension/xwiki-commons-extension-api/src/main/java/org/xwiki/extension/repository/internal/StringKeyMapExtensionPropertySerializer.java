@@ -104,11 +104,9 @@ public class StringKeyMapExtensionPropertySerializer<M extends Map> extends Abst
                     CollectionExtensionPropertySerializer.toElement(entry.getValue(), document, entry.getKey()
                         .toString(), this.serializerByClass);
 
-                if (subElement == null) {
-                    return null;
+                if (subElement != null) {
+                    element.appendChild(subElement);
                 }
-
-                element.appendChild(subElement);
             }
         }
 
