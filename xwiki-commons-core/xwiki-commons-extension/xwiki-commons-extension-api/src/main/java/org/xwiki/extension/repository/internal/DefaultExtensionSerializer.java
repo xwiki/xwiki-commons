@@ -105,6 +105,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_SUMMARY = "summary";
 
+    private static final String ELEMENT_CATEGORY = "category";
+
     private static final String ELEMENT_DESCRIPTION = "description";
 
     private static final String ELEMENT_WEBSITE = "website";
@@ -272,6 +274,10 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         Node nameNode = getNode(extensionElement, ELEMENT_NAME);
         if (nameNode != null) {
             extension.setName(nameNode.getTextContent());
+        }
+        Node categoryNode = getNode(extensionElement, ELEMENT_CATEGORY);
+        if (nameNode != null) {
+            extension.setCategory(categoryNode.getTextContent());
         }
         Node summaryNode = getNode(extensionElement, ELEMENT_SUMMARY);
         if (summaryNode != null) {
@@ -519,6 +525,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         addElement(document, extensionElement, ELEMENT_VERSION, extension.getId().getVersion().getValue());
         addElement(document, extensionElement, ELEMENT_TYPE, extension.getType());
         addElement(document, extensionElement, ELEMENT_NAME, extension.getName());
+        addElement(document, extensionElement, ELEMENT_CATEGORY, extension.getCategory());
         addElement(document, extensionElement, ELEMENT_SUMMARY, extension.getSummary());
         addElement(document, extensionElement, ELEMENT_DESCRIPTION, extension.getDescription());
         addElement(document, extensionElement, ELEMENT_WEBSITE, extension.getWebSite());
