@@ -276,7 +276,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             extension.setName(nameNode.getTextContent());
         }
         Node categoryNode = getNode(extensionElement, ELEMENT_CATEGORY);
-        if (nameNode != null) {
+        if (categoryNode != null) {
             extension.setCategory(categoryNode.getTextContent());
         }
         Node summaryNode = getNode(extensionElement, ELEMENT_SUMMARY);
