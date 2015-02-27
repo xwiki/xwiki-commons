@@ -26,7 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.internal.converter.ExtensionConverter;
+import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
@@ -52,10 +52,12 @@ public class ExtensionConverterTest
         model.setGroupId("groupid");
         model.setArtifactId("artifactid");
         model.setVersion("version");
+        model.addProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_CATEGORY, "category");
 
         Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
 
         assertEquals(model.getGroupId() + ':' + model.getArtifactId(), extension.getId().getId());
         assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
+        assertEquals("category", extension.getCategory());
     }
 }

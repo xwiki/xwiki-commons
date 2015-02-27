@@ -145,9 +145,9 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         }
 
         // category
-        String category = getProperty(model, MavenUtils.MPNAME_CATEGORY);
-        if (StringUtils.isNotBlank(featuresString)) {
-            extension.setCategory(category);
+        String categoryString = getProperty(model, MavenUtils.MPNAME_CATEGORY);
+        if (StringUtils.isNotBlank(categoryString)) {
+            extension.setCategory(categoryString);
         }
 
         // dependencies
