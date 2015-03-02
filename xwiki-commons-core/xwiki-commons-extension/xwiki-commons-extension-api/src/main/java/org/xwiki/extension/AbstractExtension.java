@@ -162,6 +162,7 @@ public abstract class AbstractExtension implements Extension
         setSummary(extension.getSummary());
         setIssueManagement(extension.getIssueManagement());
         setScm(extension.getScm());
+        setCategory(extension.getCategory());
 
         setDependencies(extension.getDependencies());
 
