@@ -46,6 +46,8 @@ public class XWikiExtensionFile implements ExtensionFile
         public XWikiExtensionFileInputStream(CloseableHttpResponse response) throws IllegalStateException, IOException
         {
             super(response.getEntity().getContent());
+
+            this.response = response;
         }
 
         @Override
