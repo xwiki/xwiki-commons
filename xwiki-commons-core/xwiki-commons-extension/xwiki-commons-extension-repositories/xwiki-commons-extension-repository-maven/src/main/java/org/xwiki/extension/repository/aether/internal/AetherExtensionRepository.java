@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
@@ -73,10 +71,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.ExtensionLicense;
-import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
-import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
@@ -120,8 +115,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private transient ConverterManager converter;
 
-    private transient ExtensionLicenseManager licenseManager;
-
     private transient AetherExtensionRepositoryFactory repositoryFactory;
 
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
@@ -157,7 +150,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         this.remoteRepository = repositoryBuilder.build();
 
         this.converter = componentManager.getInstance(ConverterManager.class);
-        this.licenseManager = componentManager.getInstance(ExtensionLicenseManager.class);
 
         this.versionRangeResolver = this.plexusContainer.lookup(VersionRangeResolver.class);
         this.versionResolver = this.plexusContainer.lookup(VersionResolver.class);
@@ -312,16 +304,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return rangeResult.getVersions();
     }
 
-    private String getProperty(Model model, String propertyName)
-    {
-        return model.getProperties().getProperty(MavenUtils.MPKEYPREFIX + propertyName);
-    }
-
-    private String getPropertyString(Model model, String propertyName, String def)
-    {
-        return StringUtils.defaultString(getProperty(model, propertyName), def);
-    }
-
     private AetherExtension resolveMaven(ExtensionDependency extensionDependency) throws ResolveException
     {
         Artifact artifact;
@@ -448,23 +430,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     private Exclusion convert(org.apache.maven.model.Exclusion exclusion)
     {
         return new Exclusion(exclusion.getGroupId(), exclusion.getArtifactId(), "*", "*");
-    }
-
-    // TODO: download custom licenses content
-    private ExtensionLicense getExtensionLicense(License license)
-    {
-        if (license.getName() == null) {
-            return new ExtensionLicense("noname", null);
-        }
-
-        return createLicenseByName(license.getName());
-    }
-
-    private ExtensionLicense createLicenseByName(String name)
-    {
-        ExtensionLicense extensionLicense = this.licenseManager.getLicense(name);
-
-        return extensionLicense != null ? extensionLicense : new ExtensionLicense(name, null);
     }
 
     private Artifact resolveVersion(Artifact artifact, List<RemoteRepository> repositories,
