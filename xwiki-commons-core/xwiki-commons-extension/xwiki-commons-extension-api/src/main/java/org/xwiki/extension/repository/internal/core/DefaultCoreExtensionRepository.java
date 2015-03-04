@@ -243,12 +243,12 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     @Override
     public IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException
     {
-        return RepositoryUtils.searchInCollection(pattern, offset, nb, this.extensions.values(), true);
+        return (IterableResult) RepositoryUtils.searchInCollection(pattern, offset, nb, this.extensions.values(), true);
     }
 
     @Override
     public IterableResult<Extension> search(ExtensionQuery query) throws SearchException
     {
-        return RepositoryUtils.searchInCollection(query, this.extensions.values(), true);
+        return (IterableResult) RepositoryUtils.searchInCollection(query, this.extensions.values(), true);
     }
 }

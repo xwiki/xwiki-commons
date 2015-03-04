@@ -228,7 +228,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public IterableResult<Extension> search(String pattern, int offset, int nb)
     {
-        IterableResult<Extension> searchResult = null;
+        IterableResult<? extends Extension> searchResult = null;
 
         int currentOffset = offset > 0 ? offset : 0;
         int currentNb = nb;
@@ -260,8 +260,8 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
             }
         }
 
-        return searchResult != null ? searchResult : new CollectionIterableResult<Extension>(0, offset,
-            Collections.<Extension>emptyList());
+        return searchResult != null ? (IterableResult) searchResult : new CollectionIterableResult<Extension>(0,
+            offset, Collections.<Extension>emptyList());
     }
 
     /**
@@ -275,10 +275,10 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
      * @return the updated maximum number of search results to return
      * @throws SearchException error while searching on provided repository
      */
-    private IterableResult<Extension> search(ExtensionRepository repository, String pattern, int offset, int nb,
-        IterableResult<Extension> previousSearchResult) throws SearchException
+    private IterableResult<? extends Extension> search(ExtensionRepository repository, String pattern, int offset,
+        int nb, IterableResult<? extends Extension> previousSearchResult) throws SearchException
     {
-        IterableResult<Extension> result;
+        IterableResult<? extends Extension> result;
 
         if (repository instanceof Searchable) {
             Searchable searchableRepository = (Searchable) repository;
@@ -300,8 +300,8 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
      * @param result the new search result to append
      * @return the new aggregated search result
      */
-    private AggregatedIterableResult<Extension> appendSearchResults(IterableResult<Extension> previousSearchResult,
-        IterableResult<Extension> result)
+    private AggregatedIterableResult<Extension> appendSearchResults(
+        IterableResult<? extends Extension> previousSearchResult, IterableResult<? extends Extension> result)
     {
         AggregatedIterableResult<Extension> newResult;
 
@@ -309,10 +309,10 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
             newResult = ((AggregatedIterableResult<Extension>) previousSearchResult);
         } else {
             newResult = new AggregatedIterableResult<Extension>(previousSearchResult.getOffset());
-            newResult.addSearchResult(previousSearchResult);
+            newResult.addSearchResult((IterableResult) previousSearchResult);
         }
 
-        newResult.addSearchResult(result);
+        newResult.addSearchResult((IterableResult) result);
 
         return newResult;
     }

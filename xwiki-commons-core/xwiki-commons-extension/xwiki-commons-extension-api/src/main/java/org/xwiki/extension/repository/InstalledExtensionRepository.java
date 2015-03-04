@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -175,7 +174,7 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @throws SearchException error when trying to search provided pattern
      * @since 5.3M1
      */
-    IterableResult<Extension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
+    IterableResult<InstalledExtension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
         throws SearchException;
 
     /**
@@ -188,5 +187,6 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @since 7.0M2
      */
     @Unstable
-    IterableResult<Extension> searchInstalledExtensions(String namespace, ExtensionQuery query) throws SearchException;
+    IterableResult<InstalledExtension> searchInstalledExtensions(String namespace, ExtensionQuery query)
+        throws SearchException;
 }

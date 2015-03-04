@@ -26,7 +26,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
@@ -87,8 +86,8 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
     }
 
     @Override
-    public IterableResult<Extension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
-        throws SearchException
+    public IterableResult<InstalledExtension> searchInstalledExtensions(String pattern, String namespace, int offset,
+        int nb) throws SearchException
     {
         ExtensionQuery query = new ExtensionQuery(pattern);
 
@@ -99,18 +98,18 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
     }
 
     @Override
-    public IterableResult<Extension> searchInstalledExtensions(String namespace, ExtensionQuery query)
+    public IterableResult<InstalledExtension> searchInstalledExtensions(String namespace, ExtensionQuery query)
         throws SearchException
     {
         return searchInstalledExtensions(namespace, query, this.extensions.values());
     }
 
-    protected IterableResult<Extension> searchInstalledExtensions(String namespace, ExtensionQuery query,
+    protected IterableResult<InstalledExtension> searchInstalledExtensions(String namespace, ExtensionQuery query,
         Collection<? extends InstalledExtension> installedExtensions)
     {
         Pattern patternMatcher = RepositoryUtils.createPatternMatcher(query.getQuery());
 
-        List<Extension> result = new ArrayList<Extension>(installedExtensions.size());
+        List<InstalledExtension> result = new ArrayList<InstalledExtension>(installedExtensions.size());
 
         for (InstalledExtension installedExtension : installedExtensions) {
             if (installedExtension.isInstalled(namespace)) {

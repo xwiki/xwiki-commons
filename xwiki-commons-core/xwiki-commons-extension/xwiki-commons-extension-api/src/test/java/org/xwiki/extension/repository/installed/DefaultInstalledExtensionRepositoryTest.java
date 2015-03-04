@@ -362,7 +362,7 @@ public class DefaultInstalledExtensionRepositoryTest
                     .asList(DefaultInstalledExtensionRepositoryTest.this.resources.installedwithfeatureasdependency));
                 put("namespace",
                     Arrays
-                    .asList(DefaultInstalledExtensionRepositoryTest.this.resources.installedonnemspacewithrootdependency));
+                        .asList(DefaultInstalledExtensionRepositoryTest.this.resources.installedonnemspacewithrootdependency));
             }
         }, this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID));
 
@@ -529,9 +529,9 @@ public class DefaultInstalledExtensionRepositoryTest
     public void testSearchInstalledExtensions() throws SearchException
     {
         // Root namespace
-        CollectionIterableResult<Extension> result =
-            (CollectionIterableResult<Extension>) this.installedExtensionRepository.searchInstalledExtensions(null,
-                null, 0, -1);
+        CollectionIterableResult<InstalledExtension> result =
+            (CollectionIterableResult<InstalledExtension>) this.installedExtensionRepository.searchInstalledExtensions(
+                null, null, 0, -1);
 
         Assert.assertEquals(4, result.getTotalHits());
         Assert.assertEquals(4, result.getSize());
@@ -539,8 +539,8 @@ public class DefaultInstalledExtensionRepositoryTest
 
         // Namespace "namespace" + "root"
         result =
-            (CollectionIterableResult<Extension>) this.installedExtensionRepository.searchInstalledExtensions(null,
-                "namespace", 0, -1);
+            (CollectionIterableResult<InstalledExtension>) this.installedExtensionRepository.searchInstalledExtensions(
+                null, "namespace", 0, -1);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(7, result.getSize());
@@ -548,8 +548,8 @@ public class DefaultInstalledExtensionRepositoryTest
 
         // This namespace does not exist so same as root
         result =
-            (CollectionIterableResult<Extension>) this.installedExtensionRepository.searchInstalledExtensions(null,
-                "notnamespace", 0, -1);
+            (CollectionIterableResult<InstalledExtension>) this.installedExtensionRepository.searchInstalledExtensions(
+                null, "notnamespace", 0, -1);
 
         Assert.assertEquals(4, result.getTotalHits());
         Assert.assertEquals(4, result.getSize());

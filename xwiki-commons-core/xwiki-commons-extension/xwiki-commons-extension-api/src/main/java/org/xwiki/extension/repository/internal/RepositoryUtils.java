@@ -60,9 +60,10 @@ public final class RepositoryUtils
      * @param nb the number of maximum element to return
      * @param extensions the extension collection to search in
      * @return the search result
+     * @param <E> the type of element in the {@link Collection}
      */
-    public static CollectionIterableResult<Extension> searchInCollection(String pattern, int offset, int nb,
-        Collection<? extends Extension> extensions)
+    public static <E extends Extension> CollectionIterableResult<E> searchInCollection(String pattern, int offset,
+        int nb, Collection<E> extensions)
     {
         return searchInCollection(pattern, offset, nb, extensions, false);
     }
@@ -75,9 +76,10 @@ public final class RepositoryUtils
      * @param forceUnique make sure returned elements are unique
      * @return the search result
      * @since 6.4.1
+     * @param <E> the type of element in the {@link Collection}
      */
-    public static CollectionIterableResult<Extension> searchInCollection(String pattern, int offset, int nb,
-        Collection<? extends Extension> extensions, boolean forceUnique)
+    public static <E extends Extension> CollectionIterableResult<E> searchInCollection(String pattern, int offset,
+        int nb, Collection<E> extensions, boolean forceUnique)
     {
         ExtensionQuery query = new ExtensionQuery(pattern);
 
@@ -93,15 +95,16 @@ public final class RepositoryUtils
      * @param forceUnique make sure returned elements are unique
      * @return the search result
      * @since 7.0M2
+     * @param <E> the type of element in the {@link Collection}
      */
-    public static CollectionIterableResult<Extension> searchInCollection(ExtensionQuery query,
-        Collection<? extends Extension> extensions, boolean forceUnique)
+    public static <E extends Extension> CollectionIterableResult<E> searchInCollection(ExtensionQuery query,
+        Collection<E> extensions, boolean forceUnique)
     {
-        List<Extension> result;
+        List<E> result;
 
         // Filter
         if (StringUtils.isEmpty(query.getQuery())) {
-            result = extensions instanceof List ? (List<Extension>) extensions : new ArrayList<Extension>(extensions);
+            result = extensions instanceof List ? (List<E>) extensions : new ArrayList<E>(extensions);
         } else {
             result = filter(query.getQuery(), query.getFilters(), extensions, forceUnique);
         }
@@ -118,19 +121,19 @@ public final class RepositoryUtils
      * @param nb the number of maximum element to return
      * @param elements the element collection to search in
      * @return the result to limit
-     * @param <T> the type of element in the {@link Collection}
+     * @param <E> the type of element in the {@link Collection}
      */
-    public static <T> CollectionIterableResult<T> getIterableResult(int offset, int nb, Collection<T> elements)
+    public static <E> CollectionIterableResult<E> getIterableResult(int offset, int nb, Collection<E> elements)
     {
         if (nb == 0 || offset >= elements.size()) {
-            return new CollectionIterableResult<T>(elements.size(), offset, Collections.<T>emptyList());
+            return new CollectionIterableResult<E>(elements.size(), offset, Collections.<E>emptyList());
         }
 
-        List<T> list;
+        List<E> list;
         if (elements instanceof List) {
-            list = (List<T>) elements;
+            list = (List<E>) elements;
         } else {
-            list = new ArrayList<T>(elements);
+            list = new ArrayList<E>(elements);
         }
 
         return getIterableResultFromList(offset, nb, list);
@@ -141,9 +144,9 @@ public final class RepositoryUtils
      * @param nb the number of maximum element to return
      * @param elements the element collection to search in
      * @return the result to limit
-     * @param <T> the type of element in the {@link List}
+     * @param <E> the type of element in the {@link List}
      */
-    private static <T> CollectionIterableResult<T> getIterableResultFromList(int offset, int nb, List<T> elements)
+    private static <E> CollectionIterableResult<E> getIterableResultFromList(int offset, int nb, List<E> elements)
     {
         int fromIndex = offset;
         if (fromIndex < 0) {
@@ -160,7 +163,7 @@ public final class RepositoryUtils
             toIndex = elements.size();
         }
 
-        return new CollectionIterableResult<T>(elements.size(), offset, elements.subList(fromIndex, toIndex));
+        return new CollectionIterableResult<E>(elements.size(), offset, elements.subList(fromIndex, toIndex));
     }
 
     /**
@@ -170,16 +173,17 @@ public final class RepositoryUtils
      * @param forceUnique make sure returned elements are unique
      * @return the filtered list of extensions
      * @since 7.0M2
+     * @param <E> the type of element in the {@link Collection}
      */
-    private static List<Extension> filter(String pattern, Collection<Filter> filters,
-        Collection<? extends Extension> extensions, boolean forceUnique)
+    private static <E extends Extension> List<E> filter(String pattern, Collection<Filter> filters,
+        Collection<E> extensions, boolean forceUnique)
     {
-        List<Extension> result = new ArrayList<Extension>(extensions.size());
+        List<E> result = new ArrayList<E>(extensions.size());
 
         Pattern patternMatcher =
             Pattern.compile(SEARCH_PATTERN_SUFFIXNPREFIX + pattern.toLowerCase() + SEARCH_PATTERN_SUFFIXNPREFIX);
 
-        for (Extension extension : extensions) {
+        for (E extension : extensions) {
             if (matches(patternMatcher, filters, extension)) {
                 result.add(extension);
             }
