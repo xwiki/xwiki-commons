@@ -24,6 +24,8 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -40,6 +42,9 @@ import org.xwiki.component.manager.ComponentManager;
 @Singleton
 public class ContextComponentManagerProvider implements Provider<ComponentManager>
 {
+    @Inject
+    private Logger logger;
+
     /**
      * The root {@link ComponentManager} used to lookup the context {@link ComponentManager} and as a fallback if none
      * is provided.
@@ -60,6 +65,8 @@ public class ContextComponentManagerProvider implements Provider<ComponentManage
         } catch (ComponentLookupException e) {
             // This means the Context CM doesn't exist, use the Root CM.
             componentManagerToUse = this.rootComponentManager;
+            this.logger.debug("Failed to find the [context] Component Manager. Cause: [{}]. Using the Root Component "
+                + "Manager", ExceptionUtils.getRootCauseMessage(e));
         }
 
         return componentManagerToUse;
