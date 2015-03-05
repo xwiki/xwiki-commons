@@ -190,7 +190,14 @@
               <className>org/xwiki/extension/Extension</className>
               <method>java.lang.String getCategory()</method>
               <justification>Add support for catagories to extension.
-              It should not be an issue for more Extension implementation whish are supposed to extend AbstractExtension</justification>
+              It should not be an issue for most Extension implementations which are supposed to extend AbstractExtension</justification>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/Extension</className>
+              <method>java.lang.Object get(java.lang.String)</method>
+              <justification>Helper to access extension fields by name.
+              It should not be an issue for most Extension implementations which are supposed to extend AbstractExtension</justification>
             </difference>
             <difference>
               <differenceType>7012</differenceType>

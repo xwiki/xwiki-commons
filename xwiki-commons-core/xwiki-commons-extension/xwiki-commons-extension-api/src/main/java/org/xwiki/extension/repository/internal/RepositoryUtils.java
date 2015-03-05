@@ -223,51 +223,6 @@ public final class RepositoryUtils
     }
 
     /**
-     * Extract the value of an extension field.
-     * 
-     * @param extension the extension
-     * @param field the name of the field
-     * @return the field value or null if no field by the passed name could be found
-     * @since 7.0M2
-     */
-    public static Object getValue(Extension extension, String field)
-    {
-        switch (field.toLowerCase()) {
-            case "id":
-                return extension.getId().getId();
-            case "version":
-                return extension.getId().getVersion();
-            case "feature":
-            case "features":
-                return extension.getFeatures();
-            case "summary":
-                return extension.getSummary();
-            case "description":
-                return extension.getDescription();
-            case "author":
-            case "authors":
-                return extension.getAuthors();
-            case "category":
-                return extension.getCategory();
-            case "license":
-            case "licenses":
-                return extension.getLicenses();
-            case "name":
-                return extension.getName();
-            case "type":
-                return extension.getType();
-            case "website":
-                return extension.getWebSite();
-            case "scm":
-                return extension.getScm();
-
-            default:
-                // Unknown field, probably a property
-                return extension.getProperty(field);
-        }
-    }
-
-    /**
      * @param filter the filter
      * @param extension the extension to match
      * @return true if the extension is matched by the filer
@@ -275,7 +230,7 @@ public final class RepositoryUtils
      */
     public static boolean matches(Filter filter, Extension extension)
     {
-        Object value = getValue(extension, filter.getField());
+        Object value = extension.get(filter.getField());
 
         if (value != null) {
             return matches(filter, value);

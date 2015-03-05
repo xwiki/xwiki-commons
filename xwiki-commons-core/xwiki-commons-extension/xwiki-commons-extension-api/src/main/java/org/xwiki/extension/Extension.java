@@ -34,6 +34,107 @@ import org.xwiki.stability.Unstable;
 public interface Extension
 {
     /**
+     * @see #getId()
+     * @since 7.0RC1
+     */
+    String FIELD_ID = "id";
+
+    /**
+     * @see #getId()
+     * @since 7.0RC1
+     */
+    String FIELD_VERSION = "version";
+
+    /**
+     * @see #getFeatures()
+     * @since 7.0RC1
+     */
+    String FIELD_FEATURE = "feature";
+
+    /**
+     * @see #getFeatures()
+     * @since 7.0RC1
+     */
+    String FIELD_FEATURES = "features";
+
+    /**
+     * @see #getSummary()
+     * @since 7.0RC1
+     */
+    String FIELD_SUMMARY = "summary";
+
+    /**
+     * @see #getDescription()
+     * @since 7.0RC1
+     */
+    String FIELD_DESCRIPTION = "description";
+
+    /**
+     * @see #getAuthors()
+     * @since 7.0RC1
+     */
+    String FIELD_AUTHOR = "author";
+
+    /**
+     * @see #getAuthors()
+     * @since 7.0RC1
+     */
+    String FIELD_AUTHORS = "authors";
+
+    /**
+     * @see #getCategory()
+     * @since 7.0RC1
+     */
+    String FIELD_CATEGORY = "category";
+
+    /**
+     * @see #getLicenses()
+     * @since 7.0RC1
+     */
+    String FIELD_LICENSE = "license";
+
+    /**
+     * @see #getLicenses()
+     * @since 7.0RC1
+     */
+    String FIELD_LICENSES = "licenses";
+
+    /**
+     * @see #getName()
+     * @since 7.0RC1
+     */
+    String FIELD_NAME = "name";
+
+    /**
+     * @see #getType()
+     * @since 7.0RC1
+     */
+    String FIELD_TYPE = "type";
+
+    /**
+     * @see #getWebSite()
+     * @since 7.0RC1
+     */
+    String FIELD_WEBSITE = "website";
+
+    /**
+     * @see #getScm()
+     * @since 7.0RC1
+     */
+    String FIELD_SCM = "scm";
+
+    /**
+     * Get an extension field (name, summary, id, etc.) by name. Fallback on properties.
+     * 
+     * @param <T> type of the field value
+     * @param fieldName the field name;
+     * @return the field value or null if none could be found
+     * @since 7.0RC1
+     */
+    @Unstable
+    <T> T get(String fieldName);
+
+    /**
      * @return the id/version combination which makes the extension unique
      */
     ExtensionId getId();
@@ -130,10 +231,11 @@ public interface Extension
     Map<String, Object> getProperties();
 
     /**
+     * @param <T> type of the property value
      * @param key the property key
      * @return the property value
      */
-    Object getProperty(String key);
+    <T> T getProperty(String key);
 
     /**
      * Get a property.

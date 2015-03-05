@@ -151,7 +151,7 @@
               **/DefaultVersion.java,
               **/AbstractInstallPlanJob.java,
               **/UnmodifiableUtils.java,
-              **/RepositoryUtils.java
+              **/AbstractExtension.java
           </excludes>
         </configuration>
       </plugin>

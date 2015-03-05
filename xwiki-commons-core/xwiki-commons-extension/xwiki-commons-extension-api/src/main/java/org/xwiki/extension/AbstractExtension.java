@@ -169,6 +169,50 @@ public abstract class AbstractExtension implements Extension
         setProperties(extension.getProperties());
     }
 
+    /**
+     * Get an extension field by name. Fallback on properties.
+     * 
+     * @param fieldName the field name;
+     * @return the field value or null if none could be found
+     */
+    @Override
+    public <T> T get(String fieldName)
+    {
+        switch (fieldName.toLowerCase()) {
+            case Extension.FIELD_ID:
+                return (T) getId().getId();
+            case Extension.FIELD_VERSION:
+                return (T) getId().getVersion();
+            case Extension.FIELD_FEATURE:
+            case Extension.FIELD_FEATURES:
+                return (T) getFeatures();
+            case Extension.FIELD_SUMMARY:
+                return (T) getSummary();
+            case Extension.FIELD_DESCRIPTION:
+                return (T) getDescription();
+            case Extension.FIELD_AUTHOR:
+            case Extension.FIELD_AUTHORS:
+                return (T) getAuthors();
+            case Extension.FIELD_CATEGORY:
+                return (T) getCategory();
+            case Extension.FIELD_LICENSE:
+            case Extension.FIELD_LICENSES:
+                return (T) getLicenses();
+            case Extension.FIELD_NAME:
+                return (T) getName();
+            case Extension.FIELD_TYPE:
+                return (T) getType();
+            case Extension.FIELD_WEBSITE:
+                return (T) getWebSite();
+            case Extension.FIELD_SCM:
+                return (T) getScm();
+
+            default:
+                // Unknown field, probably a property
+                return getProperty(fieldName);
+        }
+    }
+
     @Override
     public ExtensionId getId()
     {
@@ -446,9 +490,9 @@ public abstract class AbstractExtension implements Extension
     }
 
     @Override
-    public Object getProperty(String key)
+    public <T> T getProperty(String key)
     {
-        return getProperties().get(key);
+        return (T) getProperties().get(key);
     }
 
     @Override

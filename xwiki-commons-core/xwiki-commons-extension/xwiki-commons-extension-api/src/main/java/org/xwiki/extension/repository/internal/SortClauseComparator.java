@@ -61,8 +61,8 @@ public class SortClauseComparator implements Comparator<Extension>
 
     private int compare(Extension o1, Extension o2, SortClause sortClause)
     {
-        Object value1 = RepositoryUtils.getValue(o1, sortClause.getField());
-        Object value2 = RepositoryUtils.getValue(o2, sortClause.getField());
+        Object value1 = o1.get(sortClause.getField());
+        Object value2 = o2.get(sortClause.getField());
 
         if (value1 instanceof Comparable && value2 instanceof Comparable) {
             return ObjectUtils.compare((Comparable) value1, (Comparable) value2)
