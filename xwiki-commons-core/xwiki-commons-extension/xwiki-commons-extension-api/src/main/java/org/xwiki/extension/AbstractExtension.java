@@ -179,32 +179,34 @@ public abstract class AbstractExtension implements Extension
     public <T> T get(String fieldName)
     {
         switch (fieldName.toLowerCase()) {
-            case Extension.FIELD_ID:
+            case FIELD_REPOSITORY:
+                return (T) getRepository();
+            case FIELD_ID:
                 return (T) getId().getId();
-            case Extension.FIELD_VERSION:
+            case FIELD_VERSION:
                 return (T) getId().getVersion();
-            case Extension.FIELD_FEATURE:
-            case Extension.FIELD_FEATURES:
+            case FIELD_FEATURE:
+            case FIELD_FEATURES:
                 return (T) getFeatures();
-            case Extension.FIELD_SUMMARY:
+            case FIELD_SUMMARY:
                 return (T) getSummary();
-            case Extension.FIELD_DESCRIPTION:
+            case FIELD_DESCRIPTION:
                 return (T) getDescription();
-            case Extension.FIELD_AUTHOR:
-            case Extension.FIELD_AUTHORS:
+            case FIELD_AUTHOR:
+            case FIELD_AUTHORS:
                 return (T) getAuthors();
-            case Extension.FIELD_CATEGORY:
+            case FIELD_CATEGORY:
                 return (T) getCategory();
-            case Extension.FIELD_LICENSE:
-            case Extension.FIELD_LICENSES:
+            case FIELD_LICENSE:
+            case FIELD_LICENSES:
                 return (T) getLicenses();
-            case Extension.FIELD_NAME:
+            case FIELD_NAME:
                 return (T) getName();
-            case Extension.FIELD_TYPE:
+            case FIELD_TYPE:
                 return (T) getType();
-            case Extension.FIELD_WEBSITE:
+            case FIELD_WEBSITE:
                 return (T) getWebSite();
-            case Extension.FIELD_SCM:
+            case FIELD_SCM:
                 return (T) getScm();
 
             default:

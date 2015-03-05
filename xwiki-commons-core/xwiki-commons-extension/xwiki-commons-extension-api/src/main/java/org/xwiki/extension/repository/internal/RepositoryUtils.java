@@ -250,21 +250,19 @@ public final class RepositoryUtils
     public static boolean matches(Filter filter, Object element)
     {
         // TODO: add support for more than String
-        if (filter.getValue() instanceof String) {
-            String value = (String) filter.getValue();
-            if (filter.getComparison() == COMPARISON.MATCH) {
-                Pattern patternMatcher = createPatternMatcher(value);
+        String filterValue = filter.getValue() != null ? String.valueOf(filter.getValue()) : null;
+        String elementValue = element != null ? String.valueOf(element) : null;
 
-                if (matches(patternMatcher, element)) {
-                    return true;
-                }
-            } else if (filter.getComparison() == COMPARISON.EQUAL) {
-                if (element != null && value.toLowerCase().equals(element.toString().toLowerCase())) {
-                    return true;
-                }
+        if (filter.getComparison() == COMPARISON.MATCH) {
+            Pattern patternMatcher = createPatternMatcher(filterValue);
+
+            if (matches(patternMatcher, filterValue)) {
+                return true;
             }
-        } else {
-            return true;
+        } else if (filter.getComparison() == COMPARISON.EQUAL) {
+            if (elementValue != null && filterValue.toLowerCase().equals(elementValue.toLowerCase())) {
+                return true;
+            }
         }
 
         return false;

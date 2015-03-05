@@ -34,6 +34,12 @@ import org.xwiki.stability.Unstable;
 public interface Extension
 {
     /**
+     * @see #getRepository()
+     * @since 7.0RC1
+     */
+    String FIELD_REPOSITORY = "repository";
+
+    /**
      * @see #getId()
      * @since 7.0RC1
      */
