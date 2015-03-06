@@ -119,6 +119,11 @@ public class FormatMojo extends AbstractVerifyMojo
             node.setText("false");
         }
 
+        // Also update the attachment authors
+        for (Object attachmentAuthorNode : domdoc.selectNodes("xwikidoc/attachment/author")) {
+            ((Node) attachmentAuthorNode).setText(AUTHOR);
+        }
+
         // Set the default language
         Element element = (Element) domdoc.selectSingleNode("xwikidoc/defaultLanguage");
         if (element != null) {

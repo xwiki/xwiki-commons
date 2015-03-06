@@ -20,6 +20,8 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -33,6 +35,8 @@ import org.dom4j.io.SAXReader;
  */
 public class XWikiDocument
 {
+    private static final String AUTHOR_TAG = "author";
+
     /**
      * @see #getName()
      */
@@ -67,6 +71,12 @@ public class XWikiDocument
      * @see #getContentAuthor()
      */
     private String contentAuthor;
+
+    /**
+     * @see #getAttachmentAuthors()
+     * @since 7.0RC1
+     */
+    private List<String> attachmentAuthors;
 
     /**
      * @see #getVersion()
@@ -112,12 +122,13 @@ public class XWikiDocument
         this.language = readElement(rootElement, "language");
         this.defaultLanguage = readElement(rootElement, "defaultLanguage");
         this.creator = readElement(rootElement, "creator");
-        this.author = readElement(rootElement, "author");
+        this.author = readElement(rootElement, AUTHOR_TAG);
         this.contentAuthor = readElement(rootElement, "contentAuthor");
         this.version = readElement(rootElement, "version");
         this.parent = readElement(rootElement, "parent");
         this.comment = readElement(rootElement, "comment");
         this.minorEdit = readElement(rootElement, "minorEdit");
+        this.attachmentAuthors = readAttachmentAuthors(rootElement);
     }
 
     /**
@@ -135,6 +146,15 @@ public class XWikiDocument
             result = element.getText();
         }
         return result;
+    }
+
+    private List<String> readAttachmentAuthors(Element rootElement)
+    {
+        List<String> authors = new ArrayList<>();
+        for (Object attachmentNode : rootElement.elements("attachment")) {
+            authors.add(readElement((Element) attachmentNode, AUTHOR_TAG));
+        }
+        return authors;
     }
 
     /**
@@ -255,6 +275,15 @@ public class XWikiDocument
     public String getMinorEdit()
     {
         return this.minorEdit;
+    }
+
+    /**
+     * @return the attachment authors and an empty list if there's no attachment
+     * @since 7.0RC1
+     */
+    public List<String> getAttachmentAuthors()
+    {
+        return this.attachmentAuthors;
     }
 
     /**

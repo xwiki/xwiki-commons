@@ -43,6 +43,14 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithWrongAttachmentAuthors() throws Exception
+    {
+        verifyExecution("/wrongAttachmentAuthors", "Verifying [Space/WebHome.xml]... errors",
+            "- Attachment author must [xwiki:XWiki.Admin] but was []",
+            "- Attachment author must [xwiki:XWiki.Admin] but was [wrong author]");
+    }
+
+    @Test
     public void executeWithWrongContentAuthor() throws Exception
     {
         verifyExecution("/wrongContentAuthor", "Verifying [Space/WebHome.xml]... errors",
