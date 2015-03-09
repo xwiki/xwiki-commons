@@ -59,12 +59,14 @@ import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.SearchException;
+import org.xwiki.extension.repository.xwiki.model.jaxb.COMPARISON;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionQuery;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersionSummary;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersions;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionsSearchResult;
 import org.xwiki.extension.repository.xwiki.model.jaxb.Filter;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ORDER;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ObjectFactory;
 import org.xwiki.extension.repository.xwiki.model.jaxb.Repository;
 import org.xwiki.extension.repository.xwiki.model.jaxb.SortClause;
@@ -423,13 +425,13 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
             Filter restFilter = EXTENSION_OBJECT_FACTORY.createFilter();
             restFilter.setField(filter.getField());
             restFilter.setValueString(filter.getValue().toString());
-            restFilter.setComparison(filter.getComparison().name());
+            restFilter.setComparison(COMPARISON.fromValue(filter.getComparison().name()));
             restQuery.getFilters().add(restFilter);
         }
         for (org.xwiki.extension.repository.search.ExtensionQuery.SortClause sortClause : query.getSortClauses()) {
             SortClause restSortClause = EXTENSION_OBJECT_FACTORY.createSortClause();
             restSortClause.setField(sortClause.getField());
-            restSortClause.setOrder(sortClause.getOrder().name());
+            restSortClause.setOrder(ORDER.fromValue(sortClause.getOrder().name()));
             restQuery.getSortClauses().add(restSortClause);
         }
 
