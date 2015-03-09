@@ -247,8 +247,8 @@
     <complexType name="ExtensionQuery">
       <sequence>
         <element name="query" type="string" minOccurs="0" maxOccurs="1"></element>
-            <element name="offset" type="int" minOccurs="0" maxOccurs="1"></element>
-            <element name="limit" type="int" minOccurs="0" maxOccurs="1"></element>
+            <element name="offset" type="int" default="0"></element>
+            <element name="limit" type="int" default="-1"></element>
             <element name="filters" type="extension:Filter" minOccurs="0" maxOccurs="unbounded"></element>
             <element name="sortClauses" type="extension:SortClause" minOccurs="0" maxOccurs="unbounded"></element>
       </sequence>
@@ -261,7 +261,8 @@
         <element name="field" type="string" minOccurs="1"
           maxOccurs="1">
         </element>
-        <element name="order" type="string" minOccurs="0" maxOccurs="1"></element>
+        <element name="order" default="ASC" type="extension:ORDER">
+        </element>
       </sequence>
     </complexType>
 
@@ -269,7 +270,22 @@
       <sequence>
         <element name="field" type="string" minOccurs="1" maxOccurs="1"></element>
             <element name="valueString" type="string" minOccurs="1" maxOccurs="1"></element>
-            <element name="comparison" type="string" minOccurs="0" maxOccurs="1"></element>
+            <element name="comparison" default="MATCH" type="extension:COMPARISON">
+            </element>
       </sequence>
     </complexType>
+
+    <simpleType name="COMPARISON">
+      <restriction base="string">
+        <enumeration value="EQUAL"/>
+        <enumeration value="MATCH"/>
+      </restriction>
+    </simpleType>
+
+    <simpleType name="ORDER">
+      <restriction base="string">
+        <enumeration value="DESC"/>
+        <enumeration value="ASC"/>
+      </restriction>
+    </simpleType>
 </schema>
