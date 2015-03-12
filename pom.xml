@@ -589,6 +589,13 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- Generic java annotations. These superseed jsr250-api, so we need to make
+           sure to exclude it in case it is pulled transitively. -->
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
