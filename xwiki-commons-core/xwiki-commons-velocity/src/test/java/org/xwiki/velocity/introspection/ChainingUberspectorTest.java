@@ -210,6 +210,18 @@ public class ChainingUberspectorTest
             .getCanonicalName());
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
+
+        this.loggingVerification.become("on");
+        this.mockery.checking(new Expectations()
+        {{
+            // Get rid of debug log
+            allowing(mockLogger).isDebugEnabled();
+            returnValue(false);
+
+            // Allow one warning for getConstructors since it's forbidden
+            oneOf(mockLogger).warn("Cannot retrieve method getConstructors from object of class java.lang.Class due to security restrictions.");
+        }});
+
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo = 'hello')"
                 + "#set($bar = $foo.getClass().getConstructors())$foo $foo.class.name $bar"));
