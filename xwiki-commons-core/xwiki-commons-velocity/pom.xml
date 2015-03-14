@@ -79,7 +79,7 @@
     <!-- Needed by velocity-tools, now that we excluded commons-logging that was bringing it. -->
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
