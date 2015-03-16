@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.classloader.ClassLoaderManager;
@@ -56,7 +57,8 @@ import org.xwiki.observation.ObservationManager;
  * @version $Id$
  * @since 4.0M1
  */
-@Component("jar")
+@Component
+@Named("jar")
 @Singleton
 public class JarExtensionHandler extends AbstractExtensionHandler implements Initializable
 {
