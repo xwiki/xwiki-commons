@@ -56,7 +56,8 @@ import org.xwiki.observation.ObservationManager;
  * @version $Id$
  * @since 4.0M1
  */
-@Component("jar")
+@Component
+@Named("jar")
 @Singleton
 public class JarExtensionHandler extends AbstractExtensionHandler implements Initializable
 {
