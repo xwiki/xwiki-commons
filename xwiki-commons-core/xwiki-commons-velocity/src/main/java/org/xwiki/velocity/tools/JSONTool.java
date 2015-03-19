@@ -22,17 +22,15 @@ package org.xwiki.velocity.tools;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONException;
+import net.sf.json.JSONSerializer;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONException;
-import net.sf.json.JSONSerializer;
 
 /**
  * Velocity tool to facilitate serialization of Java objects to the JSON format.
@@ -65,13 +63,8 @@ public class JSONTool
         StringWriter writer = new StringWriter();
 
         try {
-            JsonFactory jsonFactory = new JsonFactory();
-            JsonGenerator generator = jsonFactory.createGenerator(writer);
-            generator.setCodec(new ObjectMapper());
-
-            generator.writeObject(object);
-
-            generator.flush();
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(object);
         } catch (IOException e) {
             // There is no reason this ever happen with a StringWriter
             this.logger.error("Failed to serialize object to JSON", e);
