@@ -20,6 +20,7 @@
 package org.xwiki.diff.display.internal;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Singleton;
@@ -41,6 +42,7 @@ public class CharSplitter implements Splitter<String, Character>
     @Override
     public List<Character> split(String composite)
     {
-        return Arrays.asList(ArrayUtils.toObject(composite.toCharArray()));
+        return composite == null ? Collections.<Character>emptyList() : Arrays.asList(ArrayUtils.toObject(composite
+            .toCharArray()));
     }
 }

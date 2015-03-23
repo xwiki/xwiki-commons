@@ -21,6 +21,7 @@ package org.xwiki.diff.display.internal;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Named;
@@ -45,7 +46,7 @@ public class LineSplitter implements Splitter<String, String>
     public List<String> split(String composite)
     {
         try {
-            return IOUtils.readLines(new StringReader(composite));
+            return composite == null ? Collections.<String>emptyList() : IOUtils.readLines(new StringReader(composite));
         } catch (IOException e) {
             throw new RuntimeException("Failed to split lines.", e);
         }
