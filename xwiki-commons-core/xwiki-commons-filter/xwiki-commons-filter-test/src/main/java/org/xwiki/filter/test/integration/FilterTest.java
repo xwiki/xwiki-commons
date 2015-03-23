@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,16 +36,16 @@ import org.xwiki.filter.FilterException;
 import org.xwiki.filter.input.DefaultFileInputSource;
 import org.xwiki.filter.input.DefaultURLInputSource;
 import org.xwiki.filter.input.FileInputSource;
-import org.xwiki.filter.input.InputSource;
-import org.xwiki.filter.input.InputStreamInputSource;
 import org.xwiki.filter.input.InputFilterStream;
 import org.xwiki.filter.input.InputFilterStreamFactory;
+import org.xwiki.filter.input.InputSource;
+import org.xwiki.filter.input.InputStreamInputSource;
 import org.xwiki.filter.input.ReaderInputSource;
 import org.xwiki.filter.input.StringInputSource;
 import org.xwiki.filter.output.ByteArrayOutputTarget;
-import org.xwiki.filter.output.OutputTarget;
 import org.xwiki.filter.output.OutputFilterStream;
 import org.xwiki.filter.output.OutputFilterStreamFactory;
+import org.xwiki.filter.output.OutputTarget;
 import org.xwiki.filter.output.StringWriterOutputTarget;
 import org.xwiki.filter.test.internal.FileAssert;
 import org.xwiki.filter.utils.FilterStreamConstants;
@@ -72,6 +73,11 @@ public class FilterTest
     @Test
     public void execute() throws Throwable
     {
+        TimeZone currentTimeZone = TimeZone.getDefault();
+
+        // Make sure to have a stable timezone during tests
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
         Map<String, String> originalConfiguration = new HashMap<String, String>();
         if (this.configuration.configuration != null) {
             ConfigurationSource configurationSource = getComponentManager().getInstance(ConfigurationSource.class);
@@ -90,6 +96,9 @@ public class FilterTest
         try {
             runTestInternal();
         } finally {
+            // Restore current Timezone
+            TimeZone.setDefault(currentTimeZone);
+
             // Revert Configuration that have been set
             if (this.configuration.configuration != null) {
                 ConfigurationSource configurationSource = getComponentManager().getInstance(ConfigurationSource.class);
