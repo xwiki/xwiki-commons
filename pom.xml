@@ -143,7 +143,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>xwiki-commons-4.4-milestone-1</tag>
+    <tag>stable-7.0.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
