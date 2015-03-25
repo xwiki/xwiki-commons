@@ -63,6 +63,8 @@ public class DefaultScriptContextManager implements ScriptContextManager
         // We re-initialize the Script Context with all Script Context Initializers. We do this in order to ensure
         // that the Script Context always contain correct values even if user scripts or XWiki code have modified them.
         // For example the current document in the Script Context could have changed and thus needs to be set back.
+        // Also note that we don't clone the context since we want that in the same request several script executions
+        // can share bindings.
         for (ScriptContextInitializer scriptContextInitializer : this.scriptContextInitializerList) {
             scriptContextInitializer.initialize(context);
         }
