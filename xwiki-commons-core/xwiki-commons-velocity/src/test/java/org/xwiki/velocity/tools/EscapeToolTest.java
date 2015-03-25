@@ -22,6 +22,7 @@ package org.xwiki.velocity.tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -206,17 +207,17 @@ public class EscapeToolTest
     public void testURLWithDouble()
     {
         EscapeTool tool = new EscapeTool();
-        HashMap<String, Double> map = new HashMap<String, Double>();
+        HashMap<String, Double> map = new LinkedHashMap<>();
         map.put("A&A", 1.5);
         map.put("B&B", 1.2);
-        Assert.assertEquals("B%26B=1.2&A%26A=1.5", tool.url(map));
+        Assert.assertEquals("A%26A=1.5&B%26B=1.2", tool.url(map));
     }
 
     @Test
     public void testURLWithArray()
     {
         EscapeTool tool = new EscapeTool();
-        HashMap<String, String[]> map = new HashMap<String, String[]>();
+        HashMap<String, String[]> map = new HashMap<>();
         String[] array = { "M&M", null, "Astronomy&Astrophysics" };
         map.put("couple", array);
         Assert.assertEquals("couple=M%26M&couple=&couple=Astronomy%26Astrophysics", tool.url(map));
@@ -226,11 +227,11 @@ public class EscapeToolTest
     public void testURLWithCollection()
     {
         EscapeTool tool = new EscapeTool();
-        HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
-        ArrayList<String> collection1 = new ArrayList<String>();
+        HashMap<String, ArrayList<String>> map = new HashMap<>();
+        ArrayList<String> collection1 = new ArrayList<>();
         collection1.add("test");
         map.put("alice", collection1);
-        ArrayList<String> collection2 = new ArrayList<String>();
+        ArrayList<String> collection2 = new ArrayList<>();
         collection2.add(null);
         collection2.add("t&t");
         collection2.add("R&D");
