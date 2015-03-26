@@ -200,4 +200,20 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
         }
         queryStringBuilder.append(cleanKey).append(EQUALS).append(cleanValue);
     }
+
+    /**
+     * Escapes XWiki syntax text by prefixing each character of the input text with the {@code ~} escape character.
+     *
+     * @param content the text to escape
+     * @return the XWiki syntax escaped text
+     */
+    public String xwiki(Object content)
+    {
+        StringBuilder result = new StringBuilder();
+        for (char c : String.valueOf(content).toCharArray()) {
+            result.append('~');
+            result.append(c);
+        }
+        return result.toString();
+    }
 }
