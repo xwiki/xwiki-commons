@@ -183,6 +183,10 @@
           <configuration>
             <!-- Add missing license headers by default -->
             <formatLicense>true</formatLicense>
+            <!-- Consider all pages named *Translations as content pages by default -->
+            <contentPages>
+              <contentPage>.*Translations\.xml</contentPage>
+            </contentPages>
           </configuration>
         </plugin>
       </plugins>

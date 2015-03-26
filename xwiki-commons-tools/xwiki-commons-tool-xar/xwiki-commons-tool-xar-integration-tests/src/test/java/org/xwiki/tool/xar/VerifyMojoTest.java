@@ -117,6 +117,18 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithSpecifiedContentPage() throws Exception
+    {
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/specifiedContentPage");
+
+        Verifier verifier = new Verifier(testDir.getAbsolutePath());
+        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        verifier.addCliOption("-Dforce=true");
+        verifier.executeGoal("install");
+        verifier.verifyErrorFreeLog();
+    }
+
+    @Test
     public void executeOk() throws Exception
     {
         File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/allOk");

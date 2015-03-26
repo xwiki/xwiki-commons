@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,6 +105,18 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected String commonsVersion;
 
     /**
+     * Explicitly define a list of pages (it's a regex) that should be considered as content pages (rather than
+     * technical pages). Note that content pages must have a non empty default language specified and note that if a
+     * page is not in this list and it doesn't have any translation then it's considered by default to be a technical
+     * page for the default language check. Thus this configuration property is useful for pages such as Translations
+     * pages (even though they may not have any translations at first).
+     *
+     * @parameter expression="${xar.verify.contentPages}"
+     * @since 7.1M1
+     */
+    private List<String> contentPages;
+
+    /**
      * The current Maven session.
      *
      * @parameter expression="${session}"
@@ -119,6 +132,22 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      * @required
      */
     private BuildPluginManager pluginManager;
+
+    private List<Pattern> contentPagePatterns;
+
+    /**
+     * Initialize content page patterns for performance reasons.
+     */
+    protected void initializeContentPagePatterns()
+    {
+        if (this.contentPages != null) {
+            List<Pattern> patterns = new ArrayList<>();
+            for (String contentPageRegex : this.contentPages) {
+                patterns.add(Pattern.compile(contentPageRegex));
+            }
+            this.contentPagePatterns = patterns;
+        }
+    }
 
     /**
      * @return the list of XAR XML files in this project
@@ -165,6 +194,8 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * Guess the {@code &lt;defaultLanguage&gt;} value to use for the passed file using the following algorithm:
      * <ul>
+     *     <li>If the page name matches one of the regexes defined by the user as content pages then check that the
+     *         default language is {@link #defaultLanguage}.</li>
      *     <li>If there's no other translation of the file then consider default language to be empty to signify that
      *         it's a technical document. </li>
      *     <li>If there are other translations ("(prefix).(language).xml" format) then the default language should be
@@ -174,16 +205,26 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      */
     protected String guessDefaultLanguage(File file, Collection<File> xwikiXmlFiles)
     {
+        // Is it in the list of defined content pages?
+        String fileName = file.getName();
+        if (this.contentPagePatterns != null) {
+            for (Pattern contentPagePattern : this.contentPagePatterns) {
+                if (contentPagePattern.matcher(fileName).matches()) {
+                    return this.defaultLanguage;
+                }
+            }
+        }
+
         String language = "";
 
         // Check if the doc is a translation
-        Matcher matcher = TRANSLATION_PATTERN.matcher(file.getName());
+        Matcher matcher = TRANSLATION_PATTERN.matcher(fileName);
         if (matcher.matches()) {
             // We're in a translation, use the default language
             language = this.defaultLanguage;
         } else {
             // We're not in a translation, check if there are translations. First get the doc name before the extension
-            String prefix = StringUtils.substringBeforeLast(file.getName(), EXTENSION);
+            String prefix = StringUtils.substringBeforeLast(fileName, EXTENSION);
             // Check for a translation now
             Pattern translationPattern = Pattern.compile(String.format("%s\\..*\\.xml", Pattern.quote(prefix)));
             for (File xwikiXmlFile : xwikiXmlFiles) {

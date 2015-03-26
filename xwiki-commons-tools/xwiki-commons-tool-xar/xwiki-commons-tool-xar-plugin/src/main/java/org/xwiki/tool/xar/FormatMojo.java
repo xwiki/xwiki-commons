@@ -58,6 +58,7 @@ public class FormatMojo extends AbstractVerifyMojo
         // Only format XAR modules or when forced
         if (getProject().getPackaging().equals("xar") || this.force) {
             getLog().info("Formatting XAR XML files...");
+            initializeContentPagePatterns();
             Collection<File> xmlFiles = getXARXMLFiles();
             for (File file : xmlFiles) {
                 try {
