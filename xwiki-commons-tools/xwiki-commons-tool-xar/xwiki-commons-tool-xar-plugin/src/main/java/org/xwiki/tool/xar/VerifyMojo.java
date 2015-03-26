@@ -68,7 +68,7 @@ public class VerifyMojo extends AbstractVerifyMojo
 
         getLog().info("Checking validity of XAR XML files...");
 
-        initializeContentPagePatterns();
+        initializePagePatterns();
 
         boolean hasErrors = false;
         Collection<File> xmlFiles = getXARXMLFiles();

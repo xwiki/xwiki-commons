@@ -34,8 +34,11 @@
         <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
         <version>@project.version@</version>
         <configuration>
+          <technicalPages>
+            <technicalPage>EditTranslations\.xml</technicalPage>
+          </technicalPages>
           <contentPages>
-            <contentPage>Translations\.xml</contentPage>
+            <contentPage>.*Translations\.xml</contentPage>
           </contentPages>
         </configuration>
         <executions>

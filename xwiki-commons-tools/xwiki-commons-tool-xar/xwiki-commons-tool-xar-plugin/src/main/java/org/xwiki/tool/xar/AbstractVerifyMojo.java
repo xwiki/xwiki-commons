@@ -117,6 +117,15 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     private List<String> contentPages;
 
     /**
+     * Explicitly define a list of pages (it's a regex) that should  be considered as technical pages. Any matching
+     * page defined in this list has precedence over pages matching {@link #contentPages}.
+     *
+     * @parameter expression="${xar.verify.technicalPages}"
+     * @since 7.1M1
+     */
+    private List<String> technicalPages;
+
+    /**
      * The current Maven session.
      *
      * @parameter expression="${session}"
@@ -135,18 +144,26 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     private List<Pattern> contentPagePatterns;
 
+    private List<Pattern> technicalPagePatterns;
+
     /**
-     * Initialize content page patterns for performance reasons.
+     * Initialize content/technical page patterns for performance reasons.
      */
-    protected void initializeContentPagePatterns()
+    protected void initializePagePatterns()
     {
-        if (this.contentPages != null) {
-            List<Pattern> patterns = new ArrayList<>();
-            for (String contentPageRegex : this.contentPages) {
-                patterns.add(Pattern.compile(contentPageRegex));
+        this.contentPagePatterns = initializationPagePatterns(this.contentPages);
+        this.technicalPagePatterns = initializationPagePatterns(this.technicalPages);
+    }
+
+    private List<Pattern> initializationPagePatterns(List<String> pageRegexes)
+    {
+        List<Pattern> patterns = new ArrayList<>();
+        if (pageRegexes != null) {
+            for (String pageRegex : pageRegexes) {
+                patterns.add(Pattern.compile(pageRegex));
             }
-            this.contentPagePatterns = patterns;
         }
+        return patterns;
     }
 
     /**
@@ -196,6 +213,8 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      * <ul>
      *     <li>If the page name matches one of the regexes defined by the user as content pages then check that the
      *         default language is {@link #defaultLanguage}.</li>
+     *     <li>If the page name matches one of the regexes defined by the user as technial pages then check that the
+     *         default language is empty. Matching technical pages have precedence over matching content pages.</li>
      *     <li>If there's no other translation of the file then consider default language to be empty to signify that
      *         it's a technical document. </li>
      *     <li>If there are other translations ("(prefix).(language).xml" format) then the default language should be
@@ -205,17 +224,21 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      */
     protected String guessDefaultLanguage(File file, Collection<File> xwikiXmlFiles)
     {
-        // Is it in the list of defined content pages?
         String fileName = file.getName();
-        if (this.contentPagePatterns != null) {
-            for (Pattern contentPagePattern : this.contentPagePatterns) {
-                if (contentPagePattern.matcher(fileName).matches()) {
-                    return this.defaultLanguage;
-                }
-            }
+
+        // Is it in the list of defined technical pages?
+        String language = guessDefaultLanguageForPatterns(fileName, this.technicalPagePatterns, "");
+        if (language != null) {
+            return language;
         }
 
-        String language = "";
+        // Is it in the list of defined content pages?
+        language = guessDefaultLanguageForPatterns(fileName, this.contentPagePatterns, this.defaultLanguage);
+        if (language != null) {
+            return language;
+        }
+
+        language = "";
 
         // Check if the doc is a translation
         Matcher matcher = TRANSLATION_PATTERN.matcher(fileName);
@@ -236,6 +259,21 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
                 }
             }
         }
+        return language;
+    }
+
+    private String guessDefaultLanguageForPatterns(String fileName, List<Pattern> patterns, String defaultLanguage)
+    {
+        String language = null;
+
+        if (patterns != null) {
+            for (Pattern pattern : patterns) {
+                if (pattern.matcher(fileName).matches()) {
+                    return defaultLanguage;
+                }
+            }
+        }
+
         return language;
     }
 

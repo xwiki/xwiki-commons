@@ -117,9 +117,9 @@ public class VerifyMojoTest
     }
 
     @Test
-    public void executeWithSpecifiedContentPage() throws Exception
+    public void executeWithSpecifiedPages() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/specifiedContentPage");
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/specifiedPages");
 
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
