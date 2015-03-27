@@ -238,4 +238,41 @@ public class EscapeToolTest
         map.put("bob", collection2);
         Assert.assertEquals("bob=&bob=t%26t&bob=R%26D&alice=test", tool.url(map));
     }
+
+    @Test
+    public void xwiki()
+    {
+        EscapeTool tool = new EscapeTool();
+
+        // Since the logic is pretty simple (prepend every character with an escape character), the below tests are
+        // mostly for exemplification.
+        Assert.assertEquals("~~", tool.xwiki("~"));
+        Assert.assertEquals("~*~*~t~e~s~t~*~*", tool.xwiki("**test**"));
+        // Note: Java escaped string "\\" == "\" (real string).
+        Assert.assertEquals("~a~\\~\\~[~[~l~i~n~k~>~>~X~.~Y~]~]", tool.xwiki("a\\\\[[link>>X.Y]]"));
+        Assert.assertEquals("~{~{~{~v~e~r~b~a~t~i~m~}~}~}", tool.xwiki("{{{verbatim}}}"));
+        Assert.assertEquals("~{~{~m~a~c~r~o~ ~s~o~m~e~=~'~p~a~r~a~m~e~t~e~r~'~}~}~c~o~n~t~e~n~t~{~{~/~m~a~c~r~o~}~}",
+            tool.xwiki("{{macro some='parameter'}}content{{/macro}}"));
+    }
+
+    @Test
+    public void xwikiSpaces()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("~a~ ~*~*~t~e~s~t~*~*", tool.xwiki("a **test**"));
+    }
+
+    @Test
+    public void xwikiNewLine()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals("~a~\n~b", tool.xwiki("a\nb"));
+    }
+
+    @Test
+    public void xwikiWithNullInput()
+    {
+        EscapeTool tool = new EscapeTool();
+        Assert.assertNull("Unexpected non-null output for null input", tool.xwiki(null));
+    }
 }

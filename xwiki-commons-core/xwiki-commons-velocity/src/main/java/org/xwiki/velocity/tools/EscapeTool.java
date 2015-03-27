@@ -209,11 +209,20 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
      */
     public String xwiki(Object content)
     {
-        StringBuilder result = new StringBuilder();
-        for (char c : String.valueOf(content).toCharArray()) {
-            result.append('~');
-            result.append(c);
+        if (content == null) {
+            return null;
         }
-        return result.toString();
+
+        String input = String.valueOf(content);
+
+        // Since we prefix all characters, the result size will be double the input's, so we can just se char[].
+        char[] result = new char[input.length() * 2];
+
+        for (int i = 0; i < input.length(); i++) {
+            result[2 * i] = '~';
+            result[2 * i + 1] = input.charAt(i);
+        }
+
+        return String.valueOf(result);
     }
 }
