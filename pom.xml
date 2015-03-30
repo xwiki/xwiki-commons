@@ -48,7 +48,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>7.0-SNAPSHOT</commons.version>
+    <commons.version>7.0</commons.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>6.4.3</xwiki.clirr.previous.version>
