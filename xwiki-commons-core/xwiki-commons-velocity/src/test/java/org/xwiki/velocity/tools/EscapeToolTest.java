@@ -37,21 +37,6 @@ import org.junit.Test;
 public class EscapeToolTest
 {
     /**
-     * XWiki 1.0 syntax used in the XWiki syntax escaping test.
-     */
-    private static final String XWIKI_1_0_SYNTAX = "xwiki/1.0";
-
-    /**
-     * XWiki 2.1 syntax used in the XWiki syntax escaping test.
-     */
-    private static final String XWIKI_2_0_SYNTAX = "xwiki/2.0";
-
-    /**
-     * XWiki 2.1 syntax used in the XWiki syntax escaping test.
-     */
-    private static final String XWIKI_2_1_SYNTAX = "xwiki/2.1";
-
-    /**
      * The tested tool.
      */
     private EscapeTool tool;
@@ -241,92 +226,5 @@ public class EscapeToolTest
         collection2.add("R&D");
         map.put("bob", collection2);
         Assert.assertEquals("bob=&bob=t%26t&bob=R%26D&alice=test", this.tool.url(map));
-    }
-
-    @Test
-    public void xwiki10()
-    {
-        // Since the logic is pretty simple (prepend every character with an escape character), the below tests are
-        // mostly for exemplification.
-        // Note: Java escaped string "\\" == "\" (real string).
-        Assert.assertEquals("\\\\", this.tool.xwiki("\\", XWIKI_1_0_SYNTAX));
-        Assert.assertEquals("\\*\\t\\e\\s\\t\\*", this.tool.xwiki("*test*", XWIKI_1_0_SYNTAX));
-        Assert.assertEquals("\\a\\\\\\\\\\[\\l\\i\\n\\k\\>\\X\\.\\Y\\]",
-            this.tool.xwiki("a\\\\[link>X.Y]", XWIKI_1_0_SYNTAX));
-        Assert.assertEquals("\\{\\p\\r\\e\\}\\v\\e\\r\\b\\a\\t\\i\\m\\{\\/\\p\\r\\e\\}",
-            this.tool.xwiki("{pre}verbatim{/pre}", XWIKI_1_0_SYNTAX));
-        Assert.assertEquals("\\{\\m\\a\\c\\r\\o\\:\\s\\o\\m\\e\\=\\p\\a\\r\\a\\m\\e\\t\\e\\r\\}"
-            + "\\c\\o\\n\\t\\e\\n\\t" + "\\{\\m\\a\\c\\r\\o\\}",
-            this.tool.xwiki("{macro:some=parameter}content{macro}", XWIKI_1_0_SYNTAX));
-    }
-
-    @Test
-    public void xwiki20()
-    {
-        // Since the logic is pretty simple (prepend every character with an escape character), the below tests are
-        // mostly for exemplification.
-        Assert.assertEquals("~~", this.tool.xwiki("~", XWIKI_2_0_SYNTAX));
-        Assert.assertEquals("~*~*~t~e~s~t~*~*", this.tool.xwiki("**test**", XWIKI_2_0_SYNTAX));
-        // Note: Java escaped string "\\" == "\" (real string).
-        Assert.assertEquals("~a~\\~\\~[~[~l~i~n~k~>~>~X~.~Y~]~]",
-            this.tool.xwiki("a\\\\[[link>>X.Y]]", XWIKI_2_0_SYNTAX));
-        Assert.assertEquals("~{~{~{~v~e~r~b~a~t~i~m~}~}~}", this.tool.xwiki("{{{verbatim}}}", XWIKI_2_0_SYNTAX));
-        Assert.assertEquals("~{~{~m~a~c~r~o~ ~s~o~m~e~=~'~p~a~r~a~m~e~t~e~r~'~}~}~c~o~n~t~e~n~t~{~{~/~m~a~c~r~o~}~}",
-            this.tool.xwiki("{{macro some='parameter'}}content{{/macro}}", XWIKI_2_0_SYNTAX));
-    }
-
-    @Test
-    public void xwiki21()
-    {
-        // Since the logic is pretty simple (prepend every character with an escape character), the below tests are
-        // mostly for exemplification.
-        Assert.assertEquals("~~", this.tool.xwiki("~", XWIKI_2_1_SYNTAX));
-        Assert.assertEquals("~*~*~t~e~s~t~*~*", this.tool.xwiki("**test**", XWIKI_2_1_SYNTAX));
-        // Note: Java escaped string "\\" == "\" (real string).
-        Assert.assertEquals("~a~\\~\\~[~[~l~i~n~k~>~>~X~.~Y~]~]",
-            this.tool.xwiki("a\\\\[[link>>X.Y]]", XWIKI_2_1_SYNTAX));
-        Assert.assertEquals("~{~{~{~v~e~r~b~a~t~i~m~}~}~}", this.tool.xwiki("{{{verbatim}}}", XWIKI_2_1_SYNTAX));
-        Assert.assertEquals("~{~{~m~a~c~r~o~ ~s~o~m~e~=~'~p~a~r~a~m~e~t~e~r~'~}~}~c~o~n~t~e~n~t~{~{~/~m~a~c~r~o~}~}",
-            this.tool.xwiki("{{macro some='parameter'}}content{{/macro}}", XWIKI_2_1_SYNTAX));
-    }
-
-    @Test
-    public void xwikiSpaces()
-    {
-        Assert.assertEquals("\\a\\ \\*\\t\\e\\s\\t\\*", this.tool.xwiki("a *test*", XWIKI_1_0_SYNTAX));
-        Assert.assertEquals("~a~ ~*~*~t~e~s~t~*~*", this.tool.xwiki("a **test**", XWIKI_2_0_SYNTAX));
-        Assert.assertEquals("~a~ ~*~*~t~e~s~t~*~*", this.tool.xwiki("a **test**", XWIKI_2_1_SYNTAX));
-    }
-
-    @Test
-    public void xwikiNewLines()
-    {
-        Assert.assertEquals("\\a\\\n\\b", this.tool.xwiki("a\nb", XWIKI_1_0_SYNTAX));
-        Assert.assertEquals("~a~\n~b", this.tool.xwiki("a\nb", XWIKI_2_0_SYNTAX));
-        Assert.assertEquals("~a~\n~b", this.tool.xwiki("a\nb", XWIKI_2_1_SYNTAX));
-    }
-
-    @Test
-    public void xwikiWithNullInput()
-    {
-        Assert.assertNull("Unexpected non-null output for null input", this.tool.xwiki(null, XWIKI_2_1_SYNTAX));
-    }
-
-    @Test
-    public void xwikiWithNullSyntax()
-    {
-        Assert.assertNull("Unexpected non-null output for null syntax", this.tool.xwiki("anything", null));
-    }
-
-    @Test
-    public void xwikiWithNullInputAndSyntax()
-    {
-        Assert.assertNull("Unexpected non-null output for null input and syntax", this.tool.xwiki(null, null));
-    }
-
-    @Test
-    public void xwikiWithUnsupportedSyntax()
-    {
-        Assert.assertNull("Unexpected non-null output for unsuported syntax", this.tool.xwiki("unsuported", "syntax"));
     }
 }

@@ -27,7 +27,6 @@ import org.apache.commons.codec.net.BCodec;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.xwiki.xml.XMLUtils;
 
 /**
@@ -200,52 +199,5 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
             queryStringBuilder.append(AND);
         }
         queryStringBuilder.append(cleanKey).append(EQUALS).append(cleanValue);
-    }
-
-    /**
-     * Escapes XWiki syntax text by prefixing each character of the input text with the escape character (e.g. {@code ~}
-     * for "xwiki/2.1") corresponding to the specified syntax.
-     *
-     * @param content the text to escape
-     * @param syntaxId the XWiki syntax ID (e.g. "xwiki/1.0", "xwiki/2.0", "xwiki/2.1", etc.)
-     * @return the XWiki syntax escaped text
-     */
-    public String xwiki(Object content, String syntaxId)
-    {
-        if (content == null || StringUtils.isBlank(syntaxId)) {
-            return null;
-        }
-        String input = String.valueOf(content);
-
-        // Determine the escape character for the syntax.
-        char escapeChar;
-        try {
-            escapeChar = getEscapeCharacter(syntaxId);
-        } catch (Exception e) {
-            // We don`t know how to proceed, so we just return null.
-            return null;
-        }
-
-        // Since we prefix all characters, the result size will be double the input's, so we can just use char[].
-        char[] result = new char[input.length() * 2];
-
-        // Escape the content.
-        for (int i = 0; i < input.length(); i++) {
-            result[2 * i] = escapeChar;
-            result[2 * i + 1] = input.charAt(i);
-        }
-
-        return String.valueOf(result);
-    }
-
-    private char getEscapeCharacter(String syntaxId) throws IllegalArgumentException
-    {
-        if ("xwiki/1.0".equals(syntaxId)) {
-            return '\\';
-        } else if ("xwiki/2.0".equals(syntaxId) || "xwiki/2.1".equals(syntaxId)) {
-            return '~';
-        }
-
-        throw new IllegalArgumentException("Illegal syntax ID.");
     }
 }
