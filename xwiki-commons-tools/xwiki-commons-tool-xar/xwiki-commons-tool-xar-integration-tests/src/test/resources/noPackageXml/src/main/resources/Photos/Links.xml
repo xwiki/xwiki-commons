@@ -21,7 +21,7 @@
 <validationScript></validationScript>
 <comment></comment>
 <minorEdit>false</minorEdit>
-<syntaxId>xwiki/1.0</syntaxId>
+<syntaxId>xwiki/2.1</syntaxId>
 <object>
 <class>
 <name>XWiki.TagClass</name>
@@ -944,7 +944,5 @@
 <number>0</number>
 <className>XWiki.XWikiPreferences</className>
 </object>
-<content>1.1.1 $msg.get("usefullinks")
-* [Photo Album Sheet&gt;XWiki.PhotoAlbumClassSheet]
-* [Photo Album Template&gt;XWiki.PhotoAlbumClassTemplate]</content>
+<content>some content</content>
 </xwikidoc>
