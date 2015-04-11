@@ -1106,6 +1106,15 @@ mm
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>0.7.4.201502262128</version>
+          <configuration>
+            <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
+                 error, see
+                 http://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
+                 TODO: remove when https://sourceforge.net/p/cssparser/bugs/53/ is fixed -->
+            <excludes>
+              <exclude>**com.steadystate.css.parser.SACParserCSS21TokenManager</exclude>
+            </excludes>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>com.github.searls</groupId>
@@ -1311,13 +1320,6 @@ mm
                   </limits>
                 </rule>
               </rules>
-              <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
-                   error, see
-                   http://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
-                   TODO: remove when https://sourceforge.net/p/cssparser/bugs/53/ is fixed -->
-              <excludes>
-                <exclude>**com.steadystate.css.parser.SACParserCSS21TokenManager</exclude>
-              </excludes>
             </configuration>
           </plugin>
         </plugins>
