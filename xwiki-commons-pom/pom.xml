@@ -160,7 +160,7 @@
               <exclude>**/goal.txt</exclude>
             </excludes>
           </configuration>
-          <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->
+          <!-- Add a dependency since this is where the license-maven-plugin plugin will find the license.txt file -->
           <dependencies>
             <dependency>
               <groupId>org.xwiki.commons</groupId>
