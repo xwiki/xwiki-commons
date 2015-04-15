@@ -97,12 +97,18 @@ public class AllLogRule implements TestRule
             // Setup Logback to catch log calls
             before();
 
+            boolean validate = true;
             try {
                 // Run the test
                 this.statement.evaluate();
+            } catch (Throwable t) {
+                // Don't verify anything if the test did not pass in the first place
+                validate = false;
+
+                throw t;
             } finally {
                 // Remove Logback setup
-                after();
+                after(validate);
             }
         }
 
@@ -118,10 +124,10 @@ public class AllLogRule implements TestRule
         /**
          * Stop Logback capturing.
          */
-        private void after()
+        private void after(boolean verify)
         {
             listAppender.stop();
-            uninitializeLogger();
+            uninitializeLogger(verify);
         }
     }
 
@@ -207,7 +213,7 @@ public class AllLogRule implements TestRule
         logger.setLevel(this.level.getLevel());
     }
 
-    private void uninitializeLogger()
+    private void uninitializeLogger(boolean verify)
     {
         Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.detachAppender(this.listAppender);
@@ -221,7 +227,7 @@ public class AllLogRule implements TestRule
         }
 
         // Verify that all appender list messages have been asserted.
-        if (this.listAppender.list.size() != this.assertedMessages.size()) {
+        if (verify && this.listAppender.list.size() != this.assertedMessages.size()) {
             throw new AssertionError("All messages must be asserted!");
         }
     }
