@@ -567,6 +567,22 @@ public class EmbeddableComponentManagerTest
         Assert.assertEquals("DisposableWithPriorityRoleImpl", lastDisposedComponent);
     }
 
+    @Test
+    public void diposeWhenImplementationIsECM() throws Exception
+    {
+        EmbeddableComponentManager ecm = new EmbeddableComponentManager();
+
+        DefaultComponentDescriptor<ComponentManager> cd = new DefaultComponentDescriptor<>();
+        cd.setRoleType(ComponentManager.class);
+        cd.setRoleHint("hint");
+        cd.setImplementation(EmbeddableComponentManager.class);
+        cd.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
+        ecm.registerComponent(cd, ecm);
+
+        // If the test fails, the following line will generate a StackOverflowException
+        ecm.dispose();
+    }
+
     public static class ComponentDescriptorRoleImpl implements Role
     {
         private ComponentDescriptor<ComponentDescriptorRoleImpl> descriptor;

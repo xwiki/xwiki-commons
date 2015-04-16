@@ -653,18 +653,16 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             synchronized (componentEntry) {
                 Object instance = componentEntry.instance;
 
-                if (instance instanceof Disposable) {
-                    // Protection to prevent infinite recursion in case a component implementation points to this
-                    // instance
-                    if (componentEntry.instance != this) {
-                        try {
-                            SHUTDOWN_LOGGER.debug("Disposing component [{}]...", instance.getClass().getName());
-                            ((Disposable) instance).dispose();
-                            SHUTDOWN_LOGGER.debug("Component [{}] has been disposed", instance.getClass().getName());
-                        } catch (ComponentLifecycleException e) {
-                            this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
-                                componentEntry.descriptor.getRoleType(), componentEntry.descriptor.getRoleHint(), e);
-                        }
+                // Protection to prevent infinite recursion in case a component implementation points to this
+                // instance.
+                if (instance instanceof Disposable && componentEntry.instance != this) {
+                    try {
+                        SHUTDOWN_LOGGER.debug("Disposing component [{}]...", instance.getClass().getName());
+                        ((Disposable) instance).dispose();
+                        SHUTDOWN_LOGGER.debug("Component [{}] has been disposed", instance.getClass().getName());
+                    } catch (ComponentLifecycleException e) {
+                        this.logger.error("Failed to dispose component with role type [{}] and role hint [{}]",
+                            componentEntry.descriptor.getRoleType(), componentEntry.descriptor.getRoleHint(), e);
                     }
                 }
             }
