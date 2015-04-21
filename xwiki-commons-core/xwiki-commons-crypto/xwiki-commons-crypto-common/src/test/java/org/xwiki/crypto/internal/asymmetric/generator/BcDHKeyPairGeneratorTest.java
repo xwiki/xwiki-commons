@@ -47,6 +47,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+// Skipping since this could be very long or blocking due to the amount of entropy needed, DH support is AS IS.
+@Ignore
 @ComponentList({BcDHKeyParameterGenerator.class, BcDHKeyFactory.class, DefaultSecureRandomProvider.class})
 public class BcDHKeyPairGeneratorTest
 {
@@ -73,7 +75,6 @@ public class BcDHKeyPairGeneratorTest
 
     @Test
     // Skipping since this could be very long or blocking due to the amount of entropy needed, DH support is AS IS.
-    @Ignore
     public void testGenerateWithoutArgument() throws Exception
     {
         AsymmetricKeyPair kp1 = generator.generate();
@@ -96,8 +97,6 @@ public class BcDHKeyPairGeneratorTest
     }
 
     @Test
-    // Skipping since this could be very long or blocking due to the amount of entropy needed, DH support is AS IS.
-    @Ignore
     public void testGenerateWithDefaultParameters() throws Exception
     {
         DHKeyGenerationParameters params = (DHKeyGenerationParameters) parameterGenerator.generate();
