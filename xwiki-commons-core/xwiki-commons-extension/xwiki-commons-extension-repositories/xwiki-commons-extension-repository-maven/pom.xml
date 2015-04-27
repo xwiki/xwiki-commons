@@ -109,7 +109,7 @@
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <version>0.3.0</version>
+      <version>0.3.1</version>
       <exclusions>
         <!-- This dependency is now deprecated and replaced by annotation-api. -->
         <exclusion>
@@ -127,7 +127,7 @@
     <dependency>
       <groupId>org.sonatype.sisu</groupId>
       <artifactId>sisu-guice</artifactId>
-      <version>3.2.5</version>
+      <version>3.2.6</version>
       <classifier>no_aop</classifier>
     </dependency>
     <!-- Test dependencies -->
