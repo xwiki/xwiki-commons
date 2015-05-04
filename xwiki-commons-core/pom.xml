@@ -185,6 +185,12 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/repository/ExtensionRepositoryManager</className>
+              <method>org.xwiki.extension.repository.result.IterableResult search(org.xwiki.extension.repository.search.ExtensionQuery)</method>
+              <justification>Add support for advanced search</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

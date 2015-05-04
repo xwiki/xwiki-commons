@@ -27,6 +27,7 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.version.Version;
 
 /**
@@ -133,4 +134,14 @@ public interface ExtensionRepositoryManager
      * @see org.xwiki.extension.repository.search.Searchable
      */
     IterableResult<Extension> search(String pattern, int offset, int nb);
+
+    /**
+     * Search among all repositories implementing {@link org.xwiki.extension.repository.search.AdvancedSearchable}
+     * interface.
+     * 
+     * @param query the query
+     * @return the found extensions descriptors, empty list if nothing could be found
+     * @see org.xwiki.extension.repository.search.AdvancedSearchable
+     */
+    IterableResult<Extension> search(ExtensionQuery query);
 }

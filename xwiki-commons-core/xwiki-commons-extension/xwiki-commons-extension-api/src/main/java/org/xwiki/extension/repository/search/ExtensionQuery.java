@@ -184,6 +184,20 @@ public class ExtensionQuery
     }
 
     /**
+     * @param query the query to duplicate
+     */
+    public ExtensionQuery(ExtensionQuery query)
+    {
+        this.query = query.getQuery();
+
+        setOffset(query.getOffset());
+        setLimit(query.getLimit());
+
+        setSortClauses(query.getSortClauses());
+        setFilters(query.getFilters());
+    }
+
+    /**
      * @return the query statement
      */
     public String getQuery()
