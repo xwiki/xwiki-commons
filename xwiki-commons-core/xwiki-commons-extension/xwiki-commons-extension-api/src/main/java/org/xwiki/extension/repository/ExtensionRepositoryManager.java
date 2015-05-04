@@ -142,6 +142,7 @@ public interface ExtensionRepositoryManager
      * @param query the query
      * @return the found extensions descriptors, empty list if nothing could be found
      * @see org.xwiki.extension.repository.search.AdvancedSearchable
+     * @since 7.1M1
      */
     IterableResult<Extension> search(ExtensionQuery query);
 }
