@@ -71,7 +71,7 @@ public class UnstableAnnotationCheck extends Check
     public void visitToken(DetailAST ast)
     {
         if (this.currentVersion == null) {
-            log(0, "No currentVersion property set. Skipping @Unstable validation.");
+            // If not current version is set, just ignore this check
 
             return ;
         }
