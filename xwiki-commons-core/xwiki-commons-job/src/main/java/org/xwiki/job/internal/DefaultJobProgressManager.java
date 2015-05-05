@@ -19,6 +19,8 @@
  */
 package org.xwiki.job.internal;
 
+import java.util.concurrent.Callable;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -60,4 +62,15 @@ public class DefaultJobProgressManager implements JobProgressManager
         this.observationManager.notify(new PopLevelProgressEvent(), source);
     }
 
+    @Override
+    public <T> T call(Callable<T> task, int steps, Object source) throws Exception
+    {
+        pushLevelProgress(steps, source);
+
+        try {
+            return task.call();
+        } finally {
+            popLevelProgress(source);
+        }
+    }
 }

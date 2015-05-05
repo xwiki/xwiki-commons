@@ -191,6 +191,12 @@
               <method>org.xwiki.extension.repository.result.IterableResult search(org.xwiki.extension.repository.search.ExtensionQuery)</method>
               <justification>Add support for advanced search</justification>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/job/event/status/JobProgressManager</className>
+              <method>java.lang.Object call(java.util.concurrent.Callable, int, java.lang.Object)</method>
+              <justification>Add new helper</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

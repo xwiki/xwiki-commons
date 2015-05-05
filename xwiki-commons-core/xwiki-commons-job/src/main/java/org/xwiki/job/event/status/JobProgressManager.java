@@ -19,6 +19,8 @@
  */
 package org.xwiki.job.event.status;
 
+import java.util.concurrent.Callable;
+
 import org.xwiki.component.annotation.Role;
 
 /**
@@ -51,4 +53,17 @@ public interface JobProgressManager
      * @param source the source to send with the event
      */
     void popLevelProgress(Object source);
+
+    /**
+     * Automatically push and pop progression level around passed task.
+     *
+     * @param <T> the return type
+     * @param task the task to execute
+     * @param steps number of steps in this new level
+     * @param source the source to send with the event
+     * @return computed result
+     * @throws Exception if unable to compute a result
+     * @since 7.1M1
+     */
+    <T> T call(Callable<T> task, int steps, Object source) throws Exception;
 }
