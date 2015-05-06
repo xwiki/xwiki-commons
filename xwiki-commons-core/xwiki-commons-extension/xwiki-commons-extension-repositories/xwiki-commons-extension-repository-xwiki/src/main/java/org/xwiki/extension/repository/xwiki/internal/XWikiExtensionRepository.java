@@ -414,6 +414,10 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
     public IterableResult<Extension> search(org.xwiki.extension.repository.search.ExtensionQuery query)
         throws SearchException
     {
+        if (this.repositoryVersion.equals(Resources.VERSION10)) {
+            return search(query.getQuery(), query.getOffset(), query.getLimit());
+        }
+
         UriBuilder builder = this.searchUriBuider.clone();
 
         ExtensionQuery restQuery = EXTENSION_OBJECT_FACTORY.createExtensionQuery();
