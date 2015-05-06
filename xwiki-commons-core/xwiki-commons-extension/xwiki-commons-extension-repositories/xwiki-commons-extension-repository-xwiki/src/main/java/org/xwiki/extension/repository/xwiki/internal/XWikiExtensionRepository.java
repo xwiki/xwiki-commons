@@ -83,6 +83,10 @@ import org.xwiki.repository.UriBuilder;
 public class XWikiExtensionRepository extends AbstractExtensionRepository implements AdvancedSearchable,
     RatableExtensionRepository
 {
+    public static final Version VERSION10 = new DefaultVersion(Resources.VERSION10);
+
+    public static final Version VERSION11 = new DefaultVersion(Resources.VERSION11);
+
     private static final Logger LOGGER = LoggerFactory.getLogger(XWikiExtensionRepository.class);
 
     private static final ObjectFactory EXTENSION_OBJECT_FACTORY = new ObjectFactory();
@@ -178,6 +182,16 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
                 LOGGER.error("Failed to get repository features", e);
             }
         }
+    }
+
+    /**
+     * @return the version of the protocol supported by the repository
+     */
+    public Version getRepositoryVersion()
+    {
+        initRepositoryFeatures();
+
+        return this.repositoryVersion;
     }
 
     @Override
@@ -414,7 +428,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
     public IterableResult<Extension> search(org.xwiki.extension.repository.search.ExtensionQuery query)
         throws SearchException
     {
-        if (this.repositoryVersion.equals(Resources.VERSION10)) {
+        if (getRepositoryVersion().equals(VERSION10)) {
             return search(query.getQuery(), query.getOffset(), query.getLimit());
         }
 
