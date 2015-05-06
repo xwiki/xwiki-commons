@@ -406,7 +406,9 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
 
         builder.queryParam(Resources.QPARAM_LIST_START, offset);
         builder.queryParam(Resources.QPARAM_LIST_NUMBER, nb);
-        builder.queryParam(Resources.QPARAM_SEARCH_QUERY, pattern);
+        if (pattern != null) {
+            builder.queryParam(Resources.QPARAM_SEARCH_QUERY, pattern);
+        }
 
         ExtensionsSearchResult restExtensions;
         try {
