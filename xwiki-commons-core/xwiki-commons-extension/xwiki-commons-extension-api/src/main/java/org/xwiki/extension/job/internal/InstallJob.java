@@ -101,6 +101,8 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
         ExecutionContext context = this.execution.getContext();
 
         try {
+            this.progressManager.startStep(this);
+
             // Create the plan
 
             InstallRequest planRequest = new InstallRequest(getRequest());
@@ -117,7 +119,7 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
                     .get(0).getThrowable());
             }
 
-            this.progressManager.stepPropress(this);
+            this.progressManager.startStep(this);
 
             // Put the plan in context
             // TODO: use a stack ?
@@ -133,15 +135,15 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
 
             try {
                 for (ExtensionPlanAction action : actions) {
-                    store(action);
+                    this.progressManager.startStep(this);
 
-                    this.progressManager.stepPropress(this);
+                    store(action);
                 }
             } finally {
                 this.progressManager.popLevelProgress(this);
             }
 
-            this.progressManager.stepPropress(this);
+            this.progressManager.startStep(this);
 
             // Install all extensions
 

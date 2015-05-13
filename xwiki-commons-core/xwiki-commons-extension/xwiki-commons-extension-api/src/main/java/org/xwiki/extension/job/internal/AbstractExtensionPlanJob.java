@@ -96,9 +96,9 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
 
         try {
             for (String namespace : namespaces) {
-                uninstallExtension(extensionId, namespace, parentBranch, withBackWard);
+                this.progressManager.startStep(this);
 
-                this.progressManager.stepPropress(this);
+                uninstallExtension(extensionId, namespace, parentBranch, withBackWard);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -143,9 +143,9 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
 
         try {
             for (String namespace : namespaces) {
-                uninstallExtension(installedExtension, namespace, parentBranch, withBackWard);
+                this.progressManager.startStep(this);
 
-                this.progressManager.stepPropress(this);
+                uninstallExtension(installedExtension, namespace, parentBranch, withBackWard);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -166,9 +166,9 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
 
         try {
             for (InstalledExtension backardDependency : extensions) {
-                uninstallExtension(backardDependency, namespace, parentBranch, withBackWard);
+                this.progressManager.startStep(this);
 
-                this.progressManager.stepPropress(this);
+                uninstallExtension(backardDependency, namespace, parentBranch, withBackWard);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -273,9 +273,9 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
 
         try {
             for (Map.Entry<String, Collection<InstalledExtension>> entry : backwardDependencies.entrySet()) {
-                uninstallExtensions(entry.getValue(), entry.getKey(), parentBranch, withBackWard);
+                this.progressManager.startStep(this);
 
-                this.progressManager.stepPropress(this);
+                uninstallExtensions(entry.getValue(), entry.getKey(), parentBranch, withBackWard);
             }
         } finally {
             this.progressManager.popLevelProgress(this);

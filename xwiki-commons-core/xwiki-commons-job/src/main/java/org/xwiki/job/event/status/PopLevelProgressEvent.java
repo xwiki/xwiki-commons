@@ -19,19 +19,25 @@
  */
 package org.xwiki.job.event.status;
 
-import org.xwiki.observation.event.Event;
-
 /**
  * Indicate to the progress listener that a new step level is ending.
- *
+ * <p>
+ * The event also send the following parameters:
+ * </p>
+ * <ul>
+ * <li>source: whoever sent the event</li>
+ * <li>data: null</li>
+ * </ul>
+ * 
  * @version $Id$
  * @since 4.0M1
  */
-public class PopLevelProgressEvent implements Event
+public class PopLevelProgressEvent extends AbstractProgressEvent
 {
-    @Override
-    public boolean matches(Object arg0)
-    {
-        return true;
-    }
+    /**
+     * Unique instance of {@link PopLevelProgressEvent}.
+     * 
+     * @since 7.1M2
+     */
+    public static final PopLevelProgressEvent INSTANCE = new PopLevelProgressEvent();
 }

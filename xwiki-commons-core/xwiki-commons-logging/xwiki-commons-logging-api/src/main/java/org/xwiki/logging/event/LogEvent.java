@@ -19,20 +19,13 @@
  */
 package org.xwiki.logging.event;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-import org.slf4j.helpers.MessageFormatter;
 import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.internal.helpers.ExtendedMessageFormatter;
-import org.xwiki.logging.marker.ContainerMarker;
-import org.xwiki.logging.marker.TranslationMarker;
+import org.xwiki.logging.Message;
 import org.xwiki.observation.event.Event;
 
 /**
@@ -48,7 +41,7 @@ import org.xwiki.observation.event.Event;
  * @version $Id$
  * @since 3.2M1
  */
-public class LogEvent implements Event, Serializable
+public class LogEvent extends Message implements Event
 {
     /**
      * The marker to use to indicate that we start a group of logs.
@@ -61,39 +54,9 @@ public class LogEvent implements Event, Serializable
     public static final Marker MARKER_END = MarkerFactory.getMarker("xwiki.end");
 
     /**
-     * Serialization identifier.
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * @see #getMarker()
-     */
-    private Marker marker;
-
-    /**
      * @see #getLevel()
      */
     private LogLevel level;
-
-    /**
-     * @see LogEvent#getMessage()
-     */
-    private String message;
-
-    /**
-     * @see #getArgumentArray()
-     */
-    private Object[] argumentArray;
-
-    /**
-     * @see LogEvent#getThrowable()
-     */
-    private Throwable throwable;
-
-    /**
-     * Formatted version of the message.
-     */
-    private transient String formattedMessage;
 
     /**
      * The number of milliseconds elapsed from 1/1/1970 until logging event was created.
@@ -154,11 +117,9 @@ public class LogEvent implements Event, Serializable
     public LogEvent(Marker marker, LogLevel level, String message, Object[] argumentArray, Throwable throwable,
         long timeStamp)
     {
-        this.marker = marker;
+        super(marker, message, argumentArray, throwable);
+
         this.level = level;
-        this.message = message;
-        this.argumentArray = argumentArray;
-        this.throwable = throwable;
         this.timeStamp = timeStamp;
     }
 
@@ -192,15 +153,6 @@ public class LogEvent implements Event, Serializable
     }
 
     /**
-     * @return the log marker
-     * @since 4.3M1
-     */
-    public Marker getMarker()
-    {
-        return this.marker;
-    }
-
-    /**
      * @return the log level
      */
     public LogLevel getLevel()
@@ -209,80 +161,11 @@ public class LogEvent implements Event, Serializable
     }
 
     /**
-     * @return the log message
-     */
-    public String getMessage()
-    {
-        return this.message;
-    }
-
-    /**
-     * @return the event arguments to insert in the message
-     */
-    public Object[] getArgumentArray()
-    {
-        return this.argumentArray;
-    }
-
-    /**
-     * @return the throwable associated to the event
-     */
-    public Throwable getThrowable()
-    {
-        return this.throwable;
-    }
-
-    /**
      * @return the number of milliseconds elapsed from 1/1/1970 until logging event was created
      */
     public long getTimeStamp()
     {
         return this.timeStamp;
-    }
-
-    /**
-     * @return the formated version of the message
-     */
-    public String getFormattedMessage()
-    {
-        if (this.formattedMessage != null) {
-            return this.formattedMessage;
-        }
-        if (this.argumentArray != null) {
-            this.formattedMessage = MessageFormatter.arrayFormat(this.message, this.argumentArray).getMessage();
-        } else {
-            this.formattedMessage = this.message;
-        }
-
-        return this.formattedMessage;
-    }
-
-    /**
-     * @return the log message cut in peaces
-     * @since 4.2M1
-     */
-    public List<String> getMessageElements()
-    {
-        return ExtendedMessageFormatter.parseMessage(getMessage(), getArgumentArray());
-    }
-
-    /**
-     * @return the translation key associated to the log
-     * @since 5.0M2
-     */
-    public String getTranslationKey()
-    {
-        if (getMarker() instanceof ContainerMarker) {
-            ContainerMarker containerMarker = (ContainerMarker) getMarker();
-
-            TranslationMarker translationMarker = containerMarker.get(TranslationMarker.NAME);
-
-            if (translationMarker != null) {
-                return ((TranslationMarker) getMarker()).getTranslationKey();
-            }
-        }
-
-        return null;
     }
 
     // Event
@@ -298,31 +181,23 @@ public class LogEvent implements Event, Serializable
     @Override
     public String toString()
     {
-        return getLevel().toString() + ':' + getFormattedMessage();
+        return getLevel().toString() + ':' + super.toString();
     }
 
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder(7, 11).append(getMarker()).append(getLevel()).append(getMessage())
-            .append(getArgumentArray()).append(getThrowable()).toHashCode();
+        return new HashCodeBuilder(7, 11).append(getLevel()).appendSuper(super.hashCode()).toHashCode();
     }
 
     @Override
     public boolean equals(Object object)
     {
-        if (object == null) {
+        if (!super.equals(object)) {
             return false;
         }
-        if (object == this) {
-            return true;
-        }
-        if (object.getClass() != getClass()) {
-            return false;
-        }
+
         LogEvent rhs = (LogEvent) object;
-        return new EqualsBuilder().append(getMarker(), rhs.getMarker()).append(getLevel(), rhs.getLevel())
-            .append(getMessage(), rhs.getMessage()).append(getArgumentArray(), rhs.getArgumentArray())
-            .append(getThrowable(), rhs.getThrowable()).isEquals();
+        return getLevel() == rhs.getLevel();
     }
 }

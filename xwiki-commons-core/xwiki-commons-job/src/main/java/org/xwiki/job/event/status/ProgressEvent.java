@@ -19,49 +19,14 @@
  */
 package org.xwiki.job.event.status;
 
+import org.xwiki.observation.event.Event;
+
 /**
- * Indicate to the progress listener that a new step level is starting.
- * <p>
- * The event also send the following parameters:
- * </p>
- * <ul>
- * <li>source: whoever sent the event</li>
- * <li>data: the associated {@link org.xwiki.logging.Message} or null</li>
- * </ul>
- *
+ * Progress related events.
+ * 
  * @version $Id$
- * @since 4.0M1
+ * @since 7.1M2
  */
-public class PushLevelProgressEvent extends AbstractProgressEvent
+public interface ProgressEvent extends Event
 {
-    /**
-     * Number of sub steps.
-     */
-    private int steps;
-
-    /**
-     * Matches any {@link PushLevelProgressEvent}.
-     * <p>
-     * Also used for level with unknown number of steps.
-     */
-    public PushLevelProgressEvent()
-    {
-        
-    }
-
-    /**
-     * @param steps the number of sub steps.
-     */
-    public PushLevelProgressEvent(int steps)
-    {
-        this.steps = steps;
-    }
-
-    /**
-     * @return the number of sub steps
-     */
-    public int getSteps()
-    {
-        return this.steps;
-    }
 }

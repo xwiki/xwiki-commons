@@ -19,49 +19,41 @@
  */
 package org.xwiki.job.event.status;
 
+import java.util.List;
+
+import org.xwiki.logging.Message;
+
 /**
- * Indicate to the progress listener that a new step level is starting.
- * <p>
- * The event also send the following parameters:
- * </p>
- * <ul>
- * <li>source: whoever sent the event</li>
- * <li>data: the associated {@link org.xwiki.logging.Message} or null</li>
- * </ul>
- *
+ * Represents one step in the progress tree.
+ * 
  * @version $Id$
- * @since 4.0M1
+ * @since 7.1M2
  */
-public class PushLevelProgressEvent extends AbstractProgressEvent
+public interface JobProgressStep
 {
     /**
-     * Number of sub steps.
+     * @return the message associated to the step, can be null
      */
-    private int steps;
+    Message getMessage();
 
     /**
-     * Matches any {@link PushLevelProgressEvent}.
-     * <p>
-     * Also used for level with unknown number of steps.
+     * @return the parent step
      */
-    public PushLevelProgressEvent()
-    {
-        
-    }
+    JobProgressStep getParent();
 
     /**
-     * @param steps the number of sub steps.
+     * @param <S> the type of the step
+     * @return the children steps
      */
-    public PushLevelProgressEvent(int steps)
-    {
-        this.steps = steps;
-    }
+    <S extends JobProgressStep> List<S> getChildren();
 
     /**
-     * @return the number of sub steps
+     * @return progress of the current step between 0 and 1
      */
-    public int getSteps()
-    {
-        return this.steps;
-    }
+    double getOffset();
+
+    /**
+     * @return the time spend executing the step, in nanoseconds
+     */
+    long getElapsedTime();
 }

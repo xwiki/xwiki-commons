@@ -73,6 +73,8 @@ public class UninstallPlanJob extends AbstractExtensionPlanJob<UninstallRequest>
 
         try {
             for (ExtensionId extensionId : extensions) {
+                this.progressManager.startStep(this);
+
                 if (extensionId.getVersion() != null) {
                     InstalledExtension installedExtension = this.installedExtensionRepository.resolve(extensionId);
 
@@ -92,8 +94,6 @@ public class UninstallPlanJob extends AbstractExtensionPlanJob<UninstallRequest>
                         uninstallExtension(extensionId.getId(), (String) null, this.extensionTree, true);
                     }
                 }
-
-                this.progressManager.stepPropress(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);

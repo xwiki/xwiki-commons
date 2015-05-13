@@ -321,7 +321,9 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
      * Push new progression level.
      *
      * @param steps number of steps in this new level
+     * @deprecated since 7.1M2, use directly {@link #progressManager} instead
      */
+    @Deprecated
     protected void notifyPushLevelProgress(int steps)
     {
         this.progressManager.pushLevelProgress(steps, this);
@@ -329,7 +331,10 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     /**
      * Next step.
+     * 
+     * @deprecated since 7.1M2, use directly {@link #progressManager} instead
      */
+    @Deprecated
     protected void notifyStepPropress()
     {
         this.progressManager.stepPropress(this);
@@ -337,7 +342,10 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
 
     /**
      * Pop progression level.
+     * 
+     * @deprecated since 7.1M2, use directly {@link #progressManager} instead
      */
+    @Deprecated
     protected void notifyPopLevelProgress()
     {
         this.progressManager.popLevelProgress(this);

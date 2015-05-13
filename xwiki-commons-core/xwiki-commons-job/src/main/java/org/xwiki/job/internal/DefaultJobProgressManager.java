@@ -25,10 +25,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.job.event.status.EndStepProgressEvent;
 import org.xwiki.job.event.status.JobProgressManager;
 import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;
+import org.xwiki.job.event.status.StartStepProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
+import org.xwiki.logging.Message;
 import org.xwiki.observation.ObservationManager;
 
 /**
@@ -45,21 +48,70 @@ public class DefaultJobProgressManager implements JobProgressManager
     private ObservationManager observationManager;
 
     @Override
+    public void pushLevelProgress(Object source)
+    {
+        this.observationManager.notify(new PushLevelProgressEvent(), source);
+    }
+
+    @Override
     public void pushLevelProgress(int steps, Object source)
     {
         this.observationManager.notify(new PushLevelProgressEvent(steps), source);
     }
 
     @Override
+    @Deprecated
     public void stepPropress(Object source)
     {
-        this.observationManager.notify(new StepProgressEvent(), source);
+        this.observationManager.notify(StepProgressEvent.INSTANCE, source);
+    }
+
+    @Override
+    public void startStep(Object source)
+    {
+        startStep(source, (Message) null);
+    }
+
+    @Override
+    public void startStep(Object source, String name)
+    {
+        startStep(source, toMessage(name));
+    }
+
+    @Override
+    public void startStep(Object source, Message message)
+    {
+        this.observationManager.notify(StartStepProgressEvent.INSTANCE, source, message);
+    }
+
+    @Override
+    public void startStep(Object source, String translationKey, String message, Object... arguments)
+    {
+        startStep(source, toMessage(translationKey, message, arguments));
+    }
+
+    @Override
+    public void endStep(Object source)
+    {
+        this.observationManager.notify(EndStepProgressEvent.INSTANCE, source);
     }
 
     @Override
     public void popLevelProgress(Object source)
     {
-        this.observationManager.notify(new PopLevelProgressEvent(), source);
+        this.observationManager.notify(PopLevelProgressEvent.INSTANCE, source);
+    }
+
+    @Override
+    public <T> T call(Callable<T> task, Object source) throws Exception
+    {
+        pushLevelProgress(source);
+
+        try {
+            return task.call();
+        } finally {
+            popLevelProgress(source);
+        }
     }
 
     @Override
@@ -72,5 +124,15 @@ public class DefaultJobProgressManager implements JobProgressManager
         } finally {
             popLevelProgress(source);
         }
+    }
+
+    private Message toMessage(String name)
+    {
+        return name != null ? new Message(name) : null;
+    }
+
+    private Message toMessage(String translationKey, String message, Object[] arguments)
+    {
+        return new Message(translationKey, message, arguments);
     }
 }

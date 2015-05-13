@@ -146,57 +146,57 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
             Collection<InstalledExtension> installedExtensions =
                 this.installedExtensionRepository.getInstalledExtensions();
 
-            notifyPushLevelProgress(installedExtensions.size());
+            this.progressManager.pushLevelProgress(installedExtensions.size(), this);
 
             try {
                 for (InstalledExtension installedExtension : installedExtensions) {
+                    this.progressManager.startStep(this);
+
                     if (installedExtension.getNamespaces() == null) {
                         upgradeExtension(installedExtension, null);
                     } else {
-                        notifyPushLevelProgress(installedExtension.getNamespaces().size());
+                        this.progressManager.pushLevelProgress(installedExtension.getNamespaces().size(), this);
 
                         try {
                             for (String namespace : installedExtension.getNamespaces()) {
-                                upgradeExtension(installedExtension, namespace);
+                                this.progressManager.startStep(this);
 
-                                notifyStepPropress();
+                                upgradeExtension(installedExtension, namespace);
                             }
                         } finally {
-                            notifyPopLevelProgress();
+                            this.progressManager.popLevelProgress(this);
                         }
                     }
-
-                    notifyStepPropress();
                 }
             } finally {
-                notifyPopLevelProgress();
+                this.progressManager.popLevelProgress(this);
             }
         } else {
-            notifyPushLevelProgress(namespaces.size());
+            this.progressManager.pushLevelProgress(namespaces.size(), this);
 
             try {
                 for (String namespace : namespaces) {
+                    this.progressManager.startStep(this);
+
                     Collection<InstalledExtension> installedExtensions =
                         this.installedExtensionRepository.getInstalledExtensions(namespace);
 
-                    notifyPushLevelProgress(installedExtensions.size());
+                    this.progressManager.pushLevelProgress(installedExtensions.size(), this);
 
                     try {
                         for (InstalledExtension installedExtension : installedExtensions) {
+                            this.progressManager.startStep(this);
+
                             if (namespace == null || !installedExtension.isInstalled(null)) {
                                 upgradeExtension(installedExtension, namespace);
                             }
-
-                            notifyStepPropress();
                         }
                     } finally {
-                        notifyPopLevelProgress();
+                        this.progressManager.popLevelProgress(this);
                     }
-
-                    notifyStepPropress();
                 }
             } finally {
-                notifyPopLevelProgress();
+                this.progressManager.popLevelProgress(this);
             }
         }
     }

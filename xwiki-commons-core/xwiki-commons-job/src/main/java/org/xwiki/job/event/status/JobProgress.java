@@ -36,4 +36,16 @@ public interface JobProgress
      * @return progress of the current level between 0 and 1
      */
     double getCurrentLevelOffset();
+
+    /**
+     * @return the root step
+     * @since 7.1M2
+     */
+    JobProgressStep getRootStep();
+
+    /**
+     * @return the current step
+     * @since 7.1M2
+     */
+    JobProgressStep getCurrentStep();
 }

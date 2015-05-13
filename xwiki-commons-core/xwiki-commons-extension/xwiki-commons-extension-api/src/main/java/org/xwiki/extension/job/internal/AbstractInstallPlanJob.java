@@ -209,6 +209,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         try {
             for (Map.Entry<ExtensionId, Collection<String>> entry : extensionsByNamespace.entrySet()) {
+                this.progressManager.startStep(this);
+
                 ExtensionId extensionId = entry.getKey();
                 Collection<String> namespaces = entry.getValue();
 
@@ -217,9 +219,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                     try {
                         for (String namespace : namespaces) {
-                            installExtension(extensionId, namespace, this.extensionTree);
+                            this.progressManager.startStep(this);
 
-                            this.progressManager.stepPropress(this);
+                            installExtension(extensionId, namespace, this.extensionTree);
                         }
                     } finally {
                         this.progressManager.popLevelProgress(this);
@@ -227,8 +229,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 } else {
                     installExtension(extensionId, null, this.extensionTree);
                 }
-
-                this.progressManager.stepPropress(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -679,10 +679,12 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         this.progressManager.pushLevelProgress(2, this);
 
         try {
+            this.progressManager.startStep(this);
+
             // Check if the extension is already in local repository
             Extension extension = resolveExtension(targetDependency);
 
-            this.progressManager.stepPropress(this);
+            this.progressManager.startStep(this);
 
             try {
                 return installExtension(extension, dependency, namespace, targetDependency);
@@ -759,10 +761,12 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         this.progressManager.pushLevelProgress(2, this);
 
         try {
+            this.progressManager.startStep(this);
+
             // Check is the extension is already in local repository
             Extension extension = resolveExtension(extensionId);
 
-            this.progressManager.stepPropress(this);
+            this.progressManager.startStep(this);
 
             try {
                 return installExtension(extension, dependency, namespace, null);
@@ -852,6 +856,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         this.progressManager.pushLevelProgress(6, this);
 
         try {
+            this.progressManager.startStep(this);
+
             ExtensionHandler extensionHandler;
 
             // Is type supported ?
@@ -861,17 +867,17 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 throw new InstallException(String.format("Unsupported type [%s]", extension.getType()), e);
             }
 
-            this.progressManager.stepPropress(this);
+            this.progressManager.startStep(this);
 
             // Is installing the extension allowed ?
             extensionHandler.checkInstall(extension, namespace, getRequest());
 
-            this.progressManager.stepPropress(this);
+            this.progressManager.startStep(this);
 
             // Find all existing versions of the extension
             Set<InstalledExtension> previousExtensions = getReplacedInstalledExtensions(extension, namespace);
 
-            this.progressManager.stepPropress(this);
+            this.progressManager.startStep(this);
 
             // Mark replaced extensions as uninstalled
             for (InstalledExtension previousExtension : new ArrayList<>(previousExtensions)) {
@@ -888,7 +894,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 }
             }
 
-            this.progressManager.stepPropress(this);
+            this.progressManager.startStep(this);
 
             // Check dependencies
             Collection<? extends ExtensionDependency> dependencies = extension.getDependencies();
@@ -900,16 +906,16 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 try {
                     children = new ArrayList<ModifableExtensionPlanNode>();
                     for (ExtensionDependency dependencyDependency : extension.getDependencies()) {
-                        installExtensionDependency(dependencyDependency, namespace, children);
+                        this.progressManager.startStep(this);
 
-                        this.progressManager.stepPropress(this);
+                        installExtensionDependency(dependencyDependency, namespace, children);
                     }
                 } finally {
                     this.progressManager.popLevelProgress(this);
                 }
             }
 
-            this.progressManager.stepPropress(this);
+            this.progressManager.startStep(this);
 
             ModifableExtensionPlanNode node =
                 initialDependency != null ? new ModifableExtensionPlanNode(initialDependency,

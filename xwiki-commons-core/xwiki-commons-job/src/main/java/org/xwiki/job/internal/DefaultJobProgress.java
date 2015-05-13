@@ -21,14 +21,16 @@ package org.xwiki.job.internal;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xwiki.job.event.status.EndStepProgressEvent;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.PopLevelProgressEvent;
 import org.xwiki.job.event.status.PushLevelProgressEvent;
+import org.xwiki.job.event.status.StartStepProgressEvent;
 import org.xwiki.job.event.status.StepProgressEvent;
+import org.xwiki.logging.Message;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
@@ -46,88 +48,34 @@ public class DefaultJobProgress implements EventListener, JobProgress
     /**
      * Listened events.
      */
-    private static final List<Event> EVENTS = Arrays.asList(new PushLevelProgressEvent(), new PopLevelProgressEvent(),
-        new StepProgressEvent());
+    private static final List<Event> EVENTS = Arrays.<Event>asList(new PushLevelProgressEvent(),
+        PopLevelProgressEvent.INSTANCE, StepProgressEvent.INSTANCE, StartStepProgressEvent.INSTANCE,
+        EndStepProgressEvent.INSTANCE);
 
-    /**
-     * The unique name of the current job progress.
-     */
-    private final String name;
+    private final String listenerName;
 
-    /**
-     * The progress stack.
-     */
-    private final Stack<Level> progress = new Stack<Level>();
+    private final DefaultJobProgressStep rootStep;
 
-    /**
-     * Flag indicating that the next {@link StepProgressEvent} should be ignored (probably because its progress was
-     * already taken into account by a {@link PopLevelProgressEvent}).
-     */
-    private boolean ignoreNextStepProgressEvent;
-
-    /**
-     * A step.
-     *
-     * @version $Id$
-     */
-    static class Level
-    {
-        /**
-         * Global progress between 0 and 1.
-         */
-        public double globalOffset;
-
-        /**
-         * Current level progress between 0 and 1.
-         */
-        public double levelOffset;
-
-        /**
-         * Size of the step between 0 and 1.
-         */
-        public double globalStepSize;
-
-        /**
-         * Size of the step between 0 and 1.
-         */
-        public double localStepSize;
-
-        /**
-         * The current step.
-         */
-        public int currentStep;
-
-        /**
-         * The number of steps.
-         */
-        public int steps;
-
-        /**
-         * @param steps number of steps
-         * @param offset the current offset
-         * @param parentSize the size of the parent step
-         */
-        public Level(int steps, double offset, double parentSize)
-        {
-            this.steps = steps;
-
-            this.globalOffset = offset;
-            this.globalStepSize = parentSize / steps;
-
-            this.localStepSize = 1.0D / steps;
-        }
-    }
+    private DefaultJobProgressStep currentStep;
 
     /**
      * Default constructor.
      */
     public DefaultJobProgress()
     {
-        this.name = getClass().getName() + '_' + hashCode();
+        this(null);
+    }
 
-        // Push the root level to be able to distinguish between the case when the progress hasn't started yet and the
-        // case when the progress is over. Otherwise we would have an empty progress stack for both cases.
-        this.progress.push(new Level(1, 0, 1));
+    /**
+     * @param name the name associated to the job progress
+     */
+    public DefaultJobProgress(String name)
+    {
+        this.listenerName = name != null ? name : getClass().getName() + '_' + System.identityHashCode(this);
+
+        this.rootStep =
+            new DefaultJobProgressStep(new Message("job.progress", "Progress with name [{}]", name), null, null);
+        this.currentStep = this.rootStep;
     }
 
     // EventListener
@@ -135,7 +83,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
     @Override
     public String getName()
     {
-        return this.name;
+        return this.listenerName;
     }
 
     @Override
@@ -145,16 +93,18 @@ public class DefaultJobProgress implements EventListener, JobProgress
     }
 
     @Override
-    public void onEvent(Event event, Object arg1, Object arg2)
+    public void onEvent(Event event, Object source, Object message)
     {
-        boolean ignoreNextStep = this.ignoreNextStepProgressEvent;
-        this.ignoreNextStepProgressEvent = false;
         if (event instanceof PushLevelProgressEvent) {
-            onPushLevelProgress((PushLevelProgressEvent) event);
+            onPushLevelProgress(((PushLevelProgressEvent) event).getSteps(), source);
         } else if (event instanceof PopLevelProgressEvent) {
-            onPopLevelProgress();
-        } else if (event instanceof StepProgressEvent && !ignoreNextStep) {
-            onStepProgress();
+            onPopLevelProgress(source);
+        } else if (event instanceof StartStepProgressEvent) {
+            onStartStepProgress((Message) message, source);
+        } else if (event instanceof EndStepProgressEvent) {
+            onEndStepProgress(source);
+        } else if (event instanceof StepProgressEvent) {
+            onStepProgress(source);
         }
     }
 
@@ -163,42 +113,124 @@ public class DefaultJobProgress implements EventListener, JobProgress
      *
      * @param event the event that was fired
      */
-    private void onPushLevelProgress(PushLevelProgressEvent event)
+    private void onPushLevelProgress(int steps, Object source)
     {
-        this.progress.push(new Level(event.getSteps(), getOffset(), this.progress.peek().globalStepSize));
+        if (this.currentStep.isLevelFinished()) {
+            // If current step is done move to next one
+            this.currentStep = this.currentStep.getParent().nextStep(null, source);
+        }
+
+        // Add level
+        this.currentStep = this.currentStep.addLevel(steps, source);
+    }
+
+    /**
+     * Close current step.
+     */
+    private void onEndStepProgress(Object source)
+    {
+        // Try to find the right step based on the source
+        DefaultJobProgressStep step = findStep(this.currentStep, source);
+
+        if (step == null) {
+            LOGGER.warn("Could not find any matching step for source [{}]. Ignoring EndStepProgress.",
+                source.toString());
+
+            return;
+        }
+
+        this.currentStep = step;
+
+        this.currentStep.finish();
+    }
+
+    private void onStartStepProgress(Message message, Object source)
+    {
+        // If we are still on root node, create a level
+        if (this.currentStep.getParent() == null) {
+            // We don't really know how many steps there is so lets put 0
+            this.currentStep = this.currentStep.addLevel(0, source);
+        }
+
+        // Start a new step
+        this.currentStep = this.currentStep.getParent().nextStep(message, source);
     }
 
     /**
      * Move progress to next step.
+     * 
+     * @deprecated since 7.1M2, use {@link #onStartStepProgress(Message)} instead
      */
-    private void onStepProgress()
+    @Deprecated
+    private void onStepProgress(Object source)
     {
-        Level level = this.progress.peek();
-        if (level.currentStep++ < level.steps) {
-            level.globalOffset += level.globalStepSize;
-            level.levelOffset += level.localStepSize;
-        } else {
-            LOGGER.warn("StepProgressEvent was fired too many times: [{}] instead of [{}]. The number of times"
-                + " StepProgressEvent is fired must match the number of steps passed to PushLevelProgressEvent.",
-                level.currentStep, level.steps);
+        onStartStepProgress(null, source);
+
+        // if there is only one step close it and move to the next one
+        if (this.currentStep.getParent().getChildren().size() == 1) {
+            this.currentStep = this.currentStep.getParent().nextStep(null, source);
         }
     }
 
     /**
      * Called when a {@link PopLevelProgressEvent} is fired.
      */
-    private void onPopLevelProgress()
+    private void onPopLevelProgress(Object source)
     {
-        // The progress stack must have at least one element: the root level.
-        if (this.progress.size() > 1) {
-            this.progress.pop();
-            onStepProgress();
-            // Ignore the next StepProgressEvent because we already updated the progress.
-            this.ignoreNextStepProgressEvent = true;
-        } else {
+        DefaultJobProgressStep parent = this.currentStep.getParent();
+
+        if (parent == null) {
             LOGGER.warn("PopLevelProgressEvent was fired too many times. Don't forget "
                 + "to match each PopLevelProgressEvent with a PushLevelProgressEvent.");
+
+            return;
         }
+
+        // Try to find the right level based on the source
+        DefaultJobProgressStep level = findLevel(this.currentStep.getParent(), source);
+
+        if (level == null) {
+            LOGGER.warn("Could not find any matching step level for source [{}]. Ignoring PopLevelProgressEvent.",
+                source.toString());
+
+            return;
+        }
+
+        // Move to parent step
+        this.currentStep = level;
+
+        // Close the level
+        this.currentStep.finishLevel();
+    }
+
+    private DefaultJobProgressStep findStep(DefaultJobProgressStep step, Object source)
+    {
+        DefaultJobProgressStep matchingStep = step;
+
+        do {
+            if (matchingStep.source == source) {
+                return matchingStep;
+            }
+
+            matchingStep = matchingStep.getParent();
+        } while (matchingStep != null);
+
+        return null;
+    }
+
+    private DefaultJobProgressStep findLevel(DefaultJobProgressStep step, Object levelSource)
+    {
+        DefaultJobProgressStep matchingStep = step;
+
+        do {
+            if (levelSource == null || matchingStep.levelSource == levelSource) {
+                return matchingStep;
+            }
+
+            matchingStep = matchingStep.getParent();
+        } while (matchingStep != null);
+
+        return null;
     }
 
     // JobProgress
@@ -206,12 +238,24 @@ public class DefaultJobProgress implements EventListener, JobProgress
     @Override
     public double getOffset()
     {
-        return this.progress.peek().globalOffset;
+        return this.rootStep.getOffset();
     }
 
     @Override
     public double getCurrentLevelOffset()
     {
-        return this.progress.peek().levelOffset;
+        return this.currentStep.getParent() != null ? this.currentStep.getParent().getOffset() : getOffset();
+    }
+
+    @Override
+    public DefaultJobProgressStep getRootStep()
+    {
+        return this.rootStep;
+    }
+
+    @Override
+    public DefaultJobProgressStep getCurrentStep()
+    {
+        return this.currentStep;
     }
 }

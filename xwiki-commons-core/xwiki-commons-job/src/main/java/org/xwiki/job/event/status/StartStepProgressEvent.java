@@ -20,7 +20,7 @@
 package org.xwiki.job.event.status;
 
 /**
- * Indicate to the progress listener that a new step level is starting.
+ * Indicate to the progress listener that a new step is starting.
  * <p>
  * The event also send the following parameters:
  * </p>
@@ -30,38 +30,12 @@ package org.xwiki.job.event.status;
  * </ul>
  *
  * @version $Id$
- * @since 4.0M1
+ * @since 7.1M2
  */
-public class PushLevelProgressEvent extends AbstractProgressEvent
+public class StartStepProgressEvent extends AbstractProgressEvent
 {
     /**
-     * Number of sub steps.
+     * Unique instance of {@link StartStepProgressEvent}.
      */
-    private int steps;
-
-    /**
-     * Matches any {@link PushLevelProgressEvent}.
-     * <p>
-     * Also used for level with unknown number of steps.
-     */
-    public PushLevelProgressEvent()
-    {
-        
-    }
-
-    /**
-     * @param steps the number of sub steps.
-     */
-    public PushLevelProgressEvent(int steps)
-    {
-        this.steps = steps;
-    }
-
-    /**
-     * @return the number of sub steps
-     */
-    public int getSteps()
-    {
-        return this.steps;
-    }
+    public static final StartStepProgressEvent INSTANCE = new StartStepProgressEvent();
 }

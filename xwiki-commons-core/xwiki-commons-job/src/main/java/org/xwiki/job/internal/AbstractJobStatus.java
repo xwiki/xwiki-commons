@@ -55,11 +55,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private final transient Condition answered = this.askLock.newCondition();
 
     /**
-     * Take care of progress related events to produce a progression information usually used in a progress bar.
-     */
-    private final transient DefaultJobProgress progress = new DefaultJobProgress();
-
-    /**
      * Used register itself to receive logging and progress related events.
      */
     private final transient ObservationManager observationManager;
@@ -78,6 +73,11 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      * Used to listen to all the log produced during job execution.
      */
     private transient LoggerListener logListener;
+
+    /**
+     * Take care of progress related events to produce a progression information usually used in a progress bar.
+     */
+    private final DefaultJobProgress progress = new DefaultJobProgress();
 
     /**
      * Log sent during job execution.
@@ -160,6 +160,9 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
             this.observationManager.removeListener(this.logListener.getName());
         }
         this.observationManager.removeListener(this.progress.getName());
+
+        // Make sure the progress is closed
+        this.progress.getRootStep().finish();
     }
 
     // JobStatus

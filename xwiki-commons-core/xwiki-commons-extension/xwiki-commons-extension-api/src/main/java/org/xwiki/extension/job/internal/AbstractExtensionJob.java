@@ -145,11 +145,11 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
 
         try {
             for (ExtensionPlanAction action : actions) {
+                this.progressManager.startStep(this);
+
                 if (action.getAction() != Action.NONE) {
                     applyAction(action);
                 }
-
-                this.progressManager.stepPropress(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -185,10 +185,12 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
         this.progressManager.pushLevelProgress(2, this);
 
         try {
+            this.progressManager.startStep(this);
+
             if (action.getAction() == Action.UNINSTALL) {
                 InstalledExtension installedExtension = (InstalledExtension) action.getExtension();
 
-                this.progressManager.stepPropress(this);
+                this.progressManager.startStep(this);
 
                 // Uninstall
                 uninstallExtension(installedExtension, namespace);
@@ -196,7 +198,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 // Store extension in local repository
                 LocalExtension localExtension = this.localExtensionRepository.resolve(extension.getId());
 
-                this.progressManager.stepPropress(this);
+                this.progressManager.startStep(this);
 
                 // Install
                 installExtension(localExtension, previousExtensions, namespace, action.isDependency());
