@@ -146,10 +146,12 @@ public class DefaultJobProgress implements EventListener, JobProgress
 
     private void onStartStepProgress(Message message, Object source)
     {
-        // If we are still on root node, create a level
         if (this.currentStep.getParent() == null) {
-            // We don't really know how many steps there is so lets put 0
-            this.currentStep = this.currentStep.addLevel(0, source);
+            // If we are still on root node, create a level
+            this.currentStep = this.currentStep.addLevel(source);
+        } else if (!this.currentStep.isLevelFinished() && this.currentStep.source != source) {
+            // If current step is from a different source add a level
+            onPushLevelProgress(0, source);
         }
 
         // Start a new step

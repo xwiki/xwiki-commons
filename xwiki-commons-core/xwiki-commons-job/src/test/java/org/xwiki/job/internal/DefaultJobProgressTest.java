@@ -329,7 +329,7 @@ public class DefaultJobProgressTest
     }
 
     @Test
-    public void testEndSetpOnParentStepSource()
+    public void testEndStepOnParentStepSource()
     {
         Assert.assertEquals(0D, this.progress.getOffset(), 0D);
         Assert.assertEquals(0D, this.progress.getCurrentLevelOffset(), 0D);
@@ -368,5 +368,36 @@ public class DefaultJobProgressTest
 
         Assert.assertEquals(1D, this.progress.getOffset(), 0D);
         Assert.assertEquals(1D, this.progress.getCurrentLevelOffset(), 0D);
+    }
+
+    @Test
+    public void testStartStepFromDifferentSource()
+    {
+        // Root level
+        this.observation.notify(new PushLevelProgressEvent(), null, null);
+
+        Object source1 = "source1";
+        Object source11 = "source11";
+        Object source12 = "source12";
+
+        // First step in source11 level
+        this.observation.notify(new StartStepProgressEvent(), source1, null);
+
+        assertEquals(1, this.progress.getRootStep().getChildren().size());
+
+        // First step in source11 level (from source11)
+        this.observation.notify(new StartStepProgressEvent(), source11, null);
+
+        assertEquals(1, this.progress.getRootStep().getChildren().size());
+        assertEquals(1, this.progress.getRootStep().getChildren().get(0).getChildren().size());
+
+        // Close the step
+        this.observation.notify(new EndStepProgressEvent(), source11, null);
+
+        // Second step in source11 level (from source12)
+        this.observation.notify(new StartStepProgressEvent(), source12, null);
+
+        assertEquals(1, this.progress.getRootStep().getChildren().size());
+        assertEquals(2, this.progress.getRootStep().getChildren().get(0).getChildren().size());
     }
 }

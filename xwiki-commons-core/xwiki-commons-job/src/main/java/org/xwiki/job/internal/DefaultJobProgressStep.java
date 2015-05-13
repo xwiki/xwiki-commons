@@ -156,6 +156,17 @@ public class DefaultJobProgressStep implements JobProgressStep
     }
 
     /**
+     * Add level with unknown number of steps to the step and return a virtual step as child of the level.
+     * 
+     * @param newLevelSource who asked to create this new level
+     * @return the new step
+     */
+    public DefaultJobProgressStep addLevel(Object newLevelSource)
+    {
+        return addLevel(0, newLevelSource);
+    }
+
+    /**
      * Add children to the step and return the first one.
      * 
      * @param steps the number of step
