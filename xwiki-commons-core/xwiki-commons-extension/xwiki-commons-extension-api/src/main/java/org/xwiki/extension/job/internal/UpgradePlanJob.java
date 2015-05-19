@@ -37,7 +37,7 @@ import org.xwiki.extension.version.Version;
 import org.xwiki.job.Request;
 
 /**
- * Create an Extension installation plan.
+ * Create an Extension upgrade plan.
  *
  * @version $Id$
  * @since 4.1M1
