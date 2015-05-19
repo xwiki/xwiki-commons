@@ -156,6 +156,20 @@ public class ExtensionQuery
         {
             return this.comparison;
         }
+
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+
+            builder.append(getField());
+            builder.append(' ');
+            builder.append(getComparison());
+            builder.append(' ');
+            builder.append(getValue());
+
+            return builder.toString();
+        }
     }
 
     private String query;

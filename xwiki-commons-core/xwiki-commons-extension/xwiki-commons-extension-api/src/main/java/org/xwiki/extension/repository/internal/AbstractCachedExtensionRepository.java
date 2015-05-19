@@ -260,8 +260,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
         for (List<E> versions : this.extensionsVersions.values()) {
             E extension = versions.get(0);
 
-            if ((patternMatcher == null || RepositoryUtils.matches(patternMatcher, query.getFilters(), extension))
-                && !set.contains(extension)) {
+            if (RepositoryUtils.matches(patternMatcher, query.getFilters(), extension) && !set.contains(extension)) {
                 result.add(extension);
                 set.add(extension);
             }

@@ -113,8 +113,7 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
 
         for (InstalledExtension installedExtension : installedExtensions) {
             if (installedExtension.isInstalled(namespace)) {
-                if ((patternMatcher == null || RepositoryUtils.matches(patternMatcher, query.getFilters(),
-                    installedExtension))) {
+                if (RepositoryUtils.matches(patternMatcher, query.getFilters(), installedExtension)) {
                     result.add(installedExtension);
                 }
             }

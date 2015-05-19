@@ -277,6 +277,10 @@ public final class RepositoryUtils
      */
     public static boolean matches(Pattern patternMatcher, Object... elements)
     {
+        if (patternMatcher == null) {
+            return true;
+        }
+
         for (Object element : elements) {
             if (matches(patternMatcher, element)) {
                 return true;
