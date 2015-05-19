@@ -175,6 +175,11 @@ public abstract class AbstractExtensionHandlerTest
         return executeJob(jobId, uninstallRequest, failFrom);
     }
 
+    protected ExtensionPlan upgradePlan() throws Throwable
+    {
+        return upgradePlan((String) null);
+    }
+
     protected ExtensionPlan upgradePlan(String namespace) throws Throwable
     {
         return upgradePlan(namespace, (Collection<ExtensionId>) null);
@@ -201,6 +206,16 @@ public abstract class AbstractExtensionHandlerTest
             installRequest.getExcludedExtensions().addAll(excludedExtensions);
         }
 
+        return (ExtensionPlan) executeJob("upgradeplan", installRequest, failFrom).getStatus();
+    }
+
+    protected ExtensionPlan upgradePlan(InstallRequest installRequest) throws Throwable
+    {
+        return upgradePlan(installRequest, LogLevel.WARN);
+    }
+
+    protected ExtensionPlan upgradePlan(InstallRequest installRequest, LogLevel failFrom) throws Throwable
+    {
         return (ExtensionPlan) executeJob("upgradeplan", installRequest, failFrom).getStatus();
     }
 }

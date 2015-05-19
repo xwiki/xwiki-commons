@@ -74,14 +74,13 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
      * @param extension the extension currently installed
      * @param namespace the namespace where the extension is installed
      */
-    protected void upgradeExtension(InstalledExtension extension, String namespace)
+    protected void upgradeExtension(InstalledExtension extension, String namespace, boolean filterDependencies)
     {
-        if (!getRequest().getExcludedExtensions().contains(extension.getId()) && !extension.isDependency(namespace)) {
-            String extensionId = extension.getId().getId();
-
+        if (!getRequest().getExcludedExtensions().contains(extension.getId())
+            && (!filterDependencies || !extension.isDependency(namespace))) {
             IterableResult<Version> versions;
             try {
-                versions = this.repositoryManager.resolveVersions(extensionId, 0, -1);
+                versions = this.repositoryManager.resolveVersions(extension.getId().getId(), 0, -1);
 
                 if (versions.getSize() == 0) {
                     throw new ResolveException("Can't find any remote version for extension ([" + extension + "]");
@@ -92,23 +91,29 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                     versionList.add(version);
                 }
 
-                for (ListIterator<Version> it = versionList.listIterator(versionList.size()); it.hasPrevious();) {
-                    Version version = it.previous();
-
-                    // Only upgrade if the existing version is greater than the current one
-                    if (extension.getId().getVersion().compareTo(version) >= 0) {
-                        break;
-                    }
-
-                    // Only upgrade beta if the current is beta etc.
-                    if (extension.getId().getVersion().getType().ordinal() <= version.getType().ordinal()) {
-                        if (tryInstallExtension(new ExtensionId(extensionId, version), namespace)) {
-                            break;
-                        }
-                    }
-                }
+                upgradeExtension(extension, namespace, versionList);
             } catch (ResolveException e) {
-                this.logger.debug("Failed to resolve versions for extension id [{}]", extensionId, e);
+                this.logger.debug("Failed to resolve versions for extension id [{}]", extension.getId().getId(), e);
+            }
+        }
+    }
+
+    protected void upgradeExtension(InstalledExtension extension, String namespace, List<Version> versionList)
+    {
+
+        for (ListIterator<Version> it = versionList.listIterator(versionList.size()); it.hasPrevious();) {
+            Version version = it.previous();
+
+            // Only upgrade if the existing version is greater than the current one
+            if (extension.getId().getVersion().compareTo(version) >= 0) {
+                break;
+            }
+
+            // Only upgrade beta if the current is beta etc.
+            if (extension.getId().getVersion().getType().ordinal() <= version.getType().ordinal()) {
+                if (tryInstallExtension(new ExtensionId(extension.getId().getId(), version), namespace)) {
+                    break;
+                }
             }
         }
     }
@@ -137,40 +142,108 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
         return false;
     }
 
+    protected void upgrade(String namespace, Collection<InstalledExtension> installedExtensions,
+        boolean filterDependencies)
+    {
+        this.progressManager.pushLevelProgress(installedExtensions.size(), this);
+
+        try {
+            for (InstalledExtension installedExtension : installedExtensions) {
+                this.progressManager.startStep(this);
+
+                if (namespace == null || !installedExtension.isInstalled(null)) {
+                    upgradeExtension(installedExtension, namespace, filterDependencies);
+                }
+            }
+        } finally {
+            this.progressManager.popLevelProgress(this);
+        }
+    }
+
+    protected void upgrade(Collection<InstalledExtension> installedExtensions, boolean filterDependencies)
+    {
+        this.progressManager.pushLevelProgress(installedExtensions.size(), this);
+
+        try {
+            for (InstalledExtension installedExtension : installedExtensions) {
+                this.progressManager.startStep(this);
+
+                if (installedExtension.getNamespaces() == null) {
+                    upgradeExtension(installedExtension, null, filterDependencies);
+                } else {
+                    this.progressManager.pushLevelProgress(installedExtension.getNamespaces().size(), this);
+
+                    try {
+                        for (String namespace : installedExtension.getNamespaces()) {
+                            this.progressManager.startStep(this);
+
+                            upgradeExtension(installedExtension, namespace, filterDependencies);
+                        }
+                    } finally {
+                        this.progressManager.popLevelProgress(this);
+                    }
+                }
+            }
+        } finally {
+            this.progressManager.popLevelProgress(this);
+        }
+    }
+
+    protected Collection<InstalledExtension> getInstalledExtensions(String namespace)
+    {
+        Collection<ExtensionId> requestExtensions = getRequest().getExtensions();
+
+        Collection<InstalledExtension> installedExtensions;
+
+        if (requestExtensions != null && !requestExtensions.isEmpty()) {
+            installedExtensions = new ArrayList<>(requestExtensions.size());
+
+            for (ExtensionId requestExtension : requestExtensions) {
+                InstalledExtension installedExtension =
+                    this.installedExtensionRepository.getInstalledExtension(requestExtension);
+                if (installedExtension.isInstalled(namespace)) {
+                    installedExtensions.add(installedExtension);
+                }
+            }
+        } else {
+            installedExtensions = this.installedExtensionRepository.getInstalledExtensions(namespace);
+        }
+
+        return installedExtensions;
+    }
+
+    protected Collection<InstalledExtension> getInstalledExtensions()
+    {
+        Collection<ExtensionId> requestExtensions = getRequest().getExtensions();
+
+        Collection<InstalledExtension> installedExtensions;
+
+        if (requestExtensions != null && !requestExtensions.isEmpty()) {
+            installedExtensions = new ArrayList<>(requestExtensions.size());
+
+            for (ExtensionId requestExtension : requestExtensions) {
+                InstalledExtension installedExtension =
+                    this.installedExtensionRepository.getInstalledExtension(requestExtension);
+                installedExtensions.add(installedExtension);
+            }
+        } else {
+            installedExtensions = this.installedExtensionRepository.getInstalledExtensions();
+        }
+
+        return installedExtensions;
+    }
+
     @Override
     protected void runInternal() throws Exception
     {
         Collection<String> namespaces = getRequest().getNamespaces();
+        Collection<ExtensionId> requestExtensions = getRequest().getExtensions();
+        boolean filterDependencies = requestExtensions == null || requestExtensions.isEmpty();
 
         if (namespaces == null) {
-            Collection<InstalledExtension> installedExtensions =
-                this.installedExtensionRepository.getInstalledExtensions();
+            Collection<InstalledExtension> installedExtensions = getInstalledExtensions();
 
-            this.progressManager.pushLevelProgress(installedExtensions.size(), this);
-
-            try {
-                for (InstalledExtension installedExtension : installedExtensions) {
-                    this.progressManager.startStep(this);
-
-                    if (installedExtension.getNamespaces() == null) {
-                        upgradeExtension(installedExtension, null);
-                    } else {
-                        this.progressManager.pushLevelProgress(installedExtension.getNamespaces().size(), this);
-
-                        try {
-                            for (String namespace : installedExtension.getNamespaces()) {
-                                this.progressManager.startStep(this);
-
-                                upgradeExtension(installedExtension, namespace);
-                            }
-                        } finally {
-                            this.progressManager.popLevelProgress(this);
-                        }
-                    }
-                }
-            } finally {
-                this.progressManager.popLevelProgress(this);
-            }
+            upgrade(installedExtensions, filterDependencies);
         } else {
             this.progressManager.pushLevelProgress(namespaces.size(), this);
 
@@ -178,22 +251,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                 for (String namespace : namespaces) {
                     this.progressManager.startStep(this);
 
-                    Collection<InstalledExtension> installedExtensions =
-                        this.installedExtensionRepository.getInstalledExtensions(namespace);
-
-                    this.progressManager.pushLevelProgress(installedExtensions.size(), this);
-
-                    try {
-                        for (InstalledExtension installedExtension : installedExtensions) {
-                            this.progressManager.startStep(this);
-
-                            if (namespace == null || !installedExtension.isInstalled(null)) {
-                                upgradeExtension(installedExtension, namespace);
-                            }
-                        }
-                    } finally {
-                        this.progressManager.popLevelProgress(this);
-                    }
+                    upgrade(namespace, getInstalledExtensions(namespace), filterDependencies);
                 }
             } finally {
                 this.progressManager.popLevelProgress(this);
