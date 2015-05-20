@@ -58,9 +58,7 @@ public abstract class AbstractGenericComponentManager extends DelegateComponentM
     @Override
     public ComponentManager getComponentManager()
     {
-        String key = getKey();
-        ComponentManager componentManager =
-            key != null ? this.componentManagerManager.getComponentManager(key, false) : null;
+        ComponentManager componentManager = getComponentManagerInternal();
         if (componentManager == null) {
             // There's no specific Component Manager for the Current Context Component Manager.
             // Redirect to the Parent Component Manager if it exists and if not, then use the Null pattern
@@ -73,6 +71,12 @@ public abstract class AbstractGenericComponentManager extends DelegateComponentM
         }
 
         return componentManager;
+    }
+
+    protected ComponentManager getComponentManagerInternal()
+    {
+        String key = getKey();
+        return key != null ? this.componentManagerManager.getComponentManager(key, false) : null;
     }
 
     @Override
