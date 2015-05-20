@@ -73,6 +73,9 @@ public abstract class AbstractGenericComponentManager extends DelegateComponentM
         return componentManager;
     }
 
+    /**
+     * @since 7.1RC1
+     */
     protected ComponentManager getComponentManagerInternal()
     {
         String key = getKey();
