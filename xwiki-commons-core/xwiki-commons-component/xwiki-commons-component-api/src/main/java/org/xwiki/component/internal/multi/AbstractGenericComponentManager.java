@@ -88,12 +88,12 @@ public abstract class AbstractGenericComponentManager extends DelegateComponentM
     {
         synchronized (this) {
             // Make sure the ComponentManager associated to the current key exists
-            this.componentManagerManager.getComponentManager(getKey(), true);
+            ComponentManager componentManager = this.componentManagerManager.getComponentManager(getKey(), true);
 
             if (componentInstance == null) {
-                super.registerComponent(componentDescriptor);
+                componentManager.registerComponent(componentDescriptor);
             } else {
-                super.registerComponent(componentDescriptor, componentInstance);
+                componentManager.registerComponent(componentDescriptor, componentInstance);
             }
         }
     }
