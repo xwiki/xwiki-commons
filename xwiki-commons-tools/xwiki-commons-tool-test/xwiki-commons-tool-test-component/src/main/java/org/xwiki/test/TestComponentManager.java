@@ -23,7 +23,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import org.xwiki.component.embed.EmbeddableComponentManager;
+import org.xwiki.component.internal.StackingComponentEventManager;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
+import org.xwiki.observation.ObservationManager;
 import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.internal.ComponentRegistrator;
@@ -120,6 +123,23 @@ public class TestComponentManager extends EmbeddableComponentManager
             if (declaredMethod.isAnnotationPresent(AfterComponent.class)) {
                 declaredMethod.invoke(testClassInstance);
             }
+        }
+    }
+
+    /**
+     * Enabled notification of component descriptor registration/unregistration.
+     * 
+     * @throws ComponentLookupException when failing to lookup {@link ObservationManager} component
+     */
+    public void notifyComponentDescriptorEvent() throws ComponentLookupException
+    {
+        // Set component event manager if available
+        if (hasComponent(ObservationManager.class)) {
+            StackingComponentEventManager eventManager = new StackingComponentEventManager();
+            eventManager.setObservationManager(this.<ObservationManager>getInstance(ObservationManager.class));
+            eventManager.shouldStack(false);
+
+            setComponentEventManager(eventManager);
         }
     }
 
