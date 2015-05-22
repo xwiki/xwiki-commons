@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.descriptor.ComponentDescriptor;
@@ -182,12 +183,12 @@ public class DefaultObservationManager implements ObservationManager
         if (previousListener != null) {
             removeListener(eventListener.getName());
 
-            this.logger.warn(
-                "The [{}] listener is overwritting a previously "
-                    + "registered listener [{}] since they both are registered under the same id [{}]. "
-                    + "In the future consider removing a Listener first if you really want to register it again.",
-                new Object[] { eventListener.getClass().getName(), previousListener.getClass().getName(),
-                        eventListener.getName() });
+            this.logger.warn("The [{}] listener (loaded from [{}]) is overwritting a previously "
+                + "registered listener [{}] (loaded from [{}]) since they both are registered under the same id [{}]. "
+                + "In the future consider removing a Listener first if you really want to register it again.",
+                eventListener.getClass().getName(), getSourcePath(eventListener.getClass()),
+                previousListener.getClass().getName(), getSourcePath(previousListener.getClass()),
+                eventListener.getName());
         }
 
         // Register the listener by name. If already registered, override it.
@@ -390,6 +391,17 @@ public class DefaultObservationManager implements ObservationManager
 
         if (removedEventListener != null) {
             removeListener(removedEventListener.getName());
+        }
+    }
+
+    private String getSourcePath(Class clazz)
+    {
+        try {
+            return clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
+        } catch (Exception e) {
+            // This can happen for example when there's a security manager set up and the permission has not been given
+            // to get the protection domain.
+            return String.format("Could not compute location: [%s]", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 }
