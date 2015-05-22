@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jdom.DocType;
 import org.jdom.Element;
 import org.jdom.input.DOMBuilder;
@@ -57,10 +58,11 @@ public final class HTMLUtils
      * (&lt;, &gt; &apos; &amp; &#xD; and \r\n). However since we're using HTML Cleaner
      * (http://htmlcleaner.sourceforge.net/) and since it's buggy for character escapes we have turned off character
      * escaping for it and thus we need to perform selective escaping here.
-     *
-     * Moreover, since we support HTML5, we need to expand empty elements on some elements and not on the others.
-     * For example: {@code <span></span>} is valid meanwhile {@code <br></br>} is not.
-     * See {@code OMIT_ELEMENT_EXPANDING_SET} for the list of elements to not expand.
+     * <p>
+     * Moreover, since we support HTML5, we need to
+     * expand empty elements on some elements and not on the others. For example: {@code <span></span>} is valid
+     * meanwhile {@code <br>
+     * </br>} is not. See {@code OMIT_ELEMENT_EXPANDING_SET} for the list of elements to not expand.
      */
     // TODO: Remove the complex escaping code when SF HTML Cleaner will do proper escaping
     public static class XWikiXMLOutputter extends XMLOutputter
@@ -74,6 +76,10 @@ public final class HTMLUtils
          * Ampersand character.
          */
         private static final String AMPERSAND = "&";
+
+        private static final String[] REPLACE_ELEMENTS_SEARCH = new String[] { "<", ">" };
+
+        private static final String[] REPLACE_ELEMENTS_RESULT = new String[] { "&lt;", "&gt;" };
 
         /**
          * Whether to omit the document type when printing the W3C Document or not.
@@ -113,8 +119,7 @@ public final class HTMLUtils
                 }
             } else {
                 result = escapeAmpersand(text);
-                result = result.replaceAll("<", "&lt;");
-                result = result.replaceAll(">", "&gt;");
+                StringUtils.replaceEach(text, REPLACE_ELEMENTS_SEARCH, REPLACE_ELEMENTS_RESULT);
             }
 
             return result;
@@ -126,7 +131,7 @@ public final class HTMLUtils
             String result = escapeElementEntities(text);
 
             // Attribute values must have quotes escaped since attributes are defined with quotes...
-            result = result.replaceAll("\"", "&quot;");
+            result = StringUtils.replace(result, "\"", "&quot;");
 
             return result;
         }
