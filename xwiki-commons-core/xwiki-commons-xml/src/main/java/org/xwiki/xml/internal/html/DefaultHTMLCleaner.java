@@ -97,9 +97,14 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     @Named("attribute")
     private HTMLFilter attributeFilter;
 
+    private DocumentBuilderFactory documentBuilderFactory;
+
     @Override
     public void initialize() throws InitializationException
     {
+        // Get an instance of the DocumentBuilderFactory is very expensive so we keep it
+        this.documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
         // The clean method below is thread safe. However it seems that DOMOutputter.output() is not fully thread safe
         // since it causes the following exception on the first time it's called from different threads:
         //  Caused by: org.jdom.JDOMException: Reflection failed while creating new JAXP document:
@@ -156,11 +161,12 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             // this can cause problem for code not serializing the W3C DOM to a String since it won't have the
             // characters escaped.
             // See https://sourceforge.net/tracker/index.php?func=detail&aid=2691888&group_id=183053&atid=903696
-            Document tempDoc = new XWikiDOMSerializer(cleanerProperties, false).createDOM(cleanedNode);
-            DOMImplementation domImpl =
-                DocumentBuilderFactory.newInstance().newDocumentBuilder().getDOMImplementation();
-            DocumentType docType = domImpl.createDocumentType(QUALIFIED_NAME_HTML, "-//W3C//DTD XHTML 1.0 Strict//EN",
-                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
+            Document tempDoc =
+                new XWikiDOMSerializer(cleanerProperties, false).createDOM(this.documentBuilderFactory, cleanedNode);
+            DOMImplementation domImpl = this.documentBuilderFactory.newDocumentBuilder().getDOMImplementation();
+            DocumentType docType =
+                domImpl.createDocumentType(QUALIFIED_NAME_HTML, "-//W3C//DTD XHTML 1.0 Strict//EN",
+                    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
             result = domImpl.createDocument(null, QUALIFIED_NAME_HTML, docType);
             result.replaceChild(result.adoptNode(tempDoc.getDocumentElement()), result.getDocumentElement());
         } catch (ParserConfigurationException ex) {

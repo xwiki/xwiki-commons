@@ -40,14 +40,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Generate a W3C Document from a SF's HTML Cleaner TagNode.
- * Original implementation by Vladimir Nikic, under the BSD license
- * (see http://htmlcleaner.sourceforge.net/license.php).
- *
- * Modified to bypass following bugs:
+ * Generate a W3C Document from a SF's HTML Cleaner TagNode. Original implementation by Vladimir Nikic, under the BSD
+ * license (see http://htmlcleaner.sourceforge.net/license.php). Modified to bypass following bugs:
  * <ul>
- *   <li>https://sourceforge.net/tracker/?func=detail&aid=2691888&group_id=183053&atid=903696</li>
- *   <li>https://sourceforge.net/tracker/?func=detail&aid=2761963&group_id=183053&atid=903696</li>
+ * <li>https://sourceforge.net/tracker/?func=detail&aid=2691888&group_id=183053&atid=903696</li>
+ * <li>https://sourceforge.net/tracker/?func=detail&aid=2761963&group_id=183053&atid=903696</li>
  * </ul>
  *
  * @version $Id$
@@ -58,8 +55,8 @@ public class XWikiDOMSerializer
     /**
      * The Regex Pattern to recognize a CDATA block.
      */
-    private static final Pattern CDATA_PATTERN =
-        Pattern.compile("<!\\[CDATA\\[.*(\\]\\]>|<!\\[CDATA\\[)", Pattern.DOTALL);
+    private static final Pattern CDATA_PATTERN = Pattern.compile("<!\\[CDATA\\[.*(\\]\\]>|<!\\[CDATA\\[)",
+        Pattern.DOTALL);
 
     private static final String CSS_COMMENT_START = "/*";
 
@@ -94,14 +91,13 @@ public class XWikiDOMSerializer
     }
 
     /**
+     * @param factory the {@link DocumentBuilderFactory} instance to use
      * @param rootNode the HTML Cleaner root node to serialize
      * @return the W3C Document object
      * @throws ParserConfigurationException if there's an error during serialization
      */
-    public Document createDOM(TagNode rootNode) throws ParserConfigurationException
+    public Document createDOM(DocumentBuilderFactory factory, TagNode rootNode) throws ParserConfigurationException
     {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
         Document document = factory.newDocumentBuilder().newDocument();
         Element rootElement = document.createElement(rootNode.getName());
         document.appendChild(rootElement);
