@@ -44,6 +44,11 @@ import org.xwiki.extension.repository.internal.ExtensionSerializer;
 @Singleton
 public class CoreExtensionCache implements Initializable
 {
+    /**
+     * The String to search in a descriptor URL to know if it's inside a jar or another packaged file.
+     */
+    private static final String PACKAGE_MARKER = "!/";
+
     @Inject
     private Environment environment;
 
@@ -74,7 +79,14 @@ public class CoreExtensionCache implements Initializable
             return;
         }
 
-        File file = getFile(extension.getDescriptorURL());
+        URL descriptorURL = extension.getDescriptorURL();
+
+        if (!descriptorURL.getPath().contains(PACKAGE_MARKER)) {
+            // Usually mean jars are not kept, don't cache that or it's going to be a nightmare when upgrading
+            return;
+        }
+
+        File file = getFile(descriptorURL);
 
         // Make sure the file parents exist
         if (!file.exists()) {
@@ -94,6 +106,11 @@ public class CoreExtensionCache implements Initializable
     public DefaultCoreExtension getExtension(DefaultCoreExtensionRepository repository, URL descriptorURL)
     {
         if (this.folder == null) {
+            return null;
+        }
+
+        if (!descriptorURL.getPath().contains(PACKAGE_MARKER)) {
+            // Usually mean jars are not kept, make sure to not take into account such a wrongly cached descriptor
             return null;
         }
 
