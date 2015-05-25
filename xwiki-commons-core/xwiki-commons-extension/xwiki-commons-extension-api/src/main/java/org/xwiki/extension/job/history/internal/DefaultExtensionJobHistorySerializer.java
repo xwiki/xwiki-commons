@@ -74,11 +74,10 @@ public class DefaultExtensionJobHistorySerializer implements ExtensionJobHistory
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<ExtensionJobHistoryRecord> deserialize(String serializedRecords)
     {
-        return (List<ExtensionJobHistoryRecord>) this.xstream.fromXML(serializedRecords);
+        return this.read(new StringReader(serializedRecords));
     }
 
     @SuppressWarnings("unchecked")
