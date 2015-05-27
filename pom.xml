@@ -1105,7 +1105,7 @@ mm
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.7.4.201502262128</version>
+          <version>0.7.5.201505241946</version>
           <configuration>
             <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
                  error, see
