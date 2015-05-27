@@ -304,7 +304,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         Plugin licensePlugin = plugin(
             groupId("com.mycila"),
             artifactId("license-maven-plugin"),
-            version("2.6"));
+            version("2.11"));
         licensePlugin.setDependencies(Collections.singletonList(dep));
 
         executeMojo(
