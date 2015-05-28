@@ -295,6 +295,10 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         Plugin licensePlugin =
             this.project.getPluginManagement().getPluginsAsMap().get("com.mycila:license-maven-plugin");
 
+        if (licensePlugin == null) {
+            throw new MojoExecutionException("License plugin could not be found in <pluginManagement>");
+        }
+
         executeMojo(
             licensePlugin,
             goal(goal),
