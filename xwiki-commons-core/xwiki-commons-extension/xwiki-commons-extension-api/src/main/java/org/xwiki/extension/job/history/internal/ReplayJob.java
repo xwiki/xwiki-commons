@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.job.history.internal;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Named;
@@ -28,7 +29,11 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.job.history.ExtensionJobHistoryRecord;
 import org.xwiki.extension.job.history.ReplayJobStatus;
 import org.xwiki.extension.job.history.ReplayRequest;
+import org.xwiki.extension.job.internal.AbstractExtensionJob;
+import org.xwiki.job.GroupedJob;
 import org.xwiki.job.Job;
+import org.xwiki.job.JobGroupPath;
+import org.xwiki.job.Request;
 import org.xwiki.job.internal.AbstractJob;
 
 /**
@@ -39,17 +44,51 @@ import org.xwiki.job.internal.AbstractJob;
  */
 @Component
 @Named(ReplayJob.JOB_TYPE)
-public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus>
+public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> implements GroupedJob
 {
     /**
      * The id of the job.
      */
     public static final String JOB_TYPE = "replay";
 
+    /**
+     * Specifies the group this job is part of. If all the extension history records to be replayed by this job target
+     * the same wiki then this job is part of the group of extension jobs that run on that wiki (it will only block the
+     * extension jobs that run on that wiki). Otherwise, if there is at least one record that targets multiple wikis or
+     * the root namespace then this job is part of the group of extension jobs that run on global (root) namespace.
+     */
+    private JobGroupPath groupPath;
+
     @Override
     public String getType()
     {
         return JOB_TYPE;
+    }
+
+    @Override
+    public JobGroupPath getGroupPath()
+    {
+        return this.groupPath;
+    }
+
+    @Override
+    public void initialize(Request request)
+    {
+        super.initialize(request);
+
+        // Build the job group path.
+        String targetNamespace = getTargetNamespace();
+        if (targetNamespace != null) {
+            this.groupPath = new JobGroupPath(targetNamespace, AbstractExtensionJob.ROOT_GROUP);
+        } else {
+            this.groupPath = AbstractExtensionJob.ROOT_GROUP;
+        }
+    }
+
+    @Override
+    protected ReplayJobStatus createNewStatus(ReplayRequest request)
+    {
+        return new ReplayJobStatus(request, this.observationManager, this.loggerManager);
     }
 
     @Override
@@ -80,5 +119,30 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus>
         Job job = this.componentManager.getInstance(Job.class, record.getJobType());
         job.initialize(record.getRequest());
         job.run();
+    }
+
+    private String getTargetNamespace()
+    {
+        List<ExtensionJobHistoryRecord> records = this.request.getRecords();
+        if (records == null) {
+            return null;
+        }
+
+        String targetNamespace = null;
+        for (ExtensionJobHistoryRecord record : records) {
+            Collection<String> namespaces = record.getRequest().getNamespaces();
+            if (namespaces != null && namespaces.size() == 1) {
+                String namespace = namespaces.iterator().next();
+                if (targetNamespace == null) {
+                    targetNamespace = namespace;
+                } else if (!targetNamespace.equals(namespace)) {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+
+        return targetNamespace;
     }
 }

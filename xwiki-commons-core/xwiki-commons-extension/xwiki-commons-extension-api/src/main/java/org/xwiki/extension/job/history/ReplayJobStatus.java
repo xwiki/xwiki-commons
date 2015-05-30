@@ -44,7 +44,7 @@ public class ReplayJobStatus extends DefaultJobStatus<ReplayRequest>
      */
     public ReplayJobStatus(ReplayRequest request, ObservationManager observationManager, LoggerManager loggerManager)
     {
-        super(request, observationManager, loggerManager, false);
+        super(request, observationManager, loggerManager, null);
     }
 
     /**

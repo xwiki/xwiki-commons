@@ -37,6 +37,8 @@ import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
+import org.xwiki.job.Job;
+import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.marker.TranslationMarker;
 
 /**
@@ -78,8 +80,10 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
     @Override
     protected DefaultExtensionPlan<R> createNewStatus(R request)
     {
+        Job currentJob = this.jobContext.getCurrentJob();
+        JobStatus currentJobStatus = currentJob != null ? currentJob.getStatus() : null;
         return new DefaultExtensionPlan<R>(request, this.observationManager, this.loggerManager, this.extensionTree,
-            this.jobContext.getCurrentJob() != null);
+            currentJobStatus);
     }
 
     /**

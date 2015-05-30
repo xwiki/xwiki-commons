@@ -187,7 +187,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private static final String FOLDER_NULL = "&null";
 
-    private static final JobStatus NOSTATUS = new DefaultJobStatus<Request>(null, null, null, false);
+    private static final JobStatus NOSTATUS = new DefaultJobStatus<Request>(null, null, null, null);
 
     /**
      * Used to get the storage directory.
