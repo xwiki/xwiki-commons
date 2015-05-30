@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -31,7 +30,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -41,16 +39,12 @@ import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelecto
 import org.codehaus.plexus.components.io.resources.PlexusIoFileResourceCollection;
 import org.codehaus.plexus.components.io.resources.PlexusIoResource;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.groupId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.name;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
 /**
  * Common code for the Verify and Format Mojos.
@@ -296,16 +290,14 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      */
     protected void executeLicenseGoal(String goal) throws MojoExecutionException
     {
-        Dependency dep = new Dependency();
-        dep.setGroupId("org.xwiki.commons");
-        dep.setArtifactId("xwiki-commons-tool-verification-resources");
-        dep.setVersion(getXWikiCommonsVersion());
+        // Find the license plugin (it's project's responsibility to make sure the License plugin is properly setup in
+        // its <pluginManagement>, for most XWiki projects it just mean inherits from xwiki-commons-pom)
+        Plugin licensePlugin =
+            this.project.getPluginManagement().getPluginsAsMap().get("com.mycila:license-maven-plugin");
 
-        Plugin licensePlugin = plugin(
-            groupId("com.mycila"),
-            artifactId("license-maven-plugin"),
-            version("2.6"));
-        licensePlugin.setDependencies(Collections.singletonList(dep));
+        if (licensePlugin == null) {
+            throw new MojoExecutionException("License plugin could not be found in <pluginManagement>");
+        }
 
         executeMojo(
             licensePlugin,
