@@ -31,6 +31,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.history.ExtensionJobHistory;
 import org.xwiki.extension.job.history.ExtensionJobHistoryRecord;
+import org.xwiki.extension.job.history.ReplayJobStatus;
 import org.xwiki.job.Job;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.internal.AbstractJobStatus;
@@ -84,8 +85,8 @@ public class ExtensionJobHistoryRecorder implements EventListener
             return;
         }
 
-        if (job.getStatus() instanceof AbstractJobStatus && ((AbstractJobStatus<?>) job.getStatus()).isSubJob()) {
-            // We record only the requests that have been made explicitly.
+        if (job.getStatus() instanceof AbstractJobStatus && isSubJob((AbstractJobStatus<?>) job.getStatus())) {
+            // We record only the jobs that have been triggered explicitly or that are part of a replay.
             return;
         }
 
@@ -93,5 +94,10 @@ public class ExtensionJobHistoryRecorder implements EventListener
         // event listeners are called so it's not available right now.
         this.history.addRecord(new ExtensionJobHistoryRecord(job.getType(), (ExtensionRequest) job.getRequest(), null,
             job.getStatus().getStartDate(), new Date()));
+    }
+
+    private <T extends AbstractJobStatus<?>> boolean isSubJob(T jobStatus)
+    {
+        return jobStatus.isSubJob() && !(jobStatus.getParentJobStatus() instanceof ReplayJobStatus);
     }
 }

@@ -34,6 +34,7 @@ import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.event.LoggerListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base implementation of {@link JobStatus}.
@@ -286,6 +287,17 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public boolean isSubJob()
     {
         return this.parentJobStatus != null;
+    }
+
+    /**
+     * @return the status of the parent job, i.e. the status of the job that started this one; returns {@code null} if
+     *         the job has no parent, i.e. if the job hasn't been started by another job
+     * @since 7.1RC1
+     */
+    @Unstable
+    public JobStatus getParentJobStatus()
+    {
+        return this.parentJobStatus;
     }
 
     /**
