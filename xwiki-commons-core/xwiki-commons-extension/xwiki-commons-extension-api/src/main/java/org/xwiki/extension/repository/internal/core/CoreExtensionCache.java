@@ -22,16 +22,19 @@ package org.xwiki.extension.repository.internal.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.environment.Environment;
+import org.xwiki.extension.internal.PathUtils;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
 
 /**
@@ -132,11 +135,45 @@ public class CoreExtensionCache implements Initializable
         return null;
     }
 
+    private String getExtensionFileName(URL url)
+    {
+        URL extensionURL;
+        try {
+            extensionURL = PathUtils.getExtensionURL(url);
+        } catch (MalformedURLException e) {
+            return null;
+        }
+
+        String extensionPath = extensionURL.toExternalForm();
+        int index = extensionPath.lastIndexOf('/');
+        if (index > 0 && index < extensionPath.length()) {
+            extensionPath = extensionPath.substring(index + 1);
+
+            index = extensionPath.lastIndexOf('.');
+            if (index > 0 && index < extensionPath.length()) {
+                extensionPath = extensionPath.substring(0, index);
+            }
+
+            return extensionPath;
+        }
+
+        return null;
+    }
+
     private File getFile(URL url)
     {
-        // FIXME: make it more unique
-        String fileName = String.valueOf(url.toExternalForm().hashCode());
+        StringBuilder builder = new StringBuilder();
 
-        return new File(this.folder, fileName + ".xed");
+        String fileName = getExtensionFileName(url);
+        if (fileName != null) {
+            builder.append(fileName);
+            builder.append('-');
+        }
+
+        builder.append(DigestUtils.md5Hex(url.toExternalForm()));
+
+        builder.append(".xed");
+
+        return new File(this.folder, builder.toString());
     }
 }

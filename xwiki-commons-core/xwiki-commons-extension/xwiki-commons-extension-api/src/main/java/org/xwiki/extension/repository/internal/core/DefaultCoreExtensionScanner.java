@@ -21,7 +21,6 @@ package org.xwiki.extension.repository.internal.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,6 +52,7 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.internal.PathUtils;
 import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.internal.MavenExtension;
@@ -138,25 +138,6 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
         return artifactId;
     }
 
-    private URL getExtensionURL(URL descriptorURL) throws MalformedURLException
-    {
-        String extensionURLStr = descriptorURL.toString();
-        extensionURLStr =
-            extensionURLStr.substring(0, descriptorURL.toString().indexOf(MavenUtils.MAVENPACKAGE.replace('.', '/')));
-
-        if (extensionURLStr.startsWith("jar:")) {
-            int start = "jar:".length();
-            int end = extensionURLStr.length();
-            if (extensionURLStr.endsWith("!/")) {
-                end -= "!/".length();
-            }
-
-            extensionURLStr = extensionURLStr.substring(start, end);
-        }
-
-        return new URL(extensionURLStr);
-    }
-
     private DefaultCoreExtension getCoreExension(URL descriptorURL, DefaultCoreExtensionRepository repository)
         throws Exception
     {
@@ -177,7 +158,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model mavenModel = reader.read(descriptorStream);
 
-            URL extensionURL = getExtensionURL(descriptorURL);
+            URL extensionURL = PathUtils.getExtensionURL(descriptorURL);
 
             Extension mavenExtension = this.converter.convert(Extension.class, mavenModel);
 

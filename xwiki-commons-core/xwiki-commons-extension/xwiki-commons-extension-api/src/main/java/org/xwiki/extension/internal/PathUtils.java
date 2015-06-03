@@ -20,7 +20,11 @@
 package org.xwiki.extension.internal;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
+
+import org.xwiki.extension.internal.maven.MavenUtils;
 
 /**
  * Various path utilities.
@@ -30,6 +34,10 @@ import java.net.URLEncoder;
  */
 public final class PathUtils
 {
+    private static final String JAR_PREFIX = "jar:";
+
+    private static final String JAR_SEPARATOR = "!/";
+
     private PathUtils()
     {
         // Utility class
@@ -40,6 +48,7 @@ public final class PathUtils
      * 
      * @param str the file or directory name to encode
      * @return the encoded name
+     * @since 7.1RC1
      */
     public static String encode(String str)
     {
@@ -53,5 +62,29 @@ public final class PathUtils
         }
 
         return encoded;
+    }
+
+    /**
+     * @param descriptorURL the URL to the core extension descriptor
+     * @return the URL to the core extension file
+     * @throws MalformedURLException when failing to create a URL
+     */
+    public static URL getExtensionURL(URL descriptorURL) throws MalformedURLException
+    {
+        String extensionURLStr = descriptorURL.toString();
+        extensionURLStr =
+            extensionURLStr.substring(0, descriptorURL.toString().indexOf(MavenUtils.MAVENPACKAGE.replace('.', '/')));
+
+        if (extensionURLStr.startsWith(JAR_PREFIX)) {
+            int start = JAR_PREFIX.length();
+            int end = extensionURLStr.length();
+            if (extensionURLStr.endsWith(JAR_SEPARATOR)) {
+                end -= JAR_SEPARATOR.length();
+            }
+
+            extensionURLStr = extensionURLStr.substring(start, end);
+        }
+
+        return new URL(extensionURLStr);
     }
 }
