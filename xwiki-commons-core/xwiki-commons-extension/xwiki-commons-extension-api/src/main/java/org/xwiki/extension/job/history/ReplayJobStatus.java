@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.job.history;
 
+import java.util.List;
+
 import org.xwiki.job.internal.DefaultJobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
@@ -63,5 +65,18 @@ public class ReplayJobStatus extends DefaultJobStatus<ReplayRequest>
     public void setCurrentRecordNumber(int currentRecordNumber)
     {
         this.currentRecordNumber = currentRecordNumber;
+    }
+
+    /**
+     * @return the record that is currently being replayed
+     */
+    public ExtensionJobHistoryRecord getCurrentRecord()
+    {
+        int index = this.currentRecordNumber;
+        List<ExtensionJobHistoryRecord> records = getRequest().getRecords();
+        if (records != null && index >= 0 && index < records.size()) {
+            return records.get(index);
+        }
+        return null;
     }
 }

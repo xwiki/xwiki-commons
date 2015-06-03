@@ -42,7 +42,7 @@ public class ExtensionJobHistoryRecord
 
     private final ExtensionRequest request;
 
-    private final Map<String, Object> answers;
+    private final Map<String, QuestionRecorder<Object>> answers;
 
     private final Date startDate;
 
@@ -55,16 +55,18 @@ public class ExtensionJobHistoryRecord
      * @param request the extension request
      * @param answers the answers that were given by the user to the questions asked by the job specified by this
      *            history record (if the job was interactive); the key in the given map identifies the question type;
-     *            the value depends on the question
+     *            the value represents the recorded answers for the corresponding question type
      * @param startDate the date when the job execution started
      * @param endDate the date when the job execution ended
      */
-    public ExtensionJobHistoryRecord(String jobType, ExtensionRequest request, Map<String, Object> answers,
-        Date startDate, Date endDate)
+    public ExtensionJobHistoryRecord(String jobType, ExtensionRequest request,
+        Map<String, QuestionRecorder<Object>> answers, Date startDate, Date endDate)
     {
         this.jobType = jobType;
         this.request = request;
-        this.answers = answers != null ? Collections.unmodifiableMap(answers) : Collections.<String, Object>emptyMap();
+        this.answers =
+            answers != null ? Collections.unmodifiableMap(answers) : Collections
+                .<String, QuestionRecorder<Object>>emptyMap();
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -88,9 +90,9 @@ public class ExtensionJobHistoryRecord
     /**
      * @return the answers that were given by the user to the questions asked by the job specified by this history
      *         record (if the job was interactive); the key in the returned map identifies the question type; the value
-     *         depends on the question
+     *         represents the recorded answers for the corresponding question type
      */
-    public Map<String, Object> getAnswers()
+    public Map<String, QuestionRecorder<Object>> getAnswers()
     {
         return answers;
     }

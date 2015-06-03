@@ -9,6 +9,7 @@ org.xwiki.extension.internal.safe.CollectionScriptSafeProvider
 org.xwiki.extension.internal.safe.DefaultScriptSafeProvider
 org.xwiki.extension.internal.safe.MapScriptSafeProvider
 org.xwiki.extension.internal.converter.ExtensionConverter
+org.xwiki.extension.job.history.internal.AnswerReplayer
 org.xwiki.extension.job.history.internal.DefaultExtensionJobHistory
 org.xwiki.extension.job.history.internal.DefaultExtensionJobHistoryConfiguration
 org.xwiki.extension.job.history.internal.DefaultExtensionJobHistorySerializer
