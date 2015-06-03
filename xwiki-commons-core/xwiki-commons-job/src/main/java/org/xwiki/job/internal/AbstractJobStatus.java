@@ -27,6 +27,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.event.status.QuestionAnsweredEvent;
+import org.xwiki.job.event.status.QuestionAskedEvent;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
@@ -220,7 +222,14 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
             if (isSubJob()) {
                 this.parentJobStatus.ask(question);
             } else {
-                this.answered.await();
+                String questionType = question != null ? question.getClass().getName() : null;
+                QuestionAskedEvent event = new QuestionAskedEvent(questionType, this.request.getId());
+                this.observationManager.notify(event, this);
+                if (event.isAnswered()) {
+                    answered();
+                } else {
+                    this.answered.await();
+                }
             }
             this.state = State.RUNNING;
         } finally {
@@ -239,12 +248,14 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     {
         this.askLock.lock();
 
-        this.question = null;
-
         try {
             if (isSubJob()) {
+                this.question = null;
                 this.parentJobStatus.answered();
             } else {
+                String questionType = question != null ? question.getClass().getName() : null;
+                this.observationManager.notify(new QuestionAnsweredEvent(questionType, this.request.getId()), this);
+                this.question = null;
                 this.answered.signal();
             }
         } finally {
