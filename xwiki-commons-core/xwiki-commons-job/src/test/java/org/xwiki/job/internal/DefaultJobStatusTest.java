@@ -19,13 +19,21 @@
  */
 package org.xwiki.job.internal;
 
+import java.util.Arrays;
+
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.event.status.QuestionAnsweredEvent;
+import org.xwiki.job.event.status.QuestionAskedEvent;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
+import org.xwiki.observation.event.Event;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -56,5 +64,51 @@ public class DefaultJobStatusTest
 
         assertNull(jobStatus.getQuestion());
         verify(parentJobStatus).answered();
+
+        // Only the parent job status should fire QuestionAsked/Answered events.
+        verify(this.observationManager, never()).notify(any(Event.class), anyObject());
+        verify(this.observationManager, never()).notify(any(Event.class), anyObject(), anyObject());
+    }
+
+    @Test
+    public void fireQuestionAnsweredOK()
+    {
+        DefaultRequest request = new DefaultRequest();
+        request.setId(Arrays.asList("test", "answered"));
+
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>(request, this.observationManager, this.loggerManager, null);
+
+        jobStatus.answered();
+
+        // The question type is null because we didn't asked any question.
+        verify(this.observationManager).notify(new QuestionAnsweredEvent(null, request.getId()), jobStatus);
+    }
+
+    @Test
+    public void fireQuestionAskedOK() throws Exception
+    {
+        DefaultRequest request = new DefaultRequest();
+        request.setId(Arrays.asList("test", "asked"));
+
+        DefaultJobStatus<DefaultRequest> jobStatus =
+            new DefaultJobStatus<>(request, this.observationManager, this.loggerManager, null);
+
+        QuestionAskedEvent questionAsked = new QuestionAskedEvent(String.class.getName(), request.getId());
+        doAnswer(new Answer<Void>()
+        {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable
+            {
+                QuestionAskedEvent event = (QuestionAskedEvent) invocation.getArguments()[0];
+                event.answered();
+                return null;
+            }
+        }).when(this.observationManager).notify(questionAsked, jobStatus);
+
+        jobStatus.ask("What's up?");
+
+        QuestionAnsweredEvent questionAnswered = new QuestionAnsweredEvent(String.class.getName(), request.getId());
+        verify(this.observationManager).notify(questionAnswered, jobStatus);
     }
 }

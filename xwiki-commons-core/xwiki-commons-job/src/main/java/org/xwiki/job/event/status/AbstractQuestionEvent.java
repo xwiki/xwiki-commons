@@ -21,6 +21,8 @@ package org.xwiki.job.event.status;
 
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -100,5 +102,31 @@ public abstract class AbstractQuestionEvent implements QuestionEvent
     private boolean matchesJobId(List<String> jobId)
     {
         return jobId == null || this.jobId == null || this.jobId.equals(jobId);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(7, 11).append(this.jobId).append(this.questionType).build();
+    }
+
+    @Override
+    public boolean equals(Object object)
+    {
+        if (object == null) {
+            return false;
+        }
+
+        if (object == this) {
+            return true;
+        }
+
+        if (object.getClass() != getClass()) {
+            return false;
+        }
+
+        QuestionEvent event = (QuestionEvent) object;
+        return new EqualsBuilder().append(this.jobId, event.getJobId())
+            .append(this.questionType, event.getQuestionType()).build();
     }
 }
