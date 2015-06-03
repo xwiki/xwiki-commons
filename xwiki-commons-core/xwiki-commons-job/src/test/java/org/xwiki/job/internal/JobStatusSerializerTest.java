@@ -166,7 +166,7 @@ public class JobStatusSerializerTest
     @Test
     public void test() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         writeread(status);
     }
@@ -174,7 +174,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLog() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message");
 
@@ -187,7 +187,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithException() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new Exception("exception message", new Exception("cause")));
 
@@ -201,7 +201,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithArguments() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", "arg1", "arg2");
 
@@ -216,7 +216,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithComponentArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new DefaultJobStatusStore());
 
@@ -230,7 +230,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithStandaloneComponentArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new StandaloneComponent());
 
@@ -244,7 +244,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithSerializableStandaloneComponentArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableStandaloneComponent());
 
@@ -259,7 +259,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithCrossReference() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("message", new CrossReferenceObjectTest());
 
@@ -272,7 +272,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithComponentField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new ObjectTest(new DefaultJobStatusStore()));
 
@@ -285,7 +285,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithStandaloneComponentField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new ObjectTest(new StandaloneComponent()));
 
@@ -298,7 +298,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithLoggerField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new ObjectTest(mock(Logger.class)));
 
@@ -311,7 +311,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithProviderField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new ObjectTest(mock(Provider.class)));
 
@@ -324,7 +324,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithComponentManagerField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new ObjectTest(mock(ComponentManager.class)));
 
@@ -337,7 +337,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithSerializableProviderField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new ObjectTest(new SerializableProvider()));
 
@@ -352,7 +352,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithSerializableImplementationProviderField() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new ObjectTest(new SerializableImplementationProvider()));
 
@@ -367,7 +367,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithCustomObjectArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new CustomObject("value"));
 
@@ -381,7 +381,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithSerializableCustomObjectArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new SerializableCustomObject("value"));
 
@@ -395,7 +395,7 @@ public class JobStatusSerializerTest
     @Test
     public void testLogWithNotSerializableCustomObjectArgument() throws IOException
     {
-        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, false);
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
         status.getLog().error("error message", new NotSerializableCustomObject("value"));
 

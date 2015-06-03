@@ -313,8 +313,9 @@ public abstract class AbstractJob<R extends Request, S extends AbstractJobStatus
      */
     protected S createNewStatus(R request)
     {
-        return (S) new DefaultJobStatus<R>(request, this.observationManager, this.loggerManager,
-            this.jobContext.getCurrentJob() != null);
+        Job currentJob = this.jobContext.getCurrentJob();
+        JobStatus currentJobStatus = currentJob != null ? currentJob.getStatus() : null;
+        return (S) new DefaultJobStatus<R>(request, this.observationManager, this.loggerManager, currentJobStatus);
     }
 
     /**

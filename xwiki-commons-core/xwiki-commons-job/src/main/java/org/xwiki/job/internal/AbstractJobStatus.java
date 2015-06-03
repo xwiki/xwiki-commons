@@ -27,6 +27,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.job.event.status.QuestionAnsweredEvent;
+import org.xwiki.job.event.status.QuestionAskedEvent;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
@@ -34,6 +36,7 @@ import org.xwiki.logging.event.LogEvent;
 import org.xwiki.logging.event.LoggerListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base implementation of {@link JobStatus}.
@@ -105,9 +108,10 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private Date endDate;
 
     /**
-     * Indicate if the job has been started by another one.
+     * The status of the parent job, i.e. the status of the job that started this one. This is {@code null} if the job
+     * has no parent, i.e. if the job hasn't been started by another job.
      */
-    private boolean subJob;
+    private JobStatus parentJobStatus;
 
     /**
      * Indicate if Job log should be grabbed.
@@ -118,16 +122,17 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      * @param request the request provided when started the job
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
-     * @param subJob indicate of the job has been started by another one
+     * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
+     *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
      */
     public AbstractJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager,
-        boolean subJob)
+        JobStatus parentJobStatus)
     {
         this.request = request;
         this.observationManager = observationManager;
         this.loggerManager = loggerManager;
-        this.subJob = subJob;
-        this.isolated = !subJob;
+        this.parentJobStatus = parentJobStatus;
+        this.isolated = parentJobStatus == null;
 
         this.logs = new LogQueue();
     }
@@ -214,7 +219,18 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         try {
             // Wait for the answer
             this.state = State.WAITING;
-            this.answered.await();
+            if (isSubJob()) {
+                this.parentJobStatus.ask(question);
+            } else {
+                String questionType = question != null ? question.getClass().getName() : null;
+                QuestionAskedEvent event = new QuestionAskedEvent(questionType, this.request.getId());
+                this.observationManager.notify(event, this);
+                if (event.isAnswered()) {
+                    answered();
+                } else {
+                    this.answered.await();
+                }
+            }
             this.state = State.RUNNING;
         } finally {
             this.askLock.unlock();
@@ -232,10 +248,16 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     {
         this.askLock.lock();
 
-        this.question = null;
-
         try {
-            this.answered.signal();
+            if (isSubJob()) {
+                this.question = null;
+                this.parentJobStatus.answered();
+            } else {
+                String questionType = question != null ? question.getClass().getName() : null;
+                this.observationManager.notify(new QuestionAnsweredEvent(questionType, this.request.getId()), this);
+                this.question = null;
+                this.answered.signal();
+            }
         } finally {
             this.askLock.unlock();
         }
@@ -275,7 +297,18 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      */
     public boolean isSubJob()
     {
-        return this.subJob;
+        return this.parentJobStatus != null;
+    }
+
+    /**
+     * @return the status of the parent job, i.e. the status of the job that started this one; returns {@code null} if
+     *         the job has no parent, i.e. if the job hasn't been started by another job
+     * @since 7.1RC1
+     */
+    @Unstable
+    public JobStatus getParentJobStatus()
+    {
+        return this.parentJobStatus;
     }
 
     /**
