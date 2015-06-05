@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.xwiki.context.internal.DefaultExecution;
 import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
@@ -48,7 +49,8 @@ import org.xwiki.xml.internal.html.filter.ListItemFilter;
     FontFilter.class,
     BodyFilter.class,
     AttributeFilter.class,
-    DefaultHTMLCleaner.class
+    DefaultHTMLCleaner.class,
+    DefaultExecution.class
 })
 public class HTMLUtilsTest
 {

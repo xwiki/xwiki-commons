@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.xwiki.test.ComponentManagerRule;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLUtils;
@@ -50,38 +50,24 @@ import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
  * @version $Id$
  * @since 1.6M1
  */
-@ComponentList({
-    ListFilter.class,
-    ListItemFilter.class,
-    FontFilter.class,
-    BodyFilter.class,
-    AttributeFilter.class,
-    UniqueIdFilter.class,
-    DefaultHTMLCleaner.class
-})
+@ComponentList({ ListFilter.class, ListItemFilter.class, FontFilter.class, BodyFilter.class, AttributeFilter.class,
+UniqueIdFilter.class, DefaultHTMLCleaner.class })
 public class DefaultHTMLCleanerTest
 {
-    public static final String HEADER =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-            + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
+    public static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
+        + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
 
     private static final String HEADER_FULL = HEADER + "<html><head></head><body>";
 
     private static final String FOOTER = "</body></html>\n";
 
-    private HTMLCleaner cleaner;
-
     @Rule
-    public final ComponentManagerRule componentManager = new ComponentManagerRule();
-
-    @Before
-    public void setUp() throws Exception
-    {
-        this.cleaner = this.componentManager.getInstance(HTMLCleaner.class);
-    }
+    public final MockitoComponentMockingRule<HTMLCleaner> mocker = new MockitoComponentMockingRule<HTMLCleaner>(
+        DefaultHTMLCleaner.class);
 
     @Test
-    public void elementExpansion()
+    public void elementExpansion() throws ComponentLookupException
     {
         assertHTML("<p><textarea></textarea></p>", "<textarea/>");
 
@@ -91,7 +77,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void specialCharacters()
+    public void specialCharacters() throws ComponentLookupException
     {
         // TODO: We still have a problem I think in that if there are characters such as "&" or quote in the source
         // text they are not escaped. This is because we have use "false" in DefaultHTMLCleaner here:
@@ -109,13 +95,13 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void closeUnbalancedTags()
+    public void closeUnbalancedTags() throws ComponentLookupException
     {
         assertHTML("<hr /><p>hello</p>", "<hr><p>hello");
     }
 
     @Test
-    public void conversionsFromHTML()
+    public void conversionsFromHTML() throws ComponentLookupException
     {
         assertHTML("<p>this <strong>is</strong> bold</p>", "this <b>is</b> bold");
         assertHTML("<p><em>italic</em></p>", "<i>italic</i>");
@@ -132,7 +118,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void convertImageAlignment()
+    public void convertImageAlignment() throws ComponentLookupException
     {
         assertHTML("<p><img style=\"float:left\" /></p>", "<img align=\"left\"/>");
         assertHTML("<p><img style=\"float:right\" /></p>", "<img align=\"right\"/>");
@@ -142,7 +128,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void convertImplicitParagraphs()
+    public void convertImplicitParagraphs() throws ComponentLookupException
     {
         assertHTML("<p>word1</p><p>word2</p><p>word3</p><hr /><p>word4</p>", "word1<p>word2</p>word3<hr />word4");
 
@@ -162,7 +148,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void cleanNonXHTMLLists()
+    public void cleanNonXHTMLLists() throws ComponentLookupException
     {
         // Fixing invalid list item.
         assertHTML("<ul><li>item</li></ul>", "<li>item</li>");
@@ -192,7 +178,7 @@ public class DefaultHTMLCleanerTest
      * Verify that scripts are not cleaned and that we can have a CDATA section inside. Also verify CDATA behaviors.
      */
     @Test
-    public void scriptAndCData()
+    public void scriptAndCData() throws ComponentLookupException
     {
         assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\nalert(\"Hello World\")\n\n//]]></script>",
             "<script type=\"text/javascript\"><![CDATA[\nalert(\"Hello World\")\n]]></script>");
@@ -203,19 +189,14 @@ public class DefaultHTMLCleanerTest
         assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\nalert(\"Hello World\")\n\n//]]></script>",
             "<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>");
 
-        assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\n\n"
+        assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\n\n" + "function escapeForXML(origtext) {\n"
+            + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
+            + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n\n\n//]]>"
+            + "</script>", "<script type=\"text/javascript\">\n" + "/*<![CDATA[*/\n"
             + "function escapeForXML(origtext) {\n"
             + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
-            + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');"
-            + "}\n\n\n//]]>"
-            + "</script>", "<script type=\"text/javascript\">\n"
-            + "/*<![CDATA[*/\n"
-            + "function escapeForXML(origtext) {\n"
-            + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
-            + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');"
-            + "}\n"
-            + "/*]]>*/\n"
-            + "</script>");
+            + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n"
+            + "/*]]>*/\n" + "</script>");
 
         assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script>&lt;&gt;</script>");
         assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script><></script>");
@@ -230,7 +211,7 @@ public class DefaultHTMLCleanerTest
      * Verify that inline style elements are not cleaned and that we can have a CDATA section inside.
      */
     @Test
-    public void styleAndCData()
+    public void styleAndCData() throws ComponentLookupException
     {
         assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
             "<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>");
@@ -249,11 +230,12 @@ public class DefaultHTMLCleanerTest
      * Verify that we can control what filters are used for cleaning.
      */
     @Test
-    public void explicitFilterList()
+    public void explicitFilterList() throws ComponentLookupException
     {
-        HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
+        HTMLCleanerConfiguration configuration = this.mocker.getComponentUnderTest().getDefaultConfiguration();
         configuration.setFilters(Collections.<HTMLFilter>emptyList());
-        String result = HTMLUtils.toString(this.cleaner.clean(new StringReader("something"), configuration));
+        String result =
+            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader("something"), configuration));
         // Note that if the default Body filter had been executed the result would have been:
         // <p>something</p>.
         Assert.assertEquals(HEADER_FULL + "something" + FOOTER, result);
@@ -263,20 +245,22 @@ public class DefaultHTMLCleanerTest
      * Verify that the restricted parameter works.
      */
     @Test
-    public void restrictedHtml()
+    public void restrictedHtml() throws ComponentLookupException
     {
-        HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
+        HTMLCleanerConfiguration configuration = this.mocker.getComponentUnderTest().getDefaultConfiguration();
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.putAll(configuration.getParameters());
         parameters.put("restricted", "true");
         configuration.setParameters(parameters);
 
-        String result = HTMLUtils.toString(this.cleaner.clean(new StringReader("<script>alert(\"foo\")</script>"),
-            configuration));
+        String result =
+            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(
+                new StringReader("<script>alert(\"foo\")</script>"), configuration));
         Assert.assertEquals(HEADER_FULL + "<pre>alert(\"foo\")</pre>" + FOOTER, result);
 
-        result = HTMLUtils.toString(this.cleaner.clean(new StringReader("<style>p {color:white;}</style>"),
-            configuration));
+        result =
+            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(
+                new StringReader("<style>p {color:white;}</style>"), configuration));
         Assert.assertEquals(HEADER_FULL + "<pre>p {color:white;}</pre>" + FOOTER, result);
 
     }
@@ -285,7 +269,7 @@ public class DefaultHTMLCleanerTest
      * Verify that passing a fully-formed XHTML header works fine.
      */
     @Test
-    public void fullXHTMLHeader()
+    public void fullXHTMLHeader() throws ComponentLookupException
     {
         assertHTML("<p>test</p>", HEADER_FULL + "<p>test</p>" + FOOTER);
     }
@@ -298,59 +282,57 @@ public class DefaultHTMLCleanerTest
     {
         String actual = "<p id=\"x\">1</p><p id=\"xy\">2</p><p id=\"x\">3</p>";
         String expected = "<p id=\"x\">1</p><p id=\"xy\">2</p><p id=\"x0\">3</p>";
-        HTMLCleanerConfiguration config = this.cleaner.getDefaultConfiguration();
+        HTMLCleanerConfiguration config = this.mocker.getComponentUnderTest().getDefaultConfiguration();
         List<HTMLFilter> filters = new ArrayList<HTMLFilter>(config.getFilters());
-        filters.add(this.componentManager.<HTMLFilter> getInstance(HTMLFilter.class, "uniqueId"));
+        filters.add(this.mocker.<HTMLFilter>getInstance(HTMLFilter.class, "uniqueId"));
         config.setFilters(filters);
         Assert.assertEquals(HEADER_FULL + expected + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual), config)));
+            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(actual), config)));
     }
 
     /**
-     * Test that tags with a namespace are not considered as unknown tags by HTMLCleaner
-     * (see also <a href="http://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
+     * Test that tags with a namespace are not considered as unknown tags by HTMLCleaner (see also <a
+     * href="http://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
      */
     @Test
     public void cleanSVGTags() throws Exception
     {
-        String input = "<p>before</p>\n"
-            + "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
-            +   "<circle cx=\"100\" cy=\"50\" fill=\"red\" r=\"40\" stroke=\"black\" stroke-width=\"2\"></circle>\n"
-            + "</svg>\n"
-            + "<p>after</p>\n";
+        String input =
+            "<p>before</p>\n" + "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
+                + "<circle cx=\"100\" cy=\"50\" fill=\"red\" r=\"40\" stroke=\"black\" stroke-width=\"2\"></circle>\n"
+                + "</svg>\n" + "<p>after</p>\n";
         assertHTML(input, HEADER_FULL + input + FOOTER);
     }
 
     /**
      * Test that cleaning works when there's a TITLE element in the body (but with a namespace). The issue was that
-     * HTMLCleaner would consider it a duplicate of the TITLE element in the HEAD even though it's namespaced.
-     * (see also <a href="http://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
+     * HTMLCleaner would consider it a duplicate of the TITLE element in the HEAD even though it's namespaced. (see also
+     * <a href="http://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
      */
     @Test
     @Ignore("See http://jira.xwiki.org/browse/XWIKI-9753")
     public void cleanTitleWithNamespace() throws Exception
     {
         // Test with TITLE in HEAD
-        String input = "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">\n"
-            + "  <head>\n"
-            + "    <title>Title test</title>\n"
-            + "  </head>\n"
-            + "  <body>\n"
-            + "    <p>before</p>\n"
-            + "    <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"300\" width=\"500\">\n"
-            + "      <g>\n"
-            + "        <title>SVG Title Demo example</title>\n"
-            + "        <rect height=\"50\" style=\"fill:none; stroke:blue; stroke-width:1px\" width=\"200\" x=\"10\" "
-            + "y=\"10\"></rect>\n"
-            + "      </g>\n"
-            + "    </svg>\n"
-            + "    <p>after</p>\n";
-        Assert.assertEquals(HEADER + input + FOOTER, HTMLUtils.toString(this.cleaner.clean(new StringReader(input))));
+        String input =
+            "<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">\n"
+                + "  <head>\n"
+                + "    <title>Title test</title>\n"
+                + "  </head>\n"
+                + "  <body>\n"
+                + "    <p>before</p>\n"
+                + "    <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"300\" width=\"500\">\n"
+                + "      <g>\n"
+                + "        <title>SVG Title Demo example</title>\n"
+                + "        <rect height=\"50\" style=\"fill:none; stroke:blue; stroke-width:1px\" width=\"200\" x=\"10\" "
+                + "y=\"10\"></rect>\n" + "      </g>\n" + "    </svg>\n" + "    <p>after</p>\n";
+        Assert.assertEquals(HEADER + input + FOOTER,
+            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(input))));
     }
 
     /**
-     * Test that cleaning an empty DIV works (it used to fail, see
-     * <a href="http://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
+     * Test that cleaning an empty DIV works (it used to fail, see <a
+     * href="http://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
      */
     @Test
     public void cleanEmptyDIV() throws Exception
@@ -372,15 +354,15 @@ public class DefaultHTMLCleanerTest
         assertHTML("<p><span class=\"fa fa-icon\"></span></p>", "<span class=\"fa fa-icon\" />");
     }
 
-    private void assertHTML(String expected, String actual)
+    private void assertHTML(String expected, String actual) throws ComponentLookupException
     {
         Assert.assertEquals(HEADER_FULL + expected + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
+            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(actual))));
     }
 
-    private void assertHTMLWithHeadContent(String expected, String actual)
+    private void assertHTMLWithHeadContent(String expected, String actual) throws ComponentLookupException
     {
         Assert.assertEquals(HEADER + "<html><head>" + expected + "</head><body>" + FOOTER,
-            HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
+            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(actual))));
     }
 }

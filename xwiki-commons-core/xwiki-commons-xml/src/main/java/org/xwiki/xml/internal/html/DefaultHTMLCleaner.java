@@ -26,6 +26,7 @@ import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -40,6 +41,8 @@ import org.w3c.dom.DocumentType;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLConstants;
@@ -97,14 +100,12 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     @Named("attribute")
     private HTMLFilter attributeFilter;
 
-    private DocumentBuilderFactory documentBuilderFactory;
+    @Inject
+    private Execution execution;
 
     @Override
     public void initialize() throws InitializationException
     {
-        // Get an instance of the DocumentBuilderFactory is very expensive so we keep it
-        this.documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
         // The clean method below is thread safe. However it seems that DOMOutputter.output() is not fully thread safe
         // since it causes the following exception on the first time it's called from different threads:
         //  Caused by: org.jdom.JDOMException: Reflection failed while creating new JAXP document:
@@ -123,6 +124,24 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     public Document clean(Reader originalHtmlContent)
     {
         return clean(originalHtmlContent, getDefaultConfiguration());
+    }
+
+    private DocumentBuilder getAvailableDocumentBuilder() throws ParserConfigurationException
+    {
+        ExecutionContext econtext = this.execution.getContext();
+
+        if (econtext != null) {
+            DocumentBuilder documentBuilder = (DocumentBuilder) econtext.getProperty(DocumentBuilder.class.getName());
+
+            if (documentBuilder == null) {
+                documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                econtext.setProperty(DocumentBuilder.class.getName(), documentBuilder);
+            }
+
+            return documentBuilder;
+        }
+
+        return DocumentBuilderFactory.newInstance().newDocumentBuilder();
     }
 
     @Override
@@ -162,8 +181,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             // characters escaped.
             // See https://sourceforge.net/tracker/index.php?func=detail&aid=2691888&group_id=183053&atid=903696
             Document tempDoc =
-                new XWikiDOMSerializer(cleanerProperties, false).createDOM(this.documentBuilderFactory, cleanedNode);
-            DOMImplementation domImpl = this.documentBuilderFactory.newDocumentBuilder().getDOMImplementation();
+                new XWikiDOMSerializer(cleanerProperties, false).createDOM(getAvailableDocumentBuilder(), cleanedNode);
+            DOMImplementation domImpl = getAvailableDocumentBuilder().getDOMImplementation();
             DocumentType docType =
                 domImpl.createDocumentType(QUALIFIED_NAME_HTML, "-//W3C//DTD XHTML 1.0 Strict//EN",
                     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");

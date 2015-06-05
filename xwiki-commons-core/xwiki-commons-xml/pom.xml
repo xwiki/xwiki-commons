@@ -48,6 +48,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-context</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
@@ -64,6 +69,7 @@
       <groupId>net.java.dev.stax-utils</groupId>
       <artifactId>stax-utils</artifactId>
     </dependency>
+
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
