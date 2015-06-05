@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -91,14 +91,16 @@ public class XWikiDOMSerializer
     }
 
     /**
-     * @param factory the {@link DocumentBuilderFactory} instance to use
+     * @param documentDocumentBuilder the {@link DocumentBuilder} instance to use, DocumentBuilder is not garantied to
+     *            be thread safe so at most the safe instance should be used only in the same thread
      * @param rootNode the HTML Cleaner root node to serialize
      * @return the W3C Document object
      * @throws ParserConfigurationException if there's an error during serialization
      */
-    public Document createDOM(DocumentBuilderFactory factory, TagNode rootNode) throws ParserConfigurationException
+    public Document createDOM(DocumentBuilder documentDocumentBuilder, TagNode rootNode)
+        throws ParserConfigurationException
     {
-        Document document = factory.newDocumentBuilder().newDocument();
+        Document document = documentDocumentBuilder.newDocument();
         Element rootElement = document.createElement(rootNode.getName());
         document.appendChild(rootElement);
 
