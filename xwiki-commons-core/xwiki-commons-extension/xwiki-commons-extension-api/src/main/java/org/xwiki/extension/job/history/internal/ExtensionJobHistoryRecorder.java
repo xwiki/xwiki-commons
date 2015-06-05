@@ -20,8 +20,6 @@
 package org.xwiki.extension.job.history.internal;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +47,7 @@ import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.QuestionAnsweredEvent;
 import org.xwiki.job.internal.AbstractJobStatus;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
 /**
@@ -61,15 +59,12 @@ import org.xwiki.observation.event.Event;
 @Component
 @Named(ExtensionJobHistoryRecorder.NAME)
 @Singleton
-public class ExtensionJobHistoryRecorder implements EventListener
+public class ExtensionJobHistoryRecorder extends AbstractEventListener
 {
     /**
      * The name of this event listener (and its component hint at the same time).
      */
     public static final String NAME = "ExtensionJobHistoryRecorder";
-
-    private static final List<Event> EVENTS = Collections.unmodifiableList(Arrays.asList(new JobStartedEvent(),
-        new QuestionAnsweredEvent(), new JobFinishedEvent()));
 
     @Inject
     private ExtensionJobHistory history;
@@ -83,16 +78,12 @@ public class ExtensionJobHistoryRecorder implements EventListener
      */
     private Map<String, Map<String, QuestionRecorder<Object>>> answers = new ConcurrentHashMap<>();
 
-    @Override
-    public List<Event> getEvents()
+    /**
+     * Default constructor.
+     */
+    public ExtensionJobHistoryRecorder()
     {
-        return EVENTS;
-    }
-
-    @Override
-    public String getName()
-    {
-        return NAME;
+        super(NAME, new JobStartedEvent(), new QuestionAnsweredEvent(), new JobFinishedEvent());
     }
 
     @Override

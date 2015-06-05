@@ -19,9 +19,6 @@
  */
 package org.xwiki.extension.job.history.internal;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -30,7 +27,7 @@ import org.xwiki.extension.job.history.ExtensionJobHistoryRecord;
 import org.xwiki.extension.job.history.QuestionRecorder;
 import org.xwiki.extension.job.history.ReplayJobStatus;
 import org.xwiki.job.event.status.QuestionAskedEvent;
-import org.xwiki.observation.EventListener;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
 /**
@@ -42,25 +39,19 @@ import org.xwiki.observation.event.Event;
 @Component
 @Named(AnswerReplayer.NAME)
 @Singleton
-public class AnswerReplayer implements EventListener
+public class AnswerReplayer extends AbstractEventListener
 {
     /**
      * The name of this event listener (and its component hint at the same time).
      */
     public static final String NAME = "AnswerReplayer";
 
-    private static final List<Event> EVENTS = Collections.<Event>singletonList(new QuestionAskedEvent());
-
-    @Override
-    public List<Event> getEvents()
+    /**
+     * Default constructor.
+     */
+    public AnswerReplayer()
     {
-        return EVENTS;
-    }
-
-    @Override
-    public String getName()
-    {
-        return NAME;
+        super(NAME, new QuestionAskedEvent());
     }
 
     @Override
