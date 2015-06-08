@@ -131,7 +131,9 @@ public class MockingComponentManager extends EmbeddableComponentManager
         if (mockId != null) {
             instance = mockery.mock((Class<T>) ReflectionUtils.getTypeClass(descriptor.getRoleType()), mockId);
         } else {
-            instance = mockery.mock((Class<T>) ReflectionUtils.getTypeClass(descriptor.getRoleType()));
+            instance =
+                mockery.mock((Class<T>) ReflectionUtils.getTypeClass(descriptor.getRoleType()), descriptor
+                    .getRoleType().toString());
         }
 
         registerComponent(descriptor, instance);
