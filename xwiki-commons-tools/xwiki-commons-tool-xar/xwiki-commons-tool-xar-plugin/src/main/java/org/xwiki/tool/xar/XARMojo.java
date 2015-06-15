@@ -51,7 +51,7 @@ import org.dom4j.io.XMLWriter;
  * @goal xar
  * @phase package
  * @requiresProject
- * @requiresDependencyResolution compile
+ * @requiresDependencyResolution compile+runtime
  * @threadSafe
  */
 public class XARMojo extends AbstractXARMojo
