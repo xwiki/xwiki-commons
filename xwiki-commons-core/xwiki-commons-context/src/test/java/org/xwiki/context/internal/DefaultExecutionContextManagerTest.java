@@ -24,8 +24,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Provider;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
@@ -54,15 +57,27 @@ public class DefaultExecutionContextManagerTest
         context.newProperty("property1").initial(xwikicontext).inherited().declare();
         context.newProperty("property2").initial(xwikicontext).inherited().makeFinal().cloneValue().declare();
 
-        DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager(execution);
-        contextManager.addExecutionContextInitializer(new ExecutionContextInitializer()
+        DefaultExecutionContextManager contextManager = new DefaultExecutionContextManager();
+        ReflectionUtils.setFieldValue(contextManager, "execution", execution);
+
+        // Set up an Execution Context Initiliazer for the test
+        final ExecutionContextInitializer initializer = new ExecutionContextInitializer()
         {
             @Override
             public void initialize(ExecutionContext context) throws ExecutionContextException
             {
                 context.setProperty("key", Arrays.asList("value"));
             }
-        });
+        };
+        Provider<List<ExecutionContextInitializer>> provider = new Provider<List<ExecutionContextInitializer>>()
+        {
+            @Override
+            public List<ExecutionContextInitializer> get()
+            {
+                return Arrays.asList(initializer);
+            }
+        };
+        ReflectionUtils.setFieldValue(contextManager, "initializerProvider", provider);
 
         ExecutionContext clonedContext = contextManager.clone(context);
 
