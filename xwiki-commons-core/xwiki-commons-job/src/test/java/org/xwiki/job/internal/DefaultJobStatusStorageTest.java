@@ -97,7 +97,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void getJobStatusInWronfPlaceAndWithInvalidLogArgument() throws Exception
+    public void getJobStatusInWrongPlaceAndWithInvalidLogArgument() throws Exception
     {
         JobStatus jobStatus =
             this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("invalidlogargument"));
