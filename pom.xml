@@ -1109,7 +1109,12 @@ mm
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.7.5.201505241946</version>
+          <!-- TODO: There's a regression with version 0.7.5.201505241946, see
+               - http://stackoverflow.com/questions/30459260/jacoco-sonarqube-incompatible-version-1007
+               - http://jira.codehaus.org/browse/SONARJAVA-1091
+               Remove once version 3.4 of the SonarQube JaCoCo plugin is released and installed on sonar.xwiki.org
+          -->
+          <version>0.7.4.201502262128</version>
           <configuration>
             <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
                  error, see
