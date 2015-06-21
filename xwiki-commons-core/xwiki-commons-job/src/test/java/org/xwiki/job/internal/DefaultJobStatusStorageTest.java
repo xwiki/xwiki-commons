@@ -46,7 +46,7 @@ public class DefaultJobStatusStorageTest
 {
     @Rule
     public final MockitoComponentMockingRule<DefaultJobStatusStore> componentManager =
-        new MockitoComponentMockingRule<DefaultJobStatusStore>(DefaultJobStatusStore.class);
+        new MockitoComponentMockingRule<>(DefaultJobStatusStore.class);
 
     @Before
     public void before() throws Exception
@@ -61,7 +61,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testGetJobStatusWithNullId() throws Exception
+    public void getJobStatusWithNullId() throws Exception
     {
         JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus((List<String>) null);
 
@@ -73,7 +73,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testGetJobStatusWithMultipleId() throws Exception
+    public void getJobStatusWithMultipleId() throws Exception
     {
         JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2"));
 
@@ -86,7 +86,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testGetJobStatusInOldPlace() throws Exception
+    public void getJobStatusInOldPlace() throws Exception
     {
         JobStatus jobStatus =
             this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2", "id3"));
@@ -97,7 +97,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testGetJobStatusInWronfPlaceAndWithInvalidLogArgument() throws Exception
+    public void getJobStatusInWronfPlaceAndWithInvalidLogArgument() throws Exception
     {
         JobStatus jobStatus =
             this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("invalidlogargument"));
@@ -106,7 +106,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testRemoveJobStatus() throws ComponentLookupException
+    public void removeJobStatus() throws ComponentLookupException
     {
         List<String> id = null;
 
@@ -124,7 +124,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testStoreJobStatus() throws ComponentLookupException
+    public void storeJobStatus() throws ComponentLookupException
     {
         List<String> id = Arrays.asList("newstatus");
 
