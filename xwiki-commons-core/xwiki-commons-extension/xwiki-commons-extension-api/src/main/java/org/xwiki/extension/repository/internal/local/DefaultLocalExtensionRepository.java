@@ -100,7 +100,11 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
 
         setDescriptor(new DefaultExtensionRepositoryDescriptor("local", "xwiki", this.storage.getRootFolder().toURI()));
 
-        this.storage.loadExtensions();
+        try {
+            this.storage.loadExtensions();
+        } catch (IOException e) {
+            throw new InitializationException("Failed to load load etensions", e);
+        }
     }
 
     /**

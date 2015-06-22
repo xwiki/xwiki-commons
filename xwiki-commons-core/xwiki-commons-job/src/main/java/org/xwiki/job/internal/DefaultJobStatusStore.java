@@ -271,12 +271,18 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     /**
      * Load jobs from directory.
+     * 
+     * @throws IOException when failing to load statuses
      */
-    private void repair()
+    private void repair() throws IOException
     {
         File folder = this.configuration.getStorage();
 
         if (folder.exists()) {
+            if (!folder.isDirectory()) {
+                throw new IOException("Not a directory: " + folder);
+            }
+
             repairFolder(folder);
         }
     }
