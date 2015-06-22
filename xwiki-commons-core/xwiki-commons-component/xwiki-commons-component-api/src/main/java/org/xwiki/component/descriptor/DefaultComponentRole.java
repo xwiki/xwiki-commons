@@ -20,9 +20,10 @@
 package org.xwiki.component.descriptor;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.xwiki.component.util.ObjectUtils;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.text.XWikiToStringBuilder;
 
@@ -98,11 +99,6 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
         return builder.toString();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @since 3.3M1
-     */
     @Override
     public boolean equals(Object object)
     {
@@ -115,30 +111,24 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
                 result = false;
             } else {
                 // object must be Syntax at this point
-                ComponentRole cr = (ComponentRole) object;
+                ComponentRole<?> cr = (ComponentRole<?>) object;
                 result =
-                    ObjectUtils.equals(getRoleType(), cr.getRoleType())
-                        && ObjectUtils.equals(getRoleHint(), cr.getRoleHint());
+                    Objects.equals(getRoleType(), cr.getRoleType()) && Objects.equals(getRoleHint(), cr.getRoleHint());
             }
         }
 
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @since 3.3M1
-     */
     @Override
     public int hashCode()
     {
-        int hash = 7;
+        HashCodeBuilder builder = new HashCodeBuilder();
 
-        hash = 31 * hash + ObjectUtils.hasCode(getRoleType());
-        hash = 31 * hash + ObjectUtils.hasCode(getRoleHint());
+        builder.append(getRoleType());
+        builder.append(getRoleHint());
 
-        return hash;
+        return builder.toHashCode();
     }
 
     // deprecated

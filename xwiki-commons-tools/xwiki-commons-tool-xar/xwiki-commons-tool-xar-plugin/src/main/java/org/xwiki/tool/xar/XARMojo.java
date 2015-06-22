@@ -415,7 +415,7 @@ public class XARMojo extends AbstractXARMojo
                     //         currentFile.getAbsolutePath().split(sourceDir.getAbsolutePath() + File.separator)[1];
                     String archivedFilePath = currentFile.getAbsolutePath().substring(
                         (sourceDir.getAbsolutePath() + File.separator).length());
-                    archivedFilePath.replace(File.separatorChar, '/');
+                    archivedFilePath = archivedFilePath.replace(File.separatorChar, '/');
 
                     archiver.addFile(currentFile, archivedFilePath);
                     documentNames.remove(documentName);

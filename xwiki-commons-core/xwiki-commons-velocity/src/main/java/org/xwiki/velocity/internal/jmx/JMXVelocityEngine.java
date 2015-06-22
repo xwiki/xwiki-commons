@@ -123,14 +123,15 @@ public class JMXVelocityEngine implements JMXVelocityEngineMBean
 
         Map<String, String[]> result = new HashMap<String, String[]>();
 
-        for (String name : namespaceHash.keySet()) {
-            String nameSpaceName = name;
-            if (globalNamespace.equals(namespaceHash.get(name))) {
+        for (Map.Entry<String, Map<String, ?>> entry : namespaceHash.entrySet()) {
+            String nameSpaceName = entry.getKey();
+            Map<String, ?> namespace = entry.getValue();
+            if (globalNamespace.equals(namespace)) {
                 nameSpaceName = "<global>";
             }
-            String[] macroNames = new String[namespaceHash.get(name).size()];
+            String[] macroNames = new String[namespace.size()];
             int i = 0;
-            for (String macroName : namespaceHash.get(name).keySet()) {
+            for (String macroName : namespace.keySet()) {
                 macroNames[i] = macroName;
                 i++;
             }

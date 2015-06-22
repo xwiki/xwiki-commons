@@ -22,6 +22,7 @@ package org.xwiki.component.util;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Basic implementation of {@link ParameterizedType}.
@@ -86,8 +87,8 @@ public class DefaultParameterizedType implements ParameterizedType
     @Override
     public int hashCode()
     {
-        return Arrays.hashCode(this.actualTypeArguments) ^ ObjectUtils.hasCode(this.ownerType)
-            ^ ObjectUtils.hasCode(this.rawType);
+        return Arrays.hashCode(this.actualTypeArguments) ^ Objects.hashCode(this.ownerType)
+            ^ Objects.hashCode(this.rawType);
     }
 
     @Override
@@ -99,8 +100,8 @@ public class DefaultParameterizedType implements ParameterizedType
 
         ParameterizedType parameterizedType = (ParameterizedType) o;
 
-        return ObjectUtils.equals(this.rawType, parameterizedType.getRawType())
-            && ObjectUtils.equals(this.ownerType, parameterizedType.getOwnerType())
+        return Objects.equals(this.rawType, parameterizedType.getRawType())
+            && Objects.equals(this.ownerType, parameterizedType.getOwnerType())
             && Arrays.equals(this.actualTypeArguments, parameterizedType.getActualTypeArguments());
     }
 

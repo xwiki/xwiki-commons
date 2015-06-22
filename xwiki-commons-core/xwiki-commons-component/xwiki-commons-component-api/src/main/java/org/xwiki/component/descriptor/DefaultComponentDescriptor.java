@@ -22,9 +22,10 @@ package org.xwiki.component.descriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.xwiki.component.util.ObjectUtils;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
@@ -162,9 +163,9 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
                 ComponentDescriptor cd = (ComponentDescriptor) object;
 
                 result =
-                    super.equals(cd) && ObjectUtils.equals(getImplementation(), cd.getImplementation())
-                        && ObjectUtils.equals(getInstantiationStrategy(), cd.getInstantiationStrategy())
-                        && ObjectUtils.equals(getComponentDependencies(), cd.getComponentDependencies());
+                    super.equals(cd) && Objects.equals(getImplementation(), cd.getImplementation())
+                        && Objects.equals(getInstantiationStrategy(), cd.getInstantiationStrategy())
+                        && Objects.equals(getComponentDependencies(), cd.getComponentDependencies());
             }
         }
 
@@ -179,13 +180,14 @@ public class DefaultComponentDescriptor<T> extends DefaultComponentRole<T> imple
     @Override
     public int hashCode()
     {
-        int hash = 7;
+        HashCodeBuilder builder = new HashCodeBuilder();
 
-        hash = 31 * hash + super.hashCode();
-        hash = 31 * hash + ObjectUtils.hasCode(getImplementation());
-        hash = 31 * hash + ObjectUtils.hasCode(getInstantiationStrategy());
-        hash = 31 * hash + ObjectUtils.hasCode(getComponentDependencies());
+        builder.appendSuper(super.hashCode());
 
-        return hash;
+        builder.append(getImplementation());
+        builder.append(getInstantiationStrategy());
+        builder.append(getComponentDependencies());
+
+        return builder.toHashCode();
     }
 }

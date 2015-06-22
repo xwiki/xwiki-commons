@@ -46,10 +46,11 @@ public class ZIPFileAssertComparator implements FileAssertComparator
     {
         final byte[] signature = new byte[12];
 
-        FileInputStream stream = new FileInputStream(file);
-        stream.mark(signature.length);
-        int signatureLength = stream.read(signature);
-        stream.close();
+        int signatureLength;
+        try (FileInputStream stream = new FileInputStream(file)) {
+            stream.mark(signature.length);
+            signatureLength = stream.read(signature);
+        }
 
         return ZipArchiveInputStream.matches(signature, signatureLength);
     }

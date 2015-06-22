@@ -62,9 +62,16 @@ public class JobGroupPath
         this.parent = parent;
 
         // Build path
-        List<String> list = new ArrayList<String>((parent != null ? parent.getPath().size() : 0) + 1);
-        list.addAll(parent.getPath());
+        List<String> list;
+        if (parent == null) {
+            list = new ArrayList<String>(1);
+        } else {
+            list = new ArrayList<String>(parent.getPath().size() + 1);
+            list.addAll(parent.getPath());
+        }
+
         list.add(element);
+
         this.path = Collections.unmodifiableList(list);
     }
 
