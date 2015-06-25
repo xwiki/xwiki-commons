@@ -223,6 +223,10 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
     @Override
     public CoreExtension getCoreExtension(String feature)
     {
+        if (feature == null) {
+            return null;
+        }
+
         return this.extensions.get(feature);
     }
 
