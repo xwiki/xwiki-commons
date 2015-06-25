@@ -618,6 +618,10 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
      */
     private InstalledFeature getInstalledFeatureFromCache(String feature, String namespace)
     {
+        if (feature == null) {
+            return null;
+        }
+
         Map<String, InstalledFeature> installedExtensionsForFeature = this.extensionNamespaceByFeature.get(feature);
 
         if (installedExtensionsForFeature == null) {

@@ -201,6 +201,10 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     @Override
     public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
     {
+        if (id == null) {
+            return new CollectionIterableResult<Version>(0, offset, Collections.<Version>emptyList());
+        }
+
         List<E> versions = this.extensionsVersions.get(id);
 
         if (versions == null) {
