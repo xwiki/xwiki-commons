@@ -17,9 +17,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.xar;
+package org.xwiki.tool.xar.internal;
 
 import java.io.File;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,19 +39,16 @@ public class XWikiDocument
     private static final String AUTHOR_TAG = "author";
 
     /**
-     * @see #getName()
+     * @see #getReference()
+     * @since 7.2M1
      */
-    private String name;
+    private String reference;
 
     /**
-     * @see #getSpace()
+     * @see #getLocale()
+     * @since 7.2M1
      */
-    private String space;
-
-    /**
-     * @see #getLanguage()
-     */
-    private String language;
+    private String locale;
 
     /**
      * @see #getDefaultLanguage()
@@ -112,14 +110,48 @@ public class XWikiDocument
     public void fromXML(File file) throws DocumentException
     {
         SAXReader reader = new SAXReader();
-        Document domdoc = reader.read(file);
+        fromXML(reader.read(file));
+        
+    }
 
+    /**
+     * Parse XML file to extract document information.
+     *
+     * @param file the xml file
+     * @throws DocumentException error when parsing XML file
+     */
+    public void fromXML(String file) throws DocumentException
+    {
+        SAXReader reader = new SAXReader();
+        fromXML(reader.read(new StringReader(file)));
+    }
+
+    /**
+     * Parse XML document to extract document information.
+     *
+     * @param domdoc the xml document
+     * @throws DocumentException error when parsing XML file
+     */
+    public void fromXML(Document domdoc) throws DocumentException
+    {
         this.encoding = domdoc.getXMLEncoding();
 
         Element rootElement = domdoc.getRootElement();
-        this.name = readElement(rootElement, "name");
-        this.space = readElement(rootElement, "web");
-        this.language = readElement(rootElement, "language");
+
+        this.reference = rootElement.attributeValue("reference");
+        if (this.reference == null) {
+            String name = readElement(rootElement, "name");
+            String space = readElement(rootElement, "web");
+
+            this.reference = space == null ? name : escapeSpaceOrPageName(space) + '.' + escapeSpaceOrPageName(name);
+        }
+
+        this.locale = rootElement.attributeValue("locale");
+        if (this.locale == null) {
+            // Fallback on old <language> element
+            this.locale = readElement(rootElement, "language");
+        }
+
         this.defaultLanguage = readElement(rootElement, "defaultLanguage");
         this.creator = readElement(rootElement, "creator");
         this.author = readElement(rootElement, AUTHOR_TAG);
@@ -158,51 +190,39 @@ public class XWikiDocument
     }
 
     /**
-     * @return the name of the document.
+     * @return the document reference
+     * @since 7.2M1
      */
-    public String getName()
+    public String getReference()
     {
-        return this.name;
+        return this.reference;
     }
 
     /**
-     * @param name the name of the document.
+     * @param reference the document reference
+     * @since 7.2M1
      */
-    public void setName(String name)
+    public void setReference(String reference)
     {
-        this.name = name;
-    }
-
-    /**
-     * @return the space of the document.
-     */
-    public String getSpace()
-    {
-        return this.space;
-    }
-
-    /**
-     * @param space the space of the document.
-     */
-    public void setSpace(String space)
-    {
-        this.space = space;
+        this.reference = reference;
     }
 
     /**
      * @return the language of the document.
+     * @since 7.2M1
      */
-    public String getLanguage()
+    public String getLocale()
     {
-        return this.language;
+        return this.locale;
     }
 
     /**
-     * @param language the language of the document.
+     * @param locale the locale of the document.
+     * @since 7.2M1
      */
-    public void setLanguage(String language)
+    public void setLocale(String locale)
     {
-        this.language = language;
+        this.locale = locale;
     }
 
     /**
@@ -295,15 +315,6 @@ public class XWikiDocument
     }
 
     /**
-     * @return the full name of the document.
-     */
-    public String getFullName()
-    {
-        return this.space == null ? this.name : escapeSpaceOrPageName(this.space) + '.'
-            + escapeSpaceOrPageName(this.name);
-    }
-
-    /**
      * @param name the name to escape
      * @return the escaped name
      */
@@ -315,8 +326,9 @@ public class XWikiDocument
     /**
      * @param file the file containing the document.
      * @return the full name of the document or null, if the document is invalid
+     * @since 7.2M1
      */
-    public static String getFullName(File file)
+    public static String getReference(File file)
     {
         XWikiDocument doc;
         try {
@@ -326,6 +338,6 @@ public class XWikiDocument
             return null;
         }
 
-        return doc.getFullName();
+        return doc.getReference();
     }
 }

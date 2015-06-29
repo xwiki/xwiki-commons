@@ -31,6 +31,7 @@ import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.*;
+import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
  * Integration tests for the XAR Mojo.
@@ -92,7 +93,7 @@ public class XARMojoTest
             ++countEntries;
 
             File currentFile = new File(tempDir, entryName);
-            String documentName = XWikiDocument.getFullName(currentFile);
+            String documentName = XWikiDocument.getReference(currentFile);
             if (!documentNames.contains(documentName)) {
                 Assert.fail(String.format("Document [%s] cannot be found in the newly created xar archive.",
                     documentName));
@@ -136,7 +137,7 @@ public class XARMojoTest
                 ++countEntries;
 
                 File currentFile = new File(tempDir, entryName);
-                String documentName = XWikiDocument.getFullName(currentFile);
+                String documentName = XWikiDocument.getReference(currentFile);
                 if (!documentNames.contains(documentName)) {
                     Assert.fail(String.format("Document [%s] cannot be found in the newly created xar archive.",
                         documentName));

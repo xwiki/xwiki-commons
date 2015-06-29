@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
  * Perform various verifications of the XAR files in this project. Namely:
@@ -93,9 +94,7 @@ public class VerifyMojo extends AbstractVerifyMojo
             verifyAttachmentAuthors(errors, xdoc.getAttachmentAuthors());
 
             // Verification 3: Check for orphans, except for Main.WebHome since it's the topmost document
-            if (StringUtils.isEmpty(xdoc.getParent())
-                && !(xdoc.getSpace().equals("Main") && xdoc.getName().equals("WebHome")))
-            {
+            if (StringUtils.isEmpty(xdoc.getParent()) && xdoc.getReference().equals("Main.WebHome")) {
                 errors.add("Parent must not be empty");
             }
 

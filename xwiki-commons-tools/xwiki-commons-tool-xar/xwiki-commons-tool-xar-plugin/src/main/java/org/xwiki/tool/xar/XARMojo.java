@@ -42,6 +42,7 @@ import org.dom4j.dom.DOMElement;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
  * Gather all resources in a XAR file (which is actually a ZIP file). Also generates a XAR descriptor if none is
@@ -313,10 +314,10 @@ public class XARMojo extends AbstractXARMojo
             if (entry.getName().indexOf("META-INF") == -1) {
                 XWikiDocument xdoc = getDocFromXML(entry.getFile());
                 if (xdoc != null) {
-                    String fullName = xdoc.getFullName();
+                    String reference = xdoc.getReference();
                     Element element = new DOMElement(FILE_TAG);
-                    element.setText(fullName);
-                    element.addAttribute("language", xdoc.getLanguage());
+                    element.setText(reference);
+                    element.addAttribute("language", xdoc.getLocale());
                     element.addAttribute("defaultAction", "0");
                     filesElement.add(element);
                 }
@@ -405,8 +406,8 @@ public class XARMojo extends AbstractXARMojo
             if (currentFile.isDirectory()) {
                 addContentsToQueue(fileQueue, currentFile);
             } else {
-                String documentName = XWikiDocument.getFullName(currentFile);
-                if (documentNames.contains(documentName)) {
+                String documentReference = XWikiDocument.getReference(currentFile);
+                if (documentNames.contains(documentReference)) {
                     // building the path the current file will have within the archive
                     //
                     // Note: DO NOT USE String.split since it requires a regexp. Under Windows XP, the FileSeparator is
@@ -418,7 +419,7 @@ public class XARMojo extends AbstractXARMojo
                     archivedFilePath = archivedFilePath.replace(File.separatorChar, '/');
 
                     archiver.addFile(currentFile, archivedFilePath);
-                    documentNames.remove(documentName);
+                    documentNames.remove(documentReference);
                 }
             }
         }

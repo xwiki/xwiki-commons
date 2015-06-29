@@ -44,6 +44,7 @@ import org.codehaus.plexus.components.io.fileselectors.FileSelector;
 import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
+import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
  * Base class for {@code xar} and {@code unxar} mojos.
