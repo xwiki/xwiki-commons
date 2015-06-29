@@ -94,7 +94,7 @@ public class VerifyMojo extends AbstractVerifyMojo
             verifyAttachmentAuthors(errors, xdoc.getAttachmentAuthors());
 
             // Verification 3: Check for orphans, except for Main.WebHome since it's the topmost document
-            if (StringUtils.isEmpty(xdoc.getParent()) && xdoc.getReference().equals("Main.WebHome")) {
+            if (StringUtils.isEmpty(xdoc.getParent()) && !xdoc.getReference().equals("Main.WebHome")) {
                 errors.add("Parent must not be empty");
             }
 
