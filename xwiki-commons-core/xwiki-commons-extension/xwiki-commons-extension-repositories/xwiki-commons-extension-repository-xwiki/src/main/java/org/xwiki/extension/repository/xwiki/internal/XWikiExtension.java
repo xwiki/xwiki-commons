@@ -26,7 +26,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.xwiki.extension.AbstractExtension;
+import org.xwiki.extension.AbstractRatingExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
@@ -54,13 +54,8 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
  * @version $Id$
  * @since 4.0M1
  */
-public class XWikiExtension extends AbstractExtension implements RatingExtension
+public class XWikiExtension extends AbstractRatingExtension implements RatingExtension
 {
-    /**
-     * @see #getRating()
-     */
-    protected org.xwiki.extension.rating.ExtensionRating rating;
-
     public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion extension,
         ExtensionLicenseManager licenseManager)
     {
@@ -165,21 +160,5 @@ public class XWikiExtension extends AbstractExtension implements RatingExtension
     public XWikiExtensionRepository getRepository()
     {
         return (XWikiExtensionRepository) super.getRepository();
-    }
-
-    // Rating
-
-    @Override
-    public org.xwiki.extension.rating.ExtensionRating getRating()
-    {
-        return this.rating;
-    }
-
-    /**
-     * @param rating an extension's rating
-     */
-    public void setRating(org.xwiki.extension.rating.ExtensionRating rating)
-    {
-        this.rating = rating;
     }
 }

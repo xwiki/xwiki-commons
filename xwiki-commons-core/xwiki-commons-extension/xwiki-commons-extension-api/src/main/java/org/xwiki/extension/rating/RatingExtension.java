@@ -31,6 +31,14 @@ public interface RatingExtension extends Extension, Rating
 {
     /**
      * @see #getRating()
+     * @see ExtensionRating#getTotalVotes()
+     * @since 7.2M1
+     */
+    String FIELD_TOTAL_VOTES = "nbvotes";
+
+    /**
+     * @see #getRating()
+     * @see ExtensionRating#getAverageVote()
      * @since 7.1.2 - 7.2M1
      */
     String FIELD_AVERAGE_VOTE = "averagevote";
