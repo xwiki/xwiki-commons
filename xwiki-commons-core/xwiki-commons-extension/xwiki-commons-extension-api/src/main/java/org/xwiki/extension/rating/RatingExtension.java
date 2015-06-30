@@ -29,5 +29,9 @@ import org.xwiki.extension.Extension;
  */
 public interface RatingExtension extends Extension, Rating
 {
-
+    /**
+     * @see #getRating()
+     * @since 7.1.1 - 7.2M1
+     */
+    String FIELD_AVERAGE_VOTE = "averagevote";
 }
