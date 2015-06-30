@@ -32,6 +32,8 @@ import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import static org.junit.Assert.assertNull;
+
 /**
  * Validate {@link ExtensionConverter} component.
  *
@@ -59,5 +61,6 @@ public class ExtensionConverterTest
         assertEquals(model.getGroupId() + ':' + model.getArtifactId(), extension.getId().getId());
         assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
         assertEquals("category", extension.getCategory());
+        assertNull(extension.getProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_CATEGORY));
     }
 }

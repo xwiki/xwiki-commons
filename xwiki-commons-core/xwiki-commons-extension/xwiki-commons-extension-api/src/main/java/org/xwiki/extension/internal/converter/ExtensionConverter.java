@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -88,6 +89,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
 
     private Extension convertToExtension(Model model)
     {
+        Properties properties = (Properties) model.getProperties().clone();
+
         String version = resolveVersion(model.getVersion(), model, false);
         String groupId = resolveGroupId(model.getGroupId(), model, false);
 
@@ -95,9 +98,9 @@ public class ExtensionConverter extends AbstractConverter<Extension>
             new DefaultLocalExtension(null, new ExtensionId(groupId + ':' + model.getArtifactId(), version),
                 MavenUtils.packagingToType(model.getPackaging()));
 
-        extension.setName(getPropertyString(model, MavenUtils.MPNAME_NAME, model.getName()));
-        extension.setSummary(getPropertyString(model, MavenUtils.MPNAME_SUMMARY, model.getDescription()));
-        extension.setWebsite(getPropertyString(model, MavenUtils.MPNAME_WEBSITE, model.getUrl()));
+        extension.setName(getPropertyString(properties, MavenUtils.MPNAME_NAME, true, model.getName()));
+        extension.setSummary(getPropertyString(properties, MavenUtils.MPNAME_SUMMARY, true, model.getDescription()));
+        extension.setWebsite(getPropertyString(properties, MavenUtils.MPNAME_WEBSITE, true, model.getUrl()));
 
         // authors
         for (Developer developer : model.getDevelopers()) {
@@ -138,14 +141,14 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         }
 
         // features
-        String featuresString = getProperty(model, MavenUtils.MPNAME_FEATURES);
+        String featuresString = getProperty(properties, MavenUtils.MPNAME_FEATURES, true);
         if (StringUtils.isNotBlank(featuresString)) {
             featuresString = featuresString.replaceAll("[\r\n]", "");
             extension.setFeatures(this.converter.<Collection<String>>convert(List.class, featuresString));
         }
 
         // category
-        String categoryString = getProperty(model, MavenUtils.MPNAME_CATEGORY);
+        String categoryString = getProperty(properties, MavenUtils.MPNAME_CATEGORY, true);
         if (StringUtils.isNotBlank(categoryString)) {
             extension.setCategory(categoryString);
         }
@@ -162,9 +165,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
                 String dependencyVersion = resolveVersion(mavenDependency.getVersion(), model, true);
 
                 DefaultExtensionDependency extensionDependency =
-                    new MavenCoreExtensionDependency(MavenUtils.toExtensionId(dependencyGroupId,
-                        dependencyArtifactId, dependencyClassifier),
-                        new DefaultVersionConstraint(dependencyVersion), mavenDependency);
+                    new MavenCoreExtensionDependency(MavenUtils.toExtensionId(dependencyGroupId, dependencyArtifactId,
+                        dependencyClassifier), new DefaultVersionConstraint(dependencyVersion), mavenDependency);
 
                 extension.addDependency(extensionDependency);
             }
@@ -174,7 +176,7 @@ public class ExtensionConverter extends AbstractConverter<Extension>
 
         extension.putProperty(MavenUtils.PKEY_MAVEN_MODEL, model);
 
-        for (Map.Entry<Object, Object> entry : model.getProperties().entrySet()) {
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
             String key = (String) entry.getKey();
             if (key.startsWith("xwiki.extension.")) {
                 extension.putProperty(key, entry.getValue());
@@ -184,14 +186,15 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         return extension;
     }
 
-    private String getProperty(Model model, String propertyName)
+    private String getProperty(Properties properties, String propertyName, boolean delete)
     {
-        return model.getProperties().getProperty(MavenUtils.MPKEYPREFIX + propertyName);
+        return delete ? (String) properties.remove(MavenUtils.MPKEYPREFIX + propertyName) : properties
+            .getProperty(MavenUtils.MPKEYPREFIX + propertyName);
     }
 
-    private String getPropertyString(Model model, String propertyName, String def)
+    private String getPropertyString(Properties properties, String propertyName, boolean delete, String def)
     {
-        return StringUtils.defaultString(getProperty(model, propertyName), def);
+        return StringUtils.defaultString(getProperty(properties, propertyName, delete), def);
     }
 
     // TODO: download custom licenses content
