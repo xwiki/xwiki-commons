@@ -31,7 +31,6 @@ import org.xwiki.extension.ExtensionIssueManagement;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionScm;
 import org.xwiki.extension.repository.ExtensionRepository;
-import org.xwiki.script.wrap.AbstractWrappingObject;
 
 /**
  * Wrap an extension.

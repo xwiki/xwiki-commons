@@ -28,7 +28,6 @@ import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
-import org.xwiki.script.wrap.AbstractWrappingObject;
 
 /**
  * Wrap an {@link ExtensionRepository}.
