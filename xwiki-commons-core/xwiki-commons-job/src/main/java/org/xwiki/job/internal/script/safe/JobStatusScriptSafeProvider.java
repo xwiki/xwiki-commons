@@ -17,55 +17,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.wrap;
+package org.xwiki.job.internal.script.safe;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.job.event.status.JobStatus;
+import org.xwiki.script.internal.safe.ScriptSafeProvider;
 
 /**
- * Wrap an Object.
- *
- * @param <T> the type of the wrapped object
+ * Provide safe Extension.
+ * 
  * @version $Id$
- * @since 4.0M1
+ * @since 4.0M2
  */
-public abstract class AbstractWrappingObject<T>
+@Component
+@Singleton
+public class JobStatusScriptSafeProvider implements ScriptSafeProvider<JobStatus>
 {
     /**
-     * @see #getWrapped()
+     * The provider of instances safe for public scripts.
      */
-    private T wrapped;
-
-    /**
-     * @param wrapped the wrapped object
-     */
-    public AbstractWrappingObject(T wrapped)
-    {
-        this.wrapped = wrapped;
-    }
-
-    /**
-     * @return the wrapped object
-     */
-    protected T getWrapped()
-    {
-        return this.wrapped;
-    }
-
-    // Object
+    @Inject
+    @SuppressWarnings("rawtypes")
+    private ScriptSafeProvider defaultSafeProvider;
 
     @Override
-    public int hashCode()
+    public <S> S get(JobStatus unsafe)
     {
-        return getWrapped().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        return getWrapped().equals(obj);
-    }
-
-    @Override
-    public String toString()
-    {
-        return getWrapped().toString();
+        return (S) new SafeJobStatus(unsafe, this.defaultSafeProvider);
     }
 }

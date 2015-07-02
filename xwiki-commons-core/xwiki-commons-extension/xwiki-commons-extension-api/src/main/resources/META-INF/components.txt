@@ -5,9 +5,6 @@ org.xwiki.extension.handler.internal.ExtensionApplicationStartedListener
 org.xwiki.extension.internal.DefaultExtensionLicenseManager
 org.xwiki.extension.internal.DefaultExtensionManager
 org.xwiki.extension.internal.DefaultExtensionManagerConfiguration
-org.xwiki.extension.internal.safe.CollectionScriptSafeProvider
-org.xwiki.extension.internal.safe.DefaultScriptSafeProvider
-org.xwiki.extension.internal.safe.MapScriptSafeProvider
 org.xwiki.extension.internal.converter.ExtensionConverter
 org.xwiki.extension.job.history.internal.AnswerReplayer
 org.xwiki.extension.job.history.internal.DefaultExtensionJobHistory

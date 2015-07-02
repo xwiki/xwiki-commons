@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal;
+package org.xwiki.script.internal.safe;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,10 +30,10 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.xwiki.extension.internal.safe.CollectionScriptSafeProvider;
-import org.xwiki.extension.internal.safe.DefaultScriptSafeProvider;
-import org.xwiki.extension.internal.safe.MapScriptSafeProvider;
-import org.xwiki.extension.internal.safe.ScriptSafeProvider;
+import org.xwiki.script.internal.safe.CollectionScriptSafeProvider;
+import org.xwiki.script.internal.safe.DefaultScriptSafeProvider;
+import org.xwiki.script.internal.safe.MapScriptSafeProvider;
+import org.xwiki.script.internal.safe.ScriptSafeProvider;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 

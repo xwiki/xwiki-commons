@@ -185,6 +185,66 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <className>org/xwiki/extension/wrap/AbstractWrappingObject</className>
+              <differenceType>8001</differenceType>
+              <justification>AbstractWrappingObject has been moved to xwiki-commons-script</justification>
+            </difference>
+            <difference>
+              <className>org/xwiki/extension/wrap/WrappingCoreExtension</className>
+              <differenceType>5001</differenceType>
+              <to>org/xwiki/extension/wrap/AbstractWrappingObject</to>
+              <justification>AbstractWrappingObject has been moved to xwiki-commons-script</justification>
+            </difference>
+            <difference>
+              <className>org/xwiki/extension/wrap/WrappingExtension</className>
+              <differenceType>5001</differenceType>
+              <to>org/xwiki/extension/wrap/AbstractWrappingObject</to>
+              <justification>AbstractWrappingObject has been moved to xwiki-commons-script</justification>
+            </difference>
+            <difference>
+              <className>org/xwiki/extension/wrap/WrappingExtensionRepository</className>
+              <differenceType>5001</differenceType>
+              <to>org/xwiki/extension/wrap/AbstractWrappingObject</to>
+              <justification>AbstractWrappingObject has been moved to xwiki-commons-script</justification>
+            </difference>
+            <difference>
+              <className>org/xwiki/extension/wrap/WrappingInstalledExtension</className>
+              <differenceType>5001</differenceType>
+              <to>org/xwiki/extension/wrap/AbstractWrappingObject</to>
+              <justification>AbstractWrappingObject has been moved to xwiki-commons-script</justification>
+            </difference>
+            <difference>
+              <className>org/xwiki/extension/wrap/WrappingIterableResult</className>
+              <differenceType>5001</differenceType>
+              <to>org/xwiki/extension/wrap/AbstractWrappingObject</to>
+              <justification>AbstractWrappingObject has been moved to xwiki-commons-script</justification>
+            </difference>
+            <difference>
+              <className>org/xwiki/extension/wrap/WrappingIterableResult</className>
+              <differenceType>5001</differenceType>
+              <to>org/xwiki/extension/internal/safe/AbstractSafeObject</to>
+              <justification>AbstractSafeObject has been moved to xwiki-commons-script</justification>
+            </difference>
+            <difference>
+              <className>org/xwiki/extension/wrap/WrappingIterableResult</className>
+              <differenceType>7005</differenceType>
+              <method>WrappingIterableResult(org.xwiki.extension.repository.result.IterableResult, org.xwiki.extension.internal.safe.ScriptSafeProvider)</method>
+              <to>WrappingIterableResult(org.xwiki.extension.repository.result.IterableResult, org.xwiki.script.internal.safe.ScriptSafeProvider)</to>
+              <justification>ScriptSafeProvider has been moved to xwiki-commons-script</justification>
+            </difference>
+            <difference>
+              <className>org/xwiki/extension/wrap/WrappingLocalExtension</className>
+              <differenceType>5001</differenceType>
+              <to>org/xwiki/extension/wrap/AbstractWrappingObject</to>
+              <justification>AbstractWrappingObject has been moved to xwiki-commons-script</justification>
+            </difference>
+            <difference>
+              <className>org/xwiki/extension/wrap/WrappingRatingExtension</className>
+              <differenceType>5001</differenceType>
+              <to>org/xwiki/extension/wrap/AbstractWrappingObject</to>
+              <justification>AbstractWrappingObject has been moved to xwiki-commons-script</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

@@ -17,24 +17,55 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal.safe;
-
-import org.xwiki.component.annotation.Role;
+package org.xwiki.script.wrap;
 
 /**
- * Provide a wrapped (or not) version of the passed object so that it's safe to use in a public script.
+ * Wrap an Object.
  *
- * @param <T>
+ * @param <T> the type of the wrapped object
  * @version $Id$
- * @since 4.0M2
+ * @since 4.0M1
  */
-@Role
-public interface ScriptSafeProvider<T>
+public abstract class AbstractWrappingObject<T>
 {
     /**
-     * @param <S> the type of the safe object version
-     * @param unsafe the unsafe version of the object
-     * @return a safe version of the passed object
+     * @see #getWrapped()
      */
-    <S> S get(T unsafe);
+    private T wrapped;
+
+    /**
+     * @param wrapped the wrapped object
+     */
+    public AbstractWrappingObject(T wrapped)
+    {
+        this.wrapped = wrapped;
+    }
+
+    /**
+     * @return the wrapped object
+     */
+    protected T getWrapped()
+    {
+        return this.wrapped;
+    }
+
+    // Object
+
+    @Override
+    public int hashCode()
+    {
+        return getWrapped().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return getWrapped().equals(obj);
+    }
+
+    @Override
+    public String toString()
+    {
+        return getWrapped().toString();
+    }
 }

@@ -22,9 +22,9 @@ package org.xwiki.extension.wrap;
 import java.util.Iterator;
 
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.internal.safe.AbstractSafeObject;
-import org.xwiki.extension.internal.safe.ScriptSafeProvider;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.script.internal.safe.AbstractSafeObject;
+import org.xwiki.script.internal.safe.ScriptSafeProvider;
 
 /**
  * Provide a public script access to a iterable result.

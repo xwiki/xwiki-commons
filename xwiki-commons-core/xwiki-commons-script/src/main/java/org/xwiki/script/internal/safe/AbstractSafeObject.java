@@ -17,9 +17,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal.safe;
+package org.xwiki.script.internal.safe;
 
-import org.xwiki.extension.wrap.AbstractWrappingObject;
+import org.xwiki.script.wrap.AbstractWrappingObject;
 
 /**
  * Encapsulate an object in a safe way for public scripts.
