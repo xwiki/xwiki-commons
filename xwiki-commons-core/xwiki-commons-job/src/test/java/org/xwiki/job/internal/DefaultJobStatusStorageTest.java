@@ -29,12 +29,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -103,6 +107,22 @@ public class DefaultJobStatusStorageTest
             this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("invalidlogargument"));
 
         Assert.assertEquals(3, jobStatus.getLog().size());
+    }
+
+    @Test
+    public void getJobStatusThatDoesNotExist() throws Exception
+    {
+        JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("nostatus"));
+
+        assertNull(jobStatus);
+
+        JobStatusSerializer mockSerializer = mock(JobStatusSerializer.class);
+        ReflectionUtils.setFieldValue(this.componentManager.getComponentUnderTest(), "serializer", mockSerializer);
+
+        jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("nostatus"));
+        assertNull(jobStatus);
+
+        verifyNoMoreInteractions(mockSerializer);
     }
 
     @Test
