@@ -20,18 +20,15 @@
 package org.xwiki.velocity.tools;
 
 import java.beans.Transient;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
-import com.fasterxml.jackson.databind.introspect.VisibilityChecker.Std;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONException;
@@ -52,64 +49,18 @@ public class JSONTool
      * (https://github.com/FasterXML/jackson-databind/issues/857)</li>
      * </ul>
      */
-    private static class CustomVisibilityChecker extends Std
+    private static class CustomAnnotationIntrospector extends JacksonAnnotationIntrospector
     {
-        protected static final CustomVisibilityChecker CUSTOM = new CustomVisibilityChecker(
-            Std.class.getAnnotation(JsonAutoDetect.class));
-
-        public CustomVisibilityChecker(JsonAutoDetect ann)
-        {
-            super(ann);
-        }
+        public static final CustomAnnotationIntrospector INTROSPECTOR = new CustomAnnotationIntrospector();
 
         @Override
-        public boolean isCreatorVisible(AnnotatedMember m)
+        public boolean hasIgnoreMarker(AnnotatedMember m)
         {
             if (m.getAnnotation(Transient.class) != null) {
-                return false;
+                return true;
             }
 
-            return super.isCreatorVisible(m);
-        }
-
-        @Override
-        public boolean isFieldVisible(Field f)
-        {
-            if (f.getAnnotation(Transient.class) != null) {
-                return false;
-            }
-
-            return super.isFieldVisible(f);
-        }
-
-        @Override
-        public boolean isGetterVisible(Method m)
-        {
-            if (m.getAnnotation(Transient.class) != null) {
-                return false;
-            }
-
-            return super.isGetterVisible(m);
-        }
-
-        @Override
-        public boolean isIsGetterVisible(Method m)
-        {
-            if (m.getAnnotation(Transient.class) != null) {
-                return false;
-            }
-
-            return super.isIsGetterVisible(m);
-        }
-
-        @Override
-        public boolean isSetterVisible(Method m)
-        {
-            if (m.getAnnotation(Transient.class) != null) {
-                return false;
-            }
-
-            return super.isSetterVisible(m);
+            return super.hasIgnoreMarker(m);
         }
     }
 
@@ -135,7 +86,7 @@ public class JSONTool
     {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibilityChecker(CustomVisibilityChecker.CUSTOM);
+            mapper.setAnnotationIntrospector(CustomAnnotationIntrospector.INTROSPECTOR);
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             this.logger.error("Failed to serialize object to JSON", e);
