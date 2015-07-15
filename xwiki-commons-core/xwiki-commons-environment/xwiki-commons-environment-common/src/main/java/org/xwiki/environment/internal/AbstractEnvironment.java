@@ -221,8 +221,8 @@ public abstract class AbstractEnvironment implements Environment
             return initDir(dir, isTemp);
         }
 
-        this.logger.error("Configured {} directory [{}] could not be created, check permissions.", tempOrPermanent,
-            dir.getAbsolutePath());
+        this.logger.error("Configured {} directory [{}] could not be created for some reason. You should start by "
+            + "checking permissions.", tempOrPermanent, dir.getAbsolutePath());
 
         return null;
     }
