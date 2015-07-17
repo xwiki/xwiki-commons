@@ -40,6 +40,11 @@
       <artifactId>xwiki-commons-tool-test-simple</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-observation-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- To be removed as soon as we get rid of AbstractXWikiComponentTestCase -->
     <dependency>
       <groupId>jmock</groupId>
