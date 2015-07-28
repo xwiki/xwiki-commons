@@ -79,7 +79,7 @@
     <clover.version>3.1.12</clover.version>
 
     <!-- IzPack -->
-    <izpack.version>5.0.1</izpack.version>
+    <izpack.version>5.0.3</izpack.version>
 
     <!-- Checkstyle -->
     <checkstyle.version>6.7</checkstyle.version>
