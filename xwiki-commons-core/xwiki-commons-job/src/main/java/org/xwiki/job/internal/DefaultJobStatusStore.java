@@ -394,7 +394,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
                     try {
                         status = loadStatus(id);
 
-                        this.cache.put(id, status != null ? status : NOSTATUS);
+                        this.cache.put(id, status);
                     } catch (Exception e) {
                         this.logger.warn("Failed to load job status for id [{}]", id, e);
 
