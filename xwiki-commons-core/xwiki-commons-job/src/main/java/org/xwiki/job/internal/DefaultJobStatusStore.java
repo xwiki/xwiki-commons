@@ -243,7 +243,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         this.executorService =
             new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), threadFactory);
 
-        this.cache = Collections.synchronizedMap(new Cache(50));
+        this.cache = Collections.synchronizedMap(new Cache(this.configuration.getJobStatusCacheSize()));
     }
 
     /**

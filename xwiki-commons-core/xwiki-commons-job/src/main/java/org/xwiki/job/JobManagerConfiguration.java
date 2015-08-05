@@ -36,4 +36,10 @@ public interface JobManagerConfiguration
      * @return the folder containing job executing status
      */
     File getStorage();
+
+    /**
+     * @return the maximum number of entries to put in the job status cache
+     * @since 7.2M2
+     */
+    int getJobStatusCacheSize();
 }

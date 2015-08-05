@@ -62,6 +62,7 @@ public class DefaultJobStatusStorageTest
         FileUtils.copyDirectory(new File("src/test/resources/jobs/"), new File("target/test/jobs/"));
 
         when(jobManagerConfiguration.getStorage()).thenReturn(new File("target/test/jobs/status"));
+        when(jobManagerConfiguration.getJobStatusCacheSize()).thenReturn(100);
     }
 
     @Test
