@@ -100,7 +100,7 @@ public class TestComponentManager extends EmbeddableComponentManager
      *
      * @param testClass the class containing the annotations
      * @throws Exception in case of an error during registration
-     * @since 7.2M1
+     * @since 7.2M2
      */
     public void registerComponentIfDontExist(Class<?> testClass) throws Exception
     {
