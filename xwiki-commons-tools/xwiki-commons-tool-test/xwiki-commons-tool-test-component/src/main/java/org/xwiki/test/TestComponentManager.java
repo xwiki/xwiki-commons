@@ -96,6 +96,18 @@ public class TestComponentManager extends EmbeddableComponentManager
     }
 
     /**
+     * Register components associated to the provided class if there is not already one.
+     *
+     * @param testClass the class containing the annotations
+     * @throws Exception in case of an error during registration
+     * @since 7.2M1
+     */
+    public void registerComponentIfDontExist(Class<?> testClass) throws Exception
+    {
+        this.componentRegistrator.registerComponent(testClass, this);
+    }
+
+    /**
      * Initialize the test component manager by registering components based on the presence of
      * {@link org.xwiki.test.annotation.AllComponents} and {@link org.xwiki.test.annotation.ComponentList} annotations.
      * Also calls methods annotated with {@link BeforeComponent} and {@link AfterComponent}.

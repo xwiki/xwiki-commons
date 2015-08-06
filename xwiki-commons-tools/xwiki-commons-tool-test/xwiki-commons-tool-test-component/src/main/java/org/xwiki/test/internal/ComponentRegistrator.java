@@ -86,13 +86,32 @@ public class ComponentRegistrator
      * @throws Exception in case of an error during registration
      * @since 5.2M1
      */
-    public void registerComponent(Class<?> componentImplementation, ComponentManager componentManager)
-        throws Exception
+    public void registerComponent(Class<?> componentImplementation, ComponentManager componentManager) throws Exception
     {
         List<ComponentDescriptor> descriptors = this.loader.getComponentsDescriptors(componentImplementation);
 
         for (ComponentDescriptor descriptor : descriptors) {
             componentManager.registerComponent(descriptor);
+        }
+    }
+
+    /**
+     * Register components associated to the provided class if there is not already one.
+     *
+     * @param componentImplementation the implementation of the component
+     * @param componentManager the component manager against which to register the components
+     * @throws Exception in case of an error during registration
+     * @since 7.2M2
+     */
+    public void registerComponentIfDontExist(Class<?> componentImplementation, ComponentManager componentManager)
+        throws Exception
+    {
+        List<ComponentDescriptor> descriptors = this.loader.getComponentsDescriptors(componentImplementation);
+
+        for (ComponentDescriptor descriptor : descriptors) {
+            if (!componentManager.hasComponent(descriptor.getRoleType(), descriptor.getRoleHint())) {
+                componentManager.registerComponent(descriptor);
+            }
         }
     }
 
