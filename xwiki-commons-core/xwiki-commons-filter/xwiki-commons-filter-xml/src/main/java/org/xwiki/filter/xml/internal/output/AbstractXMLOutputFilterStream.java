@@ -19,6 +19,7 @@
  */
 package org.xwiki.filter.xml.internal.output;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -110,6 +111,10 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
     @Override
     public void close() throws IOException
     {
+        if (this.filter instanceof Closeable) {
+            ((Closeable) this.filter).close();
+        }
+
         this.properties.getTarget().close();
     }
 }
