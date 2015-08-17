@@ -19,6 +19,8 @@
  */
 package org.xwiki.filter.xml.internal.serializer;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -48,7 +50,7 @@ import org.xwiki.xml.stax.StAXUtils;
  * @version $Id$
  * @since 5.2M1
  */
-public class DefaultXMLSerializer implements InvocationHandler
+public class DefaultXMLSerializer implements InvocationHandler, Closeable
 {
     private static final Pattern VALID_ELEMENTNAME = Pattern.compile("[A-Za-z][A-Za-z0-9:_.-]*");
 
@@ -340,7 +342,9 @@ public class DefaultXMLSerializer implements InvocationHandler
     {
         Object result = null;
 
-        if (method.getName().startsWith("begin")) {
+        if (method.getDeclaringClass() == Closeable.class) {
+            close();
+        } else if (method.getName().startsWith("begin")) {
             beginEvent(method.getName(), args);
         } else if (method.getName().startsWith("end")) {
             endEvent();
@@ -351,5 +355,15 @@ public class DefaultXMLSerializer implements InvocationHandler
         }
 
         return result;
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        try {
+            this.xmlStreamWriter.close();
+        } catch (XMLStreamException e) {
+            throw new IOException(e);
+        }
     }
 }
