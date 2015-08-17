@@ -68,7 +68,7 @@ public class XMLInputFilterFactory extends
     {
         super(FilterStreamType.FILTER_XML);
 
-        setName("Generic XML output stream");
+        setName("Generic XML input stream");
         setDescription("Generates wiki events from generic XML file.");
     }
 
