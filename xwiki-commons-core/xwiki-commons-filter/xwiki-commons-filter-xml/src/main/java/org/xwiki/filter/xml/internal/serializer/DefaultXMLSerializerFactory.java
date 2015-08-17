@@ -19,6 +19,7 @@
  */
 package org.xwiki.filter.xml.internal.serializer;
 
+import java.io.Closeable;
 import java.lang.reflect.Proxy;
 
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Result;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.xml.XMLConfiguration;
@@ -66,11 +68,29 @@ public class DefaultXMLSerializerFactory implements XMLSerializerFactory
     public <T> T createSerializer(Class<T> filterInterface, Result xmlResult, XMLConfiguration configuration)
         throws XMLStreamException, FactoryConfigurationError
     {
-        return createSerializer(new Class<?>[] { filterInterface }, xmlResult, configuration);
+        return createSerializer(new Class<?>[] { filterInterface, Closeable.class }, xmlResult, configuration);
     }
 
     @Override
     public <T> T createSerializer(Class<?>[] filterInterfaces, Result xmlResult, XMLConfiguration configuration)
+        throws XMLStreamException, FactoryConfigurationError
+    {
+        return createSerializerInternal(addCloseable(filterInterfaces), xmlResult, configuration);
+    }
+
+    private Class<?>[] addCloseable(Class<?>[] filterInterfaces)
+    {
+        for (Class<?> i : filterInterfaces) {
+            if (i == Closeable.class) {
+                return filterInterfaces;
+            }
+        }
+
+        return ArrayUtils.add(filterInterfaces, Closeable.class);
+    }
+
+    private <T> T createSerializerInternal(Class<?>[] filterInterfaces, Result xmlResult,
+        XMLConfiguration configuration)
         throws XMLStreamException, FactoryConfigurationError
     {
         DefaultXMLSerializer handler =
