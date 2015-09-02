@@ -22,7 +22,7 @@ package org.xwiki.tool.checkstyle;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.puppycrawl.tools.checkstyle.api.AnnotationUtility;
+import com.puppycrawl.tools.checkstyle.AnnotationUtility;
 import com.puppycrawl.tools.checkstyle.api.Check;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
