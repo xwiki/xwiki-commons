@@ -35,16 +35,12 @@ import com.thoughtworks.xstream.mapper.Mapper;
  */
 public class SafeTreeMarshallingStrategy extends ReferenceByXPathMarshallingStrategy
 {
-    private SafeXStream xstream;
-
     /**
-     * @param xstream the {@link com.thoughtworks.xstream.XStream} instance to use to isolate array element marshaling
+     * Default constructor.
      */
-    public SafeTreeMarshallingStrategy(SafeXStream xstream)
+    public SafeTreeMarshallingStrategy()
     {
         super(RELATIVE);
-
-        this.xstream = xstream;
     }
 
     // If anything goes wrong with an element, replace it with null
@@ -60,6 +56,6 @@ public class SafeTreeMarshallingStrategy extends ReferenceByXPathMarshallingStra
     protected TreeMarshaller createMarshallingContext(HierarchicalStreamWriter writer, ConverterLookup converterLookup,
         Mapper mapper)
     {
-        return new SafeTreeMarshaller(writer, converterLookup, mapper, RELATIVE, this.xstream);
+        return new SafeTreeMarshaller(writer, converterLookup, mapper, RELATIVE);
     }
 }

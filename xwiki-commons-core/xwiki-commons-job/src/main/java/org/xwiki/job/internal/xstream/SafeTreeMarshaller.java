@@ -19,9 +19,6 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
@@ -38,27 +35,16 @@ import com.thoughtworks.xstream.mapper.Mapper;
 public class SafeTreeMarshaller extends ReferenceByXPathMarshaller
 {
     /**
-     * The logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SafeTreeMarshaller.class);
-
-    private SafeXStream xstream;
-
-    /**
      * @see ReferenceByXPathMarshaller#ReferenceByXPathMarshaller(HierarchicalStreamWriter, ConverterLookup, Mapper,
      *      int)
      * @param writer the writer
      * @param converterLookup the converter lookup
      * @param mapper the mapper
      * @param mode the marshalling mode
-     * @param xstream the {@link com.thoughtworks.xstream.XStream} instance to use to isolate array element marshaling
      */
-    public SafeTreeMarshaller(HierarchicalStreamWriter writer, ConverterLookup converterLookup, Mapper mapper,
-        int mode, SafeXStream xstream)
+    public SafeTreeMarshaller(HierarchicalStreamWriter writer, ConverterLookup converterLookup, Mapper mapper, int mode)
     {
         super(writer, converterLookup, mapper, mode);
-
-        this.xstream = xstream;
     }
 
     private ObjectIdDictionary getParentObjects()

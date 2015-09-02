@@ -44,6 +44,6 @@ public class SafeXStream extends XStream
         registerConverter(new SafeArrayConverter(this));
 
         // Protect reflection based marshalling/unmarshalling
-        setMarshallingStrategy(new SafeTreeMarshallingStrategy(this));
+        setMarshallingStrategy(new SafeTreeMarshallingStrategy());
     }
 }
