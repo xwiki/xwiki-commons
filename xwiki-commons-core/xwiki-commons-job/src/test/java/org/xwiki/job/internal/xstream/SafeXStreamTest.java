@@ -19,8 +19,6 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -28,6 +26,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.thoughtworks.xstream.XStream;
+
+import static org.junit.Assert.assertEquals;
 
 public class SafeXStreamTest
 {
@@ -47,7 +49,23 @@ public class SafeXStreamTest
         }
     }
 
-    private SafeXStream xstream;
+    static class RecursiveObjectThroughArray
+    {
+        RecursiveObjectThroughArray[] recurse;
+
+        public RecursiveObjectThroughArray()
+        {
+            this.recurse = new RecursiveObjectThroughArray[] {this};
+        }
+
+        @Override
+        public String toString()
+        {
+            return "recursive object through array";
+        }
+    }
+
+    private XStream xstream;
 
     @Before
     public void before()
@@ -81,6 +99,14 @@ public class SafeXStreamTest
 
     @Test
     public void testRecursiveObject()
+    {
+        RecursiveObject obj = (RecursiveObject) writeread(new RecursiveObject());
+
+        Assert.assertNotNull(obj);
+    }
+
+    @Test
+    public void testRecursiveObjectThroughArray()
     {
         RecursiveObject obj = (RecursiveObject) writeread(new RecursiveObject());
 
