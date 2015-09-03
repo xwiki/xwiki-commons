@@ -19,31 +19,29 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import com.thoughtworks.xstream.XStream;
+import org.junit.Test;
+import org.xwiki.logging.LogLevel;
+
+import static org.junit.Assert.assertFalse;
+
+import static org.junit.Assert.assertTrue;
 
 /**
- * A {@link XStream} that never fail whatever value is provided.
- *
+ * Validate {@link XStreamUtils}.
+ * 
  * @version $Id$
- * @since 5.4M1
  */
-public class SafeXStream extends XStream
+public class XStreamUtilsTest
 {
-    /**
-     * Default constructor.
-     */
-    public SafeXStream()
+    @Test
+    public void testRecursiveObject()
     {
-        // Overwrite default reflection converter to skip unserializable types
-        registerConverter(new SafeReflectionConverter(this), PRIORITY_VERY_LOW);
+        assertTrue(XStreamUtils.isSafeType(null));
+        assertTrue(XStreamUtils.isSafeType("string"));
+        assertTrue(XStreamUtils.isSafeType(1));
+        assertTrue(XStreamUtils.isSafeType(new Object[] {}));
+        assertTrue(XStreamUtils.isSafeType(LogLevel.ERROR));
 
-        // Cleaner array serialization
-        registerConverter(new SafeArrayConverter(this));
-
-        // We don't care if some field from the XML does not exist anymore
-        ignoreUnknownElements();
-
-        // Protect reflection based marshalling/unmarshalling
-        setMarshallingStrategy(new SafeTreeMarshallingStrategy());
+        assertFalse(XStreamUtils.isSafeType(getClass()));
     }
 }

@@ -19,8 +19,6 @@
  */
 package org.xwiki.job.internal;
 
-import static org.mockito.Mockito.mock;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
@@ -28,7 +26,6 @@ import java.util.Objects;
 import javax.inject.Provider;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -39,6 +36,13 @@ import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.test.SerializableStandaloneComponent;
 import org.xwiki.job.test.StandaloneComponent;
+
+import static org.junit.Assert.assertNull;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 /**
  * Validate {@link JobStatusSerializer}.
@@ -51,11 +55,11 @@ public class JobStatusSerializerTest
 
     private File testFile = new File("target/test/status.xml");
 
-    private static class CrossReferenceObjectTest
+    private static class CrossReferenceObject
     {
-        public CrossReferenceObjectTest field;
+        public CrossReferenceObject field;
 
-        public CrossReferenceObjectTest()
+        public CrossReferenceObject()
         {
             this.field = this;
         }
@@ -180,8 +184,8 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
     }
 
     @Test
@@ -193,9 +197,9 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals("exception message", status.getLog().peek().getThrowable().getMessage());
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals("exception message", status.getLog().peek().getThrowable().getMessage());
     }
 
     @Test
@@ -207,10 +211,10 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
-        Assert.assertEquals("arg2", status.getLog().peek().getArgumentArray()[1]);
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
+        assertEquals("arg2", status.getLog().peek().getArgumentArray()[1]);
     }
 
     @Test
@@ -222,9 +226,9 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
     }
 
     @Test
@@ -236,9 +240,9 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals(String.class, status.getLog().peek().getArgumentArray()[0].getClass());
     }
 
     @Test
@@ -250,9 +254,9 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals(SerializableStandaloneComponent.class,
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals(SerializableStandaloneComponent.class,
             status.getLog().peek().getArgumentArray()[0].getClass());
     }
 
@@ -261,12 +265,13 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("message", new CrossReferenceObjectTest());
+        status.getLog().error("message", new CrossReferenceObject());
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertNull(((CrossReferenceObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNotNull(status.getLog());
+        CrossReferenceObject obj = (CrossReferenceObject) status.getLog().peek().getArgumentArray()[0];
+        assertSame(obj, obj.field);
     }
 
     @Test
@@ -278,8 +283,8 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNotNull(status.getLog());
+        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -291,8 +296,8 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNotNull(status.getLog());
+        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -304,8 +309,8 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNotNull(status.getLog());
+        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -317,8 +322,8 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNotNull(status.getLog());
+        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -330,8 +335,8 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNotNull(status.getLog());
+        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -343,9 +348,9 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals(SerializableProvider.class,
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals(SerializableProvider.class,
             ((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field.getClass());
     }
 
@@ -358,9 +363,9 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals(SerializableImplementationProvider.class, ((ObjectTest) status.getLog().peek()
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals(SerializableImplementationProvider.class, ((ObjectTest) status.getLog().peek()
             .getArgumentArray()[0]).field.getClass());
     }
 
@@ -373,9 +378,9 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals(new CustomObject("value"), status.getLog().peek().getArgumentArray()[0]);
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals(new CustomObject("value"), status.getLog().peek().getArgumentArray()[0]);
     }
 
     @Test
@@ -387,9 +392,9 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals(new SerializableCustomObject("value"), status.getLog().peek().getArgumentArray()[0]);
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals(new SerializableCustomObject("value"), status.getLog().peek().getArgumentArray()[0]);
     }
 
     @Test
@@ -401,8 +406,8 @@ public class JobStatusSerializerTest
 
         status = writeread(status);
 
-        Assert.assertNotNull(status.getLog());
-        Assert.assertEquals("error message", status.getLog().peek().getMessage());
-        Assert.assertEquals("value", status.getLog().peek().getArgumentArray()[0]);
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals("value", status.getLog().peek().getArgumentArray()[0]);
     }
 }

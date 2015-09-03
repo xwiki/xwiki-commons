@@ -19,43 +19,58 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import java.util.Iterator;
-
-import com.thoughtworks.xstream.converters.DataHolder;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.WriterWrapper;
 
 /**
- * Wrap a {@link DataHolder}.
- *
+ * Help tracking and closing forgotten ending tags.
+ * 
  * @version $Id$
- * @since 5.4M1
+ * @since 7.2RC1
  */
-public class DataHolderWrapper implements DataHolder
+public class SafeWriter extends WriterWrapper
 {
-    private final DataHolder wrapped;
+    private int depth;
 
     /**
-     * @param wrapped the wrapped {@link DataHolder}
+     * @param writer the actual writer
      */
-    public DataHolderWrapper(DataHolder wrapped)
+    public SafeWriter(HierarchicalStreamWriter writer)
     {
-        this.wrapped = wrapped;
+        super(writer);
     }
 
     @Override
-    public Object get(Object key)
+    public void startNode(String name)
     {
-        return this.wrapped.get(key);
+        super.startNode(name);
+
+        ++this.depth;
     }
 
     @Override
-    public void put(Object key, Object value)
+    public void startNode(String name, Class clazz)
     {
-        this.wrapped.put(key, value);
+        super.startNode(name, clazz);
+
+        ++this.depth;
     }
 
     @Override
-    public Iterator keys()
+    public void endNode()
     {
-        return this.wrapped.keys();
+        super.endNode();
+
+        --this.depth;
+    }
+
+    /**
+     * Close any open tag in case of error in the middle of the serialization.
+     */
+    public void fix()
+    {
+        while (this.depth > 0) {
+            endNode();
+        }
     }
 }

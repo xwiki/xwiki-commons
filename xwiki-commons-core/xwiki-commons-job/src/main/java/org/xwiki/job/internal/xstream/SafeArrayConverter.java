@@ -19,22 +19,14 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.collections.ArrayConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.copy.HierarchicalStreamCopier;
-import com.thoughtworks.xstream.io.xml.DomReader;
-import com.thoughtworks.xstream.io.xml.DomWriter;
 
 /**
  * A {@link ArrayConverter} which never fail whatever value is provided.
@@ -49,30 +41,12 @@ public class SafeArrayConverter extends ArrayConverter
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SafeArrayConverter.class);
 
-    private final DocumentBuilderFactory docFactory;
-
-    private DocumentBuilder docBuilder;
-
-    private final HierarchicalStreamCopier copier;
-
-    private SafeXStream xstream;
-
     /**
      * @param xstream the {@link com.thoughtworks.xstream.XStream} instance to use to isolate array element marshaling
      */
     public SafeArrayConverter(SafeXStream xstream)
     {
         super(xstream.getMapper());
-
-        this.docFactory = DocumentBuilderFactory.newInstance();
-        try {
-            this.docBuilder = this.docFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            // Should never happen
-            LOGGER.error("Failed to create a DocumentBuilder");
-        }
-        this.copier = new HierarchicalStreamCopier();
-        this.xstream = xstream;
     }
 
     @Override
@@ -99,26 +73,20 @@ public class SafeArrayConverter extends ArrayConverter
     @Override
     protected void writeItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer)
     {
-        if (XStreamUtils.isSafeType(item) || this.docBuilder == null) {
+        if (XStreamUtils.isSerializable(item)) {
             super.writeItem(item, context, writer);
-        } else if (!XStreamUtils.isSerializable(item)) {
-            super.writeItem(item.toString(), context, writer);
         } else {
+            String str;
             try {
-                Document doc = this.docBuilder.newDocument();
-
-                DomWriter domWriter = new DomWriter(doc);
-
-                this.xstream.marshal(item, domWriter, new DataHolderWrapper(context));
-
-                DomReader domReader = new DomReader(doc);
-
-                this.copier.copy(domReader, writer);
+                str = item.toString();
             } catch (Throwable e) {
-                LOGGER.debug("Failed to write field", e);
+                LOGGER.debug("Failed to convert item [{}] to String",
+                    item.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(item)), e);
 
-                super.writeItem(item.toString(), context, writer);
+                str = null;
             }
+
+            super.writeItem(str, context, writer);
         }
     }
 }

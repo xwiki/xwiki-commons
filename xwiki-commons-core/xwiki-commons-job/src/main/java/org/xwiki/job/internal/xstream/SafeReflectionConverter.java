@@ -203,21 +203,8 @@ public class SafeReflectionConverter extends ReflectionConverter
             // Custom method
             void safeWriteField(String fieldName, String aliasName, Class fieldType, Class definedIn, Object newObj)
             {
-                if (XStreamUtils.isSafeType(newObj)) {
+                if (XStreamUtils.isSerializable(newObj)) {
                     writeField(fieldName, aliasName, fieldType, definedIn, newObj);
-                } else if (XStreamUtils.isSerializable(newObj)) {
-                    try {
-                        // Test the serialization
-                        SafeReflectionConverter.this.xstream.marshal(newObj, VoidWriter.WRITER, new DataHolderWrapper(
-                            context));
-
-                        // Do the actual serialization
-                        writeField(fieldName, aliasName, fieldType, definedIn, newObj);
-                    } catch (Throwable e) {
-                        // Just ignore the field if its serialization test failed
-
-                        LOGGER.debug("Failed to write field [{}], ignore", fieldName, e);
-                    }
                 }
             }
 
