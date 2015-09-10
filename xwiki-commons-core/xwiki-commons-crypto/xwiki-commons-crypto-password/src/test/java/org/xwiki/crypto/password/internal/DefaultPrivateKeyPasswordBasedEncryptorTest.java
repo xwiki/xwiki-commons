@@ -121,7 +121,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
 
         // The JCE distributed with Java 8 seems to not properly support PKCS#8 decoding of encrypted private key
         // using the PBES2 password based encryption scheme defined in PKCS#5.
-        // TODO: Investigate why JVM8 does not support PKCS#5/8 properly
+        // See https://bugs.openjdk.java.net/browse/JDK-8076999.
         if (!IS_JRE_8) {
             assertThat(this.encryptor.decrypt(PASSWORD, new EncryptedPrivateKeyInfo(data)).getEncoded(),
                 equalTo(RSAKEY));
