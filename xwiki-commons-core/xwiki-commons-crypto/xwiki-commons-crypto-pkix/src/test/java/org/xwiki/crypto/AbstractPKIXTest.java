@@ -23,7 +23,9 @@ package org.xwiki.crypto;
 
 public abstract class AbstractPKIXTest
 {
-    protected static final String RSA_PRIVATE_KEY = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDCmjim/3likJ4"
+    protected static final String RSA_PRIVATE_KEY =
+        // Link to decoded ASN.1: https://goo.gl/kgV0IB
+        "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDCmjim/3likJ4"
         + "VF564UyygqPjIX/z090AImLl0fDLUkIyCVTSd18wJ3axr1qjLtSgNPWet0puSxO"
         + "FH0AzFKRCJOjUkQRU8iAkz64MLAf9xrx4nBECciqeB941s01kLtG8C/UqC3O9Sw"
         + "HSdhtUpUU8V/91SiD09yNJsnODi3WqM3oLg1QYzKhoaD2mVo2xJLQ/QXqr2XIc5"
@@ -50,7 +52,9 @@ public abstract class AbstractPKIXTest
         + "tBtoVWLRWWmuCINyqr6e9AdyvbvT6mQCjbn9+y7t6ZAhLaya5ZMUVEBLyLLqMzr"
         + "y oi/huj7m4nV4kPZz9LKxDRu3r6o0Pah+daDsTxEYObtsKa7e";
 
-    protected static final String RSA_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwpo4pv95YpCeFReeuFM"
+    protected static final String RSA_PUBLIC_KEY =
+        // Link to decoded ASN.1: https://goo.gl/2YsSco
+        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwpo4pv95YpCeFReeuFM"
         + "soKj4yF/89PdACJi5dHwy1JCMglU0ndfMCd2sa9aoy7UoDT1nrdKbksThR9AMxS"
         + "kQiTo1JEEVPIgJM+uDCwH/ca8eJwRAnIqngfeNbNNZC7RvAv1KgtzvUsB0nYbVK"
         + "VFPFf/dUog9PcjSbJzg4t1qjN6C4NUGMyoaGg9plaNsSS0P0F6q9lyHOYtjJaX6"
@@ -59,27 +63,31 @@ public abstract class AbstractPKIXTest
         + "2aJPPbMwIDAQAB";
 
     protected static final String INTERCA_DSA_PRIVATE_KEY =
+        // Link to decoded ASN.1: https://goo.gl/Bn03lH
         "MIIBSwIBADCCASwGByqGSM44BAEwggEfAoGBALjHlfmpKj8BiEfekiLTnbYdZlo5"
-            + "Hz6E2dAjx+ryqv3jeGYbPTxh+pxrD0MIIUKF+3o8Y+TBwBpbKnnZ/G2T/P6QXs8+"
-            + "l7H7Q4CUJKShdQ+PhpK8JXYaICN4VAtKsP4PVhBMWLw/3VANh67JDwZz1Oa5soci"
-            + "3dAVQDWN8mc4PdbhAhUAoWrfRj14AUQT759T/Men1dQ9o0ECgYEAgWPlEWkpvgfk"
-            + "CvyBMRiRWchS0suOUUL5RyqYKmVFpDE2aKRMMFO5owlluJ1lm57f4zaddY8zAsT7"
-            + "2tv0tTxz7nFAAPoX4QPOcSxYYapvEGRZklJRU4qrrXOPlXTia6jsWlgjnMaJ43zC"
-            + "BXteK2AdZ2DF7Yr9UPRuNukIzSYc4pcEFgIULVbclkmz+d+shls7gXvWJD6Z1Pc=";
+        + "Hz6E2dAjx+ryqv3jeGYbPTxh+pxrD0MIIUKF+3o8Y+TBwBpbKnnZ/G2T/P6QXs8+"
+        + "l7H7Q4CUJKShdQ+PhpK8JXYaICN4VAtKsP4PVhBMWLw/3VANh67JDwZz1Oa5soci"
+        + "3dAVQDWN8mc4PdbhAhUAoWrfRj14AUQT759T/Men1dQ9o0ECgYEAgWPlEWkpvgfk"
+        + "CvyBMRiRWchS0suOUUL5RyqYKmVFpDE2aKRMMFO5owlluJ1lm57f4zaddY8zAsT7"
+        + "2tv0tTxz7nFAAPoX4QPOcSxYYapvEGRZklJRU4qrrXOPlXTia6jsWlgjnMaJ43zC"
+        + "BXteK2AdZ2DF7Yr9UPRuNukIzSYc4pcEFgIULVbclkmz+d+shls7gXvWJD6Z1Pc=";
 
     protected static final String INTERCA_DSA_PUBLIC_KEY =
+        // Link to decoded ASN.1: https://goo.gl/kjEIyJ
         "MIIBtzCCASwGByqGSM44BAEwggEfAoGBALjHlfmpKj8BiEfekiLTnbYdZlo5Hz6E"
-            + "2dAjx+ryqv3jeGYbPTxh+pxrD0MIIUKF+3o8Y+TBwBpbKnnZ/G2T/P6QXs8+l7H7"
-            + "Q4CUJKShdQ+PhpK8JXYaICN4VAtKsP4PVhBMWLw/3VANh67JDwZz1Oa5soci3dAV"
-            + "QDWN8mc4PdbhAhUAoWrfRj14AUQT759T/Men1dQ9o0ECgYEAgWPlEWkpvgfkCvyB"
-            + "MRiRWchS0suOUUL5RyqYKmVFpDE2aKRMMFO5owlluJ1lm57f4zaddY8zAsT72tv0"
-            + "tTxz7nFAAPoX4QPOcSxYYapvEGRZklJRU4qrrXOPlXTia6jsWlgjnMaJ43zCBXte"
-            + "K2AdZ2DF7Yr9UPRuNukIzSYc4pcDgYQAAoGAEH/cX4auYYjapwPvipulmUPLPB9G"
-            + "TPcZfcefLYH4FlAs/W1/vfer1kGZL/+urSu+5D/FonOGNE9VRnLhVO4SyOremfJT"
-            + "O0ZLA7w5ciQwcQRxwXX3vvYzxtiFA2H7G7SHVcg8GDzyikHePQnyDwjgXf2C8dxc"
-            + "yasUA5FJb62YKo0=";
+        + "2dAjx+ryqv3jeGYbPTxh+pxrD0MIIUKF+3o8Y+TBwBpbKnnZ/G2T/P6QXs8+l7H7"
+        + "Q4CUJKShdQ+PhpK8JXYaICN4VAtKsP4PVhBMWLw/3VANh67JDwZz1Oa5soci3dAV"
+        + "QDWN8mc4PdbhAhUAoWrfRj14AUQT759T/Men1dQ9o0ECgYEAgWPlEWkpvgfkCvyB"
+        + "MRiRWchS0suOUUL5RyqYKmVFpDE2aKRMMFO5owlluJ1lm57f4zaddY8zAsT72tv0"
+        + "tTxz7nFAAPoX4QPOcSxYYapvEGRZklJRU4qrrXOPlXTia6jsWlgjnMaJ43zCBXte"
+        + "K2AdZ2DF7Yr9UPRuNukIzSYc4pcDgYQAAoGAEH/cX4auYYjapwPvipulmUPLPB9G"
+        + "TPcZfcefLYH4FlAs/W1/vfer1kGZL/+urSu+5D/FonOGNE9VRnLhVO4SyOremfJT"
+        + "O0ZLA7w5ciQwcQRxwXX3vvYzxtiFA2H7G7SHVcg8GDzyikHePQnyDwjgXf2C8dxc"
+        + "yasUA5FJb62YKo0=";
 
-    protected static final String DSA_PRIVATE_KEY = "MIIBTAIBADCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/e"
+    protected static final String DSA_PRIVATE_KEY =
+        // Link to decoded ASN.1: https://goo.gl/n6abEQ
+        "MIIBTAIBADCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/e"
         + "d2VrBw6TPkgMyV1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6ze"
         + "aTpvUohGLyTa0F7UY15LkbJpyz8WFJaVykH85nz3Zo6Md9Z4X95yvF1+h9qYuak"
         + "jWcHW31+pN4u3cJNg5FAhUAj986cVG9NgWgWzFVSLbB9pEPbFUCgYEAmQrZFH3M"
@@ -88,7 +96,9 @@ public abstract class AbstractPKIXTest
         + "yQtFzMddHmYB0QnS9yX1n6DOWj/CSX0PvrlMYEFwIVAIO1GUQjAddL4btiFQnhe"
         + "N4fxBTa";
 
-    protected static final String DSA_PUBLIC_KEY = "MIIBtzCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/ed2VrB"
+    protected static final String DSA_PUBLIC_KEY =
+        // Link to decoded ASN.1: https://goo.gl/0fLEBU
+        "MIIBtzCCASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/ed2VrB"
         + "w6TPkgMyV1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6zeaTpvUo"
         + "hGLyTa0F7UY15LkbJpyz8WFJaVykH85nz3Zo6Md9Z4X95yvF1+h9qYuakjWcHW31"
         + "+pN4u3cJNg5FAhUAj986cVG9NgWgWzFVSLbB9pEPbFUCgYEAmQrZFH3MX5CLX/5v"
@@ -99,24 +109,32 @@ public abstract class AbstractPKIXTest
         + "DyiO++72IiGUluc6yHg6m9cQ53eeJt9i44LJfTOw1S3YMU1ST7alokSnJRTICp5W"
         + "By0m1scwheuTo0E=";
 
-    protected static final String V1_CA_CERT = "MIICpzCCAY8CEBySdlSTKgwuylJNlQxTMNIwDQYJKoZIhvcNAQEFBQAwEjEQMA4G"
-        + "A1UEAwwHVGVzdCBDQTAeFw0xNDAyMDMxMTAwMDBaFw0xNTA2MTgxMDAwMDBaMBIx"
-        + "EDAOBgNVBAMMB1Rlc3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB"
-        + "AQDCmjim/3likJ4VF564UyygqPjIX/z090AImLl0fDLUkIyCVTSd18wJ3axr1qjL"
-        + "tSgNPWet0puSxOFH0AzFKRCJOjUkQRU8iAkz64MLAf9xrx4nBECciqeB941s01kL"
-        + "tG8C/UqC3O9SwHSdhtUpUU8V/91SiD09yNJsnODi3WqM3oLg1QYzKhoaD2mVo2xJ"
-        + "LQ/QXqr2XIc5i2Mlpfq6S5JNbFD/I+UFhBUlBNuDOEV7ttIt2eFMEUsfkCestGo0"
-        + "YoQYOpTLPcPGRS7MnSY1CLWGUYqaMSnes0nS8ke2PPD4Q0suAZz4msnhNufanscs"
-        + "tM8tcNtsZF6hj0JvbZok89szAgMBAAEwDQYJKoZIhvcNAQEFBQADggEBAB2M29kY"
-        + "IwXRNpqM/CnRhc8MFCKO5XDQI35CrECFFXOyfGJsWb2W/O2FQFpi3bNHdKgt5BN6"
-        + "ZVjTdr8veHPr5bQ9IrZgoAAL41xwMThQjGDvomiZri0WtulP8VfX0axFGhdde4mg"
-        + "iYpYyCLYvTg5Mp8FuEW9XPtgJSumKYTNhk0prKyN7UfLxrhdI1sG3Y1/2/a8Bz3m"
-        + "xzPB6DMYMNPD1rB6R/mU+QUBPCPlUSCm+zQf+gTL0Uu2r4jlUiHSVywAPcEWfGFP"
-        + "/qb05hjvU8mYDbwPd3kX/mKHBUYKVqGemz9UPJqF0Yg9y7qtlivdiv7o7VaoykdK"
-        + "mDzNKbH1jnI/azc=";
+    protected static final String V1_CA_CERT =
+        // Generated from BcX509CertificateGeneratorFactoryTest#testGenerateEndEntitySignedCertificateVersion1()
+        // caCertificate with adapted validity
+        // Link to decoded ASN.1: https://goo.gl/ztT2OZ
+        "MIICqDCCAZACEQDrYWVzWMEc+z95IS0t2lvrMA0GCSqGSIb3DQEBBQUAMBIxEDAO"
+        + "BgNVBAMMB1Rlc3QgQ0EwHhcNMTUwOTEwMTAwMDAwWhcNNDkxMjMxMTEwMDAwWjAS"
+        + "MRAwDgYDVQQDDAdUZXN0IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC"
+        + "AQEAwpo4pv95YpCeFReeuFMsoKj4yF/89PdACJi5dHwy1JCMglU0ndfMCd2sa9ao"
+        + "y7UoDT1nrdKbksThR9AMxSkQiTo1JEEVPIgJM+uDCwH/ca8eJwRAnIqngfeNbNNZ"
+        + "C7RvAv1KgtzvUsB0nYbVKVFPFf/dUog9PcjSbJzg4t1qjN6C4NUGMyoaGg9plaNs"
+        + "SS0P0F6q9lyHOYtjJaX6ukuSTWxQ/yPlBYQVJQTbgzhFe7bSLdnhTBFLH5AnrLRq"
+        + "NGKEGDqUyz3DxkUuzJ0mNQi1hlGKmjEp3rNJ0vJHtjzw+ENLLgGc+JrJ4Tbn2p7H"
+        + "LLTPLXDbbGReoY9Cb22aJPPbMwIDAQABMA0GCSqGSIb3DQEBBQUAA4IBAQCE21dm"
+        + "cllKcNs9weq25l+l0ldbJ17NXWSaEmtzFgAW26/m19DBpP5+52Y6KirhIs1dTJPU"
+        + "kHneNSVoo5gNr7MbOMngwhNaND2PrqtP0UJanCyM+Egknd7tooPRXcv2XJYd880k"
+        + "EcRzOjzN4h1aW0noN/R6KEz0FQZU+d1BXT/H6VAKyfYkdSy40BrYdj4rvCaMFZVt"
+        + "QPhfGqNeyWQCmTAVlVsxu31ydMvIoaE4Cle5xXwN7tKTyLWkfd/tbA2DKUgjMuG0"
+        + "b+zjuNs72VAFZGAr7tzbbAexM9MeTsHjl/lj2U2ljPPQojlb0XxnMNL1G/cArhaE"
+        + "YfyQlA4q7tvUehy8";
 
-    protected static final String V1_CERT = "MIIDRDCCAiwCEGTodh45ecrZyNhs/OCWTMQwDQYJKoZIhvcNAQEFBQAwEjEQMA4G"
-        + "A1UEAwwHVGVzdCBDQTAeFw0xNDAzMTcxMTAwMDBaFw0xNTA3MzAxMDAwMDBaMBox"
+    protected static final String V1_CERT =
+        // Generated from BcX509CertificateGeneratorFactoryTest#testGenerateEndEntitySignedCertificateVersion1()
+        // certificate with adapted validity
+        // Link to decoded ASN.1: https://goo.gl/bvp09M
+        "MIIDRDCCAiwCEAjkgt3VsI1SyG7IVMtG2RkwDQYJKoZIhvcNAQEFBQAwEjEQMA4G"
+        + "A1UEAwwHVGVzdCBDQTAeFw0xNTA5MTAxMDAwMDBaFw00OTEyMzExMTAwMDBaMBox"
         + "GDAWBgNVBAMMD1Rlc3QgRW5kIEVudGl0eTCCAbcwggEsBgcqhkjOOAQBMIIBHwKB"
         + "gQDUPTmtY/bFgIXVzcqs/By/2wP3ndlawcOkz5IDMldVKYsefEUozhzEDa4Hpkhp"
         + "G/NHUXC6lQ2GyNzm5yCYfN2ces3mk6b1KIRi8k2tBe1GNeS5Gyacs/FhSWlcpB/O"
@@ -127,57 +145,69 @@ public abstract class AbstractPKIXTest
         + "AAKBgCb57k5vKCP0USNrYmR7T5L0kGgNxT+D0bFces9aCBoPTgMa7Ukv2okGvh1h"
         + "YO34x5TCd9FYdMqre4oI+9I2ixsg769zDw8ojvvu9iIhlJbnOsh4OpvXEOd3nibf"
         + "YuOCyX0zsNUt2DFNUk+2paJEpyUUyAqeVgctJtbHMIXrk6NBMA0GCSqGSIb3DQEB"
-        + "BQUAA4IBAQC8bGVK2vFXZGGVOSxvvXXkDNFL9H8cW4i4efrBJ8xGVgtRRm211Mkn"
-        + "uziXcHi2pAPdDnmdrgz0xnj+RxTJDLltYbRgh6R7QCywKH+Wqsqq6D+p/D9wm5FI"
-        + "BYSjS3UMjB9ALSKC4x09Plp+6ooU9tpKGHlmkNCCH9tkkK2p2GcjbOv9o+tM5BWa"
-        + "nRyNfdeKrfWSPVxchHovIEG2ytfBVsd8UNMgIIOM8QBFHqzbGjT2jTcIWoAlwaRL"
-        + "wJLu0jsLxRl+pRqced1xaz42KYHwZceBIVjg1SP6goowbwfgaQKfteGcpZk27KME"
-        + "x3zaPAb+IcpeOs3gOMfdiAk77nlo3mxo";
+        + "BQUAA4IBAQCtDu4e2a2rHfACv53OrZsYK8GAbJfkVvj7hGcoCauJvuXHoymJuYDA"
+        + "9zUzbQAPEWmsY1OYrKlT2MwndCT6Ikr/LU8Gso3R2V4Kngg74Iy9b9BziqXPp794"
+        + "9oJEUb+0mHEdmsEEEtxPxUJjpEWiiGrk49GQt3jOL3wee6eEMJlXpRKODpll3rQa"
+        + "ZJwWrqnu5uyTr37yajO/T/QXDu7oQrIGMwucWVWhAm5E/FOTsTiA354jTd2F46/L"
+        + "RSZiWaqt8qGPhJOgFbZ880y5mps7HsT/bebctMVim1jQuc8qTxUE0Lba32MLu3Qv"
+        + "4fs0zr/FQpWY04M5Tvb5zVNzaEmLoaH1";
 
 
-    protected static final String V3_CA_CERT = "MIIDEjCCAfqgAwIBAgIRANKASb61Xw7K0Oz9c034VPswDQYJKoZIhvcNAQEFBQAw"
-        + "EjEQMA4GA1UEAwwHVGVzdCBDQTAeFw0xNDAzMTcyMzAwMDBaFw0xNTA3MzAyMjAw"
-        + "MDBaMBIxEDAOBgNVBAMMB1Rlc3QgQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw"
-        + "ggEKAoIBAQDCmjim/3likJ4VF564UyygqPjIX/z090AImLl0fDLUkIyCVTSd18wJ"
-        + "3axr1qjLtSgNPWet0puSxOFH0AzFKRCJOjUkQRU8iAkz64MLAf9xrx4nBECciqeB"
-        + "941s01kLtG8C/UqC3O9SwHSdhtUpUU8V/91SiD09yNJsnODi3WqM3oLg1QYzKhoa"
-        + "D2mVo2xJLQ/QXqr2XIc5i2Mlpfq6S5JNbFD/I+UFhBUlBNuDOEV7ttIt2eFMEUsf"
-        + "kCestGo0YoQYOpTLPcPGRS7MnSY1CLWGUYqaMSnes0nS8ke2PPD4Q0suAZz4msnh"
-        + "NufanscstM8tcNtsZF6hj0JvbZok89szAgMBAAGjYzBhMB8GA1UdIwQYMBaAFIgW"
-        + "dvPuXSJklQkwvPTIhpgTzhVhMB0GA1UdDgQWBBSIFnbz7l0iZJUJMLz0yIaYE84V"
-        + "YTAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjANBgkqhkiG9w0BAQUF"
-        + "AAOCAQEAs8QhTcl1gIczPhb0JFFB44Uvv5PSGzmnZev9PRstdHzyElCXngM3DVDc"
-        + "RfoukW0FUcStw7r7XrVKxMAQPHiFmmfESr8M5uX/RNvp9Vm/x3NsCZfYXFsj7P89"
-        + "kRfZOrld+IEVlKa/OhMiG9uOvT3ZZQIUON7pLZEfiVgMTnzKKAyJ1uE0cD18wXrZ"
-        + "XkzvVwyBX61ALnLA49ZvE9IWpzJEk9F+hgFnJox1GNuQn6JC9ibdEW+FQVuThCVI"
-        + "axcICn4Ek9fPos990Ehd9EdMx+tWgz+6URtkpRYLPGCFZ3ygejGvCh6FqRfLMFoc"
-        + "DdEVSTgcutG5PEOLctckxeHsS6yJkg==";
+    protected static final String V3_CA_CERT =
+        // Generated from BcX509CertificateGeneratorFactoryTest#testGenerateIntermediateCertificateVersion3()
+        // caCertificate with adapted validity
+        // Link to decoded ASN.1: https://goo.gl/XP56Ct
+        "MIIDEDCCAfigAwIBAgIPXnmirmTeiBhYy1/i/twrMA0GCSqGSIb3DQEBBQUAMBIx"
+        + "EDAOBgNVBAMMB1Rlc3QgQ0EwHhcNMTUwOTEwMTAwMDAwWhcNNDkxMjMxMTEwMDAw"
+        + "WjASMRAwDgYDVQQDDAdUZXN0IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB"
+        + "CgKCAQEAwpo4pv95YpCeFReeuFMsoKj4yF/89PdACJi5dHwy1JCMglU0ndfMCd2s"
+        + "a9aoy7UoDT1nrdKbksThR9AMxSkQiTo1JEEVPIgJM+uDCwH/ca8eJwRAnIqngfeN"
+        + "bNNZC7RvAv1KgtzvUsB0nYbVKVFPFf/dUog9PcjSbJzg4t1qjN6C4NUGMyoaGg9p"
+        + "laNsSS0P0F6q9lyHOYtjJaX6ukuSTWxQ/yPlBYQVJQTbgzhFe7bSLdnhTBFLH5An"
+        + "rLRqNGKEGDqUyz3DxkUuzJ0mNQi1hlGKmjEp3rNJ0vJHtjzw+ENLLgGc+JrJ4Tbn"
+        + "2p7HLLTPLXDbbGReoY9Cb22aJPPbMwIDAQABo2MwYTAfBgNVHSMEGDAWgBSIFnbz"
+        + "7l0iZJUJMLz0yIaYE84VYTAdBgNVHQ4EFgQUiBZ28+5dImSVCTC89MiGmBPOFWEw"
+        + "DwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMCAQYwDQYJKoZIhvcNAQEFBQAD"
+        + "ggEBAEQnUNI1REuJGNrnEIxqLJX6w8TmgUp6g+4ytqh8fZoy1tHIH6+dhPhP87Gk"
+        + "E4QVfq5AZDb/mMuZCdGjOAaWqXsaUfJNFcJcrbKxnu0MBbfcPrHkhTTlDpoPV+N7"
+        + "P+iLBHJB3IAVcic+b/xXqeUn50Yp7VmfIVYzrIS3diA57hHntm72eMsYHLjuToxh"
+        + "QD9E/PVo3eqAH2MW71+RY0X75gZytu3in9/1v0+IbFBeTG7KrVxMAt+x2pE7CybA"
+        + "pNxs5wkFxwU0wF2jjTgef6ivAS3gn+KOk9YR1xpMk5FkHAjwCUWEve8GKvEIU/83"
+        + "0z4rffrSX2Y9mYm4gF/GtjAkgLA=";
 
-    protected static final String V3_ITERCA_CERT = "MIID4zCCAsugAwIBAgIQTAHcJ2NjsKKdlkNAWCJaxTANBgkqhkiG9w0BAQUFADAS"
-        + "MRAwDgYDVQQDDAdUZXN0IENBMB4XDTE0MDMxNzIzMDAwMFoXDTE1MDczMDIyMDAw"
-        + "MFowHzEdMBsGA1UEAwwUVGVzdCBJbnRlcm1lZGlhdGUgQ0EwggG3MIIBLAYHKoZI"
-        + "zjgEATCCAR8CgYEAuMeV+akqPwGIR96SItOdth1mWjkfPoTZ0CPH6vKq/eN4Zhs9"
-        + "PGH6nGsPQwghQoX7ejxj5MHAGlsqedn8bZP8/pBezz6XsftDgJQkpKF1D4+Gkrwl"
-        + "dhogI3hUC0qw/g9WEExYvD/dUA2HrskPBnPU5rmyhyLd0BVANY3yZzg91uECFQCh"
-        + "at9GPXgBRBPvn1P8x6fV1D2jQQKBgQCBY+URaSm+B+QK/IExGJFZyFLSy45RQvlH"
-        + "KpgqZUWkMTZopEwwU7mjCWW4nWWbnt/jNp11jzMCxPva2/S1PHPucUAA+hfhA85x"
-        + "LFhhqm8QZFmSUlFTiqutc4+VdOJrqOxaWCOcxonjfMIFe14rYB1nYMXtiv1Q9G42"
-        + "6QjNJhzilwOBhAACgYAQf9xfhq5hiNqnA++Km6WZQ8s8H0ZM9xl9x58tgfgWUCz9"
-        + "bX+996vWQZkv/66tK77kP8Wic4Y0T1VGcuFU7hLI6t6Z8lM7RksDvDlyJDBxBHHB"
-        + "dfe+9jPG2IUDYfsbtIdVyDwYPPKKQd49CfIPCOBd/YLx3FzJqxQDkUlvrZgqjaOB"
-        + "kjCBjzBKBgNVHSMEQzBBgBSIFnbz7l0iZJUJMLz0yIaYE84VYaEWpBQwEjEQMA4G"
-        + "A1UEAwwHVGVzdCBDQYIRANKASb61Xw7K0Oz9c034VPswHQYDVR0OBBYEFG663aJM"
-        + "aoS1UB532ZKStTze5FG6MBIGA1UdEwEB/wQIMAYBAf8CAQAwDgYDVR0PAQH/BAQD"
-        + "AgEGMA0GCSqGSIb3DQEBBQUAA4IBAQAfcpvFEzTGdqcdg/3XUS7PDnuP40O+Alli"
-        + "5Vqt77Ldh3a11+g6HBxSrk+MrqB/0gC2SQ1id0FCyJxfXAameZpqqXt2DnjwOWX/"
-        + "cWcDBws0VbZDisq37eg/LwPAAxnJvF9ap625Vwmr+Gr7B/zehegdOajYj5Iufk0Z"
-        + "72ZJEXs39KX9g4+95YxRX8wRgASv3qSl1rtdR7jEo8T2+Ca5CjueNtk7uGxzPzUV"
-        + "93dfky41j1UKXlCndj0vqTvlRe7pJ9OPFR5I9P2afQWOKELVR67yDsQnD9MRblkF"
-        + "/zEecnWSgPNAJi/YywA3ImvwlVJADrIOsAwbAOm6SHADgHgNAJ2n";
+    protected static final String V3_ITERCA_CERT =
+        // Generated from BcX509CertificateGeneratorFactoryTest#testGenerateIntermediateCertificateVersion3()
+        // interCAcert with adapted validity
+        // Link to decoded ASN.1: https://goo.gl/ahbPjf
+        "MIID4jCCAsqgAwIBAgIRALpeBEAtiuOWnOU9EQEPV5wwDQYJKoZIhvcNAQEFBQAw"
+        + "EjEQMA4GA1UEAwwHVGVzdCBDQTAeFw0xNTA5MTAxMDAwMDBaFw00OTEyMzExMTAw"
+        + "MDBaMB8xHTAbBgNVBAMMFFRlc3QgSW50ZXJtZWRpYXRlIENBMIIBtzCCASwGByqG"
+        + "SM44BAEwggEfAoGBALjHlfmpKj8BiEfekiLTnbYdZlo5Hz6E2dAjx+ryqv3jeGYb"
+        + "PTxh+pxrD0MIIUKF+3o8Y+TBwBpbKnnZ/G2T/P6QXs8+l7H7Q4CUJKShdQ+PhpK8"
+        + "JXYaICN4VAtKsP4PVhBMWLw/3VANh67JDwZz1Oa5soci3dAVQDWN8mc4PdbhAhUA"
+        + "oWrfRj14AUQT759T/Men1dQ9o0ECgYEAgWPlEWkpvgfkCvyBMRiRWchS0suOUUL5"
+        + "RyqYKmVFpDE2aKRMMFO5owlluJ1lm57f4zaddY8zAsT72tv0tTxz7nFAAPoX4QPO"
+        + "cSxYYapvEGRZklJRU4qrrXOPlXTia6jsWlgjnMaJ43zCBXteK2AdZ2DF7Yr9UPRu"
+        + "NukIzSYc4pcDgYQAAoGAEH/cX4auYYjapwPvipulmUPLPB9GTPcZfcefLYH4FlAs"
+        + "/W1/vfer1kGZL/+urSu+5D/FonOGNE9VRnLhVO4SyOremfJTO0ZLA7w5ciQwcQRx"
+        + "wXX3vvYzxtiFA2H7G7SHVcg8GDzyikHePQnyDwjgXf2C8dxcyasUA5FJb62YKo2j"
+        + "gZAwgY0wSAYDVR0jBEEwP4AUiBZ28+5dImSVCTC89MiGmBPOFWGhFqQUMBIxEDAO"
+        + "BgNVBAMMB1Rlc3QgQ0GCD155oq5k3ogYWMtf4v7cKzAdBgNVHQ4EFgQUbrrdokxq"
+        + "hLVQHnfZkpK1PN7kUbowEgYDVR0TAQH/BAgwBgEB/wIBADAOBgNVHQ8BAf8EBAMC"
+        + "AQYwDQYJKoZIhvcNAQEFBQADggEBALuttCfxVloX+cVZw97ny2C0Gx1gF2iQXPUq"
+        + "7QjsTs9xWB2X2j9hMYS8x4oB8x2w59PRZpdtdlFvjxeLR9xrX1yFeqcGMZ2opEqx"
+        + "htFhSE28Inv+A+VWo/Je1T986XEgGMrIgPkW46Bc8xsNy63WHdcpj7U9xWU2Qcs8"
+        + "EPzTNV3ibevNdCS6bwXEpgn2fSV7dsscaZGt9O43Co2iyGYqXZXqjRXOJkQmLFc/"
+        + "p5xPpsPhFXERE65Ihdtl17XLiIt88mvOyfNl/X9c28lLf0+hlEqnmE1CDrvitKAy"
+        + "hHU7w1nXlQZZz6RWvilHqn0NkT3vTYhQBVXq5XiQwT8xLBjJJtw=";
 
-    protected static final String V3_CERT = "MIIDMTCCAu+gAwIBAgIRANthik4fzttcoxdetKvv3g0wCwYHKoZIzjgEAwUAMB8x"
-        + "HTAbBgNVBAMMFFRlc3QgSW50ZXJtZWRpYXRlIENBMB4XDTE0MDMxNzIzMDAwMFoX"
-        + "DTE1MDczMDIyMDAwMFowGjEYMBYGA1UEAwwPVGVzdCBFbmQgRW50aXR5MIIBtzCC"
+    protected static final String V3_CERT =
+        // Generated from BcX509CertificateGeneratorFactoryTest#testGenerateIntermediateCertificateVersion3()
+        // certificate with adapted validity
+        // Link to decoded ASN.1: https://goo.gl/OPAFci
+        "MIIDMjCCAvCgAwIBAgIRAKm/hze1CY3FuwXuKd86eXgwCwYHKoZIzjgEAwUAMB8x"
+        + "HTAbBgNVBAMMFFRlc3QgSW50ZXJtZWRpYXRlIENBMB4XDTE1MDkxMDEwMDAwMFoX"
+        + "DTQ5MTIzMTExMDAwMFowGjEYMBYGA1UEAwwPVGVzdCBFbmQgRW50aXR5MIIBtzCC"
         + "ASwGByqGSM44BAEwggEfAoGBANQ9Oa1j9sWAhdXNyqz8HL/bA/ed2VrBw6TPkgMy"
         + "V1Upix58RSjOHMQNrgemSGkb80dRcLqVDYbI3ObnIJh83Zx6zeaTpvUohGLyTa0F"
         + "7UY15LkbJpyz8WFJaVykH85nz3Zo6Md9Z4X95yvF1+h9qYuakjWcHW31+pN4u3cJ"
@@ -187,12 +217,12 @@ public abstract class AbstractPKIXTest
         + "X1n6DOWj/CSX0PvrlMYDgYQAAoGAJvnuTm8oI/RRI2tiZHtPkvSQaA3FP4PRsVx6"
         + "z1oIGg9OAxrtSS/aiQa+HWFg7fjHlMJ30Vh0yqt7igj70jaLGyDvr3MPDyiO++72"
         + "IiGUluc6yHg6m9cQ53eeJt9i44LJfTOw1S3YMU1ST7alokSnJRTICp5WBy0m1scw"
-        + "heuTo0Gjga8wgawwSQYDVR0jBEIwQIAUbrrdokxqhLVQHnfZkpK1PN7kUbqhFqQU"
-        + "MBIxEDAOBgNVBAMMB1Rlc3QgQ0GCEEwB3CdjY7CinZZDQFgiWsUwHQYDVR0OBBYE"
-        + "FJ0i7GBYsbjkyTTVEdohFS7ZFp0eMA4GA1UdDwEB/wQEAwIEkDATBgNVHSUEDDAK"
-        + "BggrBgEFBQcDBDAbBgNVHREEFDASgRB0ZXN0QGV4YW1wbGUuY29tMAsGByqGSM44"
-        + "BAMFAAMvADAsAhQJWXbMhGtsgc8EbXoXWWlk+QNuoQIURvSp4HxJ8oFD8RbmiRsc"
-        + "4jiu93Q=";
+        + "heuTo0GjgbAwga0wSgYDVR0jBEMwQYAUbrrdokxqhLVQHnfZkpK1PN7kUbqhFqQU"
+        + "MBIxEDAOBgNVBAMMB1Rlc3QgQ0GCEQC6XgRALYrjlpzlPREBD1ecMB0GA1UdDgQW"
+        + "BBSdIuxgWLG45Mk01RHaIRUu2RadHjAOBgNVHQ8BAf8EBAMCBJAwEwYDVR0lBAww"
+        + "CgYIKwYBBQUHAwQwGwYDVR0RBBQwEoEQdGVzdEBleGFtcGxlLmNvbTALBgcqhkjO"
+        + "OAQDBQADLwAwLAIUe6xUKxqsupL5MWKKdsaY0FiGWVgCFHG3MW1tmgQ6CChIdA9K"
+        + "5fBjULkT";
 
     protected static final String TEXT = "Congress shall make no law respecting an establishment of religion, or "
         + "prohibiting the free exercise thereof; or abridging the freedom of speech, "

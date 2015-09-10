@@ -23,7 +23,6 @@ package org.xwiki.crypto.signer.internal.cms;
 import java.util.Arrays;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.crypto.AbstractPKIXTest;
@@ -60,7 +59,6 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-@Ignore("See http://jira.xwiki.org/browse/XWIKI-12389")
 @ComponentList({Base64BinaryStringEncoder.class, BcRSAKeyFactory.class, BcDSAKeyFactory.class,
     DefaultDigestFactory.class, BcSHA1DigestFactory.class, BcSHA1withRsaSignerFactory.class,
     BcDSAwithSHA1SignerFactory.class, DefaultSignerFactory.class, BcX509CertificateFactory.class,
