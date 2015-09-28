@@ -140,6 +140,18 @@ public class VerifyMojoTest
         verifier.verifyErrorFreeLog();
     }
 
+    @Test
+    public void executeNestedSpaces() throws Exception
+    {
+        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/nestedSpaces");
+
+        Verifier verifier = new Verifier(testDir.getAbsolutePath());
+        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        verifier.addCliOption("-Dforce=true");
+        verifier.executeGoal("install");
+        verifier.verifyErrorFreeLog();
+    }
+
     private void verifyExecution(Verifier verifier, String... messages) throws Exception
     {
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
