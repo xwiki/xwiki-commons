@@ -31,6 +31,7 @@ public enum ComponentInstantiationStrategy
      * The same component implementation instance is returned for all lookups.
      * @deprecated starting with 3.1, use {@link javax.inject.Singleton} instead
      */
+    @Deprecated
     SINGLETON,
 
     /**
