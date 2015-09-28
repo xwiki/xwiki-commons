@@ -30,10 +30,11 @@ import org.codehaus.plexus.archiver.zip.ZipFile;
 import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Integration tests for the XAR Mojo.
@@ -53,7 +54,7 @@ public class XARMojoTest
 
         try {
             verifier.executeGoals(Arrays.asList("clean", "package"));
-            Assert.fail("Should have raised an exception since the provided package.xml is invalid.");
+            fail("Should have raised an exception since the provided package.xml is invalid.");
         } catch (Exception expected) {
             // Expected
         }
@@ -83,8 +84,8 @@ public class XARMojoTest
 
         ZipFile zip = new ZipFile(xarFile);
         Enumeration<ZipEntry> entries = zip.getEntries();
-        Assert.assertTrue(entries.hasMoreElements());
-        Assert.assertEquals(entries.nextElement().toString(), XARMojo.PACKAGE_XML);
+        assertTrue(entries.hasMoreElements());
+        assertEquals(entries.nextElement().toString(), XARMojo.PACKAGE_XML);
 
         File classesDir = new File(testDir, "target/classes");
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
@@ -97,12 +98,11 @@ public class XARMojoTest
             File currentFile = new File(tempDir, entryName);
             String documentName = XWikiDocument.getReference(currentFile);
             if (!documentNames.contains(documentName)) {
-                Assert.fail(String.format("Document [%s] cannot be found in the newly created xar archive.",
-                    documentName));
+                fail(String.format("Document [%s] cannot be found in the newly created xar archive.", documentName));
             }
         }
-        Assert.assertEquals("The newly created xar archive doesn't contain the required documents",
-            documentNames.size(), countEntries);
+        assertEquals("The newly created xar archive doesn't contain the required documents", documentNames.size(),
+            countEntries);
     }
 
     @Test
@@ -117,7 +117,7 @@ public class XARMojoTest
 
         File xarFile = new File(testDir, "target/xwiki-commons-tool-xar-plugin-test.xar");
         ZipFile zip = new ZipFile(xarFile);
-        Assert.assertNotNull("Package.xml file not found in zip!", zip.getEntry(XARMojo.PACKAGE_XML));
+        assertNotNull("Package.xml file not found in zip!", zip.getEntry(XARMojo.PACKAGE_XML));
 
         File tempDir = new File(testDir, "target/temp");
         tempDir.mkdirs();
@@ -141,13 +141,13 @@ public class XARMojoTest
                 File currentFile = new File(tempDir, entryName);
                 String documentName = XWikiDocument.getReference(currentFile);
                 if (!documentNames.contains(documentName)) {
-                    Assert.fail(String.format("Document [%s] cannot be found in the newly created xar archive.",
+                    fail(String.format("Document [%s] cannot be found in the newly created xar archive.",
                         documentName));
                 }
             }
         }
-        Assert.assertEquals("The newly created xar archive doesn't contain the required documents",
-            documentNames.size(), countEntries);
+        assertEquals("The newly created xar archive doesn't contain the required documents", documentNames.size(),
+            countEntries);
     }
 
     @Test
@@ -172,14 +172,13 @@ public class XARMojoTest
 
         ZipFile zip = new ZipFile(xarFile);
         Enumeration<ZipEntry> entries = zip.getEntries();
-        Assert.assertTrue(entries.hasMoreElements());
-        Assert.assertEquals(entries.nextElement().toString(), XARMojo.PACKAGE_XML);
+        assertTrue(entries.hasMoreElements());
+        assertEquals(entries.nextElement().toString(), XARMojo.PACKAGE_XML);
 
         File classesDir = new File(testDir, "target/classes");
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
 
-        Assert.assertEquals("The newly created xar archive doesn't contain the required documents", 1,
-            documentNames.size());
+        assertEquals("The newly created xar archive doesn't contain the required documents", 1, documentNames.size());
 
         assertEquals("Page reference not properly serialized in the package.xml", "1.2.page", documentNames.iterator()
             .next());

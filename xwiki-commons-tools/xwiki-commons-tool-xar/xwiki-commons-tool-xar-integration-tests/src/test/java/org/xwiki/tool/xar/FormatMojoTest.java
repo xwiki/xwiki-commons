@@ -24,8 +24,9 @@ import java.io.File;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Integration tests for the Format Mojo.
@@ -52,25 +53,25 @@ public class FormatMojoTest
 
         String content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Page1.xml"));
         String expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage1.xml"));
-        Assert.assertEquals(expected, content);
+        assertEquals(expected, content);
 
         // Test with a XML file having a license header
         content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Page2.xml"));
         expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage2.xml"));
-        Assert.assertEquals(expected, content);
+        assertEquals(expected, content);
 
         // Test the default language
         content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Page3.xml"));
         expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage3.xml"));
-        Assert.assertEquals(expected, content);
+        assertEquals(expected, content);
         content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Page3.fr.xml"));
         expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage3.fr.xml"));
-        Assert.assertEquals(expected, content);
+        assertEquals(expected, content);
 
         // Verify that not included pages are not formatted
         try {
             verifier.verifyTextInLog("Formatting [Pretty");
-            Assert.fail("Exception should have been thrown here");
+            fail("Exception should have been thrown here");
         } catch (VerificationException expectedException) {
             // Passed!
         }
@@ -90,11 +91,11 @@ public class FormatMojoTest
 
         String content = FileUtils.fileRead(new File(testDir, "src/main/resources/Pretty/Page1.xml"));
         String expected = FileUtils.fileRead(new File(testDir, "ExpectedPrettyPage1.xml"));
-        Assert.assertEquals(expected, content);
+        assertEquals(expected, content);
 
         // Test with a XML file having a license header
         content = FileUtils.fileRead(new File(testDir, "src/main/resources/Pretty/Page2.xml"));
         expected = FileUtils.fileRead(new File(testDir, "ExpectedPrettyPage2.xml"));
-        Assert.assertEquals(expected, content);
+        assertEquals(expected, content);
     }
 }

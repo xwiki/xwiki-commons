@@ -24,8 +24,9 @@ import java.io.File;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Integration tests for the Verify Mojo.
@@ -160,10 +161,10 @@ public class VerifyMojoTest
             verifier.addCliOption("-Dforce=true");
             verifier.executeGoal("install");
             verifier.verifyErrorFreeLog();
-            Assert.fail("An error should have been thrown in the build");
+            fail("An error should have been thrown in the build");
         } catch (VerificationException expected) {
             for (String message : messages) {
-                Assert.assertThat(expected.getMessage(), CoreMatchers.containsString(message));
+                assertThat(expected.getMessage(), CoreMatchers.containsString(message));
             }
         }
     }
