@@ -170,11 +170,6 @@ public class XARMojoTest
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
 
-        ZipFile zip = new ZipFile(xarFile);
-        Enumeration<ZipEntry> entries = zip.getEntries();
-        assertTrue(entries.hasMoreElements());
-        assertEquals(entries.nextElement().toString(), XARMojo.PACKAGE_XML);
-
         File classesDir = new File(testDir, "target/classes");
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
 
