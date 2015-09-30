@@ -19,6 +19,7 @@
  */
 package org.xwiki.test.internal;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,22 +131,49 @@ public class ComponentRegistrator
         if (allComponentsAnnotation != null) {
             this.loader.initialize(componentManager, testClass.getClassLoader());
         } else {
-            ComponentList componentListAnnotation = testClass.getAnnotation(ComponentList.class);
-            if (componentListAnnotation != null) {
-                List<ComponentDeclaration> componentDeclarations = new ArrayList<ComponentDeclaration>();
-                for (Class<?> componentClass : componentListAnnotation.value()) {
-                    componentDeclarations.add(new ComponentDeclaration(componentClass.getName()));
-                }
+            // Find all Annotations that are annotated with ComponentList to get the list of Component Declarations
+            List<ComponentDeclaration> componentDeclarations =
+                getComponentDeclarationsFromAnnotation(testClass.getAnnotations(), new ArrayList<Annotation>());
+            if (!componentDeclarations.isEmpty()) {
                 this.loader.initialize(componentManager, testClass.getClassLoader(), componentDeclarations);
             }
         }
     }
 
     /**
-     * Register in-memory data source for the default and "xwikiproperties" configuration sources.
+     * @param annotations the list of annotations to check
+     * @param alreadyProcessedAnnotations the list of already processed annotation to avoid circular dependencies
+     * @return the list of Component Declarations declared by any passed annotation annotated by {@link ComponentList}
+     */
+    private List<ComponentDeclaration> getComponentDeclarationsFromAnnotation(Annotation[] annotations,
+        List<Annotation> alreadyProcessedAnnotations)
+    {
+        List<ComponentDeclaration> componentDeclarations = new ArrayList<>();
+        for (Annotation annotation : annotations) {
+            // Is the Annotation (or one of the Annotation annotating the Annotation) tagged with @ComponentList?
+            // If so, then call the "value()" method to get the list of Component Declarations
+            if (annotation instanceof ComponentList) {
+                ComponentList componentListAnnotation = (ComponentList) annotation;
+                for (Class<?> componentClass : componentListAnnotation.value()) {
+                    componentDeclarations.add(new ComponentDeclaration(componentClass.getName()));
+                }
+            } else {
+                // Protection against Annotations that tag themselves with themselves like @Retention, @Documented, etc
+                if (!alreadyProcessedAnnotations.contains(annotation)) {
+                    alreadyProcessedAnnotations.add(annotation);
+                    componentDeclarations.addAll(getComponentDeclarationsFromAnnotation(
+                        annotation.annotationType().getAnnotations(), alreadyProcessedAnnotations));
+                }
+            }
+        }
+        return componentDeclarations;
+    }
+
+    /**
+     * Register in-memory data source for the default, "xwikiproperties" and "all" configuration sources.
      *
      * @param componentManager the component manager against which to register the configuration sources
-     * @return the in-memory configuration source used for both default and "xwikiproperties" component hints
+     * @return the in-memory configuration source used for default, "xwikiproperties" and "all" component hints
      * @throws Exception in case the registration fails
      */
     public MemoryConfigurationSource registerMemoryConfigurationSource(ComponentManager componentManager)
@@ -155,6 +183,7 @@ public class ComponentRegistrator
         componentManager.registerComponent(MockConfigurationSource.getDescriptor(null), configurationSource);
         componentManager.registerComponent(MockConfigurationSource.getDescriptor("xwikiproperties"),
             configurationSource);
+        componentManager.registerComponent(MockConfigurationSource.getDescriptor("all"), configurationSource);
         return configurationSource;
     }
 }
