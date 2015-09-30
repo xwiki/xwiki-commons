@@ -33,8 +33,7 @@ public class MockConfigurationSource extends MemoryConfigurationSource
 {
     public static DefaultComponentDescriptor<ConfigurationSource> getDescriptor(String roleHint)
     {
-        DefaultComponentDescriptor<ConfigurationSource> descriptor =
-            new DefaultComponentDescriptor<ConfigurationSource>();
+        DefaultComponentDescriptor<ConfigurationSource> descriptor = new DefaultComponentDescriptor<>();
         descriptor.setRoleType(ConfigurationSource.class);
         if (roleHint != null) {
             descriptor.setRoleHint(roleHint);
