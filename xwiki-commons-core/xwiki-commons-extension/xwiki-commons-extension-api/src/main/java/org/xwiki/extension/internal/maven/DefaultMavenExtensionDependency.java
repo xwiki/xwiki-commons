@@ -17,19 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.core;
+package org.xwiki.extension.internal.maven;
 
 import org.apache.maven.model.Dependency;
 import org.xwiki.extension.DefaultExtensionDependency;
+import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.version.VersionConstraint;
 
 /**
- * Extends {@link DefaultExtensionDependency} with Maven related informations.
- *
+ * Default implementation of {@link MavenExtension}.
+ * 
  * @version $Id$
- * @since 4.0M1
+ * @since 7.3M1
  */
-public class MavenCoreExtensionDependency extends DefaultExtensionDependency
+public class DefaultMavenExtensionDependency extends DefaultExtensionDependency implements MavenExtensionDependency
 {
     /**
      * The key associated to the Maven dependency object.
@@ -37,11 +38,21 @@ public class MavenCoreExtensionDependency extends DefaultExtensionDependency
     public static final String PKEY_MAVEN_DEPENDENCY = "maven.Dependency";
 
     /**
+     * Create new instance by cloning the provided one.
+     *
+     * @param dependency the extension dependency to copy
+     */
+    public DefaultMavenExtensionDependency(ExtensionDependency dependency)
+    {
+        super(dependency);
+    }
+
+    /**
      * @param extensionId the id of the extension dependency
      * @param constraint the version constraint of the extension dependency
      * @param mavenDependency the Maven dependency object
      */
-    public MavenCoreExtensionDependency(String extensionId, VersionConstraint constraint, Dependency mavenDependency)
+    public DefaultMavenExtensionDependency(String extensionId, VersionConstraint constraint, Dependency mavenDependency)
     {
         super(extensionId, constraint);
 
@@ -49,9 +60,7 @@ public class MavenCoreExtensionDependency extends DefaultExtensionDependency
         putProperty(PKEY_MAVEN_DEPENDENCY, mavenDependency);
     }
 
-    /**
-     * @return the Maven dependency object
-     */
+    @Override
     public Dependency getMavenDependency()
     {
         return (Dependency) getProperty(PKEY_MAVEN_DEPENDENCY);

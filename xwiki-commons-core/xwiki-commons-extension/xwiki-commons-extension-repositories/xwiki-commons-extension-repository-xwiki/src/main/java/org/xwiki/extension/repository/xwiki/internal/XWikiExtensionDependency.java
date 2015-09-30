@@ -22,6 +22,7 @@ package org.xwiki.extension.repository.xwiki.internal;
 import java.net.URISyntaxException;
 
 import org.xwiki.extension.AbstractExtensionDependency;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRepository;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
@@ -36,10 +37,17 @@ public class XWikiExtensionDependency extends AbstractExtensionDependency
 {
     /**
      * @param restDependency the REST representation of an Extension dependency
+     * @param extensionRepository the repository of the parent extension
      */
-    public XWikiExtensionDependency(ExtensionDependency restDependency)
+    public XWikiExtensionDependency(ExtensionDependency restDependency,
+        ExtensionRepositoryDescriptor extensionRepository)
     {
         super(restDependency.getId(), new DefaultVersionConstraint(restDependency.getConstraint()));
+
+        // Make sure the dependency will be resolved in the extension repository first
+        if (extensionRepository != null) {
+            addRepository(extensionRepository);
+        }
 
         // Repositories
         for (ExtensionRepository restRepository : restDependency.getRepositories()) {

@@ -59,6 +59,9 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
         String type)
     {
         super(repository, new ExtensionId(groupId + ':' + artifactId, version), type);
+
+        setMavenGroupId(groupId);
+        setMavenArtifactId(artifactId);
     }
 
     /**

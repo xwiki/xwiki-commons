@@ -23,9 +23,11 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -223,9 +225,18 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
+        Set<ExtensionRepositoryDescriptor> checkedRepositories = new HashSet<>();
+
         Exception lastExtension = null;
 
         for (ExtensionRepositoryDescriptor repositoryDescriptor : extensionDependency.getRepositories()) {
+            if (checkedRepositories.contains(repositoryDescriptor)) {
+                continue;
+            }
+
+            // Remember we tried that repository
+            checkedRepositories.add(repositoryDescriptor);
+
             ExtensionRepository repository;
             try {
                 repository = getRepository(repositoryDescriptor);
@@ -247,6 +258,13 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
         }
 
         for (ExtensionRepository repository : this.repositories) {
+            if (checkedRepositories.contains(repository.getDescriptor())) {
+                continue;
+            }
+
+            // Remember we tried that repository
+            checkedRepositories.add(repository.getDescriptor());
+
             try {
                 return repository.resolve(extensionDependency);
             } catch (ResolveException e) {

@@ -61,6 +61,17 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     protected Map<String, Object> properties = new HashMap<String, Object>();
 
     /**
+     * Create new instance by cloning the provided one.
+     *
+     * @param dependency the extension dependency to copy
+     * @since 7.3M1
+     */
+    public AbstractExtensionDependency(ExtensionDependency dependency)
+    {
+        this(dependency, null);
+    }
+
+    /**
      * Create new instance by cloning the provided one with different version constraint.
      *
      * @param dependency the extension dependency to copy
@@ -68,7 +79,8 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      */
     public AbstractExtensionDependency(ExtensionDependency dependency, VersionConstraint versionConstraint)
     {
-        this(dependency.getId(), versionConstraint, dependency.getProperties());
+        this(dependency.getId(), versionConstraint != null ? versionConstraint : dependency.getVersionConstraint(),
+            dependency.getProperties());
     }
 
     /**

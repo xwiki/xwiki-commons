@@ -19,40 +19,56 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.aether.graph.Dependency;
-import org.xwiki.extension.AbstractExtensionDependency;
+import org.xwiki.extension.DefaultExtensionDependency;
+import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.internal.maven.DefaultMavenExtensionDependency;
+import org.xwiki.extension.internal.maven.MavenUtils;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
  * @version $Id$
  * @since 4.0M1
  */
-public class AetherExtensionDependency extends AbstractExtensionDependency
+public class AetherExtensionDependency extends DefaultMavenExtensionDependency
 {
     public static final String PKEY_AETHER_DEPENDENCY = "aether.Dependency";
 
-    public static final String PKEY_MAVEN_DEPENDENCY = "maven.Dependency";
-
-    public AetherExtensionDependency(Dependency aetherDependency, org.apache.maven.model.Dependency mavenDependency)
+    public AetherExtensionDependency(ExtensionDependency extensionDependency, Dependency aetherDependency,
+        ExtensionRepositoryDescriptor extensionRepository)
     {
-        super(AetherUtils.createExtensionId(aetherDependency.getArtifact()).getId(), new DefaultVersionConstraint(
-            aetherDependency.getArtifact().getVersion()));
+        super(extensionDependency);
+
+        // Make sure the dependency will be resolved in the extension repository first
+        if (extensionRepository != null) {
+            List<ExtensionRepositoryDescriptor> newRepositories = new ArrayList<>(getRepositories().size() + 1);
+
+            newRepositories.add(extensionRepository);
+            newRepositories.addAll(getRepositories());
+
+            setRepositories(newRepositories);
+        }
+
+        // Custom properties
+        putProperty(PKEY_AETHER_DEPENDENCY, aetherDependency);
+    }
+
+    public AetherExtensionDependency(Dependency aetherDependency)
+    {
+        super(new DefaultExtensionDependency(MavenUtils.toExtensionId(aetherDependency.getArtifact().getGroupId(),
+            aetherDependency.getArtifact().getArtifactId(), aetherDependency.getArtifact().getClassifier()),
+            new DefaultVersionConstraint(aetherDependency.getArtifact().getVersion()), null));
 
         // custom properties
         putProperty(PKEY_AETHER_DEPENDENCY, aetherDependency);
-        putProperty(PKEY_MAVEN_DEPENDENCY, mavenDependency);
     }
 
     public Dependency getAetherDependency()
     {
         return (Dependency) this.getProperty(PKEY_AETHER_DEPENDENCY);
-    }
-
-    /**
-     * @return the Maven dependency object
-     */
-    public Dependency getMavenDependency()
-    {
-        return (Dependency) getProperty(PKEY_MAVEN_DEPENDENCY);
     }
 }

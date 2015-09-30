@@ -53,6 +53,7 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.PathUtils;
+import org.xwiki.extension.internal.maven.MavenExtensionDependency;
 import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.internal.MavenExtension;
@@ -352,12 +353,12 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     }
 
                     if (index != -1) {
-                        fileNames.put(filename, new Object[] {url});
+                        fileNames.put(filename, new Object[] { url });
 
                         String artefactname = filename.substring(0, index);
                         String version = filename.substring(index + 1);
 
-                        guessedArtefacts.put(artefactname, new Object[] {version, url, type});
+                        guessedArtefacts.put(artefactname, new Object[] { version, url, type });
                     }
                 } catch (Exception e) {
                     this.logger.warn("Failed to parse resource name [{}]", url, e);
@@ -387,10 +388,11 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
             // Add dependencies that does not provide proper pom.xml resource and can't be found in the classpath
             for (ExtensionDependency extensionDependency : dependencies) {
-                Dependency dependency =
-                    (Dependency) extensionDependency.getProperty(MavenCoreExtensionDependency.PKEY_MAVEN_DEPENDENCY);
+                Dependency dependency;
 
-                if (dependency == null) {
+                if (extensionDependency instanceof MavenExtensionDependency) {
+                    dependency = ((MavenExtensionDependency) extensionDependency).getMavenDependency();
+                } else {
                     dependency =
                         toDependency(extensionDependency.getId(),
                             extensionDependency.getVersionConstraint().getValue(), null);

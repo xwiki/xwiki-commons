@@ -58,87 +58,93 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
  */
 public class XWikiExtension extends AbstractRatingExtension implements RatingExtension
 {
-    public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion extension,
+    public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion restExtension,
         ExtensionLicenseManager licenseManager)
     {
-        super(repository, new ExtensionId(extension.getId(), extension.getVersion()), extension.getType());
+        super(repository, new ExtensionId(restExtension.getId(), restExtension.getVersion()), restExtension.getType());
 
-        setName(extension.getName());
-        setSummary(extension.getSummary());
-        setDescription(extension.getDescription());
-        setWebsite(extension.getWebsite());
+        setName(restExtension.getName());
+        setSummary(restExtension.getSummary());
+        setDescription(restExtension.getDescription());
+        setWebsite(restExtension.getWebsite());
 
-        setFeatures(extension.getFeatures());
+        setFeatures(restExtension.getFeatures());
 
         // Rating
-        ExtensionRating rating = extension.getRating();
-        if (rating != null) {
-            setRating(new DefaultExtensionRating(rating.getTotalVotes(), rating.getAverageVote(), getRepository()));
+        ExtensionRating restRating = restExtension.getRating();
+        if (restRating != null) {
+            setRating(new DefaultExtensionRating(restRating.getTotalVotes(), restRating.getAverageVote(),
+                getRepository()));
         }
 
         // Authors
-        for (ExtensionAuthor author : extension.getAuthors()) {
+        for (ExtensionAuthor restAuthor : restExtension.getAuthors()) {
             URL url;
             try {
-                url = new URL(author.getUrl());
+                url = new URL(restAuthor.getUrl());
             } catch (MalformedURLException e) {
                 url = null;
             }
 
-            addAuthor(new DefaultExtensionAuthor(author.getName(), url));
+            addAuthor(new DefaultExtensionAuthor(restAuthor.getName(), url));
         }
 
         // License
 
-        for (License license : extension.getLicenses()) {
-            if (license.getName() != null) {
-                ExtensionLicense extensionLicense = licenseManager.getLicense(license.getName());
+        for (License restLicense : restExtension.getLicenses()) {
+            if (restLicense.getName() != null) {
+                ExtensionLicense extensionLicense = licenseManager.getLicense(restLicense.getName());
                 if (extensionLicense != null) {
                     addLicense(extensionLicense);
                 } else {
                     List<String> content = null;
-                    if (license.getContent() != null) {
+                    if (restLicense.getContent() != null) {
                         try {
-                            content = IOUtils.readLines(new StringReader(license.getContent()));
+                            content = IOUtils.readLines(new StringReader(restLicense.getContent()));
                         } catch (IOException e) {
                             // That should never happen
                         }
                     }
 
-                    addLicense(new ExtensionLicense(license.getName(), content));
+                    addLicense(new ExtensionLicense(restLicense.getName(), content));
                 }
             }
         }
 
         // Scm
 
-        ExtensionScm scm = extension.getScm();
-        if (scm != null) {
-            DefaultExtensionScmConnection connection = toDefaultExtensionScmConnection(scm.getConnection());
+        ExtensionScm restSCM = restExtension.getScm();
+        if (restSCM != null) {
+            DefaultExtensionScmConnection connection = toDefaultExtensionScmConnection(restSCM.getConnection());
             DefaultExtensionScmConnection developerConnection =
-                toDefaultExtensionScmConnection(scm.getDeveloperConnection());
+                toDefaultExtensionScmConnection(restSCM.getDeveloperConnection());
 
-            setScm(new DefaultExtensionScm(scm.getUrl(), connection, developerConnection));
+            setScm(new DefaultExtensionScm(restSCM.getUrl(), connection, developerConnection));
         }
 
         // Issue management
 
-        ExtensionIssueManagement issueManagement = extension.getIssueManagement();
-        if (issueManagement != null) {
-            setIssueManagement(new DefaultExtensionIssueManagement(issueManagement.getSystem(),
-                issueManagement.getUrl()));
+        ExtensionIssueManagement restIssueManagement = restExtension.getIssueManagement();
+        if (restIssueManagement != null) {
+            setIssueManagement(new DefaultExtensionIssueManagement(restIssueManagement.getSystem(),
+                restIssueManagement.getUrl()));
         }
 
         // Category
-        setCategory(extension.getCategory());
+        setCategory(restExtension.getCategory());
 
         // Properties
-        for (Property property : extension.getProperties()) {
-            putProperty(property.getKey(), property.getStringValue());
+        for (Property restProperty : restExtension.getProperties()) {
+            putProperty(restProperty.getKey(), restProperty.getStringValue());
+        }
+
+        // Make sure the dependency will be resolved in the extension repository first
+        if (repository != null) {
+            addRepository(repository.getDescriptor());
         }
 
         // Repositories
-        for (ExtensionRepository restRepository : extension.getRepositories()) {
+        for (ExtensionRepository restRepository : restExtension.getRepositories()) {
             try {
                 addRepository(toDefaultExtensionRepositoryDescriptor(restRepository));
             } catch (URISyntaxException e) {
@@ -148,8 +154,9 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
 
         // Dependencies
 
-        for (ExtensionDependency dependency : extension.getDependencies()) {
-            addDependency(new XWikiExtensionDependency(dependency));
+        for (ExtensionDependency dependency : restExtension.getDependencies()) {
+            addDependency(new XWikiExtensionDependency(dependency, repository != null ? repository.getDescriptor()
+                : null));
         }
 
         // File

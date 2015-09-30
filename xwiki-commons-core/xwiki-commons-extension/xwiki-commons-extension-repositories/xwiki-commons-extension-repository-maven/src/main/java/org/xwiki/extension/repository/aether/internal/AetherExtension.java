@@ -19,9 +19,13 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.aether.artifact.Artifact;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.internal.maven.AbstractMavenExtension;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
  * Add support for repositories supported by AETHER (only Maven for now).
@@ -41,5 +45,16 @@ public class AetherExtension extends AbstractMavenExtension
         setType(artifact.getExtension());
 
         setFile(new AetherExtensionFile(artifact, repository));
+
+        // Make sure we remember the extension repository (Extension#getRepository() will be the local extension
+        // repository when the extension is downloaded)
+        if (repository != null) {
+            List<ExtensionRepositoryDescriptor> newRepositories = new ArrayList<>(getRepositories().size() + 1);
+
+            newRepositories.add(repository.getDescriptor());
+            newRepositories.addAll(getRepositories());
+
+            setRepositories(newRepositories);
+        }
     }
 }

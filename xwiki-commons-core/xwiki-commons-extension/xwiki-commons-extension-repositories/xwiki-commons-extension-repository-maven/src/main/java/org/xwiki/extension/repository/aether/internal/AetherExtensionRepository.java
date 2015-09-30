@@ -22,6 +22,7 @@ package org.xwiki.extension.repository.aether.internal;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -72,6 +73,7 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.internal.maven.MavenExtensionDependency;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
@@ -380,21 +382,20 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         AetherExtension extension = new AetherExtension(mavenExtension, filerArtifact, this);
 
-        // dependencies
-        extension.setDependencies(Collections.<ExtensionDependency>emptyList());
+        // Convert Maven dependencies to Aether dependencies
+        List<ExtensionDependency> dependencies = new ArrayList<>(mavenExtension.getDependencies().size());
         try {
             ArtifactTypeRegistry stereotypes = session.getArtifactTypeRegistry();
 
-            for (org.apache.maven.model.Dependency mavenDependency : model.getDependencies()) {
-                if (!mavenDependency.isOptional()
-                    && (mavenDependency.getScope().equals("compile") || mavenDependency.getScope().equals("runtime"))) {
-                    extension.addDependency(new AetherExtensionDependency(
-                        convertToAether(mavenDependency, stereotypes), mavenDependency));
-                }
+            for (MavenExtensionDependency mavenDependency : (Collection<MavenExtensionDependency>) mavenExtension
+                .getDependencies()) {
+                dependencies.add(new AetherExtensionDependency(mavenDependency, convertToAether(
+                    mavenDependency.getMavenDependency(), stereotypes), this.getDescriptor()));
             }
         } catch (Exception e) {
             throw new ResolveException("Failed to resolve dependencies", e);
         }
+        extension.setDependencies(dependencies);
 
         return extension;
     }

@@ -52,11 +52,11 @@ import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.internal.maven.DefaultMavenExtension;
+import org.xwiki.extension.internal.maven.DefaultMavenExtensionDependency;
 import org.xwiki.extension.internal.maven.MavenExtension;
 import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.extension.repository.internal.core.MavenCoreExtensionDependency;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.AbstractConverter;
@@ -190,8 +190,9 @@ public class ExtensionConverter extends AbstractConverter<Extension>
                 String dependencyVersion = resolveVersion(mavenDependency.getVersion(), model, true);
 
                 DefaultExtensionDependency extensionDependency =
-                    new MavenCoreExtensionDependency(MavenUtils.toExtensionId(dependencyGroupId, dependencyArtifactId,
-                        dependencyClassifier), new DefaultVersionConstraint(dependencyVersion), mavenDependency);
+                    new DefaultMavenExtensionDependency(MavenUtils.toExtensionId(dependencyGroupId,
+                        dependencyArtifactId, dependencyClassifier), new DefaultVersionConstraint(dependencyVersion),
+                        mavenDependency);
 
                 extension.setRepositories(repositories);
                 extension.addDependency(extensionDependency);
