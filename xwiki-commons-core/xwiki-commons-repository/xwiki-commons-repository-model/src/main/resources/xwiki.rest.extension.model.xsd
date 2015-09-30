@@ -47,7 +47,9 @@
     <sequence>
       <element name="id" type="string" maxOccurs="1" minOccurs="1"></element>
       <element name="constraint" type="string" maxOccurs="1"
-        minOccurs="1"></element>
+        minOccurs="1">
+      </element>
+      <element name="repositories" type="extension:ExtensionRepository" minOccurs="0" maxOccurs="unbounded"></element>
     </sequence>
   </complexType>
 
@@ -160,7 +162,10 @@
           <element name="category" type="string" minOccurs="0"
             maxOccurs="1">
           </element>
-          <element name="properties" type="extension:Property" minOccurs="0" maxOccurs="unbounded"></element>
+          <element name="properties" type="extension:Property"
+            minOccurs="0" maxOccurs="unbounded">
+          </element>
+          <element name="repositories" type="extension:ExtensionRepository" minOccurs="0" maxOccurs="unbounded"></element>
         </sequence>
       </extension>
     </complexContent>
@@ -288,4 +293,12 @@
         <enumeration value="ASC"/>
       </restriction>
     </simpleType>
+
+    <complexType name="ExtensionRepository">
+      <sequence>
+        <element name="id" type="string"></element>
+        <element name="uri" type="string" minOccurs="1" maxOccurs="1"></element>
+        <element name="type" type="string" minOccurs="1" maxOccurs="1"></element>
+      </sequence>
+    </complexType>
 </schema>

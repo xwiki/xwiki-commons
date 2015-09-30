@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -113,6 +114,11 @@ public abstract class AbstractExtension implements Extension
      * @see #getCategory()
      */
     protected String category;
+
+    /**
+     * @see #getRepositories()
+     */
+    protected List<ExtensionRepositoryDescriptor> repositories;
 
     /**
      * The file of the extension.
@@ -407,7 +413,9 @@ public abstract class AbstractExtension implements Extension
      */
     public void setDependencies(Collection<? extends ExtensionDependency> dependencies)
     {
-        this.dependencies = Collections.unmodifiableList(new ArrayList<ExtensionDependency>(dependencies));
+        this.dependencies =
+            dependencies != null ? Collections.unmodifiableList(new ArrayList<ExtensionDependency>(dependencies))
+                : null;
     }
 
     @Override
@@ -483,6 +491,36 @@ public abstract class AbstractExtension implements Extension
     public void setCategory(String categrory)
     {
         this.category = categrory;
+    }
+
+    @Override
+    public Collection<ExtensionRepositoryDescriptor> getRepositories()
+    {
+        return this.repositories != null ? this.repositories : Collections.<ExtensionRepositoryDescriptor>emptyList();
+    }
+
+    /**
+     * @param repositories the custom repositories provided by the extension (usually to resolve dependencies)
+     * @since 7.3M1
+     */
+    public void setRepositories(Collection<? extends ExtensionRepositoryDescriptor> repositories)
+    {
+        this.repositories = repositories != null ? Collections.unmodifiableList(new ArrayList<>(repositories)) : null;
+    }
+
+    /**
+     * Add a new repository to the extension.
+     *
+     * @param repository a repository descriptor
+     * @since 7.3M1
+     */
+    public void addRepository(ExtensionRepositoryDescriptor repository)
+    {
+        List<ExtensionRepositoryDescriptor> newrepositories =
+            new ArrayList<ExtensionRepositoryDescriptor>(getRepositories());
+        newrepositories.add(repository);
+
+        this.repositories = Collections.unmodifiableList(newrepositories);
     }
 
     @Override

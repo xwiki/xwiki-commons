@@ -24,38 +24,51 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.jmock.Expectations;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.extension.DefaultExtensionDependency;
+import org.xwiki.extension.Extension;
+import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.internal.DefaultExtensionRepositoryManager;
-import org.xwiki.test.jmock.AbstractMockingComponentTestCase;
-import org.xwiki.test.jmock.annotation.MockingRequirement;
+import org.xwiki.extension.version.internal.DefaultVersionConstraint;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import static org.junit.Assert.assertSame;
+
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link DefaultExtensionRepositoryManager}.
  *
  * @version $Id$
  */
-@MockingRequirement(value = DefaultExtensionRepositoryManager.class, exceptions = { ComponentManager.class })
-public class DefaultExtensionRepositoryManagerTest extends AbstractMockingComponentTestCase<ExtensionRepositoryManager>
+public class DefaultExtensionRepositoryManagerTest
 {
+    @Rule
+    public MockitoComponentMockingRule<ExtensionRepositoryManager> mocker =
+        new MockitoComponentMockingRule<ExtensionRepositoryManager>(DefaultExtensionRepositoryManager.class);
+
     private ExtensionRepository testRepository;
 
     private ExtensionRepositoryDescriptor descriptor;
 
     private ExtensionRepositoryDescriptor unsupportedDescriptor;
 
-    @Override
-    @Before
-    public void setUp() throws Exception
-    {
-        super.setUp();
+    private DefaultExtensionDependency dependency;
 
-        final ExtensionRepositoryFactory factory = registerMockComponent(ExtensionRepositoryFactory.class, "test");
-        this.testRepository = getMockery().mock(ExtensionRepository.class);
+    private Extension testExtension;
+
+    @Before
+    public void before() throws Exception
+    {
+        final ExtensionRepositoryFactory factory =
+            this.mocker.registerMockComponent(ExtensionRepositoryFactory.class, "test");
+        this.testRepository = mock(ExtensionRepository.class);
 
         this.descriptor =
             new DefaultExtensionRepositoryDescriptor("id", "test", new URI("http", "host", "/path", "fragment"));
@@ -64,22 +77,19 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
             new DefaultExtensionRepositoryDescriptor("unsupported", "unsupported", new URI("http", "unsupported",
                 "/unsupported", "unsupported"));
 
-        getMockery().checking(new Expectations()
-        {
-            {
-                allowing(factory).createRepository(with(same(DefaultExtensionRepositoryManagerTest.this.descriptor)));
-                will(returnValue(DefaultExtensionRepositoryManagerTest.this.testRepository));
+        when(factory.createRepository(same(this.descriptor))).thenReturn(this.testRepository);
+        when(this.testRepository.getDescriptor()).thenReturn(this.descriptor);
 
-                allowing(DefaultExtensionRepositoryManagerTest.this.testRepository).getDescriptor();
-                will(returnValue(DefaultExtensionRepositoryManagerTest.this.descriptor));
-            }
-        });
+        this.dependency = new DefaultExtensionDependency("id", new DefaultVersionConstraint("version"));
+
+        this.testExtension = mock(Extension.class);
+        when(this.testRepository.resolve(this.dependency)).thenReturn(testExtension);
     }
 
     @Test
     public void addRepository() throws ExtensionRepositoryException, ComponentLookupException
     {
-        ExtensionRepository repository = getMockedComponent().addRepository(this.descriptor);
+        ExtensionRepository repository = this.mocker.getComponentUnderTest().addRepository(this.descriptor);
 
         Assert.assertSame(this.testRepository, repository);
     }
@@ -89,15 +99,15 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
     @Test(expected = ExtensionRepositoryException.class)
     public void addRepository_unsuported() throws ComponentLookupException, ExtensionRepositoryException
     {
-        getMockedComponent().addRepository(this.unsupportedDescriptor);
+        this.mocker.getComponentUnderTest().addRepository(this.unsupportedDescriptor);
     }
 
     @Test
     public void getRepository() throws ExtensionRepositoryException, ComponentLookupException
     {
-        getMockedComponent().addRepository(this.descriptor);
+        this.mocker.getComponentUnderTest().addRepository(this.descriptor);
 
-        ExtensionRepository repository = getMockedComponent().getRepository("id");
+        ExtensionRepository repository = this.mocker.getComponentUnderTest().getRepository("id");
 
         Assert.assertSame(this.testRepository, repository);
     }
@@ -105,7 +115,7 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
     @Test
     public void getRepository_doesnotexists() throws ComponentLookupException
     {
-        ExtensionRepository repository = getMockedComponent().getRepository("id");
+        ExtensionRepository repository = this.mocker.getComponentUnderTest().getRepository("id");
 
         Assert.assertNull(repository);
     }
@@ -113,11 +123,11 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
     @Test
     public void removeRepository() throws ExtensionRepositoryException, ComponentLookupException
     {
-        getMockedComponent().addRepository(this.descriptor);
+        this.mocker.getComponentUnderTest().addRepository(this.descriptor);
 
-        getMockedComponent().removeRepository(this.descriptor.getId());
+        this.mocker.getComponentUnderTest().removeRepository(this.descriptor.getId());
 
-        ExtensionRepository repository = getMockedComponent().getRepository("id");
+        ExtensionRepository repository = this.mocker.getComponentUnderTest().getRepository("id");
 
         Assert.assertNull(repository);
     }
@@ -125,10 +135,32 @@ public class DefaultExtensionRepositoryManagerTest extends AbstractMockingCompon
     @Test
     public void getRepositories() throws ExtensionRepositoryException, ComponentLookupException
     {
-        getMockedComponent().addRepository(this.descriptor);
+        this.mocker.getComponentUnderTest().addRepository(this.descriptor);
 
-        Collection<ExtensionRepository> repositorties = getMockedComponent().getRepositories();
+        Collection<ExtensionRepository> repositorties = this.mocker.getComponentUnderTest().getRepositories();
 
         Assert.assertEquals(Arrays.asList(this.testRepository), new ArrayList<ExtensionRepository>(repositorties));
+    }
+
+    @Test(expected = ResolveException.class)
+    public void resolveDependencyWithNoRegisteredRepository() throws ResolveException, ComponentLookupException
+    {
+        this.mocker.getComponentUnderTest().resolve(this.dependency);
+    }
+
+    @Test
+    public void resolveDependencyWithEmbeddedRepository() throws ResolveException, ComponentLookupException
+    {
+        this.dependency.addRepository(this.testRepository.getDescriptor());
+
+        assertSame(this.testExtension, this.mocker.getComponentUnderTest().resolve(this.dependency));
+    }
+
+    @Test
+    public void resolveDependencyWithRegisteredRepository() throws ResolveException, ComponentLookupException
+    {
+        this.mocker.getComponentUnderTest().addRepository(this.testRepository);
+
+        assertSame(this.testExtension, this.mocker.getComponentUnderTest().resolve(this.dependency));
     }
 }

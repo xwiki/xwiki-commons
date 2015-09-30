@@ -19,19 +19,24 @@
  */
 package org.xwiki.extension.internal.converter;
 
-import static org.junit.Assert.assertEquals;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import org.apache.maven.model.Model;
+import org.apache.maven.model.Repository;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.internal.maven.MavenUtils;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
@@ -47,7 +52,7 @@ public class ExtensionConverterTest
         DefaultConverterManager.class);
 
     @Test
-    public void testConvertFromExtension() throws SecurityException, ComponentLookupException
+    public void testConvertFromExtension() throws SecurityException, ComponentLookupException, URISyntaxException
     {
         Model model = new Model();
 
@@ -55,6 +60,10 @@ public class ExtensionConverterTest
         model.setArtifactId("artifactid");
         model.setVersion("version");
         model.addProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_CATEGORY, "category");
+        Repository repository = new Repository();
+        repository.setId("repository-id");
+        repository.setUrl("http://url");
+        model.addRepository(repository);
 
         Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
 
@@ -62,5 +71,8 @@ public class ExtensionConverterTest
         assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
         assertEquals("category", extension.getCategory());
         assertNull(extension.getProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_CATEGORY));
+        assertEquals(
+            Arrays.asList(new DefaultExtensionRepositoryDescriptor("repository-id", "maven", new URI("http://url"))),
+            extension.getRepositories());
     }
 }

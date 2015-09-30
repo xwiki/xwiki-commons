@@ -31,6 +31,7 @@ import org.xwiki.extension.ExtensionIssueManagement;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionScm;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**
  * Wrap an extension.
@@ -145,6 +146,12 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingObje
     public String getCategory()
     {
         return getWrapped().getCategory();
+    }
+
+    @Override
+    public Collection<ExtensionRepositoryDescriptor> getRepositories()
+    {
+        return getWrapped().getRepositories();
     }
 
     @Override

@@ -32,6 +32,8 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections4.map.LRUMap;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -93,6 +95,8 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
         .synchronizedMap(new LinkedHashMap<String, ExtensionRepository>());
 
     private Collection<ExtensionRepository> repositories = Collections.emptyList();
+
+    private LRUMap<ExtensionRepositoryDescriptor, ExtensionRepository> repositoriesCache = new LRUMap<>(100);
 
     @Override
     public void initialize() throws InitializationException
@@ -158,6 +162,39 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
         return this.repositoryMap.get(repositoryId);
     }
 
+    private ExtensionRepository getRepository(ExtensionRepositoryDescriptor repositoryDescriptor)
+        throws ExtensionRepositoryException
+    {
+        // Try in the cache
+        ExtensionRepository repository = this.repositoriesCache.get(repositoryDescriptor);
+
+        if (repository == null) {
+            // Try in the registered repositories
+            if (repositoryDescriptor.getId() != null) {
+                repository = getRepository(repositoryDescriptor.getId());
+            }
+
+            if (repository == null || !repository.getDescriptor().equals(repositoryDescriptor)) {
+                // Create one
+                ExtensionRepositoryFactory repositoryFactory;
+                try {
+                    repositoryFactory =
+                        this.componentManager.getInstance(ExtensionRepositoryFactory.class,
+                            repositoryDescriptor.getType());
+                } catch (ComponentLookupException e) {
+                    throw new ExtensionRepositoryException("Unsupported extension repository type [{"
+                        + repositoryDescriptor.getType() + "}]", e);
+                }
+
+                repository = repositoryFactory.createRepository(repositoryDescriptor);
+            }
+
+            this.repositoriesCache.put(repositoryDescriptor, repository);
+        }
+
+        return repository;
+    }
+
     @Override
     public Collection<ExtensionRepository> getRepositories()
     {
@@ -186,7 +223,28 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        ResolveException lastExtension = null;
+        Exception lastExtension = null;
+
+        for (ExtensionRepositoryDescriptor repositoryDescriptor : extensionDependency.getRepositories()) {
+            ExtensionRepository repository;
+            try {
+                repository = getRepository(repositoryDescriptor);
+            } catch (ExtensionRepositoryException e) {
+                this.logger.warn("Invalid repository [{}] in extension dependency",
+                    extensionDependency.getRepositories(), extensionDependency, ExceptionUtils.getRootCauseMessage(e));
+
+                continue;
+            }
+
+            try {
+                return repository.resolve(extensionDependency);
+            } catch (ResolveException e) {
+                this.logger.debug("Could not find extension dependency [{}] in repository [{}]", extensionDependency,
+                    repository.getDescriptor(), e);
+
+                lastExtension = e;
+            }
+        }
 
         for (ExtensionRepository repository : this.repositories) {
             try {

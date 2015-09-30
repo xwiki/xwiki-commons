@@ -19,11 +19,9 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
-import org.apache.maven.model.Model;
 import org.eclipse.aether.artifact.Artifact;
-import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.repository.internal.MavenExtension;
+import org.xwiki.extension.internal.maven.AbstractMavenExtension;
 
 /**
  * Add support for repositories supported by AETHER (only Maven for now).
@@ -31,11 +29,9 @@ import org.xwiki.extension.repository.internal.MavenExtension;
  * @version $Id$
  * @since 4.0M1
  */
-public class AetherExtension extends AbstractExtension implements MavenExtension
+public class AetherExtension extends AbstractMavenExtension
 {
-    public static final String PKEY_AETHER_ATIFACT = "aether.Artifact";
-
-    public static final String PKEY_MAVEN_MODEL = "maven.Model";
+    public static final String PKEY_AETHER_ARTIFACT = "aether.Artifact";
 
     public AetherExtension(Extension mavenExtension, Artifact artifact, AetherExtensionRepository repository)
     {
@@ -45,25 +41,5 @@ public class AetherExtension extends AbstractExtension implements MavenExtension
         setType(artifact.getExtension());
 
         setFile(new AetherExtensionFile(artifact, repository));
-    }
-
-    /**
-     * @return the Maven model object
-     */
-    public Model getMavenModel()
-    {
-        return (Model) getProperty(PKEY_MAVEN_MODEL);
-    }
-
-    @Override
-    public String getMavenArtifactId()
-    {
-        return getMavenModel().getArtifactId();
-    }
-
-    @Override
-    public String getMavenGroupId()
-    {
-        return getMavenModel().getGroupId();
     }
 }

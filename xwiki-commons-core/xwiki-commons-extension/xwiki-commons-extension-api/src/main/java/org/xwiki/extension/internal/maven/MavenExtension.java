@@ -17,16 +17,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal;
+package org.xwiki.extension.internal.maven;
+
+import org.xwiki.extension.Extension;
 
 /**
- * Implemented by extensions coming from a Maven repository or a pom.xml.
- *
+ * An {@link Extension} specific to Maven.
+ * 
  * @version $Id$
- * @since 6.1M1
- * @deprecated since 7.2RC1, use {@link org.xwiki.extension.internal.maven.MavenExtension} instead
+ * @since 7.3M1
  */
-@Deprecated
-public interface MavenExtension extends org.xwiki.extension.internal.maven.MavenExtension
+public interface MavenExtension extends Extension
 {
+    /**
+     * @return the Maven artifact id
+     */
+    String getMavenArtifactId();
+
+    /**
+     * @return the Maven group id
+     */
+    String getMavenGroupId();
 }

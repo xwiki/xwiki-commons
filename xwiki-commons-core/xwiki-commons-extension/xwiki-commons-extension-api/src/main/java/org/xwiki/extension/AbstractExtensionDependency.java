@@ -19,13 +19,17 @@
  */
 package org.xwiki.extension;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.VersionConstraint;
 
 /**
@@ -45,6 +49,11 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @see #getVersionConstraint()
      */
     protected VersionConstraint versionConstraint;
+
+    /**
+     * @see #getRepositories()
+     */
+    protected List<ExtensionRepositoryDescriptor> repositories;
 
     /**
      * @see #getProperties()
@@ -112,6 +121,36 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     public void setVersionConstraint(VersionConstraint versionConstraint)
     {
         this.versionConstraint = versionConstraint;
+    }
+
+    @Override
+    public Collection<ExtensionRepositoryDescriptor> getRepositories()
+    {
+        return this.repositories != null ? this.repositories : Collections.<ExtensionRepositoryDescriptor>emptyList();
+    }
+
+    /**
+     * @param repositories the custom repositories provided by the extension (usually to resolve dependencies)
+     * @@since 7.3M1
+     */
+    public void setRepositories(Collection<? extends ExtensionRepositoryDescriptor> repositories)
+    {
+        this.repositories = Collections.unmodifiableList(new ArrayList<>(repositories));
+    }
+
+    /**
+     * Add a new repository to the extension.
+     *
+     * @param repository a repository descriptor
+     * @since 7.3M1
+     */
+    public void addRepository(ExtensionRepositoryDescriptor repository)
+    {
+        List<ExtensionRepositoryDescriptor> newrepositories =
+            new ArrayList<ExtensionRepositoryDescriptor>(getRepositories());
+        newrepositories.add(repository);
+
+        this.repositories = Collections.unmodifiableList(newrepositories);
     }
 
     @Override
@@ -186,8 +225,9 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
         if (obj instanceof ExtensionDependency) {
             ExtensionDependency otherDependency = (ExtensionDependency) obj;
-            equals = StringUtils.equals(getId(), otherDependency.getId())
-                && Objects.equals(getVersionConstraint(), otherDependency.getVersionConstraint());
+            equals =
+                StringUtils.equals(getId(), otherDependency.getId())
+                    && Objects.equals(getVersionConstraint(), otherDependency.getVersionConstraint());
         } else {
             equals = false;
         }

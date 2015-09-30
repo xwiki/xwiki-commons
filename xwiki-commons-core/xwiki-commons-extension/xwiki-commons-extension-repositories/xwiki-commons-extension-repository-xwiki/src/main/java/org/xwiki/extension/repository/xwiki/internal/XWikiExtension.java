@@ -22,13 +22,14 @@ package org.xwiki.extension.repository.xwiki.internal;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.xwiki.extension.AbstractRatingExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
@@ -37,16 +38,17 @@ import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.rating.DefaultExtensionRating;
 import org.xwiki.extension.rating.RatingExtension;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionIssueManagement;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRating;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRepository;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.License;
 import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
-import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
  * XWiki Repository implementation of {@link org.xwiki.extension.Extension}.
@@ -135,11 +137,19 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
             putProperty(property.getKey(), property.getStringValue());
         }
 
+        // Repositories
+        for (ExtensionRepository restRepository : extension.getRepositories()) {
+            try {
+                addRepository(toDefaultExtensionRepositoryDescriptor(restRepository));
+            } catch (URISyntaxException e) {
+                // TODO: Log something ?
+            }
+        }
+
         // Dependencies
 
         for (ExtensionDependency dependency : extension.getDependencies()) {
-            addDependency(new DefaultExtensionDependency(dependency.getId(), new DefaultVersionConstraint(
-                dependency.getConstraint())));
+            addDependency(new XWikiExtensionDependency(dependency));
         }
 
         // File
@@ -147,13 +157,20 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
         setFile(new XWikiExtensionFile(repository, getId()));
     }
 
-    private DefaultExtensionScmConnection toDefaultExtensionScmConnection(ExtensionScmConnection connection)
+    protected static DefaultExtensionScmConnection toDefaultExtensionScmConnection(ExtensionScmConnection connection)
     {
         if (connection != null) {
             return new DefaultExtensionScmConnection(connection.getSystem(), connection.getPath());
         } else {
             return null;
         }
+    }
+
+    protected static DefaultExtensionRepositoryDescriptor toDefaultExtensionRepositoryDescriptor(
+        ExtensionRepository restRepository) throws URISyntaxException
+    {
+        return new DefaultExtensionRepositoryDescriptor(restRepository.getId(), restRepository.getType(), new URI(
+            restRepository.getUri()));
     }
 
     @Override

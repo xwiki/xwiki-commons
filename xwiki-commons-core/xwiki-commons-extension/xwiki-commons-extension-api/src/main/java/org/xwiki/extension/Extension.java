@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.stability.Unstable;
 
 /**
@@ -223,6 +224,12 @@ public interface Extension
      */
     @Unstable
     String getCategory();
+
+    /**
+     * @return the custom repositories provided by the extension (usually to resolve dependencies)
+     * @since 7.3M1
+     */
+    Collection<ExtensionRepositoryDescriptor> getRepositories();
 
     // Custom properties
 
