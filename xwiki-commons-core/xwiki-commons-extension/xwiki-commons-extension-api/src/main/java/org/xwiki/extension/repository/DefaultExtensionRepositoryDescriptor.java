@@ -149,6 +149,6 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
     @Override
     public String toString()
     {
-        return getId() + " (" + getURI() + ')';
+        return getId() + ':' + getType() + ':' + getURI();
     }
 }

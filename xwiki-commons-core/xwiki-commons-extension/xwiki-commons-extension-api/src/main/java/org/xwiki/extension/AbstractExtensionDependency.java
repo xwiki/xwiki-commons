@@ -25,9 +25,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.VersionConstraint;
@@ -147,7 +146,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      */
     public void setRepositories(Collection<? extends ExtensionRepositoryDescriptor> repositories)
     {
-        this.repositories = Collections.unmodifiableList(new ArrayList<>(repositories));
+        this.repositories = repositories != null ? Collections.unmodifiableList(new ArrayList<>(repositories)) : null;
     }
 
     /**
@@ -237,9 +236,14 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
         if (obj instanceof ExtensionDependency) {
             ExtensionDependency otherDependency = (ExtensionDependency) obj;
-            equals =
-                StringUtils.equals(getId(), otherDependency.getId())
-                    && Objects.equals(getVersionConstraint(), otherDependency.getVersionConstraint());
+
+            EqualsBuilder builder = new EqualsBuilder();
+
+            builder.append(getId(), otherDependency.getId());
+            builder.append(getVersionConstraint(), otherDependency.getVersionConstraint());
+            builder.append(getRepositories(), otherDependency.getRepositories());
+
+            equals = builder.isEquals();
         } else {
             equals = false;
         }

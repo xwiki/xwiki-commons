@@ -60,7 +60,11 @@
       <extension base="extension:AbstractExtension">
         <sequence>
           <element name="version" type="string"></element>
-          <element name="dependencies" type="extension:ExtensionDependency" minOccurs="0" maxOccurs="unbounded"></element>
+          <element name="dependencies"
+            type="extension:ExtensionDependency" minOccurs="0"
+            maxOccurs="unbounded">
+          </element>
+          <element name="repositories" type="extension:ExtensionRepository" minOccurs="0" maxOccurs="unbounded"></element>
         </sequence>
       </extension>
     </complexContent>
@@ -165,7 +169,6 @@
           <element name="properties" type="extension:Property"
             minOccurs="0" maxOccurs="unbounded">
           </element>
-          <element name="repositories" type="extension:ExtensionRepository" minOccurs="0" maxOccurs="unbounded"></element>
         </sequence>
       </extension>
     </complexContent>

@@ -131,6 +131,12 @@ public interface Extension
     String FIELD_SCM = "scm";
 
     /**
+     * @see #getRepositories()
+     * @since 7.3M1
+     */
+    String FIELD_REPOSITORIES = "repositories";
+
+    /**
      * Get an extension field (name, summary, id, etc.) by name. Fallback on properties.
      * 
      * @param <T> type of the field value
