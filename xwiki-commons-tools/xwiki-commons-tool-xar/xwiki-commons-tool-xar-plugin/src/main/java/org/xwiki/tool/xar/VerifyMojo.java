@@ -120,11 +120,6 @@ public class VerifyMojo extends AbstractVerifyMojo
                     xdoc.getDefaultLanguage()));
             }
 
-            // Verification 8: Check for well-known page names which should be hidden
-            if (xdoc.getReference().endsWith("Translations") && !xdoc.isHidden()) {
-                errors.add("Translations documents should be hidden");
-            }
-
             // Display errors
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
