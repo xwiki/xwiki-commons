@@ -29,9 +29,10 @@ public enum ComponentInstantiationStrategy
 {
     /**
      * The same component implementation instance is returned for all lookups.
-     * @deprecated starting with 3.1, use {@link javax.inject.Singleton} instead
      */
-    @Deprecated
+    // Note: We cannot deprecate this right now because even though users should use {@link javax.inject.Singleton}
+    // instead we still have no alternative when constructing a Component Descriptor and we have to use:
+    //   descriptor.setInstantiationStrategy(ComponentInstantiationStrategy.SINGLETON);
     SINGLETON,
 
     /**
