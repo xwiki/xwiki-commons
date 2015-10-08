@@ -109,6 +109,13 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithNotHiddenTranslation() throws Exception
+    {
+        verifyExecution("/notHiddenTranslation", "Verifying [Space/Translations.xml]... errors",
+            "- Translations documents should be hidden", "There are errors in the XAR XML files!");
+    }
+
+    @Test
     public void executeWithMissingLicenseHeader() throws Exception
     {
         Verifier verifier = createVerifier("/missingLicense");

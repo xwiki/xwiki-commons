@@ -102,6 +102,11 @@ public class XWikiDocument
     private String encoding;
 
     /**
+     * @see #isHidden()
+     */
+    private boolean isHidden;
+
+    /**
      * Parse XML file to extract document information.
      *
      * @param file the xml file
@@ -161,6 +166,7 @@ public class XWikiDocument
         this.comment = readElement(rootElement, "comment");
         this.minorEdit = readElement(rootElement, "minorEdit");
         this.attachmentAuthors = readAttachmentAuthors(rootElement);
+        this.isHidden = Boolean.parseBoolean(readElement(rootElement, "hidden"));
     }
 
     /**
@@ -312,6 +318,14 @@ public class XWikiDocument
     public String getEncoding()
     {
         return this.encoding;
+    }
+
+    /**
+     * @return true if the document is hidden or false otherwise
+     */
+    public boolean isHidden()
+    {
+        return this.isHidden;
     }
 
     /**
