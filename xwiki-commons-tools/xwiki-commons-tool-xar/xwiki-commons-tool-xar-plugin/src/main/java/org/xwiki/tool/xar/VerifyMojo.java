@@ -120,6 +120,11 @@ public class VerifyMojo extends AbstractVerifyMojo
                     xdoc.getDefaultLanguage()));
             }
 
+            // Verification 8: Verify that all technical pages are hidden
+            if (isTechnicalPage(file.getName()) && !xdoc.isHidden()) {
+                errors.add("Technical documents must be hidden");
+            }
+
             // Display errors
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));

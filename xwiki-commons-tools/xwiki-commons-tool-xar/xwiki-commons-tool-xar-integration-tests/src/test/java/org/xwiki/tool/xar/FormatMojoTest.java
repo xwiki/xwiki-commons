@@ -68,6 +68,11 @@ public class FormatMojoTest
         expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStylePage3.fr.xml"));
         assertEquals(expected, content);
 
+        // Test that technical pages are set as hidden
+        content = FileUtils.fileRead(new File(testDir, "src/main/resources/NoStyle/Translations.xml"));
+        expected = FileUtils.fileRead(new File(testDir, "ExpectedNoStyleTranslations.xml"));
+        assertEquals(expected, content);
+
         // Verify that not included pages are not formatted
         try {
             verifier.verifyTextInLog("Formatting [Pretty");

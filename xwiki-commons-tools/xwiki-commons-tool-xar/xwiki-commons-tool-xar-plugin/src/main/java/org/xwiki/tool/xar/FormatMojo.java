@@ -80,7 +80,7 @@ public class FormatMojo extends AbstractVerifyMojo
     {
         SAXReader reader = new SAXReader();
         Document domdoc = reader.read(file);
-        format(domdoc, defaultLanguage);
+        format(file.getName(), domdoc, defaultLanguage);
 
         XMLWriter writer;
         if (this.pretty) {
@@ -97,7 +97,7 @@ public class FormatMojo extends AbstractVerifyMojo
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
     }
 
-    private void format(Document domdoc, String defaultLanguage) throws Exception
+    private void format(String fileName, Document domdoc, String defaultLanguage) throws Exception
     {
         Node node = domdoc.selectSingleNode("xwikidoc/author");
         if (node != null) {
@@ -139,6 +139,12 @@ public class FormatMojo extends AbstractVerifyMojo
         element = (Element) domdoc.selectSingleNode("xwikidoc/comment");
         if (element != null) {
             removeContent(element);
+        }
+
+        // If the page is technical, make sure it's hidedn
+        element = (Element) domdoc.selectSingleNode("xwikidoc/hidden");
+        if (isTechnicalPage(fileName)) {
+            element.setText("true");
         }
     }
 

@@ -118,15 +118,13 @@ public class VerifyMojoTest
     }
 
     @Test
-    public void executeWithSpecifiedPages() throws Exception
+    public void executeContentAndTechnicalPages() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/specifiedPages");
-
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
-        verifier.addCliOption("-Dforce=true");
-        verifier.executeGoal("install");
-        verifier.verifyErrorFreeLog();
+        verifyExecution("/contentAndTechnical",
+            "Verifying [Main/EditTranslations.xml]... errors",
+            "- Technical documents must be hidden",
+            "Verifying [Main/Translations.xml]... errors",
+            "- Default Language should have been [en] but was []");
     }
 
     @Test

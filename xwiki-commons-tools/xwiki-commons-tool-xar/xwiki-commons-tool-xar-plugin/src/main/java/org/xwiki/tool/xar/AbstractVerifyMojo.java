@@ -220,14 +220,17 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     {
         String fileName = file.getName();
 
-        // Is it in the list of defined technical pages?
-        String language = guessDefaultLanguageForPatterns(fileName, this.technicalPagePatterns, "");
+        // Note that we need to check for content pages before technical pages because some pages are both content
+        // pages (Translation pages for example) and technical pages.
+
+        // Is it in the list of defined content pages?
+        String language = guessDefaultLanguageForPatterns(fileName, this.contentPagePatterns, this.defaultLanguage);
         if (language != null) {
             return language;
         }
 
-        // Is it in the list of defined content pages?
-        language = guessDefaultLanguageForPatterns(fileName, this.contentPagePatterns, this.defaultLanguage);
+        // Is it in the list of defined technical pages?
+        language = guessDefaultLanguageForPatterns(fileName, this.technicalPagePatterns, "");
         if (language != null) {
             return language;
         }
@@ -269,6 +272,18 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         }
 
         return language;
+    }
+
+    protected boolean isTechnicalPage(String fileName)
+    {
+        if (this.technicalPagePatterns != null) {
+            for (Pattern pattern : this.technicalPagePatterns) {
+                if (pattern.matcher(fileName).matches()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
