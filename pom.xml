@@ -463,6 +463,11 @@
           </exclusion>
           <!-- Already part of Java SE 6 -->
           <exclusion>
+            <artifactId>jaxb-api</artifactId>
+            <groupId>javax.xml.bind</groupId>
+          </exclusion>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
             <artifactId>stax-api</artifactId>
             <groupId>stax</groupId>
           </exclusion>
