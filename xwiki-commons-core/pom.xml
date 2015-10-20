@@ -243,5 +243,13 @@
         <module>xwiki-commons-legacy</module>
       </modules>
     </profile>
+    <profile>
+      <id>clover</id>
+      <properties>
+        <!-- Don't check that unit tests don't output anything to the console since for example Clover will output
+             messages such as "Updating existing database at '...'." during tests! -->
+        <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
+      </properties>
+    </profile>
   </profiles>
 </project>
