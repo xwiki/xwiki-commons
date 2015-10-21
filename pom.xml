@@ -79,7 +79,7 @@
     <aspectj.version>1.8.7</aspectj.version>
 
     <!-- Clover -->
-    <clover.version>3.1.12</clover.version>
+    <clover.version>4.0.6</clover.version>
 
     <!-- IzPack -->
     <izpack.version>5.0.5</izpack.version>
@@ -1102,10 +1102,10 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
           <configuration>
-            <license><![CDATA[qrQMuLFrILhIeRILrqhGBqjUrQQEnImixnpoFreoubGuqOa
-mj2Kjoh2sXZcCMFBWOhe<dGh2L053ktz00HxawUp94OiFmK
-rmnrUtrrrnMPPpNRrOOwXoNPnRqQqRMmPOsWsSsvVtTPqQP
-rnmqmUUnptsnqpommmmmUUnptsnqpommmmmUUONfhfUUnmm
+            <license><![CDATA[nrqrUjrDHDhJUHFmcbwQoxwhnrpAvvxtfireXcjcnFLfnhs
+mj2KyGJY<oOR4f95>VRjHIO22L01PV<1<v2Q64gRLmTAFh1
+mnOmtsRNMRMORpMpnpmsSmNRqOqrNoqnqMVxvvVXvssmpRq
+RnmqmUUnrmoptpsmmmmmUUnrmoptpsmmmmmUUONfhfUUnmm
 mm
 ]]></license>
             <!-- For some reason there's currently a problem in the Rendering Include Macro test execution when
