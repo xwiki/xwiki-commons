@@ -72,7 +72,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
         private String groupThreadName;
 
-        public JobGroupExecutor(JobGroupPath path)
+        JobGroupExecutor(JobGroupPath path)
         {
             super(1, 36000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
@@ -134,7 +134,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
     private class JobThreadExecutor extends ThreadPoolExecutor
     {
-        public JobThreadExecutor(int maximumPoolSize, long keepAliveTime, TimeUnit unit,
+        JobThreadExecutor(int maximumPoolSize, long keepAliveTime, TimeUnit unit,
             BlockingQueue<Runnable> workQueue)
         {
             super(0, maximumPoolSize, keepAliveTime, unit, workQueue);

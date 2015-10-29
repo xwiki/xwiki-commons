@@ -54,7 +54,7 @@ abstract class AbstractJobEvent implements JobEvent
     /**
      * Default constructor.
      */
-    public AbstractJobEvent()
+    AbstractJobEvent()
     {
     }
 

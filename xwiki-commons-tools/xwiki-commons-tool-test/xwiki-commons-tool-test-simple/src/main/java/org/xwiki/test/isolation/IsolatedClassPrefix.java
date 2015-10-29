@@ -37,10 +37,7 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface IsolatedClassPrefix {
     /**
-     * @return
+     * @return the list of class name prefix that will be isolated for this test
      */
-    // TODO: I would have liked to put the following documentation in the @return javadoc annotation above:
-    // "the list of class name prefix that will be isolated for this test". But Checkstyle is buggy, see:
-    // http://sourceforge.net/tracker/?func=detail&atid=397078&aid=2685184&group_id=29721
     String[] value();
 }

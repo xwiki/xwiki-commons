@@ -67,7 +67,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
         private final Set<List<String>> noStatusCache;
 
-        public Cache(int size)
+        Cache(int size)
         {
             this.cache = new LRUMap<>(size);
             this.noStatusCache = new HashSet<List<String>>();
@@ -214,7 +214,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
          */
         private final JobStatus status;
 
-        public JobStatusSerializerRunnable(JobStatus status)
+        JobStatusSerializerRunnable(JobStatus status)
         {
             this.status = status;
         }

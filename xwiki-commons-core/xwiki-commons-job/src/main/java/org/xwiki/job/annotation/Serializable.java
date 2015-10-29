@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
 public @interface Serializable
 {
     /**
-     * True if the objects of that class should be serialized during Job status serialization.
+     * @return true if the objects of that class should be serialized during Job status serialization.
      */
     boolean value() default true;
 }

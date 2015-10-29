@@ -37,7 +37,7 @@ public interface ExtensionPlanAction
      *
      * @version $Id$
      */
-    public enum Action
+    enum Action
     {
         /**
          * Nothing to do. Just here for information as why nothing is done here.

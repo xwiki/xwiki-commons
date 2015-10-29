@@ -33,7 +33,7 @@ public class X509CertificateGenerationParameters implements CertificateGeneratio
     /**
      * X.509 version.
      */
-    public static enum Version
+    public enum Version
     {
         /**
          * Request a version 1 X.509 certificate.

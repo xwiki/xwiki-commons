@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
 public @interface PropertyDescription
 {
     /**
-     * The description.
+     * @return the description.
      */
     String value();
 }

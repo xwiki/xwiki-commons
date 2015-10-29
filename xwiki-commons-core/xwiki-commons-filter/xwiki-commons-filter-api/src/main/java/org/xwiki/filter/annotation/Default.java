@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
 public @interface Default
 {
     /**
-     * The default value of the parameter.
+     * @return the default value of the parameter.
      */
     String value();
 }

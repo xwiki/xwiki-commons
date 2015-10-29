@@ -43,7 +43,7 @@ public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Se
 
         private Iterator<LogEvent> currentIterator;
 
-        public LogTreeNodeIterator(Iterator<LogEvent> rootIterator)
+        LogTreeNodeIterator(Iterator<LogEvent> rootIterator)
         {
             this.rootIterator = rootIterator;
             this.currentIterator = this.rootIterator;

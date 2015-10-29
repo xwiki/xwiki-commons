@@ -143,7 +143,7 @@ public class IsolatedTestRunner extends BlockJUnit4ClassRunner
          * Creates a IsolatedTestClassLoader for the provided prefixes.
          * @param prefixes List of class name prefix use to limit isolation to the given classes.
          */
-        public IsolatedTestClassLoader(String[] prefixes) {
+        IsolatedTestClassLoader(String[] prefixes) {
             super(((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs());
             this.prefixes = prefixes;
         }

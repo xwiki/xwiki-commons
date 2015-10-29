@@ -126,7 +126,7 @@ public class LogRule implements TestRule
         /**
          * @param level see {@link #getLevel()}
          */
-        private LogLevel(Level level)
+        LogLevel(Level level)
         {
             this.internalLevel = level;
         }

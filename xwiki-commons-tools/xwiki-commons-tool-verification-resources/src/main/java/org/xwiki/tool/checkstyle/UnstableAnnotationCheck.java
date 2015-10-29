@@ -22,7 +22,6 @@ package org.xwiki.tool.checkstyle;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.puppycrawl.tools.checkstyle.AnnotationUtility;
 import com.puppycrawl.tools.checkstyle.api.Check;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
@@ -30,6 +29,7 @@ import com.puppycrawl.tools.checkstyle.api.FileContents;
 import com.puppycrawl.tools.checkstyle.api.FullIdent;
 import com.puppycrawl.tools.checkstyle.api.TextBlock;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.utils.AnnotationUtility;
 
 /**
  * Verify if Unstable annotations should be removed.

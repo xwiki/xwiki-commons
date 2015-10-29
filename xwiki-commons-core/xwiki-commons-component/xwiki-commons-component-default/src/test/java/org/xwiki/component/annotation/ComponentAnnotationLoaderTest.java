@@ -161,7 +161,7 @@ public class ComponentAnnotationLoaderTest
     {
         private Logger logger;
 
-        public TestableComponentAnnotationLoader(Logger logger)
+        TestableComponentAnnotationLoader(Logger logger)
         {
             this.logger = logger;
         }
