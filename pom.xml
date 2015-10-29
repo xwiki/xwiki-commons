@@ -48,7 +48,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>7.3-milestone-2</commons.version>
+    <commons.version>7.3-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>7.2</xwiki.clirr.previous.version>
@@ -85,7 +85,7 @@
     <izpack.version>5.0.5</izpack.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>6.7</checkstyle.version>
+    <checkstyle.version>6.11.2</checkstyle.version>
 
     <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -805,7 +805,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.16</version>
+          <version>2.17</version>
           <configuration>
             <consoleOutput>true</consoleOutput>
             <!-- We use this to disable checkstyle when the clover profile is executed since there's a
