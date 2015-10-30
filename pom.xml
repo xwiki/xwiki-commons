@@ -499,6 +499,11 @@
             <artifactId>javax.ws.rs-api</artifactId>
             <groupId>javax.ws.rs</groupId>
           </exclusion>
+          <!-- We use a more accurate and up to date JSON framework version -->
+          <exclusion>
+            <artifactId>org.restlet.lib.org.json</artifactId>
+            <groupId>org.restlet.jse</groupId>
+          </exclusion>
         </exclusions>
       </dependency>
 
