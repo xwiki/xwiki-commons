@@ -85,7 +85,7 @@
     <izpack.version>5.0.5</izpack.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>6.11.2</checkstyle.version>
+    <checkstyle.version>6.12</checkstyle.version>
 
     <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
