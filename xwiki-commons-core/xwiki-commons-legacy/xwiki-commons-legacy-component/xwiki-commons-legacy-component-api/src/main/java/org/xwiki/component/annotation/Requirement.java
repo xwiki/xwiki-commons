@@ -43,13 +43,15 @@ import java.lang.annotation.Target;
 public @interface Requirement
 {
     /**
-     * The hint value selecting a specific component implementation to use.
+     * @return the hint value selecting a specific component implementation to use.
      */
     String value() default "";
 
     /**
      * When injecting a Collection of requirements, allows specifying a discrete list of hints to use. If these are
      * not specified, then all implementations for the specified role will be injected.
+     * 
+     * @return the list of hints
      */
     String[] hints() default { };
 }
