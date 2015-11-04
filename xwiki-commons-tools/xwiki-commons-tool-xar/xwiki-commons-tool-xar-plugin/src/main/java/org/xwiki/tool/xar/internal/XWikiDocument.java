@@ -107,6 +107,11 @@ public class XWikiDocument
     private boolean isHidden;
 
     /**
+     * @see #getTitle()
+     */
+    private String title;
+
+    /**
      * Parse XML file to extract document information.
      *
      * @param file the xml file
@@ -167,6 +172,7 @@ public class XWikiDocument
         this.minorEdit = readElement(rootElement, "minorEdit");
         this.attachmentAuthors = readAttachmentAuthors(rootElement);
         this.isHidden = Boolean.parseBoolean(readElement(rootElement, "hidden"));
+        this.title = readElement(rootElement, "title");
     }
 
     /**
@@ -326,6 +332,15 @@ public class XWikiDocument
     public boolean isHidden()
     {
         return this.isHidden;
+    }
+
+    /**
+     * @return the document's title
+     * @since 7.3RC1
+     */
+    public String getTitle()
+    {
+        return this.title;
     }
 
     /**

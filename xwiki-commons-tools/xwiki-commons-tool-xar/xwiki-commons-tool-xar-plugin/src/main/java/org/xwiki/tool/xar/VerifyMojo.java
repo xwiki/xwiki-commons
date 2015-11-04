@@ -69,7 +69,7 @@ public class VerifyMojo extends AbstractVerifyMojo
 
         getLog().info("Checking validity of XAR XML files...");
 
-        initializePagePatterns();
+        initializePatterns();
 
         boolean hasErrors = false;
         Collection<File> xmlFiles = getXARXMLFiles();
@@ -123,6 +123,12 @@ public class VerifyMojo extends AbstractVerifyMojo
             // Verification 8: Verify that all technical pages are hidden
             if (isTechnicalPage(file.getName()) && !xdoc.isHidden()) {
                 errors.add("Technical documents must be hidden");
+            }
+
+            // Verification 9: Verify that WebPreferences pages have the right title
+            if (file.getName().equals("WebPreferences.xml") && !isWebPreferencesTitleMatching(xdoc.getTitle())) {
+                errors.add(String.format("WebPreferences pages must have a title matching regex [%s]",
+                    this.webPreferencesTitle));
             }
 
             // Display errors

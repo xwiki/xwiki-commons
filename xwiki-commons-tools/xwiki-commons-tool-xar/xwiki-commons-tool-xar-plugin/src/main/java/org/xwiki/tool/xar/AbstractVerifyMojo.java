@@ -99,6 +99,15 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected String commonsVersion;
 
     /**
+     * Defines what the content of the Title field for WebPreferences pages should be (this is a regex).
+     *
+     * @parameter expression="${xar.verify.webPreferencesTitle}"
+     *            default-value="\\$services\\.localization\\.render\\('admin.preferences.title'\\)"
+     * @since 7.3RC1
+     */
+    protected String webPreferencesTitle;
+
+    /**
      * Explicitly define a list of pages (it's a regex) that should be considered as content pages (rather than
      * technical pages). Note that content pages must have a non empty default language specified and note that if a
      * page is not in this list and it doesn't have any translation then it's considered by default to be a technical
@@ -140,13 +149,16 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     private List<Pattern> technicalPagePatterns;
 
+    private Pattern webPreferencesTitlePattern;
+
     /**
-     * Initialize content/technical page patterns for performance reasons.
+     * Initialize regex Patterns for performance reasons.
      */
-    protected void initializePagePatterns()
+    protected void initializePatterns()
     {
         this.contentPagePatterns = initializationPagePatterns(this.contentPages);
         this.technicalPagePatterns = initializationPagePatterns(this.technicalPages);
+        this.webPreferencesTitlePattern = Pattern.compile(this.webPreferencesTitle);
     }
 
     private List<Pattern> initializationPagePatterns(List<String> pageRegexes)
@@ -284,6 +296,11 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
             }
         }
         return false;
+    }
+
+    protected boolean isWebPreferencesTitleMatching(String title)
+    {
+        return this.webPreferencesTitlePattern.matcher(title).matches();
     }
 
     /**

@@ -109,6 +109,14 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithWrongWebPreferencesTitle() throws Exception
+    {
+        verifyExecution("/wrongWebPreferencesTitle", "Verifying [Space/WebPreferences.xml]... errors",
+            "- WebPreferences pages must have a title matching regex [\\$services\\.localization\\.render\\("
+            + "'admin.preferences.title'\\)]", "There are errors in the XAR XML files!");
+    }
+
+    @Test
     public void executeWithMissingLicenseHeader() throws Exception
     {
         Verifier verifier = createVerifier("/missingLicense");
