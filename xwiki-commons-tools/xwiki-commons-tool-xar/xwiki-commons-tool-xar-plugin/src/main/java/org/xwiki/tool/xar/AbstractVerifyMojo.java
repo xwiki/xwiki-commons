@@ -23,8 +23,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,13 +102,12 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected String commonsVersion;
 
     /**
-     * Defines what the content of the Title field for WebPreferences pages should be (this is a regex).
+     * Defines expectations for the Title field of pages.
      *
-     * @parameter expression="${xar.verify.webPreferencesTitle}"
-     *            default-value="\\$services\\.localization\\.render\\('admin.preferences.title'\\)"
+     * @parameter expression="${xar.verify.titles}"
      * @since 7.3RC1
      */
-    protected String webPreferencesTitle;
+    protected Properties titles;
 
     /**
      * Explicitly define a list of pages (it's a regex) that should be considered as content pages (rather than
@@ -149,7 +151,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     private List<Pattern> technicalPagePatterns;
 
-    private Pattern webPreferencesTitlePattern;
+    private Map<Pattern, Pattern> titlePatterns;
 
     /**
      * Initialize regex Patterns for performance reasons.
@@ -158,7 +160,13 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     {
         this.contentPagePatterns = initializationPagePatterns(this.contentPages);
         this.technicalPagePatterns = initializationPagePatterns(this.technicalPages);
-        this.webPreferencesTitlePattern = Pattern.compile(this.webPreferencesTitle);
+
+        // Transform title expectations into Patterns
+        Map<Pattern, Pattern> patterns = new HashMap<>();
+        for (String key : this.titles.stringPropertyNames()) {
+            patterns.put(Pattern.compile(key), Pattern.compile(this.titles.getProperty(key)));
+        }
+        this.titlePatterns = patterns;
     }
 
     private List<Pattern> initializationPagePatterns(List<String> pageRegexes)
@@ -298,9 +306,26 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
         return false;
     }
 
-    protected boolean isWebPreferencesTitleMatching(String title)
+    protected boolean isTitlesMatching(String documentReference, String title)
     {
-        return this.webPreferencesTitlePattern.matcher(title).matches();
+        for (Map.Entry<Pattern, Pattern> entry : this.titlePatterns.entrySet()) {
+            if (entry.getKey().matcher(documentReference).matches()) {
+                if (!entry.getValue().matcher(title).matches()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    protected String getTitlePatternRuleforPage(String documentReference)
+    {
+        for (Map.Entry<Pattern, Pattern> entry : this.titlePatterns.entrySet()) {
+            if (entry.getKey().matcher(documentReference).matches()) {
+                return entry.getValue().pattern();
+            }
+        }
+        return null;
     }
 
     /**

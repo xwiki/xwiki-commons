@@ -38,6 +38,14 @@
             <goals>
               <goal>verify</goal>
             </goals>
+            <configuration>
+              <titles>
+                <property>
+                  <name>.*WebPreferences</name>
+                  <value>\$services\.localization\.render\('admin.preferences.title'\)</value>
+                </property>
+              </titles>
+            </configuration>
           </execution>
         </executions>
       </plugin>
