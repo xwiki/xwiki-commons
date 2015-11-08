@@ -109,11 +109,12 @@ public class VerifyMojoTest
     }
 
     @Test
-    public void executeWithWrongWebPreferencesTitle() throws Exception
+    public void executeWithWronPageTitle() throws Exception
     {
-        verifyExecution("/wrongWebPreferencesTitle", "Verifying [Space/WebPreferences.xml]... errors",
-            "- WebPreferences pages must have a title matching regex [\\$services\\.localization\\.render\\("
-            + "'admin.preferences.title'\\)]", "There are errors in the XAR XML files!");
+        verifyExecution("/wrongPageTitle", "Verifying [Space/WebPreferences.xml]... errors",
+            "- [WebPreferences.xml] ([Space.WebPreferences]) page must have a title matching regex "
+            + "[\\$services\\.localization\\.render\\('admin.preferences.title'\\)]",
+            "There are errors in the XAR XML files!");
     }
 
     @Test

@@ -125,10 +125,10 @@ public class VerifyMojo extends AbstractVerifyMojo
                 errors.add("Technical documents must be hidden");
             }
 
-            // Verification 9: Verify that WebPreferences pages have the right title
-            if (file.getName().equals("WebPreferences.xml") && !isWebPreferencesTitleMatching(xdoc.getTitle())) {
-                errors.add(String.format("WebPreferences pages must have a title matching regex [%s]",
-                    this.webPreferencesTitle));
+            // Verification 9: Verify that the current document has a matching title (if a rule is defined for it)
+            if (!isTitlesMatching(xdoc.getReference(), xdoc.getTitle())) {
+                errors.add(String.format("[%s] ([%s]) page must have a title matching regex [%s]",
+                    file.getName(), xdoc.getReference(), getTitlePatternRuleforPage(xdoc.getReference())));
             }
 
             // Display errors

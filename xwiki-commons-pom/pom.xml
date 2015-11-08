@@ -191,6 +191,13 @@
             <technicalPages>
               <technicalPage>.*Translations\.xml</technicalPage>
             </technicalPages>
+            <titles>
+              <!-- Verify that all WebPreferences pages have the same title for consistency -->
+              <property>
+                <name>.*WebPreferences</name>
+                <value>\$services\.localization\.render\('admin.preferences.title'\)</value>
+              </property>
+            </titles>
           </configuration>
         </plugin>
       </plugins>
