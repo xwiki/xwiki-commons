@@ -185,18 +185,6 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/extension/Extension</className>
-              <method>java.util.Collection getRepositories()</method>
-              <justification>Add support for custom repositories in extensions</justification>
-            </difference>
-            <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/extension/ExtensionDependency</className>
-              <method>java.util.Collection getRepositories()</method>
-              <justification>Add support for custom repositories in extensions</justification>
-            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
