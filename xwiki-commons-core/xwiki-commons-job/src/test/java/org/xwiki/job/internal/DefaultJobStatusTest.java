@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.xwiki.job.DefaultRequest;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.QuestionAnsweredEvent;
 import org.xwiki.job.event.status.QuestionAskedEvent;
@@ -51,8 +52,8 @@ public class DefaultJobStatusTest
     public void subJobQuestionIsForwardedToParent() throws Exception
     {
         JobStatus parentJobStatus = mock(JobStatus.class);
-        DefaultJobStatus<DefaultRequest> jobStatus =
-            new DefaultJobStatus<>(new DefaultRequest(), this.observationManager, this.loggerManager, parentJobStatus);
+        org.xwiki.job.DefaultJobStatus<DefaultRequest> jobStatus = new org.xwiki.job.DefaultJobStatus<>(
+            new DefaultRequest(), parentJobStatus, this.observationManager, this.loggerManager);
 
         String question = "What's up?";
         jobStatus.ask(question);
@@ -77,7 +78,7 @@ public class DefaultJobStatusTest
         request.setId(Arrays.asList("test", "answered"));
 
         DefaultJobStatus<DefaultRequest> jobStatus =
-            new DefaultJobStatus<>(request, this.observationManager, this.loggerManager, null);
+            new DefaultJobStatus<>(request, null, this.observationManager, this.loggerManager);
 
         jobStatus.answered();
 
@@ -92,7 +93,7 @@ public class DefaultJobStatusTest
         request.setId(Arrays.asList("test", "asked"));
 
         DefaultJobStatus<DefaultRequest> jobStatus =
-            new DefaultJobStatus<>(request, this.observationManager, this.loggerManager, null);
+            new DefaultJobStatus<>(request, null, this.observationManager, this.loggerManager);
 
         QuestionAskedEvent questionAsked = new QuestionAskedEvent(String.class.getName(), request.getId());
         doAnswer(new Answer<Void>()

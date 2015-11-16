@@ -30,9 +30,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.JobManagerConfiguration;
-import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -151,7 +151,7 @@ public class DefaultJobStatusStorageTest
 
         DefaultRequest request = new DefaultRequest();
         request.setId(id);
-        JobStatus jobStatus = new DefaultJobStatus<Request>(request, null, null, null);
+        JobStatus jobStatus = new DefaultJobStatus(request, null, null, null);
 
         this.componentManager.getComponentUnderTest().store(jobStatus);
 

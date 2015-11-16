@@ -45,11 +45,11 @@ import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.job.AbstractJob;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.JobGroupPath;
 import org.xwiki.job.Request;
-import org.xwiki.job.internal.AbstractJob;
-import org.xwiki.job.internal.AbstractJobStatus;
+import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.marker.BeginTranslationMarker;
 import org.xwiki.logging.marker.EndTranslationMarker;
 import org.xwiki.logging.marker.TranslationMarker;
@@ -62,8 +62,8 @@ import org.xwiki.logging.marker.TranslationMarker;
  * @version $Id$
  * @since 4.0M1
  */
-public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends AbstractJobStatus<R>> extends
-    AbstractJob<R, S> implements GroupedJob
+public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends JobStatus> extends AbstractJob<R, S>
+    implements GroupedJob
 {
     /**
      * The key to use to access the context extension plan.
@@ -249,9 +249,8 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     private void installExtension(LocalExtension extension, Collection<InstalledExtension> previousExtensions,
         String namespace, boolean dependency) throws InstallException
     {
-        Map<String, Object> properties =
-            getRequest().getProperty(InstallRequest.PROPERTY_EXTENSION_PROPERTIES,
-                Collections.<String, Object>emptyMap());
+        Map<String, Object> properties = getRequest().getProperty(InstallRequest.PROPERTY_EXTENSION_PROPERTIES,
+            Collections.<String, Object>emptyMap());
         if (previousExtensions.isEmpty()) {
             this.extensionHandlerManager.install(extension, namespace, getRequest());
 
@@ -274,8 +273,8 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             InstalledExtension installedExtension =
                 this.installedExtensionRepository.installExtension(extension, namespace, dependency, properties);
 
-            this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace),
-                installedExtension, previousExtensions);
+            this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace), installedExtension,
+                previousExtensions);
         }
     }
 }

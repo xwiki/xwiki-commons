@@ -30,11 +30,11 @@ import org.xwiki.extension.job.history.ExtensionJobHistoryRecord;
 import org.xwiki.extension.job.history.ReplayJobStatus;
 import org.xwiki.extension.job.history.ReplayRequest;
 import org.xwiki.extension.job.internal.AbstractExtensionJob;
+import org.xwiki.job.AbstractJob;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobGroupPath;
 import org.xwiki.job.Request;
-import org.xwiki.job.internal.AbstractJob;
 
 /**
  * A job that can replay records from the extension job history.

@@ -32,9 +32,9 @@ import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.Job;
 import org.xwiki.job.Request;
-import org.xwiki.job.internal.DefaultJobStatus;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 

@@ -44,9 +44,9 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.JobStatusStore;
-import org.xwiki.job.Request;
 import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
 
@@ -187,7 +187,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private static final String FOLDER_NULL = "&null";
 
-    private static final JobStatus NOSTATUS = new DefaultJobStatus<Request>(null, null, null, null);
+    private static final JobStatus NOSTATUS = new DefaultJobStatus(null, null, null, null);
 
     /**
      * Used to get the storage directory.

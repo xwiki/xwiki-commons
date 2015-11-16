@@ -28,8 +28,8 @@ import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.ExtensionPlanTree;
+import org.xwiki.job.AbstractJobStatus;
 import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.job.internal.AbstractJobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 
@@ -61,7 +61,7 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
     public DefaultExtensionPlan(R request, ObservationManager observationManager, LoggerManager loggerManager,
         ExtensionPlanTree tree, JobStatus parentJobStatus)
     {
-        super(request, observationManager, loggerManager, parentJobStatus);
+        super(request, parentJobStatus, observationManager, loggerManager);
 
         this.tree = tree;
     }

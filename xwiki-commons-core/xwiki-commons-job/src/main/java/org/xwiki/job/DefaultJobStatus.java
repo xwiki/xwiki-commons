@@ -17,33 +17,32 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.job.internal;
+package org.xwiki.job;
 
-import org.xwiki.job.Request;
+import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 
 /**
- * Base implementation of {@link JobStatus}.
+ * Default implementation of {@link org.xwiki.job.event.status.JobStatus}.
  *
- * @param <R>
+ * @param <R> the request type associated to the job
  * @version $Id$
- * @since 4.0M1
- * @deprecated since 7.4M1, use {@link org.xwiki.job.AbstractJobStatus} instead
+ * @since 7.4M1
  */
-@Deprecated
-public abstract class AbstractJobStatus<R extends Request> extends org.xwiki.job.AbstractJobStatus<R>
+@Serializable
+public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R>
 {
     /**
      * @param request the request provided when started the job
-     * @param observationManager the observation manager component
-     * @param loggerManager the logger manager component
      * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
      *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
+     * @param observationManager the observation manager component
+     * @param loggerManager the logger manager component
      */
-    public AbstractJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager,
-        JobStatus parentJobStatus)
+    public DefaultJobStatus(R request, JobStatus parentJobStatus, ObservationManager observationManager,
+        LoggerManager loggerManager)
     {
         super(request, parentJobStatus, observationManager, loggerManager);
     }

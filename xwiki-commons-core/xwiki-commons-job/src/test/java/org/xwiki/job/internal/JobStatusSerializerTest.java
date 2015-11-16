@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Request;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.test.SerializableStandaloneComponent;
