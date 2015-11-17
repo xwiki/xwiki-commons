@@ -51,7 +51,7 @@
     <commons.version>7.1.4-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>7.1.2</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>7.1.3</xwiki.clirr.previous.version>
 
     <!-- REST -->
     <restlet.version>2.0.14</restlet.version>
