@@ -35,7 +35,7 @@ import org.xwiki.observation.ObservationManager;
  */
 @Serializable
 @Deprecated
-public class DefaultJobStatus<R extends Request> extends org.xwiki.job.DefaultJobStatus<R>
+public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R>
 {
     /**
      * @param request the request provided when started the job
@@ -47,6 +47,6 @@ public class DefaultJobStatus<R extends Request> extends org.xwiki.job.DefaultJo
     public DefaultJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager,
         JobStatus parentJobStatus)
     {
-        super(request, parentJobStatus, observationManager, loggerManager);
+        super(request, observationManager, loggerManager, parentJobStatus);
     }
 }
