@@ -89,18 +89,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <systemPropertyVariables>
-                <commons.version>${project.version}</commons.version>
-              </systemPropertyVariables>
-            </configuration>
-          </execution>
-        </executions>
+        <configuration>
+          <systemPropertyVariables>
+            <commons.version>${project.version}</commons.version>
+            <xwiki.jacoco.itDestFile>${xwiki.jacoco.itDestFile}</xwiki.jacoco.itDestFile>
+          </systemPropertyVariables>
+        </configuration>
       </plugin>
     </plugins>
   </build>
