@@ -42,15 +42,12 @@ import static org.junit.Assert.*;
  * @version $Id$
  * @since 4.2M1
  */
-public class XARMojoTest
+public class XARMojoTest extends AbstractMojoTest
 {
     @Test
     public void invalidPackageXmlThrowsException() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/invalidPackageFile");
-
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        Verifier verifier = createVerifier("/invalidPackageFile");
 
         try {
             verifier.executeGoals(Arrays.asList("clean", "package"));
@@ -65,18 +62,15 @@ public class XARMojoTest
     @Test
     public void validPackageXml() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/validXml");
-
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        Verifier verifier = createVerifier("/validXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
 
-        File tempDir = new File(testDir, "target/temp");
+        File tempDir = new File(verifier.getBasedir(), "target/temp");
         tempDir.mkdirs();
 
         // Extract the generated XAR so that we verify its content easily
-        File xarFile = new File(testDir, "target/xwiki-commons-tool-xar-plugin-test.xar");
+        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
         unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
         unarchiver.setDestDirectory(tempDir);
@@ -87,7 +81,7 @@ public class XARMojoTest
         assertTrue(entries.hasMoreElements());
         assertEquals(entries.nextElement().toString(), XARMojo.PACKAGE_XML);
 
-        File classesDir = new File(testDir, "target/classes");
+        File classesDir = new File(verifier.getBasedir(), "target/classes");
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
 
         int countEntries = 0;
@@ -108,18 +102,15 @@ public class XARMojoTest
     @Test
     public void noPackageXml() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/noPackageXml");
-
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        Verifier verifier = createVerifier("/noPackageXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
 
-        File xarFile = new File(testDir, "target/xwiki-commons-tool-xar-plugin-test.xar");
+        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test.xar");
         ZipFile zip = new ZipFile(xarFile);
         assertNotNull("Package.xml file not found in zip!", zip.getEntry(XARMojo.PACKAGE_XML));
 
-        File tempDir = new File(testDir, "target/temp");
+        File tempDir = new File(verifier.getBasedir(), "target/temp");
         tempDir.mkdirs();
 
         // Extract package.xml and extract all the entries one by one and read them as a XWiki Document to verify
@@ -129,7 +120,7 @@ public class XARMojoTest
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
 
-        File classesDir = new File(testDir, "target/classes");
+        File classesDir = new File(verifier.getBasedir(), "target/classes");
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
         int countEntries = 0;
         Enumeration<ZipEntry> entries = zip.getEntries();
@@ -153,24 +144,21 @@ public class XARMojoTest
     @Test
     public void nestedSpacesXml() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/nestedSpaces");
-
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        Verifier verifier = createVerifier("/nestedSpaces");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
 
-        File tempDir = new File(testDir, "target/temp");
+        File tempDir = new File(verifier.getBasedir(), "target/temp");
         tempDir.mkdirs();
 
         // Extract the generated XAR so that we verify its content easily
-        File xarFile = new File(testDir, "target/xwiki-commons-tool-xar-plugin-test.xar");
+        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
         unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
         unarchiver.setDestDirectory(tempDir);
         unarchiver.extract();
 
-        File classesDir = new File(testDir, "target/classes");
+        File classesDir = new File(verifier.getBasedir(), "target/classes");
         Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
 
         assertEquals("The newly created xar archive doesn't contain the required documents", 1, documentNames.size());
@@ -183,10 +171,7 @@ public class XARMojoTest
     @Ignore("Could not make it work, for some reason the plugin configuration is not taken into account!")
     public void transformXML() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/transformedXml");
-
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
+        Verifier verifier = createVerifier("/transformedXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
     }

@@ -19,8 +19,6 @@
  */
 package org.xwiki.tool.xar;
 
-import java.io.File;
-
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.hamcrest.CoreMatchers;
@@ -34,7 +32,7 @@ import static org.junit.Assert.*;
  * @version $Id$
  * @since 4.0M2
  */
-public class VerifyMojoTest
+public class VerifyMojoTest extends AbstractMojoTest
 {
     @Test
     public void executeWithWrongAuthor() throws Exception
@@ -139,11 +137,7 @@ public class VerifyMojoTest
     @Test
     public void executeOk() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/allOk");
-
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
-        verifier.addCliOption("-Dforce=true");
+        Verifier verifier = createVerifier("/allOk");
         verifier.executeGoal("install");
         verifier.verifyErrorFreeLog();
     }
@@ -151,21 +145,14 @@ public class VerifyMojoTest
     @Test
     public void executeNestedSpaces() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/nestedSpaces");
-
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
-        verifier.addCliOption("-Dforce=true");
+        Verifier verifier = createVerifier("/nestedSpaces");
         verifier.executeGoal("install");
         verifier.verifyErrorFreeLog();
     }
 
     private void verifyExecution(Verifier verifier, String... messages) throws Exception
     {
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
-
         try {
-            verifier.addCliOption("-Dforce=true");
             verifier.executeGoal("install");
             verifier.verifyErrorFreeLog();
             fail("An error should have been thrown in the build");
@@ -179,11 +166,5 @@ public class VerifyMojoTest
     private void verifyExecution(String testDirectory, String... messages) throws Exception
     {
         verifyExecution(createVerifier(testDirectory), messages);
-    }
-
-    private Verifier createVerifier(String testDirectory) throws Exception
-    {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), testDirectory);
-        return new Verifier(testDir.getAbsolutePath());
     }
 }

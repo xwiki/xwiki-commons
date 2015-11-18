@@ -92,10 +92,29 @@
         <configuration>
           <systemPropertyVariables>
             <commons.version>${project.version}</commons.version>
-            <xwiki.jacoco.itDestFile>${xwiki.jacoco.itDestFile}</xwiki.jacoco.itDestFile>
           </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <!-- Add support for Jacoco -->
+    <profile>
+      <id>coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables combine.children="append">
+                <xwiki.jacoco.itDestFile>${xwiki.jacoco.itDestFile}</xwiki.jacoco.itDestFile>
+                <jacoco.version>${jacoco.version}</jacoco.version>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
