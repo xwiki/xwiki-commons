@@ -1383,9 +1383,9 @@ mm
         <dependencies>
           <!-- Needed when using Clover for runtime execution of integration tests -->
           <dependency>
-            <groupId>com.cenqua.clover</groupId>
+            <groupId>com.atlassian.clover</groupId>
             <artifactId>clover</artifactId>
-            <version>3.1.6</version>
+            <version>${clover.version}</version>
           </dependency>
         </dependencies>
       </dependencyManagement>
