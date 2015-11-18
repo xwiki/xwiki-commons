@@ -1467,7 +1467,10 @@ mm
               </execution>
             </executions>
             <configuration>
+              <!-- Tell the Agent Mojo to use a single destination file (instead of one per Maven module) -->
               <destFile>${xwiki.jacoco.itDestFile}</destFile>
+              <!-- Tell the Report Mojos to use the same destination file used for instrumentation -->
+              <dataFile>${xwiki.jacoco.itDestFile}</dataFile>
               <append>true</append>
             </configuration>
           </plugin>
