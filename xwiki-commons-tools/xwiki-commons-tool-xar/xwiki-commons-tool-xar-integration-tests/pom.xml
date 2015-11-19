@@ -29,7 +29,7 @@
   </parent>
   <artifactId>xwiki-commons-tool-xar-integration-tests</artifactId>
   <name>XWiki Commons - Tools - XAR Tools - Functional Tests</name>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <description>XWiki Commons - Tools - XAR Tools - Functional Tests</description>
   <dependencies>
     <dependency>
