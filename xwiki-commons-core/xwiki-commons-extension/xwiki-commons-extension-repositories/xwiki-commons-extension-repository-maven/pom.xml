@@ -101,7 +101,7 @@
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <version>0.3.1</version>
+      <version>0.3.2</version>
       <exclusions>
         <!-- This dependency is now deprecated and replaced by annotation-api. -->
         <exclusion>
@@ -117,9 +117,9 @@
       <artifactId>javax.annotation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-guice</artifactId>
-      <version>3.2.6</version>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>4.0</version>
       <classifier>no_aop</classifier>
     </dependency>
     <!-- Test dependencies -->
