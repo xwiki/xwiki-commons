@@ -21,7 +21,7 @@ package org.xwiki.extension.job.history;
 
 import java.util.List;
 
-import org.xwiki.job.internal.DefaultJobStatus;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.stability.Unstable;
@@ -46,7 +46,7 @@ public class ReplayJobStatus extends DefaultJobStatus<ReplayRequest>
      */
     public ReplayJobStatus(ReplayRequest request, ObservationManager observationManager, LoggerManager loggerManager)
     {
-        super(request, observationManager, loggerManager, null);
+        super(request, null, observationManager, loggerManager);
     }
 
     /**
