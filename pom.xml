@@ -222,7 +222,7 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.3</version>
+        <version>3.4</version>
       </dependency>
       <!-- Apache HttpComponents -->
       <dependency>
