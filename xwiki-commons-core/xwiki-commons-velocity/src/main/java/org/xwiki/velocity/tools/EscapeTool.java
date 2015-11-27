@@ -27,6 +27,8 @@ import org.apache.commons.codec.net.BCodec;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.xml.XMLUtils;
 
 /**
@@ -45,6 +47,8 @@ import org.xwiki.xml.XMLUtils;
  */
 public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EscapeTool.class);
+
     /** Equals sign. */
     private static final String EQUALS = "=";
 
@@ -199,5 +203,23 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
             queryStringBuilder.append(AND);
         }
         queryStringBuilder.append(cleanKey).append(EQUALS).append(cleanValue);
+    }
+
+    /**
+     * Escapes a CSS identifier.
+     * 
+     * @param identifier the identifier to escape
+     * @return the escaped identifier
+     * @see https://drafts.csswg.org/cssom/#serialize-an-identifier
+     * @since 6.4.7, 7.1.4, 7.4M1
+     */
+    public String css(String identifier)
+    {
+        try {
+            return new CSSIdentifierSerializer().serialize(identifier);
+        } catch (IllegalArgumentException e) {
+            LOGGER.warn("Failed to escape CSS identifier. {}", e.getMessage());
+            return null;
+        }
     }
 }
