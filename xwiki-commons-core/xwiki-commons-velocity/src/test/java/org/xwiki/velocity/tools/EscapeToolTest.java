@@ -244,9 +244,10 @@ public class EscapeToolTest
     @Test
     public void css()
     {
-        Assert.assertEquals(this.tool.css("a#b.c d[e=f]g{h:i;j}k"), "a\\#b\\.c\\ d\\[e\\=f\\]g\\{h\\:i\\;j\\}k");
+        EscapeTool tool = new EscapeTool();
+        Assert.assertEquals(tool.css("a#b.c d[e=f]g{h:i;j}k"), "a\\#b\\.c\\ d\\[e\\=f\\]g\\{h\\:i\\;j\\}k");
 
         // Invalid character U+0000 (the exception must be caught)
-        Assert.assertNull(this.tool.css("a\u0000b"));
+        Assert.assertNull(tool.css("a\u0000b"));
     }
 }
