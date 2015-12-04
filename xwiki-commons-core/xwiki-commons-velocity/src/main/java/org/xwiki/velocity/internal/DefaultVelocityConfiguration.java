@@ -46,6 +46,7 @@ import org.xwiki.velocity.tools.EscapeTool;
 import org.xwiki.velocity.tools.JSONTool;
 import org.xwiki.velocity.tools.RegexTool;
 import org.xwiki.velocity.tools.URLTool;
+import org.xwiki.velocity.tools.nio.NIOTool;
 
 /**
  * All configuration options for the Velocity subsystem.
@@ -94,6 +95,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("jsontool", JSONTool.class.getName());
         this.defaultTools.setProperty("urltool", URLTool.class.getName());
         this.defaultTools.setProperty("exceptiontool", ExceptionUtils.class.getName());
+        this.defaultTools.setProperty("niotool", NIOTool.class.getName());
 
         // Default Velocity properties
         this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());
