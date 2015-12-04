@@ -55,8 +55,36 @@ public class RegexToolTest
     public void testFindWithoutMatches()
     {
         RegexTool tool = new RegexTool();
-        List<RegexResult> result =
-            tool.find("nothing here", "something");
+        List<RegexResult> result = tool.find("nothing here", "something");
+
+        Assert.assertEquals(0, result.size());
+    }
+
+    @Test
+    public void findAll()
+    {
+        RegexTool tool = new RegexTool();
+        List<List<RegexResult>> result =
+            tool.findAll("one :two three (:four) five :six seven=:eight", ":(\\w+) (\\w+)");
+
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals(":two three", result.get(0).get(0).getGroup());
+        Assert.assertEquals(":six seven", result.get(1).get(0).getGroup());
+
+        Assert.assertEquals(3, result.get(0).size());
+        Assert.assertEquals("two", result.get(0).get(1).getGroup());
+        Assert.assertEquals("three", result.get(0).get(2).getGroup());
+
+        Assert.assertEquals(3, result.get(1).size());
+        Assert.assertEquals("six", result.get(1).get(1).getGroup());
+        Assert.assertEquals("seven", result.get(1).get(2).getGroup());
+    }
+
+    @Test
+    public void findAllNoMatch()
+    {
+        RegexTool tool = new RegexTool();
+        List<List<RegexResult>> result = tool.findAll("nothing here", "something");
 
         Assert.assertEquals(0, result.size());
     }

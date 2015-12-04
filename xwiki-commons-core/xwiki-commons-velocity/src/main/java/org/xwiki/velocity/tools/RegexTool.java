@@ -110,6 +110,27 @@ public class RegexTool
     }
 
     /**
+     * @param content the content to parse
+     * @param regex the regular expression to look for in the passed content
+     * @return an empty list if the passed regular expression doesn't match the content, several {@link RegexResult}
+     *         objects containing the matched position and matched content for all capturing groups and sub-groups
+     *         otherwise
+     */
+    public List<List<RegexResult>> findAll(String content, String regex)
+    {
+        List<List<RegexResult>> result = new ArrayList<>();
+        Matcher matcher = Pattern.compile(regex, Pattern.MULTILINE).matcher(content);
+        while (matcher.find()) {
+            List<RegexResult> match = new ArrayList<>();
+            for (int i = 0; i < matcher.groupCount() + 1; i++) {
+                match.add(new RegexResult(matcher.start(i), matcher.end(i), matcher.group(i)));
+            }
+            result.add(match);
+        }
+        return result;
+    }
+
+    /**
      * Compiles a regular expression into a java {@code Pattern} object.
      *
      * @param regex the textual representation of the regular expression
