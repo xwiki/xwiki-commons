@@ -26,7 +26,9 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Provides access to some of the static NIO2 Files methods.
@@ -196,6 +198,71 @@ public class NIOTool
     {
         try {
             return Files.newBufferedReader(path, cs);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * See {@link Files#size(Path)}.
+     *
+     * @param path See {@link Files#size(Path)}
+     * @return See {@link Files#size(Path)}
+     */
+    public long size(Path path)
+    {
+        try {
+            return Files.size(path);
+        } catch (IOException e) {
+            return 0L;
+        }
+    }
+
+    /**
+     * See {@link Files#getAttribute(Path, String, LinkOption...)}.
+     *
+     * @param path See {@link Files#getAttribute(Path, String, LinkOption...)}
+     * @param attribute See {@link Files#getAttribute(Path, String, LinkOption...)}
+     * @param options See {@link Files#getAttribute(Path, String, LinkOption...)}
+     * @return See {@link Files#getAttribute(Path, String, LinkOption...)}
+     */
+    public Object getAttribute(Path path, String attribute, LinkOption... options)
+    {
+        try {
+            return Files.getAttribute(path, attribute, options);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * See {@link Files#readAttributes(Path, String, LinkOption...)}.
+     *
+     * @param path See {@link Files#readAttributes(Path, String, LinkOption...)}
+     * @param attributes See {@link Files#readAttributes(Path, String, LinkOption...)}
+     * @param options See {@link Files#readAttributes(Path, String, LinkOption...)}
+     * @return See {@link Files#readAttributes(Path, String, LinkOption...)}
+     */
+    public Map<String, Object> readAttributes(Path path, String attributes, LinkOption... options)
+    {
+        try {
+            return Files.readAttributes(path, attributes, options);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * See {@link Files#getLastModifiedTime(Path, LinkOption...)}.
+     *
+     * @param path See {@link Files#getLastModifiedTime(Path, LinkOption...)}
+     * @param options See {@link Files#getLastModifiedTime(Path, LinkOption...)}
+     * @return See {@link Files#getLastModifiedTime(Path, LinkOption...)}
+     */
+    public FileTime getLastModifiedTime(Path path, LinkOption... options)
+    {
+        try {
+            return Files.getLastModifiedTime(path, options);
         } catch (IOException e) {
             return null;
         }
