@@ -19,8 +19,10 @@
  */
 package org.xwiki.extension;
 
+import java.util.Collection;
 import java.util.Map;
 
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.VersionConstraint;
 
 /**
@@ -40,6 +42,12 @@ public interface ExtensionDependency
      * @return the version constraint of the target extension
      */
     VersionConstraint getVersionConstraint();
+
+    /**
+     * @return the custom repositories provided by the extension (usually to resolve dependencies)
+     * @since 7.3M1
+     */
+    Collection<ExtensionRepositoryDescriptor> getRepositories();
 
     /**
      * Extends {@link ExtensionDependency} standard properties.

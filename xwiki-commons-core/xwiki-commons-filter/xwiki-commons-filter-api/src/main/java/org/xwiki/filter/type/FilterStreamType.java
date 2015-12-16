@@ -40,16 +40,35 @@ public class FilterStreamType implements Comparable<FilterStreamType>
     public static final String DATA_XML = "xml";
 
     /**
+     * Data format identifier for XAR.
+     */
+    public static final String DATA_XAR = "xar";
+
+    /**
      * Generic WIKI XML Syntax.
      */
     public static final FilterStreamType FILTER_XML = new FilterStreamType(SystemType.FILTER, DATA_XML);
 
     /**
-     * The XAR format.
+     * The XAR format in version 1.1.
      *
      * @since 6.2M1
      */
-    public static final FilterStreamType XWIKI_XAR_11 = new FilterStreamType(SystemType.XWIKI, "xar", "1.1");
+    public static final FilterStreamType XWIKI_XAR_11 = new FilterStreamType(SystemType.XWIKI, DATA_XAR, "1.1");
+
+    /**
+     * The XAR format in version 1.2.
+     *
+     * @since 7.2M1
+     */
+    public static final FilterStreamType XWIKI_XAR_12 = new FilterStreamType(SystemType.XWIKI, DATA_XAR, "1.2");
+
+    /**
+     * The XAR format in the current version.
+     *
+     * @since 7.2M1
+     */
+    public static final FilterStreamType XWIKI_XAR_CURRENT = XWIKI_XAR_12;
 
     /**
      * The database stream based on oldcore APIs.

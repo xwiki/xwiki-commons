@@ -22,7 +22,6 @@ package org.xwiki.crypto.params.generator.asymmetric;
 import org.xwiki.crypto.params.generator.KeyGenerationParameters;
 import org.xwiki.crypto.params.generator.KeyParametersGenerationParameters;
 import org.xwiki.crypto.params.generator.symmetric.GenericKeyGenerationParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Parameters for DH key pair generation consistent for use in the MTI/A0 key agreement protocol.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class DHKeyParametersGenerationParameters extends GenericKeyGenerationParameters
     implements KeyParametersGenerationParameters, KeyGenerationParameters
 {

@@ -22,7 +22,6 @@ package org.xwiki.crypto.pkix;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.pkix.params.CertificateGenerationParameters;
 import org.xwiki.crypto.signer.Signer;
-import org.xwiki.stability.Unstable;
 
 /**
  * Factory of Certificate Generator.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4
  */
 @Role
-@Unstable
 public interface CertificateGeneratorFactory
 {
     /**

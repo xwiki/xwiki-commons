@@ -21,15 +21,12 @@ package org.xwiki.crypto.pkix.params;
 
 import java.io.IOException;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Marker interface for unique identifier of a principal.
  *
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public interface PrincipalIndentifier
 {
     /**

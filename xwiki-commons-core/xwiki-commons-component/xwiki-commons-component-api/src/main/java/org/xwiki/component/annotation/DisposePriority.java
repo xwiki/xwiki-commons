@@ -55,7 +55,7 @@ public @interface DisposePriority
     int DEFAULT_PRIORITY = 1000;
 
     /**
-     * The priority to use, knowing that the smaller the value the higher the priority.
+     * @return the priority to use, knowing that the smaller the value the higher the priority.
      */
     int value() default DEFAULT_PRIORITY;
 }

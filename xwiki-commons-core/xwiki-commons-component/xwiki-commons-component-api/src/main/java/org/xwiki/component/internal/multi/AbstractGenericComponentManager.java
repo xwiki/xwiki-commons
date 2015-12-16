@@ -58,9 +58,7 @@ public abstract class AbstractGenericComponentManager extends DelegateComponentM
     @Override
     public ComponentManager getComponentManager()
     {
-        String key = getKey();
-        ComponentManager componentManager =
-            key != null ? this.componentManagerManager.getComponentManager(key, false) : null;
+        ComponentManager componentManager = getComponentManagerInternal();
         if (componentManager == null) {
             // There's no specific Component Manager for the Current Context Component Manager.
             // Redirect to the Parent Component Manager if it exists and if not, then use the Null pattern
@@ -75,18 +73,27 @@ public abstract class AbstractGenericComponentManager extends DelegateComponentM
         return componentManager;
     }
 
+    /**
+     * @since 7.1RC1
+     */
+    protected ComponentManager getComponentManagerInternal()
+    {
+        String key = getKey();
+        return key != null ? this.componentManagerManager.getComponentManager(key, false) : null;
+    }
+
     @Override
     public <T> void registerComponent(ComponentDescriptor<T> componentDescriptor, T componentInstance)
         throws ComponentRepositoryException
     {
         synchronized (this) {
             // Make sure the ComponentManager associated to the current key exists
-            this.componentManagerManager.getComponentManager(getKey(), true);
+            ComponentManager componentManager = this.componentManagerManager.getComponentManager(getKey(), true);
 
             if (componentInstance == null) {
-                super.registerComponent(componentDescriptor);
+                componentManager.registerComponent(componentDescriptor);
             } else {
-                super.registerComponent(componentDescriptor, componentInstance);
+                componentManager.registerComponent(componentDescriptor, componentInstance);
             }
         }
     }

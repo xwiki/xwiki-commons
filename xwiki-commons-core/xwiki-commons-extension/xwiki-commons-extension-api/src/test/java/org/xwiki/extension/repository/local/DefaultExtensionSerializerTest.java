@@ -70,6 +70,7 @@ public class DefaultExtensionSerializerTest
         Assert.assertEquals(extension, unserializedExtension);
         Assert.assertEquals(extension.getDescription(), unserializedExtension.getDescription());
         Assert.assertEquals(extension.getName(), unserializedExtension.getName());
+        Assert.assertEquals(extension.getCategory(), unserializedExtension.getCategory());
         Assert.assertEquals(extension.getSummary(), unserializedExtension.getSummary());
         Assert.assertEquals(extension.getWebSite(), unserializedExtension.getWebSite());
         Assert.assertEquals(extension.getAuthors(), unserializedExtension.getAuthors());
@@ -113,6 +114,8 @@ public class DefaultExtensionSerializerTest
         extension.setSummary("summary");
         extension.setWebsite("website");
         extension.setName("name");
+
+        extension.setCategory("category");
 
         extension.putProperty("key1", "value1");
         extension.putProperty("key2", true);

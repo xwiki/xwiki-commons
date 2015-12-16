@@ -82,4 +82,10 @@ public abstract class AbstractExtensionScmConnection implements ExtensionScmConn
 
         return builder.toHashCode();
     }
+
+    @Override
+    public String toString()
+    {
+        return getSystem() + ':' + getPath();
+    }
 }

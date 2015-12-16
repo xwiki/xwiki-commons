@@ -22,13 +22,15 @@ package org.xwiki.extension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link Extension} implementations.
@@ -109,6 +111,16 @@ public abstract class AbstractExtension implements Extension
     protected ExtensionIssueManagement issueManagement;
 
     /**
+     * @see #getCategory()
+     */
+    protected String category;
+
+    /**
+     * @see #getRepositories()
+     */
+    protected List<ExtensionRepositoryDescriptor> repositories;
+
+    /**
      * The file of the extension.
      */
     protected ExtensionFile file;
@@ -154,10 +166,61 @@ public abstract class AbstractExtension implements Extension
         setWebsite(extension.getWebSite());
         setLicenses(extension.getLicenses());
         setSummary(extension.getSummary());
+        setIssueManagement(extension.getIssueManagement());
+        setScm(extension.getScm());
+        setCategory(extension.getCategory());
 
         setDependencies(extension.getDependencies());
 
         setProperties(extension.getProperties());
+    }
+
+    /**
+     * Get an extension field by name. Fallback on properties.
+     * 
+     * @param fieldName the field name;
+     * @return the field value or null if none could be found
+     */
+    @Override
+    public <T> T get(String fieldName)
+    {
+        switch (fieldName.toLowerCase()) {
+            case FIELD_REPOSITORY:
+                return (T) getRepository();
+            case FIELD_ID:
+                return (T) getId().getId();
+            case FIELD_VERSION:
+                return (T) getId().getVersion();
+            case FIELD_FEATURE:
+            case FIELD_FEATURES:
+                return (T) getFeatures();
+            case FIELD_SUMMARY:
+                return (T) getSummary();
+            case FIELD_DESCRIPTION:
+                return (T) getDescription();
+            case FIELD_AUTHOR:
+            case FIELD_AUTHORS:
+                return (T) getAuthors();
+            case FIELD_CATEGORY:
+                return (T) getCategory();
+            case FIELD_LICENSE:
+            case FIELD_LICENSES:
+                return (T) getLicenses();
+            case FIELD_NAME:
+                return (T) getName();
+            case FIELD_TYPE:
+                return (T) getType();
+            case FIELD_WEBSITE:
+                return (T) getWebSite();
+            case FIELD_SCM:
+                return (T) getScm();
+            case FIELD_REPOSITORIES:
+                return (T) getRepositories();
+
+            default:
+                // Unknown field, probably a property
+                return getProperty(fieldName);
+        }
     }
 
     @Override
@@ -394,7 +457,9 @@ public abstract class AbstractExtension implements Extension
      */
     public void setDependencies(Collection<? extends ExtensionDependency> dependencies)
     {
-        this.dependencies = Collections.unmodifiableList(new ArrayList<ExtensionDependency>(dependencies));
+        this.dependencies =
+            dependencies != null ? Collections.unmodifiableList(new ArrayList<ExtensionDependency>(dependencies))
+                : null;
     }
 
     @Override
@@ -457,15 +522,61 @@ public abstract class AbstractExtension implements Extension
     }
 
     @Override
+    public String getCategory()
+    {
+        return this.category;
+    }
+
+    /**
+     * @param categrory the category of the extension
+     * @since 7.0M2
+     */
+    @Unstable
+    public void setCategory(String categrory)
+    {
+        this.category = categrory;
+    }
+
+    @Override
+    public Collection<ExtensionRepositoryDescriptor> getRepositories()
+    {
+        return this.repositories != null ? this.repositories : Collections.<ExtensionRepositoryDescriptor>emptyList();
+    }
+
+    /**
+     * @param repositories the custom repositories provided by the extension (usually to resolve dependencies)
+     * @since 7.3M1
+     */
+    public void setRepositories(Collection<? extends ExtensionRepositoryDescriptor> repositories)
+    {
+        this.repositories = repositories != null ? Collections.unmodifiableList(new ArrayList<>(repositories)) : null;
+    }
+
+    /**
+     * Add a new repository to the extension.
+     *
+     * @param repository a repository descriptor
+     * @since 7.3M1
+     */
+    public void addRepository(ExtensionRepositoryDescriptor repository)
+    {
+        List<ExtensionRepositoryDescriptor> newrepositories =
+            new ArrayList<ExtensionRepositoryDescriptor>(getRepositories());
+        newrepositories.add(repository);
+
+        this.repositories = Collections.unmodifiableList(newrepositories);
+    }
+
+    @Override
     public Map<String, Object> getProperties()
     {
         return this.properties != null ? this.properties : Collections.<String, Object>emptyMap();
     }
 
     @Override
-    public Object getProperty(String key)
+    public <T> T getProperty(String key)
     {
-        return getProperties().get(key);
+        return (T) getProperties().get(key);
     }
 
     @Override
@@ -483,7 +594,7 @@ public abstract class AbstractExtension implements Extension
      */
     public void putProperty(String key, Object value)
     {
-        Map<String, Object> newProperties = new HashMap<String, Object>(getProperties());
+        Map<String, Object> newProperties = new LinkedHashMap<String, Object>(getProperties());
         newProperties.put(key, value);
 
         this.properties = Collections.unmodifiableMap(newProperties);
@@ -496,7 +607,7 @@ public abstract class AbstractExtension implements Extension
      */
     public void setProperties(Map<String, Object> properties)
     {
-        this.properties = Collections.unmodifiableMap(new HashMap<String, Object>(properties));
+        this.properties = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(properties));
     }
 
     // Object

@@ -85,7 +85,7 @@ public class DefaultUnifiedDiffDisplayer implements UnifiedDiffDisplayer
          *
          * @param previous the previous version used to take the unmodified elements from
          */
-        public State(List<E> previous)
+        State(List<E> previous)
         {
             this.previous = previous;
         }

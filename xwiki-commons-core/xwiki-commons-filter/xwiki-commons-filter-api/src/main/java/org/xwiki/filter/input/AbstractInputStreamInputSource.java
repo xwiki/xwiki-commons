@@ -63,6 +63,6 @@ public abstract class AbstractInputStreamInputSource implements InputStreamInput
     @Override
     public String toString()
     {
-        return this.inputStream != null ? this.inputStream.toString() : null;
+        return this.inputStream != null ? this.inputStream.toString() : super.toString();
     }
 }

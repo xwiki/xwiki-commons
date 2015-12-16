@@ -23,7 +23,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.test.LogRule;
-import org.xwiki.test.LogRule.LogLevel;
 
 /**
  * Unit tests for {@link RestrictParseLocationEventHandler}.

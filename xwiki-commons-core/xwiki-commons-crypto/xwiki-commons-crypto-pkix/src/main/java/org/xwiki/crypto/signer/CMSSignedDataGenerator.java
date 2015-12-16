@@ -24,7 +24,6 @@ import java.security.GeneralSecurityException;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.signer.param.CMSSignedDataGeneratorParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Generate SignedData according to RFC 3852.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @since 6.0M1
  */
 @Role
-@Unstable
 public interface CMSSignedDataGenerator
 {
     /**

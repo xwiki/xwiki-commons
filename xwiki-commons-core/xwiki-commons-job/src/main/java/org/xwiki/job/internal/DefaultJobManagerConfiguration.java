@@ -82,4 +82,10 @@ public class DefaultJobManagerConfiguration implements JobManagerConfiguration
 
         return this.store;
     }
+
+    @Override
+    public int getJobStatusCacheSize()
+    {
+        return this.configuration.get().getProperty("job.statusCacheSize", 50);
+    }
 }

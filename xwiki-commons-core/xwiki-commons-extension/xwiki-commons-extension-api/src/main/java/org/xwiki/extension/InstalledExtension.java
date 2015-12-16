@@ -20,6 +20,9 @@
 package org.xwiki.extension;
 
 import java.util.Collection;
+import java.util.Date;
+
+import org.xwiki.stability.Unstable;
 
 /**
  * Represent a local extension.
@@ -32,31 +35,38 @@ import java.util.Collection;
 public interface InstalledExtension extends LocalExtension
 {
     /**
+     * The prefix that should be used by all custom extension properties that are specific to installed extensions.
+     * 
+     * @since 7.0M2
+     */
+    String PKEY_PREFIX = "installed.";
+
+    /**
      * Custom property key containing {@link #isInstalled()}.
      */
-    String PKEY_INSTALLED = "installed.installed";
+    String PKEY_INSTALLED = PKEY_PREFIX + "installed";
 
     /**
      * Custom property key containing {@link #getNamespaces()}.
      * <p>
      * Since 4.3M1 it's a Map<String, Object>.
      */
-    String PKEY_NAMESPACES = "installed.namespaces";
+    String PKEY_NAMESPACES = PKEY_PREFIX + "namespaces";
 
     /**
      * Custom property key containing {@link #getNamespaces()}.
      */
-    String PKEY_NAMESPACES_NAMESPACE = "installed.namespaces.namespace";
+    String PKEY_NAMESPACES_NAMESPACE = PKEY_NAMESPACES + ".namespace";
 
     /**
      * Custom property key containing {@link #isInstalled(String)}.
      */
-    String PKEY_NAMESPACES_DEPENDENCY = "installed.namespaces.dependency";
+    String PKEY_NAMESPACES_DEPENDENCY = PKEY_NAMESPACES + ".dependency";
 
     /**
      * Custom property key containing {@link #isDependency(String)} with <code>null</code> namespace.
      */
-    String PKEY_DEPENDENCY = "installed.dependency";
+    String PKEY_DEPENDENCY = PKEY_PREFIX + "dependency";
 
     /**
      * @return the actual extension
@@ -103,6 +113,27 @@ public interface InstalledExtension extends LocalExtension
      * @return true if the the extension has been installed only because it was a dependency of another extension
      */
     boolean isDependency(String namespace);
+
+    /**
+     * @param namespace the namespace to look at, {@code null} indicates the root namespace
+     * @return the date when this extension has been installed on the specified namespace, {@code null} if the install
+     *         date is not available or if this extension is not installed on the specified namespace
+     * @since 7.0M2
+     */
+    @Unstable
+    Date getInstallDate(String namespace);
+
+    /**
+     * An installed extension can have different values for its properties depending on the namespace where it is
+     * installed. This method allows us to access the value of a specific extension property on a given namespace.
+     * 
+     * @param key the name of the property to look for
+     * @param namespace the namespace to look at, {@code null} indicates the root namespace
+     * @return the value of the specified extension property on the given namespace
+     * @since 7.0M2
+     */
+    @Unstable
+    Object getNamespaceProperty(String key, String namespace);
 
     // Deprecated
 

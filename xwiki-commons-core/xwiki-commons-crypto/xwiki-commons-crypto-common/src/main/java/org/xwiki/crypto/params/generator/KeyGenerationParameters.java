@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.params.generator;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Key generation parameters marker interface.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public interface KeyGenerationParameters
 {
 }

@@ -24,7 +24,6 @@ import java.util.Collection;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
-import org.xwiki.stability.Unstable;
 
 /**
  * Build a certificate chain for a given certificate and a certificate provider.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @since 6.0M1
  */
 @Role
-@Unstable
 public interface CertificateChainBuilder
 {
     /**

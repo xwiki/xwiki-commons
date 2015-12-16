@@ -22,13 +22,14 @@ package org.xwiki.extension.repository.xwiki.internal;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.xwiki.extension.AbstractExtension;
+import org.xwiki.extension.AbstractRatingExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
@@ -37,16 +38,18 @@ import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.rating.DefaultExtensionRating;
 import org.xwiki.extension.rating.RatingExtension;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionFeature;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionIssueManagement;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRating;
+import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRepository;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.License;
-import org.xwiki.extension.version.internal.DefaultVersionConstraint;
+import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
 
 /**
  * XWiki Repository implementation of {@link org.xwiki.extension.Extension}.
@@ -54,22 +57,17 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
  * @version $Id$
  * @since 4.0M1
  */
-public class XWikiExtension extends AbstractExtension implements RatingExtension
+public class XWikiExtension extends AbstractRatingExtension implements RatingExtension
 {
-    /**
-     * @see #getRating()
-     */
-    protected org.xwiki.extension.rating.ExtensionRating rating;
-
-    public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion extension,
+    public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion restExtension,
         ExtensionLicenseManager licenseManager)
     {
-        super(repository, new ExtensionId(extension.getId(), extension.getVersion()), extension.getType());
+        super(repository, new ExtensionId(restExtension.getId(), restExtension.getVersion()), restExtension.getType());
 
-        setName(extension.getName());
-        setSummary(extension.getSummary());
-        setDescription(extension.getDescription());
-        setWebsite(extension.getWebsite());
+        setName(restExtension.getName());
+        setSummary(restExtension.getSummary());
+        setDescription(restExtension.getDescription());
+        setWebsite(restExtension.getWebsite());
 
         // Features
         for (ExtensionFeature feature : extension.getExtensionFeatures()) {
@@ -78,69 +76,92 @@ public class XWikiExtension extends AbstractExtension implements RatingExtension
         }
 
         // Rating
-        ExtensionRating rating = extension.getRating();
-        if (rating != null) {
-            setRating(new DefaultExtensionRating(rating.getTotalVotes(), rating.getAverageVote(), getRepository()));
+        ExtensionRating restRating = restExtension.getRating();
+        if (restRating != null) {
+            setRating(new DefaultExtensionRating(restRating.getTotalVotes(), restRating.getAverageVote(),
+                getRepository()));
         }
 
         // Authors
-        for (ExtensionAuthor author : extension.getAuthors()) {
+        for (ExtensionAuthor restAuthor : restExtension.getAuthors()) {
             URL url;
             try {
-                url = new URL(author.getUrl());
+                url = new URL(restAuthor.getUrl());
             } catch (MalformedURLException e) {
                 url = null;
             }
 
-            addAuthor(new DefaultExtensionAuthor(author.getName(), url));
+            addAuthor(new DefaultExtensionAuthor(restAuthor.getName(), url));
         }
 
         // License
 
-        for (License license : extension.getLicenses()) {
-            if (license.getName() != null) {
-                ExtensionLicense extensionLicense = licenseManager.getLicense(license.getName());
+        for (License restLicense : restExtension.getLicenses()) {
+            if (restLicense.getName() != null) {
+                ExtensionLicense extensionLicense = licenseManager.getLicense(restLicense.getName());
                 if (extensionLicense != null) {
                     addLicense(extensionLicense);
                 } else {
                     List<String> content = null;
-                    if (license.getContent() != null) {
+                    if (restLicense.getContent() != null) {
                         try {
-                            content = IOUtils.readLines(new StringReader(license.getContent()));
+                            content = IOUtils.readLines(new StringReader(restLicense.getContent()));
                         } catch (IOException e) {
                             // That should never happen
                         }
                     }
 
-                    addLicense(new ExtensionLicense(license.getName(), content));
+                    addLicense(new ExtensionLicense(restLicense.getName(), content));
                 }
             }
         }
 
         // Scm
 
-        ExtensionScm scm = extension.getScm();
-        if (scm != null) {
-            DefaultExtensionScmConnection connection = toDefaultExtensionScmConnection(scm.getConnection());
+        ExtensionScm restSCM = restExtension.getScm();
+        if (restSCM != null) {
+            DefaultExtensionScmConnection connection = toDefaultExtensionScmConnection(restSCM.getConnection());
             DefaultExtensionScmConnection developerConnection =
-                toDefaultExtensionScmConnection(scm.getDeveloperConnection());
+                toDefaultExtensionScmConnection(restSCM.getDeveloperConnection());
 
-            setScm(new DefaultExtensionScm(scm.getUrl(), connection, developerConnection));
+            setScm(new DefaultExtensionScm(restSCM.getUrl(), connection, developerConnection));
         }
 
         // Issue management
 
-        ExtensionIssueManagement issueManagement = extension.getIssueManagement();
-        if (issueManagement != null) {
-            setIssueManagement(new DefaultExtensionIssueManagement(issueManagement.getSystem(),
-                issueManagement.getUrl()));
+        ExtensionIssueManagement restIssueManagement = restExtension.getIssueManagement();
+        if (restIssueManagement != null) {
+            setIssueManagement(new DefaultExtensionIssueManagement(restIssueManagement.getSystem(),
+                restIssueManagement.getUrl()));
+        }
+
+        // Category
+        setCategory(restExtension.getCategory());
+
+        // Properties
+        for (Property restProperty : restExtension.getProperties()) {
+            putProperty(restProperty.getKey(), restProperty.getStringValue());
+        }
+
+        // Make sure the dependency will be resolved in the extension repository first
+        if (repository != null) {
+            addRepository(repository.getDescriptor());
+        }
+
+        // Repositories
+        for (ExtensionRepository restRepository : restExtension.getRepositories()) {
+            try {
+                addRepository(toDefaultExtensionRepositoryDescriptor(restRepository));
+            } catch (URISyntaxException e) {
+                // TODO: Log something ?
+            }
         }
 
         // Dependencies
 
-        for (ExtensionDependency dependency : extension.getDependencies()) {
-            addDependency(new DefaultExtensionDependency(dependency.getId(), new DefaultVersionConstraint(
-                dependency.getConstraint())));
+        for (ExtensionDependency dependency : restExtension.getDependencies()) {
+            addDependency(new XWikiExtensionDependency(dependency, repository != null ? repository.getDescriptor()
+                : null));
         }
 
         // File
@@ -148,7 +169,7 @@ public class XWikiExtension extends AbstractExtension implements RatingExtension
         setFile(new XWikiExtensionFile(repository, getId()));
     }
 
-    private DefaultExtensionScmConnection toDefaultExtensionScmConnection(ExtensionScmConnection connection)
+    protected static DefaultExtensionScmConnection toDefaultExtensionScmConnection(ExtensionScmConnection connection)
     {
         if (connection != null) {
             return new DefaultExtensionScmConnection(connection.getSystem(), connection.getPath());
@@ -157,25 +178,16 @@ public class XWikiExtension extends AbstractExtension implements RatingExtension
         }
     }
 
+    protected static DefaultExtensionRepositoryDescriptor toDefaultExtensionRepositoryDescriptor(
+        ExtensionRepository restRepository) throws URISyntaxException
+    {
+        return new DefaultExtensionRepositoryDescriptor(restRepository.getId(), restRepository.getType(), new URI(
+            restRepository.getUri()));
+    }
+
     @Override
     public XWikiExtensionRepository getRepository()
     {
         return (XWikiExtensionRepository) super.getRepository();
-    }
-
-    // Rating
-
-    @Override
-    public org.xwiki.extension.rating.ExtensionRating getRating()
-    {
-        return this.rating;
-    }
-
-    /**
-     * @param rating an extension's rating
-     */
-    public void setRating(org.xwiki.extension.rating.ExtensionRating rating)
-    {
-        this.rating = rating;
     }
 }

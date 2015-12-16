@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.velocity.tools.generic.ComparisonDateTool;
 import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
@@ -42,10 +41,12 @@ import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
 import org.xwiki.velocity.tools.CollectionsTool;
+import org.xwiki.velocity.tools.ComparisonDateTool;
 import org.xwiki.velocity.tools.EscapeTool;
 import org.xwiki.velocity.tools.JSONTool;
 import org.xwiki.velocity.tools.RegexTool;
 import org.xwiki.velocity.tools.URLTool;
+import org.xwiki.velocity.tools.nio.NIOTool;
 
 /**
  * All configuration options for the Velocity subsystem.
@@ -94,6 +95,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("jsontool", JSONTool.class.getName());
         this.defaultTools.setProperty("urltool", URLTool.class.getName());
         this.defaultTools.setProperty("exceptiontool", ExceptionUtils.class.getName());
+        this.defaultTools.setProperty("niotool", NIOTool.class.getName());
 
         // Default Velocity properties
         this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());

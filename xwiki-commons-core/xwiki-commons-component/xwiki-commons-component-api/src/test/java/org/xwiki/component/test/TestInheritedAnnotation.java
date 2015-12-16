@@ -28,8 +28,6 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Indicate the name of the filter element parameter.
  * 
@@ -40,7 +38,6 @@ import org.xwiki.stability.Unstable;
 @Inherited
 @Retention(RUNTIME)
 @Target({PARAMETER, METHOD })
-@Unstable
 public @interface TestInheritedAnnotation
 {
 }

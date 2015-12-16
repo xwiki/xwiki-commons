@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-tools</artifactId>
   <name>XWiki Commons - Tools - Parent POM</name>
@@ -35,6 +35,7 @@
     <!-- Sorted Alphabetically -->
     <module>xwiki-commons-tool-enforcers</module>
     <module>xwiki-commons-tool-license-resources</module>
+    <module>xwiki-commons-tool-test</module>
     <module>xwiki-commons-tool-verification-resources</module>
     <module>xwiki-commons-tool-xar</module>
   </modules>

@@ -45,7 +45,9 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
-import org.xwiki.extension.repository.result.CollectionIterableResult;
+import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.ExtensionQuery;
+import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
 import org.xwiki.extension.test.TestExtensionHandler;
@@ -362,7 +364,7 @@ public class DefaultInstalledExtensionRepositoryTest
                     .asList(DefaultInstalledExtensionRepositoryTest.this.resources.installedwithfeatureasdependency));
                 put("namespace",
                     Arrays
-                    .asList(DefaultInstalledExtensionRepositoryTest.this.resources.installedonnemspacewithrootdependency));
+                        .asList(DefaultInstalledExtensionRepositoryTest.this.resources.installedonnemspacewithrootdependency));
             }
         }, this.installedExtensionRepository.getBackwardDependencies(TestResources.INSTALLED_ID));
 
@@ -451,74 +453,73 @@ public class DefaultInstalledExtensionRepositoryTest
     @Test
     public void testSearch() throws SearchException
     {
-        CollectionIterableResult<Extension> result =
-            (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 0, -1);
+        IterableResult<Extension> result = this.installedExtensionRepository.search(null, 0, -1);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(7, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search("", 0, -1);
+        result = this.installedExtensionRepository.search("", 0, -1);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(7, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search("extension", 0, -1);
+        result = this.installedExtensionRepository.search("extension", 0, -1);
 
         Assert.assertEquals(3, result.getTotalHits());
         Assert.assertEquals(3, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search("Extension", 0, -1);
+        result = this.installedExtensionRepository.search("Extension", 0, -1);
 
         Assert.assertEquals(3, result.getTotalHits());
         Assert.assertEquals(3, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search("dependency", 0, -1);
+        result = this.installedExtensionRepository.search("dependency", 0, -1);
 
         Assert.assertEquals(3, result.getTotalHits());
         Assert.assertEquals(3, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 0, 0);
+        result = this.installedExtensionRepository.search(null, 0, 0);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(0, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 0, 2);
+        result = this.installedExtensionRepository.search(null, 0, 2);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 0, 1);
+        result = this.installedExtensionRepository.search(null, 0, 1);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(1, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 1, 2);
+        result = this.installedExtensionRepository.search(null, 1, 2);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(1, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, 2, 2);
+        result = this.installedExtensionRepository.search(null, 2, 2);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(2, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, -1, 2);
+        result = this.installedExtensionRepository.search(null, -1, 2);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(2, result.getSize());
         Assert.assertEquals(-1, result.getOffset());
 
-        result = (CollectionIterableResult<Extension>) this.installedExtensionRepository.search(null, -1, 1);
+        result = this.installedExtensionRepository.search(null, -1, 1);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(1, result.getSize());
@@ -526,30 +527,56 @@ public class DefaultInstalledExtensionRepositoryTest
     }
 
     @Test
+    public void testAdvancedSearchWithNullQuery() throws SearchException
+    {
+        ExtensionQuery query = new ExtensionQuery();
+
+        query.addFilter(Extension.FIELD_ID, TestResources.INSTALLED_ID.getId(), COMPARISON.EQUAL);
+
+        IterableResult<Extension> result = this.installedExtensionRepository.search(query);
+
+        Assert.assertEquals(1, result.getTotalHits());
+        Assert.assertEquals(1, result.getSize());
+        Assert.assertEquals(0, result.getOffset());
+        Assert.assertEquals(TestResources.INSTALLED_ID, result.iterator().next().getId());
+    }
+
+    @Test
+    public void testAdvancedSearchInstalledWithNullQuery() throws SearchException
+    {
+        ExtensionQuery query = new ExtensionQuery();
+
+        query.addFilter(Extension.FIELD_ID, TestResources.INSTALLED_ID.getId(), COMPARISON.EQUAL);
+
+        IterableResult<InstalledExtension> result =
+            this.installedExtensionRepository.searchInstalledExtensions(null, query);
+
+        Assert.assertEquals(1, result.getTotalHits());
+        Assert.assertEquals(1, result.getSize());
+        Assert.assertEquals(0, result.getOffset());
+        Assert.assertEquals(TestResources.INSTALLED_ID, result.iterator().next().getId());
+    }
+
+    @Test
     public void testSearchInstalledExtensions() throws SearchException
     {
         // Root namespace
-        CollectionIterableResult<Extension> result =
-            (CollectionIterableResult<Extension>) this.installedExtensionRepository.searchInstalledExtensions(null,
-                null, 0, -1);
+        IterableResult<InstalledExtension> result =
+            this.installedExtensionRepository.searchInstalledExtensions(null, null, 0, -1);
 
         Assert.assertEquals(4, result.getTotalHits());
         Assert.assertEquals(4, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         // Namespace "namespace" + "root"
-        result =
-            (CollectionIterableResult<Extension>) this.installedExtensionRepository.searchInstalledExtensions(null,
-                "namespace", 0, -1);
+        result = this.installedExtensionRepository.searchInstalledExtensions(null, "namespace", 0, -1);
 
         Assert.assertEquals(7, result.getTotalHits());
         Assert.assertEquals(7, result.getSize());
         Assert.assertEquals(0, result.getOffset());
 
         // This namespace does not exist so same as root
-        result =
-            (CollectionIterableResult<Extension>) this.installedExtensionRepository.searchInstalledExtensions(null,
-                "notnamespace", 0, -1);
+        result = this.installedExtensionRepository.searchInstalledExtensions(null, "notnamespace", 0, -1);
 
         Assert.assertEquals(4, result.getTotalHits());
         Assert.assertEquals(4, result.getSize());

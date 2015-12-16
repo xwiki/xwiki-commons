@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.stability.Unstable;
 
 /**
  * Represent an extension.
@@ -32,6 +34,119 @@ import org.xwiki.extension.repository.ExtensionRepository;
  */
 public interface Extension
 {
+    /**
+     * @see #getRepository()
+     * @since 7.0RC1
+     */
+    String FIELD_REPOSITORY = "repository";
+
+    /**
+     * @see #getId()
+     * @since 7.0RC1
+     */
+    String FIELD_ID = "id";
+
+    /**
+     * @see #getId()
+     * @since 7.0RC1
+     */
+    String FIELD_VERSION = "version";
+
+    /**
+     * @see #getFeatures()
+     * @since 7.0RC1
+     */
+    String FIELD_FEATURE = "feature";
+
+    /**
+     * @see #getFeatures()
+     * @since 7.0RC1
+     */
+    String FIELD_FEATURES = "features";
+
+    /**
+     * @see #getSummary()
+     * @since 7.0RC1
+     */
+    String FIELD_SUMMARY = "summary";
+
+    /**
+     * @see #getDescription()
+     * @since 7.0RC1
+     */
+    String FIELD_DESCRIPTION = "description";
+
+    /**
+     * @see #getAuthors()
+     * @since 7.0RC1
+     */
+    String FIELD_AUTHOR = "author";
+
+    /**
+     * @see #getAuthors()
+     * @since 7.0RC1
+     */
+    String FIELD_AUTHORS = "authors";
+
+    /**
+     * @see #getCategory()
+     * @since 7.0RC1
+     */
+    String FIELD_CATEGORY = "category";
+
+    /**
+     * @see #getLicenses()
+     * @since 7.0RC1
+     */
+    String FIELD_LICENSE = "license";
+
+    /**
+     * @see #getLicenses()
+     * @since 7.0RC1
+     */
+    String FIELD_LICENSES = "licenses";
+
+    /**
+     * @see #getName()
+     * @since 7.0RC1
+     */
+    String FIELD_NAME = "name";
+
+    /**
+     * @see #getType()
+     * @since 7.0RC1
+     */
+    String FIELD_TYPE = "type";
+
+    /**
+     * @see #getWebSite()
+     * @since 7.0RC1
+     */
+    String FIELD_WEBSITE = "website";
+
+    /**
+     * @see #getScm()
+     * @since 7.0RC1
+     */
+    String FIELD_SCM = "scm";
+
+    /**
+     * @see #getRepositories()
+     * @since 7.3M1
+     */
+    String FIELD_REPOSITORIES = "repositories";
+
+    /**
+     * Get an extension field (name, summary, id, etc.) by name. Fallback on properties.
+     * 
+     * @param <T> type of the field value
+     * @param fieldName the field name;
+     * @return the field value or null if none could be found
+     * @since 7.0RC1
+     */
+    @Unstable
+    <T> T get(String fieldName);
+
     /**
      * @return the id/version combination which makes the extension unique
      */
@@ -120,6 +235,19 @@ public interface Extension
      */
     ExtensionIssueManagement getIssueManagement();
 
+    /**
+     * @return the category of the extension
+     * @since 7.0M2
+     */
+    @Unstable
+    String getCategory();
+
+    /**
+     * @return the custom repositories provided by the extension (usually to resolve dependencies)
+     * @since 7.3M1
+     */
+    Collection<ExtensionRepositoryDescriptor> getRepositories();
+
     // Custom properties
 
     /**
@@ -133,10 +261,11 @@ public interface Extension
     Map<String, Object> getProperties();
 
     /**
+     * @param <T> type of the property value
      * @param key the property key
      * @return the property value
      */
-    Object getProperty(String key);
+    <T> T getProperty(String key);
 
     /**
      * Get a property.

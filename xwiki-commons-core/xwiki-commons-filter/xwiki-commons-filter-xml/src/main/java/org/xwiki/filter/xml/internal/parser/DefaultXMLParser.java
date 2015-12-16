@@ -385,7 +385,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             // push new event
             Block block = getBlock(qName, attributes);
 
-            currentBlock = this.blockStack.push(block);
+            this.blockStack.push(block);
 
             if (!block.isContainer() && block.filterElement != null && block.filterElement.getParameters().length > 0) {
                 this.content = new StringBuilder();

@@ -157,7 +157,7 @@ public class ComponentAnnotationLoader
                 Class<?> componentClass;
                 try {
                     componentClass = classLoader.loadClass(componentDeclaration.getImplementationClassName());
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     throw new RuntimeException(
                         String.format("Failed to load component class [%s] for annotation parsing",
                             componentDeclaration.getImplementationClassName()), e);
@@ -240,7 +240,7 @@ public class ComponentAnnotationLoader
             } catch (ClassNotFoundException e) {
                 getLogger().warn("Can't find any existing component with class [{}]. Ignoring it.",
                     componentDeclaration.getImplementationClassName());
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 getLogger().warn("Fail to load component implementation class [{}]. Ignoring it.",
                     componentDeclaration.getImplementationClassName(), e);
             }
@@ -371,7 +371,7 @@ public class ComponentAnnotationLoader
         Type[] interfaceTypes;
         try {
             interfaceTypes = componentClass.getGenericInterfaces();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new RuntimeException(String.format("Failed to get interface for [%s]", componentClass.getName()), e);
         }
         return interfaceTypes;

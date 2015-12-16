@@ -85,7 +85,7 @@ public class DefaultObservationManager implements ObservationManager
         /**
          * Events of a given type associated with a given listener.
          */
-        private List<Event> events = new ArrayList<Event>();
+        private List<Event> events = new ArrayList<>();
 
         /**
          * Listener associated with the events.
@@ -155,8 +155,8 @@ public class DefaultObservationManager implements ObservationManager
     private synchronized void initializeListeners()
     {
         if (this.listenersByName == null) {
-            this.listenersByEvent = new ConcurrentHashMap<Class<? extends Event>, Map<String, RegisteredListener>>();
-            this.listenersByName = new ConcurrentHashMap<String, EventListener>();
+            this.listenersByEvent = new ConcurrentHashMap<>();
+            this.listenersByName = new ConcurrentHashMap<>();
 
             // Can be null in unit tests
             if (this.componentManager != null) {
@@ -233,7 +233,7 @@ public class DefaultObservationManager implements ObservationManager
     {
         Map<String, RegisteredListener> listeners = getListenersByEvent().get(event.getClass());
         if (listeners == null) {
-            listeners = new ConcurrentHashMap<String, RegisteredListener>();
+            listeners = new ConcurrentHashMap<>();
             this.listenersByEvent.put(event.getClass(), listeners);
         }
         RegisteredListener listener = listeners.get(listenerName);

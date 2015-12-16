@@ -27,7 +27,6 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.pkix.CertificateProvider;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
 import org.xwiki.crypto.signer.param.CMSSignedDataVerified;
-import org.xwiki.stability.Unstable;
 
 /**
  * Verify SignedData according to RFC 3852.
@@ -36,7 +35,6 @@ import org.xwiki.stability.Unstable;
  * @since 6.0M1
  */
 @Role
-@Unstable
 public interface CMSSignedDataVerifier
 {
     /**

@@ -19,16 +19,14 @@
  */
 package org.xwiki.filter.annotation;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import org.xwiki.stability.Unstable;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Indicate the name of the filter element parameter.
@@ -40,11 +38,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Inherited
 @Retention(RUNTIME)
 @Target({ PARAMETER, METHOD })
-@Unstable
 public @interface Name
 {
     /**
-     * The name of the parameter.
+     * @return the name of the parameter.
      */
     String value();
 }

@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-extension-repositories</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-extension-repository-maven</artifactId>
   <name>XWiki Commons - Extension - Repository - Maven</name>
@@ -33,11 +33,13 @@
   <description>Allows accessing extensions located in a Maven repository</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.68</xwiki.jacoco.instructionRatio>
-    <aether.version>0.9.1.v20140329</aether.version>
+    <aether.version>1.0.2.v20150114</aether.version>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-aether,org.xwiki.commons:xwiki-commons-extension-repository-maven</xwiki.extension.features>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Extension Repository Connector - Maven</xwiki.extension.name>
+    <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
+    <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
   </properties>
   <dependencies>
     <dependency>
@@ -55,7 +57,6 @@
       <artifactId>xwiki-commons-extension-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <!-- Aether -->
     <dependency>
       <groupId>org.eclipse.aether</groupId>
@@ -92,33 +93,35 @@
       <artifactId>aether-transport-wagon</artifactId>
       <version>${aether.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-aether-provider</artifactId>
       <version>${maven.version}</version>
-      <exclusions>
-        <!-- This version of asm is not compatible with the version used is
-         others XWiki modules and we don't really need it anyway -->
-        <exclusion>
-          <artifactId>asm</artifactId>
-          <groupId>asm</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <version>0.2.1</version>
+      <version>0.3.2</version>
+      <exclusions>
+        <!-- This dependency is now deprecated and replaced by annotation-api. -->
+        <exclusion>
+          <groupId>javax.annotation</groupId>
+          <artifactId>jsr250-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Explicitly depending on it since we've excluded the deprecated package above and we want
+         the other dependencies that were working with jsr250-api to still work properly.  -->
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-guice</artifactId>
-      <version>3.2.4</version>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>4.0</version>
       <classifier>no_aop</classifier>
     </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -130,7 +133,7 @@
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock</artifactId>
-      <version>1.46</version>
+      <version>1.54</version>
       <scope>test</scope>
       <exclusions>
         <!-- We are using SLF4J -->
@@ -147,7 +150,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>

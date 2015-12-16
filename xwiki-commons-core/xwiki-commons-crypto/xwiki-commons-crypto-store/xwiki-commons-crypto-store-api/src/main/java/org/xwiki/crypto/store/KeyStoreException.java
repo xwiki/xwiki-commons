@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.store;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Exception thrown by the {@link org.xwiki.crypto.store.KeyStore}.
  *
  * @version $Id$
  * @since 6.1M2
  */
-@Unstable
 public class KeyStoreException extends Exception
 {
     private static final long serialVersionUID = -2977947971178390553L;

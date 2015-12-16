@@ -41,6 +41,8 @@ import org.xwiki.management.JMXBeanRegistration;
 @Singleton
 public class DefaultJMXBeanRegistration implements JMXBeanRegistration
 {
+    private static final String OBJECTNAME_PREFIX = "org.xwiki:";
+
     /**
      * The logger to use for logging.
      */
@@ -53,12 +55,28 @@ public class DefaultJMXBeanRegistration implements JMXBeanRegistration
         // Make sure we never fail since XWiki should execute correctly even if there's no MBean Server running.
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            ObjectName oname = new ObjectName("org.xwiki:" + name);
+            ObjectName oname = new ObjectName(OBJECTNAME_PREFIX + name);
             mbs.registerMBean(mbean, oname);
             this.logger.debug("Registered resource with name [{}]", name);
         } catch (Exception e) {
             // Failed to register the MBean, log a warning
             this.logger.warn("Failed to register resource with name [{}]. Reason = [{}]", name,
+                ExceptionUtils.getMessage(e));
+        }
+    }
+
+    @Override
+    public void unregisterMBean(String name)
+    {
+        // Make sure we never fail since XWiki should execute correctly even if it fail to unregister some MBean
+        try {
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            ObjectName oname = new ObjectName(OBJECTNAME_PREFIX + name);
+            mbs.unregisterMBean(oname);
+            this.logger.debug("Unregistered resource with name [{}]", name);
+        } catch (Exception e) {
+            // Failed to unregister the MBean, log a warning
+            this.logger.warn("Failed to unregister resource with name [{}]. Reason = [{}]", name,
                 ExceptionUtils.getMessage(e));
         }
     }

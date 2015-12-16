@@ -51,6 +51,17 @@ public class DefaultExtensionDependency extends AbstractExtensionDependency
     }
 
     /**
+     * Create new instance by cloning the provided one.
+     *
+     * @param dependency the extension dependency to copy
+     * @since 7.3M1
+     */
+    public DefaultExtensionDependency(ExtensionDependency dependency)
+    {
+        super(dependency);
+    }
+
+    /**
      * Create new instance by cloning the provided one with different version constraint.
      *
      * @param dependency the extension dependency to copy

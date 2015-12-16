@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.params.cipher.asymmetric;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * An asymmetric key pair.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class AsymmetricKeyPair
 {
     private final PrivateKeyParameters privateKey;

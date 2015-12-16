@@ -25,13 +25,17 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-pom</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
     <relativePath>../xwiki-commons-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-core</artifactId>
   <name>XWiki Commons - Core - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Core - Parent POM</description>
+  <properties>
+    <!-- By default check that unit tests don't output anything to the console -->
+    <xwiki.surefire.captureconsole.skip>false</xwiki.surefire.captureconsole.skip>
+  </properties>
   <modules>
     <!-- Sorted Alphabetically -->
     <module>xwiki-commons-blame</module>
@@ -52,7 +56,6 @@
     <module>xwiki-commons-properties</module>
     <module>xwiki-commons-script</module>
     <module>xwiki-commons-stability</module>
-    <module>xwiki-commons-test</module>
     <module>xwiki-commons-text</module>
     <module>xwiki-commons-velocity</module>
     <module>xwiki-commons-xml</module>
@@ -178,22 +181,21 @@
               IRC Bot application in a subwiki</justification>
             </difference>
 
-            See http://mojo.codehaus.org/clirr-maven-plugin/examples/ignored-differences.html
+            See http://www.mojohaus.org/clirr-maven-plugin/examples/ignored-differences.html
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
             <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/velocity/VelocityFactory</className>
-              <method>org.xwiki.velocity.VelocityEngine removeVelocityEngine(java.lang.String)</method>
-              <justification>It's very unlikely that this class is implemented by anything else and it does not make much sense to not have this method, since this is not really a cache behind it but a Map that keep 
-              engines forever it may create a memory leak on a big farm running for a long time</justification>
+              <differenceType>5001</differenceType>
+              <className>org/xwiki/extension/job/history/ReplayJobStatus</className>
+              <to>org/xwiki/job/internal/AbstractJobStatus</to>
+              <justification>Was wrongly extending internal class</justification>
             </difference>
             <difference>
-              <differenceType>7012</differenceType>
-              <className>org/xwiki/component/annotation/Component</className>
-              <method>boolean staticRegistration()</method>
-              <justification>This shouldn't be a backward incompatible change since it's a method addition on an Annotation.</justification>
+              <differenceType>5001</differenceType>
+              <className>org/xwiki/extension/job/history/ReplayJobStatus</className>
+              <to>org/xwiki/job/internal/DefaultJobStatus</to>
+              <justification>Was wrongly extending internal class</justification>
             </difference>
           </ignored>
           <excludes>
@@ -202,6 +204,34 @@
             <!-- Remove the following excludes after we release the current version as final -->
           </excludes>
         </configuration>
+      </plugin>
+      <!-- Verify that unit tests don't output anything to stdout/stderr -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemProperties combine.children="append">
+            <!-- This property makes it simple for some module to exclude the check (for example for functional
+                 tests) -->
+            <property>
+              <name>xwiki.surefire.captureconsole.skip</name>
+              <value>${xwiki.surefire.captureconsole.skip}</value>
+            </property>
+          </systemProperties>
+          <properties>
+            <property>
+              <name>listener</name>
+              <value>org.xwiki.test.CaptureConsoleRunListener</value>
+            </property>
+          </properties>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-tool-test-simple</artifactId>
+            <version>${project.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -212,6 +242,14 @@
       <modules>
         <module>xwiki-commons-legacy</module>
       </modules>
+    </profile>
+    <profile>
+      <id>clover</id>
+      <properties>
+        <!-- Don't check that unit tests don't output anything to the console since for example Clover will output
+             messages such as "Updating existing database at '...'." during tests! -->
+        <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
+      </properties>
     </profile>
   </profiles>
 </project>

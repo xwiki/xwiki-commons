@@ -34,16 +34,16 @@ public class SafeXStream extends XStream
      */
     public SafeXStream()
     {
-        // Ovewrite default reflection converter
+        // Overwrite default reflection converter to skip unserializable types
         registerConverter(new SafeReflectionConverter(this), PRIORITY_VERY_LOW);
+
+        // Cleaner array serialization
+        registerConverter(new SafeArrayConverter(this));
 
         // We don't care if some field from the XML does not exist anymore
         ignoreUnknownElements();
 
-        // Bulletproofing array elements unserialization
-        registerConverter(new SafeArrayConverter(this));
-
         // Protect reflection based marshalling/unmarshalling
-        setMarshallingStrategy(new SafeTreeMarshallingStrategy(this));
+        setMarshallingStrategy(new SafeTreeMarshallingStrategy());
     }
 }

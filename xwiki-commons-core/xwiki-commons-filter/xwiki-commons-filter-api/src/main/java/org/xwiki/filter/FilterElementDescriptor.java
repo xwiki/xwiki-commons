@@ -23,8 +23,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * An element of the filter.
  * <p>
@@ -34,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.2M1
  */
-@Unstable
 public class FilterElementDescriptor
 {
     /**

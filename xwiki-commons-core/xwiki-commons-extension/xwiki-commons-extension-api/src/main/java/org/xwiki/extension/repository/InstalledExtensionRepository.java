@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -32,8 +31,10 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
+import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.repository.search.Searchable;
+import org.xwiki.stability.Unstable;
 
 /**
  * A repository containing installed extension.
@@ -44,8 +45,7 @@ import org.xwiki.extension.repository.search.Searchable;
  * @since 4.0M2
  */
 @Role
-// TODO: move all installation related code from local repository to here
-public interface InstalledExtensionRepository extends ExtensionRepository, Searchable
+public interface InstalledExtensionRepository extends ExtensionRepository, AdvancedSearchable
 {
     /**
      * @return the number of local extensions
@@ -92,6 +92,21 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
      */
     InstalledExtension installExtension(LocalExtension extension, String namespace, boolean dependency)
         throws InstallException;
+
+    /**
+     * Indicate that the provided extension is installed in the specified namespace with the given properties.
+     * 
+     * @param extension the extension to install
+     * @param namespace the namespace in which the extension is installed
+     * @param dependency indicate if the installed extension is stored as a dependency of another extension
+     * @param properties the custom properties to set on the installed extension for the specified namespace
+     * @return the new {@link InstalledExtension}
+     * @throws InstallException error when trying to install provided extension
+     * @since 7.0M2
+     */
+    @Unstable
+    InstalledExtension installExtension(LocalExtension extension, String namespace, boolean dependency,
+        Map<String, Object> properties) throws InstallException;
 
     /**
      * Return extension descriptor from the repository. If the extension can't be found <code>null</code> is returned.
@@ -159,6 +174,19 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Searc
      * @throws SearchException error when trying to search provided pattern
      * @since 5.3M1
      */
-    IterableResult<Extension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
+    IterableResult<InstalledExtension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
+        throws SearchException;
+
+    /**
+     * Search installed extensions based of the provided query and only in the passed namespace.
+     *
+     * @param namespace the namespace where to search
+     * @param query the extension query used to filter and order the result
+     * @return the found extensions descriptors, empty list if nothing could be found
+     * @throws SearchException error when trying to search provided pattern
+     * @since 7.0M2
+     */
+    @Unstable
+    IterableResult<InstalledExtension> searchInstalledExtensions(String namespace, ExtensionQuery query)
         throws SearchException;
 }

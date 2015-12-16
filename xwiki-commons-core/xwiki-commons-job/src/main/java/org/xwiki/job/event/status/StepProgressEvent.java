@@ -19,19 +19,27 @@
  */
 package org.xwiki.job.event.status;
 
-import org.xwiki.observation.event.Event;
-
 /**
  * Indicate to the progress listener that a new step is starting.
+ * <p>
+ * The event also send the following parameters:
+ * </p>
+ * <ul>
+ * <li>source: whoever sent the event</li>
+ * <li>data: null</li>
+ * </ul>
  *
  * @version $Id$
  * @since 4.0M1
+ * @deprecated since 7.1M2, use {@link StartStepProgressEvent} instead
  */
-public class StepProgressEvent implements Event
+@Deprecated
+public class StepProgressEvent extends AbstractProgressEvent
 {
-    @Override
-    public boolean matches(Object arg0)
-    {
-        return true;
-    }
+    /**
+     * Unique instance of {@link StepProgressEvent}.
+     * 
+     * @since 7.1M2
+     */
+    public static final StepProgressEvent INSTANCE = new StepProgressEvent();
 }

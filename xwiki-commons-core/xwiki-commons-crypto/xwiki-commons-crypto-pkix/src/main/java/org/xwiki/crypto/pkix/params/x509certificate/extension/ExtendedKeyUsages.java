@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bouncycastle.asn1.x509.Extension;
-import org.xwiki.stability.Unstable;
 
 /**
  * Extended Key Usage.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public class ExtendedKeyUsages
 {
     /** OID of ExtendedKeyUsage. */

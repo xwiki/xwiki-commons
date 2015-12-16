@@ -24,7 +24,6 @@ import java.io.IOException;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.xwiki.crypto.pkix.internal.BcPrincipalIdentifier;
 import org.xwiki.crypto.pkix.params.PrincipalIndentifier;
-import org.xwiki.stability.Unstable;
 
 /**
  * Represent a Principal distinguished name.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public class DistinguishedName implements PrincipalIndentifier, BcPrincipalIdentifier
 {
     private final X500Name dn;

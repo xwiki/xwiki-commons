@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-repository</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-repository-api</artifactId>
   <name>XWiki Commons - Repository - API</name>
@@ -45,7 +45,7 @@
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-simple</artifactId>
+      <artifactId>xwiki-commons-tool-test-simple</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

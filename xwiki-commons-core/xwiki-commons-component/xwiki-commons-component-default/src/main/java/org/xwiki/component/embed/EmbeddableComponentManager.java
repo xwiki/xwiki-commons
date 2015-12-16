@@ -309,40 +309,7 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             // TODO: Handle dependency cycles
 
             // Handle different field types
-            Object fieldValue;
-
-            // Step 1: Verify if there's a Provider registered for the field type
-            // - A Provider is a component like any other (except it cannot have a field produced by itself!)
-            // - A Provider must implement the JSR330 Producer interface
-            //
-            // Step 2: Handle Logger injection.
-            //
-            // Step 3: No producer found, handle scalar and collection types by looking up standard component
-            // implementations.
-
-            Class<?> dependencyRoleClass = ReflectionUtils.getTypeClass(dependency.getRoleType());
-
-            if (dependencyRoleClass.isAssignableFrom(Logger.class)) {
-                fieldValue = createLogger(instance.getClass());
-            } else if (dependencyRoleClass.isAssignableFrom(List.class)) {
-                fieldValue = getInstanceList(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
-            } else if (dependencyRoleClass.isAssignableFrom(Map.class)) {
-                fieldValue = getInstanceMap(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
-            } else if (dependencyRoleClass.isAssignableFrom(Provider.class)) {
-                // Check if there's a Provider registered for the type
-                if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
-                    fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
-                } else {
-                    fieldValue =
-                        new GenericProvider<>(this, new RoleHint<>(
-                            ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()),
-                            dependency.getRoleHint()));
-                }
-            } else if (dependencyRoleClass.isAssignableFrom(ComponentDescriptor.class)) {
-                fieldValue = new DefaultComponentDescriptor(descriptor);
-            } else {
-                fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
-            }
+            Object fieldValue = getDependencyInstance(descriptor, instance, dependency);
 
             // Set the field by introspection
             if (fieldValue != null) {
@@ -356,6 +323,53 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         }
 
         return instance;
+    }
+
+    protected Object getDependencyInstance(ComponentDescriptor<?> descriptor, Object parentInstance,
+        ComponentDependency<?> dependency) throws ComponentLookupException
+    {
+        // TODO: Handle dependency cycles
+
+        // Handle different field types
+        Object fieldValue;
+
+        // Step 1: Verify if there's a Provider registered for the field type
+        // - A Provider is a component like any other (except it cannot have a field produced by itself!)
+        // - A Provider must implement the JSR330 Producer interface
+        //
+        // Step 2: Handle Logger injection.
+        //
+        // Step 3: No producer found, handle scalar and collection types by looking up standard component
+        // implementations.
+
+        Class<?> dependencyRoleClass = ReflectionUtils.getTypeClass(dependency.getRoleType());
+
+        if (dependencyRoleClass.isAssignableFrom(Logger.class)) {
+            fieldValue = createLogger(parentInstance.getClass());
+        } else if (dependencyRoleClass.isAssignableFrom(List.class)) {
+            fieldValue = getInstanceList(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
+        } else if (dependencyRoleClass.isAssignableFrom(Map.class)) {
+            fieldValue = getInstanceMap(ReflectionUtils.getLastTypeGenericArgument(dependency.getRoleType()));
+        } else if (dependencyRoleClass.isAssignableFrom(Provider.class)) {
+            // Check if there's a Provider registered for the type
+            if (hasComponent(dependency.getRoleType(), dependency.getRoleHint())) {
+                fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
+            } else {
+                fieldValue = createGenericProvider(descriptor, dependency);
+            }
+        } else if (dependencyRoleClass.isAssignableFrom(ComponentDescriptor.class)) {
+            fieldValue = new DefaultComponentDescriptor(descriptor);
+        } else {
+            fieldValue = getInstance(dependency.getRoleType(), dependency.getRoleHint());
+        }
+
+        return fieldValue;
+    }
+
+    protected Provider<?> createGenericProvider(ComponentDescriptor<?> descriptor, ComponentDependency<?> dependency)
+    {
+        return new GenericProvider<>(this, new RoleHint<>(ReflectionUtils.getLastTypeGenericArgument(dependency
+            .getRoleType()), dependency.getRoleHint()));
     }
 
     /**
@@ -639,7 +653,9 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
             synchronized (componentEntry) {
                 Object instance = componentEntry.instance;
 
-                if (instance instanceof Disposable) {
+                // Protection to prevent infinite recursion in case a component implementation points to this
+                // instance.
+                if (instance instanceof Disposable && componentEntry.instance != this) {
                     try {
                         SHUTDOWN_LOGGER.debug("Disposing component [{}]...", instance.getClass().getName());
                         ((Disposable) instance).dispose();

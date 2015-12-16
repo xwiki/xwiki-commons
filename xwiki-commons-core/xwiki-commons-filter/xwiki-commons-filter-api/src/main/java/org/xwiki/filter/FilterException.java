@@ -19,7 +19,6 @@
  */
 package org.xwiki.filter;
 
-import org.xwiki.stability.Unstable;
 
 /**
  * Encapsulates filters errors.
@@ -27,7 +26,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.2M2
  */
-@Unstable
 public class FilterException extends Exception
 {
     /**

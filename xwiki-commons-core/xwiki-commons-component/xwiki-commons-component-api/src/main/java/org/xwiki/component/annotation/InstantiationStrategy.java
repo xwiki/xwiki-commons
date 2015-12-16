@@ -42,7 +42,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface InstantiationStrategy
 {
     /**
-     * The instantiation strategy to use, see {@link ComponentInstantiationStrategy}.
+     * @return the instantiation strategy to use, see {@link ComponentInstantiationStrategy}.
      */
     ComponentInstantiationStrategy value();
 }

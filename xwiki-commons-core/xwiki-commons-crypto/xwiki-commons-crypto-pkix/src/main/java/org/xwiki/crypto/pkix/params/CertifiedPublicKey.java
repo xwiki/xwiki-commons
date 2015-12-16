@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Certified binding of a principal to a public key.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public interface CertifiedPublicKey
 {
     /**

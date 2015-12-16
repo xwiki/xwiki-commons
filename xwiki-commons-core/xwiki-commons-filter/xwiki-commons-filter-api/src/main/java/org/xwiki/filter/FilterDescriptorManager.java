@@ -20,7 +20,6 @@
 package org.xwiki.filter;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Manager {@link FilterDescriptor} related to classes.
@@ -29,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.2M1
  */
 @Role
-@Unstable
 public interface FilterDescriptorManager
 {
     /**

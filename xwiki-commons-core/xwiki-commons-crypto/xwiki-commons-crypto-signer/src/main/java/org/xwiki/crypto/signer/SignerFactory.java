@@ -21,7 +21,6 @@ package org.xwiki.crypto.signer;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.params.cipher.CipherParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Factory creating signer for signing and verifying data integrity.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4RC1
  */
 @Role
-@Unstable
 public interface SignerFactory
 {
     /**

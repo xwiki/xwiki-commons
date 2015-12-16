@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.params.generator.asymmetric;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Validation parameters for DH key.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class DHKeyValidationParameters
 {
     private final int counter;

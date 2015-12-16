@@ -64,13 +64,15 @@ import static org.junit.Assert.assertThat;
     BcPBES2CipherFactory.class, BcRSAKeyFactory.class, DefaultKeyFactory.class, DefaultSecureRandomProvider.class})
 public class DefaultPrivateKeyPasswordBasedEncryptorTest
 {
+    private static final boolean IS_JRE_8 = System.getProperty("java.specification.version").equals("1.8");
     private static final byte[] PASSWORD = PasswordToByteConverter.convert("changeit");
 
     /**
      * Sample RSA KEY and encrypted versions taken from not-yet-commons-ssl source code.
      */
     private static final byte[] RSAKEY = Base64.decode(
-        "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDIY6+Wgj6MqdEd\n"
+        // Link to decoded ASN.1: http://goo.gl/A764Ec
+        "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDIY6+Wgj6MqdEd"
             + "Yq6FgH5xMgTBmFqAonR/eshjxY2C6MHs+WmCmNSDik2NgZWIaODvOF9uOEK2U0Zf"
             + "JEG2LcZxoeIEgg/mfII2f4DLy1JYajm/llzwFBzAd/Rkcs3qwP2ba5VKn/pSqNLl"
             + "nKHMXkXO+9SjfHDx95x2dK1dB8eGQGculOMcTm3uK7UlWNO4TSlwG9qHZ1aoM3GI"
@@ -116,7 +118,14 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     private void runTestPBES2Conformance(String hint, String iv, int keySize, String salt, byte[] data) throws Exception
     {
         assertThat(this.encryptor.decrypt(PASSWORD, data).getEncoded(), equalTo(RSAKEY));
-        assertThat(this.encryptor.decrypt(PASSWORD, new EncryptedPrivateKeyInfo(data)).getEncoded(), equalTo(RSAKEY));
+
+        // The JCE distributed with Java 8 seems to not properly support PKCS#8 decoding of encrypted private key
+        // using the PBES2 password based encryption scheme defined in PKCS#5.
+        // See https://bugs.openjdk.java.net/browse/JDK-8076999.
+        if (!IS_JRE_8) {
+            assertThat(this.encryptor.decrypt(PASSWORD, new EncryptedPrivateKeyInfo(data)).getEncoded(),
+                equalTo(RSAKEY));
+        }
 
         assertThat(this.encryptor.encrypt(hint,
             new KeyWithIVParameters(PASSWORD, Hex.decode(iv)),
@@ -128,6 +137,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     public void testPBES2ConformanceTestDes() throws Exception
     {
         byte[] data = Base64.decode(
+            // Link to decoded ASN.1: http://goo.gl/QntPCq
             "MIIFCzA9BgkqhkiG9w0BBQ0wMDAbBgkqhkiG9w0BBQwwDgQIGBflqeZFz8sCAggA"
                 + "MBEGBSsOAwIHBAgLbTq8mvQ7QASCBMhUPEBJHO0Uvu4bW2bfb0NIvczMuPbFQDQC"
                 + "GnmzPGsa6vLcE+z61rBmPLOT45ZWcbTf867wh0e0KKFERkDh70lgenwYACRcefoE"
@@ -163,6 +173,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     public void testPBES2ConformanceTestDesEde3() throws Exception
     {
         byte[] data = Base64.decode(
+            // Link to decoded ASN.1: http://goo.gl/K0OByU
             "MIIFDjBABgkqhkiG9w0BBQ0wMzAbBgkqhkiG9w0BBQwwDgQIqpcsbmHTx+gCAggA"
                 + "MBQGCCqGSIb3DQMHBAiEYtVFOafp9ASCBMhnk03sYcXPAU1eYthAr8vueotiNFFr"
                 + "xpbIbhB2cjC/bXd39GxyH/8X36KjVMuBJxFknY630SOBsdTn/H7lN/G8c+fEYTcq"
@@ -199,6 +210,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     public void testPBES2ConformanceTestRC2() throws Exception
     {
         byte[] data = Base64.decode(
+            // Link to decoded ASN.1: http://goo.gl/ILq0Ml
             "MIIFFjBIBgkqhkiG9w0BBQ0wOzAeBgkqhkiG9w0BBQwwEQQI4aRQrNlj6ZECAggA"
                 + "AgEQMBkGCCqGSIb3DQMCMA0CAToECG8qyWz/E/DoBIIEyFBBZXtbGNaIuDvM/J1u"
                 + "l8gKw+zfurof6G7BSxefE8zuVFVhRXc7MnLQml97awOeEzvnGC7y61JELsZ7ROqa"
@@ -235,6 +247,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     public void testPBES2ConformanceTestBlowfish() throws Exception
     {
         byte[] data = Base64.decode(
+            // Link to decoded ASN.1: http://goo.gl/HusnVz
             "MIIFDzBBBgkqhkiG9w0BBQ0wNDAbBgkqhkiG9w0BBQwwDgQI+SHyL0TmEd4CAggA"
                 + "MBUGCSsGAQQBl1UBAgQIe5OfjWHHpAMEggTIr/Ma8RAEsq65a1K/AooVkDgwtqRD"
                 + "Q6A5Wx5LOvXRvQ4RLd11ham+GCWxHKWHeMTnLLrW2gQyDdEvMPtM0TRoGmm31npu"
@@ -271,6 +284,7 @@ public class DefaultPrivateKeyPasswordBasedEncryptorTest
     public void testPBES2ConformanceTestAES128() throws Exception
     {
         byte[] data = Base64.decode(
+            // Link to decoded ASN.1: http://goo.gl/ab79VG
             "MIIFHzBJBgkqhkiG9w0BBQ0wPDAbBgkqhkiG9w0BBQwwDgQImXjLGxzpmkwCAggA"
                 + "MB0GCWCGSAFlAwQBAgQQf6Bn85WfZh3mHP1w0yubaQSCBNCS2Rvfoebwb7/sIbN4"
                 + "uBS2v30Q/fOtUsqbo0JGjJEZ2Qe0kRDoXlDdf+tk2dQaI7tdjhxCcIeJOuiV0qJ6"

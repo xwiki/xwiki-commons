@@ -41,7 +41,9 @@ public final class ObjectUtils
      * @param object1 the first object
      * @param object2 the second object
      * @return true of the provided objects are equal
+     * @deprecated use {@link java.util.Objects#equals(Object, Object)} instead
      */
+    @Deprecated
     public static boolean equals(Object object1, Object object2)
     {
         if (object1 == object2) {
@@ -58,7 +60,9 @@ public final class ObjectUtils
     /**
      * @param object the object
      * @return the provided object hash code or 0 of the object is null
+     * @deprecated use {@link java.util.Objects#hashCode(Object)} instead
      */
+    @Deprecated
     public static int hasCode(Object object)
     {
         return object == null ? 0 : object.hashCode();

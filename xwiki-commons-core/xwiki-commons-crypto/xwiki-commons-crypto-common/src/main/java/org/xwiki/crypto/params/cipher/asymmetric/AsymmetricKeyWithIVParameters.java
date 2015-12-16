@@ -22,7 +22,6 @@ package org.xwiki.crypto.params.cipher.asymmetric;
 import java.security.SecureRandom;
 
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
-import org.xwiki.stability.Unstable;
 
 /**
  * Asymmetric cipher parameters for cipher requiring a key and an initialization vector.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class AsymmetricKeyWithIVParameters implements AsymmetricCipherParameters
 {
     /** A encryption initialization vector. */

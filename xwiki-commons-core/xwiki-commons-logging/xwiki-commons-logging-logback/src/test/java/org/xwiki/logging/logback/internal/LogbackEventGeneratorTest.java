@@ -33,10 +33,11 @@ import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 import org.xwiki.observation.internal.DefaultObservationManager;
+import org.xwiki.test.AllLogRule;
 import org.xwiki.test.ComponentManagerRule;
-import org.xwiki.test.LogRule;
 import org.xwiki.test.annotation.ComponentList;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -56,7 +57,7 @@ public class LogbackEventGeneratorTest
     public final ComponentManagerRule componentManager = new ComponentManagerRule();
 
     @Rule
-    public final LogRule logCapture = new LogRule();
+    public final AllLogRule logCapture = new AllLogRule();
 
     private Logger logger;
 
@@ -88,6 +89,7 @@ public class LogbackEventGeneratorTest
 
         Event expected = new LogEvent(null, LogLevel.ERROR, "error message", null, null);
         verify(listener).onEvent(eq(expected), eq(getClass().getName()), eq(null));
+        assertEquals("error message", this.logCapture.getMessage(0));
     }
 
     @Test
@@ -98,9 +100,6 @@ public class LogbackEventGeneratorTest
             (LogbackEventGenerator) this.componentManager.getInstance(EventListener.class, "LogbackEventGenerator");
         LogbackEventGenerator spyGenerator = spy(generator);
         when(spyGenerator.getRootLogger()).thenReturn(null);
-
-        // Capture logs
-        this.logCapture.recordLoggingForType(LogbackEventGenerator.class);
 
         spyGenerator.initialize();
 

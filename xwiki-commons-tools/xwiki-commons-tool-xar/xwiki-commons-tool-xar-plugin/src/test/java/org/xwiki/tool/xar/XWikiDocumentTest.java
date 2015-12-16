@@ -19,8 +19,11 @@
  */
 package org.xwiki.tool.xar;
 
-import org.junit.Assert;
+import org.dom4j.DocumentException;
 import org.junit.Test;
+import org.xwiki.tool.xar.internal.XWikiDocument;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Validate {@link XWikiDocument}.
@@ -29,37 +32,40 @@ import org.junit.Test;
  */
 public class XWikiDocumentTest
 {
+    private void assertReferenceFromNameSpace(String reference, String space, String name) throws DocumentException
+    {
+        XWikiDocument xdocument = new XWikiDocument();
+        xdocument.fromXML("<xwikidoc><web>" + space + "</web><name>" + name + "</name></xwikidoc>");
+
+        assertEquals(reference, xdocument.getReference());
+    }
+
+    private void assertReference(String reference, String xml) throws DocumentException
+    {
+        XWikiDocument xdocument = new XWikiDocument();
+        xdocument.fromXML(xml);
+
+        assertEquals(reference, xdocument.getReference());
+    }
+
     // Tests
 
     @Test
-    public void getFullName()
+    public void createReference() throws DocumentException
     {
-        XWikiDocument xdocument = new XWikiDocument();
-
-        xdocument.setSpace("Space");
-        xdocument.setName("Page");
-
-        Assert.assertEquals("Space.Page", xdocument.getFullName());
+        assertReferenceFromNameSpace("Space.Page", "Space", "Page");
 
         // .
 
-        xdocument.setName("Page.with.dots");
+        assertReferenceFromNameSpace("Space.Page\\.with\\.dots", "Space", "Page.with.dots");
 
-        Assert.assertEquals("Space.Page\\.with\\.dots", xdocument.getFullName());
-
-        xdocument.setSpace("Space.with.dots");
-
-        Assert.assertEquals("Space\\.with\\.dots.Page\\.with\\.dots", xdocument.getFullName());
+        assertReferenceFromNameSpace("Space\\.with\\.dots.Page\\.with\\.dots", "Space.with.dots", "Page.with.dots");
 
         // \
 
-        xdocument.setSpace("Space");
-        xdocument.setName("Page\\with\\backslashes");
+        assertReferenceFromNameSpace("Space.Page\\\\with\\\\backslashes", "Space", "Page\\with\\backslashes");
 
-        Assert.assertEquals("Space.Page\\\\with\\\\backslashes", xdocument.getFullName());
-
-        xdocument.setSpace("Space\\with\\backslashes");
-
-        Assert.assertEquals("Space\\\\with\\\\backslashes.Page\\\\with\\\\backslashes", xdocument.getFullName());
+        assertReferenceFromNameSpace("Space\\\\with\\\\backslashes.Page\\\\with\\\\backslashes",
+            "Space\\with\\backslashes", "Page\\with\\backslashes");
     }
 }

@@ -25,47 +25,16 @@ package org.xwiki.extension.wrap;
  * @param <T> the type of the wrapped object
  * @version $Id$
  * @since 4.0M1
+ * @deprecated since 7.2M1, use directly {@link org.xwiki.script.wrap.AbstractWrappingObject} instead
  */
-public abstract class AbstractWrappingObject<T>
+@Deprecated
+public abstract class AbstractWrappingObject<T> extends org.xwiki.script.wrap.AbstractWrappingObject<T>
 {
-    /**
-     * @see #getWrapped()
-     */
-    private T wrapped;
-
     /**
      * @param wrapped the wrapped object
      */
     public AbstractWrappingObject(T wrapped)
     {
-        this.wrapped = wrapped;
-    }
-
-    /**
-     * @return the wrapped object
-     */
-    protected T getWrapped()
-    {
-        return this.wrapped;
-    }
-
-    // Object
-
-    @Override
-    public int hashCode()
-    {
-        return getWrapped().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        return getWrapped().equals(obj);
-    }
-
-    @Override
-    public String toString()
-    {
-        return getWrapped().toString();
+        super(wrapped);
     }
 }

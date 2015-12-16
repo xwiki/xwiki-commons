@@ -22,12 +22,17 @@ package org.xwiki.extension.repository.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
+import org.xwiki.extension.repository.search.ExtensionQuery;
+import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
+import org.xwiki.extension.repository.search.ExtensionQuery.Filter;
+import org.xwiki.extension.repository.search.ExtensionQuery.SortClause;
 
 /**
  * A set of Repository related tools.
@@ -55,38 +60,60 @@ public final class RepositoryUtils
      * @param nb the number of maximum element to return
      * @param extensions the extension collection to search in
      * @return the search result
+     * @param <E> the type of element in the {@link Collection}
      */
-    public static CollectionIterableResult<Extension> searchInCollection(String pattern, int offset, int nb,
-        Collection<? extends Extension> extensions)
+    public static <E extends Extension> CollectionIterableResult<E> searchInCollection(String pattern, int offset,
+        int nb, Collection<E> extensions)
     {
-        List<Extension> result;
+        return searchInCollection(pattern, offset, nb, extensions, false);
+    }
 
-        if (StringUtils.isEmpty(pattern)) {
-            result = extensions instanceof List ? (List<Extension>) extensions : new ArrayList<Extension>(extensions);
+    /**
+     * @param pattern the pattern to match
+     * @param offset the offset where to start returning elements
+     * @param nb the number of maximum element to return
+     * @param extensions the extension collection to search in
+     * @param forceUnique make sure returned elements are unique
+     * @return the search result
+     * @since 6.4.1
+     * @param <E> the type of element in the {@link Collection}
+     */
+    public static <E extends Extension> CollectionIterableResult<E> searchInCollection(String pattern, int offset,
+        int nb, Collection<E> extensions, boolean forceUnique)
+    {
+        ExtensionQuery query = new ExtensionQuery(pattern);
+
+        query.setOffset(offset);
+        query.setLimit(nb);
+
+        return searchInCollection(query, extensions, forceUnique);
+    }
+
+    /**
+     * @param query the query
+     * @param extensions the extension collection to search in
+     * @param forceUnique make sure returned elements are unique
+     * @return the search result
+     * @since 7.0M2
+     * @param <E> the type of element in the {@link Collection}
+     */
+    public static <E extends Extension> CollectionIterableResult<E> searchInCollection(ExtensionQuery query,
+        Collection<E> extensions, boolean forceUnique)
+    {
+        List<E> result;
+
+        // Filter
+        if (StringUtils.isEmpty(query.getQuery())) {
+            result = extensions instanceof List ? (List<E>) extensions : new ArrayList<E>(extensions);
         } else {
-            result = filter(pattern, extensions);
+            result = filter(query.getQuery(), query.getFilters(), extensions, forceUnique);
         }
 
-        if (nb == 0 || offset >= result.size()) {
-            return new CollectionIterableResult<Extension>(result.size(), offset, Collections.<Extension>emptyList());
-        }
+        // Sort
+        sort(result, query.getSortClauses());
 
-        int fromIndex = offset;
-        if (fromIndex < 0) {
-            fromIndex = 0;
-        }
-
-        int toIndex;
-        if (nb > 0) {
-            toIndex = nb + fromIndex;
-            if (toIndex > result.size()) {
-                toIndex = result.size();
-            }
-        } else {
-            toIndex = result.size();
-        }
-
-        return new CollectionIterableResult<Extension>(result.size(), offset, result.subList(fromIndex, toIndex));
+        // Create result
+        return RepositoryUtils.getIterableResult(query.getOffset(), query.getLimit(), result);
     }
 
     /**
@@ -94,19 +121,19 @@ public final class RepositoryUtils
      * @param nb the number of maximum element to return
      * @param elements the element collection to search in
      * @return the result to limit
-     * @param <T> the type of element in the {@link Collection}
+     * @param <E> the type of element in the {@link Collection}
      */
-    public static <T> CollectionIterableResult<T> getIterableResult(int offset, int nb, Collection<T> elements)
+    public static <E> CollectionIterableResult<E> getIterableResult(int offset, int nb, Collection<E> elements)
     {
         if (nb == 0 || offset >= elements.size()) {
-            return new CollectionIterableResult<T>(elements.size(), offset, Collections.<T>emptyList());
+            return new CollectionIterableResult<E>(elements.size(), offset, Collections.<E>emptyList());
         }
 
-        List<T> list;
+        List<E> list;
         if (elements instanceof List) {
-            list = (List<T>) elements;
+            list = (List<E>) elements;
         } else {
-            list = new ArrayList<T>(elements);
+            list = new ArrayList<E>(elements);
         }
 
         return getIterableResultFromList(offset, nb, list);
@@ -117,9 +144,9 @@ public final class RepositoryUtils
      * @param nb the number of maximum element to return
      * @param elements the element collection to search in
      * @return the result to limit
-     * @param <T> the type of element in the {@link List}
+     * @param <E> the type of element in the {@link List}
      */
-    private static <T> CollectionIterableResult<T> getIterableResultFromList(int offset, int nb, List<T> elements)
+    private static <E> CollectionIterableResult<E> getIterableResultFromList(int offset, int nb, List<E> elements)
     {
         int fromIndex = offset;
         if (fromIndex < 0) {
@@ -136,25 +163,35 @@ public final class RepositoryUtils
             toIndex = elements.size();
         }
 
-        return new CollectionIterableResult<T>(elements.size(), offset, elements.subList(fromIndex, toIndex));
+        return new CollectionIterableResult<E>(elements.size(), offset, elements.subList(fromIndex, toIndex));
     }
 
     /**
      * @param pattern the pattern to match
+     * @param filters the filters
      * @param extensions the extension collection to search in
+     * @param forceUnique make sure returned elements are unique
      * @return the filtered list of extensions
+     * @since 7.0M2
+     * @param <E> the type of element in the {@link Collection}
      */
-    private static List<Extension> filter(String pattern, Collection<? extends Extension> extensions)
+    private static <E extends Extension> List<E> filter(String pattern, Collection<Filter> filters,
+        Collection<E> extensions, boolean forceUnique)
     {
-        List<Extension> result = new ArrayList<Extension>();
+        List<E> result = new ArrayList<E>(extensions.size());
 
         Pattern patternMatcher =
             Pattern.compile(SEARCH_PATTERN_SUFFIXNPREFIX + pattern.toLowerCase() + SEARCH_PATTERN_SUFFIXNPREFIX);
 
-        for (Extension extension : extensions) {
-            if (matches(patternMatcher, extension)) {
+        for (E extension : extensions) {
+            if (matches(patternMatcher, filters, extension)) {
                 result.add(extension);
             }
+        }
+
+        // Make sure all the elements of the list are unique
+        if (forceUnique && result.size() > 1) {
+            result = new ArrayList<>(new LinkedHashSet<>(result));
         }
 
         return result;
@@ -164,13 +201,71 @@ public final class RepositoryUtils
      * Matches an extension in a case insensitive way.
      *
      * @param patternMatcher the pattern to match
+     * @param filters the filters
      * @param extension the extension to match
      * @return true if one of the element is matched
+     * @since 7.0M2
      */
-    public static boolean matches(Pattern patternMatcher, Extension extension)
+    public static boolean matches(Pattern patternMatcher, Collection<Filter> filters, Extension extension)
     {
-        return matches(patternMatcher, extension.getId().getId(), extension.getDescription(), extension.getSummary(),
-            extension.getName(), extension.getFeatures());
+        if (matches(patternMatcher, extension.getId().getId(), extension.getDescription(), extension.getSummary(),
+            extension.getName(), extension.getFeatures())) {
+            for (Filter filter : filters) {
+                if (!matches(filter, extension)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param filter the filter
+     * @param extension the extension to match
+     * @return true if the extension is matched by the filer
+     * @since 7.0M2
+     */
+    public static boolean matches(Filter filter, Extension extension)
+    {
+        Object value = extension.get(filter.getField());
+
+        if (value != null) {
+            return matches(filter, value);
+        }
+
+        // Unknown field
+        // FIXME: not sure if it's should be true or false in this case
+        return true;
+    }
+
+    /**
+     * @param filter the filter
+     * @param element the element to match
+     * @return true if the element is matched by the filer
+     * @since 7.0M2
+     */
+    public static boolean matches(Filter filter, Object element)
+    {
+        // TODO: add support for more than String
+        String filterValue = filter.getValue() != null ? String.valueOf(filter.getValue()) : null;
+        String elementValue = element != null ? String.valueOf(element) : null;
+
+        if (filter.getComparison() == COMPARISON.MATCH) {
+            Pattern patternMatcher = createPatternMatcher(filterValue);
+
+            if (matches(patternMatcher, filterValue)) {
+                return true;
+            }
+        } else if (filter.getComparison() == COMPARISON.EQUAL) {
+            if (elementValue != null && filterValue.toLowerCase().equals(elementValue.toLowerCase())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -182,14 +277,54 @@ public final class RepositoryUtils
      */
     public static boolean matches(Pattern patternMatcher, Object... elements)
     {
+        if (patternMatcher == null) {
+            return true;
+        }
+
         for (Object element : elements) {
-            if (element != null) {
-                if (patternMatcher.matcher(element.toString().toLowerCase()).matches()) {
-                    return true;
-                }
+            if (matches(patternMatcher, element)) {
+                return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * @param patternMatcher the pattern to match
+     * @param element the element to match with the pattern
+     * @return true of the element is matched by the pattern
+     */
+    public static boolean matches(Pattern patternMatcher, Object element)
+    {
+        if (element != null) {
+            if (patternMatcher.matcher(element.toString().toLowerCase()).matches()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param pattern the pattern to match
+     * @return a {@link Pattern} used to search the passed pattern inside a {@link String}
+     */
+    public static Pattern createPatternMatcher(String pattern)
+    {
+        return StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
+            + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
+    }
+
+    /**
+     * Sort the passed extensions list based on the passed sort clauses.
+     * 
+     * @param extensions the list of extensions to sort
+     * @param sortClauses the sort clauses
+     * @since 7.0M2
+     */
+    public static void sort(List<? extends Extension> extensions, Collection<SortClause> sortClauses)
+    {
+        Collections.sort(extensions, new SortClauseComparator(sortClauses));
     }
 }

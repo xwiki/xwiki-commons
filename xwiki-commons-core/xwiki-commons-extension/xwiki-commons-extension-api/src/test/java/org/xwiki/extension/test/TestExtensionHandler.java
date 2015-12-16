@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -38,7 +39,8 @@ import org.xwiki.job.Request;
 /**
  * Basic handler used for tests.
  */
-@Component("test")
+@Component
+@Named("test")
 @Singleton
 public class TestExtensionHandler extends AbstractExtensionHandler
 {

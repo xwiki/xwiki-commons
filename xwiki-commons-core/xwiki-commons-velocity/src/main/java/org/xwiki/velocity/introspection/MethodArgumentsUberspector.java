@@ -189,7 +189,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
          *
          * @param realMethod the real method to wrap
          */
-        public ConvertingVelMethod(VelMethod realMethod)
+        ConvertingVelMethod(VelMethod realMethod)
         {
             this.innerMethod = realMethod;
         }

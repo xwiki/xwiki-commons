@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import org.xwiki.crypto.cipher.Cipher;
 import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Password based cipher.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public interface PasswordBasedCipher extends Cipher
 {
     /**

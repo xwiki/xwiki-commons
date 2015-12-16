@@ -19,13 +19,12 @@
  */
 package org.xwiki.tool.xar;
 
-import java.io.File;
-
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Integration tests for the Verify Mojo.
@@ -33,13 +32,21 @@ import org.junit.Test;
  * @version $Id$
  * @since 4.0M2
  */
-public class VerifyMojoTest
+public class VerifyMojoTest extends AbstractMojoTest
 {
     @Test
     public void executeWithWrongAuthor() throws Exception
     {
         verifyExecution("/wrongAuthor", "Verifying [Space/WebHome.xml]... errors",
             "- Author must be [xwiki:XWiki.Admin] but was [wrongAuthor]", "There are errors in the XAR XML files!");
+    }
+
+    @Test
+    public void executeWithWrongAttachmentAuthors() throws Exception
+    {
+        verifyExecution("/wrongAttachmentAuthors", "Verifying [Space/WebHome.xml]... errors",
+            "- Attachment author must [xwiki:XWiki.Admin] but was []",
+            "- Attachment author must [xwiki:XWiki.Admin] but was [wrong author]");
     }
 
     @Test
@@ -100,6 +107,15 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeWithWronPageTitle() throws Exception
+    {
+        verifyExecution("/wrongPageTitle", "Verifying [Space/WebPreferences.xml]... errors",
+            "- [WebPreferences.xml] ([Space.WebPreferences]) page must have a title matching regex "
+            + "[\\$services\\.localization\\.render\\('admin.preferences.title'\\)]",
+            "There are errors in the XAR XML files!");
+    }
+
+    @Test
     public void executeWithMissingLicenseHeader() throws Exception
     {
         Verifier verifier = createVerifier("/missingLicense");
@@ -109,29 +125,40 @@ public class VerifyMojoTest
     }
 
     @Test
+    public void executeContentAndTechnicalPages() throws Exception
+    {
+        verifyExecution("/contentAndTechnical",
+            "Verifying [Main/EditTranslations.xml]... errors",
+            "- Technical documents must be hidden",
+            "Verifying [Main/Translations.xml]... errors",
+            "- Default Language should have been [en] but was []");
+    }
+
+    @Test
     public void executeOk() throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), "/allOk");
+        Verifier verifier = createVerifier("/allOk");
+        verifier.executeGoal("install");
+        verifier.verifyErrorFreeLog();
+    }
 
-        Verifier verifier = new Verifier(testDir.getAbsolutePath());
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
-        verifier.addCliOption("-Dforce=true");
+    @Test
+    public void executeNestedSpaces() throws Exception
+    {
+        Verifier verifier = createVerifier("/nestedSpaces");
         verifier.executeGoal("install");
         verifier.verifyErrorFreeLog();
     }
 
     private void verifyExecution(Verifier verifier, String... messages) throws Exception
     {
-        verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
-
         try {
-            verifier.addCliOption("-Dforce=true");
             verifier.executeGoal("install");
             verifier.verifyErrorFreeLog();
-            Assert.fail("An error should have been thrown in the build");
+            fail("An error should have been thrown in the build");
         } catch (VerificationException expected) {
             for (String message : messages) {
-                Assert.assertThat(expected.getMessage(), CoreMatchers.containsString(message));
+                assertThat(expected.getMessage(), CoreMatchers.containsString(message));
             }
         }
     }
@@ -139,11 +166,5 @@ public class VerifyMojoTest
     private void verifyExecution(String testDirectory, String... messages) throws Exception
     {
         verifyExecution(createVerifier(testDirectory), messages);
-    }
-
-    private Verifier createVerifier(String testDirectory) throws Exception
-    {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), testDirectory);
-        return new Verifier(testDir.getAbsolutePath());
     }
 }

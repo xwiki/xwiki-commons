@@ -45,14 +45,16 @@ public class URLTool
     public Map<String, List<String>> parseQuery(String query)
     {
         Map<String, List<String>> queryParams = new LinkedHashMap<>();
-        for (NameValuePair params : URLEncodedUtils.parse(query, StandardCharsets.UTF_8)) {
-            String name = params.getName();
-            List<String> values = queryParams.get(name);
-            if (values == null) {
-                values = new ArrayList<>();
-                queryParams.put(name, values);
+        if (query != null) {
+            for (NameValuePair params : URLEncodedUtils.parse(query, StandardCharsets.UTF_8)) {
+                String name = params.getName();
+                List<String> values = queryParams.get(name);
+                if (values == null) {
+                    values = new ArrayList<>();
+                    queryParams.put(name, values);
+                }
+                values.add(params.getValue());
             }
-            values.add(params.getValue());
         }
         return queryParams;
     }

@@ -170,7 +170,7 @@ public class StackingComponentEventManager implements ComponentEventManager
          * @param descriptor the event related component descriptor.
          * @param componentManager the event related component manager instance.
          */
-        public ComponentEventEntry(Event event, ComponentDescriptor<?> descriptor, ComponentManager componentManager)
+        ComponentEventEntry(Event event, ComponentDescriptor<?> descriptor, ComponentManager componentManager)
         {
             this.event = event;
             this.descriptor = descriptor;

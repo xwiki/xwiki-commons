@@ -26,7 +26,6 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
 import org.xwiki.crypto.params.cipher.symmetric.SymmetricCipherParameters;
 import org.xwiki.crypto.password.params.KeyDerivationFunctionParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Manage encryption of private keys using password based ciphers as defined in PKCS #8.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4RC1
  */
 @Role
-@Unstable
 public interface PrivateKeyPasswordBasedEncryptor
 {
     /**

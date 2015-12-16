@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -45,6 +46,7 @@ import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
@@ -144,10 +146,16 @@ public class AetherDefaultRepositoryManagerTest
         Assert.assertEquals("git", extension.getScm().getDeveloperConnection().getSystem());
         Assert.assertEquals("git@url.git", extension.getScm().getDeveloperConnection().getPath());
 
+        List<ExtensionRepositoryDescriptor> repositories = new ArrayList<>();
+        repositories.add(extension.getRepository().getDescriptor());
+
+        Assert.assertEquals(repositories, extension.getRepositories());
+
         ExtensionDependency dependency = extension.getDependencies().iterator().next();
         Assert.assertEquals(this.dependencyExtensionId.getId(), dependency.getId());
         Assert.assertEquals(this.dependencyExtensionId.getVersionConstraint(), dependency.getVersionConstraint());
-        
+        Assert.assertEquals(repositories, dependency.getRepositories());
+
         // check that a new resolve of an already resolved extension provide the proper repository
         extension = this.repositoryManager.resolve(this.extensionId);
         Assert.assertEquals(this.repositoryUtil.getMavenRepositoryId(), extension.getRepository().getDescriptor()
@@ -184,7 +192,7 @@ public class AetherDefaultRepositoryManagerTest
     {
         Artifact artifact = new DefaultArtifact("groupid", "artifactid", "", "type", "version");
         Dependency aetherDependency = new Dependency(artifact, null);
-        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency);
 
         Extension extension = this.repositoryManager.resolve(dependency);
 
@@ -199,7 +207,7 @@ public class AetherDefaultRepositoryManagerTest
     {
         Artifact artifact = new DefaultArtifact("groupid", "artifactid", "", "type", "1.0-SNAPSHOT");
         Dependency aetherDependency = new Dependency(artifact, null);
-        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency);
 
         Extension extension = this.repositoryManager.resolve(dependency);
 

@@ -27,12 +27,13 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
  * Perform various verifications of the XAR files in this project. Namely:
  * <ul>
  *   <li>ensure that pages all have a parent (except for Main.WebHome)</li>
- *   <li>ensure that the author/contentAuthor/creator is {@code xwiki:XWiki.Admin}</li>
+ *   <li>ensure that the author/contentAuthor/creator/attachment authors are {@code xwiki:XWiki.Admin}</li>
  *   <li>ensure that the version is {@code 1.1}</li>
  * </ul>
  *
@@ -68,6 +69,8 @@ public class VerifyMojo extends AbstractVerifyMojo
 
         getLog().info("Checking validity of XAR XML files...");
 
+        initializePatterns();
+
         boolean hasErrors = false;
         Collection<File> xmlFiles = getXARXMLFiles();
         for (File file : xmlFiles) {
@@ -79,6 +82,7 @@ public class VerifyMojo extends AbstractVerifyMojo
             if (!xdoc.getEncoding().equals("UTF-8")) {
                 errors.add(String.format("Encoding must be [UTF-8] but was [%s]", xdoc.getEncoding()));
             }
+
             // Verification 2: Verify authors
             verifyAuthor(errors, xdoc.getAuthor(), String.format("Author must be [%s] but was [%s]",
                 AUTHOR, xdoc.getAuthor()));
@@ -87,24 +91,28 @@ public class VerifyMojo extends AbstractVerifyMojo
                     AUTHOR, xdoc.getContentAuthor()));
             verifyAuthor(errors, xdoc.getCreator(), String.format("Creator must be [%s] but was [%s]",
                 AUTHOR, xdoc.getCreator()));
+            verifyAttachmentAuthors(errors, xdoc.getAttachmentAuthors());
+
             // Verification 3: Check for orphans, except for Main.WebHome since it's the topmost document
-            if (StringUtils.isEmpty(xdoc.getParent())
-                && !(xdoc.getSpace().equals("Main") && xdoc.getName().equals("WebHome")))
-            {
+            if (StringUtils.isEmpty(xdoc.getParent()) && !xdoc.getReference().equals("Main.WebHome")) {
                 errors.add("Parent must not be empty");
             }
+
             // Verification 4: Check for version
             if (!xdoc.getVersion().equals(VERSION)) {
                 errors.add(String.format("Version must be [%s] but was [%s]", VERSION, xdoc.getVersion()));
             }
+
             // Verification 5: Check for empty comment
             if (!StringUtils.isEmpty(xdoc.getComment())) {
                 errors.add(String.format("Comment must be empty but was [%s]", xdoc.getComment()));
             }
+
             // Verification 6: Check for minor edit is always "false"
             if (!xdoc.getMinorEdit().equals("false")) {
                 errors.add(String.format("Minor edit must always be [false] but was [%s]", xdoc.getMinorEdit()));
             }
+
             // Verification 7: Check the default language value
             String expectedDefaultLanguage = guessDefaultLanguage(file, xmlFiles);
             if (!xdoc.getDefaultLanguage().equals(expectedDefaultLanguage)) {
@@ -112,6 +120,18 @@ public class VerifyMojo extends AbstractVerifyMojo
                     xdoc.getDefaultLanguage()));
             }
 
+            // Verification 8: Verify that all technical pages are hidden
+            if (isTechnicalPage(file.getName()) && !xdoc.isHidden()) {
+                errors.add("Technical documents must be hidden");
+            }
+
+            // Verification 9: Verify that the current document has a matching title (if a rule is defined for it)
+            if (!isTitlesMatching(xdoc.getReference(), xdoc.getTitle())) {
+                errors.add(String.format("[%s] ([%s]) page must have a title matching regex [%s]",
+                    file.getName(), xdoc.getReference(), getTitlePatternRuleforPage(xdoc.getReference())));
+            }
+
+            // Display errors
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
             } else {
@@ -138,6 +158,13 @@ public class VerifyMojo extends AbstractVerifyMojo
     {
         if (!author.equals(AUTHOR)) {
             errors.add(message);
+        }
+    }
+
+    private void verifyAttachmentAuthors(List<String> errors, List<String> authors)
+    {
+        for (String author : authors) {
+            verifyAuthor(errors, author, String.format("Attachment author must [%s] but was [%s]", AUTHOR, author));
         }
     }
 }

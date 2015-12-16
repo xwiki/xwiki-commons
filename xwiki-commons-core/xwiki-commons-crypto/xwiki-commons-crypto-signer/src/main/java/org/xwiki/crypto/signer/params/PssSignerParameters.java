@@ -21,7 +21,6 @@ package org.xwiki.crypto.signer.params;
 
 import org.xwiki.crypto.params.cipher.asymmetric.AsymmetricCipherParameters;
 import org.xwiki.crypto.params.cipher.asymmetric.AsymmetricKeyParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * PSS signer parameters.
@@ -29,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4RC1
  */
-@Unstable
 public class PssSignerParameters implements AsymmetricCipherParameters
 {
     private final AsymmetricKeyParameters keyParams;

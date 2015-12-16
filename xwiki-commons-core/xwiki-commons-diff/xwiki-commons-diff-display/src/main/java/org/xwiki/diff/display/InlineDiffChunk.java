@@ -33,7 +33,7 @@ public class InlineDiffChunk<E>
     /**
      * The possible types of chunks you can find within an in-line diff.
      */
-    public static enum Type
+    public enum Type
     {
         /** A chunk that has been added. All the elements that form this chunk have been added. */
         ADDED,

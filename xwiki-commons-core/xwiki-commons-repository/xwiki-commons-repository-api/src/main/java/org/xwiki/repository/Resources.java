@@ -27,10 +27,25 @@ package org.xwiki.repository;
  */
 public interface Resources
 {
+    /**
+     * Version 1.0 of the protocol.
+     * @since 7.0M2
+     */
+    String VERSION10 = "1.0";
+
+    /**
+     * Version 1.1 of the protocol.
+     * @since 7.0M2
+     */
+    String VERSION11 = "1.1";
+
     // Entry point
 
     /**
      * Entry point of XWiki Repository protocol.
+     */
+    /**
+     * 
      */
     String ENTRYPOINT = "/repository";
 

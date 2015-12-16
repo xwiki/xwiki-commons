@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-core</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-blame</artifactId>
   <name>XWiki Commons - Blame</name>
@@ -34,7 +34,7 @@
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-component</artifactId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

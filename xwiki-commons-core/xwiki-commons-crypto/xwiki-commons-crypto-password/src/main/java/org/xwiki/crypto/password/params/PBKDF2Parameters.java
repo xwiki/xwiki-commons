@@ -21,15 +21,12 @@ package org.xwiki.crypto.password.params;
 
 import java.security.SecureRandom;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Key derivation function parameters for PBKDF2 functions that use an iteration count and a salt.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class PBKDF2Parameters extends KeyDerivationFunctionParameters
 {
     private static final int SALT_DEFAULT_SIZE = 16;

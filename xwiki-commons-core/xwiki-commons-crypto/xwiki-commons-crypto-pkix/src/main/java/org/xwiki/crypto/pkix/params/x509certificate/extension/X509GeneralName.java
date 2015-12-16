@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.pkix.params.x509certificate.extension;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * X.509 General name marker interface.
  *
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public interface X509GeneralName
 {
 }

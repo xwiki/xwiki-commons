@@ -20,7 +20,6 @@
 package org.xwiki.crypto.password;
 
 import org.bouncycastle.crypto.PBEParametersGenerator;
-import org.xwiki.stability.Unstable;
 
 /**
  * Helper class to convert password/passphrase to bytes arrays.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public final class PasswordToByteConverter
 {
     private PasswordToByteConverter()

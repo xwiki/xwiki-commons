@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-extension</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-extension-api</artifactId>
   <name>XWiki Commons - Extension - API</name>
@@ -35,6 +35,8 @@
     <xwiki.jacoco.instructionRatio>0.71</xwiki.jacoco.instructionRatio>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-api</xwiki.extension.features>
+    <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
+    <xwiki.surefire.captureconsole.skip>true</xwiki.surefire.captureconsole.skip>
   </properties>
   <dependencies>
     <dependency>
@@ -77,7 +79,6 @@
       <artifactId>xwiki-commons-job</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -87,11 +88,26 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
     <!-- Core extensions -->
+    <!-- The version of Reflections used below draws version 2.x of com.google.code.findbugs:annotations.
+         However this prevents the xwiki-platform-vfs module from being installed with the Extension Manager since the
+         TrueVFS library it uses require version 3.0.0 of the Findbug Annotation artifact. Thus for now, we force
+         Reflections to use version 3.0.0 for it. Note that the next version of Reflections has replaced this
+         dependency by net.jcip:jcip-annotations.
+         @TODO: When we upgrade Reflections, remove this explicit dependency (after having verified that the
+         xwiki-platform-vfs-ui module can be properly installed with EM. -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
+      <version>3.0.0</version>
+    </dependency>
     <dependency>
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
@@ -101,7 +117,6 @@
       <artifactId>maven-model</artifactId>
       <version>${maven.version}</version>
     </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -116,7 +131,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
   <build>
     <plugins>
       <plugin>
@@ -143,6 +157,8 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
+              **/ExtensionConverter.java,
+              **/MavenUtils.java,
               **/AbstractExtensionJob.java,
               **/DefaultCoreExtensionScanner.java,
               **/DefaultExtensionRepositoryManager.java,
@@ -150,7 +166,8 @@
               **/DefaultInstalledExtensionRepository.java,
               **/DefaultVersion.java,
               **/AbstractInstallPlanJob.java,
-              **/UnmodifiableUtils.java
+              **/UnmodifiableUtils.java,
+              **/AbstractExtension.java
           </excludes>
         </configuration>
       </plugin>

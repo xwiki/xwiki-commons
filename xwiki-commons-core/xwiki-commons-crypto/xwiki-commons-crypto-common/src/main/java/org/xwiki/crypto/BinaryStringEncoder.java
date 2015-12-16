@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Encoder to encode binary data to string data.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4M1
  */
 @Role
-@Unstable
 public interface BinaryStringEncoder
 {
     /**

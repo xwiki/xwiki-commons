@@ -19,6 +19,7 @@
  */
 package org.xwiki.component.embed;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class GenericProvider<T> implements Provider<T>
     /**
      * @see GenericProvider#GenericProvider(ComponentManager, RoleHint)
      */
-    private ComponentManager componentManager;
+    protected ComponentManager componentManager;
 
     /**
      * @see GenericProvider#GenericProvider(ComponentManager, RoleHint)
@@ -94,14 +95,19 @@ public class GenericProvider<T> implements Provider<T>
             } else if (ReflectionUtils.getDirectAnnotation(ComponentRole.class, roleClass) != null
                 && ReflectionUtils.getDirectAnnotation(Role.class, roleClass) == null) {
                 // since 4.0M1, retro-compatibility (generic type used to not be taken into account)
-                component = this.componentManager.getInstance(roleClass, this.roleHint.getHint());
+                component = getInstance(roleClass, this.roleHint.getHint());
             } else {
-                component = this.componentManager.getInstance(this.roleHint.getRoleType(), this.roleHint.getHint());
+                component = getInstance(this.roleHint.getRoleType(), this.roleHint.getHint());
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to get [" + this.roleHint + "]", e);
         }
 
         return component;
+    }
+
+    protected T getInstance(Type type, String hint) throws ComponentLookupException
+    {
+        return this.componentManager.getInstance(type, hint);
     }
 }

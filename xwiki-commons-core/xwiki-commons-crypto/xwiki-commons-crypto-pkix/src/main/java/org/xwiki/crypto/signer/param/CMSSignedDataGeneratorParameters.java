@@ -25,7 +25,6 @@ import java.util.Collection;
 
 import org.xwiki.crypto.pkix.CertifyingSigner;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
-import org.xwiki.stability.Unstable;
 
 /**
  * Parameters for the generation of SignedData.
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.0M1
  */
-@Unstable
 public class CMSSignedDataGeneratorParameters
 {
     private Collection<CMSSignerInfo> signatures = new ArrayList<CMSSignerInfo>();

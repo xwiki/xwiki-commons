@@ -20,7 +20,6 @@
 package org.xwiki.logging.marker;
 
 import org.slf4j.Marker;
-import org.xwiki.stability.Unstable;
 
 /**
  * Custom {@link Marker}s which contains values (so which are a bit more than {@link Marker} as defined by SLF4J).
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public interface ContainerMarker extends Marker
 {
     /**

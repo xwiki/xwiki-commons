@@ -21,15 +21,12 @@ package org.xwiki.crypto.params.cipher.symmetric;
 
 import java.security.SecureRandom;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Symmetric cipher parameters for cipher requiring a key and an initialization vector.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class KeyWithIVParameters implements SymmetricCipherParameters
 {
     /** A encryption initialization vector. */

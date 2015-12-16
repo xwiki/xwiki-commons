@@ -22,7 +22,9 @@ package org.xwiki.extension.job.internal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -38,15 +40,16 @@ import org.xwiki.extension.event.ExtensionUninstalledEvent;
 import org.xwiki.extension.event.ExtensionUpgradedEvent;
 import org.xwiki.extension.handler.ExtensionHandlerManager;
 import org.xwiki.extension.job.ExtensionRequest;
+import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.job.AbstractJob;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.JobGroupPath;
 import org.xwiki.job.Request;
-import org.xwiki.job.internal.AbstractJob;
-import org.xwiki.job.internal.AbstractJobStatus;
+import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.marker.BeginTranslationMarker;
 import org.xwiki.logging.marker.EndTranslationMarker;
 import org.xwiki.logging.marker.TranslationMarker;
@@ -59,8 +62,8 @@ import org.xwiki.logging.marker.TranslationMarker;
  * @version $Id$
  * @since 4.0M1
  */
-public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends AbstractJobStatus<R>> extends
-    AbstractJob<R, S> implements GroupedJob
+public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends JobStatus> extends AbstractJob<R, S>
+    implements GroupedJob
 {
     /**
      * The key to use to access the context extension plan.
@@ -142,11 +145,11 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
 
         try {
             for (ExtensionPlanAction action : actions) {
+                this.progressManager.startStep(this);
+
                 if (action.getAction() != Action.NONE) {
                     applyAction(action);
                 }
-
-                this.progressManager.stepPropress(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -182,10 +185,12 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
         this.progressManager.pushLevelProgress(2, this);
 
         try {
+            this.progressManager.startStep(this);
+
             if (action.getAction() == Action.UNINSTALL) {
                 InstalledExtension installedExtension = (InstalledExtension) action.getExtension();
 
-                this.progressManager.stepPropress(this);
+                this.progressManager.startStep(this);
 
                 // Uninstall
                 uninstallExtension(installedExtension, namespace);
@@ -193,7 +198,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 // Store extension in local repository
                 LocalExtension localExtension = this.localExtensionRepository.resolve(extension.getId());
 
-                this.progressManager.stepPropress(this);
+                this.progressManager.startStep(this);
 
                 // Install
                 installExtension(localExtension, previousExtensions, namespace, action.isDependency());
@@ -244,11 +249,13 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
     private void installExtension(LocalExtension extension, Collection<InstalledExtension> previousExtensions,
         String namespace, boolean dependency) throws InstallException
     {
+        Map<String, Object> properties = getRequest().getProperty(InstallRequest.PROPERTY_EXTENSION_PROPERTIES,
+            Collections.<String, Object>emptyMap());
         if (previousExtensions.isEmpty()) {
             this.extensionHandlerManager.install(extension, namespace, getRequest());
 
             InstalledExtension installedExtension =
-                this.installedExtensionRepository.installExtension(extension, namespace, dependency);
+                this.installedExtensionRepository.installExtension(extension, namespace, dependency, properties);
 
             this.observationManager.notify(new ExtensionInstalledEvent(extension.getId(), namespace),
                 installedExtension);
@@ -264,10 +271,10 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             }
 
             InstalledExtension installedExtension =
-                this.installedExtensionRepository.installExtension(extension, namespace, dependency);
+                this.installedExtensionRepository.installExtension(extension, namespace, dependency, properties);
 
-            this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace),
-                installedExtension, previousExtensions);
+            this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace), installedExtension,
+                previousExtensions);
         }
     }
 }

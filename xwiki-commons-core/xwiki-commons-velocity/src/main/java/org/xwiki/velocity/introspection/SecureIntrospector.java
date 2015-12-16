@@ -44,17 +44,28 @@ public class SecureIntrospector extends SecureIntrospectorImpl
     {
         super(badClasses, badPackages, log);
 
+        this.secureClassMethods.add("getname");
         this.secureClassMethods.add("getName");
-        this.secureClassMethods.add("name");
+        this.secureClassMethods.add("getsimpleName");
+        this.secureClassMethods.add("getSimpleName");
 
+        this.secureClassMethods.add("isarray");
         this.secureClassMethods.add("isArray");
+        this.secureClassMethods.add("isassignablefrom");
         this.secureClassMethods.add("isAssignableFrom");
+        this.secureClassMethods.add("isenum");
         this.secureClassMethods.add("isEnum");
+        this.secureClassMethods.add("isinstance");
         this.secureClassMethods.add("isInstance");
+        this.secureClassMethods.add("isinterface");
         this.secureClassMethods.add("isInterface");
+        this.secureClassMethods.add("islocalClass");
         this.secureClassMethods.add("isLocalClass");
+        this.secureClassMethods.add("ismemberclass");
         this.secureClassMethods.add("isMemberClass");
+        this.secureClassMethods.add("isprimitive");
         this.secureClassMethods.add("isPrimitive");
+        this.secureClassMethods.add("issynthetic");
         this.secureClassMethods.add("isSynthetic");
 
         // TODO: add more when needed

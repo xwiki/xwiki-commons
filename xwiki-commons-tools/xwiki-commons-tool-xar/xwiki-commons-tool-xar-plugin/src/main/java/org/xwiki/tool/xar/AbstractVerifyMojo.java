@@ -23,14 +23,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -40,16 +42,12 @@ import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelecto
 import org.codehaus.plexus.components.io.resources.PlexusIoFileResourceCollection;
 import org.codehaus.plexus.components.io.resources.PlexusIoResource;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.artifactId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.configuration;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.executeMojo;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.executionEnvironment;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.goal;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.groupId;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.name;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.plugin;
-import static org.twdata.maven.mojoexecutor.MojoExecutor.version;
 
 /**
  * Common code for the Verify and Format Mojos.
@@ -104,6 +102,35 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected String commonsVersion;
 
     /**
+     * Defines expectations for the Title field of pages.
+     *
+     * @parameter expression="${xar.verify.titles}"
+     * @since 7.3RC1
+     */
+    protected Properties titles;
+
+    /**
+     * Explicitly define a list of pages (it's a regex) that should be considered as content pages (rather than
+     * technical pages). Note that content pages must have a non empty default language specified and note that if a
+     * page is not in this list and it doesn't have any translation then it's considered by default to be a technical
+     * page for the default language check. Thus this configuration property is useful for pages such as Translations
+     * pages (even though they may not have any translations at first).
+     *
+     * @parameter expression="${xar.verify.contentPages}"
+     * @since 7.1M1
+     */
+    private List<String> contentPages;
+
+    /**
+     * Explicitly define a list of pages (it's a regex) that should  be considered as technical pages. Any matching
+     * page defined in this list has precedence over pages matching {@link #contentPages}.
+     *
+     * @parameter expression="${xar.verify.technicalPages}"
+     * @since 7.1M1
+     */
+    private List<String> technicalPages;
+
+    /**
      * The current Maven session.
      *
      * @parameter expression="${session}"
@@ -119,6 +146,39 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      * @required
      */
     private BuildPluginManager pluginManager;
+
+    private List<Pattern> contentPagePatterns;
+
+    private List<Pattern> technicalPagePatterns;
+
+    private Map<Pattern, Pattern> titlePatterns;
+
+    /**
+     * Initialize regex Patterns for performance reasons.
+     */
+    protected void initializePatterns()
+    {
+        this.contentPagePatterns = initializationPagePatterns(this.contentPages);
+        this.technicalPagePatterns = initializationPagePatterns(this.technicalPages);
+
+        // Transform title expectations into Patterns
+        Map<Pattern, Pattern> patterns = new HashMap<>();
+        for (String key : this.titles.stringPropertyNames()) {
+            patterns.put(Pattern.compile(key), Pattern.compile(this.titles.getProperty(key)));
+        }
+        this.titlePatterns = patterns;
+    }
+
+    private List<Pattern> initializationPagePatterns(List<String> pageRegexes)
+    {
+        List<Pattern> patterns = new ArrayList<>();
+        if (pageRegexes != null) {
+            for (String pageRegex : pageRegexes) {
+                patterns.add(Pattern.compile(pageRegex));
+            }
+        }
+        return patterns;
+    }
 
     /**
      * @return the list of XAR XML files in this project
@@ -165,6 +225,10 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * Guess the {@code &lt;defaultLanguage&gt;} value to use for the passed file using the following algorithm:
      * <ul>
+     *     <li>If the page name matches one of the regexes defined by the user as content pages then check that the
+     *         default language is {@link #defaultLanguage}.</li>
+     *     <li>If the page name matches one of the regexes defined by the user as technial pages then check that the
+     *         default language is empty. Matching technical pages have precedence over matching content pages.</li>
      *     <li>If there's no other translation of the file then consider default language to be empty to signify that
      *         it's a technical document. </li>
      *     <li>If there are other translations ("(prefix).(language).xml" format) then the default language should be
@@ -174,16 +238,33 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      */
     protected String guessDefaultLanguage(File file, Collection<File> xwikiXmlFiles)
     {
-        String language = "";
+        String fileName = file.getName();
+
+        // Note that we need to check for content pages before technical pages because some pages are both content
+        // pages (Translation pages for example) and technical pages.
+
+        // Is it in the list of defined content pages?
+        String language = guessDefaultLanguageForPatterns(fileName, this.contentPagePatterns, this.defaultLanguage);
+        if (language != null) {
+            return language;
+        }
+
+        // Is it in the list of defined technical pages?
+        language = guessDefaultLanguageForPatterns(fileName, this.technicalPagePatterns, "");
+        if (language != null) {
+            return language;
+        }
+
+        language = "";
 
         // Check if the doc is a translation
-        Matcher matcher = TRANSLATION_PATTERN.matcher(file.getName());
+        Matcher matcher = TRANSLATION_PATTERN.matcher(fileName);
         if (matcher.matches()) {
             // We're in a translation, use the default language
             language = this.defaultLanguage;
         } else {
             // We're not in a translation, check if there are translations. First get the doc name before the extension
-            String prefix = StringUtils.substringBeforeLast(file.getName(), EXTENSION);
+            String prefix = StringUtils.substringBeforeLast(fileName, EXTENSION);
             // Check for a translation now
             Pattern translationPattern = Pattern.compile(String.format("%s\\..*\\.xml", Pattern.quote(prefix)));
             for (File xwikiXmlFile : xwikiXmlFiles) {
@@ -196,6 +277,55 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
             }
         }
         return language;
+    }
+
+    private String guessDefaultLanguageForPatterns(String fileName, List<Pattern> patterns, String defaultLanguage)
+    {
+        String language = null;
+
+        if (patterns != null) {
+            for (Pattern pattern : patterns) {
+                if (pattern.matcher(fileName).matches()) {
+                    return defaultLanguage;
+                }
+            }
+        }
+
+        return language;
+    }
+
+    protected boolean isTechnicalPage(String fileName)
+    {
+        if (this.technicalPagePatterns != null) {
+            for (Pattern pattern : this.technicalPagePatterns) {
+                if (pattern.matcher(fileName).matches()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected boolean isTitlesMatching(String documentReference, String title)
+    {
+        for (Map.Entry<Pattern, Pattern> entry : this.titlePatterns.entrySet()) {
+            if (entry.getKey().matcher(documentReference).matches()) {
+                if (!entry.getValue().matcher(title).matches()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    protected String getTitlePatternRuleforPage(String documentReference)
+    {
+        for (Map.Entry<Pattern, Pattern> entry : this.titlePatterns.entrySet()) {
+            if (entry.getKey().matcher(documentReference).matches()) {
+                return entry.getValue().pattern();
+            }
+        }
+        return null;
     }
 
     /**
@@ -217,16 +347,14 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      */
     protected void executeLicenseGoal(String goal) throws MojoExecutionException
     {
-        Dependency dep = new Dependency();
-        dep.setGroupId("org.xwiki.commons");
-        dep.setArtifactId("xwiki-commons-tool-verification-resources");
-        dep.setVersion(getXWikiCommonsVersion());
+        // Find the license plugin (it's project's responsibility to make sure the License plugin is properly setup in
+        // its <pluginManagement>, for most XWiki projects it just mean inherits from xwiki-commons-pom)
+        Plugin licensePlugin =
+            this.project.getPluginManagement().getPluginsAsMap().get("com.mycila:license-maven-plugin");
 
-        Plugin licensePlugin = plugin(
-            groupId("com.mycila"),
-            artifactId("license-maven-plugin"),
-            version("2.6"));
-        licensePlugin.setDependencies(Collections.singletonList(dep));
+        if (licensePlugin == null) {
+            throw new MojoExecutionException("License plugin could not be found in <pluginManagement>");
+        }
 
         executeMojo(
             licensePlugin,

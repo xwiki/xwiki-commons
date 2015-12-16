@@ -35,6 +35,7 @@ import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
 import org.eclipse.aether.util.repository.JreProxySelector;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
+import org.xwiki.extension.internal.maven.MavenUtils;
 
 import com.google.common.io.Files;
 
@@ -78,10 +79,10 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
         if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
             DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
                 (DefaultArtifactTypeRegistry) artifactTypeRegistry;
-            defaultArtifactTypeRegistry.add(new DefaultArtifactType("bundle", AetherUtils.JAR_EXTENSION, "",
-                AetherUtils.JAVA_LANGUAGE));
-            defaultArtifactTypeRegistry.add(new DefaultArtifactType("eclipse-plugin", AetherUtils.JAR_EXTENSION, "",
-                AetherUtils.JAVA_LANGUAGE));
+            defaultArtifactTypeRegistry.add(new DefaultArtifactType("bundle", MavenUtils.JAR_EXTENSION, "",
+                MavenUtils.JAVA_LANGUAGE));
+            defaultArtifactTypeRegistry.add(new DefaultArtifactType("eclipse-plugin", MavenUtils.JAR_EXTENSION, "",
+                MavenUtils.JAVA_LANGUAGE));
         }
 
         // Fail when the pom is missing or invalid

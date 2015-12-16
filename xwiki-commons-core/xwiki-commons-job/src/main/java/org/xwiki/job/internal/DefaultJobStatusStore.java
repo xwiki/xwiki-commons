@@ -37,16 +37,16 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.JobManagerConfiguration;
 import org.xwiki.job.JobStatusStore;
-import org.xwiki.job.Request;
 import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
 
@@ -67,9 +67,9 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
         private final Set<List<String>> noStatusCache;
 
-        public Cache(int size)
+        Cache(int size)
         {
-            this.cache = new LRUMap(size);
+            this.cache = new LRUMap<>(size);
             this.noStatusCache = new HashSet<List<String>>();
         }
 
@@ -187,7 +187,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private static final String FOLDER_NULL = "&null";
 
-    private static final JobStatus NOSTATUS = new DefaultJobStatus<Request>(null, null, null, false);
+    private static final JobStatus NOSTATUS = new DefaultJobStatus(null, null, null, null);
 
     /**
      * Used to get the storage directory.
@@ -214,7 +214,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
          */
         private final JobStatus status;
 
-        public JobStatusSerializerRunnable(JobStatus status)
+        JobStatusSerializerRunnable(JobStatus status)
         {
             this.status = status;
         }
@@ -243,7 +243,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         this.executorService =
             new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), threadFactory);
 
-        this.cache = Collections.synchronizedMap(new Cache(50));
+        this.cache = Collections.synchronizedMap(new Cache(this.configuration.getJobStatusCacheSize()));
     }
 
     /**
@@ -271,12 +271,18 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     /**
      * Load jobs from directory.
+     * 
+     * @throws IOException when failing to load statuses
      */
-    private void repair()
+    private void repair() throws IOException
     {
         File folder = this.configuration.getStorage();
 
         if (folder.exists()) {
+            if (!folder.isDirectory()) {
+                throw new IOException("Not a directory: " + folder);
+            }
+
             repairFolder(folder);
         }
     }

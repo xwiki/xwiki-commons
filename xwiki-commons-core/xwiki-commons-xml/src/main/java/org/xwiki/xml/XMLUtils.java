@@ -19,6 +19,7 @@
  */
 package org.xwiki.xml;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.regex.Pattern;
@@ -34,8 +35,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,9 @@ import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSParser;
 import org.w3c.dom.ls.LSSerializer;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * XML Utility methods.
@@ -435,7 +439,7 @@ public final class XMLUtils
     }
 
     /**
-     * Parse and pretty pint a XML content.
+     * Parse and pretty print a XML content.
      *
      * @param content the XML content to format
      * @return the formated version of the passed XML content
@@ -452,7 +456,28 @@ public final class XMLUtils
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
         StreamResult result = new StreamResult(new StringWriter());
-        StreamSource source = new StreamSource(new StringReader(content));
+
+        // Use a SAX Source instead of a StreamSource so that we can control the XMLReader used and set up one that
+        // doesn't resolve entities (and thus doesn't go out on the internet to fetch DTDs!).
+        SAXSource source = new SAXSource(new InputSource(new StringReader(content)));
+        try {
+            XMLReader reader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
+            reader.setEntityResolver(new org.xml.sax.EntityResolver() {
+                @Override
+                public InputSource resolveEntity(String publicId, String systemId)
+                    throws SAXException, IOException
+                {
+                    // Return an empty resolved entity. Note that we don't return null since this would tell the reader
+                    // to go on the internet to fetch the DTD.
+                    return new InputSource(new StringReader(""));
+                }
+            });
+            source.setXMLReader(reader);
+        } catch (Exception e) {
+            throw new TransformerException(String.format(
+                "Failed to create XML Reader while pretty-printing content [%s]", content), e);
+        }
+
         transformer.transform(source, result);
 
         return result.getWriter().toString();

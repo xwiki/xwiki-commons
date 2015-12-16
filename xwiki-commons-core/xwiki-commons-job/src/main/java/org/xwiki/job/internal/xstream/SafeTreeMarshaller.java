@@ -22,11 +22,9 @@ package org.xwiki.job.internal.xstream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
 import com.thoughtworks.xstream.core.ReferenceByXPathMarshaller;
-import com.thoughtworks.xstream.core.util.ObjectIdDictionary;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.Mapper;
 
@@ -34,15 +32,13 @@ import com.thoughtworks.xstream.mapper.Mapper;
  * A {@link ReferenceByXPathMarshaller} which never fail whatever value is provided.
  *
  * @version $Id$
+ * @since 5.4M1
  */
 public class SafeTreeMarshaller extends ReferenceByXPathMarshaller
 {
-    /**
-     * The logger.
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(SafeTreeMarshaller.class);
 
-    private SafeXStream xstream;
+    protected SafeWriter safeWriter;
 
     /**
      * @see ReferenceByXPathMarshaller#ReferenceByXPathMarshaller(HierarchicalStreamWriter, ConverterLookup, Mapper,
@@ -51,45 +47,32 @@ public class SafeTreeMarshaller extends ReferenceByXPathMarshaller
      * @param converterLookup the converter lookup
      * @param mapper the mapper
      * @param mode the marshalling mode
-     * @param xstream the {@link com.thoughtworks.xstream.XStream} instance to use to isolate array element marshaling
      */
-    public SafeTreeMarshaller(HierarchicalStreamWriter writer, ConverterLookup converterLookup, Mapper mapper,
-        int mode, SafeXStream xstream)
+    public SafeTreeMarshaller(HierarchicalStreamWriter writer, ConverterLookup converterLookup, Mapper mapper, int mode)
     {
         super(writer, converterLookup, mapper, mode);
-
-        this.xstream = xstream;
-    }
-
-    private ObjectIdDictionary getParentObjects()
-    {
-        ObjectIdDictionary parentObjects = (ObjectIdDictionary) get(ObjectIdDictionary.class);
-
-        if (parentObjects == null) {
-            parentObjects = new ObjectIdDictionary();
-            put(ObjectIdDictionary.class, parentObjects);
-        }
-
-        return parentObjects;
     }
 
     @Override
     public void convert(Object item, Converter converter)
     {
-        ObjectIdDictionary parentObjects = getParentObjects();
+        if (XStreamUtils.isSerializable(item)) {
+            HierarchicalStreamWriter currentWriter = this.writer;
 
-        if (parentObjects.containsId(item)) {
-            ConversionException e = new CircularReferenceException("Recursive reference to parent object");
-            e.add("item-type", item.getClass().getName());
-            e.add("converter-type", converter.getClass().getName());
-            throw e;
-        }
+            try {
+                this.safeWriter = new SafeWriter(this.writer);
+                this.writer = this.safeWriter; 
 
-        parentObjects.associateId(item, "");
-        try {
-            super.convert(item, converter);
-        } finally {
-            parentObjects.removeId(item);
+                super.convert(item, converter);
+            } catch (Throwable e) {
+                LOGGER.debug("Failed to serialize item [{}]",
+                    item.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(item)), e);
+
+                // Make sure to close any forgotten end tag
+                this.safeWriter.fix();
+            } finally {
+                this.writer = currentWriter;
+            }
         }
     }
 }

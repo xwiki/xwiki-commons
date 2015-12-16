@@ -52,7 +52,7 @@ class BcBinaryStringEncoderOutputStream extends FilterOutputStream
      * @param outputStream the underlying output stream that will receive encoded data.
      * @param encoder the encoder used to encode data.
      */
-    public BcBinaryStringEncoderOutputStream(OutputStream outputStream, InternalBinaryStringEncoder encoder)
+    BcBinaryStringEncoderOutputStream(OutputStream outputStream, InternalBinaryStringEncoder encoder)
     {
         super(outputStream);
         this.encoder = encoder;

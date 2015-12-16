@@ -25,13 +25,13 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-core</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-script</artifactId>
   <name>XWiki Commons - Script</name>
   <description>XWiki Commons - Script</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.28</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
@@ -48,6 +48,13 @@
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-observation-api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

@@ -19,6 +19,7 @@
  */
 package org.xwiki.velocity.tools;
 
+import java.beans.Transient;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,6 +71,12 @@ public class JSONToolTest
         public Map<String, String> getParameters()
         {
             return Collections.singletonMap("foo", "bar");
+        }
+
+        @Transient
+        public String getTransientProperty()
+        {
+            return "transient";
         }
     }
 
@@ -147,6 +154,7 @@ public class JSONToolTest
         Assert.assertTrue(json.contains("\"items\":[\"one\"]"));
         Assert.assertTrue(json.contains("\"name\":\"XWiki\""));
         Assert.assertTrue(json.contains("\"parameters\":{\"foo\":\"bar\"}"));
+        Assert.assertFalse(json.contains("\"transientProperty\":\"transient\""));
     }
 
     @Test

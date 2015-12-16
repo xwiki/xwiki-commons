@@ -20,12 +20,13 @@
 package org.xwiki.extension.wrap;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 
 /**
- * Wrap a local extension.
+ * Wrap an installed extension.
  *
  * @param <E> the extension type
  * @version $Id$
@@ -35,11 +36,11 @@ public class WrappingInstalledExtension<E extends InstalledExtension> extends Wr
     InstalledExtension
 {
     /**
-     * @param localExtension the wrapped local extension
+     * @param installedExtension the wrapped installed extension
      */
-    public WrappingInstalledExtension(E localExtension)
+    public WrappingInstalledExtension(E installedExtension)
     {
-        super(localExtension);
+        super(installedExtension);
     }
 
     @Override
@@ -82,5 +83,17 @@ public class WrappingInstalledExtension<E extends InstalledExtension> extends Wr
     public boolean isDependency(String namespace)
     {
         return getWrapped().isDependency(namespace);
+    }
+
+    @Override
+    public Date getInstallDate(String namespace)
+    {
+        return getWrapped().getInstallDate(namespace);
+    }
+
+    @Override
+    public Object getNamespaceProperty(String key, String namespace)
+    {
+        return getWrapped().getNamespaceProperty(key, namespace);
     }
 }

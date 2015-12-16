@@ -25,7 +25,6 @@ import java.util.Collection;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.pkix.CertificateProvider;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
-import org.xwiki.stability.Unstable;
 
 /**
  * Store and retrieve certificates of entities and provide certificates for chain verification.
@@ -34,7 +33,6 @@ import org.xwiki.stability.Unstable;
  * @since 6.1M2
  */
 @Role
-@Unstable
 public interface CertificateStore
 {
     /**

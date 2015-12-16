@@ -23,7 +23,6 @@ package org.xwiki.crypto.signer.param;
 import java.util.Collection;
 
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
-import org.xwiki.stability.Unstable;
 
 /**
  * Signer information verifier results.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.0M1
  */
-@Unstable
 public interface CMSSignerVerifiedInformation extends CMSSignerInfo
 {
     /**

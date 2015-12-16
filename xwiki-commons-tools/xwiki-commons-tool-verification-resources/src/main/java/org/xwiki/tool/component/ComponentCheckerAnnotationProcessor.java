@@ -70,6 +70,16 @@ public class ComponentCheckerAnnotationProcessor extends AbstractProcessor
     {
         super.init(processingEnvironment);
 
+        // There's a problem running this Processor inside IntelliJ IDEA,
+        // see https://youtrack.jetbrains.com/issue/IDEA-133120
+        // Thus we disable the check inside IDEA for the moment.
+        if (System.getProperty("idea.home.path") != null) {
+            processingEnvironment.getMessager().printMessage(Diagnostic.Kind.NOTE,
+                "Running inside IntelliJ IDEA. Skipping components.txt checks...");
+            this.skip = true;
+            return;
+        }
+
         processingEnvironment.getMessager().printMessage(Diagnostic.Kind.NOTE,
             "Checking validity of components.txt files...");
 

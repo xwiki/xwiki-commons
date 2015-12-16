@@ -254,7 +254,9 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
     {
         CertifiedPublicKey caCertificate =
             factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
-                                new X509CertificateGenerationParameters())
+                                new X509CertificateGenerationParameters(
+                                    //<validity in days>
+                                ))
                 .generate(new DistinguishedName("CN=Test CA"), rsaPublicKey,
                     new X509CertificateParameters());
 
@@ -263,8 +265,10 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         CertifiedPublicKey certificate =
             factory.getInstance(
                     CertifyingSigner.getInstance(true, new CertifiedKeyPair(rsaPrivateKey, caCertificate), signerFactory),
-                    new X509CertificateGenerationParameters()
-                ).generate(new DistinguishedName("CN=Test End Entity"), dsaPublicKey,
+                    new X509CertificateGenerationParameters(
+                        //<validity in days>
+                    )
+            ).generate(new DistinguishedName("CN=Test End Entity"), dsaPublicKey,
                 new X509CertificateParameters());
 
         checkRootSigned(certificate, 1);
@@ -376,12 +380,15 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         CertifiedPublicKey caCertificate =
             factory.getInstance(signerFactory.getInstance(true, rsaPrivateKey),
                 new X509CertificateGenerationParameters(
+                    //<validity in days>,
                     builder.addBasicConstraints(true)
                         .addKeyUsage(true, EnumSet.of(KeyUsage.keyCertSign,
                             KeyUsage.cRLSign))
                         .build()))
                 .generate(new DistinguishedName("CN=Test CA"), rsaPublicKey,
                     new X509CertificateParameters());
+
+        //dumpCert(caCertificate);
 
         X509CertifiedPublicKey caKey = (X509CertifiedPublicKey) caCertificate;
 
@@ -390,6 +397,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         CertificateGenerator generator = factory.getInstance(
             CertifyingSigner.getInstance(true, new CertifiedKeyPair(rsaPrivateKey, caCertificate), signerFactory),
             new X509CertificateGenerationParameters(
+                //<validity in days>,
                 builder.addBasicConstraints(0)
                     .addKeyUsage(EnumSet.of(KeyUsage.keyCertSign,
                         KeyUsage.cRLSign))
@@ -398,6 +406,8 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         CertifiedPublicKey interCAcert =
             generator.generate(new DistinguishedName("CN=Test Intermediate CA"), interCaDsaPublicKey,
                 new X509CertificateParameters());
+
+        //dumpCert(interCAcert);
 
         assertTrue("Signature should match Root CA key.", interCAcert.isSignedBy(rsaPublicKey));
         assertThat(interCAcert.getIssuer(), equalTo(caCertificate.getSubject()));
@@ -424,6 +434,7 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
         generator = factory.getInstance(
             CertifyingSigner.getInstance(true, new CertifiedKeyPair(interCaDsaPrivateKey, interCAcert), (SignerFactory) mocker.getInstance(SignerFactory.class, "DSAwithSHA1")),
             new X509CertificateGenerationParameters(
+                //<validity in days>,
                 builder.addKeyUsage(EnumSet.of(KeyUsage.digitalSignature,
                     KeyUsage.dataEncipherment))
                     .addExtendedKeyUsage(false,
@@ -441,6 +452,8 @@ public class BcX509CertificateGeneratorFactoryTest extends AbstractPKIXTest
                         })
                         .build()
                 ));
+
+        //dumpCert(certificate);
 
         assertTrue("Signature should match intermediate CA key.", certificate.isSignedBy(interCaDsaPublicKey));
         assertThat(certificate.getIssuer(), equalTo(interCAcert.getSubject()));

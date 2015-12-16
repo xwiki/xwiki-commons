@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.apache.maven.model.Model;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.internal.MavenExtension;
 
@@ -65,6 +66,16 @@ public class MavenCoreExtension extends DefaultCoreExtension implements MavenExt
                 putProperty(key, entry.getValue());
             }
         }
+    }
+
+    /**
+     * @param repository the core extension repository
+     * @param url the core extension URL
+     * @param extension the extension to copy
+     */
+    public MavenCoreExtension(DefaultCoreExtensionRepository repository, URL url, Extension extension)
+    {
+        super(repository, url, extension);
     }
 
     /**

@@ -25,11 +25,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Provider;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.component.util.DefaultParameterizedType;
-import org.xwiki.component.util.ObjectUtils;
 import org.xwiki.component.util.ReflectionUtils;
 
 /**
@@ -134,7 +135,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
      */
     private boolean equals(ComponentDependency dependency)
     {
-        return super.equals(dependency) && ObjectUtils.equals(getName(), dependency.getName())
+        return super.equals(dependency) && Objects.equals(getName(), dependency.getName())
             && Arrays.equals(getHints(), dependency.getHints());
     }
 
@@ -146,16 +147,15 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
     @Override
     public int hashCode()
     {
-        // Random number. See http://www.technofundo.com/tech/java/equalhash.html for the detail of this
-        // algorithm.
-        int hash = 7;
+        HashCodeBuilder builder = new HashCodeBuilder();
 
-        hash = 31 * hash + super.hashCode();
-        hash = 31 * hash + ObjectUtils.hasCode(getRoleType());
-        hash = 31 * hash + ObjectUtils.hasCode(getName());
-        hash = 31 * hash + Arrays.hashCode(getHints());
+        builder.appendSuper(super.hashCode());
 
-        return hash;
+        builder.append(getRoleType());
+        builder.append(getName());
+        builder.append(getHints());
+
+        return builder.toHashCode();
     }
 
     // deprecated

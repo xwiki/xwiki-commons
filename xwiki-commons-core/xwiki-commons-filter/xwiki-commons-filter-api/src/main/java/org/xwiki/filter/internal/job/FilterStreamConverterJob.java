@@ -35,10 +35,10 @@ import org.xwiki.filter.job.FilterStreamConverterJobRequest;
 import org.xwiki.filter.job.FilterStreamJobRequest;
 import org.xwiki.filter.output.OutputFilterStream;
 import org.xwiki.filter.output.OutputFilterStreamFactory;
+import org.xwiki.job.AbstractJob;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.GroupedJob;
 import org.xwiki.job.JobGroupPath;
-import org.xwiki.job.internal.AbstractJob;
-import org.xwiki.job.internal.DefaultJobStatus;
 
 /**
  * Perform a Filter conversion.
@@ -49,9 +49,9 @@ import org.xwiki.job.internal.DefaultJobStatus;
 @Component
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 @Named(FilterStreamConverterJob.JOBTYPE)
-public class FilterStreamConverterJob extends
-    AbstractJob<FilterStreamConverterJobRequest, DefaultJobStatus<FilterStreamConverterJobRequest>> implements
-    GroupedJob
+public class FilterStreamConverterJob
+    extends AbstractJob<FilterStreamConverterJobRequest, DefaultJobStatus<FilterStreamConverterJobRequest>>
+    implements GroupedJob
 {
     /**
      * The id of the job.
@@ -61,8 +61,8 @@ public class FilterStreamConverterJob extends
     /**
      * The root group of all filter conversion jobs.
      */
-    public static final JobGroupPath ROOT_GROUP = new JobGroupPath(Arrays.asList(FilterStreamJobRequest.JOBID_PREFIX,
-        "converter"));
+    public static final JobGroupPath ROOT_GROUP =
+        new JobGroupPath(Arrays.asList(FilterStreamJobRequest.JOBID_PREFIX, "converter"));
 
     @Inject
     @Named("context")
@@ -83,15 +83,13 @@ public class FilterStreamConverterJob extends
     @Override
     protected void runInternal() throws Exception
     {
-        InputFilterStreamFactory inputFactory =
-            this.componentManagerProvider.get().getInstance(InputFilterStreamFactory.class,
-                getRequest().getInputType().serialize());
+        InputFilterStreamFactory inputFactory = this.componentManagerProvider.get()
+            .getInstance(InputFilterStreamFactory.class, getRequest().getInputType().serialize());
 
         InputFilterStream inputFilter = inputFactory.createInputFilterStream(getRequest().getInputProperties());
 
-        OutputFilterStreamFactory outputFactory =
-            this.componentManagerProvider.get().getInstance(OutputFilterStreamFactory.class,
-                getRequest().getOutputType().serialize());
+        OutputFilterStreamFactory outputFactory = this.componentManagerProvider.get()
+            .getInstance(OutputFilterStreamFactory.class, getRequest().getOutputType().serialize());
 
         OutputFilterStream outputFilter = outputFactory.createOutputFilterStream(getRequest().getOutputProperties());
 

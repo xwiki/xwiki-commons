@@ -29,7 +29,6 @@ import org.xwiki.crypto.pkix.params.x509certificate.extension.ExtendedKeyUsages;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.KeyUsage;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509Extensions;
 import org.xwiki.crypto.pkix.params.x509certificate.extension.X509GeneralName;
-import org.xwiki.stability.Unstable;
 
 /**
  * Builder to build X.509 extension set.
@@ -38,7 +37,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4
  */
 @Role
-@Unstable
 public interface X509ExtensionBuilder
 {
     /**

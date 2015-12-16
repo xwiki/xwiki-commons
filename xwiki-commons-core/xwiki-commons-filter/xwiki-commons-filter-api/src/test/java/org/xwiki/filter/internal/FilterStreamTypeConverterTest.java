@@ -43,8 +43,8 @@ public class FilterStreamTypeConverterTest
     {
         FilterStreamType type =
             this.mocker.getComponentUnderTest().convert(FilterStreamType.class,
-                FilterStreamType.XWIKI_XAR_11.serialize());
-        Assert.assertEquals(FilterStreamType.XWIKI_XAR_11, type);
+                FilterStreamType.XWIKI_XAR_CURRENT.serialize());
+        Assert.assertEquals(FilterStreamType.XWIKI_XAR_CURRENT, type);
     }
 
     @Test
@@ -57,8 +57,8 @@ public class FilterStreamTypeConverterTest
     @Test
     public void convertToString() throws Exception
     {
-        String typeId = this.mocker.getComponentUnderTest().convert(String.class, FilterStreamType.XWIKI_XAR_11);
-        Assert.assertEquals(FilterStreamType.XWIKI_XAR_11.serialize(), typeId);
+        String typeId = this.mocker.getComponentUnderTest().convert(String.class, FilterStreamType.XWIKI_XAR_CURRENT);
+        Assert.assertEquals(FilterStreamType.XWIKI_XAR_CURRENT.serialize(), typeId);
     }
 
     @Test

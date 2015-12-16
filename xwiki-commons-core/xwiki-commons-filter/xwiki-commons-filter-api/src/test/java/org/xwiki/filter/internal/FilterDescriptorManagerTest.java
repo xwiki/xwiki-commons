@@ -19,6 +19,12 @@
  */
 package org.xwiki.filter.internal;
 
+import static org.junit.Assert.assertNotSame;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
 import java.awt.Color;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -38,6 +44,9 @@ import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterElementDescriptor;
 import org.xwiki.filter.FilterElementParameterDescriptor;
+import org.xwiki.filter.FilterEventParameters;
+import org.xwiki.filter.FilterException;
+import org.xwiki.filter.UnknownFilter;
 import org.xwiki.filter.test.TestFilter;
 import org.xwiki.filter.test.TestFilterImplementation;
 import org.xwiki.properties.ConverterManager;
@@ -154,5 +163,20 @@ public class FilterDescriptorManagerTest
         FilterElementParameterDescriptor<Map<String, String>> parameter3 = filterElement.getParameter("map");
 
         Assert.assertEquals(Collections.EMPTY_MAP, parameter3.getDefaultValue());
+    }
+
+    @Test(expected = FilterException.class)
+    public void testProxyFailing() throws FilterException, ComponentLookupException
+    {
+        UnknownFilter filter = mock(UnknownFilter.class);
+        doThrow(FilterException.class).when(filter).onUnknwon(anyString(), any(FilterEventParameters.class));
+
+        UnknownFilter proxyFilter =
+            this.mocker.getComponentUnderTest().createFilterProxy(filter, UnknownFilter.class,
+                FilterDescriptorManager.class);
+
+        assertNotSame(filter, proxyFilter);
+
+        proxyFilter.onUnknwon(null, null);
     }
 }

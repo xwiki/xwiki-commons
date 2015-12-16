@@ -22,25 +22,22 @@ package org.xwiki.extension.repository.internal.installed;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.CoreExtension;
-import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -53,10 +50,6 @@ import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
-import org.xwiki.extension.repository.internal.AbstractCachedExtensionRepository;
-import org.xwiki.extension.repository.internal.RepositoryUtils;
-import org.xwiki.extension.repository.result.IterableResult;
-import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 
@@ -69,8 +62,9 @@ import org.xwiki.extension.version.VersionConstraint;
 @Component
 @Singleton
 // TODO: move all installation related code from local repository to here
-public class DefaultInstalledExtensionRepository extends AbstractCachedExtensionRepository<DefaultInstalledExtension>
-    implements InstalledExtensionRepository, Initializable
+public class DefaultInstalledExtensionRepository extends
+    AbstractInstalledExtensionRepository<DefaultInstalledExtension> implements InstalledExtensionRepository,
+    Initializable
 {
     private static class InstalledRootFeature
     {
@@ -436,17 +430,23 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
      * @param localExtension the extension to install
      * @param namespace the namespace
      * @param dependency indicate if the extension is stored as a dependency of another one
+     * @param properties the custom properties to set on the installed extension for the specified namespace
      * @throws InstallException error when trying to uninstall extension
      * @see #installExtension(LocalExtension, String)
      */
     private void applyInstallExtension(DefaultInstalledExtension installedExtension, String namespace,
-        boolean dependency) throws InstallException
+        boolean dependency, Map<String, Object> properties) throws InstallException
     {
         // INSTALLED
         installedExtension.setInstalled(true, namespace);
+        installedExtension.setInstallDate(new Date(), namespace);
 
         // DEPENDENCY
         installedExtension.setDependency(dependency, namespace);
+
+        // Add custom install properties for the specified namespace. The map holding the namespace properties should
+        // not be null because it is initialized by the InstalledExtension#setInstalled(true, namespace) call above.
+        installedExtension.getNamespaceProperties(namespace).putAll(properties);
 
         // Save properties
         try {
@@ -618,6 +618,10 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
      */
     private InstalledFeature getInstalledFeatureFromCache(String feature, String namespace)
     {
+        if (feature == null) {
+            return null;
+        }
+
         Map<String, InstalledFeature> installedExtensionsForFeature = this.extensionNamespaceByFeature.get(feature);
 
         if (installedExtensionsForFeature == null) {
@@ -634,37 +638,6 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
     }
 
     // InstalledExtensionRepository
-
-    @Override
-    public int countExtensions()
-    {
-        return this.extensions.size();
-    }
-
-    @Override
-    public Collection<InstalledExtension> getInstalledExtensions(String namespace)
-    {
-        List<InstalledExtension> result = new ArrayList<InstalledExtension>(this.extensions.size());
-        for (InstalledExtension installedExtension : this.extensions.values()) {
-            if (installedExtension.isInstalled(namespace)) {
-                result.add(installedExtension);
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public Collection<InstalledExtension> getInstalledExtensions()
-    {
-        return Collections.<InstalledExtension>unmodifiableCollection(this.extensions.values());
-    }
-
-    @Override
-    public InstalledExtension getInstalledExtension(ExtensionId extensionId)
-    {
-        return this.extensions.get(extensionId);
-    }
 
     @Override
     public InstalledExtension getInstalledExtension(String feature, String namespace)
@@ -684,8 +657,8 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
     }
 
     @Override
-    public InstalledExtension installExtension(LocalExtension extension, String namespace, boolean dependency)
-        throws InstallException
+    public InstalledExtension installExtension(LocalExtension extension, String namespace, boolean dependency,
+        Map<String, Object> properties) throws InstallException
     {
         DefaultInstalledExtension installedExtension = this.extensions.get(extension.getId());
 
@@ -715,7 +688,7 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
                 installedExtension = new DefaultInstalledExtension(localExtension, this);
             }
 
-            applyInstallExtension(installedExtension, namespace, dependency);
+            applyInstallExtension(installedExtension, namespace, dependency, properties);
         }
 
         return installedExtension;
@@ -804,31 +777,5 @@ public class DefaultInstalledExtensionRepository extends AbstractCachedExtension
         }
 
         return result;
-    }
-
-    // Search
-
-    @Override
-    public IterableResult<Extension> searchInstalledExtensions(String pattern, String namespace, int offset, int nb)
-        throws SearchException
-    {
-        Pattern patternMatcher =
-            StringUtils.isEmpty(pattern) ? null : Pattern.compile(RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX
-                + Pattern.quote(pattern.toLowerCase()) + RepositoryUtils.SEARCH_PATTERN_SUFFIXNPREFIX);
-
-        Set<Extension> set = new HashSet<Extension>();
-        List<Extension> result = new ArrayList<Extension>(this.extensionsVersions.size());
-
-        for (InstalledExtension installedExtension : this.extensions.values()) {
-            if (installedExtension.isInstalled(namespace)) {
-                if ((patternMatcher == null || RepositoryUtils.matches(patternMatcher, installedExtension))
-                    && !set.contains(installedExtension)) {
-                    result.add(installedExtension);
-                    set.add(installedExtension);
-                }
-            }
-        }
-
-        return RepositoryUtils.getIterableResult(offset, nb, result);
     }
 }

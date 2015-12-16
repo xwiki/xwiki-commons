@@ -1,4 +1,7 @@
 org.xwiki.script.internal.DefaultScriptContextManager
 org.xwiki.script.internal.ScriptExecutionContextInitializer
+org.xwiki.script.internal.safe.CollectionScriptSafeProvider
+org.xwiki.script.internal.safe.DefaultScriptSafeProvider
+org.xwiki.script.internal.safe.MapScriptSafeProvider
 org.xwiki.script.internal.service.DefaultScriptServiceManager
 org.xwiki.script.internal.service.ServicesScriptContextInitializer

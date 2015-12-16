@@ -35,6 +35,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
  * A {@link ReferenceByXPathUnmarshaller} which never fail whatever value is provided.
  *
  * @version $Id$
+ * @since 5.0M2
  */
 public class SafeTreeUnmarshaller extends ReferenceByXPathUnmarshaller
 {
@@ -67,9 +68,8 @@ public class SafeTreeUnmarshaller extends ReferenceByXPathUnmarshaller
                 types = (FastStack) FieldUtils.getDeclaredField(TreeUnmarshaller.class, "types", true).get(this);
                 types.popSilently();
             } catch (Exception e1) {
-                // TODO Should never happen
-
-                LOGGER.debug("Failed to access private fied com.thoughtworks.xstream.core.TreeUnmarshaller#types",
+                // Should never happen
+                LOGGER.debug("Failed to access private field com.thoughtworks.xstream.core.TreeUnmarshaller#types",
                     type, e1);
             }
 

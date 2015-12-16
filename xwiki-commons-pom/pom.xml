@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-pom</artifactId>
   <name>XWiki Commons - Root POM</name>
@@ -115,6 +115,7 @@
           </dependencies>
           <configuration>
             <configLocation>checkstyle.xml</configLocation>
+            <propertyExpansion>currentVersion=${project.version}</propertyExpansion>
           </configuration>
           <executions>
             <execution>
@@ -159,7 +160,7 @@
               <exclude>**/goal.txt</exclude>
             </excludes>
           </configuration>
-          <!-- Add a dependency since this is where the maven-license-plugin plugin will find the license.txt file -->
+          <!-- Add a dependency since this is where the license-maven-plugin plugin will find the license.txt file -->
           <dependencies>
             <dependency>
               <groupId>org.xwiki.commons</groupId>
@@ -182,6 +183,21 @@
           <configuration>
             <!-- Add missing license headers by default -->
             <formatLicense>true</formatLicense>
+            <!-- Consider all pages named *Translations as content pages (since they have translations) but also
+                 as Technical pages since they need to be hidden. -->
+            <contentPages>
+              <contentPage>.*Translations\.xml</contentPage>
+            </contentPages>
+            <technicalPages>
+              <technicalPage>.*Translations\.xml</technicalPage>
+            </technicalPages>
+            <titles>
+              <!-- Verify that all WebPreferences pages have the same title for consistency -->
+              <property>
+                <name>.*WebPreferences</name>
+                <value>\$services\.localization\.render\('admin.preferences.title'\)</value>
+              </property>
+            </titles>
           </configuration>
         </plugin>
       </plugins>

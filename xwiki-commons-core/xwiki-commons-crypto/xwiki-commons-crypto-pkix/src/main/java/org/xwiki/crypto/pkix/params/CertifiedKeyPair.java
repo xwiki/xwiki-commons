@@ -22,7 +22,6 @@ package org.xwiki.crypto.pkix.params;
 import org.xwiki.crypto.params.cipher.asymmetric.AsymmetricKeyPair;
 import org.xwiki.crypto.params.cipher.asymmetric.PrivateKeyParameters;
 import org.xwiki.crypto.params.cipher.asymmetric.PublicKeyParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * A certified key pair.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public class CertifiedKeyPair
 {
     private final PrivateKeyParameters privateKey;

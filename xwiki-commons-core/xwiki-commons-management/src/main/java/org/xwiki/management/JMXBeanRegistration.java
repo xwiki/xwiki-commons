@@ -36,4 +36,11 @@ public interface JMXBeanRegistration
      *        that the domain is registered by default and shouldn't be passed
      */
     void registerMBean(Object mbean, String name);
+
+    /**
+     * @param name the name under which to register, for example "type=Velocity,domain=Engines,name=someName". Note
+     *        that the domain is registered by default and shouldn't be passed
+     * @since 6.4RC1
+     */
+    void unregisterMBean(String name);
 }

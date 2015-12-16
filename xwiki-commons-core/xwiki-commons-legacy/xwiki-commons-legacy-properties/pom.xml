@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-legacy</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-legacy-properties</artifactId>
   <name>XWiki Commons - Properties</name>
@@ -40,11 +40,10 @@
       <artifactId>xwiki-commons-properties</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <!-- Tests dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-component</artifactId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

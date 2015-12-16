@@ -26,7 +26,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>6.4-SNAPSHOT</version>
+  <version>7.4-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -48,38 +48,50 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>6.4-SNAPSHOT</commons.version>
+    <commons.version>7.4-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>6.3</xwiki.clirr.previous.version>
+    <xwiki.clirr.previous.version>7.3</xwiki.clirr.previous.version>
 
     <!-- REST -->
     <restlet.version>2.0.14</restlet.version>
 
+    <!-- Jackson -->
+    <jackson.version>2.6.4</jackson.version>
+
     <!-- Selenium -->
-    <selenium.version>2.43.1</selenium.version>
+    <selenium.version>2.44.0</selenium.version>
 
     <!-- SLF4J -->
-    <slf4j.version>1.7.9</slf4j.version>
+    <slf4j.version>1.7.13</slf4j.version>
 
     <!-- Hamcrest -->
     <hamcrest.version>1.3</hamcrest.version>
 
     <!-- JUnit -->
-    <junit.version>4.11</junit.version>
+    <junit.version>4.12</junit.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
-    <mockito.version>1.10.8</mockito.version>
+    <mockito.version>1.10.19</mockito.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.8.4</aspectj.version>
+    <aspectj.version>1.8.7</aspectj.version>
 
-    <!-- Clover -->
-    <clover.version>3.1.12</clover.version>
+    <!-- Clover & Jacoco -->
+    <clover.version>4.0.6</clover.version>
+    <!-- TODO: There's a regression with version 0.7.5.201505241946, see
+         - http://stackoverflow.com/questions/30459260/jacoco-sonarqube-incompatible-version-1007
+         - http://jira.codehaus.org/browse/SONARJAVA-1091
+         Remove once version 3.4 of the SonarQube JaCoCo plugin is released and installed on sonar.xwiki.org
+    -->
+    <jacoco.version>0.7.4.201502262128</jacoco.version>
 
     <!-- IzPack -->
-    <izpack.version>5.0.0-rc1</izpack.version>
+    <izpack.version>5.0.6</izpack.version>
+
+    <!-- Checkstyle -->
+    <checkstyle.version>6.13</checkstyle.version>
 
     <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -179,7 +191,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.3.2</version>
+        <version>3.4</version>
       </dependency>
       <!-- We don't use Commons Lang 2.x ourselves (we use Commons Lang 3.x) but some of our transitive dependencies
            require Commons Lang. The issue is that Maven uses a "closest-to-root" strategy to resolve dependency
@@ -195,12 +207,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
-        <version>4.0</version>
+        <version>4.1</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
-        <version>3.2.1</version>
+        <version>3.2.2</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -210,13 +222,13 @@
       <dependency>
         <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
-        <version>3.3</version>
+        <version>3.4</version>
       </dependency>
       <!-- Apache HttpComponents -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.3.6</version>
+        <version>4.5.1</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -228,17 +240,17 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>4.3.6</version>
+        <version>4.5.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.3.3</version>
+        <version>4.4.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
-        <version>4.3.3</version>
+        <version>4.4.4</version>
       </dependency>
       <!-- Old httpclient -->
       <dependency>
@@ -254,9 +266,16 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>commons-dbcp</groupId>
-        <artifactId>commons-dbcp</artifactId>
-        <version>1.3</version>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-dbcp2</artifactId>
+        <version>2.1.1</version>
+        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
@@ -295,22 +314,25 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.9</version>
+        <version>1.10</version>
       </dependency>
 
       <!-- XML processing -->
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.7</version>
+        <version>1.4.8</version>
       </dependency>
+      <!-- Note: The DOM4J project has been dead for several years and we've decided to not use it in any new code and
+           over time to refactor existing code to use JDOM or other XML techniques (such as STaX). When all code has
+           been converted, remove this dependency and add it as a build failure so that we don't reintroduce it again
+           by error -->
       <dependency>
         <groupId>dom4j</groupId>
         <artifactId>dom4j</artifactId>
         <version>1.6.1</version>
       </dependency>
       <dependency>
-
         <groupId>org.jdom</groupId>
         <artifactId>jdom</artifactId>
         <version>1.1.3</version>
@@ -318,7 +340,7 @@
       <dependency>
         <groupId>org.jdom</groupId>
         <artifactId>jdom2</artifactId>
-        <version>2.0.5</version>
+        <version>2.0.6</version>
       </dependency>
       <dependency>
         <groupId>net.java.dev.stax-utils</groupId>
@@ -331,6 +353,16 @@
             <artifactId>jsr173-ri</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>xpp3</groupId>
+        <artifactId>xpp3</artifactId>
+        <version>1.1.4c</version>
+      </dependency>
+      <dependency>
+        <groupId>xpp3</groupId>
+        <artifactId>xpp3_min</artifactId>
+        <version>1.1.4c</version>
       </dependency>
 
       <!-- What is included in the JRE is too old and Oracle does not seems to plan to upgrade it anytime soon -->
@@ -345,20 +377,14 @@
         <artifactId>xml-apis</artifactId>
         <version>1.4.01</version>
       </dependency>
-
-      <!-- Jackson -->
+      <!-- Used by several projects (HTMLCleaner, Formula renderer, etc.) directly or indirectly to do XPath and XSLT transformations -->
       <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-core-asl</artifactId>
-        <version>1.9.13</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-mapper-asl</artifactId>
-        <version>1.9.13</version>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>2.7.2</version>
       </dependency>
 
-      <!-- Used in both commons and platform -->
+      <!-- Json -->
       <dependency>
         <groupId>net.sf.json-lib</groupId>
         <artifactId>json-lib</artifactId>
@@ -372,27 +398,136 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- Version greater than 20140107 require Java 8 -->
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20140107</version>
+      </dependency>
+
+      <!-- Jackson -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-csv</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-smile</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-cbor</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-avro</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jdk7</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-jaxb-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-jsonSchema</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <!-- JAX-RS -->
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>jsr311-api</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.restlet.jse</groupId>
+        <artifactId>org.restlet.ext.jaxrs</artifactId>
+        <version>${restlet.version}</version>
+        <exclusions>
+          <!-- Exclude Servlet API 2.5 which is not declared as provided. And we use a newer version too. -->
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
+            <artifactId>jaxb-impl</artifactId>
+            <groupId>com.sun.xml.bind</groupId>
+          </exclusion>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
+            <artifactId>jaxb-api</artifactId>
+            <groupId>javax.xml.bind</groupId>
+          </exclusion>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
+            <groupId>javax.xml.stream</groupId>
+            <artifactId>stax-api</artifactId>
+          </exclusion>
+          <!-- We use a more accurate and up to date JSON framework version -->
+          <exclusion>
+            <artifactId>org.restlet.lib.org.json</artifactId>
+            <groupId>org.restlet.jse</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- Bouncy Castle -->
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk15on</artifactId>
-        <version>1.49</version>
+        <version>1.53</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk15on</artifactId>
-        <version>1.49</version>
+        <version>1.53</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcmail-jdk15on</artifactId>
-        <version>1.49</version>
+        <version>1.53</version>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
       <dependency>
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
-        <version>0.9.9</version>
+        <version>0.9.10</version>
       </dependency>
 
       <!-- netcdf 4.2-min wrongly embbeds jcip classes -->
@@ -406,14 +541,14 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>18.0</version>
+        <version>19.0</version>
       </dependency>
 
       <!-- Groovy engine. Used in both commons and platform -->
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
-        <version>2.3.8</version>
+        <version>2.4.5</version>
       </dependency>
 
       <!-- Everybody logs -->
@@ -426,7 +561,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.1.2</version>
+        <version>1.1.3</version>
       </dependency>
       <!-- External libraries using Commons Logging will delegate to SLF4J -->
       <dependency>
@@ -445,14 +580,14 @@
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
-        <version>3.1.3.GA</version>
+        <version>3.1.4.GA</version>
       </dependency>
 
       <!-- Triggerd by several Maven related projects (Doxia, Maven, Aether) as transitive dependency -->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>3.0.17</version>
+        <version>3.0.22</version>
       </dependency>
 
       <!-- Everybody tests -->
@@ -480,6 +615,13 @@
         <groupId>org.jmock</groupId>
         <artifactId>jmock-junit4</artifactId>
         <version>${jmock.version}</version>
+        <exclusions>
+          <!-- junit-dep is deprecated and junit should be used instead  -->
+          <exclusion>
+            <artifactId>junit-dep</artifactId>
+            <groupId>junit</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
@@ -509,14 +651,13 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- Most plugins depend on the servlet API -->
+      <!-- Several modules depend on the servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <!-- Note: The 2.4 version is not technically correct as 2.4 corresponds to a specification
-             # and is not an implementation version. The central repo would need to be fixed... -->
-        <version>2.4</version>
-        <!-- It should always be provided, otherwise containers will complain about it. -->
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.0.1</version>
+        <!-- It should always be provided as the API jar is provided by the Servlet Container in which XWiki is
+             deployed -->
         <scope>provided</scope>
       </dependency>
       <!-- Needed for Legacy modules. The version needs to be in sync with the one used by the AspectJ plugin -->
@@ -529,7 +670,7 @@
       <dependency>
         <groupId>net.sourceforge.cssparser</groupId>
         <artifactId>cssparser</artifactId>
-        <version>0.9.14</version>
+        <version>0.9.18</version>
       </dependency>
       <!-- Bean validation -->
       <dependency>
@@ -549,12 +690,6 @@
             <artifactId>activation</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <!-- SmartGWT -->
-      <dependency>
-        <groupId>com.smartgwt</groupId>
-        <artifactId>smartgwt</artifactId>
-        <version>4.0</version>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
@@ -582,6 +717,19 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <!-- Generic java annotations. These superseed jsr250-api, so we need to make
+           sure to exclude it in case it is pulled transitively. -->
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.2</version>
+      </dependency>
+      <!-- ASM -->
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>5.0.4</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -682,7 +830,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.13</version>
+          <version>2.17</version>
           <configuration>
             <consoleOutput>true</consoleOutput>
             <!-- We use this to disable checkstyle when the clover profile is executed since there's a
@@ -690,13 +838,23 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
                  checkstyle rules -->
             <skip>${xwiki.checkstyle.skip}</skip>
           </configuration>
+          <!-- We redeclare the version of checkstyle to control which version we use. We do that since we also write
+               custom checkstyle checks and we need to keep in sync the checkstyle version used to compile those
+               checks with the checkstyle version used by the checkstyle plugin -->
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>${checkstyle.version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <!-- Used to check/update license headers -->
         <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
+          <version>2.11</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -714,7 +872,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5.1</version>
+          <version>2.5.3</version>
           <configuration>
             <!-- By default the release plugin will execute the "clean" and "verify" goals but won't perform an
                  "install". This is causing problems since several modules will fail to build during release:prepare.
@@ -724,13 +882,15 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             <!-- Avoid site generation during the release:perform to speed up release process -->
             <goals>deploy</goals>
             <mavenExecutorId>forked-path</mavenExecutorId>
+            <!-- We always use the same version for submodules -->
+            <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6.1</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -789,7 +949,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.16</version>
+          <version>2.19</version>
           <!-- XWiki rule is to put test in *Test classes -->
           <configuration>
             <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
@@ -815,7 +975,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5</version>
+          <version>2.6</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -829,19 +989,19 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5.3</version>
+          <version>2.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.9</version>
+          <version>2.10</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5</version>
+          <version>2.6</version>
           <configuration>
             <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
@@ -861,7 +1021,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.7</version>
+          <version>1.8</version>
           <configuration>
             <complianceLevel>1.7</complianceLevel>
             <source>1.7</source>
@@ -886,7 +1046,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-invoker-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.8</version>
+          <version>1.10</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -904,7 +1064,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.7</version>
+          <version>1.10</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -928,7 +1088,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>clirr-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
+          <version>2.7</version>
           <executions>
             <execution>
               <id>clirr-check</id>
@@ -961,7 +1121,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.3.7</version>
+          <version>2.5.3</version>
         </plugin>
         <plugin>
           <groupId>com.atlassian.maven.plugins</groupId>
@@ -969,10 +1129,10 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
           <configuration>
-            <license><![CDATA[qrQMuLFrILhIeRILrqhGBqjUrQQEnImixnpoFreoubGuqOa
-mj2Kjoh2sXZcCMFBWOhe<dGh2L053ktz00HxawUp94OiFmK
-rmnrUtrrrnMPPpNRrOOwXoNPnRqQqRMmPOsWsSsvVtTPqQP
-rnmqmUUnptsnqpommmmmUUnptsnqpommmmmUUONfhfUUnmm
+            <license><![CDATA[nrqrUjrDHDhJUHFmcbwQoxwhnrpAvvxtfireXcjcnFLfnhs
+mj2KyGJY<oOR4f95>VRjHIO22L01PV<1<v2Q64gRLmTAFh1
+mnOmtsRNMRMORpMpnpmsSmNRqOqrNoqnqMVxvvVXvssmpRq
+RnmqmUUnrmoptpsmmmmmUUnrmoptpsmmmmmUUONfhfUUnmm
 mm
 ]]></license>
             <!-- For some reason there's currently a problem in the Rendering Include Macro test execution when
@@ -990,19 +1150,19 @@ mm
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.0</version>
+          <version>2.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.5</version>
+          <version>1.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.10.1</version>
+          <version>2.10.2</version>
           <configuration>
             <!-- Always exclude the internal package since it's not user-public -->
             <excludePackageNames>*.internal.*</excludePackageNames>
@@ -1069,16 +1229,19 @@ mm
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <!-- Lock down plugin version for build reproducibility -->
-          <version>2.2</version>
-        </plugin>
-        <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.7.2.201409121644</version>
+          <version>${jacoco.version}</version>
+          <configuration>
+            <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
+                 error, see
+                 http://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
+                 TODO: remove when https://sourceforge.net/p/cssparser/bugs/53/ is fixed -->
+            <excludes>
+              <exclude>**com.steadystate.css.parser.SACParserCSS21TokenManager</exclude>
+            </excludes>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>com.github.searls</groupId>
@@ -1223,9 +1386,9 @@ mm
         <dependencies>
           <!-- Needed when using Clover for runtime execution of integration tests -->
           <dependency>
-            <groupId>com.cenqua.clover</groupId>
+            <groupId>com.atlassian.clover</groupId>
             <artifactId>clover</artifactId>
-            <version>3.1.6</version>
+            <version>${clover.version}</version>
           </dependency>
         </dependencies>
       </dependencyManagement>
@@ -1307,7 +1470,10 @@ mm
               </execution>
             </executions>
             <configuration>
+              <!-- Tell the Agent Mojo to use a single destination file (instead of one per Maven module) -->
               <destFile>${xwiki.jacoco.itDestFile}</destFile>
+              <!-- Tell the Report Mojos to use the same destination file used for instrumentation -->
+              <dataFile>${xwiki.jacoco.itDestFile}</dataFile>
               <append>true</append>
             </configuration>
           </plugin>

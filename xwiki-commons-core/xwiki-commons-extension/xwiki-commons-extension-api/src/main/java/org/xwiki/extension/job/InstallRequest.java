@@ -19,7 +19,11 @@
  */
 package org.xwiki.extension.job;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.xwiki.job.Request;
+import org.xwiki.stability.Unstable;
 
 /**
  * Request used in {@link org.xwiki.extension.job.internal.InstallJob}.
@@ -29,6 +33,11 @@ import org.xwiki.job.Request;
  */
 public class InstallRequest extends AbstractExtensionRequest
 {
+    /**
+     * @see #getExtensionProperties()
+     */
+    public static final String PROPERTY_EXTENSION_PROPERTIES = "extension.properties";
+
     /**
      * Serialization identifier.
      */
@@ -47,5 +56,36 @@ public class InstallRequest extends AbstractExtensionRequest
     public InstallRequest(Request request)
     {
         super(request);
+    }
+
+    /**
+     * @return the custom extension properties to be set on each of the extensions that are going to be installed from
+     *         this request
+     * @since 7.0M2
+     */
+    @Unstable
+    public Map<String, Object> getExtensionProperties()
+    {
+        Map<String, Object> extensionProperties = getProperty(PROPERTY_EXTENSION_PROPERTIES);
+        if (extensionProperties == null) {
+            extensionProperties = new HashMap<>();
+            setProperty(PROPERTY_EXTENSION_PROPERTIES, extensionProperties);
+        }
+        return extensionProperties;
+    }
+
+    /**
+     * Sets a custom extension property to be set on each of the extensions that are going to be installed from this
+     * request.
+     * 
+     * @param key the property name
+     * @param value the new property value
+     * @return the previous property value
+     * @since 7.0M2
+     */
+    @Unstable
+    public Object setExtensionProperty(String key, Object value)
+    {
+        return getExtensionProperties().put(key, value);
     }
 }

@@ -19,16 +19,27 @@
  */
 package org.xwiki.job.internal.xstream;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.thoughtworks.xstream.XStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
+/**
+ * Validate {@link SafeXStream}.
+ * 
+ * @version $Id$
+ */
 public class SafeXStreamTest
 {
     static class RecursiveObject
@@ -47,7 +58,98 @@ public class SafeXStreamTest
         }
     }
 
-    private SafeXStream xstream;
+    static class RecursiveObjectThroughArray
+    {
+        RecursiveObjectThroughArray[] recurse;
+
+        public RecursiveObjectThroughArray()
+        {
+            this.recurse = new RecursiveObjectThroughArray[] { this };
+        }
+
+        @Override
+        public String toString()
+        {
+            return "recursive object through array";
+        }
+    }
+
+    static class FailToSerializeObject implements Serializable
+    {
+        private void writeObject(java.io.ObjectOutputStream out) throws IOException
+        {
+            throw new IOException();
+        }
+
+        private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+        {
+        }
+
+        private void readObjectNoData() throws ObjectStreamException
+        {
+        }
+    }
+
+    static class FailToSerializeField implements Serializable
+    {
+        FailToSerializeObject failingObject;
+    }
+
+    @org.xwiki.job.annotation.Serializable(false)
+    private static class NotSerializableObject
+    {
+        public String field;
+
+        public NotSerializableObject(String field)
+        {
+            this.field = field;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return Objects.equals(((NotSerializableObject) obj).field, this.field);
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.field;
+        }
+    }
+
+    private static class NotSerializableField
+    {
+        public NotSerializableObject field;
+
+        public NotSerializableField(String field)
+        {
+            this.field = new NotSerializableObject(field);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return Objects.equals(((NotSerializableObject) obj).field, this.field);
+        }
+    }
+
+    @org.xwiki.job.annotation.Serializable(false)
+    static class NotSerializableObjectWithFailingToString
+    {
+        public NotSerializableObjectWithFailingToString()
+        {
+
+        }
+
+        @Override
+        public String toString()
+        {
+            throw new RuntimeException();
+        }
+    }
+
+    private XStream xstream;
 
     @Before
     public void before()
@@ -55,13 +157,17 @@ public class SafeXStreamTest
         this.xstream = new SafeXStream();
     }
 
-    private Object writeread(Object obj)
+    private Object writeread(Object obj, String resource) throws IOException
     {
-        StringWriter writer = new StringWriter();
+        String str = this.xstream.toXML(obj);
 
-        this.xstream.toXML(obj, writer);
+        if (resource != null) {
+            String content = IOUtils.toString(getClass().getResourceAsStream(resource));
 
-        return this.xstream.fromXML(writer.toString());
+            assertEquals(content, str);
+        }
+
+        return this.xstream.fromXML(str);
     }
 
     private Object assertReadwrite(String resource) throws IOException
@@ -80,16 +186,92 @@ public class SafeXStreamTest
     // Tests
 
     @Test
-    public void testRecursiveObject()
+    public void testRecursiveObject() throws IOException
     {
-        RecursiveObject obj = (RecursiveObject) writeread(new RecursiveObject());
+        RecursiveObject obj = (RecursiveObject) writeread(new RecursiveObject(), "/xstream/RecursiveObject.xml");
 
-        Assert.assertNotNull(obj);
+        assertNotNull(obj);
+        assertNotNull(obj.recurse);
+        assertSame(obj, obj.recurse);
     }
 
     @Test
-    public void testReference() throws IOException
+    public void testRecursiveObjectThroughArray() throws IOException
     {
-        assertReadwrite("/xstream/arraywithreference.xml");
+        RecursiveObjectThroughArray obj =
+            (RecursiveObjectThroughArray) writeread(new RecursiveObjectThroughArray(),
+                "/xstream/RecursiveObjectThroughArray.xml");
+
+        assertNotNull(obj);
+        assertNotNull(obj.recurse);
+        assertEquals(1, obj.recurse.length);
+        assertSame(obj, obj.recurse[0]);
+    }
+
+    @Test
+    public void testArrayWithReference() throws IOException
+    {
+        assertReadwrite("/xstream/ArrayWithReference.xml");
+    }
+
+    @Test
+    public void testFailToSerializeObject() throws IOException
+    {
+        FailToSerializeObject obj =
+            (FailToSerializeObject) writeread(new FailToSerializeObject(), "/xstream/FailToSerializeObject.xml");
+
+        assertNotNull(obj);
+    }
+
+    @Test
+    public void testFailToSerializeField() throws IOException
+    {
+        FailToSerializeField obj =
+            (FailToSerializeField) writeread(new FailToSerializeField(), "/xstream/FailToSerializeField.xml");
+
+        assertNotNull(obj);
+        assertNull(obj.failingObject);
+    }
+
+    @Test
+    public void testNotSerializableObject() throws IOException
+    {
+        NotSerializableObject obj =
+            (NotSerializableObject) writeread(new NotSerializableObject("value"), "/xstream/NotSerializableObject.xml");
+
+        assertNotNull(obj);
+        assertNull(obj.field);
+    }
+
+    @Test
+    public void testNotSerializableObjectInArray() throws IOException
+    {
+        Object[] obj =
+            (Object[]) writeread(new Object[] { new NotSerializableObject("value") },
+                "/xstream/NotSerializableObjectInArray.xml");
+
+        assertNotNull(obj);
+        assertEquals("value", obj[0]);
+    }
+
+    @Test
+    public void testNotSerializableField() throws IOException
+    {
+        NotSerializableField obj =
+            (NotSerializableField) writeread(new NotSerializableField("value"), "/xstream/NotSerializableField.xml");
+
+        assertNotNull(obj);
+        assertNull(obj.field);
+    }
+
+    @Test
+    public void testNotSerializableObjectWithFailingToStringInArray() throws IOException
+    {
+        Object[] obj =
+            (Object[]) writeread(new Object[] { new NotSerializableObjectWithFailingToString() },
+                "/xstream/NotSerializableObjectWithFailingToStringInArray.xml");
+
+        assertNotNull(obj);
+        assertEquals(null, obj[0]);
     }
 }

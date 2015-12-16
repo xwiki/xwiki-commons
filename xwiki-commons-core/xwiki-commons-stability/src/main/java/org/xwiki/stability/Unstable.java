@@ -42,7 +42,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface Unstable
 {
     /**
-     * An optional explanation about the reason why the java type is unstable.
+     * @return an optional explanation about the reason why the java type is unstable.
      */
     String value() default "";
 }

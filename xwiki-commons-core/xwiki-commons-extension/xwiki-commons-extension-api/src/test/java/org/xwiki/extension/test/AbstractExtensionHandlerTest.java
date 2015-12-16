@@ -133,7 +133,6 @@ public abstract class AbstractExtensionHandlerTest
         throws Throwable
     {
         InstallRequest installRequest = new InstallRequest();
-        installRequest.setId(extensionId.getId());
         installRequest.addExtension(extensionId);
         if (namespaces != null) {
             for (String namespace : namespaces) {
@@ -168,13 +167,17 @@ public abstract class AbstractExtensionHandlerTest
         throws Throwable
     {
         UninstallRequest uninstallRequest = new UninstallRequest();
-        uninstallRequest.setId(extensionId.getId());
         uninstallRequest.addExtension(extensionId);
         if (namespace != null) {
             uninstallRequest.addNamespace(namespace);
         }
 
         return executeJob(jobId, uninstallRequest, failFrom);
+    }
+
+    protected ExtensionPlan upgradePlan() throws Throwable
+    {
+        return upgradePlan((String) null);
     }
 
     protected ExtensionPlan upgradePlan(String namespace) throws Throwable
@@ -203,6 +206,16 @@ public abstract class AbstractExtensionHandlerTest
             installRequest.getExcludedExtensions().addAll(excludedExtensions);
         }
 
+        return (ExtensionPlan) executeJob("upgradeplan", installRequest, failFrom).getStatus();
+    }
+
+    protected ExtensionPlan upgradePlan(InstallRequest installRequest) throws Throwable
+    {
+        return upgradePlan(installRequest, LogLevel.WARN);
+    }
+
+    protected ExtensionPlan upgradePlan(InstallRequest installRequest, LogLevel failFrom) throws Throwable
+    {
         return (ExtensionPlan) executeJob("upgradeplan", installRequest, failFrom).getStatus();
     }
 }

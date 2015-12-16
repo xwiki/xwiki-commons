@@ -23,15 +23,19 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections4.map.LRUMap;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -52,6 +56,8 @@ import org.xwiki.extension.repository.ExtensionRepositorySource;
 import org.xwiki.extension.repository.result.AggregatedIterableResult;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
+import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.version.Version;
@@ -91,6 +97,8 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
         .synchronizedMap(new LinkedHashMap<String, ExtensionRepository>());
 
     private Collection<ExtensionRepository> repositories = Collections.emptyList();
+
+    private LRUMap<ExtensionRepositoryDescriptor, ExtensionRepository> repositoriesCache = new LRUMap<>(100);
 
     @Override
     public void initialize() throws InitializationException
@@ -156,6 +164,39 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
         return this.repositoryMap.get(repositoryId);
     }
 
+    private ExtensionRepository getRepository(ExtensionRepositoryDescriptor repositoryDescriptor)
+        throws ExtensionRepositoryException
+    {
+        // Try in the cache
+        ExtensionRepository repository = this.repositoriesCache.get(repositoryDescriptor);
+
+        if (repository == null) {
+            // Try in the registered repositories
+            if (repositoryDescriptor.getId() != null) {
+                repository = getRepository(repositoryDescriptor.getId());
+            }
+
+            if (repository == null || !repository.getDescriptor().equals(repositoryDescriptor)) {
+                // Create one
+                ExtensionRepositoryFactory repositoryFactory;
+                try {
+                    repositoryFactory =
+                        this.componentManager.getInstance(ExtensionRepositoryFactory.class,
+                            repositoryDescriptor.getType());
+                } catch (ComponentLookupException e) {
+                    throw new ExtensionRepositoryException("Unsupported extension repository type [{"
+                        + repositoryDescriptor.getType() + "}]", e);
+                }
+
+                repository = repositoryFactory.createRepository(repositoryDescriptor);
+            }
+
+            this.repositoriesCache.put(repositoryDescriptor, repository);
+        }
+
+        return repository;
+    }
+
     @Override
     public Collection<ExtensionRepository> getRepositories()
     {
@@ -184,9 +225,46 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        ResolveException lastExtension = null;
+        Set<ExtensionRepositoryDescriptor> checkedRepositories = new HashSet<>();
+
+        Exception lastExtension = null;
+
+        for (ExtensionRepositoryDescriptor repositoryDescriptor : extensionDependency.getRepositories()) {
+            if (checkedRepositories.contains(repositoryDescriptor)) {
+                continue;
+            }
+
+            // Remember we tried that repository
+            checkedRepositories.add(repositoryDescriptor);
+
+            ExtensionRepository repository;
+            try {
+                repository = getRepository(repositoryDescriptor);
+            } catch (ExtensionRepositoryException e) {
+                this.logger.warn("Invalid repository [{}] in extension dependency",
+                    extensionDependency.getRepositories(), extensionDependency, ExceptionUtils.getRootCauseMessage(e));
+
+                continue;
+            }
+
+            try {
+                return repository.resolve(extensionDependency);
+            } catch (ResolveException e) {
+                this.logger.debug("Could not find extension dependency [{}] in repository [{}]", extensionDependency,
+                    repository.getDescriptor(), e);
+
+                lastExtension = e;
+            }
+        }
 
         for (ExtensionRepository repository : this.repositories) {
+            if (checkedRepositories.contains(repository.getDescriptor())) {
+                continue;
+            }
+
+            // Remember we tried that repository
+            checkedRepositories.add(repository.getDescriptor());
+
             try {
                 return repository.resolve(extensionDependency);
             } catch (ResolveException e) {
@@ -228,62 +306,84 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public IterableResult<Extension> search(String pattern, int offset, int nb)
     {
-        IterableResult<Extension> searchResult = null;
+        ExtensionQuery query = new ExtensionQuery(pattern);
 
-        int currentOffset = offset > 0 ? offset : 0;
-        int currentNb = nb;
+        query.setOffset(offset);
+        query.setLimit(nb);
+
+        return search(query);
+    }
+
+    @Override
+    public IterableResult<Extension> search(ExtensionQuery query)
+    {
+        IterableResult<? extends Extension> searchResult = null;
+
+        int currentOffset = query.getOffset() > 0 ? query.getOffset() : 0;
+        int currentNb = query.getLimit();
 
         // A local index would avoid things like this...
         for (ExtensionRepository repository : this.repositories) {
             try {
-                searchResult = search(repository, pattern, currentOffset, currentNb, searchResult);
+                ExtensionQuery customQuery = query;
+                if (currentOffset != customQuery.getOffset() && currentNb != customQuery.getLimit()) {
+                    customQuery = new ExtensionQuery(query);
+                    customQuery.setOffset(currentOffset);
+                    customQuery.setLimit(currentNb);
+                }
+
+                searchResult = search(repository, customQuery, searchResult);
 
                 if (searchResult != null) {
                     if (currentOffset > 0) {
-                        currentOffset = offset - searchResult.getTotalHits();
+                        currentOffset = query.getOffset() - searchResult.getTotalHits();
                         if (currentOffset < 0) {
                             currentOffset = 0;
                         }
                     }
 
                     if (currentNb > 0) {
-                        currentNb = nb - searchResult.getSize();
+                        currentNb = query.getLimit() - searchResult.getSize();
                         if (currentNb < 0) {
                             currentNb = 0;
                         }
                     }
                 }
             } catch (SearchException e) {
-                this.logger.error("Failed to search on repository [{}] with pattern=[{}], offset=[{}] and nb=[{}]. "
-                    + "Ignore and go to next repository.", repository.getDescriptor().toString(), pattern, offset, nb,
-                    e);
+                this.logger.error("Failed to search on repository [{}] with query [{}]. "
+                    + "Ignore and go to next repository.", repository.getDescriptor().toString(), query, e);
             }
         }
 
-        return searchResult != null ? searchResult : new CollectionIterableResult<Extension>(0, offset,
-            Collections.<Extension>emptyList());
+        return searchResult != null ? (IterableResult) searchResult : new CollectionIterableResult<Extension>(0,
+            query.getOffset(), Collections.<Extension>emptyList());
+
     }
 
     /**
      * Search one repository.
      *
      * @param repository the repository to search
-     * @param pattern the pattern to search
-     * @param offset the offset from where to start returning search results
-     * @param nb the maximum number of search results to return
+     * @param query the search query
      * @param previousSearchResult the current search result merged from all previous repositories
      * @return the updated maximum number of search results to return
      * @throws SearchException error while searching on provided repository
      */
-    private IterableResult<Extension> search(ExtensionRepository repository, String pattern, int offset, int nb,
-        IterableResult<Extension> previousSearchResult) throws SearchException
+    private IterableResult<? extends Extension> search(ExtensionRepository repository, ExtensionQuery query,
+        IterableResult<? extends Extension> previousSearchResult) throws SearchException
     {
-        IterableResult<Extension> result;
+        IterableResult<? extends Extension> result;
 
         if (repository instanceof Searchable) {
-            Searchable searchableRepository = (Searchable) repository;
+            if (repository instanceof AdvancedSearchable) {
+                AdvancedSearchable searchableRepository = (AdvancedSearchable) repository;
 
-            result = searchableRepository.search(pattern, offset, nb);
+                result = searchableRepository.search(query);
+            } else {
+                Searchable searchableRepository = (Searchable) repository;
+
+                result = searchableRepository.search(query.getQuery(), query.getOffset(), query.getLimit());
+            }
 
             if (previousSearchResult != null) {
                 result = appendSearchResults(previousSearchResult, result);
@@ -300,8 +400,8 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
      * @param result the new search result to append
      * @return the new aggregated search result
      */
-    private AggregatedIterableResult<Extension> appendSearchResults(IterableResult<Extension> previousSearchResult,
-        IterableResult<Extension> result)
+    private AggregatedIterableResult<Extension> appendSearchResults(
+        IterableResult<? extends Extension> previousSearchResult, IterableResult<? extends Extension> result)
     {
         AggregatedIterableResult<Extension> newResult;
 
@@ -309,10 +409,10 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
             newResult = ((AggregatedIterableResult<Extension>) previousSearchResult);
         } else {
             newResult = new AggregatedIterableResult<Extension>(previousSearchResult.getOffset());
-            newResult.addSearchResult(previousSearchResult);
+            newResult.addSearchResult((IterableResult) previousSearchResult);
         }
 
-        newResult.addSearchResult(result);
+        newResult.addSearchResult((IterableResult) result);
 
         return newResult;
     }

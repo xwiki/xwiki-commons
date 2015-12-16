@@ -93,6 +93,12 @@ public class ExtendedDiffDisplayerTest
             "@@ -1,4 +1,4 @@\n one\n-two-o-\n-thre\n+two\n+thre+e+\n four\n");
     }
 
+    @Test
+    public void testNullInput() throws Exception
+    {
+        execute(null, null, "");
+    }
+
     /**
      * Generates the extended diff between the given versions and asserts if it meets the expectation.
      *

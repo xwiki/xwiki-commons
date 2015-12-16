@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.pkix.params.CertifiedPublicKey;
-import org.xwiki.stability.Unstable;
 
 /**
  * Component role for creating certificate instances from external sources.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4
  */
 @Role
-@Unstable
 public interface CertificateFactory
 {
     /**

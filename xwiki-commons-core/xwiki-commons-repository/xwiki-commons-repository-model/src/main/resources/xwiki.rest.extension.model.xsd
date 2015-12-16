@@ -47,7 +47,9 @@
     <sequence>
       <element name="id" type="string" maxOccurs="1" minOccurs="1"></element>
       <element name="constraint" type="string" maxOccurs="1"
-        minOccurs="1"></element>
+        minOccurs="1">
+      </element>
+      <element name="repositories" type="extension:ExtensionRepository" minOccurs="0" maxOccurs="unbounded"></element>
     </sequence>
   </complexType>
 
@@ -58,7 +60,11 @@
       <extension base="extension:AbstractExtension">
         <sequence>
           <element name="version" type="string"></element>
-          <element name="dependencies" type="extension:ExtensionDependency" minOccurs="0" maxOccurs="unbounded"></element>
+          <element name="dependencies"
+            type="extension:ExtensionDependency" minOccurs="0"
+            maxOccurs="unbounded">
+          </element>
+          <element name="repositories" type="extension:ExtensionRepository" minOccurs="0" maxOccurs="unbounded"></element>
         </sequence>
       </extension>
     </complexContent>
@@ -158,6 +164,12 @@
             type="extension:ExtensionIssueManagement" minOccurs="0"
             maxOccurs="1">
           </element>
+          <element name="category" type="string" minOccurs="0"
+            maxOccurs="1">
+          </element>
+          <element name="properties" type="extension:Property"
+            minOccurs="0" maxOccurs="unbounded">
+          </element>
         </sequence>
       </extension>
     </complexContent>
@@ -221,6 +233,81 @@
       <sequence>
         <element name="id" type="string" minOccurs="1" maxOccurs="1"></element>
         <element name="version" type="string" minOccurs="0" maxOccurs="1"></element>
+      </sequence>
+    </complexType>
+
+    <complexType name="Property">
+      <sequence>
+        <element name="key" type="string"></element>
+        <!-- TODO: add support for any type -->
+        <element name="stringValue" type="string"></element>
+      </sequence>
+    </complexType>
+
+    <complexType name="Repository">
+      <sequence>
+        <element name="filterable" type="boolean" minOccurs="0"
+          maxOccurs="1">
+        </element>
+        <element name="sortable" type="boolean" minOccurs="0"
+          maxOccurs="1">
+        </element>
+        <element name="version" type="string" minOccurs="1" maxOccurs="1"></element>
+      </sequence>
+    </complexType>
+
+    <element name="repository" type="extension:Repository"></element>
+
+    <complexType name="ExtensionQuery">
+      <sequence>
+        <element name="query" type="string" minOccurs="0" maxOccurs="1"></element>
+            <element name="offset" type="int" default="0"></element>
+            <element name="limit" type="int" default="-1"></element>
+            <element name="filters" type="extension:Filter" minOccurs="0" maxOccurs="unbounded"></element>
+            <element name="sortClauses" type="extension:SortClause" minOccurs="0" maxOccurs="unbounded"></element>
+      </sequence>
+    </complexType>
+
+    <element name="extensionQuery" type="extension:ExtensionQuery"></element>
+
+    <complexType name="SortClause">
+      <sequence>
+        <element name="field" type="string" minOccurs="1"
+          maxOccurs="1">
+        </element>
+        <element name="order" default="ASC" type="extension:ORDER">
+        </element>
+      </sequence>
+    </complexType>
+
+    <complexType name="Filter">
+      <sequence>
+        <element name="field" type="string" minOccurs="1" maxOccurs="1"></element>
+            <element name="valueString" type="string" minOccurs="1" maxOccurs="1"></element>
+            <element name="comparison" default="MATCH" type="extension:COMPARISON">
+            </element>
+      </sequence>
+    </complexType>
+
+    <simpleType name="COMPARISON">
+      <restriction base="string">
+        <enumeration value="EQUAL"/>
+        <enumeration value="MATCH"/>
+      </restriction>
+    </simpleType>
+
+    <simpleType name="ORDER">
+      <restriction base="string">
+        <enumeration value="DESC"/>
+        <enumeration value="ASC"/>
+      </restriction>
+    </simpleType>
+
+    <complexType name="ExtensionRepository">
+      <sequence>
+        <element name="id" type="string"></element>
+        <element name="uri" type="string" minOccurs="1" maxOccurs="1"></element>
+        <element name="type" type="string" minOccurs="1" maxOccurs="1"></element>
       </sequence>
     </complexType>
 </schema>

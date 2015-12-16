@@ -21,7 +21,6 @@ package org.xwiki.crypto.password;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.password.params.KeyDerivationFunctionParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Factory for Key Derivation Function.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4M1
  */
 @Role
-@Unstable
 public interface KeyDerivationFunctionFactory
 {
     /**

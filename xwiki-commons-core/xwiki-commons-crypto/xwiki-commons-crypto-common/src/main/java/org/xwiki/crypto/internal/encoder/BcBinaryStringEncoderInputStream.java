@@ -255,7 +255,7 @@ class BcBinaryStringEncoderInputStream extends FilterInputStream
      * @param inputStream the underlying input stream where data will be read.
      * @param encoder the encoder used to decode data.
      */
-    public BcBinaryStringEncoderInputStream(InputStream inputStream, InternalBinaryStringEncoder encoder)
+    BcBinaryStringEncoderInputStream(InputStream inputStream, InternalBinaryStringEncoder encoder)
     {
         super(inputStream);
         this.encoder = encoder;

@@ -38,8 +38,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface Component
 {
     /**
-     * The hint value. Can be any text value. It's used to differentiate one component implementation from another one.
-     *
+     * @return the hint value. Can be any text value. It's used to differentiate one component implementation from
+     *         another one.
      * @deprecated since 3.1M1 use the {@code @Named} annotation instead
      */
     @Deprecated
@@ -48,20 +48,24 @@ public @interface Component
     /**
      * Sometimes you want to register the component several times with different hints. In this case the default
      * annotation value is ignored and the passed list of hints is used instead.
+     * 
+     * @return the list of hints
      */
-    String[] hints() default { };
+    String[] hints() default {};
 
     /**
      * When specified forces the component to be registered as many times as there are roles specified. Otherwise the
      * superclass/interface hierarchy is scanned for ComponentRole annotations and the component is registered under all
      * roles found.
+     * 
+     * @return the list of roles
      */
-    Class<?>[] roles() default { };
+    Class<?>[] roles() default {};
 
     /**
-     * Whether the Component should be registered in a {@code components.txt} file or not (this can happen for example
-     * when using a component in a test and registering it dynamically without going through a {@code components.txt}
-     * file).
+     * @return true if the Component should be registered in a {@code components.txt} file. False can be used for
+     *         example when using a component in a test and registering it dynamically without going through a
+     *         {@code components.txt} file.
      */
     boolean staticRegistration() default true;
 }

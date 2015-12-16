@@ -19,23 +19,14 @@
  */
 package org.xwiki.extension.repository.internal;
 
-import org.xwiki.extension.Extension;
-
 /**
  * Implemented by extensions coming from a Maven repository or a pom.xml.
  *
  * @version $Id$
  * @since 6.1M1
+ * @deprecated since 7.2RC1, use {@link org.xwiki.extension.internal.maven.MavenExtension} instead
  */
-public interface MavenExtension extends Extension
+@Deprecated
+public interface MavenExtension extends org.xwiki.extension.internal.maven.MavenExtension
 {
-    /**
-     * @return the Maven artifact id
-     */
-    String getMavenArtifactId();
-
-    /**
-     * @return the Maven artifact id
-     */
-    String getMavenGroupId();
 }

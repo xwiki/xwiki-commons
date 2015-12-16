@@ -37,7 +37,7 @@ public class UnifiedDiffElement<E, F>
     /**
      * The possible types of elements you can find within a unified diff.
      */
-    public static enum Type
+    public enum Type
     {
         /** An element that was added. */
         ADDED('+'),

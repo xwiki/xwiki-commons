@@ -19,15 +19,12 @@
  */
 package org.xwiki.crypto.params.cipher.symmetric;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Derived version of key parameters to specify effective key bits of RC2.
  *
  * @version $Id$
  * @since 5.4M1
  */
-@Unstable
 public class RC2KeyParameters extends KeyParameter
 {
     private final int bits;

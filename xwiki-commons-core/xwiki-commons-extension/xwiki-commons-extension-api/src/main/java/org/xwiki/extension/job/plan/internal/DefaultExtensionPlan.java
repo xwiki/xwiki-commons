@@ -28,7 +28,8 @@ import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.ExtensionPlanTree;
-import org.xwiki.job.internal.AbstractJobStatus;
+import org.xwiki.job.AbstractJobStatus;
+import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 
@@ -54,12 +55,13 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
      * @param loggerManager the logger manager component
      * @param tree the tree representation of the plan, it's not copied but taken as it it to allow filling it from
      *            outside
-     * @param subJob indicate of the job has been started by another one
+     * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
+     *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
      */
     public DefaultExtensionPlan(R request, ObservationManager observationManager, LoggerManager loggerManager,
-        ExtensionPlanTree tree, boolean subJob)
+        ExtensionPlanTree tree, JobStatus parentJobStatus)
     {
-        super(request, observationManager, loggerManager, subJob);
+        super(request, parentJobStatus, observationManager, loggerManager);
 
         this.tree = tree;
     }

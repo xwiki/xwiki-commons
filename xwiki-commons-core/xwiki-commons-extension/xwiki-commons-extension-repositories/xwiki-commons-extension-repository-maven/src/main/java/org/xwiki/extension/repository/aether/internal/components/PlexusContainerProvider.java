@@ -26,7 +26,7 @@ import javax.inject.Singleton;
 import org.codehaus.plexus.ContainerConfiguration;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.MutablePlexusContainer;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.slf4j.Logger;
@@ -53,13 +53,15 @@ public class PlexusContainerProvider implements Provider<PlexusContainer>, Initi
     /**
      * In-process maven runtime.
      */
-    private MutablePlexusContainer plexusContainer;
+    private DefaultPlexusContainer plexusContainer;
 
     @Override
     public void initialize() throws InitializationException
     {
         try {
-            ContainerConfiguration config = new DefaultContainerConfiguration().setAutoWiring(true);
+            ContainerConfiguration config = new DefaultContainerConfiguration();
+            config.setAutoWiring(true);
+            config.setClassPathScanning(PlexusConstants.SCANNING_INDEX);
             this.plexusContainer = new DefaultPlexusContainer(config);
             this.plexusContainer.setLoggerManager(new XWikiLoggerManager(this.logger));
         } catch (PlexusContainerException e) {

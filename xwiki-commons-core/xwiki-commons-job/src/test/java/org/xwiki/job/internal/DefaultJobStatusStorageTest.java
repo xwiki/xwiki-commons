@@ -29,12 +29,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.util.ReflectionUtils;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.JobManagerConfiguration;
-import org.xwiki.job.Request;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -46,7 +50,7 @@ public class DefaultJobStatusStorageTest
 {
     @Rule
     public final MockitoComponentMockingRule<DefaultJobStatusStore> componentManager =
-        new MockitoComponentMockingRule<DefaultJobStatusStore>(DefaultJobStatusStore.class);
+        new MockitoComponentMockingRule<>(DefaultJobStatusStore.class);
 
     @Before
     public void before() throws Exception
@@ -58,10 +62,11 @@ public class DefaultJobStatusStorageTest
         FileUtils.copyDirectory(new File("src/test/resources/jobs/"), new File("target/test/jobs/"));
 
         when(jobManagerConfiguration.getStorage()).thenReturn(new File("target/test/jobs/status"));
+        when(jobManagerConfiguration.getJobStatusCacheSize()).thenReturn(100);
     }
 
     @Test
-    public void testGetJobStatusWithNullId() throws Exception
+    public void getJobStatusWithNullId() throws Exception
     {
         JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus((List<String>) null);
 
@@ -73,7 +78,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testGetJobStatusWithMultipleId() throws Exception
+    public void getJobStatusWithMultipleId() throws Exception
     {
         JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2"));
 
@@ -86,7 +91,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testGetJobStatusInOldPlace() throws Exception
+    public void getJobStatusInOldPlace() throws Exception
     {
         JobStatus jobStatus =
             this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("id1", "id2", "id3"));
@@ -97,7 +102,7 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testGetJobStatusInWronfPlaceAndWithInvalidLogArgument() throws Exception
+    public void getJobStatusInWrongPlaceAndWithInvalidLogArgument() throws Exception
     {
         JobStatus jobStatus =
             this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("invalidlogargument"));
@@ -106,7 +111,23 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testRemoveJobStatus() throws ComponentLookupException
+    public void getJobStatusThatDoesNotExist() throws Exception
+    {
+        JobStatus jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("nostatus"));
+
+        assertNull(jobStatus);
+
+        JobStatusSerializer mockSerializer = mock(JobStatusSerializer.class);
+        ReflectionUtils.setFieldValue(this.componentManager.getComponentUnderTest(), "serializer", mockSerializer);
+
+        jobStatus = this.componentManager.getComponentUnderTest().getJobStatus(Arrays.asList("nostatus"));
+        assertNull(jobStatus);
+
+        verifyNoMoreInteractions(mockSerializer);
+    }
+
+    @Test
+    public void removeJobStatus() throws ComponentLookupException
     {
         List<String> id = null;
 
@@ -124,13 +145,13 @@ public class DefaultJobStatusStorageTest
     }
 
     @Test
-    public void testStoreJobStatus() throws ComponentLookupException
+    public void storeJobStatus() throws ComponentLookupException
     {
         List<String> id = Arrays.asList("newstatus");
 
         DefaultRequest request = new DefaultRequest();
         request.setId(id);
-        JobStatus jobStatus = new DefaultJobStatus<Request>(request, null, null, false);
+        JobStatus jobStatus = new DefaultJobStatus(request, null, null, null);
 
         this.componentManager.getComponentUnderTest().store(jobStatus);
 

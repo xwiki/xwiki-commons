@@ -25,14 +25,14 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-core</artifactId>
-    <version>6.4-SNAPSHOT</version>
+    <version>7.4-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-job</artifactId>
   <name>XWiki Commons - Job</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Job</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.35</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.46</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
@@ -61,12 +61,17 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-script</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -76,16 +81,10 @@
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.batch</groupId>
-      <artifactId>javax.batch-api</artifactId>
-      <version>1.0</version>
-    </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-test-component</artifactId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
@@ -104,7 +103,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
           <excludes>
-              org/xwiki/job/internal/AbstractJob.java,
+              org/xwiki/job/AbstractJob.java,
               org/xwiki/job/internal/xstream/SafeReflectionConverter.java,
               org/xwiki/job/internal/xstream/XStreamUtils.java
           </excludes>

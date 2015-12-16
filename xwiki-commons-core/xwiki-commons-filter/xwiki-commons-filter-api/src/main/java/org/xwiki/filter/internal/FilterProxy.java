@@ -29,7 +29,6 @@ import org.xwiki.filter.FilterElementParameterDescriptor;
 import org.xwiki.filter.FilterEventParameters;
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.UnknownFilter;
-import org.xwiki.stability.Unstable;
 
 /**
  * Helper for input module taking care of calling the right event when it exist, fallback on {@link UnknownFilter} or
@@ -38,7 +37,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.2M1
  */
-@Unstable
 public final class FilterProxy implements InvocationHandler
 {
     /**
@@ -64,7 +62,7 @@ public final class FilterProxy implements InvocationHandler
         try {
             invoke(this.targetFilter, this.descriptor, method, args);
         } catch (InvocationTargetException e) {
-            return e.getCause();
+            throw e.getCause();
         }
 
         return null;

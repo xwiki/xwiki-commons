@@ -19,10 +19,10 @@
  */
 package org.xwiki.context.internal;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
@@ -48,28 +48,13 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
     private Execution execution;
 
     /**
-     * Used to initialize the passed {@link ExecutionContext}.
+     * Used to initialize the passed {@link ExecutionContext}. Note that we use a Provider so that the loading of
+     * all the Initializers is done lazily when they are required. This allows Extensions to contribute Initializers.
+     * Incidentally it also prevents creating Component Manager cycles since an Initializer could depend on
+     * something required to initialize this class.
      */
     @Inject
-    private List<ExecutionContextInitializer> initializers = new ArrayList<ExecutionContextInitializer>();
-
-    /**
-     * Default constructor.
-     */
-    public DefaultExecutionContextManager()
-    {
-    }
-
-    /**
-     * Generally used for unit tests.
-     *
-     * @param execution an {@link Execution} to use when initializing {@link ExecutionContext}.
-     * @since 3.2RC1
-     */
-    public DefaultExecutionContextManager(Execution execution)
-    {
-        this.execution = execution;
-    }
+    private Provider<List<ExecutionContextInitializer>> initializerProvider;
 
     @Override
     public ExecutionContext clone(ExecutionContext context) throws ExecutionContextException
@@ -126,16 +111,8 @@ public class DefaultExecutionContextManager implements ExecutionContextManager
      */
     private void runInitializers(ExecutionContext context) throws ExecutionContextException
     {
-        for (ExecutionContextInitializer initializer : this.initializers) {
+        for (ExecutionContextInitializer initializer : this.initializerProvider.get()) {
             initializer.initialize(context);
         }
-    }
-
-    /**
-     * @param initializer the initializer to add to the list
-     */
-    public void addExecutionContextInitializer(ExecutionContextInitializer initializer)
-    {
-        this.initializers.add(initializer);
     }
 }

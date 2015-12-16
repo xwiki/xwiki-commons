@@ -21,6 +21,7 @@ package org.xwiki.environment.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -217,12 +218,16 @@ public abstract class AbstractEnvironment implements Environment
 
             return null;
 
-        } else if (dir.mkdirs()) {
-            return initDir(dir, isTemp);
         }
 
-        this.logger.error("Configured {} directory [{}] could not be created, check permissions.", tempOrPermanent,
-            dir.getAbsolutePath());
+        try {
+            Files.createDirectories(dir.toPath());
+
+            return initDir(dir, isTemp);
+        } catch (IOException e) {
+            this.logger.error("Configured {} directory [{}] could not be created.", tempOrPermanent,
+                dir.getAbsolutePath(), e);
+        }
 
         return null;
     }

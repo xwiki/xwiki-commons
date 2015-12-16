@@ -46,6 +46,8 @@ import org.xwiki.velocity.internal.jmx.JMXVelocityEngineMBean;
 @Singleton
 public class DefaultVelocityFactory implements VelocityFactory
 {
+    private static final String MBEANNAME_PREFIX = "type=Velocity,domain=Engines,name=";
+
     /**
      * The Component manager we use to lookup (and thus create since it's a singleton) the VelocityEngine component.
      */
@@ -91,7 +93,7 @@ public class DefaultVelocityFactory implements VelocityFactory
         // Register a JMX MBean for providing information about the created Velocity Engine (template namespaces,
         // macros, etc).
         JMXVelocityEngineMBean mbean = new JMXVelocityEngine(engine);
-        this.jmxRegistration.registerMBean(mbean, "type=Velocity,domain=Engines,name=" + key);
+        this.jmxRegistration.registerMBean(mbean, MBEANNAME_PREFIX + key);
 
         return engine;
     }
@@ -99,6 +101,8 @@ public class DefaultVelocityFactory implements VelocityFactory
     @Override
     public VelocityEngine removeVelocityEngine(String key)
     {
+        this.jmxRegistration.unregisterMBean(MBEANNAME_PREFIX + key);
+
         return this.velocityEngines.remove(key);
     }
 }

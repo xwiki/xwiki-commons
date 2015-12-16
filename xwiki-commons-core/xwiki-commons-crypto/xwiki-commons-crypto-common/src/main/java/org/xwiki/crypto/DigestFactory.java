@@ -21,7 +21,6 @@ package org.xwiki.crypto;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.crypto.params.DigestParameters;
-import org.xwiki.stability.Unstable;
 
 /**
  * Factory for creating new digest instance.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @since 5.4M1
  */
 @Role
-@Unstable
 public interface DigestFactory
 {
     /**

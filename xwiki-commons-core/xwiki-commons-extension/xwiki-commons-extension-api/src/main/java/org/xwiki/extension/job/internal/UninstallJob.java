@@ -32,9 +32,9 @@ import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.Job;
 import org.xwiki.job.Request;
-import org.xwiki.job.internal.DefaultJobStatus;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
 
@@ -90,11 +90,13 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest, Default
     @Override
     protected void runInternal() throws Exception
     {
-        notifyPushLevelProgress(2);
+        this.progressManager.pushLevelProgress(2, this);
 
         ExecutionContext context = this.execution.getContext();
 
         try {
+            this.progressManager.startStep(this);
+
             // Create the plan
 
             UninstallRequest planRequest = new UninstallRequest(getRequest());
@@ -111,7 +113,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest, Default
                     .get(0).getThrowable());
             }
 
-            notifyStepPropress();
+            this.progressManager.startStep(this);
 
             // Put the plan in context
             // TODO: use a stack ?
@@ -123,7 +125,7 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest, Default
 
             applyActions(actions);
         } finally {
-            notifyPopLevelProgress();
+            this.progressManager.popLevelProgress(this);
 
             // Clean context
             context.removeProperty(CONTEXTKEY_PLAN);

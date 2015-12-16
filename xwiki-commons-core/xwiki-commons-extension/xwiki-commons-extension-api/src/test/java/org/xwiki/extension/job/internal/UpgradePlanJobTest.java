@@ -25,6 +25,7 @@ import java.util.Iterator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.extension.TestResources;
+import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
@@ -41,7 +42,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         // check upgrade
 
-        ExtensionPlan plan = upgradePlan(null);
+        ExtensionPlan plan = upgradePlan();
 
         // Tree
 
@@ -93,7 +94,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         // check upgrade
 
-        ExtensionPlan plan = upgradePlan(null);
+        ExtensionPlan plan = upgradePlan();
 
         // Tree
         // ////////
@@ -183,5 +184,38 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
 
         Assert.assertSame(childAction, actionIterator.next());
         Assert.assertSame(action, actionIterator.next());
+    }
+
+    @Test
+    public void testUpgradePlanOnRootWithTargetDependencyExtension() throws Throwable
+    {
+        // install first version
+        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID);
+
+        // check upgrade
+
+        InstallRequest installRequest = new InstallRequest();
+        installRequest.addExtension(TestResources.REMOTE_UPGRADE10_ID);
+        ExtensionPlan plan = upgradePlan(installRequest);
+
+        // Tree
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UPGRADE, action.getAction());
+        Assert.assertNull(action.getNamespace());
+
+        Assert.assertEquals(0, node.getChildren().size());
+
+        // Actions
+
+        Assert.assertEquals(1, plan.getActions().size());
+
+        Assert.assertSame(action, plan.getActions().iterator().next());
     }
 }

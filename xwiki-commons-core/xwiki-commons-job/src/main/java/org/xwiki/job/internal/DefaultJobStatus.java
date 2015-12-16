@@ -21,28 +21,32 @@ package org.xwiki.job.internal;
 
 import org.xwiki.job.Request;
 import org.xwiki.job.annotation.Serializable;
+import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 
 /**
  * Default implementation of {@link org.xwiki.job.event.status.JobStatus}.
  *
- * @param <R>
+ * @param <R> the request type associated to the job
  * @version $Id$
  * @since 4.0M1
+ * @deprecated since 7.4M1, use {@link org.xwiki.job.DefaultJobStatus} instead
  */
 @Serializable
+@Deprecated
 public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R>
 {
     /**
      * @param request the request provided when started the job
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
-     * @param subJob indicate of the job has been started by another one
+     * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
+     *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
      */
     public DefaultJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager,
-        boolean subJob)
+        JobStatus parentJobStatus)
     {
-        super(request, observationManager, loggerManager, subJob);
+        super(request, observationManager, loggerManager, parentJobStatus);
     }
 }

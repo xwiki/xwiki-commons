@@ -100,8 +100,10 @@ public class LocalExtensionStorage
 
     /**
      * Load extension from repository storage.
+     * 
+     * @throws IOException when failing to load extensions
      */
-    protected void loadExtensions()
+    protected void loadExtensions() throws IOException
     {
         // Load local extension from repository
 
@@ -114,10 +116,25 @@ public class LocalExtensionStorage
 
     /**
      * @param folder the folder from where to load the extension
+     * @throws IOException when failing to load extensions
      */
-    protected void loadExtensions(File folder)
+    protected void loadExtensions(File folder) throws IOException
     {
-        for (File child : folder.listFiles()) {
+        if (!this.rootFolder.exists()) {
+            throw new IOException("Directory does not exist: " + this.rootFolder);
+        }
+
+        if (!this.rootFolder.isDirectory()) {
+            throw new IOException("Not a directory: " + this.rootFolder);
+        }
+
+        File[] files = folder.listFiles();
+
+        if (files == null) {
+            throw new IOException("Could not list files: " + this.rootFolder);
+        }
+
+        for (File child : files) {
             if (child.isDirectory()) {
                 loadExtensions(child);
             } else if (child.getName().endsWith(DESCRIPTOR_SUFFIX)) {

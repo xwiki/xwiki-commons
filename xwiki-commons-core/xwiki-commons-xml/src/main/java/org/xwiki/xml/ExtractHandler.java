@@ -68,7 +68,7 @@ public class ExtractHandler extends DefaultHandler
          * @param qName Tag's qualified name.
          * @param atts Tag's attributes.
          */
-        public XMLTag(String qName, Attributes atts)
+        XMLTag(String qName, Attributes atts)
         {
             this.qName = qName;
             this.atts = atts;

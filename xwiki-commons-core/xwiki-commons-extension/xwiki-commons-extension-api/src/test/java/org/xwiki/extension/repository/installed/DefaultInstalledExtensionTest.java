@@ -21,6 +21,7 @@ package org.xwiki.extension.repository.installed;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 
 import org.junit.Assert;
@@ -130,5 +131,42 @@ public class DefaultInstalledExtensionTest
         Assert
             .assertEquals(Arrays.asList("namespace3"), new ArrayList<String>(this.installedExtension.getNamespaces()));
 
+    }
+
+    @Test
+    public void testSetInstallDate()
+    {
+        Date date = new Date(13);
+
+        this.installedExtension.setInstallDate(date, "foo");
+        Assert.assertNull(this.installedExtension.getInstallDate("foo"));
+
+        this.installedExtension.setInstallDate(date, null);
+        Assert.assertNull(this.installedExtension.getInstallDate(null));
+
+        this.installedExtension.setInstalled(true, "foo");
+        this.installedExtension.setInstallDate(date, "foo");
+        Assert.assertEquals(date, this.installedExtension.getInstallDate("foo"));
+        Assert.assertNull(this.installedExtension.getInstallDate("bar"));
+        Assert.assertNull(this.installedExtension.getInstallDate(null));
+
+        this.installedExtension.setInstalled(false, "foo");
+        Assert.assertNull(this.installedExtension.getInstallDate("foo"));
+
+        this.installedExtension.setInstalled(true, null);
+        this.installedExtension.setInstallDate(date, null);
+        Assert.assertEquals(date, this.installedExtension.getInstallDate(null));
+        Assert.assertEquals(date, this.installedExtension.getInstallDate("foo"));
+
+        this.installedExtension.setInstalled(false, null);
+        Assert.assertNull(this.installedExtension.getInstallDate(null));
+        Assert.assertNull(this.installedExtension.getInstallDate("foo"));
+
+        this.installedExtension.setInstalled(true, "foo");
+        this.installedExtension.setInstallDate(new Date(27), "foo");
+        this.installedExtension.setInstalled(true, null);
+        this.installedExtension.setInstallDate(date, null);
+        Assert.assertEquals(date, this.installedExtension.getInstallDate(null));
+        Assert.assertEquals(date, this.installedExtension.getInstallDate("foo"));
     }
 }

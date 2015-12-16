@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.beanutils.ConvertUtils;
 import org.xwiki.component.annotation.Component;
 
 /**
@@ -68,29 +69,37 @@ public class MemoryConfigurationSource extends AbstractConfigurationSource
     @Override
     public <T> T getProperty(String key, T defaultValue)
     {
-        T value;
+        T result;
 
         if (this.properties.containsKey(key)) {
-            value = (T) this.properties.get(key);
+            Object value = this.properties.get(key);
+            if (value != null && defaultValue != null && !defaultValue.getClass().isInstance(value)) {
+                value = ConvertUtils.convert(value, defaultValue.getClass());
+            }
+            result = (T) value;
         } else {
-            value = defaultValue;
+            result = defaultValue;
         }
 
-        return value;
+        return result;
     }
 
     @Override
     public <T> T getProperty(String key, Class<T> valueClass)
     {
-        T value;
+        T result;
 
         if (this.properties.containsKey(key)) {
-            value = valueClass.cast(this.properties.get(key));
+            Object value = this.properties.get(key);
+            if (value != null && valueClass != null && !valueClass.isInstance(value)) {
+                value = ConvertUtils.convert(value, valueClass);
+            }
+            result = (T) value;
         } else {
-            value = getDefault(valueClass);
+            result = getDefault(valueClass);
         }
 
-        return value;
+        return result;
     }
 
     @SuppressWarnings("unchecked")

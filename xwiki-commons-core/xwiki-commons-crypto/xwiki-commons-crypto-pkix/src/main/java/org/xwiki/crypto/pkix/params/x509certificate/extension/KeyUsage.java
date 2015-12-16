@@ -20,7 +20,6 @@
 package org.xwiki.crypto.pkix.params.x509certificate.extension;
 
 import org.bouncycastle.asn1.x509.Extension;
-import org.xwiki.stability.Unstable;
 
 /**
  * X.509 Certificates Key Usages.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 5.4
  */
-@Unstable
 public enum KeyUsage
 {
     /**
