@@ -377,7 +377,11 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     String id = idNode != null ? idNode.getTextContent() : null;
                     String version = versionNode != null ? versionNode.getTextContent() : null;
 
-                    extension.addExtensionFeature(new ExtensionFeature(id, new DefaultVersionConstraint(version)));
+                    if (version != null) {
+                        extension.addExtensionFeature(new ExtensionFeature(id, new DefaultVersionConstraint(version)));
+                    } else {
+                        extension.addExtensionFeature(new ExtensionFeature(id));
+                    }
                 }
             }
         }

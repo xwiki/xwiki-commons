@@ -69,13 +69,8 @@ import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.component.util.DefaultParameterizedType;
-import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionIssueManagement;
-import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
-import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.maven.MavenExtensionDependency;
@@ -386,14 +381,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                 artifactExtension, artifact.getVersion());
 
         AetherExtension extension = new AetherExtension(mavenExtension, filerArtifact, this);
-
-        // features
-        String featuresString = getProperty(model, MPNAME_FEATURES);
-        if (StringUtils.isNotBlank(featuresString)) {
-            featuresString = featuresString.replaceAll("[\r\n]", "");
-            extension.setExtensionFeatures(this.converter.<Collection<ExtensionFeature>>convert(
-                new DefaultParameterizedType(null, List.class, ExtensionFeature.class), featuresString));
-        }
 
         // Convert Maven dependencies to Aether dependencies
         List<ExtensionDependency> dependencies = new ArrayList<>(mavenExtension.getDependencies().size());

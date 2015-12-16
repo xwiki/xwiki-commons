@@ -19,8 +19,6 @@
  */
 package org.xwiki.extension.repository.core;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Arrays;
 
 import org.junit.Assert;
@@ -29,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.CoreExtensionRepository;
@@ -38,6 +37,8 @@ import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
 import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import static org.junit.Assert.assertEquals;
 
 @AllComponents
 public class DefaultCoreExtensionRepositoryTest
@@ -123,7 +124,7 @@ public class DefaultCoreExtensionRepositoryTest
     public void testSearchWithSeveralFeatures() throws SearchException
     {
         this.coreExtensionRepository.addExtensions("extension", new DefaultVersion("version"),
-            Arrays.asList("feature1", "feature2"));
+            Arrays.asList(new ExtensionFeature("feature1"), new ExtensionFeature("feature2")));
 
         IterableResult<Extension> result = this.coreExtensionRepository.search("feature", 0, -1);
 

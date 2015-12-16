@@ -38,8 +38,7 @@ import org.xwiki.properties.converter.AbstractConverter;
 @Singleton
 public class ExtensionFeatureConverter extends AbstractConverter<ExtensionFeature>
 {
-    @Override
-    protected ExtensionFeature convertToType(Type targetType, Object value)
+    public static ExtensionFeature toExtensionFeature(Object value)
     {
         ExtensionFeature feature = null;
 
@@ -58,20 +57,18 @@ public class ExtensionFeatureConverter extends AbstractConverter<ExtensionFeatur
             feature = new ExtensionFeature(id, version);
         }
 
-        return feature;
+        return feature;        
+    }
+    
+    @Override
+    protected ExtensionFeature convertToType(Type targetType, Object value)
+    {
+        return toExtensionFeature(value);
     }
 
     @Override
     protected String convertToString(ExtensionFeature value)
     {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append(value.getId());
-
-        if (value.getVersionConstraint() != null) {
-            builder.append(value.getVersionConstraint());
-        }
-
-        return builder.toString();
+        return value.toString();
     }
 }

@@ -50,6 +50,7 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.License;
 import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
+import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
  * XWiki Repository implementation of {@link org.xwiki.extension.Extension}.
@@ -70,16 +71,16 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
         setWebsite(restExtension.getWebsite());
 
         // Features
-        for (ExtensionFeature feature : extension.getExtensionFeatures()) {
-            addExtensionFeature(new org.xwiki.extension.ExtensionFeature(feature.getId(), new DefaultVersionConstraint(
-                feature.getVersion())));
+        for (ExtensionFeature feature : restExtension.getExtensionFeatures()) {
+            addExtensionFeature(new org.xwiki.extension.ExtensionFeature(feature.getId(),
+                new DefaultVersionConstraint(feature.getVersion())));
         }
 
         // Rating
         ExtensionRating restRating = restExtension.getRating();
         if (restRating != null) {
-            setRating(new DefaultExtensionRating(restRating.getTotalVotes(), restRating.getAverageVote(),
-                getRepository()));
+            setRating(
+                new DefaultExtensionRating(restRating.getTotalVotes(), restRating.getAverageVote(), getRepository()));
         }
 
         // Authors
@@ -131,8 +132,8 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
 
         ExtensionIssueManagement restIssueManagement = restExtension.getIssueManagement();
         if (restIssueManagement != null) {
-            setIssueManagement(new DefaultExtensionIssueManagement(restIssueManagement.getSystem(),
-                restIssueManagement.getUrl()));
+            setIssueManagement(
+                new DefaultExtensionIssueManagement(restIssueManagement.getSystem(), restIssueManagement.getUrl()));
         }
 
         // Category
@@ -160,8 +161,8 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
         // Dependencies
 
         for (ExtensionDependency dependency : restExtension.getDependencies()) {
-            addDependency(new XWikiExtensionDependency(dependency, repository != null ? repository.getDescriptor()
-                : null));
+            addDependency(
+                new XWikiExtensionDependency(dependency, repository != null ? repository.getDescriptor() : null));
         }
 
         // File
@@ -181,8 +182,8 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
     protected static DefaultExtensionRepositoryDescriptor toDefaultExtensionRepositoryDescriptor(
         ExtensionRepository restRepository) throws URISyntaxException
     {
-        return new DefaultExtensionRepositoryDescriptor(restRepository.getId(), restRepository.getType(), new URI(
-            restRepository.getUri()));
+        return new DefaultExtensionRepositoryDescriptor(restRepository.getId(), restRepository.getType(),
+            new URI(restRepository.getUri()));
     }
 
     @Override

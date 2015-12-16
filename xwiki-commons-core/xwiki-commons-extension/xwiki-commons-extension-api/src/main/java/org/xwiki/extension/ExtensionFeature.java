@@ -101,6 +101,7 @@ public class ExtensionFeature
         builder.append(getId());
 
         if (getVersionConstraint() != null) {
+            builder.append('/');
             builder.append(getVersionConstraint());
         }
 

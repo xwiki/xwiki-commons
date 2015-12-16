@@ -47,18 +47,16 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
-import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.PathUtils;
+import org.xwiki.extension.internal.maven.MavenExtension;
 import org.xwiki.extension.internal.maven.MavenExtensionDependency;
 import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
-import org.xwiki.extension.repository.internal.MavenExtension;
 import org.xwiki.properties.ConverterManager;
 
 import com.google.common.base.Predicates;
@@ -290,7 +288,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                             coreExtension.getId(), coreExtension.getDescriptorURL(), existingCoreExtension.getId(),
                             existingCoreExtension.getDescriptorURL());
 
-                        if (coreExtension.getId().getVersion().compareTo(existingCoreExtension.getId().getVersion()) > 0) {
+                        if (coreExtension.getId().getVersion()
+                            .compareTo(existingCoreExtension.getId().getVersion()) > 0) {
                             extensions.put(coreExtension.getId().getId(), coreExtension);
 
                             this.logger.warn("[{} ({})] is selected", coreExtension.getId(),
@@ -395,9 +394,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                 if (extensionDependency instanceof MavenExtensionDependency) {
                     dependency = ((MavenExtensionDependency) extensionDependency).getMavenDependency();
                 } else {
-                    dependency =
-                        toDependency(extensionDependency.getId(),
-                            extensionDependency.getVersionConstraint().getValue(), null);
+                    dependency = toDependency(extensionDependency.getId(),
+                        extensionDependency.getVersionConstraint().getValue(), null);
                 }
 
                 String dependencyId = dependency.getGroupId() + ':' + dependency.getArtifactId();
@@ -414,16 +412,14 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
                     Object[] guessedArtefact = guessedArtefacts.get(dependency.getArtifactId());
 
                     if (filenameArtifact != null) {
-                        coreExtension =
-                            new DefaultCoreExtension(repository, (URL) filenameArtifact[0], new ExtensionId(
-                                dependencyId, dependency.getVersion()),
-                                MavenUtils.packagingToType(dependency.getType()));
+                        coreExtension = new DefaultCoreExtension(repository, (URL) filenameArtifact[0],
+                            new ExtensionId(dependencyId, dependency.getVersion()),
+                            MavenUtils.packagingToType(dependency.getType()));
                         coreExtension.setGuessed(true);
                     } else if (guessedArtefact != null) {
-                        coreExtension =
-                            new DefaultCoreExtension(repository, (URL) guessedArtefact[1], new ExtensionId(
-                                dependencyId, (String) guessedArtefact[0]), MavenUtils.packagingToType(dependency
-                                .getType()));
+                        coreExtension = new DefaultCoreExtension(repository, (URL) guessedArtefact[1],
+                            new ExtensionId(dependencyId, (String) guessedArtefact[0]),
+                            MavenUtils.packagingToType(dependency.getType()));
                         coreExtension.setGuessed(true);
                     }
 
