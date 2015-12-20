@@ -70,7 +70,7 @@ public class ExternalExtensionCheck extends AbstractPomCheck
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException
     {
-        Model model = getModel(helper);
+        Model model = getResolvedModel(helper);
 
         checkGroupId(model);
 
