@@ -96,6 +96,17 @@
               </rules>
             </configuration>
           </execution>
+          <execution>
+            <id>enforce-valid-poms</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <externalExtensionCheck implementation="org.xwiki.tool.enforcer.ExternalExtensionCheck"/>
+              </rules>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>

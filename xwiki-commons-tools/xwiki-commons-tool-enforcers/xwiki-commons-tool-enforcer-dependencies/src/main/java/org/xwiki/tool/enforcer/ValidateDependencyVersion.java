@@ -19,22 +19,16 @@
  */
 package org.xwiki.tool.enforcer;
 
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.maven.enforcer.rule.api.EnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 
 /**
  * Performs checks on the version specified for dependencies in pom.xml files.
@@ -57,7 +51,7 @@ import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluatio
  * @version $Id$
  * @since 4.5RC1
  */
-public class ValidateDependencyVersion implements EnforcerRule
+public class ValidateDependencyVersion extends AbstractPomCheck
 {
     /**
      * List of checks to execute; they are configured in the pom.xml.
@@ -118,72 +112,5 @@ public class ValidateDependencyVersion implements EnforcerRule
                 }
             }
         }
-    }
-
-    /**
-     * @param helper the enforcer helper object
-     * @return the MavenProject instance for the current Maven project
-     * @throws EnforcerRuleException if an error occurred getting the MavenProject instance
-     */
-    private MavenProject getMavenProject(EnforcerRuleHelper helper) throws EnforcerRuleException
-    {
-        MavenProject project;
-        try {
-            project = (MavenProject) helper.evaluate( "${project}" );
-        } catch (ExpressionEvaluationException e) {
-            throw new EnforcerRuleException("Failed to get Maven project", e);
-        }
-        return project;
-    }
-
-    /**
-     * @param helper the enforcer helper object
-     * @return the Model instance for the current Maven project (this contains the raw data from the pom.xml file
-     *         before any interpolation)
-     * @throws EnforcerRuleException if an error occurred getting the Model instance
-     */
-    private Model getModel(EnforcerRuleHelper helper) throws EnforcerRuleException
-    {
-        MavenProject project = getMavenProject(helper);
-
-        Model model;
-        Reader reader = null;
-        try {
-            reader = new FileReader(project.getFile());
-            MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
-            model = xpp3Reader.read(reader);
-        } catch (Exception e) {
-            throw new EnforcerRuleException("Failed to read pom file [" + project.getFile() + "]", e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (Exception ee) {
-                    throw new EnforcerRuleException("Failed to close stream after reading pom file ["
-                        + project.getFile() + "]", ee);
-                }
-            }
-        }
-
-        return model;
-    }
-
-    @Override
-    public boolean isCacheable()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isResultValid(EnforcerRule enforcerRule)
-    {
-        return false;
-    }
-
-    @Override
-    public String getCacheId()
-    {
-        // Not used since caching if off for this rule
-        return "";
     }
 }
