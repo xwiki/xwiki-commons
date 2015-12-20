@@ -55,6 +55,8 @@ public abstract class AbstractPomCheck implements EnforcerRule
     }
 
     /**
+     * The Maven model as it's present in the project's {@code pom.xml} (non resolved).
+     *
      * @param helper the enforcer helper object
      * @return the Model instance for the current Maven project (this contains the raw data from the pom.xml file
      *         before any interpolation)
@@ -63,7 +65,6 @@ public abstract class AbstractPomCheck implements EnforcerRule
     protected Model getModel(EnforcerRuleHelper helper) throws EnforcerRuleException
     {
         MavenProject project = getMavenProject(helper);
-/*
         Model model;
         Reader reader = null;
         try {
@@ -81,8 +82,22 @@ public abstract class AbstractPomCheck implements EnforcerRule
                         + project.getFile() + "]", ee);
                 }
             }
-        }*/
+        }
+        return model;
+    }
 
+    /**
+     * The resolved Maven model (i.e. with parent poms taken into account).
+     *
+     * @param helper the enforcer helper object
+     * @return the resolved Model instance for the current Maven project (this contains the data from the pom.xml file
+     *         after interpolation)
+     * @throws EnforcerRuleException if an error occurred getting the Model instance
+     */
+    protected Model getResolvedModel(EnforcerRuleHelper helper) throws EnforcerRuleException
+    {
+        MavenProject project = getMavenProject(helper);
+        // Note: the model is resolved at this point, which means the Model contains
         return project.getModel();
     }
 
