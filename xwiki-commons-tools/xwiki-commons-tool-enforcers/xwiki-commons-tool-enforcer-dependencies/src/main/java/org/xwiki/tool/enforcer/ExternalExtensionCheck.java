@@ -158,7 +158,7 @@ public class ExternalExtensionCheck extends AbstractPomCheck
 
     private void checkArtifactId(String groupId, String artifactId, String prefix) throws EnforcerRuleException
     {
-        if (!artifactId.startsWith("xwiki-commons")) {
+        if (!artifactId.startsWith(prefix)) {
             throw new EnforcerRuleException(String.format(
                 "Artifact Id must start with [%s] for group Id [%s] but found [%s]", prefix, groupId, artifactId));
         }
