@@ -20,8 +20,6 @@
 
 package org.xwiki.blame;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Single element of an annotated content.
  *
@@ -30,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M2
  */
-@Unstable
 public interface AnnotatedElement<R, E>
 {
     /**

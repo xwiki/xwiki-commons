@@ -22,8 +22,6 @@ package org.xwiki.blame;
 
 import java.util.Iterator;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Annotated content.
  *
@@ -32,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M2
  */
-@Unstable
 public interface AnnotatedContent<R, E> extends Iterable<AnnotatedElement<R, E>>
 {
     @Override
