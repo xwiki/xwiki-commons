@@ -21,13 +21,10 @@ package org.xwiki.filter.output;
 
 import java.io.File;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface FileOutputTarget extends OutputTarget
 {
     File getFile();

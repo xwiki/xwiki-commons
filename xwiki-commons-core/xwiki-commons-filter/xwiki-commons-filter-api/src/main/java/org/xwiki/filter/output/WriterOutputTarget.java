@@ -21,13 +21,10 @@ package org.xwiki.filter.output;
 
 import java.io.Writer;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface WriterOutputTarget extends OutputTarget
 {
     Writer getWriter();

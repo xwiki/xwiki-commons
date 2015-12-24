@@ -19,13 +19,10 @@
  */
 package org.xwiki.filter.descriptor;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface FilterStreamBeanDescriptor extends FilterStreamDescriptor
 {
     /**

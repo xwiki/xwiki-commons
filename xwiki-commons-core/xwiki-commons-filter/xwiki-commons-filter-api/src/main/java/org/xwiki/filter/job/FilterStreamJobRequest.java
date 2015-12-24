@@ -20,7 +20,6 @@
 package org.xwiki.filter.job;
 
 import org.xwiki.job.Request;
-import org.xwiki.stability.Unstable;
 
 /**
  * Filter job request.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface FilterStreamJobRequest extends Request
 {
     /**

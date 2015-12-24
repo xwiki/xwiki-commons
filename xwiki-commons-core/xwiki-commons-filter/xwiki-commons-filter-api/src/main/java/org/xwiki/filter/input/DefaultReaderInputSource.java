@@ -22,13 +22,10 @@ package org.xwiki.filter.input;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class DefaultReaderInputSource implements ReaderInputSource
 {
     private final Reader reader;

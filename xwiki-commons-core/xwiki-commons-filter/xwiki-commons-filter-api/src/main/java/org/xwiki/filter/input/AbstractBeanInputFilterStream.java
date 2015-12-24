@@ -29,14 +29,12 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterException;
-import org.xwiki.stability.Unstable;
 
 /**
  * @param <F> the type of the filter supported by this {@link InputFilterStream}
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public abstract class AbstractBeanInputFilterStream<P, F> implements BeanInputFilterStream<P>, Initializable
 {
     @Inject

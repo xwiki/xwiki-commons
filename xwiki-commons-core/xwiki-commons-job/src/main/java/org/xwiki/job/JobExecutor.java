@@ -22,7 +22,6 @@ package org.xwiki.job;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * By default Jobs are either executed asynchronously whenever there is a free thread in the pool. Jobs can implement
@@ -34,7 +33,6 @@ import org.xwiki.stability.Unstable;
  * @since 6.1M2
  */
 @Role
-@Unstable
 public interface JobExecutor
 {
     /**

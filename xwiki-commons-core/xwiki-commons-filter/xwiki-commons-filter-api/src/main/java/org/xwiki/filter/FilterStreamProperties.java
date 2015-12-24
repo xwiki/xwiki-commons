@@ -21,7 +21,6 @@ package org.xwiki.filter;
 
 import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyName;
-import org.xwiki.stability.Unstable;
 
 /**
  * Properties common to most streams.
@@ -29,7 +28,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface FilterStreamProperties
 {
     /**

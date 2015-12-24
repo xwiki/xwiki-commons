@@ -21,13 +21,10 @@ package org.xwiki.filter.input;
 
 import java.io.Reader;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface ReaderInputSource extends InputSource
 {
     public Reader getReader();

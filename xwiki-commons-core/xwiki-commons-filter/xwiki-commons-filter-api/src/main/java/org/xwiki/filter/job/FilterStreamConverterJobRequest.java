@@ -26,7 +26,6 @@ import java.util.Map;
 import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.job.AbstractRequest;
 import org.xwiki.job.Request;
-import org.xwiki.stability.Unstable;
 
 /**
  * The request used to configure "filter.converter" job.
@@ -34,7 +33,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class FilterStreamConverterJobRequest extends AbstractRequest implements FilterStreamJobRequest
 {
     /**

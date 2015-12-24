@@ -24,13 +24,11 @@ import org.xwiki.filter.xml.XMLProperties;
 import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyMandatory;
 import org.xwiki.properties.annotation.PropertyName;
-import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class XMLInputProperties extends XMLProperties
 {
     /**

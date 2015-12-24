@@ -23,7 +23,6 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.rating.ExtensionRating;
 import org.xwiki.extension.version.Version;
-import org.xwiki.stability.Unstable;
 
 /**
  * A repository can implement it to provide rating capabilities.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.4M3
  */
-@Unstable
 public interface Ratable
 {
     /**

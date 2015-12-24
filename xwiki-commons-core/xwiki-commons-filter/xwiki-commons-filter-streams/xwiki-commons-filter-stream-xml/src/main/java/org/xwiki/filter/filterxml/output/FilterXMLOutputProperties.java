@@ -20,7 +20,6 @@
 package org.xwiki.filter.filterxml.output;
 
 import org.xwiki.filter.xml.output.XMLOutputProperties;
-import org.xwiki.stability.Unstable;
 
 /**
  * Generic XML serializer properties.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class FilterXMLOutputProperties extends XMLOutputProperties
 {
 

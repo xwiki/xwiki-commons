@@ -20,7 +20,6 @@
 package org.xwiki.filter.type;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.stability.Unstable;
 
 /**
  * Encapsulates WikiType and Filter type based errors.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class FilterStreamTypeException extends FilterException
 {
     /**

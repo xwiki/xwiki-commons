@@ -22,7 +22,6 @@ package org.xwiki.filter.xml.output;
 import javax.xml.transform.Result;
 
 import org.xwiki.filter.output.OutputTarget;
-import org.xwiki.stability.Unstable;
 
 /**
  * {@link Result} based {@link OutputTarget}.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface ResultOutputTarget extends OutputTarget
 {
     /**

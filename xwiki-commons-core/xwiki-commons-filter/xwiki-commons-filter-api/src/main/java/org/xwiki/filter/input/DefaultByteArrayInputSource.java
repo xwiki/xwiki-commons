@@ -23,13 +23,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class DefaultByteArrayInputSource extends AbstractInputStreamInputSource
 {
     private final byte[] array;

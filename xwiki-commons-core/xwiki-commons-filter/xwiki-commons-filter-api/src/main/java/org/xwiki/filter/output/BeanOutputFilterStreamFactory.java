@@ -20,13 +20,11 @@
 package org.xwiki.filter.output;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface BeanOutputFilterStreamFactory<P> extends OutputFilterStreamFactory
 {
     /**

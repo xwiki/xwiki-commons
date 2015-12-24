@@ -23,13 +23,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class StringWriterOutputTarget extends AbstractWriterOutputTarget
 {
     /**

@@ -19,15 +19,12 @@
  */
 package org.xwiki.filter;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Properties common to most streams.
  *
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class DefaultFilterStreamProperties implements FilterStreamProperties
 {
     private boolean verbose = true;

@@ -23,7 +23,6 @@ import java.util.Collection;
 
 import org.xwiki.filter.descriptor.FilterStreamDescriptor;
 import org.xwiki.filter.type.FilterStreamType;
-import org.xwiki.stability.Unstable;
 
 /**
  * Filter class should be inherited by all the stream based classes to implement the type and descriptor which describes
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface FilterStreamFactory
 {
     /**

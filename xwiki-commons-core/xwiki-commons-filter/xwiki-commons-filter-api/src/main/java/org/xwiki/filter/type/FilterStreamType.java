@@ -23,7 +23,6 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.xwiki.stability.Unstable;
 
 /**
  * Combination of supported system and their data types.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class FilterStreamType implements Comparable<FilterStreamType>
 {
     /**

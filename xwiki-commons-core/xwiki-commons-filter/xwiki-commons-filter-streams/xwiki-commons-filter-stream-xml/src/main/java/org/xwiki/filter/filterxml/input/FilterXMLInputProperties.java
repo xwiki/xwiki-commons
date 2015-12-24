@@ -20,7 +20,6 @@
 package org.xwiki.filter.filterxml.input;
 
 import org.xwiki.filter.xml.input.XMLInputProperties;
-import org.xwiki.stability.Unstable;
 
 /**
  * Generic XML parser properties.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class FilterXMLInputProperties extends XMLInputProperties
 {
 
