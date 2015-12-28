@@ -32,11 +32,16 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
+import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
+import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
 import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
+
+import static org.junit.Assert.assertEquals;
 
 @AllComponents
 public class DefaultLocalExtensionRepositoryTest
@@ -99,8 +104,8 @@ public class DefaultLocalExtensionRepositoryTest
     @Test(expected = ResolveException.class)
     public void testResolveUnexistingDependencyId() throws ResolveException
     {
-        this.localExtensionRepository.resolve(new DefaultExtensionDependency("unexistingextension",
-            new DefaultVersionConstraint("version")));
+        this.localExtensionRepository
+            .resolve(new DefaultExtensionDependency("unexistingextension", new DefaultVersionConstraint("version")));
     }
 
     @Test(expected = ResolveException.class)
@@ -120,8 +125,8 @@ public class DefaultLocalExtensionRepositoryTest
     @Test(expected = ResolveException.class)
     public void testResolveUnexistingButSmalerVersionDependency() throws ResolveException
     {
-        this.localExtensionRepository.resolve(new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(),
-            new DefaultVersionConstraint("0.9")));
+        this.localExtensionRepository.resolve(
+            new DefaultExtensionDependency(TestResources.INSTALLED_ID.getId(), new DefaultVersionConstraint("0.9")));
     }
 
     @Test
@@ -196,6 +201,49 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
+    public void testSearchWithQueryEQUAL() throws SearchException
+    {
+        ExtensionQuery query = new ExtensionQuery();
+
+        query.addFilter(Extension.FIELD_ID, TestResources.INSTALLED_ID.getId(), COMPARISON.EQUAL);
+
+        IterableResult<Extension> result = this.localExtensionRepository.search(query);
+
+        assertEquals(1, result.getTotalHits());
+        assertEquals(1, result.getSize());
+        assertEquals(0, result.getOffset());
+        assertEquals(TestResources.INSTALLED_ID, result.iterator().next().getId());
+    }
+
+    @Test
+    public void testSearchWithQueryMATCH() throws SearchException
+    {
+        ExtensionQuery query = new ExtensionQuery();
+
+        query.addFilter(Extension.FIELD_ID, TestResources.INSTALLED_ID.getId(), COMPARISON.MATCH);
+
+        IterableResult<Extension> result = this.localExtensionRepository.search(query);
+
+        assertEquals(3, result.getTotalHits());
+        assertEquals(3, result.getSize());
+        assertEquals(0, result.getOffset());
+    }
+
+    @Test
+    public void testSearchWithQueryWithNullValue() throws SearchException
+    {
+        ExtensionQuery query = new ExtensionQuery();
+
+        query.addFilter(Extension.FIELD_CATEGORY, "category", COMPARISON.EQUAL);
+
+        IterableResult<Extension> result = this.localExtensionRepository.search(query);
+
+        assertEquals(0, result.getTotalHits());
+        assertEquals(0, result.getSize());
+        assertEquals(0, result.getOffset());
+    }
+
+    @Test
     public void testRemove() throws ResolveException
     {
         LocalExtension localExtension = this.localExtensionRepository.resolve(TestResources.INSTALLED_ID);
@@ -204,15 +252,15 @@ public class DefaultLocalExtensionRepositoryTest
 
         try {
             this.localExtensionRepository.resolve(TestResources.INSTALLED_ID);
-            Assert.fail("Extension [" + TestResources.INSTALLED_ID
-                + "] should not exist anymore in the local repository");
+            Assert.fail(
+                "Extension [" + TestResources.INSTALLED_ID + "] should not exist anymore in the local repository");
         } catch (ResolveException e) {
             // expected
         }
 
         Assert.assertFalse(this.localExtensionRepository.getLocalExtensionVersions(TestResources.INSTALLED_ID.getId())
             .contains(localExtension));
-        Assert.assertFalse(this.localExtensionRepository.getLocalExtensionVersions(
-            TestResources.INSTALLED_ID.getId() + "-feature").contains(localExtension));
+        Assert.assertFalse(this.localExtensionRepository
+            .getLocalExtensionVersions(TestResources.INSTALLED_ID.getId() + "-feature").contains(localExtension));
     }
 }
