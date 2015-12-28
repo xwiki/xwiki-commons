@@ -230,15 +230,7 @@ public final class RepositoryUtils
      */
     public static boolean matches(Filter filter, Extension extension)
     {
-        Object value = extension.get(filter.getField());
-
-        if (value != null) {
-            return matches(filter, value);
-        }
-
-        // Unknown field
-        // FIXME: not sure if it's should be true or false in this case
-        return true;
+        return matches(filter, extension.get(filter.getField()));
     }
 
     /**
@@ -249,18 +241,24 @@ public final class RepositoryUtils
      */
     public static boolean matches(Filter filter, Object element)
     {
+        if (element == null) {
+            return filter.getValue() == null;
+        } else if (filter.getValue() == null) {
+            return false;
+        }
+
         // TODO: add support for more than String
-        String filterValue = filter.getValue() != null ? String.valueOf(filter.getValue()) : null;
-        String elementValue = element != null ? String.valueOf(element) : null;
+        String filterValue = String.valueOf(filter.getValue());
+        String elementValue = String.valueOf(element);
 
         if (filter.getComparison() == COMPARISON.MATCH) {
             Pattern patternMatcher = createPatternMatcher(filterValue);
 
-            if (matches(patternMatcher, filterValue)) {
+            if (matches(patternMatcher, elementValue)) {
                 return true;
             }
         } else if (filter.getComparison() == COMPARISON.EQUAL) {
-            if (elementValue != null && filterValue.toLowerCase().equals(elementValue.toLowerCase())) {
+            if (filterValue.equalsIgnoreCase(elementValue)) {
                 return true;
             }
         }
