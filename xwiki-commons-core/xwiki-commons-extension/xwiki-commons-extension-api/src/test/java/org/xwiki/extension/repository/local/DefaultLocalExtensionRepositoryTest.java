@@ -196,7 +196,7 @@ public class DefaultLocalExtensionRepositoryTest
     }
 
     @Test
-    public void testRemove() throws ResolveException, SearchException
+    public void testRemove() throws ResolveException
     {
         LocalExtension localExtension = this.localExtensionRepository.resolve(TestResources.INSTALLED_ID);
 
