@@ -24,13 +24,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class ByteArrayOutputTarget extends AbstractOutputStreamOutputTarget
 {
     @Override

@@ -19,13 +19,10 @@
  */
 package org.xwiki.filter.utils;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface FilterStreamConstants
 {
     // Standard properties

@@ -24,14 +24,12 @@ import java.util.Map;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.FilterStreamFactory;
-import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
 @Role
-@Unstable
 public interface OutputFilterStreamFactory extends FilterStreamFactory
 {
     /**

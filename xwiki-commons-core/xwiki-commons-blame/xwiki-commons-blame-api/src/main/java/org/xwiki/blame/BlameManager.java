@@ -23,7 +23,6 @@ package org.xwiki.blame;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Annotate/Blame/Praise tool that allow building annotated content from the content of all revision starting with
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @since 6.2M2
  */
 @Role
-@Unstable
 public interface BlameManager
 {
     /**

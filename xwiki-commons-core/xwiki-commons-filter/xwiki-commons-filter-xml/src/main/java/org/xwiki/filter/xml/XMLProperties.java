@@ -20,7 +20,6 @@
 package org.xwiki.filter.xml;
 
 import org.xwiki.filter.DefaultFilterStreamProperties;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base Java bean for XML based modules.
@@ -28,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class XMLProperties extends DefaultFilterStreamProperties
 {
 }

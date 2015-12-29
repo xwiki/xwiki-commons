@@ -21,15 +21,12 @@ package org.xwiki.filter.descriptor;
 
 import java.util.Collection;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Describes a filter stream.
  *
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface FilterStreamDescriptor
 {
     /**

@@ -22,13 +22,10 @@ package org.xwiki.filter.output;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface OutputStreamOutputTarget extends OutputTarget
 {
     OutputStream getOutputStream() throws IOException;

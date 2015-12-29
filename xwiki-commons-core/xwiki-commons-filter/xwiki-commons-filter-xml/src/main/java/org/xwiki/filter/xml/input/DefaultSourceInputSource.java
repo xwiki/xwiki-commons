@@ -23,15 +23,12 @@ import java.io.IOException;
 
 import javax.xml.transform.Source;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Default implementation of {@link SourceInputSource}.
  *
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class DefaultSourceInputSource implements SourceInputSource
 {
     /**

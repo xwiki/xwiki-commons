@@ -24,13 +24,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class DefaultFileOutputTarget extends AbstractOutputStreamOutputTarget implements FileOutputTarget
 {
     private File file;

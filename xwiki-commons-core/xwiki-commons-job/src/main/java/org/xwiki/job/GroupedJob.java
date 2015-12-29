@@ -19,8 +19,6 @@
  */
 package org.xwiki.job;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * A Job which is part of a group of jobs. Grouped jobs are executed synchronously usually in the same thread.
  * <p>
@@ -37,7 +35,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.1M2
  */
-@Unstable
 public interface GroupedJob extends Job
 {
     /**

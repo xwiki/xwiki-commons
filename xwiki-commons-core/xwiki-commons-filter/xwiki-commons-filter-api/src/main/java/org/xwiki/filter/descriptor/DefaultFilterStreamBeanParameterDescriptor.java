@@ -22,7 +22,6 @@ package org.xwiki.filter.descriptor;
 import java.lang.reflect.Type;
 
 import org.xwiki.properties.PropertyDescriptor;
-import org.xwiki.stability.Unstable;
 
 /**
  * The default implementation of {@link FilterStreamPropertyDescriptor}.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class DefaultFilterStreamBeanParameterDescriptor<T> implements FilterStreamPropertyDescriptor<T>
 {
     /**

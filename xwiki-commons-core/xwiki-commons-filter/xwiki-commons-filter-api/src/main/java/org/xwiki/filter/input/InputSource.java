@@ -21,8 +21,6 @@ package org.xwiki.filter.input;
 
 import java.io.Closeable;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Represent a source of data used by a filter input stream. What kind of {@link InputSource} is supported by each input
  * stream is entirely input stream choice.
@@ -34,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface InputSource extends Closeable
 {
     /**

@@ -19,14 +19,12 @@
  */
 package org.xwiki.extension.test;
 
-import java.io.UnsupportedEncodingException;
-
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.ExtensionId;
 
 public class EmptyExtension extends AbstractExtension
 {
-    public EmptyExtension(ExtensionId id, String type) throws UnsupportedEncodingException
+    public EmptyExtension(ExtensionId id, String type)
     {
         super(null, id, type);
 

@@ -24,13 +24,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public abstract class AbstractFilterStreamDescriptor implements FilterStreamDescriptor
 {
     /**

@@ -21,15 +21,12 @@ package org.xwiki.filter.descriptor;
 
 import java.lang.reflect.Type;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Defines a filter property.
  *
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface FilterStreamPropertyDescriptor<T>
 {
     /**

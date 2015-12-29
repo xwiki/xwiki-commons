@@ -22,7 +22,6 @@ package org.xwiki.filter.xml.input;
 import javax.xml.transform.Source;
 
 import org.xwiki.filter.input.InputSource;
-import org.xwiki.stability.Unstable;
 
 /**
  * {@link Source} based {@link InputSource}.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface SourceInputSource extends InputSource
 {
     /**

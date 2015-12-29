@@ -22,13 +22,11 @@ package org.xwiki.filter.output;
 import java.io.Closeable;
 
 import org.xwiki.filter.FilterException;
-import org.xwiki.stability.Unstable;
 
 /**
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public interface OutputFilterStream extends Closeable
 {
     Object getFilter() throws FilterException;

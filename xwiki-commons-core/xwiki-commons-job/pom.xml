@@ -25,14 +25,14 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-core</artifactId>
-    <version>7.4-SNAPSHOT</version>
+    <version>8.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-job</artifactId>
   <name>XWiki Commons - Job</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Job</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.46</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.54</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

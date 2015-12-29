@@ -21,15 +21,12 @@ package org.xwiki.filter.type;
 
 import java.util.Objects;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Represents various systems.
  *
  * @version $Id$
  * @since 6.2M1
  */
-@Unstable
 public class SystemType
 {
     /**

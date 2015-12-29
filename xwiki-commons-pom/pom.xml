@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>7.4-SNAPSHOT</version>
+    <version>8.0-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-pom</artifactId>
   <name>XWiki Commons - Root POM</name>
@@ -93,6 +93,17 @@
                     <exclude>.*xwiki.*:.*-legacy-.*</exclude>
                   </excludes>
                 </xwikiBannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-valid-poms</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <externalExtensionCheck implementation="org.xwiki.tool.enforcer.ExternalExtensionCheck" />
               </rules>
             </configuration>
           </execution>

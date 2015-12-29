@@ -32,7 +32,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.diff.display.Splitter;
 import org.xwiki.script.service.ScriptService;
-import org.xwiki.stability.Unstable;
 
 /**
  * Provide script oriented APIs to do annotate/blame/praise.
@@ -43,7 +42,6 @@ import org.xwiki.stability.Unstable;
 @Component
 @Named("blame")
 @Singleton
-@Unstable
 public class BlameScriptService implements ScriptService
 {
     /**
