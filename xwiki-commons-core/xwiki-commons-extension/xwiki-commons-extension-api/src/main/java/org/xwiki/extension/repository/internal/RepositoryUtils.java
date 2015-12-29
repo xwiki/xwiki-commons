@@ -258,7 +258,7 @@ public final class RepositoryUtils
                 return true;
             }
         } else if (filter.getComparison() == COMPARISON.EQUAL) {
-            if (filterValue.equalsIgnoreCase(elementValue)) {
+            if (filterValue.equals(elementValue)) {
                 return true;
             }
         }
