@@ -126,6 +126,12 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingObje
     }
 
     @Override
+    public Collection<String> getAllowedNamespaces()
+    {
+        return getWrapped().getAllowedNamespaces();
+    }
+
+    @Override
     public Collection<? extends ExtensionDependency> getDependencies()
     {
         return getWrapped().getDependencies();

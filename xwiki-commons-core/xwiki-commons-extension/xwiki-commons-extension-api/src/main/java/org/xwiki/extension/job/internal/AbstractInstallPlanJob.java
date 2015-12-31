@@ -32,6 +32,8 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.namespace.NamespaceNotAllowedException;
+import org.xwiki.component.namespace.NamespaceValidator;
 import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
@@ -156,6 +158,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      */
     @Inject
     protected CoreExtensionRepository coreExtensionRepository;
+
+    @Inject
+    private NamespaceValidator namespaceResolver;
 
     /**
      * Used to make sure dependencies are compatible between each other in the whole plan.
@@ -743,11 +748,15 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @throws InstallException error when trying to install provided extension
      * @throws IncompatibleVersionConstraintException
      * @throws UninstallException
+     * @throws NamespaceNotAllowedException when passed namespace is not compatible with the passed extension
      */
     private ModifableExtensionPlanNode installExtension(Extension extension, boolean dependency, String namespace,
-        ExtensionDependency initialDependency)
-            throws InstallException, ResolveException, IncompatibleVersionConstraintException, UninstallException
+        ExtensionDependency initialDependency) throws InstallException, ResolveException,
+            IncompatibleVersionConstraintException, UninstallException, NamespaceNotAllowedException
     {
+        // Check the namespace is compatible with the Extension
+        this.namespaceResolver.checkAllowed(extension.getAllowedNamespaces(), namespace);
+
         // Check if the extension is already in the install plan
         checkExistingPlanNodeExtension(extension, namespace);
 

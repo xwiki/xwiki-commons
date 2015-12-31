@@ -129,6 +129,10 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_EFFID = "feature";
 
+    private static final String ELEMENT_ALLOWEDNAMESPACES = "allowednamespaces";
+
+    private static final String ELEMENT_ANNAMESPACE = "namespace";
+
     private static final String ELEMENT_EFFVERSION = "version";
 
     private static final String ELEMENT_SCM = "scm";
@@ -390,6 +394,12 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             }
         }
 
+        // Allowed namespaces
+        List<String> allowedNamespaces = parseList(extensionElement, ELEMENT_ALLOWEDNAMESPACES, ELEMENT_ANNAMESPACE);
+        if (allowedNamespaces != null) {
+            extension.setAllowedNamespaces(allowedNamespaces);
+        }
+
         // Scm
         extension.setScm(loadlScm(extensionElement));
 
@@ -568,6 +578,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         addAuthors(document, extensionElement, extension);
 
+        addAllowedNamespaces(document, extensionElement, extension);
+
         addLicenses(document, extensionElement, extension);
 
         addScm(document, extensionElement, extension);
@@ -624,6 +636,19 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
             for (String feature : features) {
                 addElement(document, featuresElement, ELEMENT_FFEATURE, feature);
+            }
+        }
+    }
+
+    private void addAllowedNamespaces(Document document, Element parentElement, Extension extension)
+    {
+        Collection<String> namespaces = extension.getAllowedNamespaces();
+        if (namespaces != null) {
+            Element namespacesElement = document.createElement(ELEMENT_ALLOWEDNAMESPACES);
+            parentElement.appendChild(namespacesElement);
+
+            for (String namespace : namespaces) {
+                addElement(document, namespacesElement, ELEMENT_ANNAMESPACE, namespace);
             }
         }
     }

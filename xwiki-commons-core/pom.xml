@@ -197,6 +197,12 @@
               <method>java.util.Collection getExtensionFeatures()</method>
               <justification>Allow associating a version different from the extension version to the features</justification>
             </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/Extension</className>
+              <method>java.util.Collection getAllowedNamespaces()</method>
+              <justification>Allow indicating namespace constraint in an extension</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

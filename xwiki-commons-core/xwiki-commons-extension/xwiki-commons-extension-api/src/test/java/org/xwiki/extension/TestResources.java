@@ -84,6 +84,8 @@ public class TestResources
     public static final ExtensionId REMOTE_OTHERUPGRADEWITHDEPENDENCY20_ID = new ExtensionId(
         "other-upgrade-withdependency", "2.0");
 
+    public static final ExtensionId REMOTE_ROOTEXTENSION10_ID = new ExtensionId("rootupgrade", "1.0");
+
     public static final ExtensionId REMOTE_UNSUPPORTED_ID = new ExtensionId("unsupported", "version");
 
     public static final ExtensionId REMOTE_NOTINSTALLED_ID = new ExtensionId("notinstalledextension", "2.0");

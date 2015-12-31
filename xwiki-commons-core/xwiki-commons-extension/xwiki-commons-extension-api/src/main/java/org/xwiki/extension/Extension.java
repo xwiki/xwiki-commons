@@ -125,6 +125,18 @@ public interface Extension
     String FIELD_WEBSITE = "website";
 
     /**
+     * @see #getAllowedNamespaces()
+     * @since 8.0M1
+     */
+    String FIELD_ALLOWEDNAMESPACE = "allowednamespace";
+
+    /**
+     * @see #getAllowedNamespaces()
+     * @since 8.0M1
+     */
+    String FIELD_ALLOWEDNAMESPACES = "allowednamespaces";
+
+    /**
      * @see #getScm()
      * @since 7.0RC1
      */
@@ -214,6 +226,12 @@ public interface Extension
      * @return the extension authors, an empty collection if there is none
      */
     Collection<ExtensionAuthor> getAuthors();
+
+    /**
+     * @return the namespaces where it's allowed to install this extension
+     * @since 8.0M1
+     */
+    Collection<String> getAllowedNamespaces();
 
     /**
      * @return the dependencies of the extension, an empty collection if there is none

@@ -94,6 +94,11 @@ public abstract class AbstractExtension implements Extension
     protected String website;
 
     /**
+     * @see #getAllowedNamespaces()
+     */
+    protected Set<String> allowedNamespaces;
+
+    /**
      * @see #getRepository()
      */
     protected ExtensionRepository repository;
@@ -220,6 +225,9 @@ public abstract class AbstractExtension implements Extension
                 return (T) getType();
             case FIELD_WEBSITE:
                 return (T) getWebSite();
+            case FIELD_ALLOWEDNAMESPACE:
+            case FIELD_ALLOWEDNAMESPACES:
+                return (T) getAllowedNamespaces();
             case FIELD_SCM:
                 return (T) getScm();
             case FIELD_REPOSITORIES:
@@ -468,6 +476,36 @@ public abstract class AbstractExtension implements Extension
     public void setWebsite(String website)
     {
         this.website = website;
+    }
+
+    @Override
+    public Collection<String> getAllowedNamespaces()
+    {
+        return this.allowedNamespaces;
+    }
+
+    /**
+     * Add a new allowed namespace to the extension.
+     *
+     * @param namespace a namespace
+     * @since 8.0M1
+     */
+    public void addAllowedNamespace(String namespace)
+    {
+        Set<String> newNamespaces = this.allowedNamespaces != null ? new LinkedHashSet<String>(this.allowedNamespaces)
+            : new LinkedHashSet<String>();
+        newNamespaces.add(namespace);
+
+        this.allowedNamespaces = Collections.unmodifiableSet(newNamespaces);
+    }
+
+    /**
+     * @param namespaces the namespaces where it's allowed to install this extension
+     * @since 8.0M1
+     */
+    public void setAllowedNamespaces(Collection<String> namespaces)
+    {
+        this.allowedNamespaces = Collections.unmodifiableSet(new LinkedHashSet<>(namespaces));
     }
 
     /**

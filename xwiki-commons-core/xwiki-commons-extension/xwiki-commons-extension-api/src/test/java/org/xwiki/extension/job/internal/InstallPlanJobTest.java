@@ -440,4 +440,15 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         // Install extension 2.0 on namespace
         installPlan(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace");
     }
+
+    @Test(expected = InstallException.class)
+    public void testInstallExtensionOnIncompatibleNamespace() throws Throwable
+    {
+        // Install 1.0 on root
+        install(TestResources.REMOTE_ROOTEXTENSION10_ID);
+        uninstall(TestResources.REMOTE_ROOTEXTENSION10_ID, null);
+
+        // Install 1.0 on incompatible namespace
+        install(TestResources.REMOTE_ROOTEXTENSION10_ID, "namespace");
+    }
 }

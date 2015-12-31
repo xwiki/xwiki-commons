@@ -155,8 +155,13 @@
           </element>
           <element name="features" type="string" minOccurs="0"
             maxOccurs="unbounded">
+                        <annotation>
+                          <documentation>@Deprecated since 8.0M1, use extensionFeatures instead</documentation>
+                        </annotation>
           </element>
-          <element name="extensionFeatures" type="extension:ExtensionId" minOccurs="0" maxOccurs="unbounded"></element>
+          <element name="extensionFeatures" type="extension:ExtensionId"
+            minOccurs="0" maxOccurs="unbounded">
+          </element>
           <element name="scm" type="extension:ExtensionScm"
             minOccurs="0" maxOccurs="1">
           </element>
@@ -167,6 +172,7 @@
           <element name="category" type="string" minOccurs="0"
             maxOccurs="1">
           </element>
+          <element name="allowedNamespaces" type="extension:Namespaces" minOccurs="0" maxOccurs="1"></element>
           <element name="properties" type="extension:Property"
             minOccurs="0" maxOccurs="unbounded">
           </element>
@@ -308,6 +314,12 @@
         <element name="id" type="string"></element>
         <element name="uri" type="string" minOccurs="1" maxOccurs="1"></element>
         <element name="type" type="string" minOccurs="1" maxOccurs="1"></element>
+      </sequence>
+    </complexType>
+
+    <complexType name="Namespaces">
+      <sequence>
+        <element name="namespace" type="string" minOccurs="0" maxOccurs="unbounded"></element>
       </sequence>
     </complexType>
 </schema>

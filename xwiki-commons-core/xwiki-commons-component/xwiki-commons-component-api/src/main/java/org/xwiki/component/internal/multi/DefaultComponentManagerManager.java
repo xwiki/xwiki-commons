@@ -28,6 +28,7 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.namespace.NamespaceUtils;
 
 /**
  * Default implementation of {@link ComponentManagerManager}.
@@ -82,7 +83,7 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
      */
     private ComponentManager createComponentManager(String id)
     {
-        String prefix = getPrefix(id);
+        String prefix = NamespaceUtils.getPrefix(id);
 
         ComponentManagerFactory componentManagerFactory;
         try {
@@ -92,36 +93,5 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
         }
 
         return componentManagerFactory.createComponentManager(id, this.rootComponentManager);
-    }
-
-    /**
-     * Extract prefix of the id used to find custom factory.
-     *
-     * @param id the identifier of the component manager to create
-     * @return the prefix of the id or null if none is provided
-     */
-    private String getPrefix(String id)
-    {
-        boolean escaped = false;
-        StringBuilder typeBuilder = null;
-        for (int i = 0; i < id.length(); ++i) {
-            char c = id.charAt(i);
-            if (escaped) {
-                typeBuilder.append(c);
-            } else {
-                if (c == '\\') {
-                    if (typeBuilder == null) {
-                        typeBuilder = new StringBuilder();
-                        typeBuilder.append(id.substring(0, i));
-                    }
-                } else if (c == ':') {
-                    return id.substring(0, i);
-                } else if (typeBuilder != null) {
-                    typeBuilder.append(c);
-                }
-            }
-        }
-
-        return null;
     }
 }

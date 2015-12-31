@@ -48,6 +48,7 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScm;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.License;
+import org.xwiki.extension.repository.xwiki.model.jaxb.Namespaces;
 import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
 import org.xwiki.extension.version.internal.DefaultVersion;
 
@@ -138,6 +139,12 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
 
         // Category
         setCategory(restExtension.getCategory());
+
+        // Allowed namespaces
+        Namespaces namespaces = restExtension.getAllowedNamespaces();
+        if (namespaces != null) {
+            setAllowedNamespaces(namespaces.getNamespaces());
+        }
 
         // Properties
         for (Property restProperty : restExtension.getProperties()) {

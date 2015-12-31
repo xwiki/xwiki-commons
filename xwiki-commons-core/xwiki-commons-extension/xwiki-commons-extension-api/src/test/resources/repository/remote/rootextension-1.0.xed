@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>rootextension</id>
+  <version>1.0</version>
+  <type>test</type>
+  <allowedNamespaces>
+    <namespace>&lt;root&gt;</namespace>
+  </allowedNamespaces>
+</extension>

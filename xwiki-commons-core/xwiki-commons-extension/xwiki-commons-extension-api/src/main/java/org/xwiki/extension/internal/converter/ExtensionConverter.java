@@ -164,6 +164,15 @@ public class ExtensionConverter extends AbstractConverter<Extension>
             extension.setCategory(categoryString);
         }
 
+        // features
+        String namespacesString = getProperty(properties, MavenUtils.MPNAME_NAMESPACES, true);
+        if (StringUtils.isNotBlank(namespacesString)) {
+            namespacesString = namespacesString.replaceAll("[\r\n]", "");
+            Collection<String> namespaces = this.converter.<Collection<String>>convert(
+                new DefaultParameterizedType(null, List.class, String.class), namespacesString);
+            extension.setAllowedNamespaces(namespaces);
+        }
+
         // repositories
         List<ExtensionRepositoryDescriptor> repositories;
         List<Repository> mavenRepositories = model.getRepositories();
