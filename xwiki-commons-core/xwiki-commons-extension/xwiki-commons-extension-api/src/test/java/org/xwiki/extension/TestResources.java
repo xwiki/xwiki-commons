@@ -44,7 +44,7 @@ public class TestResources
         "installedwithfeatureonnamespace", "version");
 
     public static final ExtensionId INSTALLED_WITHFEATUREASDEPENDENCY_ID = new ExtensionId(
-        "installewithfeatureasdependency", "version");
+        "installedwithfeatureasdependency", "version");
 
     public InstalledExtension installed;
 
@@ -70,6 +70,10 @@ public class TestResources
     public static final ExtensionId REMOTE_UPGRADE10_ID = new ExtensionId("upgrade", "1.0");
 
     public static final ExtensionId REMOTE_UPGRADE20_ID = new ExtensionId("upgrade", "2.0");
+
+    public static final ExtensionId REMOTE_UPGRADEFEATURE20_ID = new ExtensionId("upgrade-feature", "2.0");
+
+    public static final ExtensionId REMOTE_UPGRADEWITHFEATURE10_ID = new ExtensionId("upgrade-withfeature", "1.0");
 
     public static final ExtensionId REMOTE_UPGRADEWITHDEPENDENCY10_ID =
         new ExtensionId("upgrade-withdependency", "1.0");

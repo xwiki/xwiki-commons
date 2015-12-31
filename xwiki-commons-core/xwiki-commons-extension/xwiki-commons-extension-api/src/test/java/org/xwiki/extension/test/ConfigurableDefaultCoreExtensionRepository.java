@@ -19,12 +19,11 @@
  */
 package org.xwiki.extension.test;
 
-import java.util.Collection;
+import java.util.Arrays;
 
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
@@ -39,23 +38,18 @@ public class ConfigurableDefaultCoreExtensionRepository extends DefaultCoreExten
         this.extensions.put(extension.getId().getId(), extension);
     }
 
-    public void addExtensions(String id, Version version)
-    {
-        addExtensions(id, version, null);
-    }
-
-    public void addExtensions(String id, Version version, Collection<ExtensionFeature> features)
+    public void addExtensions(String id, Version version, ExtensionId... features)
     {
         DefaultCoreExtension coreExtension =
             new DefaultCoreExtension(null, null, new ExtensionId(id, version), "unknown");
 
-        if (features != null) {
-            coreExtension.setExtensionFeatures(features);
+        if (features.length > 0) {
+            coreExtension.setExtensionFeatures(Arrays.asList(features));
         }
 
         this.extensions.put(id, coreExtension);
 
-        for (ExtensionFeature feature : coreExtension.getExtensionFeatures()) {
+        for (ExtensionId feature : coreExtension.getExtensionFeatures()) {
             this.extensions.put(feature.getId(), coreExtension);
         }
     }

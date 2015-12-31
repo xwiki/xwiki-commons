@@ -185,6 +185,18 @@
           -->
           <ignored>
             <!-- Remove the following ignores after we release the current version as final -->
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/Extension</className>
+              <method>org.xwiki.extension.ExtensionId getExtensionFeature(java.lang.String)</method>
+              <justification>Allow associating a version different from the extension version to the features</justification>
+            </difference>
+            <difference>
+              <differenceType>7012</differenceType>
+              <className>org/xwiki/extension/Extension</className>
+              <method>java.util.Collection getExtensionFeatures()</method>
+              <justification>Allow associating a version different from the extension version to the features</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

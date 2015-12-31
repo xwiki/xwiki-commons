@@ -156,7 +156,7 @@
           <element name="features" type="string" minOccurs="0"
             maxOccurs="unbounded">
           </element>
-          <element name="extensionFeatures" type="extension:ExtensionFeature" minOccurs="0" maxOccurs="unbounded"></element>
+          <element name="extensionFeatures" type="extension:ExtensionId" minOccurs="0" maxOccurs="unbounded"></element>
           <element name="scm" type="extension:ExtensionScm"
             minOccurs="0" maxOccurs="1">
           </element>
@@ -229,7 +229,7 @@
       </sequence>
     </complexType>
 
-    <complexType name="ExtensionFeature">
+    <complexType name="ExtensionId">
       <sequence>
         <element name="id" type="string" minOccurs="1" maxOccurs="1"></element>
         <element name="version" type="string" minOccurs="0" maxOccurs="1"></element>

@@ -157,7 +157,7 @@ public interface Extension
      * can be matched in this list.
      *
      * @return the extension ids also provided by this extension, an empty collection if there is none
-     * @deprecated since 7.0M1, use {@link #getExtensionFEatures()} instead
+     * @deprecated since 8.0M1, use {@link #getExtensionFeatures()} instead
      */
     @Deprecated
     Collection<String> getFeatures();
@@ -166,10 +166,19 @@ public interface Extension
      * Indicate in an extension a list of provided "functionalities". Then when resolving extensions dependencies they
      * can be matched in this list.
      * 
-     * @return the {@link ExtensionFeature}s also provided by this extension, an empty collection if there is none
-     * @since 7.0M1
+     * @return the {@link ExtensionId}s also provided by this extension, an empty collection if there is none
+     * @since 8.0M1
      */
-    Collection<ExtensionFeature> getExtensionFeatures();
+    Collection<ExtensionId> getExtensionFeatures();
+
+    /**
+     * Return the {@link ExtensionFeature} that matches the passed feature id.
+     * 
+     * @param featureId the ide of the feature
+     * @return the {@link ExtensionId} associated to the passed id
+     * @since 8.0M1
+     */
+    ExtensionId getExtensionFeature(String featureId);
 
     /**
      * @return the type of the extension

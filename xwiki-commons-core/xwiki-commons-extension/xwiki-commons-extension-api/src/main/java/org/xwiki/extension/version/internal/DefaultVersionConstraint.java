@@ -110,6 +110,15 @@ public class DefaultVersionConstraint implements VersionConstraint
     }
 
     /**
+     * @param version the recommended version
+     */
+    public DefaultVersionConstraint(Version version)
+    {
+        this.ranges = Collections.emptyList();
+        this.version = version;
+    }
+
+    /**
      * @param rawConstraint the constraint to parse
      */
     private void setConstraint(String rawConstraint)

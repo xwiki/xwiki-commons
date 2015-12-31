@@ -63,7 +63,6 @@ import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.ExtensionDependency;
-import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionIssueManagement;
 import org.xwiki.extension.ExtensionLicense;
@@ -223,9 +222,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     {
         Element extensionElement = getExtensionElement(descriptor);
 
-        DefaultCoreExtension coreExtension =
-            new DefaultCoreExtension(repository, url, getExtensionId(extensionElement),
-                getExtensionType(extensionElement));
+        DefaultCoreExtension coreExtension = new DefaultCoreExtension(repository, url, getExtensionId(extensionElement),
+            getExtensionType(extensionElement));
 
         loadExtensionDescriptor(coreExtension, extensionElement);
 
@@ -319,9 +317,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     ExtensionLicense license = this.licenseManager.getLicense(licenseName);
                     if (license == null) {
                         try {
-                            license =
-                                new ExtensionLicense(licenseName, licenceContentNode != null
-                                    ? IOUtils.readLines(new StringReader(licenceContentNode.getTextContent())) : null);
+                            license = new ExtensionLicense(licenseName, licenceContentNode != null
+                                ? IOUtils.readLines(new StringReader(licenceContentNode.getTextContent())) : null);
                         } catch (IOException e) {
                             // That should never happen
                             throw new InvalidExtensionException("Failed to write license content", e);
@@ -351,8 +348,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                             authorURL = new URL(authorURLNode.getTextContent());
                         } catch (MalformedURLException e) {
                             // That should never happen
-                            throw new InvalidExtensionException("Malformed URL [" + authorURLNode.getTextContent()
-                                + "]", e);
+                            throw new InvalidExtensionException(
+                                "Malformed URL [" + authorURLNode.getTextContent() + "]", e);
                         }
                     } else {
                         authorURL = null;
@@ -378,17 +375,19 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     String version = versionNode != null ? versionNode.getTextContent() : null;
 
                     if (version != null) {
-                        extension.addExtensionFeature(new ExtensionFeature(id, new DefaultVersionConstraint(version)));
+                        extension.addExtensionFeature(new ExtensionId(id, version));
                     } else {
-                        extension.addExtensionFeature(new ExtensionFeature(id));
+                        extension.addExtensionFeature(new ExtensionId(id, extension.getId().getVersion()));
                     }
                 }
             }
         }
-        // @Deprecated Features
-        List<String> legacyFeatures = parseList(extensionElement, ELEMENT_FEATURES, ELEMENT_FFEATURE);
-        if (legacyFeatures != null) {
-            extension.setFeatures(legacyFeatures);
+        if (featuresNode == null) {
+            // @Deprecated Features
+            List<String> legacyFeatures = parseList(extensionElement, ELEMENT_FEATURES, ELEMENT_FFEATURE);
+            if (legacyFeatures != null) {
+                extension.setFeatures(legacyFeatures);
+            }
         }
 
         // Scm
@@ -458,8 +457,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             Node path = getNode(scmConnectionElement, ELEMENT_SCPATH);
 
             if (system != null) {
-                return new DefaultExtensionScmConnection(system.getTextContent(), path != null ? path.getTextContent()
-                    : null);
+                return new DefaultExtensionScmConnection(system.getTextContent(),
+                    path != null ? path.getTextContent() : null);
             }
         }
 
@@ -475,8 +474,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             Node urlNode = getNode(node, ELEMENT_IURL);
 
             if (systemNode != null) {
-                return new DefaultExtensionIssueManagement(systemNode.getTextContent(), urlNode != null
-                    ? urlNode.getTextContent() : null);
+                return new DefaultExtensionIssueManagement(systemNode.getTextContent(),
+                    urlNode != null ? urlNode.getTextContent() : null);
             }
         }
 
@@ -546,8 +545,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     }
 
     @Override
-    public void saveExtensionDescriptor(Extension extension, OutputStream fos) throws ParserConfigurationException,
-        TransformerException
+    public void saveExtensionDescriptor(Extension extension, OutputStream fos)
+        throws ParserConfigurationException, TransformerException
     {
         DocumentBuilder documentBuilder = this.documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.newDocument();
@@ -565,7 +564,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         addElement(document, extensionElement, ELEMENT_WEBSITE, extension.getWebSite());
 
         addExtensionFeatures(document, extensionElement, extension);
-        addFeatures(document, extensionElement, extension);
+        addLegacyFeatures(document, extensionElement, extension);
 
         addAuthors(document, extensionElement, extension);
 
@@ -616,7 +615,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     }
 
     @Deprecated
-    private void addFeatures(Document document, Element parentElement, Extension extension)
+    private void addLegacyFeatures(Document document, Element parentElement, Extension extension)
     {
         Collection<String> features = extension.getFeatures();
         if (!features.isEmpty()) {
@@ -631,17 +630,17 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private void addExtensionFeatures(Document document, Element parentElement, Extension extension)
     {
-        Collection<ExtensionFeature> features = extension.getExtensionFeatures();
+        Collection<ExtensionId> features = extension.getExtensionFeatures();
         if (!features.isEmpty()) {
             Element featuresElement = document.createElement(ELEMENT_EXTENSIONFEATURES);
             parentElement.appendChild(featuresElement);
 
-            for (ExtensionFeature feature : features) {
+            for (ExtensionId feature : features) {
                 Element authorElement = document.createElement(ELEMENT_EFFEATURE);
                 featuresElement.appendChild(authorElement);
 
                 addElement(document, authorElement, ELEMENT_EFFID, feature.getId());
-                addElement(document, authorElement, ELEMENT_EFFVERSION, feature.getVersionConstraint());
+                addElement(document, authorElement, ELEMENT_EFFVERSION, feature.getVersion());
             }
         }
     }
@@ -739,9 +738,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private void addElement(Document document, Element parentElement, String elementName, Object elementValue)
     {
-        Element element =
-            CollectionExtensionPropertySerializer
-                .toElement(elementValue, document, elementName, this.serializerByClass);
+        Element element = CollectionExtensionPropertySerializer.toElement(elementValue, document, elementName,
+            this.serializerByClass);
 
         if (element != null) {
             parentElement.appendChild(element);

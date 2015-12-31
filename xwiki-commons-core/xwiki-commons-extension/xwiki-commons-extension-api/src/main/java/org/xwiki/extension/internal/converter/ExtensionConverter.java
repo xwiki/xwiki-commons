@@ -49,7 +49,6 @@ import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionScmConnection;
@@ -150,8 +149,13 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         // features
         String featuresString = getProperty(properties, MavenUtils.MPNAME_FEATURES, true);
         if (StringUtils.isNotBlank(featuresString)) {
-            extension.setExtensionFeatures(this.converter.<Collection<ExtensionFeature>>convert(
-                new DefaultParameterizedType(null, List.class, ExtensionFeature.class), featuresString));
+            featuresString = featuresString.replaceAll("[\r\n]", "");
+            Collection<String> features = this.converter.<Collection<String>>convert(
+                new DefaultParameterizedType(null, List.class, String.class), featuresString);
+            for (String feature : features) {
+                extension
+                    .addExtensionFeature(ExtensionIdConverter.toExtensionId(feature, extension.getId().getVersion()));
+            }
         }
 
         // category

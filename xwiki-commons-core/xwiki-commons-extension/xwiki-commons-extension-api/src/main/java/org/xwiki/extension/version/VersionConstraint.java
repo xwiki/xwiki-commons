@@ -76,12 +76,12 @@ public interface VersionConstraint extends Serializable
     boolean isCompatible(Version version);
 
     /**
-     * Merge too version constraints in one.
+     * Merge two versions constraints in one.
      *
      * @param versionConstraint the version constraint to merge with this version constraint
      * @return the merged version constraint
-     * @throws IncompatibleVersionConstraintException the provided version constraint is compatible with the provided
-     *             version constraint
+     * @throws IncompatibleVersionConstraintException the provided version constraint is not compatible with the
+     *             provided version constraint
      */
     VersionConstraint merge(VersionConstraint versionConstraint) throws IncompatibleVersionConstraintException;
 }

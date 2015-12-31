@@ -20,9 +20,7 @@
 package org.xwiki.extension.job.internal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -54,7 +52,6 @@ import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.version.IncompatibleVersionConstraintException;
-import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 
 /**
@@ -293,67 +290,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         }
     }
 
-    protected Collection<InstalledExtension> checkAlreadyInstalledExtensions(String id, Version version,
-        String namespace) throws ResolveException, InstallException
-    {
-        InstalledExtension previousExtension = this.installedExtensionRepository.getInstalledExtension(id, namespace);
-        if (previousExtension != null) {
-            if (getRequest().isVerbose()) {
-                this.logger.debug("Found already installed extension with id [{}]. Checking compatibility...", id);
-            }
-
-            if (version == null) {
-                throw new InstallException(String.format("The extension with id [%s] is already installed", id));
-            }
-
-            int versionDiff = version.compareTo(previousExtension.getId().getVersion());
-
-            if (versionDiff == 0) {
-                throw new InstallException(String.format("The extension [%s-%s] is already installed", id, version));
-            } else {
-                // Make sure the new version is compatible with old version backward dependencies
-                if (previousExtension.isInstalled(null)) {
-                    Map<String, Collection<InstalledExtension>> backwardDependencies =
-                        this.installedExtensionRepository.getBackwardDependencies(previousExtension.getId());
-
-                    if (!isCompatible(backwardDependencies.get(null), id, version)) {
-                        throw new InstallException(
-                            String
-                                .format(
-                                    "The extension [%s-%s] is not compatible with previous version ([%s]) backward dependencies",
-                                    id, version, previousExtension.getId()));
-                    }
-
-                    if (namespace != null) {
-                        if (!isCompatible(backwardDependencies.get(namespace), id, version)) {
-                            throw new InstallException(
-                                String
-                                    .format(
-                                        "The extension [%s-%s] is not compatible with previous version ([%s]) backward dependencies on namespace [%s]",
-                                        id, version, previousExtension.getId(), namespace));
-                        }
-                    }
-                } else {
-                    Collection<InstalledExtension> backwardDependencies =
-                        this.installedExtensionRepository.getBackwardDependencies(previousExtension.getId().getId(),
-                            namespace);
-
-                    if (!isCompatible(backwardDependencies, id, version)) {
-                        throw new InstallException(
-                            String
-                                .format(
-                                    "The extension [%s-%s] is not compatible with previous version ([%s]) backward dependencies on namespace [%s]",
-                                    id, version, previousExtension.getId(), namespace));
-                    }
-                }
-
-                return Arrays.asList(previousExtension);
-            }
-        }
-
-        return Collections.emptyList();
-    }
-
     /**
      * Install provided extension.
      *
@@ -377,7 +313,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         }
 
         // Check if the feature is already in the install plan
-        if (checkExistingPlanNodeExtension(extensionId, namespace)) {
+        if (checkExistingPlanNodeExtension(extensionId, true, namespace)) {
             return;
         }
 
@@ -396,39 +332,21 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         parentBranch.add(node);
     }
 
-    /**
-     * Check if provided id/version is compatible with provided extensions dependencies constraints.
-     */
-    private boolean isCompatible(Collection<? extends Extension> extensions, String id, Version version)
-    {
-        if (extensions != null) {
-            for (Extension extension : extensions) {
-                for (ExtensionDependency dependency : extension.getDependencies()) {
-                    if (dependency.getId().equals(id)) {
-                        if (!dependency.getVersionConstraint().isCompatible(version)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
     private boolean checkCoreDependency(ExtensionDependency extensionDependency,
         List<ModifableExtensionPlanNode> parentBranch) throws InstallException
     {
         CoreExtension coreExtension = this.coreExtensionRepository.getCoreExtension(extensionDependency.getId());
 
         if (coreExtension != null) {
-            if (!extensionDependency.getVersionConstraint().isCompatible(coreExtension.getId().getVersion())) {
+            ExtensionId feature = coreExtension.getExtensionFeature(extensionDependency.getId());
+            if (!extensionDependency.getVersionConstraint().isCompatible(feature.getVersion())) {
                 throw new InstallException("Dependency [" + extensionDependency
-                    + "] is not compatible with core extension [" + coreExtension + "]");
+                    + "] is not compatible with core extension feature [" + feature + "] ([" + coreExtension + "])");
             } else {
                 if (getRequest().isVerbose()) {
-                    this.logger.debug("There is already a core extension [{}] covering extension dependency [{}]",
-                        coreExtension.getId(), extensionDependency);
+                    this.logger.debug(
+                        "There is already a core extension feature [{}] ([{}]) covering extension dependency [{}]",
+                        feature, coreExtension, extensionDependency);
                 }
 
                 ModifableExtensionPlanNode node =
@@ -444,9 +362,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         return false;
     }
 
-    private VersionConstraint checkExistingPlanNodeDependency(ExtensionDependency extensionDependency,
-        String namespace, List<ModifableExtensionPlanNode> parentBranch, VersionConstraint previousVersionConstraint)
-        throws InstallException
+    private VersionConstraint checkExistingPlanNodeDependency(ExtensionDependency extensionDependency, String namespace,
+        List<ModifableExtensionPlanNode> parentBranch, VersionConstraint previousVersionConstraint)
+            throws InstallException
     {
         VersionConstraint versionConstraint = previousVersionConstraint;
 
@@ -478,44 +396,32 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     private boolean checkExistingPlanNodeExtension(Extension extension, String namespace) throws InstallException
     {
-        if (checkExistingPlanNodeExtension(extension.getId(), namespace)) {
+        if (checkExistingPlanNodeExtension(extension.getId(), true, namespace)) {
             return true;
         }
 
-        for (String feature : extension.getFeatures()) {
-            checkExistingPlanNodeExtension(feature, extension.getId().getVersion(), namespace);
+        for (ExtensionId feature : extension.getExtensionFeatures()) {
+            checkExistingPlanNodeExtension(feature, false, namespace);
         }
 
         return false;
     }
 
-    private boolean checkExistingPlanNodeExtension(ExtensionId extensionId, String namespace) throws InstallException
-    {
-        return checkExistingPlanNodeExtension(extensionId.getId(), extensionId.getVersion(), true, namespace);
-    }
-
-    private void checkExistingPlanNodeExtension(String feature, Version version, String namespace)
+    private boolean checkExistingPlanNodeExtension(ExtensionId extensionId, boolean isId, String namespace)
         throws InstallException
     {
-        checkExistingPlanNodeExtension(feature, version, false, namespace);
-    }
-
-    private boolean checkExistingPlanNodeExtension(String feature, Version version, boolean id, String namespace)
-        throws InstallException
-    {
-        ModifableExtensionPlanNode existingNode = getExtensionNode(feature, namespace);
+        ModifableExtensionPlanNode existingNode = getExtensionNode(extensionId.getId(), namespace);
         if (existingNode != null) {
-            if (id && existingNode.getAction().getExtension().getId().getId().equals(feature)
-                && existingNode.getAction().getExtension().getId().getVersion().equals(version)) {
+            if (isId && existingNode.getAction().getExtension().getId().equals(extensionId)) {
                 // Same extension already planned for install
                 return true;
             }
 
             if (existingNode.versionConstraint != null) {
-                if (!existingNode.versionConstraint.isCompatible(version)) {
-                    throw new InstallException(String.format(
-                        "Extension [%s-%s] is incompatible with existing constraint [%s]", feature, version,
-                        existingNode.versionConstraint));
+                if (!existingNode.versionConstraint.isCompatible(extensionId.getVersion())) {
+                    throw new InstallException(
+                        String.format("Extension feature [%s] is incompatible with existing constraint [%s]",
+                            extensionId, existingNode.versionConstraint));
                 }
             }
         }
@@ -525,7 +431,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     private ExtensionDependency checkInstalledDependency(ExtensionDependency extensionDependency,
         VersionConstraint versionConstraint, String namespace, List<ModifableExtensionPlanNode> parentBranch)
-        throws InstallException
+            throws InstallException
     {
         InstalledExtension installedExtension =
             this.installedExtensionRepository.getInstalledExtension(extensionDependency.getId(), namespace);
@@ -534,30 +440,33 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         if (installedExtension != null) {
             // Check if already installed version is compatible
-            if (installedExtension.isValid(namespace)
-                && versionConstraint.isCompatible(installedExtension.getId().getVersion())) {
-                if (getRequest().isVerbose()) {
-                    this.logger.debug(
-                        "There is already an installed extension [{}] covering extension dependency [{}]",
-                        installedExtension.getId(), extensionDependency);
+            if (installedExtension.isValid(namespace)) {
+                ExtensionId feature = installedExtension.getExtensionFeature(extensionDependency.getId());
+
+                if (versionConstraint.isCompatible(feature.getVersion())) {
+                    if (getRequest().isVerbose()) {
+                        this.logger.debug(
+                            "There is already an installed extension [{}] covering extension dependency [{}]",
+                            installedExtension.getId(), extensionDependency);
+                    }
+
+                    ModifableExtensionPlanNode node =
+                        new ModifableExtensionPlanNode(extensionDependency, versionConstraint);
+                    node.setAction(new DefaultExtensionPlanAction(installedExtension, null, Action.NONE, namespace,
+                        installedExtension.isDependency(namespace)));
+
+                    addExtensionNode(node);
+                    parentBranch.add(node);
+
+                    return null;
                 }
-
-                ModifableExtensionPlanNode node =
-                    new ModifableExtensionPlanNode(extensionDependency, versionConstraint);
-                node.setAction(new DefaultExtensionPlanAction(installedExtension, null, Action.NONE, namespace,
-                    installedExtension.isDependency(namespace)));
-
-                addExtensionNode(node);
-                parentBranch.add(node);
-
-                return null;
             }
 
             // If incompatible root extension fail
             if (namespace != null && installedExtension.isInstalled(null)) {
-                throw new InstallException(String.format(
-                    "Dependency [%s] is incompatible with installed root extension [%s]", extensionDependency,
-                    installedExtension.getId()));
+                throw new InstallException(
+                    String.format("Dependency [%s] is incompatible with installed root extension [%s]",
+                        extensionDependency, installedExtension.getId()));
             }
 
             // If not compatible with it, try to merge dependencies constraint of all backward dependencies to find a
@@ -568,18 +477,15 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     Map<String, Collection<InstalledExtension>> backwardDependencies =
                         this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId());
 
-                    mergedVersionContraint =
-                        mergeVersionConstraints(backwardDependencies.get(null), extensionDependency.getId(),
-                            versionConstraint);
+                    mergedVersionContraint = mergeVersionConstraints(backwardDependencies.get(null),
+                        extensionDependency.getId(), versionConstraint);
                     if (namespace != null) {
-                        mergedVersionContraint =
-                            mergeVersionConstraints(backwardDependencies.get(namespace), extensionDependency.getId(),
-                                mergedVersionContraint);
+                        mergedVersionContraint = mergeVersionConstraints(backwardDependencies.get(namespace),
+                            extensionDependency.getId(), mergedVersionContraint);
                     }
                 } else {
-                    Collection<InstalledExtension> backwardDependencies =
-                        this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId().getId(),
-                            namespace);
+                    Collection<InstalledExtension> backwardDependencies = this.installedExtensionRepository
+                        .getBackwardDependencies(installedExtension.getId().getId(), namespace);
 
                     mergedVersionContraint =
                         mergeVersionConstraints(backwardDependencies, extensionDependency.getId(), versionConstraint);
@@ -609,8 +515,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @throws IncompatibleVersionConstraintException
      */
     private void installExtensionDependency(ExtensionDependency extensionDependency, String namespace,
-        List<ModifableExtensionPlanNode> parentBranch) throws InstallException, IncompatibleVersionConstraintException,
-        ResolveException
+        List<ModifableExtensionPlanNode> parentBranch)
+            throws InstallException, IncompatibleVersionConstraintException, ResolveException
     {
         if (getRequest().isVerbose()) {
             if (namespace != null) {
@@ -649,9 +555,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         // For root dependency make sure to generate a version constraint compatible with any already existing
         // namespace extension backward dependency
         if (namespace == null) {
-            versionConstraint =
-                mergeBackwardDependenciesVersionConstraints(targetDependency.getId(), namespace,
-                    targetDependency.getVersionConstraint());
+            versionConstraint = mergeBackwardDependenciesVersionConstraints(targetDependency.getId(), namespace,
+                targetDependency.getVersionConstraint());
             targetDependency = new DefaultExtensionDependency(targetDependency, versionConstraint);
         }
 
@@ -689,8 +594,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             try {
                 return installExtension(extension, dependency, namespace, targetDependency);
             } catch (Exception e) {
-                throw new InstallException(String.format(
-                    "Failed to create an install plan for extension dependency [%s]", targetDependency), e);
+                throw new InstallException(
+                    String.format("Failed to create an install plan for extension dependency [%s]", targetDependency),
+                    e);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -820,8 +726,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             try {
                 extension = this.repositoryManager.resolve(extensionDependency);
             } catch (ResolveException e1) {
-                throw new InstallException(String.format("Failed to resolve extension dependency [%s]",
-                    extensionDependency), e1);
+                throw new InstallException(
+                    String.format("Failed to resolve extension dependency [%s]", extensionDependency), e1);
             }
         }
 
@@ -839,8 +745,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @throws UninstallException
      */
     private ModifableExtensionPlanNode installExtension(Extension extension, boolean dependency, String namespace,
-        ExtensionDependency initialDependency) throws InstallException, ResolveException,
-        IncompatibleVersionConstraintException, UninstallException
+        ExtensionDependency initialDependency)
+            throws InstallException, ResolveException, IncompatibleVersionConstraintException, UninstallException
     {
         // Check if the extension is already in the install plan
         checkExistingPlanNodeExtension(extension, namespace);
@@ -917,15 +823,28 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
             this.progressManager.startStep(this);
 
-            ModifableExtensionPlanNode node =
-                initialDependency != null ? new ModifableExtensionPlanNode(initialDependency,
-                    initialDependency.getVersionConstraint()) : new ModifableExtensionPlanNode();
+            ModifableExtensionPlanNode node = initialDependency != null
+                ? new ModifableExtensionPlanNode(initialDependency, initialDependency.getVersionConstraint())
+                : new ModifableExtensionPlanNode();
 
             node.setChildren(children);
 
             Action action;
             if (!previousExtensions.isEmpty()) {
-                if (previousExtensions.iterator().next().getId().getVersion().compareTo(extension.getId().getVersion()) > 0) {
+                InstalledExtension previousExtension = previousExtensions.iterator().next();
+                ExtensionId newFeature = extension.getId();
+                ExtensionId previousFeature = previousExtension.getExtensionFeature(newFeature.getId());
+                if (previousFeature == null) {
+                    for (ExtensionId extensionFeature : extension.getExtensionFeatures()) {
+                        previousFeature = previousExtension.getExtensionFeature(extensionFeature.getId());
+                        if (previousFeature != null) {
+                            newFeature = extensionFeature;
+                            break;
+                        }
+                    }
+                }
+
+                if (previousFeature != null && previousFeature.getVersion().compareTo(newFeature.getVersion()) > 0) {
                     action = Action.DOWNGRADE;
                 } else {
                     action = Action.UPGRADE;
@@ -934,7 +853,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 action = Action.INSTALL;
             }
 
-            node.setAction(new DefaultExtensionPlanAction(extension, previousExtensions, action, namespace, dependency));
+            node.setAction(
+                new DefaultExtensionPlanAction(extension, previousExtensions, action, namespace, dependency));
 
             return node;
         } finally {
@@ -953,8 +873,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         InstalledExtension installedExtension =
             this.installedExtensionRepository.getInstalledExtension(extension.getId());
         if (installedExtension != null && installedExtension.isInstalled(namespace)) {
-            throw new InstallException(String.format("Extension [%s] is already installed on namespace [%s]",
-                extension.getId(), namespace));
+            throw new InstallException(
+                String.format("Extension [%s] is already installed on namespace [%s]", extension.getId(), namespace));
         }
     }
 
@@ -962,8 +882,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     {
         checkRootExtension(extension.getId().getId());
 
-        for (String feature : extension.getFeatures()) {
-            checkRootExtension(feature);
+        for (ExtensionId feature : extension.getExtensionFeatures()) {
+            checkRootExtension(feature.getId());
         }
     }
 
@@ -971,16 +891,16 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     {
         InstalledExtension rootExtension = this.installedExtensionRepository.getInstalledExtension(feature, null);
         if (rootExtension != null) {
-            throw new InstallException(String.format(
-                "An extension with feature [%s] is already installed on root namespace ([%s])", feature,
-                rootExtension.getId()));
+            throw new InstallException(
+                String.format("An extension with feature [%s] is already installed on root namespace ([%s])", feature,
+                    rootExtension.getId()));
         }
     }
 
     private void checkCoreExtension(Extension extension) throws InstallException
     {
-        for (String feature : extension.getFeatures()) {
-            checkCoreExtension(feature);
+        for (ExtensionId feature : extension.getExtensionFeatures()) {
+            checkCoreExtension(feature.getId());
         }
     }
 
@@ -1007,18 +927,18 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         Set<InstalledExtension> installedExtensions = getInstalledExtensions(extension.getId().getId(), namespace);
 
         VersionConstraint versionConstraint =
-            checkReplacedInstalledExtensions(installedExtensions, extension.getId().getId(), extension, namespace, null);
+            checkReplacedInstalledExtensions(installedExtensions, extension.getId(), namespace, null);
         previousExtensions.addAll(installedExtensions);
 
-        for (String feature : extension.getFeatures()) {
+        for (ExtensionId feature : extension.getExtensionFeatures()) {
             // If a namespace extension already exist on root, fail the install
             if (namespace != null) {
-                checkRootExtension(feature);
+                checkRootExtension(feature.getId());
             }
 
-            installedExtensions = getInstalledExtensions(feature, namespace);
+            installedExtensions = getInstalledExtensions(feature.getId(), namespace);
             versionConstraint =
-                checkReplacedInstalledExtensions(installedExtensions, feature, extension, namespace, versionConstraint);
+                checkReplacedInstalledExtensions(installedExtensions, feature, namespace, versionConstraint);
             previousExtensions.addAll(installedExtensions);
         }
 
@@ -1054,8 +974,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     }
 
     private VersionConstraint checkReplacedInstalledExtensions(Collection<InstalledExtension> installedExtensions,
-        String feature, Extension extension, String namespace, VersionConstraint versionConstraint)
-        throws IncompatibleVersionConstraintException, ResolveException
+        ExtensionId feature, String namespace, VersionConstraint versionConstraint)
+            throws IncompatibleVersionConstraintException, ResolveException
     {
         if (installedExtensions.isEmpty()) {
             return versionConstraint;
@@ -1067,14 +987,14 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         // Merge all backward dependencies constraints
         for (Map.Entry<String, Set<InstalledExtension>> entry : backwardDependencies.entrySet()) {
-            versionConstraint = mergeVersionConstraints(entry.getValue(), feature, versionConstraint);
+            versionConstraint = mergeVersionConstraints(entry.getValue(), feature.getId(), versionConstraint);
 
             // Validate version constraint
             if (versionConstraint != null) {
-                if (!versionConstraint.isCompatible(extension.getId().getVersion())) {
+                if (!versionConstraint.isCompatible(feature.getVersion())) {
                     throw new IncompatibleVersionConstraintException(String.format(
-                        "The extension [%s] is not compatible with existing backward dependency constraint [%s]",
-                        extension.getId(), versionConstraint));
+                        "The extension with feature [%s] is not compatible with existing backward dependency constraint [%s]",
+                        feature, versionConstraint));
                 }
             }
         }
@@ -1100,8 +1020,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     namespaceBackwardDependencies.addAll(entry.getValue());
                 }
             } else {
-                for (InstalledExtension backwardDependency : this.installedExtensionRepository.getBackwardDependencies(
-                    installedExtension.getId().getId(), namespace)) {
+                for (InstalledExtension backwardDependency : this.installedExtensionRepository
+                    .getBackwardDependencies(installedExtension.getId().getId(), namespace)) {
                     Set<InstalledExtension> namespaceBackwardDependencies = backwardDependencies.get(namespace);
                     if (namespaceBackwardDependencies == null) {
                         namespaceBackwardDependencies = new LinkedHashSet<>();
@@ -1148,8 +1068,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             }
 
             // Check features
-            for (String installedFeature : installedExtension.getFeatures())
-                if (installedFeature.equals(feature)) {
+            for (ExtensionId installedFeature : installedExtension.getExtensionFeatures())
+                if (installedFeature.getId().equals(feature)) {
                     installedExtensions.add(installedExtension);
                     break;
                 }

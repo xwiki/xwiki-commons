@@ -86,9 +86,9 @@ public class DefaultInstalledExtensionRepository extends
     {
         public InstalledRootFeature root;
 
-        public String feature;
+        public ExtensionId feature;
 
-        public InstalledFeature(InstalledRootFeature root, String feature)
+        public InstalledFeature(InstalledRootFeature root, ExtensionId feature)
         {
             this.root = root;
             this.feature = feature;
@@ -157,8 +157,8 @@ public class DefaultInstalledExtensionRepository extends
     {
         addInstalledLocalExtension(localExtension.getId().getId(), localExtension);
 
-        for (String feature : localExtension.getFeatures()) {
-            addInstalledLocalExtension(feature, localExtension);
+        for (ExtensionId feature : localExtension.getExtensionFeatures()) {
+            addInstalledLocalExtension(feature.getId(), localExtension);
         }
     }
 
@@ -393,8 +393,8 @@ public class DefaultInstalledExtensionRepository extends
     {
         removeInstalledFeature(installedExtension.getId().getId(), namespace);
 
-        for (String feature : installedExtension.getFeatures()) {
-            removeInstalledFeature(feature, namespace);
+        for (ExtensionId feature : installedExtension.getExtensionFeatures()) {
+            removeInstalledFeature(feature.getId(), namespace);
         }
 
         removeFromBackwardDependencies(installedExtension, namespace);
@@ -513,10 +513,10 @@ public class DefaultInstalledExtensionRepository extends
         addCachedExtension(installedExtension);
 
         // Register the extension in the installed extensions for the provided namespace
-        addInstalledFeatureToCache(installedExtension.getId().getId(), namespace, installedExtension);
+        addInstalledFeatureToCache(installedExtension.getId(), namespace, installedExtension);
 
         // Add virtual extensions
-        for (String feature : installedExtension.getFeatures()) {
+        for (ExtensionId feature : installedExtension.getExtensionFeatures()) {
             addInstalledFeatureToCache(feature, namespace, installedExtension);
         }
 
@@ -558,9 +558,11 @@ public class DefaultInstalledExtensionRepository extends
                     (DefaultInstalledExtension) getInstalledExtension(dependency.getId(), namespace);
 
                 if (dependencyLocalExtension != null) {
+                    ExtensionId feature = dependencyLocalExtension.getExtensionFeature(dependency.getId());
+
                     // Make sure to register backward dependency on the right namespace
                     InstalledFeature dependencyInstalledExtension =
-                        addInstalledFeatureToCache(dependency.getId(), namespace, dependencyLocalExtension);
+                        addInstalledFeatureToCache(feature, namespace, dependencyLocalExtension);
 
                     dependencyInstalledExtension.root.backwardDependencies.add(installedExtension);
                 }
@@ -578,20 +580,21 @@ public class DefaultInstalledExtensionRepository extends
      * @param localExtension the extension
      * @return the installed extension informations
      */
-    private InstalledFeature addInstalledFeatureToCache(String feature, String namespace,
+    private InstalledFeature addInstalledFeatureToCache(ExtensionId feature, String namespace,
         DefaultInstalledExtension localExtension)
     {
-        Map<String, InstalledFeature> installedExtensionsForFeature = this.extensionNamespaceByFeature.get(feature);
+        Map<String, InstalledFeature> installedExtensionsForFeature =
+            this.extensionNamespaceByFeature.get(feature.getId());
 
         if (installedExtensionsForFeature == null) {
             installedExtensionsForFeature = new HashMap<String, InstalledFeature>();
-            this.extensionNamespaceByFeature.put(feature, installedExtensionsForFeature);
+            this.extensionNamespaceByFeature.put(feature.getId(), installedExtensionsForFeature);
         }
 
         InstalledFeature installedFeature = installedExtensionsForFeature.get(namespace);
         if (installedFeature == null) {
             InstalledRootFeature rootFeature;
-            if (localExtension.getId().getId().equals(feature)) {
+            if (localExtension.getId().getId().equals(feature.getId())) {
                 rootFeature = new InstalledRootFeature(namespace);
             } else {
                 rootFeature = getInstalledFeatureFromCache(localExtension.getId().getId(), namespace).root;

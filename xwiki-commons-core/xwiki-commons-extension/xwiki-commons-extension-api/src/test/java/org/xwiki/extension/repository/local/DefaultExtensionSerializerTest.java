@@ -74,18 +74,20 @@ public class DefaultExtensionSerializerTest
         Assert.assertEquals(extension.getSummary(), unserializedExtension.getSummary());
         Assert.assertEquals(extension.getWebSite(), unserializedExtension.getWebSite());
         Assert.assertEquals(extension.getAuthors(), unserializedExtension.getAuthors());
+        Assert.assertEquals(new ArrayList<ExtensionId>(extension.getExtensionFeatures()),
+            new ArrayList<ExtensionId>(unserializedExtension.getExtensionFeatures()));
         Assert.assertEquals(new ArrayList<String>(extension.getFeatures()),
             new ArrayList<String>(unserializedExtension.getFeatures()));
-        Assert.assertEquals(new ArrayList<ExtensionLicense>(extension.getLicenses()), new ArrayList<ExtensionLicense>(
-            unserializedExtension.getLicenses()));
+        Assert.assertEquals(new ArrayList<ExtensionLicense>(extension.getLicenses()),
+            new ArrayList<ExtensionLicense>(unserializedExtension.getLicenses()));
         Assert.assertEquals(extension.getScm(), unserializedExtension.getScm());
         Assert.assertEquals(extension.getIssueManagement(), unserializedExtension.getIssueManagement());
         Assert.assertEquals(extension.getProperties(), unserializedExtension.getProperties());
 
         for (int i = 0; i < extension.getDependencies().size(); ++i) {
             Assert.assertEquals(extension.getDependencies().get(i), unserializedExtension.getDependencies().get(i));
-            Assert.assertEquals(extension.getDependencies().get(i).getProperties(), unserializedExtension
-                .getDependencies().get(i).getProperties());
+            Assert.assertEquals(extension.getDependencies().get(i).getProperties(),
+                unserializedExtension.getDependencies().get(i).getProperties());
         }
 
         return unserializedExtension;
@@ -123,10 +125,8 @@ public class DefaultExtensionSerializerTest
         extension.putProperty("key4", Arrays.asList("list1", "list2"));
         extension.putProperty("key5", new HashSet<String>(Arrays.asList("list1", "list2")));
         extension.putProperty("key6", Collections.<String, Object>singletonMap("key", "value"));
-        extension.putProperty(
-            "key7",
-            Collections.<String, Object>singletonMap("key",
-                Collections.<String, Object>singletonMap("subkey", "subvalue")));
+        extension.putProperty("key7", Collections.<String, Object>singletonMap("key",
+            Collections.<String, Object>singletonMap("subkey", "subvalue")));
 
         extension.addAuthor(new DefaultExtensionAuthor("authorname", new URL("http://authorurl")));
         extension.addFeature("feature1");

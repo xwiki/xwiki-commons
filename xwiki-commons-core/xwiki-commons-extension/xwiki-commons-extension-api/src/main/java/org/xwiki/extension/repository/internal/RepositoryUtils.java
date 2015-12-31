@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
@@ -209,7 +210,7 @@ public final class RepositoryUtils
     public static boolean matches(Pattern patternMatcher, Collection<Filter> filters, Extension extension)
     {
         if (matches(patternMatcher, extension.getId().getId(), extension.getDescription(), extension.getSummary(),
-            extension.getName(), extension.getFeatures())) {
+            extension.getName(), ExtensionIdConverter.toStringList(extension.getExtensionFeatures()))) {
             for (Filter filter : filters) {
                 if (!matches(filter, extension)) {
                     return false;

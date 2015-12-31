@@ -23,7 +23,7 @@
 -->
 
 <extension>
-  <id>installewithfeatureasdependency</id>
+  <id>installedwithfeatureasdependency</id>
   <version>version</version>
   <type>test</type>
   <dependencies>

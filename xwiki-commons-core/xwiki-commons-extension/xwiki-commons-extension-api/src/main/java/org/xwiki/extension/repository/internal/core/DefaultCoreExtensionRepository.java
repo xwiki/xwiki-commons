@@ -118,8 +118,8 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository 
 
             // Put extensions features in the map
             for (DefaultCoreExtension extension : this.extensions.values()) {
-                for (String feature : extension.getFeatures()) {
-                    this.extensions.put(feature, extension);
+                for (ExtensionId feature : extension.getExtensionFeatures()) {
+                    this.extensions.put(feature.getId(), extension);
                 }
             }
 

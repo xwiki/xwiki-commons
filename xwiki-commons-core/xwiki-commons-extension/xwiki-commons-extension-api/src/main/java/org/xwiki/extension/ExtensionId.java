@@ -21,8 +21,11 @@ package org.xwiki.extension;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
+
+import com.google.common.base.Objects;
 
 /**
  * The combination of properties which makes an extension unique.
@@ -46,6 +49,15 @@ public class ExtensionId implements Serializable
      * @see #getVersion()
      */
     private final Version version;
+
+    /**
+     * @param id the extension identifier
+     * @since 8.0M1
+     */
+    public ExtensionId(String id)
+    {
+        this(id, (Version) null);
+    }
 
     /**
      * @param id the extension identifier
@@ -88,7 +100,7 @@ public class ExtensionId implements Serializable
         if (obj instanceof ExtensionId) {
             ExtensionId extensionId = (ExtensionId) obj;
 
-            return getId().equals(extensionId.getId()) && getVersion().equals(extensionId.getVersion());
+            return Objects.equal(extensionId.getId(), getId()) && Objects.equal(extensionId.getVersion(), getVersion());
         }
 
         return false;
@@ -97,7 +109,12 @@ public class ExtensionId implements Serializable
     @Override
     public int hashCode()
     {
-        return toString().hashCode();
+        HashCodeBuilder builder = new HashCodeBuilder();
+
+        builder.append(getId());
+        builder.append(getVersion());
+
+        return builder.toHashCode();
     }
 
     @Override

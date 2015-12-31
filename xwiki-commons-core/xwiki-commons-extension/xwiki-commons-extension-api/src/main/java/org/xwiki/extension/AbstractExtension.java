@@ -22,12 +22,13 @@ package org.xwiki.extension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.stability.Unstable;
@@ -47,8 +48,15 @@ public abstract class AbstractExtension implements Extension
 
     /**
      * @see #getExtensionFeatures()
+     * @deprecated since 8.0M1, use {@link #featuresMap} instead
      */
-    protected Set<ExtensionFeature> features;
+    @Deprecated
+    protected Set<String> features;
+
+    /**
+     * @see #getExtensionFeatures()
+     */
+    protected Map<String, ExtensionId> featuresMap;
 
     /**
      * @see #getType()
@@ -193,7 +201,7 @@ public abstract class AbstractExtension implements Extension
                 return (T) getId().getVersion();
             case FIELD_FEATURE:
             case FIELD_FEATURES:
-                return (T) getFeatures();
+                return (T) ExtensionIdConverter.toStringList(getExtensionFeatures());
             case FIELD_SUMMARY:
                 return (T) getSummary();
             case FIELD_DESCRIPTION:
@@ -242,25 +250,19 @@ public abstract class AbstractExtension implements Extension
     @Deprecated
     public Collection<String> getFeatures()
     {
-        Collection<ExtensionFeature> extensionFeatures = getExtensionFeatures();
-        List<String> features = new ArrayList<String>(extensionFeatures.size());
-        for (ExtensionFeature extensionFeature : extensionFeatures) {
-            features.add(extensionFeature.getId());
-        }
-
-        return features;
+        return this.features != null ? this.features : Collections.<String>emptyList();
     }
 
     /**
      * @param features the extension ids also provided by this extension
-     * @deprecated since 7.0M1, use {@link #setExtensionFeatures(Collection)} instead
+     * @deprecated since 8.0M1, use {@link #setExtensionFeatures(Collection)} instead
      */
     @Deprecated
     public void setFeatures(Collection<String> features)
     {
-        List<ExtensionFeature> extensionFeatures = new ArrayList<ExtensionFeature>(features.size());
+        List<ExtensionId> extensionFeatures = new ArrayList<ExtensionId>(features.size());
         for (String feature : features) {
-            extensionFeatures.add(new ExtensionFeature(feature, null));
+            extensionFeatures.add(new ExtensionId(feature, getId().getVersion()));
         }
 
         setExtensionFeatures(extensionFeatures);
@@ -270,41 +272,77 @@ public abstract class AbstractExtension implements Extension
      * Add a new feature to the extension.
      *
      * @param feature a feature name
-     * @deprecated since 7.0M1, use {@link #addExtensionFeature(ExtensionFeature)} instead
+     * @deprecated since 8.0M1, use {@link #addExtensionFeature(ExtensionId)} instead
      */
     @Deprecated
     public void addFeature(String feature)
     {
-        addExtensionFeature(new ExtensionFeature(feature, null));
+        addExtensionFeature(new ExtensionId(feature, getId().getVersion()));
     }
 
     @Override
-    public Collection<ExtensionFeature> getExtensionFeatures()
+    public Collection<ExtensionId> getExtensionFeatures()
     {
-        return this.features != null ? this.features : Collections.<ExtensionFeature>emptyList();
+        return this.featuresMap != null ? this.featuresMap.values() : Collections.<ExtensionId>emptyList();
+    }
+
+    @Override
+    public ExtensionId getExtensionFeature(String featureId)
+    {
+        ExtensionId feature = null;
+
+        // Search in the extension features
+        if (this.featuresMap != null) {
+            feature = this.featuresMap.get(featureId);
+        }
+
+        // Fallback on extension id
+        if (feature == null && featureId.equals(getId().getId())) {
+            feature = getId();
+        }
+
+        return feature;
     }
 
     /**
-     * @param features the {@link ExtensionFeature}s also provided by this extension
-     * @since 7.0M1
+     * @param features the {@link ExtensionId}s also provided by this extension
+     * @since 8.0M1
      */
-    public void setExtensionFeatures(Collection<ExtensionFeature> features)
+    public void setExtensionFeatures(Collection<ExtensionId> features)
     {
-        this.features = Collections.unmodifiableSet(new HashSet<ExtensionFeature>(features));
+        Map<String, ExtensionId> map = new LinkedHashMap<>();
+        for (ExtensionId feature : features) {
+            map.put(feature.getId(), feature);
+        }
+
+        setFeatureMap(map);
     }
 
     /**
      * Add a new feature to the extension.
      *
      * @param feature a feature name
-     * @since 7.0M1
+     * @since 8.0M1
      */
-    public void addExtensionFeature(ExtensionFeature feature)
+    public void addExtensionFeature(ExtensionId feature)
     {
-        Set<ExtensionFeature> newFeatures = new HashSet<ExtensionFeature>(getExtensionFeatures());
-        newFeatures.add(feature);
+        Map<String, ExtensionId> map = this.featuresMap != null
+            ? new LinkedHashMap<String, ExtensionId>(this.featuresMap) : new LinkedHashMap<String, ExtensionId>();
+        map.put(feature.getId(), feature);
 
-        this.features = Collections.unmodifiableSet(newFeatures);
+        setFeatureMap(map);
+    }
+
+    private void setFeatureMap(Map<String, ExtensionId> map)
+    {
+        this.featuresMap = Collections.unmodifiableMap(map);
+
+        // Retro compatibility
+        Set<String> list = new LinkedHashSet<String>(this.featuresMap.size());
+        for (ExtensionId extensionId : this.featuresMap.values()) {
+            list.add(extensionId.getId());
+        }
+        this.features = Collections.unmodifiableSet(list);
     }
 
     @Override
@@ -457,9 +495,8 @@ public abstract class AbstractExtension implements Extension
      */
     public void setDependencies(Collection<? extends ExtensionDependency> dependencies)
     {
-        this.dependencies =
-            dependencies != null ? Collections.unmodifiableList(new ArrayList<ExtensionDependency>(dependencies))
-                : null;
+        this.dependencies = dependencies != null
+            ? Collections.unmodifiableList(new ArrayList<ExtensionDependency>(dependencies)) : null;
     }
 
     @Override

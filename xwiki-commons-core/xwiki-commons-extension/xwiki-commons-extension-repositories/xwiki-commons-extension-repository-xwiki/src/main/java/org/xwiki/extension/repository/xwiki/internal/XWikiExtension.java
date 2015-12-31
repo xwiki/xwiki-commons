@@ -41,7 +41,6 @@ import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
-import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionFeature;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionIssueManagement;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRating;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRepository;
@@ -50,7 +49,7 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionScmConnection;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.License;
 import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
-import org.xwiki.extension.version.internal.DefaultVersionConstraint;
+import org.xwiki.extension.version.internal.DefaultVersion;
 
 /**
  * XWiki Repository implementation of {@link org.xwiki.extension.Extension}.
@@ -71,9 +70,10 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
         setWebsite(restExtension.getWebsite());
 
         // Features
-        for (ExtensionFeature feature : restExtension.getExtensionFeatures()) {
-            addExtensionFeature(new org.xwiki.extension.ExtensionFeature(feature.getId(),
-                new DefaultVersionConstraint(feature.getVersion())));
+        for (org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionId feature : restExtension
+            .getExtensionFeatures()) {
+            addExtensionFeature(new ExtensionId(feature.getId(),
+                feature.getVersion() != null ? new DefaultVersion(feature.getVersion()) : getId().getVersion()));
         }
 
         // Rating

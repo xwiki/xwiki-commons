@@ -19,15 +19,12 @@
  */
 package org.xwiki.extension.repository.core;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.ExtensionFeature;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.CoreExtensionRepository;
@@ -124,7 +121,7 @@ public class DefaultCoreExtensionRepositoryTest
     public void testSearchWithSeveralFeatures() throws SearchException
     {
         this.coreExtensionRepository.addExtensions("extension", new DefaultVersion("version"),
-            Arrays.asList(new ExtensionFeature("feature1"), new ExtensionFeature("feature2")));
+            new ExtensionId("feature1"), new ExtensionId("feature2"));
 
         IterableResult<Extension> result = this.coreExtensionRepository.search("feature", 0, -1);
 
