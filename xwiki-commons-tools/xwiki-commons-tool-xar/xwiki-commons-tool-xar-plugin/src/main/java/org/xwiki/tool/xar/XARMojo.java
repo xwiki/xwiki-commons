@@ -133,13 +133,18 @@ public class XARMojo extends AbstractXARMojo
                 return (name.equals(PACKAGE_XML));
             }
         };
-        if (!resourcesDir.exists() || resourcesDir.list(packageXmlFiler).length == 0) {
-            addFilesToArchive(archiver, sourceDir);
+        String[] fileNames = resourcesDir.list(packageXmlFiler);
+        if (fileNames != null) {
+            if (!resourcesDir.exists() || fileNames.length == 0) {
+                addFilesToArchive(archiver, sourceDir);
+            } else {
+                File packageXml = new File(resourcesDir, PACKAGE_XML);
+                addFilesToArchive(archiver, sourceDir, packageXml);
+            }
         } else {
-            File packageXml = new File(resourcesDir, PACKAGE_XML);
-            addFilesToArchive(archiver, sourceDir, packageXml);
+            throw new MojoExecutionException(String.format("Couldn't get list of files in resources dir [%s]",
+                resourcesDir));
         }
-
         archiver.createArchive();
 
         this.project.getArtifact().setFile(xarFile);
@@ -450,7 +455,7 @@ public class XARMojo extends AbstractXARMojo
                 fileQueue.add(currentFile);
             }
         } else {
-            throw new MojoExecutionException(String.format("Cannot get list of files in [%s]", sourceDir));
+            throw new MojoExecutionException(String.format("Couldn't get list of files in source dir [%s]", sourceDir));
         }
     }
 }
