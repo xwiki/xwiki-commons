@@ -45,7 +45,7 @@ public class DefaultAnnotatedContent<R, E> implements AnnotatedContent<R, E>
     private final List<E> initialContent;
     private final List<E> currentRevisionContent;
     private R currentRevision;
-    private final List<Integer> elementMap;
+    private final List<Integer> elementList;
     private final int size;
 
     DefaultAnnotatedContent(R revision, List<E> initialContent)
@@ -55,10 +55,10 @@ public class DefaultAnnotatedContent<R, E> implements AnnotatedContent<R, E>
         this.initialContent = initialContent;
         this.currentRevisionContent = new ArrayList<E>(initialContent);
         this.currentRevision = revision;
-        this.elementMap = new ArrayList<>(this.size);
+        this.elementList = new ArrayList<>(this.size);
         for (int i = 0; i < size; i++) {
             this.sourceRevisions.add(null);
-            this.elementMap.add(i);
+            this.elementList.add(i);
         }
     }
 
@@ -149,7 +149,7 @@ public class DefaultAnnotatedContent<R, E> implements AnnotatedContent<R, E>
             int pos = original.getPosition() + lineOffset;
             // delete lines
             for (int i = 0; i < original.size(); i++) {
-                int origLine = elementMap.remove(pos);
+                int origLine = elementList.remove(pos);
                 currentRevisionContent.remove(pos);
                 if (origLine != -1) {
                     sourceRevisions.set(origLine, currentRevision);
@@ -158,7 +158,7 @@ public class DefaultAnnotatedContent<R, E> implements AnnotatedContent<R, E>
 
             for (int i = 0; i < revised.size(); i++) {
                 currentRevisionContent.add(pos + i, revised.getLines().get(i));
-                elementMap.add(pos + i, -1);
+                elementList.add(pos + i, -1);
             }
 
             lineOffset += revised.size() - original.size();
