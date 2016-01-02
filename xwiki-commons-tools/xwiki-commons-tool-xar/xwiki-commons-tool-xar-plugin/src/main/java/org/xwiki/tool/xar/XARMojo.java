@@ -442,10 +442,15 @@ public class XARMojo extends AbstractXARMojo
      * @param fileQueue the queue of files
      * @param sourceDir the directory to be scanned
      */
-    private static void addContentsToQueue(Queue<File> fileQueue, File sourceDir)
+    private static void addContentsToQueue(Queue<File> fileQueue, File sourceDir) throws MojoExecutionException
     {
-        for (File currentFile : sourceDir.listFiles()) {
-            fileQueue.add(currentFile);
+        File[] files = sourceDir.listFiles();
+        if (files != null) {
+            for (File currentFile : files) {
+                fileQueue.add(currentFile);
+            }
+        } else {
+            throw new MojoExecutionException(String.format("Cannot get list of files in [%s]", sourceDir));
         }
     }
 }
