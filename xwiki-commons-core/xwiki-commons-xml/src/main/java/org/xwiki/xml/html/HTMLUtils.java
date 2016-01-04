@@ -186,6 +186,11 @@ public final class HTMLUtils
                         break;
                     }
                 }
+                
+                // TODO: only if the output syntax is HTML 5
+                if ("html".equals(elementName)) {
+                    out.write("<!doctype html>\n");
+                }
 
                 // Call the method from the super class
                 super.printElement(out, element, level, namespaces);

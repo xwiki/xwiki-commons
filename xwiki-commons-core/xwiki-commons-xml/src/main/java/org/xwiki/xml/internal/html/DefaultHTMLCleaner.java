@@ -63,6 +63,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
      * The qualified name to be used when generating an html {@link DocumentType}.
      */
     private static final String QUALIFIED_NAME_HTML = "html";
+    
+    private static final XWikiHTML5TagProvider html5TagProvider = new XWikiHTML5TagProvider();
 
     /**
      * {@link HTMLFilter} for filtering html lists.
@@ -153,7 +155,13 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         // especially since this makes it extra safe with regards to multithreading (even though HTML Cleaner is
         // already supposed to be thread safe).
         CleanerProperties cleanerProperties = getDefaultCleanerProperties(configuration);
-        HtmlCleaner cleaner = new HtmlCleaner(cleanerProperties);
+        HtmlCleaner cleaner;
+        if (HTMLCleanerConfiguration.XHTML_1_0.equals(
+                configuration.getParameters().get(HTMLCleanerConfiguration.HTML_VERSION))) {
+            cleaner = new HtmlCleaner(cleanerProperties);
+        } else {
+            cleaner = new HtmlCleaner(html5TagProvider, cleanerProperties);
+        }
 
         TagNode cleanedNode;
         try {
@@ -163,31 +171,38 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             // Cleaner.
             throw new RuntimeException("Unhandled error when cleaning HTML", e);
         }
-
-        // Serialize the cleanedNode TagNode into a w3c dom. Ideally following code should be enough.
-        // But SF's HTML Cleaner seems to omit the DocType declaration while serializing.
-        // See https://sourceforge.net/tracker/index.php?func=detail&aid=2062318&group_id=183053&atid=903696
-        //      cleanedNode.setDocType(new DoctypeToken("html", "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
-        //          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
-        //      try {
-        //          result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
-        //      } catch(ParserConfigurationException ex) { }
-        // As a workaround, we must serialize the cleanedNode into a temporary w3c document, create a new w3c document
-        // with proper DocType declaration and move the root node from the temporary document to the new one.
+        
         try {
             // Since there's a bug in SF's HTML Cleaner in that it doesn't recognize CDATA blocks we need to turn off
             // character escaping (hence the false value passed) and do the escaping in XMLUtils.toString(). Note that
             // this can cause problem for code not serializing the W3C DOM to a String since it won't have the
             // characters escaped.
             // See https://sourceforge.net/tracker/index.php?func=detail&aid=2691888&group_id=183053&atid=903696
-            Document tempDoc =
+            result =
                 new XWikiDOMSerializer(cleanerProperties, false).createDOM(getAvailableDocumentBuilder(), cleanedNode);
-            DOMImplementation domImpl = getAvailableDocumentBuilder().getDOMImplementation();
-            DocumentType docType =
-                domImpl.createDocumentType(QUALIFIED_NAME_HTML, "-//W3C//DTD XHTML 1.0 Strict//EN",
-                    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
-            result = domImpl.createDocument(null, QUALIFIED_NAME_HTML, docType);
-            result.replaceChild(result.adoptNode(tempDoc.getDocumentElement()), result.getDocumentElement());
+            
+            // Add the doctype if XHTML 1.0 is used.
+            // Note: we cannot add the HTML5 doctype in the DOM tree because there is no HTML5 DTD.
+            if (HTMLCleanerConfiguration.XHTML_1_0.equals(
+                    configuration.getParameters().get(HTMLCleanerConfiguration.HTML_VERSION))) {
+                // Serialize the cleanedNode TagNode into a w3c dom. Ideally following code should be enough.
+                // But SF's HTML Cleaner seems to omit the DocType declaration while serializing.
+                // See https://sourceforge.net/tracker/index.php?func=detail&aid=2062318&group_id=183053&atid=903696
+                //      cleanedNode.setDocType(new DoctypeToken("html", "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
+                //          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
+                //      try {
+                //          result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
+                //      } catch(ParserConfigurationException ex) { }
+                // As a workaround, we must serialize the cleanedNode into a temporary w3c document, create a new w3c document
+                // with proper DocType declaration and move the root node from the temporary document to the new one.
+                DOMImplementation domImpl = getAvailableDocumentBuilder().getDOMImplementation();
+                DocumentType docType =
+                    domImpl.createDocumentType(QUALIFIED_NAME_HTML, "",
+                        "");
+                Document tempDoc = result;
+                result = domImpl.createDocument(null, QUALIFIED_NAME_HTML, docType);
+                result.replaceChild(result.adoptNode(tempDoc.getDocumentElement()), result.getDocumentElement());
+            }
         } catch (ParserConfigurationException ex) {
             throw new RuntimeException("Error while serializing TagNode into w3c dom.", ex);
         }
@@ -243,11 +258,11 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
 
         // Set Cleaner transformations
         defaultProperties.setCleanerTransformations(getDefaultCleanerTransformations(configuration));
-        
-        // By default, we are cleaning XHTML 1.0 code, not HTML 5.
-        // Note: Tests are broken if we don't set the version 4, meaning that supporting HTML5 requires some work.
-        // TODO: handle HTML5 correctly (see: http://jira.xwiki.org/browse/XCOMMONS-901)
-        defaultProperties.setHtmlVersion(4);
+
+        if (HTMLCleanerConfiguration.XHTML_1_0.equals(
+                configuration.getParameters().get(HTMLCleanerConfiguration.HTML_VERSION))) {
+            defaultProperties.setHtmlVersion(4);
+        }
 
         return defaultProperties;
     }

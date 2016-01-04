@@ -71,7 +71,7 @@ public class HTMLUtilsTest
         Document document =
             this.cleaner.clean(new StringReader("<html><head><body><p>test1</p><p>test2</p></body></html>"));
         HTMLUtils.stripHTMLEnvelope(document);
-        Assert.assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><p>test1</p><p>test2</p></html>\n",
+        Assert.assertEquals(DefaultHTMLCleanerTest.HEADER_HTML_5 + "<html><p>test1</p><p>test2</p></html>\n",
             HTMLUtils.toString(document));
     }
 
@@ -80,7 +80,7 @@ public class HTMLUtilsTest
     {
         Document document = this.cleaner.clean(new StringReader("<html><head /><body><p>test</p></body></html>"));
         HTMLUtils.stripFirstElementInside(document, "body", "p");
-        Assert.assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body>test</body></html>\n",
+        Assert.assertEquals(DefaultHTMLCleanerTest.HEADER_HTML_5 + "<html><head></head><body>test</body></html>\n",
             HTMLUtils.toString(document));
     }
 }

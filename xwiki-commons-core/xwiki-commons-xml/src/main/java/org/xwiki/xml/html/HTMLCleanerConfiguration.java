@@ -42,6 +42,12 @@ public interface HTMLCleanerConfiguration
      * Cleaning in restricted mode ({@code &lt;script&gt;} and {@code &lt;style&gt;} should not be allowed for example).
      */
     String RESTRICTED = "restricted";
+    
+    String HTML_VERSION = "htmlVersion";
+    
+    String XHTML_1_0 = "xhtml/1.0";
+
+    String XHTML_5_0 = "xhtml/5.0";
 
     /**
      * @return the ordered list of filters to use for cleaning the HTML content

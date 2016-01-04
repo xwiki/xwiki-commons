@@ -20,6 +20,7 @@
 package org.xwiki.xml.internal.html;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,15 @@ public class DefaultHTMLCleanerConfiguration implements HTMLCleanerConfiguration
     /**
      * Parameters to apply for the cleaning.
      */
-    private Map<String, String> parameters = Collections.emptyMap();
+    private Map<String, String> parameters = new HashMap<>();
+
+    /**
+     * Default constructor.
+     */
+    public DefaultHTMLCleanerConfiguration()
+    {
+        parameters.put(HTML_VERSION, XHTML_5_0);
+    }
 
     @Override
     public List<HTMLFilter> getFilters()
