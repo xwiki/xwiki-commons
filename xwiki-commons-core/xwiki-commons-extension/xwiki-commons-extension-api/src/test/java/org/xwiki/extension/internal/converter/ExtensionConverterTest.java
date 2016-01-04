@@ -21,6 +21,7 @@ package org.xwiki.extension.internal.converter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.maven.model.Model;
@@ -48,8 +49,8 @@ import static org.junit.Assert.assertNull;
 public class ExtensionConverterTest
 {
     @Rule
-    public MockitoComponentMockingRule<ConverterManager> mocker = new MockitoComponentMockingRule<ConverterManager>(
-        DefaultConverterManager.class);
+    public MockitoComponentMockingRule<ConverterManager> mocker =
+        new MockitoComponentMockingRule<ConverterManager>(DefaultConverterManager.class);
 
     @Test
     public void testConvertFromExtension() throws SecurityException, ComponentLookupException, URISyntaxException
@@ -60,6 +61,7 @@ public class ExtensionConverterTest
         model.setArtifactId("artifactid");
         model.setVersion("version");
         model.addProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_CATEGORY, "category");
+        model.addProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_NAMESPACES, "namespace1, namespace2");
         Repository repository = new Repository();
         repository.setId("repository-id");
         repository.setUrl("http://url");
@@ -71,6 +73,8 @@ public class ExtensionConverterTest
         assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
         assertEquals("category", extension.getCategory());
         assertNull(extension.getProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_CATEGORY));
+        assertEquals(Arrays.asList("namespace1", "namespace2"), new ArrayList<>(extension.getAllowedNamespaces()));
+        assertNull(extension.getProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_NAMESPACES));
         assertEquals(
             Arrays.asList(new DefaultExtensionRepositoryDescriptor("repository-id", "maven", new URI("http://url"))),
             extension.getRepositories());
