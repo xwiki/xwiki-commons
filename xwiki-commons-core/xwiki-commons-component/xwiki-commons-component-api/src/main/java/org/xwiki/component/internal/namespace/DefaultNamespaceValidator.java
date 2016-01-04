@@ -28,8 +28,10 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.namespace.NamespaceNotAllowedException;
 import org.xwiki.component.namespace.NamespaceValidator;
@@ -40,6 +42,8 @@ import org.xwiki.component.namespace.NamespaceValidator;
  * @version $Id$
  * @since 8.0M1
  */
+@Component
+@Singleton
 public class DefaultNamespaceValidator implements NamespaceValidator
 {
     private static final Pattern REGEXP_PATTERN = Pattern.compile("\\[(.*)\\]");

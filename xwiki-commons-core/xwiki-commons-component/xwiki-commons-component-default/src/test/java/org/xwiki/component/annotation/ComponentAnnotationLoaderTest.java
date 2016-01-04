@@ -39,6 +39,7 @@ import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.component.internal.RootComponentManager;
 import org.xwiki.component.internal.embed.EmbeddableComponentManagerFactory;
 import org.xwiki.component.internal.multi.DefaultComponentManagerManager;
+import org.xwiki.component.internal.namespace.DefaultNamespaceValidator;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.test.jmock.JMockRule;
@@ -208,18 +209,20 @@ public class ComponentAnnotationLoaderTest
             this.loader.getComponentsDescriptors(DefaultComponentManagerManager.class).get(0);
         final ComponentDescriptor descriptor6 =
             this.loader.getComponentsDescriptors(ContextComponentManagerProvider.class).get(0);
-
         final ComponentDescriptor descriptor7 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProvider1.class).get(0);
+            this.loader.getComponentsDescriptors(DefaultNamespaceValidator.class).get(0);
+
         final ComponentDescriptor descriptor8 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProvider12.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderTest.TestProvider1.class).get(0);
         final ComponentDescriptor descriptor9 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProvider2.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderTest.TestProvider12.class).get(0);
         final ComponentDescriptor descriptor10 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviders.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderTest.TestProvider2.class).get(0);
         final ComponentDescriptor descriptor11 =
-            this.loader.getComponentsDescriptors(ProviderTest.TestProviderWithExceptionInInitialize.class).get(0);
+            this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviders.class).get(0);
         final ComponentDescriptor descriptor12 =
+            this.loader.getComponentsDescriptors(ProviderTest.TestProviderWithExceptionInInitialize.class).get(0);
+        final ComponentDescriptor descriptor13 =
             this.loader.getComponentsDescriptors(ProviderTest.TestComponentWithProviderInException.class).get(0);
 
         // This is the test, we verify that registerComponent() is called for each of the descriptor we're expecting
@@ -239,6 +242,7 @@ public class ComponentAnnotationLoaderTest
                 oneOf(mockManager).registerComponent(descriptor10);
                 oneOf(mockManager).registerComponent(descriptor11);
                 oneOf(mockManager).registerComponent(descriptor12);
+                oneOf(mockManager).registerComponent(descriptor13);
             }
         });
 
