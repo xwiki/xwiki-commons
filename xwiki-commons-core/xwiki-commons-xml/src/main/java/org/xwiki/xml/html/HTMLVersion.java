@@ -17,32 +17,16 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.xml.internal.html;
-
-import org.htmlcleaner.Html4TagProvider;
-import org.htmlcleaner.Html5TagProvider;
-import org.xwiki.xml.html.HTMLConstants;
+package org.xwiki.xml.html;
 
 /**
- * List the tags allowed in HTML 5 with some additions to handle some legacy tags such as "font" or "tt".
+ * Versions of HTML language.
  *  
  * @version $Id$
+ * @since 8.0M1
  */
-public class XWikiHTML5TagProvider extends Html5TagProvider
+public enum HTMLVersion
 {
-    /**
-     * Default constructor.
-     */
-    public XWikiHTML5TagProvider()
-    { 
-        super();
-        
-        // Add the "font" tag to be able to filter on it afterwards
-        addTag(HTMLConstants.TAG_FONT);   
-    }
-    
-    private void addTag(String tagName)
-    {
-        this.put(tagName, Html4TagProvider.INSTANCE.getTagInfo(tagName));
-    }
+    XHTML_1_0,
+    XHTML_5_0
 }

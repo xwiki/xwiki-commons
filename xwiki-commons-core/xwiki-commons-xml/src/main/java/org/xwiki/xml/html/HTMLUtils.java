@@ -87,14 +87,20 @@ public final class HTMLUtils
         private boolean omitDocType;
 
         /**
+         * The HTML version of the code to generate.  
+         */
+        private HTMLVersion htmlVersion;
+
+        /**
          * @param format the JDOM class used to control output formats, see {@link org.jdom.output.Format}
          * @param omitDocType if true then omit the document type when printing the W3C Document
          * @see XMLOutputter#XMLOutputter(Format)
          */
-        public XWikiXMLOutputter(Format format, boolean omitDocType)
+        public XWikiXMLOutputter(Format format, boolean omitDocType, HTMLVersion htmlVersion)
         {
             super(format);
             this.omitDocType = omitDocType;
+            this.htmlVersion = htmlVersion;
         }
 
         @Override
@@ -187,8 +193,9 @@ public final class HTMLUtils
                     }
                 }
                 
-                // TODO: only if the output syntax is HTML 5
-                if ("html".equals(elementName)) {
+                if (!this.omitDocType && HTMLVersion.XHTML_5_0.equals(this.htmlVersion) && "html".equals(elementName)) {
+                    // Since there is no DTD for XHTML 5, the printDocType() method is not executed and we need
+                    // to display the doctype manually.
                     out.write("<!doctype html>\n");
                 }
 
@@ -221,11 +228,32 @@ public final class HTMLUtils
 
     /**
      * @param document the W3C Document to transform into a String
+     * @return the XML as a String
+     */
+    public static String toString(Document document, HTMLVersion htmlVersion)
+    {
+        return HTMLUtils.toString(document, false, false, htmlVersion);
+    }
+
+    /**
+     * @param document the W3C Document to transform into a String
      * @param omitDeclaration whether the XML declaration should be printed or not
      * @param omitDoctype whether the document type should be printed or not
      * @return the XML as a String
      */
     public static String toString(Document document, boolean omitDeclaration, boolean omitDoctype)
+    {
+        return toString(document, omitDeclaration, omitDoctype, HTMLVersion.XHTML_1_0);
+    }
+
+    /**
+     * @param document the W3C Document to transform into a String
+     * @param omitDeclaration whether the XML declaration should be printed or not
+     * @param omitDoctype whether the document type should be printed or not
+     * @return the XML as a String
+     */
+    public static String toString(Document document, boolean omitDeclaration, boolean omitDoctype, 
+            HTMLVersion htmlVersion)
     {
         // Note: We don't use javax.xml.transform.Transformer since it prints our valid XHTML as HTML which is not
         // XHTML compliant. For example it transforms our "<hr/>" into "<hr>.
@@ -243,7 +271,7 @@ public final class HTMLUtils
 
         format.setOmitDeclaration(omitDeclaration);
 
-        XMLOutputter outputter = new XWikiXMLOutputter(format, omitDoctype);
+        XMLOutputter outputter = new XWikiXMLOutputter(format, omitDoctype, htmlVersion);
         String result = outputter.outputString(jdomDoc);
 
         return result;

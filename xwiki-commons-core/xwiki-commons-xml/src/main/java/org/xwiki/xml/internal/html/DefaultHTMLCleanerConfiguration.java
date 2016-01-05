@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
+import org.xwiki.xml.html.HTMLVersion;
 import org.xwiki.xml.html.filter.HTMLFilter;
 
 /**
@@ -50,7 +51,8 @@ public class DefaultHTMLCleanerConfiguration implements HTMLCleanerConfiguration
      */
     public DefaultHTMLCleanerConfiguration()
     {
-        parameters.put(HTML_VERSION, XHTML_5_0);
+        // Default is XHTML 1.0 for retro-compatibility
+        parameters.put(HTML_VERSION, HTMLVersion.XHTML_1_0.name());
     }
 
     @Override

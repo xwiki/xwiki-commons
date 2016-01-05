@@ -36,6 +36,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLUtils;
+import org.xwiki.xml.html.HTMLVersion;
 import org.xwiki.xml.html.filter.HTMLFilter;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
@@ -54,16 +55,16 @@ import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
 UniqueIdFilter.class, DefaultHTMLCleaner.class })
 public class DefaultHTMLCleanerTest
 {
-    public static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    public static final String HEADER_XHTML_1_0 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
         + "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n";
     
-    public static final String HEADER_HTML_5 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" 
+    public static final String HEADER_XHTML_5_0 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         + "<!doctype html>\n";
 
-    private static final String HEADER_FULL = HEADER + "<html><head></head><body>";
+    private static final String HEADER_FULL_XHTML_1_0 = HEADER_XHTML_1_0 + "<html><head></head><body>";
 
-    private static final String HEADER_FULL_HTML_5 = HEADER_HTML_5 + "<html><head></head><body>";
+    private static final String HEADER_FULL_XHTML_5_0 = HEADER_XHTML_5_0 + "<html><head></head><body>";
 
     private static final String FOOTER = "</body></html>\n";
 
@@ -243,7 +244,7 @@ public class DefaultHTMLCleanerTest
             HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader("something"), configuration));
         // Note that if the default Body filter had been executed the result would have been:
         // <p>something</p>.
-        Assert.assertEquals(HEADER_FULL_HTML_5 + "something" + FOOTER, result);
+        Assert.assertEquals(HEADER_FULL_XHTML_1_0 + "something" + FOOTER, result);
     }
 
     /**
@@ -261,12 +262,12 @@ public class DefaultHTMLCleanerTest
         String result =
             HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(
                 new StringReader("<script>alert(\"foo\")</script>"), configuration));
-        Assert.assertEquals(HEADER_FULL_HTML_5 + "<pre>alert(\"foo\")</pre>" + FOOTER, result);
+        Assert.assertEquals(HEADER_FULL_XHTML_1_0 + "<pre>alert(\"foo\")</pre>" + FOOTER, result);
 
         result =
             HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(
                 new StringReader("<style>p {color:white;}</style>"), configuration));
-        Assert.assertEquals(HEADER_FULL_HTML_5 + "<pre>p {color:white;}</pre>" + FOOTER, result);
+        Assert.assertEquals(HEADER_FULL_XHTML_1_0 + "<pre>p {color:white;}</pre>" + FOOTER, result);
 
     }
 
@@ -276,7 +277,7 @@ public class DefaultHTMLCleanerTest
     @Test
     public void fullXHTMLHeader() throws ComponentLookupException
     {
-        assertHTML("<p>test</p>", HEADER_FULL + "<p>test</p>" + FOOTER);
+        assertHTML("<p>test</p>", HEADER_FULL_XHTML_1_0 + "<p>test</p>" + FOOTER);
     }
 
     /**
@@ -291,7 +292,7 @@ public class DefaultHTMLCleanerTest
         List<HTMLFilter> filters = new ArrayList<HTMLFilter>(config.getFilters());
         filters.add(this.mocker.<HTMLFilter>getInstance(HTMLFilter.class, "uniqueId"));
         config.setFilters(filters);
-        Assert.assertEquals(HEADER_FULL_HTML_5 + expected + FOOTER,
+        Assert.assertEquals(HEADER_FULL_XHTML_1_0 + expected + FOOTER,
             HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(actual), config)));
     }
 
@@ -306,7 +307,7 @@ public class DefaultHTMLCleanerTest
             "<p>before</p>\n" + "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
                 + "<circle cx=\"100\" cy=\"50\" fill=\"red\" r=\"40\" stroke=\"black\" stroke-width=\"2\"></circle>\n"
                 + "</svg>\n" + "<p>after</p>\n";
-        assertHTML(input, HEADER_FULL + input + FOOTER);
+        assertHTML(input, HEADER_FULL_XHTML_1_0 + input + FOOTER);
     }
 
     /**
@@ -331,7 +332,7 @@ public class DefaultHTMLCleanerTest
                 + "        <title>SVG Title Demo example</title>\n"
                 + "        <rect height=\"50\" style=\"fill:none; stroke:blue; stroke-width:1px\" width=\"200\" x=\"10\" "
                 + "y=\"10\"></rect>\n" + "      </g>\n" + "    </svg>\n" + "    <p>after</p>\n";
-        Assert.assertEquals(HEADER + input + FOOTER,
+        Assert.assertEquals(HEADER_XHTML_1_0 + input + FOOTER,
             HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(input))));
     }
 
@@ -343,14 +344,14 @@ public class DefaultHTMLCleanerTest
     public void cleanEmptyDIV() throws Exception
     {
         String input = "<div id=\"y\"></div><div id=\"z\">something</div>";
-        assertHTML(input, HEADER_FULL + input + FOOTER);
+        assertHTML(input, HEADER_FULL_XHTML_1_0 + input + FOOTER);
     }
 
     @Test
     public void verifyLegendTagNotStripped() throws Exception
     {
         String input = "<fieldset><legend>test</legend><div>content</div></fieldset>";
-        assertHTML(input, HEADER_FULL + input + FOOTER);
+        assertHTML(input, HEADER_FULL_XHTML_1_0 + input + FOOTER);
     }
 
     @Test
@@ -358,16 +359,44 @@ public class DefaultHTMLCleanerTest
     {
         assertHTML("<p><span class=\"fa fa-icon\"></span></p>", "<span class=\"fa fa-icon\" />");
     }
+    
+    @Test
+    public void verifyHTMLVersion() throws Exception
+    {
+        assertXHTML5_0("<nav>Hello</nav>", "<nav>Hello</nav>");
+        assertXHTML1_0("<p>Hello</p>", "<nav>Hello</nav>");
+    }
+
+    private void assertXHTML1_0(String expected, String actual) throws ComponentLookupException
+    {
+        HTMLCleanerConfiguration configuration = this.mocker.getComponentUnderTest().getDefaultConfiguration();
+        configuration.getParameters().put(HTMLCleanerConfiguration.HTML_VERSION, HTMLVersion.XHTML_1_0.name());
+        
+        Assert.assertEquals(HEADER_FULL_XHTML_1_0 + expected + FOOTER,
+                HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(actual), configuration),
+                        HTMLVersion.XHTML_1_0));
+    }
+
+    private void assertXHTML5_0(String expected, String actual) throws ComponentLookupException
+    {
+        HTMLCleanerConfiguration configuration = this.mocker.getComponentUnderTest().getDefaultConfiguration();
+        configuration.getParameters().put(HTMLCleanerConfiguration.HTML_VERSION, HTMLVersion.XHTML_5_0.name());
+
+        Assert.assertEquals(HEADER_FULL_XHTML_5_0 + expected + FOOTER,
+                HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(actual), configuration),
+                        HTMLVersion.XHTML_5_0));
+    }
 
     private void assertHTML(String expected, String actual) throws ComponentLookupException
     {
-        Assert.assertEquals(HEADER_FULL_HTML_5 + expected + FOOTER,
-            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(actual))));
+        // Try both XHTML 1.0 and XHTML 5 cleaners
+        assertXHTML1_0(expected, actual);
+        assertXHTML5_0(expected, actual);
     }
 
     private void assertHTMLWithHeadContent(String expected, String actual) throws ComponentLookupException
     {
-        Assert.assertEquals(HEADER_HTML_5 + "<html><head>" + expected + "</head><body>" + FOOTER,
+        Assert.assertEquals(HEADER_XHTML_1_0 + "<html><head>" + expected + "</head><body>" + FOOTER,
             HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(actual))));
     }
 }

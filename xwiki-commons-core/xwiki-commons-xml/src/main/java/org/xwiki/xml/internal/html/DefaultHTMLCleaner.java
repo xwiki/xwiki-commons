@@ -32,7 +32,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.CleanerTransformations;
+import org.htmlcleaner.Html4TagProvider;
 import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.ITagInfoProvider;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.TagTransformation;
 import org.w3c.dom.DOMImplementation;
@@ -46,6 +48,7 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.xml.html.HTMLCleaner;
 import org.xwiki.xml.html.HTMLCleanerConfiguration;
 import org.xwiki.xml.html.HTMLConstants;
+import org.xwiki.xml.html.HTMLVersion;
 import org.xwiki.xml.html.filter.HTMLFilter;
 
 /**
@@ -155,14 +158,13 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         // especially since this makes it extra safe with regards to multithreading (even though HTML Cleaner is
         // already supposed to be thread safe).
         CleanerProperties cleanerProperties = getDefaultCleanerProperties(configuration);
-        HtmlCleaner cleaner;
-        if (HTMLCleanerConfiguration.XHTML_1_0.equals(
-                configuration.getParameters().get(HTMLCleanerConfiguration.HTML_VERSION))) {
-            cleaner = new HtmlCleaner(cleanerProperties);
-        } else {
-            cleaner = new HtmlCleaner(html5TagProvider, cleanerProperties);
-        }
 
+        HTMLVersion htmlVersion = getHTMLVersion(configuration);
+        ITagInfoProvider tagInfoProvider = 
+                (htmlVersion == HTMLVersion.XHTML_5_0 ? html5TagProvider : Html4TagProvider.INSTANCE);
+        
+        HtmlCleaner cleaner = new HtmlCleaner(tagInfoProvider, cleanerProperties);
+        
         TagNode cleanedNode;
         try {
             cleanedNode = cleaner.clean(originalHtmlContent);
@@ -183,8 +185,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             
             // Add the doctype if XHTML 1.0 is used.
             // Note: we cannot add the HTML5 doctype in the DOM tree because there is no HTML5 DTD.
-            if (HTMLCleanerConfiguration.XHTML_1_0.equals(
-                    configuration.getParameters().get(HTMLCleanerConfiguration.HTML_VERSION))) {
+            if (htmlVersion == HTMLVersion.XHTML_1_0) {
                 // Serialize the cleanedNode TagNode into a w3c dom. Ideally following code should be enough.
                 // But SF's HTML Cleaner seems to omit the DocType declaration while serializing.
                 // See https://sourceforge.net/tracker/index.php?func=detail&aid=2062318&group_id=183053&atid=903696
@@ -197,8 +198,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
                 // with proper DocType declaration and move the root node from the temporary document to the new one.
                 DOMImplementation domImpl = getAvailableDocumentBuilder().getDOMImplementation();
                 DocumentType docType =
-                    domImpl.createDocumentType(QUALIFIED_NAME_HTML, "",
-                        "");
+                    domImpl.createDocumentType(QUALIFIED_NAME_HTML, "-//W3C//DTD XHTML 1.0 Strict//EN",
+                            "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
                 Document tempDoc = result;
                 result = domImpl.createDocument(null, QUALIFIED_NAME_HTML, docType);
                 result.replaceChild(result.adoptNode(tempDoc.getDocumentElement()), result.getDocumentElement());
@@ -259,9 +260,15 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         // Set Cleaner transformations
         defaultProperties.setCleanerTransformations(getDefaultCleanerTransformations(configuration));
 
-        if (HTMLCleanerConfiguration.XHTML_1_0.equals(
-                configuration.getParameters().get(HTMLCleanerConfiguration.HTML_VERSION))) {
-            defaultProperties.setHtmlVersion(4);
+        switch (getHTMLVersion(configuration)) {
+            case XHTML_1_0:
+                // XHTML 1.0 is marked as HTML 4 in the SF Html Cleaner
+                defaultProperties.setHtmlVersion(4);
+                break;
+            case XHTML_5_0:
+            default:
+                defaultProperties.setHtmlVersion(5);
+                break;
         }
 
         return defaultProperties;
@@ -306,5 +313,10 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         }
 
         return defaultTransformations;
+    }
+    
+    private HTMLVersion getHTMLVersion(HTMLCleanerConfiguration configuration)
+    {
+        return HTMLVersion.valueOf(configuration.getParameters().get(HTMLCleanerConfiguration.HTML_VERSION));
     }
 }
