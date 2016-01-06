@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
@@ -703,5 +704,46 @@ public abstract class AbstractExtension implements Extension
     public int hashCode()
     {
         return getId().hashCode();
+    }
+
+    @Override
+    public int compareTo(Extension o)
+    {
+        if (o == null) {
+            return -1;
+        }
+
+        // Try to find this into provided extension
+        Integer comparizon = compareTo(this, o);
+        if (comparizon != null) {
+            return comparizon;
+        }
+
+        // Try to find provided extension into this
+        comparizon = compareTo(o, this);
+        if (comparizon != null) {
+            return comparizon;
+        }
+
+        return ObjectUtils.compare(getId(), o.getId());
+    }
+
+    private static Integer compareTo(Extension e1, Extension e2)
+    {
+        // Try to find e1 id in e2
+        ExtensionId feature = e2.getExtensionFeature(e1.getId().getId());
+        if (feature != null) {
+            return ObjectUtils.compare(e1.getId().getVersion(), feature.getVersion());
+        }
+
+        // Try to find e1 features in e2
+        for (ExtensionId feature1 : e1.getExtensionFeatures()) {
+            feature = e2.getExtensionFeature(feature1.getId());
+            if (feature != null) {
+                return ObjectUtils.compare(feature1.getVersion(), feature.getVersion());
+            }
+        }
+
+        return null;
     }
 }

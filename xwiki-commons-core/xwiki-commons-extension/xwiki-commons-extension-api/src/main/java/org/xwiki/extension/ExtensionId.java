@@ -21,6 +21,7 @@ package org.xwiki.extension;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
@@ -33,7 +34,7 @@ import com.google.common.base.Objects;
  * @version $Id$
  * @since 4.0M1
  */
-public class ExtensionId implements Serializable
+public class ExtensionId implements Serializable, Comparable<ExtensionId>
 {
     /**
      * Serialization identifier.
@@ -121,5 +122,20 @@ public class ExtensionId implements Serializable
     public String toString()
     {
         return getId() + '-' + getVersion();
+    }
+
+    @Override
+    public int compareTo(ExtensionId o)
+    {
+        if (o == null) {
+            return -1;
+        }
+
+        CompareToBuilder builder = new CompareToBuilder();
+
+        builder.append(getId(), o.getId());
+        builder.append(getVersion(), o.getVersion());
+
+        return builder.toComparison();
     }
 }

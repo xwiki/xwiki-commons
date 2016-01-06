@@ -32,7 +32,7 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 4.0M1
  */
-public interface Extension
+public interface Extension extends Comparable<Extension>
 {
     /**
      * @see #getRepository()

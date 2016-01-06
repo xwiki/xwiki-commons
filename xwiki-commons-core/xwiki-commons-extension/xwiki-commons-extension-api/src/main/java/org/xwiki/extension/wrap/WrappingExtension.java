@@ -190,4 +190,10 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingObje
     {
         return getWrapped().getProperty(key, def);
     }
+
+    @Override
+    public int compareTo(Extension o)
+    {
+        return getWrapped().compareTo(o);
+    }
 }
