@@ -125,6 +125,25 @@ public class XARMojo extends AbstractXARMojo
         // If no package.xml can be found at the top level of the current project, generate one
         // otherwise, try to use the existing one
         File resourcesDir = getResourcesDirectory();
+        if (!hasPackageXmlFile(resourcesDir)) {
+            // Add files and generate the package.xml file
+            addFilesToArchive(archiver, sourceDir);
+        } else {
+            File packageXml = new File(resourcesDir, PACKAGE_XML);
+            addFilesToArchive(archiver, sourceDir, packageXml);
+        }
+        archiver.createArchive();
+
+        this.project.getArtifact().setFile(xarFile);
+    }
+
+    private boolean hasPackageXmlFile(File resourcesDir) throws MojoExecutionException
+    {
+        // If the src/main/resources directory doesn't exist then we consider there isn't any package.xml file...
+        if (!resourcesDir.exists()) {
+            return false;
+        }
+
         FilenameFilter packageXmlFiler = new FilenameFilter()
         {
             @Override
@@ -134,20 +153,11 @@ public class XARMojo extends AbstractXARMojo
             }
         };
         String[] fileNames = resourcesDir.list(packageXmlFiler);
-        if (fileNames != null) {
-            if (!resourcesDir.exists() || fileNames.length == 0) {
-                addFilesToArchive(archiver, sourceDir);
-            } else {
-                File packageXml = new File(resourcesDir, PACKAGE_XML);
-                addFilesToArchive(archiver, sourceDir, packageXml);
-            }
-        } else {
+        if (fileNames == null) {
             throw new MojoExecutionException(String.format("Couldn't get list of files in resources dir [%s]",
                 resourcesDir));
         }
-        archiver.createArchive();
-
-        this.project.getArtifact().setFile(xarFile);
+        return fileNames.length != 0;
     }
 
     private void performTransformations() throws Exception
