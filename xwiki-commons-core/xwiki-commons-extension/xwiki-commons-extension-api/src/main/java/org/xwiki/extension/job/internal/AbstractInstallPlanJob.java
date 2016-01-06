@@ -840,20 +840,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
             Action action;
             if (!previousExtensions.isEmpty()) {
-                InstalledExtension previousExtension = previousExtensions.iterator().next();
-                ExtensionId newFeature = extension.getId();
-                ExtensionId previousFeature = previousExtension.getExtensionFeature(newFeature.getId());
-                if (previousFeature == null) {
-                    for (ExtensionId extensionFeature : extension.getExtensionFeatures()) {
-                        previousFeature = previousExtension.getExtensionFeature(extensionFeature.getId());
-                        if (previousFeature != null) {
-                            newFeature = extensionFeature;
-                            break;
-                        }
-                    }
-                }
-
-                if (previousFeature != null && previousFeature.getVersion().compareTo(newFeature.getVersion()) > 0) {
+                if (extension.compareTo(previousExtensions.iterator().next()) < 0) {
                     action = Action.DOWNGRADE;
                 } else {
                     action = Action.UPGRADE;
