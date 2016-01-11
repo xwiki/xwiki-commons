@@ -522,14 +522,14 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
     {
         addCachedExtension(installedExtension);
 
-        // Register the extension in the installed extensions for the provided namespace
-        addInstalledFeatureToCache(installedExtension.getId(), namespace, installedExtension);
+        boolean isValid = installedExtension.isValid(namespace);
 
-        // Add virtual extensions (only if the extension is valid to not collide with other extensions)
-        if (installedExtension.isValid(namespace)) {
-            for (ExtensionId feature : installedExtension.getExtensionFeatures()) {
-                addInstalledFeatureToCache(feature, namespace, installedExtension);
-            }
+        // Register the extension in the installed extensions for the provided namespace
+        addInstalledFeatureToCache(installedExtension.getId(), namespace, installedExtension, isValid);
+
+        // Add virtual extensions
+        for (ExtensionId feature : installedExtension.getExtensionFeatures()) {
+            addInstalledFeatureToCache(feature, namespace, installedExtension, isValid);
         }
 
         if (this.updateBackwardDependencies) {
@@ -576,7 +576,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
 
                     // Make sure to register backward dependency on the right namespace
                     InstalledFeature dependencyInstalledExtension =
-                        addInstalledFeatureToCache(feature, namespace, dependencyLocalExtension);
+                        addInstalledFeatureToCache(feature, namespace, dependencyLocalExtension, false);
 
                     dependencyInstalledExtension.root.backwardDependencies.add(installedExtension);
                 }
@@ -595,7 +595,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
      * @return the installed extension informations
      */
     private InstalledFeature addInstalledFeatureToCache(ExtensionId feature, String namespace,
-        DefaultInstalledExtension installedExtension)
+        DefaultInstalledExtension installedExtension, boolean forceCreate)
     {
         Map<String, InstalledFeature> installedExtensionsForFeature =
             this.extensionNamespaceByFeature.get(feature.getId());
@@ -606,7 +606,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         }
 
         InstalledFeature installedFeature = installedExtensionsForFeature.get(namespace);
-        if (installedFeature == null) {
+        if (forceCreate || installedFeature == null) {
             // Find or create root feature
             InstalledRootFeature rootInstalledFeature;
             if (installedExtension.getId().getId().equals(feature.getId())) {
