@@ -61,7 +61,6 @@ import org.xwiki.extension.version.VersionConstraint;
  */
 @Component
 @Singleton
-// TODO: move all installation related code from local repository to here
 public class DefaultInstalledExtensionRepository extends
     AbstractInstalledExtensionRepository<DefaultInstalledExtension> implements InstalledExtensionRepository,
     Initializable
