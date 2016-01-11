@@ -19,16 +19,12 @@
  */
 package org.xwiki.velocity.tools;
 
-import java.beans.Transient;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONException;
@@ -42,28 +38,6 @@ import net.sf.json.JSONSerializer;
  */
 public class JSONTool
 {
-    /**
-     * Used to workaround Jackson limitation.
-     * <ul>
-     * <li>Jackson does not take into account java.beans.Transient
-     * (https://github.com/FasterXML/jackson-databind/issues/857)</li>
-     * </ul>
-     */
-    private static class CustomAnnotationIntrospector extends JacksonAnnotationIntrospector
-    {
-        public static final CustomAnnotationIntrospector INTROSPECTOR = new CustomAnnotationIntrospector();
-
-        @Override
-        public boolean hasIgnoreMarker(AnnotatedMember m)
-        {
-            if (m.getAnnotation(Transient.class) != null) {
-                return true;
-            }
-
-            return super.hasIgnoreMarker(m);
-        }
-    }
-
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(JSONTool.class);
 
@@ -86,7 +60,6 @@ public class JSONTool
     {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            mapper.setAnnotationIntrospector(CustomAnnotationIntrospector.INTROSPECTOR);
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             this.logger.error("Failed to serialize object to JSON", e);

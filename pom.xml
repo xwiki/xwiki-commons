@@ -57,7 +57,7 @@
     <restlet.version>2.0.14</restlet.version>
 
     <!-- Jackson -->
-    <jackson.version>2.6.4</jackson.version>
+    <jackson.version>2.7.0</jackson.version>
 
     <!-- Selenium -->
     <selenium.version>2.44.0</selenium.version>
@@ -449,11 +449,6 @@
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-avro</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.datatype</groupId>
-        <artifactId>jackson-datatype-jdk7</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
