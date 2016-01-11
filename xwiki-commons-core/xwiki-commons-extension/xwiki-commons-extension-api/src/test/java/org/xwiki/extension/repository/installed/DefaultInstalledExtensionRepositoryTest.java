@@ -166,7 +166,7 @@ public class DefaultInstalledExtensionRepositoryTest
         assertFalse(this.handler.getExtensions().get(null).contains(extension));
         assertTrue(this.handler.getExtensions().get("namespace").contains(extension));
 
-        // installewithfeatureasdependency
+        // installedwithfeatureasdependency
         extension =
             this.installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_WITHFEATUREASDEPENDENCY_ID);
 
