@@ -38,6 +38,8 @@ import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
 import org.xwiki.extension.version.internal.DefaultVersion;
 
+import static org.junit.Assert.fail;
+
 public class InstallPlanJobTest extends AbstractExtensionHandlerTest
 {
     private ConfigurableDefaultCoreExtensionRepository coreRepository;
@@ -441,7 +443,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         installPlan(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace");
     }
 
-    @Test(expected = InstallException.class)
+    @Test
     public void testInstallExtensionOnIncompatibleNamespace() throws Throwable
     {
         // Install 1.0 on root
@@ -449,6 +451,13 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         uninstall(TestResources.REMOTE_ROOTEXTENSION10_ID, null);
 
         // Install 1.0 on incompatible namespace
-        install(TestResources.REMOTE_ROOTEXTENSION10_ID, "namespace");
+        try {
+            install(TestResources.REMOTE_ROOTEXTENSION10_ID, "namespace");
+
+            fail("Should not be allowed to install [" + TestResources.REMOTE_ROOTEXTENSION10_ID
+                + "] on namespace [namespace]");
+        } catch (InstallException e) {
+
+        }
     }
 }

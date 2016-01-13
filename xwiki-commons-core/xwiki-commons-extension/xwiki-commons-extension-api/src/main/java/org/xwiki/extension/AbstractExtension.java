@@ -172,8 +172,6 @@ public abstract class AbstractExtension implements Extension
      */
     protected void set(Extension extension)
     {
-        setExtensionFeatures(extension.getExtensionFeatures());
-
         setName(extension.getName());
         setDescription(extension.getDescription());
         setAuthors(extension.getAuthors());
@@ -183,6 +181,8 @@ public abstract class AbstractExtension implements Extension
         setIssueManagement(extension.getIssueManagement());
         setScm(extension.getScm());
         setCategory(extension.getCategory());
+        setExtensionFeatures(extension.getExtensionFeatures());
+        setAllowedNamespaces(extension.getAllowedNamespaces());
 
         setDependencies(extension.getDependencies());
 
@@ -506,7 +506,8 @@ public abstract class AbstractExtension implements Extension
      */
     public void setAllowedNamespaces(Collection<String> namespaces)
     {
-        this.allowedNamespaces = Collections.unmodifiableSet(new LinkedHashSet<>(namespaces));
+        this.allowedNamespaces =
+            namespaces != null ? Collections.unmodifiableSet(new LinkedHashSet<>(namespaces)) : null;
     }
 
     /**

@@ -4,7 +4,7 @@
   <id>rootextension</id>
   <version>1.0</version>
   <type>test</type>
-  <allowedNamespaces>
-    <namespace>&lt;root&gt;</namespace>
-  </allowedNamespaces>
+  <allowednamespaces>
+    <namespace>{root}</namespace>
+  </allowednamespaces>
 </extension>

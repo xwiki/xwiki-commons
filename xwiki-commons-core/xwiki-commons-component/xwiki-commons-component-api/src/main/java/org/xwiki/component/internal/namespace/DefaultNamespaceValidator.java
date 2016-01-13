@@ -51,8 +51,8 @@ public class DefaultNamespaceValidator implements NamespaceValidator
     private static final Set<String> ROOT_NAMESPACES = new HashSet<>();
 
     static {
-        ROOT_NAMESPACES.add("<root>");
-        ROOT_NAMESPACES.add("<>");
+        ROOT_NAMESPACES.add("{root}");
+        ROOT_NAMESPACES.add("{}");
     };
 
     @Inject

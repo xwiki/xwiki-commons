@@ -34,11 +34,11 @@
   <properties>
     <!-- Skipping CLIRR since xwiki-commons-legacy-component-api wraps this module and runs CLIRR on it -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
-    <xwiki.jacoco.instructionRatio>0.36</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.41</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <!-- Even though this module may not use the stability API, we declare a dependency here since this module is
-         used by almost all other modules and this allows these other modules to not have to explicitely declare a
+         used by almost all other modules and this allows these other modules to not have to explicitly declare a
          dependency on the stability API -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
