@@ -203,6 +203,24 @@
               <method>java.util.Collection getAllowedNamespaces()</method>
               <justification>Allow indicating namespace constraint in an extension</justification>
             </difference>
+            <difference>
+              <differenceType>6001</differenceType>
+              <className>org/xwiki/velocity/introspection/AbstractChainableUberspector</className>
+              <field>inner</field>
+              <justification>Deprecating this class in favor of the standard library class with the same name</justification>
+            </difference>
+            <difference>
+              <differenceType>4001</differenceType>
+              <className>org/xwiki/velocity/introspection/*Uberspector</className>
+              <to>org/xwiki/velocity/introspection/ChainableUberspector</to>
+              <justification>Deprecating this class in favor of the standard library class with the same name</justification>
+            </difference>
+            <difference>
+              <differenceType>5001</differenceType>
+              <className>org/xwiki/velocity/introspection/*Uberspector</className>
+              <to>org/xwiki/velocity/introspection/AbstractChainableUberspector</to>
+              <justification>Deprecating this class in favor of the standard library class with the same name</justification>
+            </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
