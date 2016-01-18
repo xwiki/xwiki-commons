@@ -36,7 +36,6 @@ import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.text.StringUtils;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.internal.util.RestrictParseLocationEventHandler;
-import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
@@ -107,8 +106,7 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultProperties.setProperty("eventhandler.include.class",
             RestrictParseLocationEventHandler.class.getName());
         // Prevents users from writing dangerous Velocity code like using Class.forName or Java threading APIs.
-        this.defaultProperties.setProperty("runtime.introspector.uberspect", ChainingUberspector.class.getName());
-        this.defaultProperties.setProperty("runtime.introspector.uberspect.chainClasses", StringUtils.join(
+        this.defaultProperties.setProperty("runtime.introspector.uberspect", StringUtils.join(
             new String[] { SecureUberspector.class.getName(), DeprecatedCheckUberspector.class.getName(),
                 MethodArgumentsUberspector.class.getName() }, ','));
         // Enable the extra scope variables $template and $macro, similar to $foreach

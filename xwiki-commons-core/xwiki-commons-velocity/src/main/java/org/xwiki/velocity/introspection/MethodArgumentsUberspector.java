@@ -25,6 +25,7 @@ import java.util.Arrays;
 
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.RuntimeServicesAware;
+import org.apache.velocity.util.introspection.AbstractChainableUberspector;
 import org.apache.velocity.util.introspection.Info;
 import org.apache.velocity.util.introspection.VelMethod;
 import org.xwiki.component.manager.ComponentLookupException;

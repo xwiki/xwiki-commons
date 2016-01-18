@@ -60,7 +60,10 @@ import org.apache.velocity.util.introspection.VelPropertySet;
  * @since 1.5RC1
  * @see ChainingUberspector
  * @version $Id$
+ * @deprecated since 8.0M1; chaining uberspectors is much more powerful, this class was never more than a proof of
+ *             concept
  */
+@Deprecated
 public class LinkingUberspector extends UberspectImpl implements Uberspect, RuntimeServicesAware, UberspectLoggable
 {
     /** The key of the parameter that allows defining the array of uberspectors. */

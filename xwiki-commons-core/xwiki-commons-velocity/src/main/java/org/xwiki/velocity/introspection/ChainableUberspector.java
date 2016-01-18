@@ -19,29 +19,17 @@
  */
 package org.xwiki.velocity.introspection;
 
-import org.apache.velocity.util.introspection.Uberspect;
-
 /**
  * Interface that marks uberspectors as chainable, meaning that multiple uberspectors can be combined in a chain (using
  * the Decorator pattern).
  *
  * @version $Id$
  * @since 1.5M1
+ * @deprecated since 8.0M1; this is now part of the official Velocity library, use
+ *             {@link org.apache.velocity.util.introspection.ChainableUberspector} instead
  */
-public interface ChainableUberspector extends Uberspect
+@Deprecated
+public interface ChainableUberspector extends org.apache.velocity.util.introspection.ChainableUberspector
 {
-    /**
-     * Since uberspectors are dynamically enabled using a configuration string, we cannot simply call the constructors
-     * to pass the inner uberspector. We can either instantiate uberspectors using reflection and passing the wrapped
-     * object to the constructor, or explicitely "wrap" the inner uberspector. The second method has several advantages,
-     * so it was chosen here:
-     * <ul>
-     * <li>Doesn't require adding an extra constructor</li>
-     * <li>Keeps the initialization process a bit more simple</li>
-     * <li>Allows the wrapping to take place at a different time</li>
-     * </ul>
-     *
-     * @param inner The decorated uberspector.
-     */
-    void wrap(Uberspect inner);
+    // Everything is part of the super interface
 }

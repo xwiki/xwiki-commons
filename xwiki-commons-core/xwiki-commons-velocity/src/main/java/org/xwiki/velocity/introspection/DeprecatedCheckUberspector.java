@@ -21,6 +21,7 @@ package org.xwiki.velocity.introspection;
 
 import java.lang.reflect.Method;
 
+import org.apache.velocity.util.introspection.AbstractChainableUberspector;
 import org.apache.velocity.util.introspection.Info;
 import org.apache.velocity.util.introspection.Introspector;
 import org.apache.velocity.util.introspection.Uberspect;
@@ -39,8 +40,7 @@ import org.apache.velocity.util.introspection.VelPropertySet;
  * @version $Id$
  * @see ChainableUberspector
  */
-public class DeprecatedCheckUberspector extends AbstractChainableUberspector implements Uberspect,
-    ChainableUberspector, UberspectLoggable
+public class DeprecatedCheckUberspector extends AbstractChainableUberspector implements Uberspect, UberspectLoggable
 {
     @Override
     public void init()

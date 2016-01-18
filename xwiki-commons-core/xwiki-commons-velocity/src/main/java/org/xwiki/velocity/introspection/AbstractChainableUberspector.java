@@ -19,15 +19,6 @@
  */
 package org.xwiki.velocity.introspection;
 
-import java.util.Iterator;
-
-import org.apache.velocity.util.introspection.Info;
-import org.apache.velocity.util.introspection.Uberspect;
-import org.apache.velocity.util.introspection.UberspectImpl;
-import org.apache.velocity.util.introspection.VelMethod;
-import org.apache.velocity.util.introspection.VelPropertyGet;
-import org.apache.velocity.util.introspection.VelPropertySet;
-
 /**
  * Default implementation of a {@link ChainableUberspector chainable uberspector} that forwards all calls to the wrapped
  * uberspector (when that is possible). It should be used as the base class for all chainable uberspectors.
@@ -35,21 +26,17 @@ import org.apache.velocity.util.introspection.VelPropertySet;
  * @version $Id$
  * @since 1.5M1
  * @see ChainableUberspector
+ * @deprecated since 8.0M1; this is now part of the official Velocity library, use
+ *             {@link org.apache.velocity.util.introspection.AbstractChainableUberspector} instead
  */
-public abstract class AbstractChainableUberspector extends UberspectImpl implements ChainableUberspector
+@Deprecated
+public abstract class AbstractChainableUberspector
+    extends org.apache.velocity.util.introspection.AbstractChainableUberspector implements ChainableUberspector
 {
-    /** The wrapped (decorated) uberspector. */
-    protected Uberspect inner;
-
-    @Override
-    public void wrap(Uberspect inner)
-    {
-        this.inner = inner;
-    }
-
     @Override
     public void init()
     {
+        // This method is kept because the version in Velocity 1.7 doesn't catch exceptions
         if (this.inner != null) {
             try {
                 this.inner.init();
@@ -57,30 +44,5 @@ public abstract class AbstractChainableUberspector extends UberspectImpl impleme
                 this.log.error(e.getMessage(), e);
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Iterator getIterator(Object obj, Info i) throws Exception
-    {
-        return (this.inner != null) ? this.inner.getIterator(obj, i) : null;
-    }
-
-    @Override
-    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i) throws Exception
-    {
-        return (this.inner != null) ? this.inner.getMethod(obj, methodName, args, i) : null;
-    }
-
-    @Override
-    public VelPropertyGet getPropertyGet(Object obj, String identifier, Info i) throws Exception
-    {
-        return (this.inner != null) ? this.inner.getPropertyGet(obj, identifier, i) : null;
-    }
-
-    @Override
-    public VelPropertySet getPropertySet(Object obj, String identifier, Object arg, Info i) throws Exception
-    {
-        return (this.inner != null) ? this.inner.getPropertySet(obj, identifier, arg, i) : null;
     }
 }

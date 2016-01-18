@@ -67,12 +67,10 @@ public class DefaultVelocityConfigurationTest
     public void testDefaultPropertiesPresent() throws Exception
     {
         // Verify that the secure uberspector is set by default
-        assertEquals(ChainingUberspector.class.getName(),
-            this.mocker.getComponentUnderTest().getProperties().getProperty("runtime.introspector.uberspect"));
         assertEquals(StringUtils.join(new String[] { SecureUberspector.class.getName(),
             DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
             this.mocker.getComponentUnderTest().getProperties().getProperty(
-                "runtime.introspector.uberspect.chainClasses"));
+                "runtime.introspector.uberspect"));
 
         // Verify that null values are allowed by default
         assertEquals(Boolean.TRUE.toString(),

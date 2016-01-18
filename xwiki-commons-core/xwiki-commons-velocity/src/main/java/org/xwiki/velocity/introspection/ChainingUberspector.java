@@ -55,7 +55,10 @@ import org.apache.velocity.util.introspection.UberspectLoggable;
  * @since 1.5M1
  * @see ChainableUberspector
  * @version $Id$
+ * @deprecated since 8.0M1; Velocity supports the same functionality natively since 1.6; just move the configuration
+ *             from {@code runtime.introspector.uberspect.chainClasses} to {@code runtime.introspector.uberspect}
  */
+@Deprecated
 public class ChainingUberspector extends AbstractChainableUberspector implements Uberspect, RuntimeServicesAware,
     UberspectLoggable
 {
@@ -130,6 +133,8 @@ public class ChainingUberspector extends AbstractChainableUberspector implements
             // Link it in the chain
             if (u instanceof ChainableUberspector) {
                 ((ChainableUberspector) u).wrap(this.inner);
+            } else if (u instanceof org.apache.velocity.util.introspection.ChainableUberspector) {
+                ((org.apache.velocity.util.introspection.ChainableUberspector) u).wrap(this.inner);
             }
             this.inner = u;
         }
