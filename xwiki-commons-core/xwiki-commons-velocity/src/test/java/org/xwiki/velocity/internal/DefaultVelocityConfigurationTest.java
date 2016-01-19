@@ -28,7 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
-import org.xwiki.velocity.introspection.ChainingUberspector;
+import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
@@ -45,8 +45,8 @@ import static org.mockito.Mockito.when;
 public class DefaultVelocityConfigurationTest
 {
     @Rule
-    public MockitoComponentMockingRule<DefaultVelocityConfiguration> mocker =
-        new MockitoComponentMockingRule(DefaultVelocityConfiguration.class);
+    public MockitoComponentMockingRule<VelocityConfiguration> mocker =
+        new MockitoComponentMockingRule<VelocityConfiguration>(DefaultVelocityConfiguration.class);
 
     @Before
     public void configure() throws Exception
@@ -67,17 +67,17 @@ public class DefaultVelocityConfigurationTest
     public void testDefaultPropertiesPresent() throws Exception
     {
         // Verify that the secure uberspector is set by default
-        assertEquals(StringUtils.join(new String[] { SecureUberspector.class.getName(),
-            DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
-            this.mocker.getComponentUnderTest().getProperties().getProperty(
-                "runtime.introspector.uberspect"));
+        assertEquals(
+            StringUtils.join(new String[] { SecureUberspector.class.getName(),
+                DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
+            this.mocker.getComponentUnderTest().getProperties().getProperty("runtime.introspector.uberspect"));
 
         // Verify that null values are allowed by default
         assertEquals(Boolean.TRUE.toString(),
             this.mocker.getComponentUnderTest().getProperties().getProperty("directive.set.null.allowed"));
 
         // Verify that Macros are isolated by default
-        assertEquals(Boolean.TRUE.toString(), this.mocker.getComponentUnderTest().getProperties().getProperty(
-            "velocimacro.permissions.allow.inline.local.scope"));
+        assertEquals(Boolean.TRUE.toString(), this.mocker.getComponentUnderTest().getProperties()
+            .getProperty("velocimacro.permissions.allow.inline.local.scope"));
     }
 }
