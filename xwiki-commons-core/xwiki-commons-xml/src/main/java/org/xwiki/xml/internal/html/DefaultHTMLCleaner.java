@@ -32,12 +32,12 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.CleanerTransformations;
+import org.htmlcleaner.DoctypeToken;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.TagTransformation;
-import org.w3c.dom.DOMImplementation;
+import org.htmlcleaner.XWikiDOMSerializer;
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -59,11 +59,6 @@ import org.xwiki.xml.html.filter.HTMLFilter;
 @Singleton
 public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
 {
-    /**
-     * The qualified name to be used when generating an html {@link DocumentType}.
-     */
-    private static final String QUALIFIED_NAME_HTML = "html";
-
     /**
      * {@link HTMLFilter} for filtering html lists.
      */
@@ -164,30 +159,16 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             throw new RuntimeException("Unhandled error when cleaning HTML", e);
         }
 
-        // Serialize the cleanedNode TagNode into a w3c dom. Ideally following code should be enough.
-        // But SF's HTML Cleaner seems to omit the DocType declaration while serializing.
-        // See https://sourceforge.net/tracker/index.php?func=detail&aid=2062318&group_id=183053&atid=903696
-        //      cleanedNode.setDocType(new DoctypeToken("html", "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
-        //          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
-        //      try {
-        //          result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
-        //      } catch(ParserConfigurationException ex) { }
-        // As a workaround, we must serialize the cleanedNode into a temporary w3c document, create a new w3c document
-        // with proper DocType declaration and move the root node from the temporary document to the new one.
         try {
-            // Since there's a bug in SF's HTML Cleaner in that it doesn't recognize CDATA blocks we need to turn off
-            // character escaping (hence the false value passed) and do the escaping in XMLUtils.toString(). Note that
-            // this can cause problem for code not serializing the W3C DOM to a String since it won't have the
-            // characters escaped.
-            // See https://sourceforge.net/tracker/index.php?func=detail&aid=2691888&group_id=183053&atid=903696
-            Document tempDoc =
+            // Ideally we would use SF's HTMLCleaner DomSerializer but there are outstanding issues with it, so we're
+            // using a custom XWikiDOMSerializer (see its javadoc for more details).
+            // Replace by the following when fixed:
+            //   result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
+
+            cleanedNode.setDocType(new DoctypeToken("html", "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
+                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
+            result =
                 new XWikiDOMSerializer(cleanerProperties, false).createDOM(getAvailableDocumentBuilder(), cleanedNode);
-            DOMImplementation domImpl = getAvailableDocumentBuilder().getDOMImplementation();
-            DocumentType docType =
-                domImpl.createDocumentType(QUALIFIED_NAME_HTML, "-//W3C//DTD XHTML 1.0 Strict//EN",
-                    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
-            result = domImpl.createDocument(null, QUALIFIED_NAME_HTML, docType);
-            result.replaceChild(result.adoptNode(tempDoc.getDocumentElement()), result.getDocumentElement());
         } catch (ParserConfigurationException ex) {
             throw new RuntimeException("Error while serializing TagNode into w3c dom.", ex);
         }

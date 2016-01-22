@@ -17,8 +17,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.xml.internal.html;
+package org.htmlcleaner;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -29,23 +30,26 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.htmlcleaner.BaseToken;
-import org.htmlcleaner.CleanerProperties;
-import org.htmlcleaner.CommentNode;
-import org.htmlcleaner.ContentNode;
-import org.htmlcleaner.TagNode;
-import org.htmlcleaner.Utils;
 import org.w3c.dom.Comment;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 
 /**
- * Generate a W3C Document from a SF's HTML Cleaner TagNode. Original implementation by Vladimir Nikic, under the BSD
- * license (see http://htmlcleaner.sourceforge.net/license.php). Modified to bypass following bugs:
+ * Generate a W3C Document from a SF's HTML Cleaner TagNode.
+ *
+ * Some code has been copy-pasted from SF's HTML Cleaner code (which is under a BDS license, see
+ * http://htmlcleaner.sourceforge.net/license.php). Our goal is to remove this class completely if we can get SF's HTML
+ * Cleaner to support the CDATA-related use cases that force us to have this class.
+ *
+ * Remove when the following issues have been fixed:
  * <ul>
- * <li>https://sourceforge.net/tracker/?func=detail&aid=2691888&group_id=183053&atid=903696</li>
- * <li>https://sourceforge.net/tracker/?func=detail&aid=2761963&group_id=183053&atid=903696</li>
+ *     <li>https://sourceforge.net/p/htmlcleaner/bugs/169/</li>
  * </ul>
+ *
+ * Note: Even though in a public package this code is not meant to be a public API. We've had to put in under the {@code
+ * org.htmlcleaner} package because of https://sourceforge.net/p/htmlcleaner/bugs/167/.
  *
  * @version $Id$
  * @since 1.8.2
@@ -70,6 +74,8 @@ public class XWikiDOMSerializer
 
     private static final String STYLE_TAG_NAME = "style";
 
+    private static final String HTML_TAG_NAME = "html";
+
     /**
      * The HTML Cleaner properties set by the user to control the HTML cleaning.
      */
@@ -92,7 +98,7 @@ public class XWikiDOMSerializer
 
     /**
      * @param documentDocumentBuilder the {@link DocumentBuilder} instance to use, DocumentBuilder is not garantied to
-     *            be thread safe so at most the safe instance should be used only in the same thread
+     * be thread safe so at most the safe instance should be used only in the same thread
      * @param rootNode the HTML Cleaner root node to serialize
      * @return the W3C Document object
      * @throws ParserConfigurationException if there's an error during serialization
@@ -100,11 +106,70 @@ public class XWikiDOMSerializer
     public Document createDOM(DocumentBuilder documentDocumentBuilder, TagNode rootNode)
         throws ParserConfigurationException
     {
-        Document document = documentDocumentBuilder.newDocument();
-        Element rootElement = document.createElement(rootNode.getName());
-        document.appendChild(rootElement);
+        DOMImplementation impl = documentDocumentBuilder.getDOMImplementation();
 
-        createSubnodes(document, rootElement, rootNode.getAllChildren());
+        // Copied from the source code of HTML Cleaner.
+
+        Document document;
+
+        //
+        // Where a DOCTYPE is supplied in the input, ensure that this is in the output DOM. See issue #27
+        //
+        // Note that we may want to fix incorrect DOCTYPEs in future; there are some fairly
+        // common patterns for errors with the older HTML4 doctypes.
+        //
+        if (rootNode.getDocType() != null) {
+            String qualifiedName = rootNode.getDocType().getPart1();
+            String publicId = rootNode.getDocType().getPublicId();
+            String systemId = rootNode.getDocType().getSystemId();
+
+            //
+            // If there is no qualified name, set it to html. See bug #153.
+            //
+            if (qualifiedName == null) {
+                qualifiedName = HTML_TAG_NAME;
+            }
+
+            DocumentType documentType = impl.createDocumentType(qualifiedName, publicId, systemId);
+
+            //
+            // While the qualified name is "HTML" for some DocTypes, we want the actual document root name to be "html".
+            // See bug #116
+            //
+            if (qualifiedName.equals("HTML")) {
+                qualifiedName = HTML_TAG_NAME;
+            }
+            document = impl.createDocument(rootNode.getNamespaceURIOnPath(""), qualifiedName, documentType);
+        } else {
+            document = documentDocumentBuilder.newDocument();
+            Element rootElement = document.createElement(rootNode.getName());
+            document.appendChild(rootElement);
+        }
+
+        //
+        // Copy across root node attributes - see issue 127. Thanks to rasifiel for the patch
+        //
+        Map<String, String> attributes = rootNode.getAttributes();
+        Iterator<Map.Entry<String, String>> entryIterator = attributes.entrySet().iterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, String> entry = entryIterator.next();
+            String attrName = entry.getKey();
+            String attrValue = entry.getValue();
+            if (escapeXml) {
+                attrValue = Utils.escapeXml(attrValue, props, true);
+            }
+
+            document.getDocumentElement().setAttribute(attrName, attrValue);
+
+            //
+            // Flag the attribute as an ID attribute if appropriate. Thanks to Chris173
+            //
+            if (attrName.equalsIgnoreCase("id")) {
+                document.getDocumentElement().setIdAttribute(attrName, true);
+            }
+        }
+
+        createSubnodes(document, document.getDocumentElement(), rootNode.getAllChildren());
 
         return document;
     }
@@ -254,5 +319,4 @@ public class XWikiDOMSerializer
             flushContent(document, element, bufferedContent, null);
         }
     }
-
 }

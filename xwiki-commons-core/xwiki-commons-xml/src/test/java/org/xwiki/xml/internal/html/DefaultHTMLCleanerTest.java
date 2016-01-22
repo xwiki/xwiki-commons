@@ -331,6 +331,27 @@ public class DefaultHTMLCleanerTest
     }
 
     /**
+     * Verify that a xmlns namespace set on the HTML element is not removed by default and it's removed if
+     * {@link HTMLCleanerConfiguration#NAMESPACES_AWARE} is set to false.
+     */
+    @Test
+    @Ignore("See https://sourceforge.net/p/htmlcleaner/bugs/168/")
+    public void cleanHTMLTagWithNamespace() throws Exception
+    {
+        String input = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>";
+
+        // Default
+        Assert.assertEquals(HEADER + input + FOOTER,
+            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(input))));
+
+        // Configured for namespace awareness being false
+        HTMLCleanerConfiguration config = this.mocker.getComponentUnderTest().getDefaultConfiguration();
+        config.setParameters(Collections.singletonMap(HTMLCleanerConfiguration.NAMESPACES_AWARE, "false"));
+        Assert.assertEquals(HEADER + "<html><head></head><body>" + FOOTER,
+            HTMLUtils.toString(this.mocker.getComponentUnderTest().clean(new StringReader(input), config)));
+    }
+
+    /**
      * Test that cleaning an empty DIV works (it used to fail, see <a
      * href="http://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
      */
