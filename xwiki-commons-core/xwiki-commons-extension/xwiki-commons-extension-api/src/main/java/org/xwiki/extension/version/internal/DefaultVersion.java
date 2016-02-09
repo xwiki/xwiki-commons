@@ -540,6 +540,17 @@ public class DefaultVersion implements Version
     }
 
     /**
+     * @param version the version to compare as a String
+     * @return a negative integer, zero, or a positive integer as this version is less than, equal to, or greater than
+     *         the specified version
+     * @since 7.4.2, 8.0M2
+     */
+    public int compareTo(String version)
+    {
+        return compareTo(new DefaultVersion(version));
+    }
+
+    /**
      * @param version the version to compare
      * @return a negative integer, zero, or a positive integer as this version is less than, equal to, or greater than
      *         the specified version
