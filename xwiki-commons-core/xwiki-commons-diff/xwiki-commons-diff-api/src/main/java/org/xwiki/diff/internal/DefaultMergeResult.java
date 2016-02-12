@@ -22,7 +22,7 @@ package org.xwiki.diff.internal;
 import java.util.List;
 
 import org.xwiki.diff.MergeResult;
-import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.util.LoggingEventMessageQueue;
 
 /**
  * Default implementation of {@link MergeResult}.
@@ -55,7 +55,7 @@ public class DefaultMergeResult<E> implements MergeResult<E>
     /**
      * @see #getLog()
      */
-    private LogQueue log = new LogQueue();
+    private LoggingEventMessageQueue log = new LoggingEventMessageQueue();
 
     /**
      * @param commonAncestor the common ancestor
@@ -92,6 +92,12 @@ public class DefaultMergeResult<E> implements MergeResult<E>
 
     @Override
     public LogQueue getLog()
+    {
+        return this.log;
+    }
+
+    @Override
+    public LoggingEventMessageQueue getLogs()
     {
         return this.log;
     }

@@ -19,10 +19,10 @@
  */
 package org.xwiki.logging.marker;
 
-import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.LoggingEventMessage;
 
 /**
- * A {@link org.xwiki.logging.TranslationMarker} with a {@link LogEvent#MARKER_BEGIN} marker.
+ * A {@link org.xwiki.logging.TranslationMarker} with a {@link LoggingEventMessage#MARKER_BEGIN} marker.
  *
  * @version $Id$
  * @since 5.4M1
@@ -39,6 +39,6 @@ public class BeginTranslationMarker extends TranslationMarker
      */
     public BeginTranslationMarker(String translationKey)
     {
-        super(translationKey, LogEvent.MARKER_BEGIN);
+        super(translationKey, LoggingEventMessage.MARKER_BEGIN);
     }
 }

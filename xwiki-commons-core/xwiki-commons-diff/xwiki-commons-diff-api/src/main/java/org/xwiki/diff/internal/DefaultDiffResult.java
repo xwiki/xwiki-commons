@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.xwiki.diff.DiffResult;
 import org.xwiki.diff.Patch;
-import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.util.LoggingEventMessageQueue;
 
 /**
  * Default implementation of {@link DiffResult}.
@@ -46,7 +46,7 @@ public class DefaultDiffResult<E> implements DiffResult<E>
     /**
      * @see #getLog()
      */
-    private LogQueue log = new LogQueue();
+    private LoggingEventMessageQueue log = new LoggingEventMessageQueue();
 
     /**
      * @see #getPatch()
@@ -77,6 +77,12 @@ public class DefaultDiffResult<E> implements DiffResult<E>
 
     @Override
     public LogQueue getLog()
+    {
+        return this.log;
+    }
+
+    @Override
+    public LoggingEventMessageQueue getLogs()
     {
         return this.log;
     }

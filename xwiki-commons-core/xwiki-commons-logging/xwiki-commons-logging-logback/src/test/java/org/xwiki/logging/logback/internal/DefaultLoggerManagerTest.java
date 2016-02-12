@@ -27,9 +27,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.LogQueue;
-import org.xwiki.logging.event.LogQueueListener;
+import org.slf4j.event.Level;
+import org.xwiki.logging.event.LoggerListener;
+import org.xwiki.logging.util.LoggingEventMessageQueue;
 import org.xwiki.observation.internal.DefaultObservationManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 3.2M3
  */
-@ComponentList({ DefaultLoggerManager.class, DefaultObservationManager.class, LogbackEventGenerator.class })
+@ComponentList({DefaultLoggerManager.class, DefaultObservationManager.class, LogbackEventGenerator.class})
 public class DefaultLoggerManagerTest
 {
     @Rule
@@ -106,9 +106,9 @@ public class DefaultLoggerManagerTest
         // Make sure the log has been sent to the logback appender
         Assert.assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
 
-        LogQueue queue = new LogQueue();
+        LoggingEventMessageQueue queue = new LoggingEventMessageQueue();
 
-        this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid", queue));
+        this.loggerManager.pushLogListener(new LoggerListener("loglistenerid", queue));
 
         this.logger.error("[test] after push");
 
@@ -148,13 +148,13 @@ public class DefaultLoggerManagerTest
         // Make sure the log has been sent to the logback appender
         Assert.assertEquals("[test] before push", this.listAppender.list.get(0).getMessage());
 
-        LogQueue queue1 = new LogQueue();
+        LoggingEventMessageQueue queue1 = new LoggingEventMessageQueue();
 
-        this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid1", queue1));
+        this.loggerManager.pushLogListener(new LoggerListener("loglistenerid1", queue1));
 
-        LogQueue queue2 = new LogQueue();
+        LoggingEventMessageQueue queue2 = new LoggingEventMessageQueue();
 
-        this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid2", queue2));
+        this.loggerManager.pushLogListener(new LoggerListener("loglistenerid2", queue2));
 
         this.logger.error("[test] log queue2");
 
@@ -202,11 +202,11 @@ public class DefaultLoggerManagerTest
     {
         Assert.assertNull(this.loggerManager.getLoggerLevel(getClass().getName()));
 
-        LogQueue queue = new LogQueue();
+        LoggingEventMessageQueue queue = new LoggingEventMessageQueue();
 
-        this.loggerManager.pushLogListener(new LogQueueListener("loglistenerid", queue));
+        this.loggerManager.pushLogListener(new LoggerListener("loglistenerid", queue));
 
-        this.loggerManager.setLoggerLevel(getClass().getName(), LogLevel.WARN);
+        this.loggerManager.setLevel(getClass().getName(), Level.WARN);
 
         this.logger.debug("[test] debug message 1");
         // Provide information when the Assert fails
@@ -216,7 +216,7 @@ public class DefaultLoggerManagerTest
         }
         Assert.assertEquals(0, queue.size());
 
-        this.loggerManager.setLoggerLevel(getClass().getName(), LogLevel.DEBUG);
+        this.loggerManager.setLevel(getClass().getName(), Level.DEBUG);
 
         this.logger.debug("[test] debug message 2");
         Assert.assertEquals(1, queue.size());
@@ -237,8 +237,8 @@ public class DefaultLoggerManagerTest
 
         spyLoggerManager.initialize();
 
-        verify(this.mocker.getMockedLogger()).warn(
-            "Could not find any Logback root logger. All logging module advanced features will be disabled.");
+        verify(this.mocker.getMockedLogger())
+            .warn("Could not find any Logback root logger. All logging module advanced features will be disabled.");
     }
 
     @Test

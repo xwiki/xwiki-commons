@@ -29,13 +29,11 @@ import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.QuestionAnsweredEvent;
 import org.xwiki.job.event.status.QuestionAskedEvent;
 import org.xwiki.job.internal.DefaultJobProgress;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.LoggerManager;
-import org.xwiki.logging.event.LogEvent;
-import org.xwiki.logging.event.LoggerListener;
+import org.xwiki.logging.util.LoggingEventMessageQueue;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
+import org.xwiki.test.LogRule.LogLevel;
 
 /**
  * Base implementation of {@link JobStatus}.
@@ -82,7 +80,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     /**
      * Log sent during job execution.
      */
-    private final LogQueue logs;
+    private final LoggingEventMessageQueue logs;
 
     /**
      * Used to listen to all the log produced during job execution.
@@ -137,7 +135,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         this.observationManager = observationManager;
         this.loggerManager = loggerManager;
 
-        this.logs = new LogQueue();
+        this.logs = new LoggingEventMessageQueue();
     }
 
     /**
@@ -196,10 +194,18 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     }
 
     @Override
+    @Deprecated
     public LogQueue getLog()
     {
         // Make sure to always return something (it could be null if unserialized as such)
         return this.logs != null ? this.logs : new LogQueue();
+    }
+
+    @Override
+    public LoggingEventMessageQueue getLogs()
+    {
+        // Make sure to always return something (it could be null if unserialized as such)
+        return this.logs != null ? this.logs : new LoggingEventMessageQueue();
     }
 
     @Override

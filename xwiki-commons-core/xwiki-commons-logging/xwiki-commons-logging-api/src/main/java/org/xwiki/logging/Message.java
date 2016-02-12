@@ -20,6 +20,7 @@
 package org.xwiki.logging;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -109,7 +110,30 @@ public class Message implements Serializable, CharSequence
      */
     public Message(String translationKey, String message, Object... arguments)
     {
-        this(new TranslationMarker(translationKey), message, arguments, null);
+        this(new TranslationMarker(translationKey), message, arguments);
+    }
+
+    /**
+     * @param marker the log marker
+     * @param message the log message
+     * @param arguments the arguments to insert in the message
+     */
+    public Message(Marker marker, String message, Object... arguments)
+    {
+        Object[] actualArray;
+        Throwable actualThrowable;
+        if (arguments.length > 0 && arguments[arguments.length - 1] instanceof Throwable) {
+            actualArray = Arrays.copyOf(arguments, arguments.length - 1);
+            actualThrowable = (Throwable) arguments[arguments.length - 1];
+        } else {
+            actualArray = arguments;
+            actualThrowable = null;
+        }
+
+        this.marker = marker;
+        this.message = message;
+        this.argumentArray = actualArray;
+        this.throwable = actualThrowable;
     }
 
     /**
@@ -124,6 +148,26 @@ public class Message implements Serializable, CharSequence
         this.message = message;
         this.argumentArray = argumentArray;
         this.throwable = throwable;
+    }
+
+    /**
+     * @param marker the marker containing the translation key
+     * @return the translation key associated to the Marker
+     * @since 8.0M2
+     */
+    public static String getTranslationKey(Marker marker)
+    {
+        if (marker instanceof ContainerMarker) {
+            ContainerMarker containerMarker = (ContainerMarker) marker;
+
+            TranslationMarker translationMarker = containerMarker.get(TranslationMarker.NAME);
+
+            if (translationMarker != null) {
+                return translationMarker.getTranslationKey();
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -190,17 +234,7 @@ public class Message implements Serializable, CharSequence
      */
     public String getTranslationKey()
     {
-        if (getMarker() instanceof ContainerMarker) {
-            ContainerMarker containerMarker = (ContainerMarker) getMarker();
-
-            TranslationMarker translationMarker = containerMarker.get(TranslationMarker.NAME);
-
-            if (translationMarker != null) {
-                return ((TranslationMarker) getMarker()).getTranslationKey();
-            }
-        }
-
-        return null;
+        return getTranslationKey(getMarker());
     }
 
     // Object

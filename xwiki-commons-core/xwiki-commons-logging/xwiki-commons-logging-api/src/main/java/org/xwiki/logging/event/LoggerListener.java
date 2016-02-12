@@ -19,22 +19,19 @@
  */
 package org.xwiki.logging.event;
 
-import org.xwiki.logging.Logger;
+import org.slf4j.Logger;
+import org.xwiki.logging.util.LoggingUtils;
+import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
 /**
  * Redirect all received event to the provided {@link Logger}.
  *
  * @version $Id$
- * @since 5.4M1
+ * @since 8.0M2
  */
-public class LoggerListener extends AbstractLogEventListener
+public class LoggerListener extends AbstractEventListener
 {
-    /**
-     * The name of the listener.
-     */
-    private String name;
-
     /**
      * The logger where to send received events.
      */
@@ -46,14 +43,9 @@ public class LoggerListener extends AbstractLogEventListener
      */
     public LoggerListener(String name, Logger logger)
     {
-        this.name = name;
-        this.logger = logger;
-    }
+        super(name, new LoggingEventEvent());
 
-    @Override
-    public String getName()
-    {
-        return this.name;
+        this.logger = logger;
     }
 
     /**
@@ -67,6 +59,6 @@ public class LoggerListener extends AbstractLogEventListener
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        this.logger.log((LogEvent) event);
+        LoggingUtils.log(((LoggingEventEvent) event).getLoggingEvent(), this.logger);
     }
 }

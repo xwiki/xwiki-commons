@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.event.Level;
 import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.internal.multi.ComponentManagerManager;
@@ -38,7 +39,6 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
-import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.test.annotation.AfterComponent;
@@ -651,8 +651,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
 
         // actual install test
-        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
-        installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
+        // TODO: go back to Level.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        installedExtension = install(extensionId, namespace2, Level.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
 
@@ -666,7 +666,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         // actual uninstall test
         // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
-        LocalExtension localExtension = uninstall(extensionId, namespace1, LogLevel.ERROR);
+        LocalExtension localExtension = uninstall(extensionId, namespace1, Level.ERROR);
 
         ckeckUninstallStatus(localExtension);
 
@@ -684,7 +684,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         // actual uninstall test
         // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
-        localExtension = uninstall(extensionId, namespace2, LogLevel.ERROR);
+        localExtension = uninstall(extensionId, namespace2, Level.ERROR);
 
         ckeckUninstallStatus(localExtension);
 
@@ -716,8 +716,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionDep1 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
 
-        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
-        installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
+        // TODO: go back to Level.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        installedExtension = install(extensionId, namespace2, Level.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
 
@@ -770,8 +770,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionDep1 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
 
-        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
-        installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
+        // TODO: go back to Level.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        installedExtension = install(extensionId, namespace2, Level.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
 
@@ -785,7 +785,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         // actual uninstall test
         // FIXME: Ignore warning because of https://jira.xwiki.org/browse/XCOMMONS-213
-        LocalExtension localExtension = uninstall(extensionId, null, LogLevel.ERROR);
+        LocalExtension localExtension = uninstall(extensionId, null, Level.ERROR);
 
         ckeckUninstallStatus(localExtension);
 
@@ -816,8 +816,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionDep1 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
 
-        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
-        installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
+        // TODO: go back to Level.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        installedExtension = install(extensionId, namespace2, Level.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
 

@@ -22,6 +22,7 @@ package org.xwiki.logging;
 import java.util.Collection;
 
 import org.slf4j.Logger;
+import org.slf4j.event.Level;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.observation.EventListener;
 
@@ -65,17 +66,39 @@ public interface LoggerManager
      *
      * @param loggerName the logger
      * @param level the level of the logger
+     * @since 8.0M2
      */
-    void setLoggerLevel(String loggerName, LogLevel level);
+    void setLevel(String loggerName, Level level);
 
     /**
      * @param loggerName the logger
      * @return the log level associated to the logger, return null if the level is inherited from parent logger
+     * @since 8.0M2
      */
-    LogLevel getLoggerLevel(String loggerName);
+    Level getLevel(String loggerName);
 
     /**
      * @return all the registered loggers
      */
     Collection<Logger> getLoggers();
+
+    // Deprecated
+
+    /**
+     * Associate the passed logger to the passed log level.
+     *
+     * @param loggerName the logger
+     * @param level the level of the logger
+     * @deprecated since 8.0M2, use {@link #setLevel(String, Level)} instead
+     */
+    @Deprecated
+    void setLoggerLevel(String loggerName, LogLevel level);
+
+    /**
+     * @param loggerName the logger
+     * @return the log level associated to the logger, return null if the level is inherited from parent logger
+     * @deprecated since 8.0M2, use {@link #getLevel(String)} instead
+     */
+    @Deprecated
+    LogLevel getLoggerLevel(String loggerName);
 }

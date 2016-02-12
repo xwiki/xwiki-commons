@@ -33,7 +33,9 @@ import org.xwiki.observation.event.EndEvent;
  *
  * @version $Id$
  * @since 5.4M1
+ * @deprecated since 8.0M2, use {@link LoggingEventTree} instead
  */
+@Deprecated
 public class LogTree extends LogTreeNode implements Logger
 {
     /**

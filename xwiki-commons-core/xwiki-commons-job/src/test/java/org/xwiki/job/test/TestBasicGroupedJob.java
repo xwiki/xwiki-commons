@@ -32,6 +32,7 @@ import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.util.LoggingEventMessageQueue;
 
 public class TestBasicGroupedJob implements GroupedJob, JobStatus
 {
@@ -43,7 +44,7 @@ public class TestBasicGroupedJob implements GroupedJob, JobStatus
 
     private State state;
 
-    private LogQueue logQueue = new LogQueue();
+    private LoggingEventMessageQueue logQueue = new LoggingEventMessageQueue();
 
     private Thread thread;
 
@@ -130,6 +131,12 @@ public class TestBasicGroupedJob implements GroupedJob, JobStatus
     {
         return this.logQueue;
     }
+    
+    @Override
+    public LoggingEventMessageQueue getLogs()
+    {
+        return this.logQueue;
+    }
 
     @Override
     public JobProgress getProgress()
@@ -177,7 +184,7 @@ public class TestBasicGroupedJob implements GroupedJob, JobStatus
     {
         return this.logQueue.getLogs(level);
     }
-
+    
     public Thread getThread()
     {
         return this.thread;

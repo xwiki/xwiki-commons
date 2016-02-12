@@ -28,7 +28,9 @@ import org.xwiki.observation.event.BeginEvent;
  *
  * @version $Id$
  * @since 5.4RC1
+ * @deprecated since 8.0M2, use {@link LoggingEventEvent} instead
  */
+@Deprecated
 public class BeginLogEvent extends LogEvent implements BeginEvent
 {
     /**
@@ -39,7 +41,7 @@ public class BeginLogEvent extends LogEvent implements BeginEvent
     /**
      * Matches any {@link LogEvent}.
      */
-    protected BeginLogEvent()
+    public BeginLogEvent()
     {
 
     }

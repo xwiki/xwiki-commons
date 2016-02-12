@@ -65,10 +65,30 @@ public class LogbackUtils
     }
 
     /**
+     * @param level the Logback log level
+     * @return the slf4j log level
+     * @since 8.0M2
+     */
+    public org.slf4j.event.Level toSlf4jLevel(Level level)
+    {
+        return level != null ? org.slf4j.event.Level.valueOf(level.toString()) : null;
+    }
+
+    /**
      * @param logLevel the XWikilog level
      * @return the Logback log level
      */
     public Level toLevel(LogLevel logLevel)
+    {
+        return logLevel != null ? Level.toLevel(logLevel.toString(), null) : null;
+    }
+
+    /**
+     * @param logLevel the slf4j level
+     * @return the Logback log level
+     * @since 8.0M2
+     */
+    public Level toLevel(org.slf4j.event.Level logLevel)
     {
         return logLevel != null ? Level.toLevel(logLevel.toString(), null) : null;
     }

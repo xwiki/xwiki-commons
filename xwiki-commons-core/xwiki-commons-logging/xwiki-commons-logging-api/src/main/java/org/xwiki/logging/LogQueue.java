@@ -33,7 +33,9 @@ import org.xwiki.logging.event.LogEvent;
  *
  * @version $Id$
  * @since 3.2M3
+ * @deprecated since 8.0M2, {@link LoggingEventQueue} and {@link org.slf4j.event.EventRecodingLogger} instead
  */
+@Deprecated
 public class LogQueue extends ConcurrentLinkedQueue<LogEvent> implements Logger
 {
     /**

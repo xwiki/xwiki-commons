@@ -50,6 +50,7 @@
         <configuration>
           <excludes>
               org/xwiki/logging/internal/helpers/MessageParser.java
+              org/xwiki/logging/LoggingEventMessage.java
           </excludes>
         </configuration>
       </plugin>

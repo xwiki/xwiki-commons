@@ -27,6 +27,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
+import org.slf4j.event.Level;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLifecycleException;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -34,9 +35,8 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Disposable;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.LogUtils;
-import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.LoggingEventMessage;
+import org.xwiki.logging.event.LoggingEventEvent;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
@@ -64,8 +64,8 @@ import ch.qos.logback.core.AppenderBase;
 @Component
 @Named("LogbackEventGenerator")
 @Singleton
-public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implements EventListener, Initializable,
-    Disposable
+public class LogbackEventGenerator extends AppenderBase<ILoggingEvent>
+    implements EventListener, Initializable, Disposable
 {
     /**
      * The logger to log.
@@ -109,8 +109,8 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
             rootLogger.addAppender(this);
             start();
         } else {
-            this.logger.warn("Could not find any Logback root logger."
-                + " The logging module won't be able to catch logs.");
+            this.logger
+                .warn("Could not find any Logback root logger." + " The logging module won't be able to catch logs.");
         }
     }
 
@@ -140,11 +140,12 @@ public class LogbackEventGenerator extends AppenderBase<ILoggingEvent> implement
         }
 
         try {
-            LogLevel logLevel = this.utils.toLogLevel(event.getLevel());
+            Level logLevel = this.utils.toSlf4jLevel(event.getLevel());
 
-            LogEvent logevent =
-                LogUtils.newLogEvent(event.getMarker(), logLevel, event.getMessage(), event.getArgumentArray(),
-                    throwable, event.getTimeStamp());
+            LoggingEventMessage loggingEvent =
+                new LoggingEventMessage(event.getMarker(), logLevel, event.getMessage(), event.getArgumentArray(),
+                    throwable, event.getTimeStamp(), event.getLoggerName(), event.getThreadName());
+            LoggingEventEvent logevent = new LoggingEventEvent(loggingEvent);
 
             getObservationManager().notify(logevent, event.getLoggerName(), null);
         } catch (IllegalArgumentException e) {

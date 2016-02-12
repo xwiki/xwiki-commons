@@ -27,8 +27,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.event.LogEvent;
+import org.slf4j.event.Level;
+import org.xwiki.logging.LoggingEventMessage;
+import org.xwiki.logging.event.LoggingEventEvent;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
@@ -39,7 +40,10 @@ import org.xwiki.test.annotation.ComponentList;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link LogbackEventGenerator}.
@@ -47,10 +51,7 @@ import static org.mockito.Mockito.*;
  * @version $Id$
  * @since 3.2M3
  */
-@ComponentList({
-    DefaultObservationManager.class,
-    LogbackEventGenerator.class
-})
+@ComponentList({DefaultObservationManager.class, LogbackEventGenerator.class})
 public class LogbackEventGeneratorTest
 {
     @Rule
@@ -77,17 +78,15 @@ public class LogbackEventGeneratorTest
     @Test
     public void verifyThatLoggingGeneratesALogEvent()
     {
-        Event event = new LogEvent(null, LogLevel.INFO, "dummy", null, null);
-
         EventListener listener = mock(EventListener.class);
         when(listener.getName()).thenReturn("mylistener");
-        when(listener.getEvents()).thenReturn(Arrays.asList(event));
+        when(listener.getEvents()).thenReturn(Arrays.<Event>asList(new LoggingEventEvent()));
 
         this.observationManager.addListener(listener);
 
         this.logger.error("error message");
 
-        Event expected = new LogEvent(null, LogLevel.ERROR, "error message", null, null);
+        Event expected = new LoggingEventEvent(new LoggingEventMessage(null, Level.ERROR, "error message", null, null));
         verify(listener).onEvent(eq(expected), eq(getClass().getName()), eq(null));
         assertEquals("error message", this.logCapture.getMessage(0));
     }
@@ -104,7 +103,8 @@ public class LogbackEventGeneratorTest
         spyGenerator.initialize();
 
         Assert.assertEquals(1, this.logCapture.size());
-        Assert.assertEquals("Could not find any Logback root logger. The logging module won't be able to catch "
-            + "logs.", this.logCapture.getMessage(0));
+        Assert.assertEquals(
+            "Could not find any Logback root logger. The logging module won't be able to catch " + "logs.",
+            this.logCapture.getMessage(0));
     }
 }

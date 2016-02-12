@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
+import org.slf4j.event.Level;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
@@ -36,8 +37,7 @@ import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobExecutor;
 import org.xwiki.job.Request;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.LoggingEventMessage;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
@@ -63,13 +63,13 @@ public abstract class AbstractExtensionHandlerTest
         this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
     }
 
-    protected Job executeJob(String jobId, Request request, LogLevel failFrom) throws Throwable
+    protected Job executeJob(String jobId, Request request, Level failFrom) throws Throwable
     {
         Job installJob = this.jobExecutor.execute(jobId, request);
 
         installJob.join();
 
-        List<LogEvent> errors = installJob.getStatus().getLog().getLogsFrom(failFrom);
+        List<LoggingEventMessage> errors = installJob.getStatus().getLogs().getLogsFrom(failFrom);
         if (!errors.isEmpty()) {
             throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable() : new Exception(errors.get(0)
                 .getFormattedMessage());
@@ -80,25 +80,25 @@ public abstract class AbstractExtensionHandlerTest
 
     protected InstalledExtension install(ExtensionId extensionId) throws Throwable
     {
-        return install(extensionId, (String[]) null, LogLevel.WARN);
+        return install(extensionId, (String[]) null, Level.WARN);
     }
 
     protected InstalledExtension install(ExtensionId extensionId, String[] namespaces) throws Throwable
     {
-        return install(extensionId, namespaces, LogLevel.WARN);
+        return install(extensionId, namespaces, Level.WARN);
     }
 
     protected InstalledExtension install(ExtensionId extensionId, String namespace) throws Throwable
     {
-        return install(extensionId, namespace, LogLevel.WARN);
+        return install(extensionId, namespace, Level.WARN);
     }
 
-    protected InstalledExtension install(ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
+    protected InstalledExtension install(ExtensionId extensionId, String namespace, Level failFrom) throws Throwable
     {
         return install(extensionId, namespace != null ? new String[] { namespace } : null, failFrom);
     }
 
-    protected InstalledExtension install(ExtensionId extensionId, String[] namespaces, LogLevel failFrom)
+    protected InstalledExtension install(ExtensionId extensionId, String[] namespaces, Level failFrom)
         throws Throwable
     {
         install("install", extensionId, namespaces, failFrom);
@@ -108,20 +108,20 @@ public abstract class AbstractExtensionHandlerTest
 
     protected ExtensionPlan installPlan(ExtensionId extensionId) throws Throwable
     {
-        return installPlan(extensionId, (String[]) null, LogLevel.WARN);
+        return installPlan(extensionId, (String[]) null, Level.WARN);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces) throws Throwable
     {
-        return installPlan(extensionId, namespaces, LogLevel.WARN);
+        return installPlan(extensionId, namespaces, Level.WARN);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String namespace) throws Throwable
     {
-        return installPlan(extensionId, namespace != null ? new String[] { namespace } : null, LogLevel.WARN);
+        return installPlan(extensionId, namespace != null ? new String[] { namespace } : null, Level.WARN);
     }
 
-    protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces, LogLevel failFrom)
+    protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces, Level failFrom)
         throws Throwable
     {
         Job installJob = install("installplan", extensionId, namespaces, failFrom);
@@ -129,7 +129,7 @@ public abstract class AbstractExtensionHandlerTest
         return (ExtensionPlan) installJob.getStatus();
     }
 
-    protected Job install(String jobId, ExtensionId extensionId, String[] namespaces, LogLevel failFrom)
+    protected Job install(String jobId, ExtensionId extensionId, String[] namespaces, Level failFrom)
         throws Throwable
     {
         InstallRequest installRequest = new InstallRequest();
@@ -145,10 +145,10 @@ public abstract class AbstractExtensionHandlerTest
 
     protected LocalExtension uninstall(ExtensionId extensionId, String namespace) throws Throwable
     {
-        return uninstall(extensionId, namespace, LogLevel.WARN);
+        return uninstall(extensionId, namespace, Level.WARN);
     }
 
-    protected LocalExtension uninstall(ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
+    protected LocalExtension uninstall(ExtensionId extensionId, String namespace, Level failFrom) throws Throwable
     {
         uninstall("uninstall", extensionId, namespace, failFrom);
 
@@ -156,14 +156,14 @@ public abstract class AbstractExtensionHandlerTest
     }
 
     protected DefaultExtensionPlan<UninstallRequest> uninstallPlan(ExtensionId extensionId, String namespace,
-        LogLevel failFrom) throws Throwable
+        Level failFrom) throws Throwable
     {
         Job uninstallJob = uninstall("installplan", extensionId, namespace, failFrom);
 
         return (DefaultExtensionPlan<UninstallRequest>) uninstallJob.getStatus();
     }
 
-    protected Job uninstall(String jobId, ExtensionId extensionId, String namespace, LogLevel failFrom)
+    protected Job uninstall(String jobId, ExtensionId extensionId, String namespace, Level failFrom)
         throws Throwable
     {
         UninstallRequest uninstallRequest = new UninstallRequest();
@@ -187,15 +187,15 @@ public abstract class AbstractExtensionHandlerTest
 
     protected ExtensionPlan upgradePlan(String namespace, Collection<ExtensionId> excludedExtensions) throws Throwable
     {
-        return upgradePlan(namespace, excludedExtensions, LogLevel.WARN);
+        return upgradePlan(namespace, excludedExtensions, Level.WARN);
     }
 
-    protected ExtensionPlan upgradePlan(String namespace, LogLevel failFrom) throws Throwable
+    protected ExtensionPlan upgradePlan(String namespace, Level failFrom) throws Throwable
     {
         return upgradePlan(namespace, null, failFrom);
     }
 
-    protected ExtensionPlan upgradePlan(String namespace, Collection<ExtensionId> excludedExtensions, LogLevel failFrom)
+    protected ExtensionPlan upgradePlan(String namespace, Collection<ExtensionId> excludedExtensions, Level failFrom)
         throws Throwable
     {
         InstallRequest installRequest = new InstallRequest();
@@ -211,10 +211,10 @@ public abstract class AbstractExtensionHandlerTest
 
     protected ExtensionPlan upgradePlan(InstallRequest installRequest) throws Throwable
     {
-        return upgradePlan(installRequest, LogLevel.WARN);
+        return upgradePlan(installRequest, Level.WARN);
     }
 
-    protected ExtensionPlan upgradePlan(InstallRequest installRequest, LogLevel failFrom) throws Throwable
+    protected ExtensionPlan upgradePlan(InstallRequest installRequest, Level failFrom) throws Throwable
     {
         return (ExtensionPlan) executeJob("upgradeplan", installRequest, failFrom).getStatus();
     }

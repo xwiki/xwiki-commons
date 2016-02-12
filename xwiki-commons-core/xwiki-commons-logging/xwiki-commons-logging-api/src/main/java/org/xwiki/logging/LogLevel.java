@@ -19,12 +19,16 @@
  */
 package org.xwiki.logging;
 
+import org.slf4j.event.Level;
+
 /**
  * Defines the set of levels used in logging events.
  *
  * @version $Id$
  * @since 3.2M1
+ * @deprecated since 8.0M2, use {@link Level} instead
  */
+@Deprecated
 public enum LogLevel
 {
     /**

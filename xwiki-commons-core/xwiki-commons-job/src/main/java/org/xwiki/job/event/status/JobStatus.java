@@ -23,9 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.xwiki.job.Request;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.LogQueue;
-import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.util.LoggingEventMessageQueue;
+import org.xwiki.test.LogRule.LogLevel;
 
 /**
  * Describe the current status of a job.
@@ -75,8 +74,15 @@ public interface JobStatus
 
     /**
      * @return the log sent during job execution
+     * @deprecated since 8.0M2, use {@link #getLogs()} instead
      */
+    @Deprecated
     LogQueue getLog();
+
+    /**
+     * @return the log sent during job execution
+     */
+    LoggingEventMessageQueue getLogs();
 
     /**
      * @return progress information about the job (percent, etc.)

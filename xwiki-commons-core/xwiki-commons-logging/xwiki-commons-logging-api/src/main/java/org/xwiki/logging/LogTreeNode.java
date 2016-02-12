@@ -34,7 +34,9 @@ import org.xwiki.logging.event.LogEvent;
  *
  * @version $Id$
  * @since 5.4M1
+ * @deprecated since 8.0M2, use {@link LoggingEventTreeNode} instead
  */
+@Deprecated
 public class LogTreeNode extends BeginLogEvent implements Iterable<LogEvent>, Serializable
 {
     private static class LogTreeNodeIterator implements Iterator<LogEvent>

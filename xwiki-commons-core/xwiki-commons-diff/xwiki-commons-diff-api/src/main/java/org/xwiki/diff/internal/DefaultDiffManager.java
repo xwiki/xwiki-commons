@@ -89,7 +89,7 @@ public class DefaultDiffManager implements DiffManager
         } catch (DiffException e) {
             throw new MergeException("Faile to diff between common ancestor and next version", e);
         }
-        mergeResult.getLog().addAll(diffNextResult.getLog());
+        mergeResult.getLogs().addAll(diffNextResult.getLogs());
 
         Patch<E> patchNext = diffNextResult.getPatch();
 
@@ -108,10 +108,10 @@ public class DefaultDiffManager implements DiffManager
                 mergeResult.setMerged(next);
             } else if (next.isEmpty()) {
                 // The new modification was already applied
-                mergeResult.getLog().warn("The modification was already applied");
+                mergeResult.getLogs().warn("The modification was already applied");
             } else {
                 // The current version has been replaced by an empty string
-                mergeResult.getLog().error("The current value is empty");
+                mergeResult.getLogs().error("The current value is empty");
             }
         } else {
             // Get diff between common ancestor and current version
@@ -121,7 +121,7 @@ public class DefaultDiffManager implements DiffManager
             } catch (DiffException e) {
                 throw new MergeException("Faile to diff between common ancestor and current version", e);
             }
-            mergeResult.getLog().addAll(diffCurrentResult.getLog());
+            mergeResult.getLogs().addAll(diffCurrentResult.getLogs());
 
             Patch<E> patchCurrent = diffCurrentResult.getPatch();
 
@@ -320,7 +320,7 @@ public class DefaultDiffManager implements DiffManager
 
     private <E> void logConflict(DefaultMergeResult<E> mergeResult, Delta<E> deltaCurrent, Delta<E> deltaNext)
     {
-        mergeResult.getLog().error("Conflict between [{}] and [{}]", deltaCurrent, deltaNext);
+        mergeResult.getLogs().error("Conflict between [{}] and [{}]", deltaCurrent, deltaNext);
     }
 
     private <E> int apply(Delta<E> delta, List<E> merged, int currentIndex)

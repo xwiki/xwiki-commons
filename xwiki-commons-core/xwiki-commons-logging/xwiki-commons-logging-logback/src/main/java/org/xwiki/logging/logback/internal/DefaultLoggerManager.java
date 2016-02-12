@@ -27,11 +27,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
+import org.slf4j.event.Level;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.logging.legacy.LegacyLoggingUtils;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.WrappedThreadEventListener;
@@ -94,8 +96,8 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
                 }
             }
         } else {
-            this.logger.warn("Could not find any Logback root logger."
-                + " All logging module advanced features will be disabled.");
+            this.logger.warn(
+                "Could not find any Logback root logger." + " All logging module advanced features will be disabled.");
         }
     }
 
@@ -169,18 +171,32 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
     }
 
     @Override
+    @Deprecated
     public void setLoggerLevel(String loggerName, LogLevel logLevel)
+    {
+        setLevel(loggerName, LegacyLoggingUtils.toLevel(logLevel));
+    }
+
+    @Override
+    public void setLevel(String loggerName, Level level)
     {
         LoggerContext loggerContext = this.utils.getLoggerContext();
 
         if (loggerContext != null) {
             ch.qos.logback.classic.Logger askedLogger = loggerContext.getLogger(loggerName);
-            askedLogger.setLevel(this.utils.toLevel(logLevel));
+            askedLogger.setLevel(this.utils.toLevel(level));
         }
     }
 
     @Override
+    @Deprecated
     public LogLevel getLoggerLevel(String loggerName)
+    {
+        return LegacyLoggingUtils.toLogLevel(getLevel(loggerName));
+    }
+
+    @Override
+    public Level getLevel(String loggerName)
     {
         LoggerContext loggerContext = getLoggerContext();
 
@@ -188,7 +204,7 @@ public class DefaultLoggerManager implements LoggerManager, Initializable
             ch.qos.logback.classic.Logger askedLogger = loggerContext.exists(loggerName);
 
             if (askedLogger != null) {
-                return this.utils.toLogLevel(askedLogger.getLevel());
+                return this.utils.toSlf4jLevel(askedLogger.getLevel());
             }
         }
 

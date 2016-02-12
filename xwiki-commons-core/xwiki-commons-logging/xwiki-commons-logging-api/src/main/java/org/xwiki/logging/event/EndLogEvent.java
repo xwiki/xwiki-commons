@@ -28,7 +28,9 @@ import org.xwiki.observation.event.EndEvent;
  *
  * @version $Id$
  * @since 5.4RC1
+ * @deprecated since 8.0M1, use {@link EndXWikiLogingEvent} instead
  */
+@Deprecated
 public class EndLogEvent extends LogEvent implements EndEvent
 {
     /**
@@ -39,7 +41,7 @@ public class EndLogEvent extends LogEvent implements EndEvent
     /**
      * Matches any {@link LogEvent}.
      */
-    protected EndLogEvent()
+    public EndLogEvent()
     {
 
     }

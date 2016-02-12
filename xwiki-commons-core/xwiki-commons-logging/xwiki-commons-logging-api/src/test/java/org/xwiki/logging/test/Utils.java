@@ -23,10 +23,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
 import org.slf4j.MarkerFactory;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.Logger;
-import org.xwiki.logging.event.LogEvent;
+import org.slf4j.event.Level;
+import org.slf4j.event.LoggingEvent;
+import org.xwiki.logging.LoggingEventMessage;
 
 public class Utils
 {
@@ -34,7 +35,7 @@ public class Utils
     {
         int index = 0;
 
-        logger.trace(LogEvent.MARKER_BEGIN, "TRACE");
+        logger.trace(LoggingEventMessage.MARKER_BEGIN, "TRACE");
         logger.trace("msg" + index++);
         logger.trace("msg{}", index++);
         logger.trace("{}{}", "msg", index++);
@@ -45,9 +46,9 @@ public class Utils
         logger.trace(MarkerFactory.getMarker("marker" + index), "{}{}", "msg", index++);
         logger.trace(MarkerFactory.getMarker("marker" + index), "{}{}{}{}", "m", "s", "g", index++);
         logger.trace(MarkerFactory.getMarker("marker" + index), "msg" + index, new Exception("msg" + index++));
-        logger.trace(LogEvent.MARKER_END, "TRACE");
+        logger.trace(LoggingEventMessage.MARKER_END, "TRACE");
 
-        logger.debug(LogEvent.MARKER_BEGIN, "DEBUG");
+        logger.debug(LoggingEventMessage.MARKER_BEGIN, "DEBUG");
         logger.debug("msg" + index++);
         logger.debug("msg{}", index++);
         logger.debug("{}{}", "msg", index++);
@@ -58,9 +59,9 @@ public class Utils
         logger.debug(MarkerFactory.getMarker("marker" + index), "{}{}", "msg", index++);
         logger.debug(MarkerFactory.getMarker("marker" + index), "{}{}{}{}", "m", "s", "g", index++);
         logger.debug(MarkerFactory.getMarker("marker" + index), "msg" + index, new Exception("msg" + index++));
-        logger.debug(LogEvent.MARKER_END, "DEBUG");
+        logger.debug(LoggingEventMessage.MARKER_END, "DEBUG");
 
-        logger.info(LogEvent.MARKER_BEGIN, "INFO");
+        logger.info(LoggingEventMessage.MARKER_BEGIN, "INFO");
         logger.info("msg" + index++);
         logger.info("msg{}", index++);
         logger.info("{}{}", "msg", index++);
@@ -71,9 +72,9 @@ public class Utils
         logger.info(MarkerFactory.getMarker("marker" + index), "{}{}", "msg", index++);
         logger.info(MarkerFactory.getMarker("marker" + index), "{}{}{}{}", "m", "s", "g", index++);
         logger.info(MarkerFactory.getMarker("marker" + index), "msg" + index, new Exception("msg" + index++));
-        logger.info(LogEvent.MARKER_END, "INFO");
+        logger.info(LoggingEventMessage.MARKER_END, "INFO");
 
-        logger.warn(LogEvent.MARKER_BEGIN, "WARN");
+        logger.warn(LoggingEventMessage.MARKER_BEGIN, "WARN");
         logger.warn("msg" + index++);
         logger.warn("msg{}", index++);
         logger.warn("{}{}", "msg", index++);
@@ -84,9 +85,9 @@ public class Utils
         logger.warn(MarkerFactory.getMarker("marker" + index), "{}{}", "msg", index++);
         logger.warn(MarkerFactory.getMarker("marker" + index), "{}{}{}{}", "m", "s", "g", index++);
         logger.warn(MarkerFactory.getMarker("marker" + index), "msg" + index, new Exception("msg" + index++));
-        logger.warn(LogEvent.MARKER_END, "WARN");
+        logger.warn(LoggingEventMessage.MARKER_END, "WARN");
 
-        logger.error(LogEvent.MARKER_BEGIN, "ERROR");
+        logger.error(LoggingEventMessage.MARKER_BEGIN, "ERROR");
         logger.error("msg" + index++);
         logger.error("msg{}", index++);
         logger.error("{}{}", "msg", index++);
@@ -97,34 +98,34 @@ public class Utils
         logger.error(MarkerFactory.getMarker("marker" + index), "{}{}", "msg", index++);
         logger.error(MarkerFactory.getMarker("marker" + index), "{}{}{}{}", "m", "s", "g", index++);
         logger.error(MarkerFactory.getMarker("marker" + index), "msg" + index, new Exception("msg" + index++));
-        logger.error(LogEvent.MARKER_END, "ERROR");
+        logger.error(LoggingEventMessage.MARKER_END, "ERROR");
     }
 
-    public static void validateLogger(Iterator<LogEvent> logs)
+    public static void validateLogger(Iterator<? extends LoggingEvent> logs)
     {
         int index = 0;
 
-        index = validateLogger(index, LogLevel.TRACE, logs);
-        index = validateLogger(index, LogLevel.DEBUG, logs);
-        index = validateLogger(index, LogLevel.INFO, logs);
-        index = validateLogger(index, LogLevel.WARN, logs);
-        index = validateLogger(index, LogLevel.ERROR, logs);
+        index = validateLogger(index, Level.TRACE, logs);
+        index = validateLogger(index, Level.DEBUG, logs);
+        index = validateLogger(index, Level.INFO, logs);
+        index = validateLogger(index, Level.WARN, logs);
+        index = validateLogger(index, Level.ERROR, logs);
     }
 
-    private static int validateLogger(int index, LogLevel level, Iterator<LogEvent> logs)
+    private static int validateLogger(int index, Level level, Iterator<? extends LoggingEvent> logs)
     {
-        LogEvent event;
+        LoggingEventMessage event;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] {}, event.getArgumentArray());
         Assert.assertEquals(level.toString(), event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals(level.toString(), event.getMessage());
         Assert.assertEquals(Arrays.asList(level.toString()), event.getMessageElements());
         Assert.assertEquals(null, event.getThrowable());
-        Assert.assertEquals(LogEvent.MARKER_BEGIN, event.getMarker());
+        Assert.assertEquals(LoggingEventMessage.MARKER_BEGIN, event.getMarker());
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] {}, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -134,7 +135,7 @@ public class Utils
         Assert.assertEquals(null, event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] { index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -144,7 +145,7 @@ public class Utils
         Assert.assertEquals(null, event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] { "msg", index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -154,7 +155,7 @@ public class Utils
         Assert.assertEquals(null, event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] { "m", "s", "g", index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -164,7 +165,7 @@ public class Utils
         Assert.assertEquals(null, event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] {}, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -174,7 +175,7 @@ public class Utils
         Assert.assertEquals(null, event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] {}, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -184,7 +185,7 @@ public class Utils
         Assert.assertEquals(MarkerFactory.getMarker("marker" + index), event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] { index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -194,7 +195,7 @@ public class Utils
         Assert.assertEquals(MarkerFactory.getMarker("marker" + index), event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] { "msg", index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -204,7 +205,7 @@ public class Utils
         Assert.assertEquals(MarkerFactory.getMarker("marker" + index), event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] { "m", "s", "g", index }, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -214,7 +215,7 @@ public class Utils
         Assert.assertEquals(MarkerFactory.getMarker("marker" + index), event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] {}, event.getArgumentArray());
         Assert.assertEquals("msg" + index, event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
@@ -224,14 +225,14 @@ public class Utils
         Assert.assertEquals(MarkerFactory.getMarker("marker" + index), event.getMarker());
         ++index;
 
-        event = logs.next();
+        event = (LoggingEventMessage) logs.next();
         Assert.assertArrayEquals(new Object[] {}, event.getArgumentArray());
         Assert.assertEquals(level.toString(), event.getFormattedMessage());
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals(level.toString(), event.getMessage());
         Assert.assertEquals(Arrays.asList(level.toString()), event.getMessageElements());
         Assert.assertEquals(null, event.getThrowable());
-        Assert.assertEquals(LogEvent.MARKER_END, event.getMarker());
+        Assert.assertEquals(LoggingEventMessage.MARKER_END, event.getMarker());
 
         return index;
     }

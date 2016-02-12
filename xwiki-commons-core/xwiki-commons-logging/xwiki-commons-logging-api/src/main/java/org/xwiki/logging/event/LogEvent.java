@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.LoggingEventMessage;
 import org.xwiki.logging.Message;
 import org.xwiki.observation.event.Event;
 
@@ -40,18 +41,25 @@ import org.xwiki.observation.event.Event;
  *
  * @version $Id$
  * @since 3.2M1
+ * @deprecated since 8.0M2, use {@link LoggingEventMessage} or {@link LoggingEventEvent} instead
  */
+@Deprecated
 public class LogEvent extends Message implements Event
 {
     /**
      * The marker to use to indicate that we start a group of logs.
      */
-    public static final Marker MARKER_BEGIN = MarkerFactory.getMarker("xwiki.begin");
+    public static final Marker MARKER_BEGIN = LoggingEventMessage.MARKER_BEGIN;
 
     /**
      * The marker to use to indicate that we stop a group of logs.
      */
-    public static final Marker MARKER_END = MarkerFactory.getMarker("xwiki.end");
+    public static final Marker MARKER_END = LoggingEventMessage.MARKER_END;
+
+    /**
+     * The marker to use to indicate that a log has been converted from/to legacy log.
+     */
+    public static final Marker MARKER_LEGACY = MarkerFactory.getMarker("xwiki.legacy");
 
     /**
      * @see #getLevel()
@@ -77,8 +85,8 @@ public class LogEvent extends Message implements Event
      */
     public LogEvent(LogEvent logEvent)
     {
-        this(logEvent.getMarker(), logEvent.getLevel(), logEvent.getMessage(), logEvent.getArgumentArray(), logEvent
-            .getThrowable(), logEvent.getTimeStamp());
+        this(logEvent.getMarker(), logEvent.getLevel(), logEvent.getMessage(), logEvent.getArgumentArray(),
+            logEvent.getThrowable(), logEvent.getTimeStamp());
     }
 
     /**

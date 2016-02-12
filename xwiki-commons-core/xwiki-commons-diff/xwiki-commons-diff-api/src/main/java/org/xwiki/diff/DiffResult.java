@@ -21,7 +21,7 @@ package org.xwiki.diff;
 
 import java.util.List;
 
-import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.util.LoggingEventMessageQueue;
 
 /**
  * The result of the execution of a diff on two lists.
@@ -43,8 +43,16 @@ public interface DiffResult<E>
 
     /**
      * @return the log of what append during the diff executing
+     * @deprecated since 8.0M2, use {@link #getLogs()} instead
      */
+    @Deprecated
     LogQueue getLog();
+
+    /**
+     * @return the log of what append during the diff executing
+     * @since 8.0M2
+     */
+    LoggingEventMessageQueue getLogs();
 
     /**
      * @return the produced patch

@@ -25,6 +25,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.event.Level;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
@@ -38,8 +39,7 @@ import org.xwiki.extension.repository.LocalExtensionRepositoryException;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.Job;
 import org.xwiki.job.Request;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.LoggingEventMessage;
 import org.xwiki.logging.marker.TranslationMarker;
 
 /**
@@ -113,10 +113,10 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
 
             ExtensionPlan plan = (ExtensionPlan) this.installPlanJob.getStatus();
 
-            List<LogEvent> log = plan.getLog().getLogs(LogLevel.ERROR);
+            List<LoggingEventMessage> log = plan.getLogs().getLogs(Level.ERROR);
             if (!log.isEmpty()) {
-                throw new InstallException("Failed to create install plan: " + log.get(0).getFormattedMessage(), log
-                    .get(0).getThrowable());
+                throw new InstallException("Failed to create install plan: " + log.get(0).getFormattedMessage(),
+                    log.get(0).getThrowable());
             }
 
             this.progressManager.startStep(this);

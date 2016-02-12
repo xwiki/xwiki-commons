@@ -21,7 +21,7 @@ package org.xwiki.diff;
 
 import java.util.List;
 
-import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.util.LoggingEventMessageQueue;
 
 /**
  * @param <E> the type of compared elements
@@ -46,8 +46,16 @@ public interface MergeResult<E>
 
     /**
      * @return the log of what append during the merge execution
+     * @deprecated since 8.0M2, use {@link #getLogs()} instead
      */
+    @Deprecated
     LogQueue getLog();
+
+    /**
+     * @return the log of what append during the merge execution
+     * @since 8.0M2
+     */
+    LoggingEventMessageQueue getLogs();
 
     /**
      * @return the result of the 3 ways merge

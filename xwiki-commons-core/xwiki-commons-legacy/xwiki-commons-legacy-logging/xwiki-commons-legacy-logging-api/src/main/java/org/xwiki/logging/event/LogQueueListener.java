@@ -20,6 +20,7 @@
 package org.xwiki.logging.event;
 
 import org.xwiki.logging.LogQueue;
+import org.xwiki.logging.LoggerListener;
 
 /**
  * Fill the provided {@link LogQueue} with received {@link LogEvent}s.
