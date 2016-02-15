@@ -110,6 +110,11 @@
       <artifactId>json-lib</artifactId>
       <classifier>jdk15</classifier>
     </dependency>
+    <dependency>
+      <!-- Used by JSONTool -->
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
     <!-- Used by URLTool -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
