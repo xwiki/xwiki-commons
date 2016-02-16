@@ -127,6 +127,8 @@
           <configuration>
             <configLocation>checkstyle.xml</configLocation>
             <propertyExpansion>currentVersion=${project.version}</propertyExpansion>
+            <!-- Put back failOnViolation to true -->
+            <failOnViolation>true</failOnViolation>
           </configuration>
           <executions>
             <execution>
