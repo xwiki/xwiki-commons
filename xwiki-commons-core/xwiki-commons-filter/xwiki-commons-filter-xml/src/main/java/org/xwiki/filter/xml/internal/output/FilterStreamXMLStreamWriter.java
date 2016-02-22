@@ -131,7 +131,7 @@ public class FilterStreamXMLStreamWriter
         try {
             this.writer.writeEmptyElement(localName);
         } catch (XMLStreamException e) {
-            throw new FilterException("Failed to write element", e);
+            throw new FilterException(String.format("Failed to write empty element [%s]", localName), e);
         }
     }
 
@@ -155,7 +155,7 @@ public class FilterStreamXMLStreamWriter
         try {
             this.writer.writeCharacters(text);
         } catch (XMLStreamException e) {
-            throw new FilterException("Failed to write element", e);
+            throw new FilterException(String.format("Failed to write characters [%s]", text), e);
         }
     }
 
@@ -164,7 +164,7 @@ public class FilterStreamXMLStreamWriter
         try {
             this.writer.writeStartElement(localName);
         } catch (XMLStreamException e) {
-            throw new FilterException("Failed to write element", e);
+            throw new FilterException(String.format("Failed to write start element [%s]", localName), e);
         }
     }
 
@@ -173,7 +173,7 @@ public class FilterStreamXMLStreamWriter
         try {
             this.writer.writeEndElement();
         } catch (XMLStreamException e) {
-            throw new FilterException("Failed to write element", e);
+            throw new FilterException("Failed to write end element", e);
         }
     }
 
@@ -183,7 +183,8 @@ public class FilterStreamXMLStreamWriter
             try {
                 this.writer.writeAttribute(localName, value);
             } catch (XMLStreamException e) {
-                throw new FilterException("Failed to write attribute", e);
+                throw new FilterException(
+                    String.format("Failed to write attribute [%s] with value [%s]", localName, value), e);
             }
         }
     }
