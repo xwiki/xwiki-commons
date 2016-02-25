@@ -68,6 +68,11 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     {
         private static final long serialVersionUID = 1L;
 
+        public ModifableExtensionPlanTree()
+        {
+
+        }
+
         @Override
         public ModifableExtensionPlanTree clone()
         {
