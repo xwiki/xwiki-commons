@@ -20,11 +20,8 @@
 
 package org.xwiki.extension.jar;
 
-import java.net.URI;
-
 import javax.inject.Singleton;
 
-import org.xwiki.classloader.NamespaceURLClassLoader;
 import org.xwiki.classloader.internal.DefaultClassLoaderManager;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.InitializationException;
@@ -44,14 +41,6 @@ public class TestJarExtensionClassLoaderManager extends DefaultClassLoaderManage
     @Override
     public void initialize() throws InitializationException
     {
-        this.rootClassLoader = new NamespaceURLClassLoader(new URI[] {}, this.testExtensionClassLoader, null);
-    }
-    
-    @Override
-    public void dropURLClassLoaders()
-    {
-        super.dropURLClassLoaders();
-
-        this.rootClassLoader = new NamespaceURLClassLoader(new URI[] {}, this.testExtensionClassLoader, null);
+        this.containerClassLoader = this.testExtensionClassLoader;
     }
 }
