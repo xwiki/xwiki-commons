@@ -931,7 +931,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               <id>default-compile</id>
               <configuration>
                 <compilerArguments>
-                  <sourcepath>${project.basedir}/src/main/java:${project.basedir}/src/main/resources</sourcepath>
+                  <sourcepath>${xwiki.sourcepath.main}</sourcepath>
                 </compilerArguments>
               </configuration>
             </execution>
@@ -939,7 +939,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               <id>default-testCompile</id>
               <configuration>
                 <compilerArguments>
-                  <sourcepath>${project.basedir}/src/test/java:${project.basedir}/src/test/resources</sourcepath>
+                  <sourcepath>${xwiki.sourcepath.main}</sourcepath>
                 </compilerArguments>
               </configuration>
             </execution>
@@ -1479,6 +1479,31 @@ mm
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <!-- For Annotation Processing and specifically for our ComponentCheckerAnnotationProcessor -->
+    <profile>
+      <id>annotationprocessing-notwindows</id>
+      <activation>
+        <os>
+          <family>!windows</family>
+        </os>
+      </activation>
+      <properties>
+        <xwiki.sourcepath.main>${project.basedir}/src/main/java:${project.basedir}/src/main/resources</xwiki.sourcepath.main>
+        <xwiki.sourcepath.test>${project.basedir}/src/test/java:${project.basedir}/src/test/resources</xwiki.sourcepath.test>
+      </properties>
+    </profile>
+    <profile>
+      <id>annotationprocessing-windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <xwiki.sourcepath.main>${project.basedir}/src/main/java;${project.basedir}/src/main/resources</xwiki.sourcepath.main>
+        <xwiki.sourcepath.test>${project.basedir}/src/test/java;${project.basedir}/src/test/resources</xwiki.sourcepath.test>
+      </properties>
     </profile>
   </profiles>
   <distributionManagement>
