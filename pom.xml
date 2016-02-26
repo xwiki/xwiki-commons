@@ -773,7 +773,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               <id>default-testCompile</id>
               <configuration>
                 <compilerArguments>
-                  <sourcepath>${xwiki.sourcepath.main}</sourcepath>
+                  <sourcepath>${xwiki.sourcepath.test}</sourcepath>
                 </compilerArguments>
               </configuration>
             </execution>
