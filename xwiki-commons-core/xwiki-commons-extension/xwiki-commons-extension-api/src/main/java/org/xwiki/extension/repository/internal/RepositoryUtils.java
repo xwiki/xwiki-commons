@@ -231,7 +231,7 @@ public final class RepositoryUtils
      */
     public static boolean matches(Filter filter, Extension extension)
     {
-        return matches(filter, extension.get(filter.getField()));
+        return matches(filter, extension.<Object>get(filter.getField()));
     }
 
     /**
