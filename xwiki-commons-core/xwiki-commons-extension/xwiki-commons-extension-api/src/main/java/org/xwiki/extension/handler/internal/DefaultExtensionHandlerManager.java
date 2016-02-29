@@ -116,11 +116,12 @@ public class DefaultExtensionHandlerManager implements ExtensionHandlerManager
     }
 
     @Override
+    @Deprecated
     public void upgrade(LocalExtension previousLocalExtension, LocalExtension newLocalExtension, String namespace,
         Request request) throws InstallException
     {
-        upgrade(previousLocalExtension != null ? Arrays.asList(previousLocalExtension) : Collections.EMPTY_LIST,
-            newLocalExtension, namespace, request);
+        upgrade(previousLocalExtension != null ? Arrays.asList((InstalledExtension) previousLocalExtension)
+            : Collections.<InstalledExtension>emptyList(), newLocalExtension, namespace, request);
     }
 
     @Override
