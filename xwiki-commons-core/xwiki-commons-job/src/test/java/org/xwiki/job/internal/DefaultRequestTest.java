@@ -38,7 +38,7 @@ public class DefaultRequestTest
         DefaultRequest request2 = new DefaultRequest(request);
 
         Assert.assertEquals(request.getId(), request2.getId());
-        Assert.assertEquals(request.getProperty("property"), (String) request2.getProperty("property"));
+        Assert.assertEquals(request.<String>getProperty("property"), request2.<String>getProperty("property"));
         Assert.assertEquals(request.isRemote(), request2.isRemote());
         Assert.assertEquals(request.isInteractive(), request2.isInteractive());
     }
