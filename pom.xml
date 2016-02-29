@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
@@ -19,7 +18,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.xwiki.commons</groupId>
@@ -48,7 +46,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>7.4.2</commons.version>
+    <commons.version>7.4.3-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>7.4.1</xwiki.clirr.previous.version>
@@ -817,7 +815,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               -->
               <skip>true</skip>
               <rules>
-                <requireUpperBoundDeps />
+                <requireUpperBoundDeps/>
               </rules>
             </configuration>
           </execution>
@@ -1129,12 +1127,12 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
           <configuration>
-            <license><![CDATA[nrqrUjrDHDhJUHFmcbwQoxwhnrpAvvxtfireXcjcnFLfnhs
-mj2KyGJY<oOR4f95>VRjHIO22L01PV<1<v2Q64gRLmTAFh1
+            <license>nrqrUjrDHDhJUHFmcbwQoxwhnrpAvvxtfireXcjcnFLfnhs
+mj2KyGJY&lt;oOR4f95&gt;VRjHIO22L01PV&lt;1&lt;v2Q64gRLmTAFh1
 mnOmtsRNMRMORpMpnpmsSmNRqOqrNoqnqMVxvvVXvssmpRq
 RnmqmUUnrmoptpsmmmmmUUnrmoptpsmmmmmUUONfhfUUnmm
 mm
-]]></license>
+</license>
             <!-- For some reason there's currently a problem in the Rendering Include Macro test execution when
                  IncludeMacroTest is clovered. Needs to be investigated. -->
             <includesTestSourceRoots>false</includesTestSourceRoots>
@@ -1359,7 +1357,7 @@ mm
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
-                    <mkdir dir="${project.build.directory}/apidocs" />
+                    <mkdir dir="${project.build.directory}/apidocs"/>
                   </target>
                 </configuration>
                 <goals>
