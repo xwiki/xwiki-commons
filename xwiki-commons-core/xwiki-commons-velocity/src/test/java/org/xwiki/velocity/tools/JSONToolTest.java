@@ -20,9 +20,11 @@
 package org.xwiki.velocity.tools;
 
 import java.beans.Transient;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -209,5 +211,59 @@ public class JSONToolTest
     public void testParseInvalidJSON()
     {
         Assert.assertNull(this.tool.parse("This is not the JSON you are looking for..."));
+    }
+
+    @Test
+    public void serializeOrgJsonObjectWorks()
+    {
+        List<String> variants = new ArrayList<>(2);
+        variants.add("{\"a\":\"b\",\"c\":true}");
+        variants.add("{\"c\":true,\"a\":\"b\"}");
+        org.json.JSONObject object = new org.json.JSONObject();
+        object.put("a", "b");
+        object.put("c", true);
+        // Assert.assertEquals(variants.get(0), this.tool.serialize(object));
+        Assert.assertTrue(variants.contains(this.tool.serialize(object)));
+    }
+
+    @Test
+    public void serializeNestedOrgJsonObjectWorks()
+    {
+        List<String> variants = new ArrayList<>(2);
+        variants.add("{\"before\":[\"nothing\"],\"json\":{\"a\":\"b\",\"c\":true},\"after\":42}");
+        variants.add("{\"before\":[\"nothing\"],\"json\":{\"c\":true,\"a\":\"b\"},\"after\":42}");
+        org.json.JSONObject object = new org.json.JSONObject();
+        object.put("a", "b");
+        object.put("c", true);
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("before", Collections.singletonList("nothing"));
+        map.put("json", object);
+        map.put("after", 42);
+        // Assert.assertEquals(variants.get(0), this.tool.serialize(map));
+        Assert.assertTrue(variants.contains(this.tool.serialize(map)));
+    }
+
+    @Test
+    public void serializeOrgJsonArrayWorks()
+    {
+        org.json.JSONArray array = new org.json.JSONArray();
+        array.put("a");
+        array.put(42);
+        array.put(true);
+        Assert.assertEquals("[\"a\",42,true]", this.tool.serialize(array));
+    }
+
+    @Test
+    public void serializeNestedOrgJsonArrayWorks()
+    {
+        org.json.JSONArray array = new org.json.JSONArray();
+        array.put("a");
+        array.put(42);
+        array.put(true);
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("before", Collections.singletonList("nothing"));
+        map.put("json", array);
+        map.put("after", 42);
+        Assert.assertEquals("{\"before\":[\"nothing\"],\"json\":[\"a\",42,true],\"after\":42}", this.tool.serialize(map));
     }
 }
