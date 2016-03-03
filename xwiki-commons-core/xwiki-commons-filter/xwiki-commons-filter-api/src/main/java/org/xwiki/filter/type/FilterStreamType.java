@@ -62,11 +62,18 @@ public class FilterStreamType implements Comparable<FilterStreamType>
     public static final FilterStreamType XWIKI_XAR_12 = new FilterStreamType(SystemType.XWIKI, DATA_XAR, "1.2");
 
     /**
+     * The XAR format in version 1.3.
+     *
+     * @since 8.0RC1
+     */
+    public static final FilterStreamType XWIKI_XAR_13 = new FilterStreamType(SystemType.XWIKI, DATA_XAR, "1.3");
+
+    /**
      * The XAR format in the current version.
      *
      * @since 7.2M1
      */
-    public static final FilterStreamType XWIKI_XAR_CURRENT = XWIKI_XAR_12;
+    public static final FilterStreamType XWIKI_XAR_CURRENT = XWIKI_XAR_13;
 
     /**
      * The database stream based on oldcore APIs.
@@ -226,9 +233,8 @@ public class FilterStreamType implements Comparable<FilterStreamType>
             result = true;
         } else {
             if (object instanceof FilterStreamType) {
-                result =
-                    Objects.equals(getType(), ((FilterStreamType) object).getType())
-                        && Objects.equals(getDataFormat(), ((FilterStreamType) object).getDataFormat());
+                result = Objects.equals(getType(), ((FilterStreamType) object).getType())
+                    && Objects.equals(getDataFormat(), ((FilterStreamType) object).getDataFormat());
             } else {
                 result = false;
             }
