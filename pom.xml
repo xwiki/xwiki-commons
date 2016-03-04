@@ -150,7 +150,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>xwiki-commons-4.4-milestone-1</tag>
+    <tag>stable-8.0.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
@@ -819,7 +819,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               -->
               <skip>true</skip>
               <rules>
-                <requireUpperBoundDeps/>
+                <requireUpperBoundDeps />
               </rules>
             </configuration>
           </execution>
@@ -1363,7 +1363,7 @@ mm
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
-                    <mkdir dir="${project.build.directory}/apidocs"/>
+                    <mkdir dir="${project.build.directory}/apidocs" />
                   </target>
                 </configuration>
                 <goals>
