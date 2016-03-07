@@ -29,9 +29,13 @@
   <artifactId>xwiki-commons-blame-api</artifactId>
   <name>XWiki Commons - Blame - API</name>
   <packaging>jar</packaging>
-  <description>Annotate/Blame/Praise API</description>
+  <description>Generic base API to produce blame/annotate/praise information from a history of changes</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.94</xwiki.jacoco.instructionRatio>
+    <!-- Name to display in the Extension Manager -->
+    <xwiki.extension.name>Blame Module API</xwiki.extension.name>
+    <!-- Category to display in the Extension Manager -->
+    <xwiki.extension.category>api</xwiki.extension.category>
   </properties>
   <dependencies>
     <dependency>
