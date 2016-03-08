@@ -45,6 +45,7 @@ public class DefaultNamespaceValidatorTest
         assertTrue(this.validator.isAllowed(Arrays.asList("{root}"), null));
         assertTrue(this.validator.isAllowed(Arrays.asList("{}"), null));
         assertTrue(this.validator.isAllowed(Arrays.asList("[.*]"), "namespace"));
+        assertTrue(this.validator.isAllowed(Arrays.asList("[wiki:(?!xwiki$).*]"), "wiki:test"));
 
         assertFalse(this.validator.isAllowed(Arrays.asList("namespace"), "wrong"));
         assertFalse(this.validator.isAllowed(Arrays.asList("{root}"), "wrong"));
