@@ -140,7 +140,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     public Collection<String> getNamespaces()
     {
         if (this.namespacesCache == null) {
-            Map<String, Map<String, Object>> installedNamespaces = getInstalledNamespaces(false);
+            Map<String, Map<String, Object>> installedNamespaces = getInstalledNamespaces();
 
             if (installedNamespaces != null) {
                 this.namespacesCache = Collections.unmodifiableSet(installedNamespaces.keySet());
@@ -157,17 +157,20 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setNamespaces(Collection<String> namespaces)
     {
-        if (namespaces == null) {
-            putProperty(PKEY_ROOT_NAMESPACE, isInstalled() ? new HashMap<String, Object>() : null);
-            putProperty(PKEY_NAMESPACES, null);
-        } else {
-            putProperty(PKEY_ROOT_NAMESPACE, null);
-            Map<String, Map<String, Object>> installedNamespaces = new HashMap<String, Map<String, Object>>();
-            putProperty(PKEY_NAMESPACES, installedNamespaces);
-            for (String namespace : namespaces) {
-                Map<String, Object> namespaceData = new HashMap<String, Object>();
-                namespaceData.put(PKEY_NAMESPACES_NAMESPACE, namespace);
-                installedNamespaces.put(namespace, namespaceData);
+        synchronized (this.propertiesLock) {
+            if (namespaces == null) {
+                putProperty(PKEY_ROOT_NAMESPACE, isInstalled() ? new HashMap<String, Object>() : null);
+                putProperty(PKEY_NAMESPACES, null);
+            } else {
+                putProperty(PKEY_ROOT_NAMESPACE, null);
+                Map<String, Map<String, Object>> installedNamespaces =
+                    new ConcurrentHashMap<String, Map<String, Object>>();
+                putProperty(PKEY_NAMESPACES, installedNamespaces);
+                for (String namespace : namespaces) {
+                    Map<String, Object> namespaceData = new HashMap<String, Object>();
+                    namespaceData.put(PKEY_NAMESPACES_NAMESPACE, namespace);
+                    installedNamespaces.put(namespace, namespaceData);
+                }
             }
         }
 
@@ -211,29 +214,31 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setInstalled(boolean installed, String namespace)
     {
-        if (namespace == null) {
-            if (installed && !isInstalled()) {
-                setValid(namespace, true);
-            }
-
-            setInstalled(installed);
-            setNamespaces(null);
-        } else {
-            if (installed) {
-                if (!isInstalled(namespace)) {
+        synchronized (this.propertiesLock) {
+            if (namespace == null) {
+                if (installed && !isInstalled()) {
                     setValid(namespace, true);
                 }
 
-                setInstalled(true);
-                addNamespace(namespace);
+                setInstalled(installed);
+                setNamespaces(null);
             } else {
-                Map<String, Map<String, Object>> installedNamespaces = getInstalledNamespaces(false);
-                if (installedNamespaces != null) {
-                    installedNamespaces.remove(namespace);
+                if (installed) {
+                    if (!isInstalled(namespace)) {
+                        setValid(namespace, true);
+                    }
 
-                    if (getNamespaces().isEmpty()) {
-                        setInstalled(false);
-                        setNamespaces(null);
+                    setInstalled(true);
+                    addNamespace(namespace);
+                } else {
+                    Map<String, Map<String, Object>> installedNamespaces = getInstalledNamespaces();
+                    if (installedNamespaces != null) {
+                        installedNamespaces.remove(namespace);
+
+                        if (getNamespaces().isEmpty()) {
+                            setInstalled(false);
+                            setNamespaces(null);
+                        }
                     }
                 }
             }
@@ -274,9 +279,8 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
 
     /**
      * @return the installed namespaces
-     * @param create indicate if the map should be create if it does not exists
      */
-    private Map<String, Map<String, Object>> getInstalledNamespaces(boolean create)
+    private Map<String, Map<String, Object>> getInstalledNamespaces()
     {
         Object namespacesObject = getProperty(PKEY_NAMESPACES);
 
@@ -290,9 +294,20 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
 
         }
 
-        if (installedNamespaces == null && create) {
-            installedNamespaces = Collections.emptyMap();
-            putProperty(PKEY_NAMESPACES, installedNamespaces);
+        return installedNamespaces;
+    }
+
+    private Map<String, Map<String, Object>> maybeCreateInstalledNamespaces()
+    {
+        Map<String, Map<String, Object>> installedNamespaces;
+
+        synchronized (this.propertiesLock) {
+            installedNamespaces = getProperty(PKEY_NAMESPACES);
+
+            if (installedNamespaces == null) {
+                installedNamespaces = Collections.emptyMap();
+                putProperty(PKEY_NAMESPACES, installedNamespaces);
+            }
         }
 
         return installedNamespaces;
@@ -305,27 +320,47 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     private Map<String, Object> getInstalledNamespace(String namespace, boolean create)
     {
-        Map<String, Map<String, Object>> namespaces = getInstalledNamespaces(create);
+        Map<String, Map<String, Object>> namespaces = getInstalledNamespaces();
 
-        if (namespaces == null) {
-            return null;
+        if (namespaces != null) {
+            Map<String, Object> installedNamespace = namespaces.get(namespace);
+
+            if (installedNamespace != null) {
+                return installedNamespace;
+            }
         }
 
-        Map<String, Object> installedNamespace = namespaces.get(namespace);
+        return create ? maybeCreateInstalledNamespace(namespaces, namespace) : null;
+    }
 
-        if (installedNamespace == null && create) {
-            namespaces = new HashMap<String, Map<String, Object>>(namespaces);
-            putProperty(PKEY_NAMESPACES, namespaces);
-            installedNamespace = new ConcurrentHashMap<String, Object>();
-            namespaces.put(namespace, installedNamespace);
+    private Map<String, Object> maybeCreateInstalledNamespace(Map<String, Map<String, Object>> namespaces,
+        String namespace)
+    {
+        synchronized (this.propertiesLock) {
+            // Can't use ConcurrentHashMap because we have null key (root namespace)
+            Map<String, Map<String, Object>> newNamespaces;
+            if (namespaces != null) {
+                newNamespaces = new HashMap<>(namespaces);
+            } else {
+                newNamespaces = new HashMap<>();
+            }
 
+            // Create the map for the namespace
+            Map<String, Object> installedNamespace = new ConcurrentHashMap<String, Object>();
+            newNamespaces.put(namespace, installedNamespace);
+
+            // Set the new map of properties
+            putProperty(PKEY_NAMESPACES, newNamespaces);
+
+            // Reset the cache
             this.namespacesCache = null;
-        }
 
-        return installedNamespace;
+            return installedNamespace;
+        }
     }
 
     @Override
+    @Deprecated
     public boolean isDependency()
     {
         return isDependency(null);
@@ -341,9 +376,8 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         } else {
             Map<String, Object> installedNamespace = getInstalledNamespace(namespace, false);
 
-            isDependency =
-                installedNamespace != null ? (installedNamespace.get(PKEY_NAMESPACES_DEPENDENCY) == Boolean.TRUE)
-                    : isDependency(null);
+            isDependency = installedNamespace != null
+                ? (installedNamespace.get(PKEY_NAMESPACES_DEPENDENCY) == Boolean.TRUE) : isDependency(null);
         }
 
         return isDependency;
@@ -367,13 +401,15 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setDependency(boolean dependency, String namespace)
     {
-        if (namespace == null) {
-            putProperty(PKEY_DEPENDENCY, dependency);
-        } else {
-            Map<String, Object> installedNamespace = getInstalledNamespace(namespace, false);
+        synchronized (this.propertiesLock) {
+            if (namespace == null) {
+                putProperty(PKEY_DEPENDENCY, dependency);
+            } else {
+                Map<String, Object> installedNamespace = getInstalledNamespace(namespace, false);
 
-            if (installedNamespace != null) {
-                installedNamespace.put(PKEY_NAMESPACES_DEPENDENCY, dependency);
+                if (installedNamespace != null) {
+                    installedNamespace.put(PKEY_NAMESPACES_DEPENDENCY, dependency);
+                }
             }
         }
     }
@@ -427,9 +463,11 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setNamespaceProperty(String key, Object value, String namespace)
     {
-        Map<String, Object> namespaceProperties = getNamespaceProperties(namespace);
-        if (namespaceProperties != null) {
-            namespaceProperties.put(key, value);
+        synchronized (this.propertiesLock) {
+            Map<String, Object> namespaceProperties = getNamespaceProperties(namespace);
+            if (namespaceProperties != null) {
+                namespaceProperties.put(key, value);
+            }
         }
     }
 
