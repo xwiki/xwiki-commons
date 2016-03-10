@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
@@ -108,6 +109,11 @@ public abstract class AbstractExtension implements Extension
      * @see #getProperties()
      */
     protected Map<String, Object> properties;
+
+    /**
+     * Used to protect properties from concurrent write;
+     */
+    protected ReentrantLock propertiesLock = new ReentrantLock();
 
     /**
      * @see #getDependencies()
@@ -671,10 +677,12 @@ public abstract class AbstractExtension implements Extension
      */
     public void putProperty(String key, Object value)
     {
-        Map<String, Object> newProperties = new LinkedHashMap<String, Object>(getProperties());
-        newProperties.put(key, value);
+        synchronized (this.propertiesLock) {
+            Map<String, Object> newProperties = new LinkedHashMap<String, Object>(getProperties());
+            newProperties.put(key, value);
 
-        this.properties = Collections.unmodifiableMap(newProperties);
+            this.properties = Collections.unmodifiableMap(newProperties);
+        }
     }
 
     /**
