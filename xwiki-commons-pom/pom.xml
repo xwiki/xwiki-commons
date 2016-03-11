@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons</artifactId>
-    <version>6.4.8-SNAPSHOT</version>
+    <version>6.4.8</version>
   </parent>
   <artifactId>xwiki-commons-pom</artifactId>
   <name>XWiki Commons - Root POM</name>
@@ -103,7 +103,7 @@
             </goals>
             <configuration>
               <rules>
-                <externalExtensionCheck implementation="org.xwiki.tool.enforcer.ExternalExtensionCheck"/>
+                <externalExtensionCheck implementation="org.xwiki.tool.enforcer.ExternalExtensionCheck" />
               </rules>
             </configuration>
           </execution>
