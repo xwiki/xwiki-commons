@@ -38,7 +38,7 @@ package org.xwiki.job;
 public interface GroupedJob extends Job
 {
     /**
-     * @return the group hierarchy of the job
+     * @return the group hierarchy of the job. If null the job won't be grouped.
      */
     JobGroupPath getGroupPath();
 }
