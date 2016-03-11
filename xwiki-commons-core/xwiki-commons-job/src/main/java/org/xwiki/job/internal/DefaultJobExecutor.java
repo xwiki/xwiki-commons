@@ -134,8 +134,7 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
 
     private class JobThreadExecutor extends ThreadPoolExecutor
     {
-        JobThreadExecutor(int maximumPoolSize, long keepAliveTime, TimeUnit unit,
-            BlockingQueue<Runnable> workQueue)
+        JobThreadExecutor(int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue)
         {
             super(0, maximumPoolSize, keepAliveTime, unit, workQueue);
         }
@@ -272,26 +271,38 @@ public class DefaultJobExecutor implements JobExecutor, Initializable, Disposabl
     {
         if (!this.disposed) {
             if (job instanceof GroupedJob) {
-                execute((GroupedJob) job);
+                executeGroupedJob((GroupedJob) job);
             } else {
-                this.jobExecutor.execute(job);
-
-                List<String> jobId = job.getRequest().getId();
-                if (jobId != null) {
-                    synchronized (this.jobs) {
-                        this.jobs.put(jobId, job);
-                    }
-                }
+                executeSingleJob(job);
             }
         } else {
             throw new RejectedExecutionException("The job executor is disposed");
         }
     }
 
-    private void execute(GroupedJob job)
+    private void executeSingleJob(Job job)
+    {
+        this.jobExecutor.execute(job);
+
+        List<String> jobId = job.getRequest().getId();
+        if (jobId != null) {
+            synchronized (this.jobs) {
+                this.jobs.put(jobId, job);
+            }
+        }
+    }
+
+    private void executeGroupedJob(GroupedJob job)
     {
         synchronized (this.groupExecutors) {
             JobGroupPath path = job.getGroupPath();
+
+            // If path is null execute as non grouped job
+            if (path == null) {
+                executeSingleJob(job);
+
+                return;
+            }
 
             JobGroupExecutor groupExecutor = this.groupExecutors.get(path);
 
