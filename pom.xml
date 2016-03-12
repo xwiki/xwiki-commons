@@ -57,6 +57,9 @@
     <!-- Jackson -->
     <jackson.version>2.7.2</jackson.version>
 
+    <!-- Jackson -->
+    <asm.version>5.0.4</asm.version>
+
     <!-- Selenium -->
     <selenium.version>2.44.0</selenium.version>
 
@@ -719,27 +722,27 @@
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
-        <version>5.0.4</version>
+        <version>${asm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm-analysis</artifactId>
-        <version>5.0.4</version>
+        <version>${asm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm-commons</artifactId>
-        <version>5.0.4</version>
+        <version>${asm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm-tree</artifactId>
-        <version>5.0.4</version>
+        <version>${asm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm-util</artifactId>
-        <version>5.0.4</version>
+        <version>${asm.version}</version>
       </dependency>
 
       <!-- ANTLR -->
