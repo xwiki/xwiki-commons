@@ -46,7 +46,10 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLifecycleException;
+import org.xwiki.component.phase.Disposable;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
@@ -69,8 +72,13 @@ import com.google.common.base.Predicates;
  */
 @Component
 @Singleton
-public class DefaultCoreExtensionScanner implements CoreExtensionScanner
+public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Disposable
 {
+    /**
+     * Logger to use to log shutdown information (opposite of initialization).
+     */
+    private static final Logger SHUTDOWN_LOGGER = LoggerFactory.getLogger("org.xwiki.shutdown");
+
     /**
      * The logger to log.
      */
@@ -94,6 +102,14 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
 
     @Inject
     private CoreExtensionCache cache;
+
+    private boolean shouldStop;
+
+    @Override
+    public void dispose() throws ComponentLifecycleException
+    {
+        this.shouldStop = true;
+    }
 
     private Dependency toDependency(String id, String version, String type) throws ResolveException
     {
@@ -182,6 +198,12 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner
     public void updateExtensions(Collection<DefaultCoreExtension> extensions)
     {
         for (DefaultCoreExtension extension : extensions) {
+            // If XWiki is stopping before this is finished then we need to exit.
+            if (this.shouldStop) {
+                SHUTDOWN_LOGGER.debug("Aborting Extension Update as XWiki is stopping");
+                break;
+            }
+
             if (!extension.isCached()) {
                 try {
                     Extension remoteExtension = this.repositoryManager.resolve(extension.getId());
