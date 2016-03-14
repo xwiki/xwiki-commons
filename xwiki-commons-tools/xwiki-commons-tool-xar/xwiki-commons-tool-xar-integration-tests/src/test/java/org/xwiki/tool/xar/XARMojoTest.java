@@ -70,7 +70,7 @@ public class XARMojoTest extends AbstractMojoTest
         tempDir.mkdirs();
 
         // Extract the generated XAR so that we verify its content easily
-        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test.xar");
+        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
         unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
         unarchiver.setDestDirectory(tempDir);
@@ -106,7 +106,7 @@ public class XARMojoTest extends AbstractMojoTest
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
 
-        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test.xar");
+        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipFile zip = new ZipFile(xarFile);
         assertNotNull("Package.xml file not found in zip!", zip.getEntry(XARMojo.PACKAGE_XML));
 
@@ -152,7 +152,7 @@ public class XARMojoTest extends AbstractMojoTest
         tempDir.mkdirs();
 
         // Extract the generated XAR so that we verify its content easily
-        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test.xar");
+        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
         ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
         unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
         unarchiver.setDestDirectory(tempDir);

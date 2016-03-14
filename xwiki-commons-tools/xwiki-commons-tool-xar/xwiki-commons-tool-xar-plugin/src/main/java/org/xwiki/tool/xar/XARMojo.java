@@ -104,7 +104,8 @@ public class XARMojo extends AbstractXARMojo
                 "No XAR XML files found in [%s]. Has the Maven Resource plugin be called?", sourceDir));
         }
 
-        File xarFile = new File(this.project.getBuild().getDirectory(), this.project.getArtifactId() + ".xar");
+        File xarFile = new File(this.project.getBuild().getDirectory(), this.project.getArtifactId()
+            + "-" + this.project.getVersion() + ".xar");
 
         ZipArchiver archiver = new ZipArchiver();
         archiver.setEncoding(this.encoding);
