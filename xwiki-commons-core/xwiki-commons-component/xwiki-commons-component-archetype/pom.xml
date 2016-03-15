@@ -92,6 +92,27 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-archetype-plugin</artifactId>
       </plugin>
+      <!-- Override the configuratio from the top level POM since by "type" is set to "${project.packaging}" but for
+           the "maven-archetype" packaging the type is "jar" -->
+      <plugin>
+        <groupId>com.github.siom79.japicmp</groupId>
+        <artifactId>japicmp-maven-plugin</artifactId>
+        <configuration>
+          <oldVersion>
+            <dependency>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+              <version>${xwiki.compatibility.previous.version}</version>
+              <type>jar</type>
+            </dependency>
+          </oldVersion>
+          <newVersion>
+            <file>
+              <path>${project.build.directory}/${project.artifactId}-${project.version}.jar</path>
+            </file>
+          </newVersion>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>

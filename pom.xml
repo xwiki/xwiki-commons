@@ -91,9 +91,11 @@
     <!-- Checkstyle -->
     <checkstyle.version>6.16.1</checkstyle.version>
 
-    <!-- By default Checkstyle, CLIRR, Enforcer and License plugins are on -->
+    <!-- By default Checkstyle, Backward compatibility checks, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.clirr.skip>false</xwiki.clirr.skip>
+    <xwiki.japicmp.skip>false</xwiki.japicmp.skip>
+    <xwiki.revapi.skip>false</xwiki.revapi.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
 
@@ -1125,11 +1127,94 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             </execution>
           </executions>
           <configuration>
-            <comparisonVersion>${xwiki.clirr.previous.version}</comparisonVersion>
+            <comparisonVersion>${xwiki.compatibility.previous.version}</comparisonVersion>
             <skip>${xwiki.clirr.skip}</skip>
             <excludes>
               <exclude>**/internal/**</exclude>
             </excludes>
+          </configuration>
+        </plugin>
+        <!-- Used for checking backward compatibility (binary and source) -->
+        <plugin>
+          <groupId>com.github.siom79.japicmp</groupId>
+          <artifactId>japicmp-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>0.7.1</version>
+          <configuration>
+            <oldVersion>
+              <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>${project.artifactId}</artifactId>
+                <version>${xwiki.compatibility.previous.version}</version>
+                <type>${project.packaging}</type>
+              </dependency>
+            </oldVersion>
+            <newVersion>
+              <file>
+                <path>${project.build.directory}/${project.artifactId}-${project.version}.${project.packaging}</path>
+              </file>
+            </newVersion>
+            <parameter>
+              <onlyModified>true</onlyModified>
+              <accessModifier>protected</accessModifier>
+              <breakBuildOnModifications>false</breakBuildOnModifications>
+              <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
+              <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>+              <onlyBinaryIncompatible>false</onlyBinaryIncompatible>
+              <includeSynthetic>false</includeSynthetic>
+              <ignoreMissingClasses>false</ignoreMissingClasses>
+              <excludes>
+                <exclude>*.internal.*</exclude>
+                <exclude>*.test.*</exclude>
+              </excludes>
+            </parameter>
+            <skip>${xwiki.japicmp.skip}</skip>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>verify</phase>
+              <goals>
+                <goal>cmp</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- Used for checking backward compatibility (binary and source) -->
+        <plugin>
+          <groupId>org.revapi</groupId>
+          <artifactId>revapi-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>0.4.1</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.revapi</groupId>
+              <artifactId>revapi-java</artifactId>
+              <version>0.6.0</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>revapi-check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <oldArtifacts>
+              <artifact>${project.groupId}:${project.artifactId}:${project.packaging}:${xwiki.compatibility.previous.version}</artifact>
+            </oldArtifacts>
+            <skip>${xwiki.revapi.skip}</skip>
+            <analysisConfiguration><![CDATA[
+            {
+              "revapi": {
+                "filter": {
+                  "elements": {
+                    "exclude": [".*\\.internal\\..*", ".*\\.test\\..*"]
+                  }
+                }
+              }
+            }
+            ]]></analysisConfiguration>
           </configuration>
         </plugin>
         <plugin>
@@ -1406,6 +1491,9 @@ mm
         <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
         <!-- Skip Clirr since we don't need it when computing test coverage and it speeds up the build not to run it -->
         <xwiki.clirr.skip>true</xwiki.clirr.skip>
+        <!-- Skip japicpm since we don't need it when computing test coverage and it speeds up the build not to run
+             it -->
+        <xwiki.japicmp.skip>true</xwiki.japicmp.skip>
         <!-- Skip Enforcer since we don't need it for coverage and it speeds up the build not to run it -->
         <xwiki.enforcer.skip>true</xwiki.enforcer.skip>
       </properties>

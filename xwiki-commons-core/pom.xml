@@ -183,6 +183,35 @@
           </excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>com.github.siom79.japicmp</groupId>
+        <artifactId>japicmp-maven-plugin</artifactId>
+        <configuration>
+          <parameter>
+            <excludes combine.children="append">
+            </excludes>
+          </parameter>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <configuration>
+          <analysisConfiguration><![CDATA[
+            {
+              "revapi": {
+                "filter": {
+                  "elements": {
+                     "exclude": [".*\\.internal\\..*", ".*\\.test\\..*"]
+                  }
+                },
+                "ignore": [
+                ]
+              }
+            }
+          ]]></analysisConfiguration>
+        </configuration>
+      </plugin>
       <!-- Verify that unit tests don't output anything to stdout/stderr -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
