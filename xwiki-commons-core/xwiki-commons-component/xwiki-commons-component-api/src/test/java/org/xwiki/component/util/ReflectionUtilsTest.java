@@ -35,6 +35,11 @@ import org.xwiki.component.descriptor.ComponentRole;
  */
 public class ReflectionUtilsTest
 {
+    private static interface TestInterfaceSimple
+    {
+
+    }
+
     private static interface TestInterface<A, B>
     {
 
@@ -56,6 +61,11 @@ public class ReflectionUtilsTest
     }
 
     private static class TestClass3 extends TestClass2<List<String>>
+    {
+
+    }
+
+    private static class TestClass4<T> extends TestClass2<T> implements TestInterfaceSimple
     {
 
     }
@@ -95,8 +105,9 @@ public class ReflectionUtilsTest
             ReflectionUtils.getField(TestFieldClass.class, "doesntexist");
             Assert.fail();
         } catch (NoSuchFieldException expected) {
-            Assert.assertEquals("No field named [doesntexist] in class [" + TestFieldClass.class.getName()
-                + "] or superclasses", expected.getMessage());
+            Assert.assertEquals(
+                "No field named [doesntexist] in class [" + TestFieldClass.class.getName() + "] or superclasses",
+                expected.getMessage());
         }
     }
 
@@ -112,26 +123,28 @@ public class ReflectionUtilsTest
     public void testUnserializeTypeWithGenerics() throws Exception
     {
         Type genericsType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
-        Assert.assertEquals(genericsType, ReflectionUtils.unserializeType(
-            "org.xwiki.component.descriptor.ComponentRole<java.lang.String>", Thread.currentThread()
-                .getContextClassLoader()));
+        Assert.assertEquals(genericsType,
+            ReflectionUtils.unserializeType("org.xwiki.component.descriptor.ComponentRole<java.lang.String>",
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
     public void testUnserializeListType() throws Exception
     {
         Type listType = new DefaultParameterizedType(null, java.util.List.class, ComponentRole.class);
-        Assert.assertEquals(listType, ReflectionUtils.unserializeType(
-            "java.util.List<org.xwiki.component.descriptor.ComponentRole>", Thread.currentThread()
-                .getContextClassLoader()));
+        Assert.assertEquals(listType,
+            ReflectionUtils.unserializeType("java.util.List<org.xwiki.component.descriptor.ComponentRole>",
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
     public void testUnserializeMapType() throws Exception
     {
         Type mapType = new DefaultParameterizedType(null, java.util.Map.class, String.class, ComponentRole.class);
-        Assert.assertEquals(mapType, ReflectionUtils.unserializeType("java.util.Map<java.lang.String, "
-            + "org.xwiki.component.descriptor.ComponentRole>", Thread.currentThread().getContextClassLoader()));
+        Assert.assertEquals(mapType,
+            ReflectionUtils.unserializeType(
+                "java.util.Map<java.lang.String, " + "org.xwiki.component.descriptor.ComponentRole>",
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
@@ -139,9 +152,10 @@ public class ReflectionUtilsTest
     {
         Type annotatedType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
         Type mapType = new DefaultParameterizedType(null, java.util.Map.class, String.class, annotatedType);
-        Assert.assertEquals(mapType, ReflectionUtils.unserializeType(
-            "java.util.Map<java.lang.String, org.xwiki.component.descriptor.ComponentRole<java.lang.String>>", Thread
-                .currentThread().getContextClassLoader()));
+        Assert.assertEquals(mapType,
+            ReflectionUtils.unserializeType(
+                "java.util.Map<java.lang.String, org.xwiki.component.descriptor.ComponentRole<java.lang.String>>",
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
@@ -150,10 +164,11 @@ public class ReflectionUtilsTest
         Type annotatedType = new DefaultParameterizedType(null, ComponentRole.class, String.class);
         Type mapType1 = new DefaultParameterizedType(null, java.util.Map.class, String.class, annotatedType);
         Type mapType2 = new DefaultParameterizedType(null, java.util.Map.class, String.class, mapType1);
-        Assert.assertEquals(mapType2, ReflectionUtils.unserializeType(
-            "java.util.Map<java.lang.String, java.util.Map<java.lang.String, "
-                + "org.xwiki.component.descriptor.ComponentRole<java.lang.String>>>", Thread.currentThread()
-                .getContextClassLoader()));
+        Assert.assertEquals(mapType2,
+            ReflectionUtils.unserializeType(
+                "java.util.Map<java.lang.String, java.util.Map<java.lang.String, "
+                    + "org.xwiki.component.descriptor.ComponentRole<java.lang.String>>>",
+                Thread.currentThread().getContextClassLoader()));
     }
 
     @Test
@@ -168,17 +183,23 @@ public class ReflectionUtilsTest
     public void testGetTypeClass()
     {
         Assert.assertSame(TestFieldClass.class, ReflectionUtils.getTypeClass(TestFieldClass.class));
-        Assert
-            .assertSame(TestFieldClass.class, ReflectionUtils.getTypeClass(new DefaultParameterizedType(
-                ReflectionUtilsTest.class, TestFieldClass.class)));
+        Assert.assertSame(TestFieldClass.class, ReflectionUtils
+            .getTypeClass(new DefaultParameterizedType(ReflectionUtilsTest.class, TestFieldClass.class)));
         // TODO: Missing test on GenericArrayType
     }
 
     @Test
     public void testResolveType()
     {
-        Assert.assertEquals(new DefaultParameterizedType(ReflectionUtilsTest.class, TestInterface.class,
-            new DefaultParameterizedType(null, List.class, String.class), Integer.class), ReflectionUtils.resolveType(
-            TestInterface.class, TestClass3.class));
+        Assert.assertEquals(
+            new DefaultParameterizedType(ReflectionUtilsTest.class, TestInterface.class,
+                new DefaultParameterizedType(null, List.class, String.class), Integer.class),
+            ReflectionUtils.resolveType(TestInterface.class, TestClass3.class));
+
+        Assert.assertEquals(TestInterfaceSimple.class,
+            ReflectionUtils.resolveType(TestInterfaceSimple.class, TestClass4.class));
+
+        Assert.assertEquals(TestInterfaceSimple.class, ReflectionUtils.resolveType(TestInterfaceSimple.class,
+            new DefaultParameterizedType(ReflectionUtilsTest.class, TestClass4.class, String.class)));
     }
 }

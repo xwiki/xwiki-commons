@@ -394,7 +394,7 @@ public final class ReflectionUtils
     {
         Type resolvedType;
 
-        if (rootType instanceof ParameterizedType) {
+        if (targetType instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) targetType;
 
             resolvedType =
