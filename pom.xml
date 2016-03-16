@@ -79,7 +79,7 @@
     <mockito.version>1.10.19</mockito.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.8.8</aspectj.version>
+    <aspectj.version>1.8.9</aspectj.version>
 
     <!-- Clover & Jacoco -->
     <clover.version>4.0.6</clover.version>
