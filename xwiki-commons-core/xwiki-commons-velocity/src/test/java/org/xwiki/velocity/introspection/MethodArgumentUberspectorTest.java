@@ -27,6 +27,8 @@ import java.util.Properties;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.velocity.VelocityContext;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.properties.ConverterManager;
@@ -60,6 +62,12 @@ public class MethodArgumentUberspectorTest
 
     private ConverterManager converterManager;
 
+    private StringWriter writer;
+
+    private VelocityEngine engine;
+
+    private VelocityContext context;
+
     @BeforeComponent
     public void setUpComponents() throws Exception
     {
@@ -85,6 +93,94 @@ public class MethodArgumentUberspectorTest
                 return "failure";
             }
         }
+
+        public String methodWithVararg(Integer param1, Double... params)
+        {
+            StringBuilder builder = new StringBuilder("success");
+            for (Double param : params) {
+                builder.append(' ');
+                builder.append(param);
+            }
+            return builder.toString();
+        }
+    }
+
+    @Before
+    public void setUp() throws Exception
+    {
+        this.engine = this.componentManager.getInstance(VelocityEngine.class);
+        this.engine.initialize(new Properties());
+        this.writer = new StringWriter();
+        this.context = new VelocityContext();
+        this.context.put("var", new ExtendingClass());
+    }
+
+    @After
+    public void tearDown() throws Exception
+    {
+        if (this.writer != null) {
+            this.writer.close();
+        }
+    }
+
+    @Test
+    public void getMethodWhenVarargsWithNoConversionAndNoVarargParamPassed() throws Exception
+    {
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.methodWithVararg(10)"));
+        assertEquals("success", writer.toString());
+    }
+
+    @Test
+    public void getMethodWhenVarargsWithNoConversionAndOneVarargParamPassed() throws Exception
+    {
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.methodWithVararg(10, 10.0)"));
+        assertEquals("success 10.0", this.writer.toString());
+    }
+
+    @Test
+    public void getMethodWhenVarargsWithNoConversionAndTwoVarargParamsPassed() throws Exception
+    {
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.methodWithVararg(10, 10.0, 10.0)"));
+        assertEquals("success 10.0 10.0", this.writer.toString());
+    }
+
+    @Test
+    public void getMethodWhenVarargsWithConversionAndNoVarargParamPassed() throws Exception
+    {
+        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.methodWithVararg('10')"));
+        assertEquals("success", writer.toString());
+    }
+
+    @Test
+    public void getMethodWhenVarargsWithConversionAndOneVarargParamPassed() throws Exception
+    {
+        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.methodWithVararg('10', 10.0)"));
+        assertEquals("success 10.0", writer.toString());
+    }
+
+    @Test
+    public void getMethodWhenVarargsWithConversionAndTwoVarargParamsPassed() throws Exception
+    {
+        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.methodWithVararg('10', 10.0, 10.0)"));
+        assertEquals("success 10.0 10.0", writer.toString());
+    }
+
+    @Test
+    public void getMethodWhenVarargsWithConversionAndVarargParamPassedNeedingConversion() throws Exception
+    {
+        when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
+        when(this.converterManager.convert(Double.class, "10.0")).thenReturn(10.0);
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.methodWithVararg('10', 10.0, '10.0')"));
+        assertEquals("success 10.0 10.0", writer.toString());
     }
 
     /**
@@ -93,62 +189,37 @@ public class MethodArgumentUberspectorTest
     @Test
     public void getMethodWhenAddingSameMethodNameToExtendingClassAndConversion() throws Exception
     {
-        VelocityEngine velocityEngine = this.componentManager.getInstance(VelocityEngine.class);
-        velocityEngine.initialize(new Properties());
-        StringWriter writer = new StringWriter();
-        VelocityContext context = new VelocityContext();
-        context.put("var", new ExtendingClass());
         when(this.converterManager.convert(List.class, "test")).thenReturn(Arrays.asList("converted"));
-        velocityEngine.evaluate(context, writer, "template", new StringReader("$var.method('test')"));
-        assertEquals("success", writer.toString());
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method('test')"));
+        assertEquals("success", this.writer.toString());
     }
 
     @Test
     public void getMethodWhenInnerMethodAndNoConversion() throws Exception
     {
-        VelocityEngine velocityEngine = this.componentManager.getInstance(VelocityEngine.class);
-        velocityEngine.initialize(new Properties());
-        StringWriter writer = new StringWriter();
-        VelocityContext context = new VelocityContext();
-        context.put("var", new ExtendingClass());
-        velocityEngine.evaluate(context, writer, "template", new StringReader("$var.method()"));
-        assertEquals("inner", writer.toString());
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method()"));
+        assertEquals("inner", this.writer.toString());
     }
 
     @Test
     public void getMethodWhenNoConversion() throws Exception
     {
-        VelocityEngine velocityEngine = this.componentManager.getInstance(VelocityEngine.class);
-        velocityEngine.initialize(new Properties());
-        StringWriter writer = new StringWriter();
-        VelocityContext context = new VelocityContext();
-        context.put("var", new ExtendingClass());
-        velocityEngine.evaluate(context, writer, "template", new StringReader("$var.method(['converted'])"));
-        assertEquals("success", writer.toString());
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method(['converted'])"));
+        assertEquals("success", this.writer.toString());
     }
 
     @Test
     public void getMethodWhenNoMatchingMethod() throws Exception
     {
-        VelocityEngine velocityEngine = this.componentManager.getInstance(VelocityEngine.class);
-        velocityEngine.initialize(new Properties());
-        StringWriter writer = new StringWriter();
-        VelocityContext context = new VelocityContext();
-        context.put("var", new ExtendingClass());
-        velocityEngine.evaluate(context, writer, "template", new StringReader("$var.notexisting()"));
-        assertEquals("$var.notexisting()", writer.toString());
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.notexisting()"));
+        assertEquals("$var.notexisting()", this.writer.toString());
     }
 
     @Test
     public void getMethodWhenExistingMethodNameButInvalidSignature() throws Exception
     {
-        VelocityEngine velocityEngine = this.componentManager.getInstance(VelocityEngine.class);
-        velocityEngine.initialize(new Properties());
-        StringWriter writer = new StringWriter();
-        VelocityContext context = new VelocityContext();
-        context.put("var", new ExtendingClass());
         try {
-            velocityEngine.evaluate(context, writer, "template", new StringReader("$var.method('a', 'b')"));
+            this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method('a', 'b')"));
             fail("Should have raised an exception");
         } catch (XWikiVelocityException expected) {
             assertEquals("Failed to evaluate content with id [template]", expected.getMessage());
