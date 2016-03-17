@@ -38,6 +38,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.collections4.map.LRUMap;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
@@ -173,9 +175,24 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     }
 
     /**
+     * The current version of the store. Should be upgraded if any change is made.
+     */
+    private static final int VERSION = 1;
+
+    /**
      * The name of the file where the job status is stored.
      */
     private static final String FILENAME_STATUS = "status.xml";
+
+    /**
+     * The name of the file where various information about the status store are stored (like the version of the store).
+     */
+    private static final String INDEX_FILE = "store.properties";
+
+    /**
+     * The name of the property containing the version of the store.
+     */
+    private static final String INDEX_FILE_VERSION = "version";
 
     /**
      * Encoding used for file content and names.
@@ -232,14 +249,22 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         try {
             this.serializer = new JobStatusSerializer();
 
-            repair();
+            // Check if the store need to be upgraded
+            PropertiesConfiguration properties = getStoreProperties();
+            int version = properties.getInt(INDEX_FILE_VERSION, 0);
+            if (VERSION > version) {
+                repair();
+
+                // Update version
+                properties.setProperty(INDEX_FILE_VERSION, VERSION);
+                properties.save();
+            }
         } catch (Exception e) {
             this.logger.error("Failed to load jobs", e);
         }
 
-        BasicThreadFactory threadFactory =
-            new BasicThreadFactory.Builder().namingPattern("Job status serializer").daemon(true)
-                .priority(Thread.MIN_PRIORITY).build();
+        BasicThreadFactory threadFactory = new BasicThreadFactory.Builder().namingPattern("Job status serializer")
+            .daemon(true).priority(Thread.MIN_PRIORITY).build();
         this.executorService =
             new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), threadFactory);
 
@@ -363,6 +388,13 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         }
 
         return folder;
+    }
+
+    private PropertiesConfiguration getStoreProperties() throws ConfigurationException
+    {
+        File folder = this.configuration.getStorage();
+
+        return new PropertiesConfiguration(new File(folder, INDEX_FILE));
     }
 
     /**
