@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
-public class DefaultJobStatusStorageTest
+public class DefaultJobStatusStoreTest
 {
     @Rule
     public final MockitoComponentMockingRule<DefaultJobStatusStore> componentManager =
