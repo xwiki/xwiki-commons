@@ -37,14 +37,17 @@ public class TestResources
 
     public static final ExtensionId INSTALLED_ONNAMESPACE_ID = new ExtensionId("installedonnamespace", "version");
 
-    public static final ExtensionId INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID = new ExtensionId(
-        "installedonnemspacewithrootdependency", "version");
+    public static final ExtensionId INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID =
+        new ExtensionId("installedonnemspacewithrootdependency", "version");
 
-    public static final ExtensionId INSTALLED_WITHFEATUREONNAMESPACE_ID = new ExtensionId(
-        "installedwithfeatureonnamespace", "version");
+    public static final ExtensionId INSTALLED_WITHFEATUREONNAMESPACE_ID =
+        new ExtensionId("installedwithfeatureonnamespace", "version");
 
-    public static final ExtensionId INSTALLED_WITHFEATUREASDEPENDENCY_ID = new ExtensionId(
-        "installedwithfeatureasdependency", "version");
+    public static final ExtensionId INSTALLED_WITHFEATUREASDEPENDENCY_ID =
+        new ExtensionId("installedwithfeatureasdependency", "version");
+
+    public static final ExtensionId INSTALLED_WITHMISSINDEPENDENCY_ID =
+        new ExtensionId("installedwithmissingdependency", "version");
 
     public InstalledExtension installed;
 
@@ -64,8 +67,13 @@ public class TestResources
 
     public static final ExtensionId REMOTE_WITHLDEPENDENCY_ID = new ExtensionId("rwithldependency", "version");
 
-    public static final ExtensionId REMOTE_WITHRANDCDEPENDENCIES_ID = new ExtensionId("rwithrandcdependencies",
-        "version");
+    public static final ExtensionId REMOTE_WITHRANDCDEPENDENCIES_ID =
+        new ExtensionId("rwithrandcdependencies", "version");
+
+    public static final ExtensionId REMOTE_WITHRMISSINGDEPENDENCY_ID =
+        new ExtensionId("rwithmissingdependency", "version");
+
+    public static final ExtensionId REMOTE_MISSINGDEPENDENCY_ID = new ExtensionId("missingdependency", "version");
 
     public static final ExtensionId REMOTE_UPGRADE10_ID = new ExtensionId("upgrade", "1.0");
 
@@ -81,8 +89,8 @@ public class TestResources
     public static final ExtensionId REMOTE_UPGRADEWITHDEPENDENCY20_ID =
         new ExtensionId("upgrade-withdependency", "2.0");
 
-    public static final ExtensionId REMOTE_OTHERUPGRADEWITHDEPENDENCY20_ID = new ExtensionId(
-        "other-upgrade-withdependency", "2.0");
+    public static final ExtensionId REMOTE_OTHERUPGRADEWITHDEPENDENCY20_ID =
+        new ExtensionId("other-upgrade-withdependency", "2.0");
 
     public static final ExtensionId REMOTE_ROOTEXTENSION10_ID = new ExtensionId("rootextension", "1.0");
 
@@ -90,8 +98,8 @@ public class TestResources
 
     public static final ExtensionId REMOTE_NOTINSTALLED_ID = new ExtensionId("notinstalledextension", "2.0");
 
-    public static final ExtensionId REMOTE_NOTINSTALLED_DEPENDENCY_ID = new ExtensionId(
-        "notinstalledextensiondependency", "2.0");
+    public static final ExtensionId REMOTE_NOTINSTALLED_DEPENDENCY_ID =
+        new ExtensionId("notinstalledextensiondependency", "2.0");
 
     // Methods
 
@@ -101,8 +109,7 @@ public class TestResources
         this.installedDependency = installedExtensionRepository.resolve(INSTALLED_DEPENDENCY_ID);
         this.installedwithfeatureasdependency =
             installedExtensionRepository.getInstalledExtension(TestResources.INSTALLED_WITHFEATUREASDEPENDENCY_ID);
-        this.installedonnemspacewithrootdependency =
-            installedExtensionRepository
-                .getInstalledExtension(TestResources.INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID);
+        this.installedonnemspacewithrootdependency = installedExtensionRepository
+            .getInstalledExtension(TestResources.INSTALLED_ONNAMESPACEWITHROOTDEPENDENCY_ID);
     }
 }

@@ -30,6 +30,7 @@ import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.UninstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
+import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
@@ -63,6 +64,17 @@ public abstract class AbstractExtensionHandlerTest
         this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
     }
 
+    protected ExtensionPlanNode getNode(ExtensionId id, Collection<ExtensionPlanNode> nodes)
+    {
+        for (ExtensionPlanNode node : nodes) {
+            if (node.getAction().getExtension().getId().equals(id)) {
+                return node;
+            }
+        }
+
+        return null;
+    }
+
     protected Job executeJob(String jobId, Request request, LogLevel failFrom) throws Throwable
     {
         Job installJob = this.jobExecutor.execute(jobId, request);
@@ -71,8 +83,8 @@ public abstract class AbstractExtensionHandlerTest
 
         List<LogEvent> errors = installJob.getStatus().getLog().getLogsFrom(failFrom);
         if (!errors.isEmpty()) {
-            throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable() : new Exception(errors.get(0)
-                .getFormattedMessage());
+            throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable()
+                : new Exception(errors.get(0).getFormattedMessage());
         }
 
         return installJob;
@@ -163,8 +175,7 @@ public abstract class AbstractExtensionHandlerTest
         return (DefaultExtensionPlan<UninstallRequest>) uninstallJob.getStatus();
     }
 
-    protected Job uninstall(String jobId, ExtensionId extensionId, String namespace, LogLevel failFrom)
-        throws Throwable
+    protected Job uninstall(String jobId, ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
     {
         UninstallRequest uninstallRequest = new UninstallRequest();
         uninstallRequest.addExtension(extensionId);

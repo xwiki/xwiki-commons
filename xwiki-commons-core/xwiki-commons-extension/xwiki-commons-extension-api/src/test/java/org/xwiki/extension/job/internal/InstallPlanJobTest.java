@@ -416,6 +416,68 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertTrue(childnode.getChildren().isEmpty());
     }
 
+    @Test
+    public void testReInstalledWithMissingDependency() throws Throwable
+    {
+        ExtensionPlan plan = installPlan(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID);
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INITIALIZE, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_MISSINGDEPENDENCY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallRemoteWithMissingDependency() throws Throwable
+    {
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHRMISSINGDEPENDENCY_ID);
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_WITHRMISSINGDEPENDENCY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INITIALIZE, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_MISSINGDEPENDENCY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
     @Test(expected = InstallException.class)
     public void testInstallLowerVersionOfDependencyOnRoot() throws Throwable
     {

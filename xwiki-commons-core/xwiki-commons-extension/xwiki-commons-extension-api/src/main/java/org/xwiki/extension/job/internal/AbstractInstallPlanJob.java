@@ -374,7 +374,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     private VersionConstraint checkExistingPlanNodeDependency(ExtensionDependency extensionDependency, String namespace,
         List<ModifableExtensionPlanNode> parentBranch, VersionConstraint previousVersionConstraint)
-            throws InstallException
+        throws InstallException
     {
         VersionConstraint versionConstraint = previousVersionConstraint;
 
@@ -441,7 +441,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     private ExtensionDependency checkInstalledDependency(ExtensionDependency extensionDependency,
         VersionConstraint versionConstraint, String namespace, List<ModifableExtensionPlanNode> parentBranch)
-            throws InstallException
+        throws InstallException
     {
         InstalledExtension installedExtension =
             this.installedExtensionRepository.getInstalledExtension(extensionDependency.getId(), namespace);
@@ -526,7 +526,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      */
     private void installExtensionDependency(ExtensionDependency extensionDependency, String namespace,
         List<ModifableExtensionPlanNode> parentBranch)
-            throws InstallException, IncompatibleVersionConstraintException, ResolveException
+        throws InstallException, IncompatibleVersionConstraintException, ResolveException
     {
         if (getRequest().isVerbose()) {
             if (namespace != null) {
@@ -701,7 +701,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      */
     private Extension resolveExtension(ExtensionId extensionId) throws InstallException
     {
-        // Check is the extension is already in local repository
+        // Check if the extension is already in local repository
         Extension extension = this.localExtensionRepository.getLocalExtension(extensionId);
 
         if (extension == null) {
@@ -757,7 +757,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      */
     private ModifableExtensionPlanNode installExtension(Extension extension, boolean dependency, String namespace,
         ExtensionDependency initialDependency) throws InstallException, ResolveException,
-            IncompatibleVersionConstraintException, UninstallException, NamespaceNotAllowedException
+        IncompatibleVersionConstraintException, UninstallException, NamespaceNotAllowedException
     {
         // Check the namespace is compatible with the Extension
         this.namespaceResolver.checkAllowed(extension.getAllowedNamespaces(), namespace);
@@ -766,7 +766,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         checkExistingPlanNodeExtension(extension, namespace);
 
         // Check if the extension is already installed
-        checkInstalledExtension(extension, namespace);
+        extension = checkInstalledExtension(extension, namespace);
 
         // Check if the extension is a core extension
         checkCoreExtension(extension);
@@ -850,6 +850,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 } else {
                     action = Action.UPGRADE;
                 }
+            } else if (extension instanceof InstalledExtension) {
+                action = Action.INITIALIZE;
             } else {
                 action = Action.INSTALL;
             }
@@ -863,20 +865,28 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         }
     }
 
-    private void checkInstalledExtension(Extension extension, String namespace) throws InstallException
+    private Extension checkInstalledExtension(Extension extension, String namespace) throws InstallException
     {
         // Check if the extension conflict with an extension installed on root namespace
         if (namespace != null) {
             checkRootExtension(extension);
         }
 
-        // Check if the exact same extension is already installed on target namespace
+        // Check if the exact same valid extension is already installed on target namespace
         InstalledExtension installedExtension =
             this.installedExtensionRepository.getInstalledExtension(extension.getId());
         if (installedExtension != null && installedExtension.isInstalled(namespace)) {
-            throw new InstallException(
-                String.format("Extension [%s] is already installed on namespace [%s]", extension.getId(), namespace));
+            if (installedExtension.isValid(namespace)) {
+                throw new InstallException(String.format("Extension [%s] is already installed on namespace [%s]",
+                    extension.getId(), namespace));
+            }
+
+            // In case the extension is already installed on the namespace but is invalid continue with it to make clear
+            // to following code we are actually repairing it
+            return installedExtension;
         }
+
+        return extension;
     }
 
     private void checkRootExtension(Extension extension) throws InstallException
@@ -943,6 +953,12 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             previousExtensions.addAll(installedExtensions);
         }
 
+        // If the extensions is already installed (usually mean we are trying to repair an invalid extension) it's not
+        // going to replace itself
+        if (extension instanceof InstalledExtension) {
+            previousExtensions.remove(extension);
+        }
+
         return previousExtensions;
     }
 
@@ -976,7 +992,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     private VersionConstraint checkReplacedInstalledExtensions(Collection<InstalledExtension> installedExtensions,
         ExtensionId feature, String namespace, VersionConstraint versionConstraint)
-            throws IncompatibleVersionConstraintException, ResolveException
+        throws IncompatibleVersionConstraintException, ResolveException
     {
         if (installedExtensions.isEmpty()) {
             return versionConstraint;

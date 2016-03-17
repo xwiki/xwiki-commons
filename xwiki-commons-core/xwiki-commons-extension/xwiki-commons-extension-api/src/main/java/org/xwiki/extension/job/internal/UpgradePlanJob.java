@@ -21,8 +21,8 @@ package org.xwiki.extension.job.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.NavigableSet;
+import java.util.TreeSet;
 
 import javax.inject.Named;
 
@@ -78,34 +78,56 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
     {
         if (!getRequest().getExcludedExtensions().contains(extension.getId())
             && (!filterDependencies || !extension.isDependency(namespace))) {
-            IterableResult<Version> versions;
-            try {
-                versions = this.repositoryManager.resolveVersions(extension.getId().getId(), 0, -1);
+            NavigableSet<Version> versions = getVersions(extension, namespace);
 
-                if (versions.getSize() == 0) {
-                    throw new ResolveException("Can't find any remote version for extension ([" + extension + "]");
-                }
-
-                List<Version> versionList = new ArrayList<Version>(versions.getSize());
-                for (Version version : versions) {
-                    versionList.add(version);
-                }
-
-                upgradeExtension(extension, namespace, versionList);
-            } catch (ResolveException e) {
-                this.logger.debug("Failed to resolve versions for extension id [{}]", extension.getId().getId(), e);
+            // Useless to continue if the extension does not have any available version
+            if (!versions.isEmpty()) {
+                upgradeExtension(extension, namespace, versions.descendingSet());
             }
         }
     }
 
-    protected void upgradeExtension(InstalledExtension extension, String namespace, List<Version> versionList)
+    private NavigableSet<Version> getVersions(InstalledExtension extension, String namespace)
     {
+        NavigableSet<Version> versionList = new TreeSet<>();
 
-        for (ListIterator<Version> it = versionList.listIterator(versionList.size()); it.hasPrevious();) {
-            Version version = it.previous();
+        // Search local versions
+        try {
+            IterableResult<Version> versions =
+                this.localExtensionRepository.resolveVersions(extension.getId().getId(), 0, -1);
+            for (Version version : versions) {
+                versionList.add(version);
+            }
+        } catch (ResolveException e) {
+            this.logger.debug("Failed to resolve local versions for extension id [{}]", extension.getId().getId(), e);
+        }
 
-            // Only upgrade if the existing version is greater than the current one
-            if (extension.getId().getVersion().compareTo(version) >= 0) {
+        // Search remote versions
+        try {
+            IterableResult<Version> versions = this.repositoryManager.resolveVersions(extension.getId().getId(), 0, -1);
+
+            for (Version version : versions) {
+                versionList.add(version);
+            }
+        } catch (ResolveException e) {
+            this.logger.debug("Failed to resolve remote versions for extension id [{}]", extension.getId().getId(), e);
+        }
+
+        // Make sure the current version is included if the extension is invalid (it's possible this version does
+        // not exist on any repository)
+        if (!extension.isValid(namespace)) {
+            versionList.add(extension.getId().getVersion());
+        }
+
+        return versionList;
+    }
+
+    protected void upgradeExtension(InstalledExtension extension, String namespace, Collection<Version> versionList)
+    {
+        for (Version version : versionList) {
+            // Don't try to upgrade for lower versions but try to repair same version of the extension is invalid
+            int compare = extension.getId().getVersion().compareTo(version);
+            if (compare > 0 || (compare == 0 && extension.isValid(namespace))) {
                 break;
             }
 

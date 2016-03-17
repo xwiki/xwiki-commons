@@ -62,7 +62,17 @@ public interface ExtensionPlanAction
         /**
          * Uninstall the extension.
          */
-        UNINSTALL
+        UNINSTALL,
+
+        /**
+         * Initialize the extension.
+         * <p>
+         * Mostly used for "repaired" invalid extensions which need to be initialized (invalid JAR extensions are not
+         * loaded for example).
+         * 
+         * @since 8.1M1
+         */
+        INITIALIZE
     }
 
     /**

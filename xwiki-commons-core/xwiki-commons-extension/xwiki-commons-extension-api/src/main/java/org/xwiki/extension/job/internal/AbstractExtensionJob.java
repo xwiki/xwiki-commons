@@ -182,23 +182,20 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             previousExtensionsIds = null;
         }
 
-        this.progressManager.pushLevelProgress(2, this);
-
         try {
-            this.progressManager.startStep(this);
-
-            if (action.getAction() == Action.UNINSTALL) {
+            if (action.getAction() == Action.INITIALIZE) {
                 InstalledExtension installedExtension = (InstalledExtension) action.getExtension();
 
-                this.progressManager.startStep(this);
+                // Initialize
+                initializeExtension(installedExtension, namespace);
+            } else if (action.getAction() == Action.UNINSTALL) {
+                InstalledExtension installedExtension = (InstalledExtension) action.getExtension();
 
                 // Uninstall
                 uninstallExtension(installedExtension, namespace);
             } else {
                 // Store extension in local repository
                 LocalExtension localExtension = this.localExtensionRepository.resolve(extension.getId());
-
-                this.progressManager.startStep(this);
 
                 // Install
                 installExtension(localExtension, previousExtensions, namespace, action.isDependency());
@@ -217,9 +214,21 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             }
 
             throw e;
-        } finally {
-            this.progressManager.popLevelProgress(this);
         }
+    }
+
+    /**
+     * @param installedExtension the existing extension
+     * @param namespace the namespace in which to perform the action
+     * @throws ExtensionException failed to initialize extension
+     */
+    private void initializeExtension(InstalledExtension installedExtension, String namespace) throws ExtensionException
+    {
+        // Initialize extension
+        this.extensionHandlerManager.initialize(installedExtension, namespace);
+
+        this.observationManager.notify(new ExtensionUninstalledEvent(installedExtension.getId(), namespace),
+            installedExtension);
     }
 
     /**
