@@ -92,7 +92,7 @@ public class ServletEnvironment extends AbstractEnvironment
         final String tmpDirectory = super.getTemporaryDirectoryName();
         try {
             if (tmpDirectory == null) {
-                File tempDir = (File) this.getServletContext().getAttribute("javax.servlet.context.tempdir");
+                File tempDir = (File) this.getServletContext().getAttribute(ServletContext.TEMPDIR);
                 return tempDir == null ? null : tempDir.getCanonicalPath();
             }
         } catch (IOException e) {
