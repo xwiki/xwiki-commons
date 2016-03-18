@@ -1139,7 +1139,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>com.github.siom79.japicmp</groupId>
           <artifactId>japicmp-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.7.1</version>
+          <version>0.7.2-SNAPSHOT</version>
           <configuration>
             <oldVersion>
               <dependency>
@@ -1162,6 +1162,9 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>+              <onlyBinaryIncompatible>false</onlyBinaryIncompatible>
               <includeSynthetic>false</includeSynthetic>
               <ignoreMissingClasses>false</ignoreMissingClasses>
+              <skipHtmlReport>true</skipHtmlReport>
+              <skipXmlReport>true</skipXmlReport>
+              <ignoreMissingOldVersion>true</ignoreMissingOldVersion>
               <excludes>
                 <exclude>*.internal.*</exclude>
                 <exclude>*.test.*</exclude>
@@ -1183,12 +1186,12 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.4.1</version>
+          <version>0.4.2</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.6.0</version>
+              <version>0.6.2</version>
             </dependency>
           </dependencies>
           <executions>
