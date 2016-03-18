@@ -167,9 +167,16 @@ public class ExternalExtensionCheck extends AbstractPomCheck
     private void checkNonCoreDevelopers(Model model) throws EnforcerRuleException
     {
         List developers = model.getDevelopers();
-        if (developers.size() == 1 && ((Developer)developers.get(0)).getName().equals("XWiki Development Team")) {
-            throw new EnforcerRuleException(String.format("You must override the <developers> section as otherwise "
-                + "your Extension will be considered as developed by the [%s]", CORE_DEVELOPERS));
+        if (developers.size() == 1) {
+            String developerName = ((Developer) developers.get(0)).getName();
+
+            if (developerName == null) {
+                throw new EnforcerRuleException(
+                    "You must define <developers> section as otherwise your Extension will have no author");
+            } else if (developerName.equals(CORE_DEVELOPERS)) {
+                throw new EnforcerRuleException(String.format("You must override the <developers> section as otherwise "
+                    + "your Extension will be considered as developed by the [%s]", CORE_DEVELOPERS));
+            }
         }
     }
 }
