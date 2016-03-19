@@ -48,8 +48,9 @@
          commons children anyway -->
     <commons.version>8.1-SNAPSHOT</commons.version>
 
-    <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
-    <xwiki.clirr.previous.version>8.0</xwiki.clirr.previous.version>
+    <!-- The previous stable version of this project to check against for finding backward incompatibility
+         (binary and source). -->
+    <xwiki.compatibility.previous.version>7.4.2</xwiki.compatibility.previous.version>
 
     <!-- REST -->
     <restlet.version>2.0.14</restlet.version>
