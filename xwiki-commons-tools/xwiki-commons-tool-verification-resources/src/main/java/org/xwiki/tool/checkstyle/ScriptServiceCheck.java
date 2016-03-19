@@ -19,7 +19,7 @@
  */
 package org.xwiki.tool.checkstyle;
 
-import com.puppycrawl.tools.checkstyle.api.Check;
+import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.FullIdent;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
@@ -31,7 +31,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * @version $Id$
  * @since 5.3M1
  */
-public class ScriptServiceCheck extends Check
+public class ScriptServiceCheck extends AbstractCheck
 {
     private String packageName;
 
