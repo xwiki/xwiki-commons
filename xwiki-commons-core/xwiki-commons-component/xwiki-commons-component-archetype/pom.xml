@@ -113,6 +113,15 @@
           </newVersion>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <configuration>
+          <oldArtifacts>
+            <artifact>${project.groupId}:${project.artifactId}:jar:${xwiki.compatibility.previous.version}</artifact>
+          </oldArtifacts>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>
