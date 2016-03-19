@@ -91,13 +91,15 @@
     <!-- Checkstyle -->
     <checkstyle.version>6.16.1</checkstyle.version>
 
-    <!-- By default Checkstyle, Backward compatibility checks, Enforcer and License plugins are on -->
+    <!-- By default Checkstyle, Backward compatibility check, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
-    <xwiki.clirr.skip>false</xwiki.clirr.skip>
-    <xwiki.japicmp.skip>false</xwiki.japicmp.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
+    <!-- Note: We only need a single backward-compatibility check. We currently turn clirr off since it doesn't work
+         with java8 and japicmp is not fully working yet either -->
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+    <xwiki.japicmp.skip>true</xwiki.japicmp.skip>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -1139,7 +1141,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>com.github.siom79.japicmp</groupId>
           <artifactId>japicmp-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.7.2-SNAPSHOT</version>
+          <version>0.7.1</version>
           <configuration>
             <oldVersion>
               <dependency>
@@ -1162,9 +1164,11 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>+              <onlyBinaryIncompatible>false</onlyBinaryIncompatible>
               <includeSynthetic>false</includeSynthetic>
               <ignoreMissingClasses>false</ignoreMissingClasses>
+              <!-- Only supported in 0.7.2-SNAPSHOT
               <skipHtmlReport>true</skipHtmlReport>
               <skipXmlReport>true</skipXmlReport>
               <ignoreMissingOldVersion>true</ignoreMissingOldVersion>
+              -->
               <excludes>
                 <exclude>*.internal.*</exclude>
                 <exclude>*.test.*</exclude>
