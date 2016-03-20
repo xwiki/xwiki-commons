@@ -951,31 +951,6 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             <source>1.7</source>
             <target>1.7</target>
           </configuration>
-          <executions>
-            <!-- We need custom sourcepaths for our Component Annotation Process work
-                (See ComponentCheckerAnnotationProcessor.java). This is required because of
-                http://jira.codehaus.org/browse/MCOMPILER-122.
-
-                However note that IntelliJ IDEA doesn't honor custom sourcepaths, see
-                https://youtrack.jetbrains.com/issue/IDEA-133120, which means that you need to turn off
-                Annotation Processing in IDEA or IDEA will generate errors while building modules -->
-            <execution>
-              <id>default-compile</id>
-              <configuration>
-                <compilerArguments>
-                  <sourcepath>${xwiki.sourcepath.main}</sourcepath>
-                </compilerArguments>
-              </configuration>
-            </execution>
-            <execution>
-              <id>default-testCompile</id>
-              <configuration>
-                <compilerArguments>
-                  <sourcepath>${xwiki.sourcepath.test}</sourcepath>
-                </compilerArguments>
-              </configuration>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1602,31 +1577,6 @@ mm
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <!-- For Annotation Processing and specifically for our ComponentCheckerAnnotationProcessor -->
-    <profile>
-      <id>annotationprocessing-notwindows</id>
-      <activation>
-        <os>
-          <family>!windows</family>
-        </os>
-      </activation>
-      <properties>
-        <xwiki.sourcepath.main>${project.basedir}/src/main/java:${project.basedir}/src/main/resources</xwiki.sourcepath.main>
-        <xwiki.sourcepath.test>${project.basedir}/src/test/java:${project.basedir}/src/test/resources</xwiki.sourcepath.test>
-      </properties>
-    </profile>
-    <profile>
-      <id>annotationprocessing-windows</id>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-      <properties>
-        <xwiki.sourcepath.main>${project.basedir}/src/main/java;${project.basedir}/src/main/resources</xwiki.sourcepath.main>
-        <xwiki.sourcepath.test>${project.basedir}/src/test/java;${project.basedir}/src/test/resources</xwiki.sourcepath.test>
-      </properties>
     </profile>
   </profiles>
   <distributionManagement>
