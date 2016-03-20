@@ -33,16 +33,28 @@
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
-      <!-- Show compiler warnings -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <compilerArgument>-Xlint:all</compilerArgument>
+          <compilerArgs>
+            <!-- TODO: At some point, we should turn on failing on warnings since they can be real errors and tey keep
+                 growing on our build logs and we need to start addressing them -->
+            <!--arg>-Werror</arg-->
+            <arg>-Xlint:all</arg>
+            <!-- Disable the javac warning when compiling for an older JVM. Note that this can result in class files
+                 that do not work on the older platform since references to non-existent methods can get included.
+                 However, it's hard to specify a generic location of the JRE that will work on all devs machines which
+                 is why we're ignoring the warning (since we want warnings to fail the build...).
+                 For more details, see:
+                 - https://blogs.oracle.com/darcy/entry/bootclasspath_older_source
+                 - http://stackoverflow.com/questions/9164625/maven-use-jdk-7-to-compile-for-jvm-5
+            -->
+            <arg>-Xlint:-options</arg>
+          </compilerArgs>
           <showWarnings>true</showWarnings>
           <showDeprecation>true</showDeprecation>
         </configuration>
       </plugin>
-
       <!-- We want to force packaging the license resources in the produced XWiki artifacts -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -113,7 +125,7 @@
     <pluginManagement>
       <plugins>
         <!-- Apply checkstyle rules and fail the build in case of errors. The checkstyle config
-             files are taken from the build-tools JAR module.-->
+             files are taken from the xwiki-commons-tool-verification-resources JAR module.-->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
@@ -127,7 +139,6 @@
           <configuration>
             <configLocation>checkstyle.xml</configLocation>
             <propertyExpansion>currentVersion=${project.version}</propertyExpansion>
-            <!-- Put back failOnViolation to true -->
             <failOnViolation>true</failOnViolation>
           </configuration>
           <executions>

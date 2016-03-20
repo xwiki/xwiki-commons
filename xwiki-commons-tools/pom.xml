@@ -31,6 +31,13 @@
   <name>XWiki Commons - Tools - Parent POM</name>
   <packaging>pom</packaging>
   <description>XWiki Commons - Tools - Parent POM</description>
+  <properties>
+    <!-- Skip checkstyle by default since it needs the right configuration which is in the
+         xwiki-commons-tool-verification-resources module (i.e. a children).
+         Note that we don't run the checkstyle plugin by default in the tools but we still need to disable it in case
+         someone runs "mvn checkstyle:check" from the command line. -->
+    <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+  </properties>
   <modules>
     <!-- Sorted Alphabetically -->
     <module>xwiki-commons-tool-enforcers</module>

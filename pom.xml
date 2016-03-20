@@ -867,8 +867,6 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
                  conflict between checkstyle and clover. Namely the clovered code doesn't pass our
                  checkstyle rules -->
             <skip>${xwiki.checkstyle.skip}</skip>
-            <!-- Don't fail the build when the wrong configuration is used (allows executing checkstyle:check which does not take into account skip) -->
-            <failOnViolation>false</failOnViolation>
           </configuration>
           <!-- We redeclare the version of checkstyle to control which version we use. We do that since we also write
                custom checkstyle checks and we need to keep in sync the checkstyle version used to compile those
