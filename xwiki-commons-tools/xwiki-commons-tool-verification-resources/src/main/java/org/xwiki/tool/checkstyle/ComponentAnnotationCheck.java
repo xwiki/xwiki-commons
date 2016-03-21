@@ -131,7 +131,7 @@ public class ComponentAnnotationCheck extends AbstractCheck
             return;
         }
 
-        Annotation componentAnnotation = getInheritedAnnotation(this.componentAnnotationClass, componentClass);
+        Annotation componentAnnotation = componentClass.getAnnotation(this.componentAnnotationClass);
         if (componentAnnotation != null) {
             // Parse the components.txt if not already parsed for the current maven module
             if (this.registeredComponentNames == null) {
@@ -159,8 +159,8 @@ public class ComponentAnnotationCheck extends AbstractCheck
 
             // This is check 3-A
             Annotation instantiationStrategyAnnotation =
-                getInheritedAnnotation(this.instantiationStrategyAnnotationClass, componentClass);
-            Annotation singletonAnnotation = getInheritedAnnotation(this.singletonAnnotationClass, componentClass);
+                componentClass.getAnnotation(this.instantiationStrategyAnnotationClass);
+            Annotation singletonAnnotation = componentClass.getAnnotation(this.singletonAnnotationClass);
             if (instantiationStrategyAnnotation == null && singletonAnnotation == null) {
                 log(ast.getLineNo(), ast.getColumnNo(), String.format(
                     "Component class [%s] must have either the [%s] or the [%s] annotation defined on it.",
@@ -233,19 +233,6 @@ public class ComponentAnnotationCheck extends AbstractCheck
         PrintWriter pw = new PrintWriter(sw, true);
         t.printStackTrace(pw);
         return sw.getBuffer().toString();
-    }
-
-    public Annotation getInheritedAnnotation(Class<? extends Annotation> annotation, Class<?> clazz)
-    {
-        if (clazz.isAnnotationPresent(annotation)) {
-            return clazz.getAnnotation(annotation);
-        }
-        Class<?> superClass = clazz.getSuperclass();
-        if (superClass == null) {
-            return null;
-        } else {
-            return getInheritedAnnotation(annotation, clazz.getSuperclass());
-        }
     }
 
     private Class<? extends Annotation> loadAnnotationClass(String annotationClassString)
