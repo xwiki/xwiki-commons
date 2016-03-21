@@ -127,7 +127,7 @@
 
   </properties>
   <prerequisites>
-    <maven>3.0</maven>
+    <maven>3.1.1</maven>
   </prerequisites>
   <licenses>
     <license>
