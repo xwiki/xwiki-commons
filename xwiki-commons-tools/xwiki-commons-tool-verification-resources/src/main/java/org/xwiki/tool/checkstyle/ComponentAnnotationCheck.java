@@ -26,9 +26,12 @@ import java.io.StringWriter;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
+import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.FullIdent;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
@@ -65,6 +68,15 @@ public class ComponentAnnotationCheck extends AbstractCheck
 
     private Class<? extends Annotation> instantiationStrategyAnnotationClass;
 
+    private String artifactId;
+
+    public void setArtifactId(String artifactId) throws CheckstyleException
+    {
+        if (artifactId != null && !artifactId.isEmpty()) {
+            this.artifactId = artifactId;
+        }
+    }
+
     @Override
     public int[] getDefaultTokens()
     {
@@ -89,6 +101,12 @@ public class ComponentAnnotationCheck extends AbstractCheck
     @Override
     public void visitToken(DetailAST ast)
     {
+        if (this.artifactId == null) {
+            // If no artifactId is set, report an error
+            log(ast.getLineNo(), ast.getColumnNo(), "No artifactId expansion parameter passed, cannot continue!");
+            return ;
+        }
+
         if (this.componentAnnotationClass == null || this.instantiationStrategyAnnotationClass == null
             || this.singletonAnnotationClass == null)
         {
@@ -186,7 +204,22 @@ public class ComponentAnnotationCheck extends AbstractCheck
     {
         List<String> results = new ArrayList<>();
 
-        this.componentsDeclarationLocation = getClassLoader().getResource(COMPONENTS_TXT_LOCATION);
+        try {
+            Enumeration<URL> urls = getClassLoader().getResources(COMPONENTS_TXT_LOCATION);
+            while (urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                // We find the right components.txt by checking that the path to it contains the artifact Id of the
+                // current project...
+                if (url.toExternalForm().contains(this.artifactId)) {
+                    this.componentsDeclarationLocation = url;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            log(1, 1, String.format("Failed to locate [%s]. Error [%s]", COMPONENTS_TXT_LOCATION,
+                getThrowableString(e)));
+            return Collections.emptyList();
+        }
 
         try (BufferedReader in = new BufferedReader(
             new InputStreamReader(this.componentsDeclarationLocation.openStream())))
