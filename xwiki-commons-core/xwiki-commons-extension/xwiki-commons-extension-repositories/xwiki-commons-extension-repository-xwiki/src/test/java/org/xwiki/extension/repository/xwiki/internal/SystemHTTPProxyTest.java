@@ -19,11 +19,9 @@
  */
 package org.xwiki.extension.repository.xwiki.internal;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.http.client.ClientProtocolException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -53,12 +51,10 @@ public class SystemHTTPProxyTest
         new MockitoComponentMockingRule<ExtensionRepositoryFactory>(XWikiExtensionRepositoryFactory.class);
 
     @Test
-    public void testProxy() throws ClientProtocolException, IOException, ExtensionRepositoryException,
-        ComponentLookupException, URISyntaxException
+    public void testProxy() throws ExtensionRepositoryException, ComponentLookupException, URISyntaxException
     {
-        ExtensionRepository repository =
-            this.repositoryFactory.getComponentUnderTest().createRepository(
-                new DefaultExtensionRepositoryDescriptor("id", "xwiki", new URI("http://host")));
+        ExtensionRepository repository = this.repositoryFactory.getComponentUnderTest()
+            .createRepository(new DefaultExtensionRepositoryDescriptor("id", "xwiki", new URI("http://host")));
 
         try {
             repository.resolveVersions("id", 0, -1);
