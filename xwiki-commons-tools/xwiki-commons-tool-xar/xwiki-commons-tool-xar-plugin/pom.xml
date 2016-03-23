@@ -161,7 +161,6 @@
           <configLocation>checkstyle.xml</configLocation>
           <propertyExpansion>
             currentVersion=${project.version}
-            artifactId=${project.artifactId}
           </propertyExpansion>
           <excludes>
               **/AbstractXARMojo.java,

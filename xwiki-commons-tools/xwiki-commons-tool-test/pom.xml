@@ -55,7 +55,6 @@
           <configLocation>checkstyle.xml</configLocation>
           <propertyExpansion>
             currentVersion=${project.version}
-            artifactId=${project.artifactId}
           </propertyExpansion>
           <!-- Force execution since by default it's off for tools modules, see tools pom -->
           <skip>false</skip>

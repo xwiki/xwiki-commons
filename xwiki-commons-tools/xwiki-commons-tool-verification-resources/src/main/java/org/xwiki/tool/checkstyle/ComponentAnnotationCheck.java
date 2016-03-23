@@ -31,7 +31,6 @@ import java.util.Enumeration;
 import java.util.List;
 
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.FullIdent;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
@@ -68,15 +67,6 @@ public class ComponentAnnotationCheck extends AbstractCheck
 
     private Class<? extends Annotation> instantiationStrategyAnnotationClass;
 
-    private String artifactId;
-
-    public void setArtifactId(String artifactId) throws CheckstyleException
-    {
-        if (artifactId != null && !artifactId.isEmpty()) {
-            this.artifactId = artifactId;
-        }
-    }
-
     @Override
     public int[] getDefaultTokens()
     {
@@ -101,12 +91,6 @@ public class ComponentAnnotationCheck extends AbstractCheck
     @Override
     public void visitToken(DetailAST ast)
     {
-        if (this.artifactId == null) {
-            // If no artifactId is set, report an error
-            log(ast.getLineNo(), ast.getColumnNo(), "No artifactId expansion parameter passed, cannot continue!");
-            return ;
-        }
-
         if (this.componentAnnotationClass == null || this.instantiationStrategyAnnotationClass == null
             || this.singletonAnnotationClass == null)
         {
@@ -208,9 +192,9 @@ public class ComponentAnnotationCheck extends AbstractCheck
             Enumeration<URL> urls = getClassLoader().getResources(COMPONENTS_TXT_LOCATION);
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
-                // We find the right components.txt by checking that the path to it contains the artifact Id of the
-                // current project...
-                if (url.toExternalForm().contains(this.artifactId)) {
+                // We find the right components.txt by checking that the URL is using a "file" scheme (maven points
+                // to the target directory). For dependencies the URL scheme will be "jar".
+                if (url.getProtocol().equals("file")) {
                     this.componentsDeclarationLocation = url;
                     break;
                 }

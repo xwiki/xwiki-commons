@@ -140,7 +140,6 @@
             <configLocation>checkstyle.xml</configLocation>
             <propertyExpansion>
               currentVersion=${project.version}
-              artifactId=${project.artifactId}
             </propertyExpansion>
             <failOnViolation>true</failOnViolation>
           </configuration>

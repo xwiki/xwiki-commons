@@ -371,9 +371,7 @@
     </module>
 
     <!-- Verify that components.txt is in sync with @Component annotations -->
-    <module name="org.xwiki.tool.checkstyle.ComponentAnnotationCheck">
-      <property name="artifactId" value="${artifactId}" default=""/>
-    </module>
+    <module name="org.xwiki.tool.checkstyle.ComponentAnnotationCheck"/>
 
   </module>
 </module>
