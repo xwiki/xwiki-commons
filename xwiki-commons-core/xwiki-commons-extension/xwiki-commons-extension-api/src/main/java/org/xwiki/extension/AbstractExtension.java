@@ -222,6 +222,8 @@ public abstract class AbstractExtension implements Extension
                 return (T) getScm();
             case FIELD_REPOSITORIES:
                 return (T) getRepositories();
+            case FIELD_PROPERTIES:
+                return (T) getProperties();
 
             default:
                 // Unknown field, probably a property

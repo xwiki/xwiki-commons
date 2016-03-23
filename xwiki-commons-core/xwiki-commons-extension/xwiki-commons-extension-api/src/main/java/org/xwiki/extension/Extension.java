@@ -137,6 +137,12 @@ public interface Extension
     String FIELD_REPOSITORIES = "repositories";
 
     /**
+     * @see #getProperties()
+     * @since 7.4.3, 8.0.1, 8.1M1
+     */
+    String FIELD_PROPERTIES = "properties";
+
+    /**
      * Get an extension field (name, summary, id, etc.) by name. Fallback on properties.
      * 
      * @param <T> type of the field value
