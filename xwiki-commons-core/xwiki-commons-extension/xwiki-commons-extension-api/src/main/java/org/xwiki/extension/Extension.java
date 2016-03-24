@@ -19,7 +19,10 @@
  */
 package org.xwiki.extension;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.xwiki.extension.repository.ExtensionRepository;
@@ -187,16 +190,28 @@ public interface Extension extends Comparable<Extension>
      * @return the {@link ExtensionId}s also provided by this extension, an empty collection if there is none
      * @since 8.0M1
      */
-    Collection<ExtensionId> getExtensionFeatures();
+    default Collection<ExtensionId> getExtensionFeatures()
+    {
+        Collection<String> features = getFeatures();
+        List<ExtensionId> extensionFeatures = new ArrayList<ExtensionId>(features.size());
+        for (String feature : features) {
+            extensionFeatures.add(new ExtensionId(feature, getId().getVersion()));
+        }
+
+        return extensionFeatures;
+    }
 
     /**
      * Return the {@link ExtensionFeature} that matches the passed feature id.
      * 
-     * @param featureId the ide of the feature
+     * @param featureId the id of the feature
      * @return the {@link ExtensionId} associated to the passed id
      * @since 8.0M1
      */
-    ExtensionId getExtensionFeature(String featureId);
+    default ExtensionId getExtensionFeature(String featureId)
+    {
+        return getFeatures().contains(featureId) ? new ExtensionId(featureId, getId().getVersion()) : null;
+    }
 
     /**
      * @return the type of the extension
@@ -237,7 +252,10 @@ public interface Extension extends Comparable<Extension>
      * @return the namespaces where it's allowed to install this extension
      * @since 8.0M1
      */
-    Collection<String> getAllowedNamespaces();
+    default Collection<String> getAllowedNamespaces()
+    {
+        return Collections.emptyList();
+    }
 
     /**
      * @return the dependencies of the extension, an empty collection if there is none
