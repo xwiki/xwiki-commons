@@ -46,4 +46,14 @@ public interface ExtensionRequest extends Request
      * @return indicate if the request is applied on specific namespace or all of them
      */
     boolean hasNamespaces();
+
+    /**
+     * @return indicate if it's allowed to do modifications on root namespace during the job execution (not taken into
+     *         account if the target of the request is root namespace)
+     * @since 8.1M1
+     */
+    default boolean isRootModificationsAllowed()
+    {
+        return true;
+    }
 }

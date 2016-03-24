@@ -92,57 +92,125 @@ public abstract class AbstractExtensionHandlerTest
 
     protected InstalledExtension install(ExtensionId extensionId) throws Throwable
     {
-        return install(extensionId, (String[]) null, LogLevel.WARN);
+        return install(extensionId, true);
+    }
+
+    protected InstalledExtension install(ExtensionId extensionId, boolean rootModifications) throws Throwable
+    {
+        return install(extensionId, (String[]) null, rootModifications);
     }
 
     protected InstalledExtension install(ExtensionId extensionId, String[] namespaces) throws Throwable
     {
-        return install(extensionId, namespaces, LogLevel.WARN);
+        return install(extensionId, namespaces, true);
+    }
+
+    protected InstalledExtension install(ExtensionId extensionId, String[] namespaces, boolean rootModifications)
+        throws Throwable
+    {
+        return install(extensionId, namespaces, rootModifications, LogLevel.WARN);
     }
 
     protected InstalledExtension install(ExtensionId extensionId, String namespace) throws Throwable
     {
-        return install(extensionId, namespace, LogLevel.WARN);
+        return install(extensionId, namespace, true);
+    }
+
+    protected InstalledExtension install(ExtensionId extensionId, String namespace, boolean rootModifications)
+        throws Throwable
+    {
+        return install(extensionId, namespace, rootModifications, LogLevel.WARN);
     }
 
     protected InstalledExtension install(ExtensionId extensionId, String namespace, LogLevel failFrom) throws Throwable
     {
-        return install(extensionId, namespace != null ? new String[] { namespace } : null, failFrom);
+        return install(extensionId, namespace, true, failFrom);
+    }
+
+    protected InstalledExtension install(ExtensionId extensionId, String namespace, boolean rootModifications,
+        LogLevel failFrom) throws Throwable
+    {
+        return install(extensionId, namespace != null ? new String[] { namespace } : (String[]) null, rootModifications,
+            failFrom);
     }
 
     protected InstalledExtension install(ExtensionId extensionId, String[] namespaces, LogLevel failFrom)
         throws Throwable
     {
-        install("install", extensionId, namespaces, failFrom);
+        return install(extensionId, namespaces, true, failFrom);
+    }
+
+    protected InstalledExtension install(ExtensionId extensionId, String[] namespaces, boolean rootModifications,
+        LogLevel failFrom) throws Throwable
+    {
+        install("install", extensionId, namespaces, rootModifications, failFrom);
 
         return this.installedExtensionRepository.resolve(extensionId);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId) throws Throwable
     {
-        return installPlan(extensionId, (String[]) null, LogLevel.WARN);
+        return installPlan(extensionId, true);
+    }
+
+    protected ExtensionPlan installPlan(ExtensionId extensionId, boolean rootModifications) throws Throwable
+    {
+        return installPlan(extensionId, (String[]) null, rootModifications);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces) throws Throwable
     {
-        return installPlan(extensionId, namespaces, LogLevel.WARN);
+        return installPlan(extensionId, namespaces, true);
+    }
+
+    protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces, boolean rootModifications)
+        throws Throwable
+    {
+        return installPlan(extensionId, namespaces, rootModifications, LogLevel.WARN);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String namespace) throws Throwable
     {
-        return installPlan(extensionId, namespace != null ? new String[] { namespace } : null, LogLevel.WARN);
+        return installPlan(extensionId, namespace, true);
+    }
+
+    protected ExtensionPlan installPlan(ExtensionId extensionId, String namespace, boolean rootModifications)
+        throws Throwable
+    {
+        return installPlan(extensionId, namespace != null ? new String[] { namespace } : null, rootModifications,
+            LogLevel.WARN);
     }
 
     protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces, LogLevel failFrom)
         throws Throwable
     {
-        Job installJob = install("installplan", extensionId, namespaces, failFrom);
+        return installPlan(extensionId, namespaces, true, failFrom);
+    }
+
+    protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces, boolean rootModifications,
+        LogLevel failFrom) throws Throwable
+    {
+        Job installJob = install("installplan", extensionId, namespaces, rootModifications, failFrom);
 
         return (ExtensionPlan) installJob.getStatus();
     }
 
     protected Job install(String jobId, ExtensionId extensionId, String[] namespaces, LogLevel failFrom)
         throws Throwable
+    {
+        return install(jobId, extensionId, namespaces, true, failFrom);
+    }
+
+    protected Job install(String jobId, ExtensionId extensionId, String[] namespaces, boolean rootModifications,
+        LogLevel failFrom) throws Throwable
+    {
+        InstallRequest installRequest = createInstallRequest(extensionId, namespaces, rootModifications);
+
+        return executeJob(jobId, installRequest, failFrom);
+    }
+
+    protected InstallRequest createInstallRequest(ExtensionId extensionId, String[] namespaces,
+        boolean rootModifications)
     {
         InstallRequest installRequest = new InstallRequest();
         installRequest.addExtension(extensionId);
@@ -151,8 +219,9 @@ public abstract class AbstractExtensionHandlerTest
                 installRequest.addNamespace(namespace);
             }
         }
+        installRequest.setRootModificationsAllowed(rootModifications);
 
-        return executeJob(jobId, installRequest, failFrom);
+        return installRequest;
     }
 
     protected LocalExtension uninstall(ExtensionId extensionId, String namespace) throws Throwable

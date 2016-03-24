@@ -51,6 +51,11 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public static final String PROPERTY_NAMESPACES = "namespaces";
 
     /**
+     * @see #isRootModificationsAllowed()
+     */
+    public static final String PROPERTY_ROOTMODIFICATIONSALLOWED = "rootModificationsAllowed";
+
+    /**
      * Serialization identifier.
      */
     private static final long serialVersionUID = 1L;
@@ -134,5 +139,20 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
         }
 
         namespaces.add(namespace);
+    }
+
+    @Override
+    public boolean isRootModificationsAllowed()
+    {
+        return getProperty(PROPERTY_ROOTMODIFICATIONSALLOWED, true);
+    }
+
+    /**
+     * @param allowed indicate if it's allowed to do modifications on root namespace during the job execution (not taken
+     *            into account if the target of the request is root namespace)
+     */
+    public void setRootModificationsAllowed(boolean allowed)
+    {
+        setProperty(PROPERTY_ROOTMODIFICATIONSALLOWED, allowed);
     }
 }

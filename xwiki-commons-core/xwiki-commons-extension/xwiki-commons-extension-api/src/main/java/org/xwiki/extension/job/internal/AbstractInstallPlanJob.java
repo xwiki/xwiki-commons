@@ -330,12 +330,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         // Check if the feature is a core extension
         checkCoreExtension(extensionId.getId());
 
-        // Check if the feature is a root extension
-        if (namespace != null) {
-            // If a namespace extension already exist on root, fail the install
-            checkRootExtension(extensionId.getId());
-        }
-
         ModifableExtensionPlanNode node = installExtension(extensionId, dependency, namespace);
 
         addExtensionNode(node);
@@ -474,9 +468,11 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
             // If incompatible root extension fail
             if (namespace != null && installedExtension.isInstalled(null)) {
-                throw new InstallException(
-                    String.format("Dependency [%s] is incompatible with installed root extension [%s]",
-                        extensionDependency, installedExtension.getId()));
+                if (!getRequest().isRootModificationsAllowed()) {
+                    throw new InstallException(
+                        String.format("Dependency [%s] is incompatible with installed root extension [%s]",
+                            extensionDependency, installedExtension.getId()));
+                }
             }
 
             // If not compatible with it, try to merge dependencies constraint of all backward dependencies to find a
@@ -543,6 +539,15 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         // Make sure the dependency is not already a core extension
         if (checkCoreDependency(extensionDependency, parentBranch)) {
             // Already exists and added to the tree by #checkCoreExtension
+            return;
+        }
+
+        // If the dependency matches an incompatible root extension switch target namespace to root (to try to
+        // upgrade/downgrade/replace it)
+        if (namespace != null && getRequest().isRootModificationsAllowed()
+            && hasIncompatileRootDependency(extensionDependency)) {
+            installExtensionDependency(extensionDependency, null, parentBranch);
+
             return;
         }
 
@@ -674,6 +679,15 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private ModifableExtensionPlanNode installExtension(ExtensionId extensionId, boolean dependency, String namespace)
         throws InstallException
     {
+        // Check if the feature is a root extension
+        if (namespace != null) {
+            // Check if the extension already exist on root, throw exception if not allowed
+            if (checkRootExtension(extensionId.getId())) {
+                // Restart install on root
+                return installExtension(extensionId, dependency, null);
+            }
+        }
+
         this.progressManager.pushLevelProgress(2, this);
 
         try {
@@ -759,11 +773,33 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         ExtensionDependency initialDependency) throws InstallException, ResolveException,
         IncompatibleVersionConstraintException, UninstallException, NamespaceNotAllowedException
     {
-        // Check the namespace is compatible with the Extension
-        this.namespaceResolver.checkAllowed(extension.getAllowedNamespaces(), namespace);
+        boolean allowed = this.namespaceResolver.isAllowed(extension.getAllowedNamespaces(), namespace);
+
+        // Check if the namespace is compatible with the Extension
+        if (!allowed) {
+            if (namespace != null) {
+                if (getRequest().isRootModificationsAllowed()) {
+                    // Try to install it on root namespace
+                    return installExtension(extension, dependency, null, initialDependency);
+                }
+            }
+
+            // Extension is not allowed on target namespace
+            throw new NamespaceNotAllowedException(
+                String.format("Extension [%s] is not allowed on namespace [%s]", extension.getId(), namespace));
+        }
 
         // Check if the extension is already in the install plan
         checkExistingPlanNodeExtension(extension, namespace);
+
+        // Check if the extension matches a root extension
+        if (namespace != null) {
+            // Check if the extension already exist on root, throw exception if not allowed
+            if (checkRootExtension(extension)) {
+                // Restart install on root
+                return installExtension(extension, dependency, namespace, initialDependency);
+            }
+        }
 
         // Check if the extension is already installed
         extension = checkInstalledExtension(extension, namespace);
@@ -889,23 +925,38 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         return extension;
     }
 
-    private void checkRootExtension(Extension extension) throws InstallException
+    private boolean checkRootExtension(Extension extension) throws InstallException
     {
-        checkRootExtension(extension.getId().getId());
+        boolean isRootExtension = checkRootExtension(extension.getId().getId());
 
         for (ExtensionId feature : extension.getExtensionFeatures()) {
-            checkRootExtension(feature.getId());
+            isRootExtension |= checkRootExtension(feature.getId());
         }
+
+        return isRootExtension;
     }
 
-    private void checkRootExtension(String feature) throws InstallException
+    private boolean checkRootExtension(String feature) throws InstallException
     {
         InstalledExtension rootExtension = this.installedExtensionRepository.getInstalledExtension(feature, null);
         if (rootExtension != null) {
-            throw new InstallException(
-                String.format("An extension with feature [%s] is already installed on root namespace ([%s])", feature,
-                    rootExtension.getId()));
+            if (!getRequest().isRootModificationsAllowed()) {
+                throw new InstallException(
+                    String.format("An extension with feature [%s] is already installed on root namespace ([%s])",
+                        feature, rootExtension.getId()));
+            }
+
+            return true;
         }
+
+        return false;
+    }
+
+    private boolean hasIncompatileRootDependency(ExtensionDependency extensionDependency)
+    {
+        InstalledExtension rootExtension =
+            this.installedExtensionRepository.getInstalledExtension(extensionDependency.getId(), null);
+        return rootExtension != null && !extensionDependency.isCompatible(rootExtension);
     }
 
     private void checkCoreExtension(Extension extension) throws InstallException

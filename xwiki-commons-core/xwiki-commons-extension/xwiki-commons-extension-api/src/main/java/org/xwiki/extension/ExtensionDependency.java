@@ -75,4 +75,38 @@ public interface ExtensionDependency
      * @see #getProperty(String)
      */
     <T> T getProperty(String key, T def);
+
+    /**
+     * Indicate if the passed extension is compatible with this dependency.
+     * 
+     * @param extension the extension to check
+     * @return true if the passed extension is compatible, false otherwise
+     * @since 8.1M1
+     */
+    default boolean isCompatible(Extension extension)
+    {
+        if (isCompatible(extension.getId())) {
+            return true;
+        }
+
+        for (ExtensionId extensionId : extension.getExtensionFeatures()) {
+            if (isCompatible(extensionId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Indicate if the passed extension id is compatible with this dependency.
+     * 
+     * @param extensionId the extension to check
+     * @return true if the passed extension id is compatible, false otherwise
+     * @since 8.1M1
+     */
+    default boolean isCompatible(ExtensionId extensionId)
+    {
+        return getId().equals(extensionId.getId()) && getVersionConstraint().isCompatible(extensionId.getVersion());
+    }
 }

@@ -94,12 +94,18 @@ public class TestResources
 
     public static final ExtensionId REMOTE_ROOTEXTENSION10_ID = new ExtensionId("rootextension", "1.0");
 
+    public static final ExtensionId REMOTE_ROOTEXTENSION20_ID = new ExtensionId("rootextension", "2.0");
+
     public static final ExtensionId REMOTE_UNSUPPORTED_ID = new ExtensionId("unsupported", "version");
 
     public static final ExtensionId REMOTE_NOTINSTALLED_ID = new ExtensionId("notinstalledextension", "2.0");
 
     public static final ExtensionId REMOTE_NOTINSTALLED_DEPENDENCY_ID =
         new ExtensionId("notinstalledextensiondependency", "2.0");
+
+    public static final ExtensionId REMOTE_WITH_ROOT_DEPENDENY10_ID = new ExtensionId("rwithrootdependency", "1.0");
+
+    public static final ExtensionId REMOTE_WITH_ROOT_DEPENDENY20_ID = new ExtensionId("rwithrootdependency", "2.0");
 
     // Methods
 

@@ -165,6 +165,28 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     }
 
     @Override
+    public boolean isCompatible(Extension extension)
+    {
+        if (isCompatible(extension.getId())) {
+            return true;
+        }
+
+        for (ExtensionId extensionId : extension.getExtensionFeatures()) {
+            if (isCompatible(extensionId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean isCompatible(ExtensionId extensionId)
+    {
+        return getId().equals(extensionId.getId()) && getVersionConstraint().isCompatible(extensionId.getVersion());
+    }
+
+    @Override
     public Map<String, Object> getProperties()
     {
         return Collections.unmodifiableMap(this.properties);

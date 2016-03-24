@@ -478,35 +478,114 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(0, node.getChildren().size());
     }
 
-    @Test(expected = InstallException.class)
-    public void testInstallLowerVersionOfDependencyOnRoot() throws Throwable
-    {
-        // Install extension 2.0 on namespace
-        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace");
-        // Install dependendy 1.0 on root
-        installPlan(TestResources.REMOTE_UPGRADE10_ID);
-    }
-
-    @Test(expected = InstallException.class)
+    @Test
     public void testInstallNameSpaceExtensionWithExistingRootExtension() throws Throwable
     {
         // Install 1.0 on root
         install(TestResources.REMOTE_UPGRADE10_ID);
         // Try to upgrade 2.0 on namespace
-        installPlan(TestResources.REMOTE_UPGRADE20_ID, "namespace");
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_UPGRADE20_ID, "namespace");
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UPGRADE, action.getAction());
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getPreviousExtension().getId());
+        Assert.assertEquals(null, action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallNameSpaceExtensionWithDependencyAllowedOnRootOnly() throws Throwable
+    {
+        // Try to install remote extension with only root allowed dependency on namespace
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_ROOT_DEPENDENY10_ID, "namespace");
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_WITH_ROOT_DEPENDENY10_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_ROOTEXTENSION10_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testUpgradeExtensionOnNamespaceWithDependencyAllowedOnRootOnly() throws Throwable
+    {
+        // Instance version 1.0
+        install(TestResources.REMOTE_WITH_ROOT_DEPENDENY10_ID, "namespace");
+
+        // Try to upgrade remote extension with only root allowed dependency on namespace
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_ROOT_DEPENDENY20_ID, "namespace");
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_WITH_ROOT_DEPENDENY20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UPGRADE, action.getAction());
+        Assert.assertEquals(TestResources.REMOTE_WITH_ROOT_DEPENDENY10_ID, action.getPreviousExtension().getId());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_ROOTEXTENSION20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.UPGRADE, action.getAction());
+        Assert.assertEquals(TestResources.REMOTE_ROOTEXTENSION10_ID, action.getPreviousExtension().getId());
+        Assert.assertNull(action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    // Failures
+
+    @Test(expected = InstallException.class)
+    public void testForbiddenInstallLowerVersionOfDependencyOnRoot() throws Throwable
+    {
+        // Install extension 2.0 on namespace
+        install(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace");
+        // Install dependency 1.0 on root
+        installPlan(TestResources.REMOTE_UPGRADE10_ID, false);
     }
 
     @Test(expected = InstallException.class)
-    public void testInstallNameSpaceExtensionWithIncompatibleRootDependency() throws Throwable
+    public void testForbiddenInstallNameSpaceExtensionWithExistingRootExtension() throws Throwable
+    {
+        // Install 1.0 on root
+        install(TestResources.REMOTE_UPGRADE10_ID);
+        // Try to upgrade 2.0 on namespace
+        installPlan(TestResources.REMOTE_UPGRADE20_ID, "namespace", false);
+    }
+
+    @Test(expected = InstallException.class)
+    public void testForbiddenInstallNameSpaceExtensionWithIncompatibleRootDependency() throws Throwable
     {
         // Install 1.0 on root
         install(TestResources.REMOTE_UPGRADE10_ID);
         // Install extension 2.0 on namespace
-        installPlan(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace");
+        installPlan(TestResources.REMOTE_UPGRADEWITHDEPENDENCY20_ID, "namespace", false);
     }
 
     @Test
-    public void testInstallExtensionOnIncompatibleNamespace() throws Throwable
+    public void testForbiddenInstallExtensionOnIncompatibleNamespace() throws Throwable
     {
         // Install 1.0 on root
         install(TestResources.REMOTE_ROOTEXTENSION10_ID);
@@ -514,7 +593,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
 
         // Install 1.0 on incompatible namespace
         try {
-            install(TestResources.REMOTE_ROOTEXTENSION10_ID, "namespace");
+            install(TestResources.REMOTE_ROOTEXTENSION10_ID, "namespace", false);
 
             fail("Should not be allowed to install [" + TestResources.REMOTE_ROOTEXTENSION10_ID
                 + "] on namespace [namespace]");
