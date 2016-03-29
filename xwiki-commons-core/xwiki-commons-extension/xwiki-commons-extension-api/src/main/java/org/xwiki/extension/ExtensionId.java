@@ -20,9 +20,12 @@
 package org.xwiki.extension;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
 
@@ -36,6 +39,14 @@ import com.google.common.base.Objects;
  */
 public class ExtensionId implements Serializable, Comparable<ExtensionId>
 {
+    /**
+     * Type instance for List<ExtensionId>.
+     *
+     * @since 8.0M1
+     */
+    public static final ParameterizedType TYPE_LIST =
+        new DefaultParameterizedType(null, List.class, ExtensionId.class);
+
     /**
      * Serialization identifier.
      */
