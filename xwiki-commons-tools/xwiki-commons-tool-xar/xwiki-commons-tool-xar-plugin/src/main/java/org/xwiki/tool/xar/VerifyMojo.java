@@ -32,9 +32,15 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
 /**
  * Perform various verifications of the XAR files in this project. Namely:
  * <ul>
+ *   <li>ensure that the encoding is UTF8</li>
  *   <li>ensure that pages all have a parent (except for Main.WebHome)</li>
  *   <li>ensure that the author/contentAuthor/creator/attachment authors are {@code xwiki:XWiki.Admin}</li>
  *   <li>ensure that the version is {@code 1.1}</li>
+ *   <li>ensure that comment is empty</li>
+ *   <li>ensure that minor edit is false</li>
+ *   <li>ensure that technical pages are hidden</li>
+ *   <li>ensure that the default language is set properly</li>
+ *   <li>ensure titles follow any defined rules (when defined by the user)</li>
  * </ul>
  *
  * @version $Id$
