@@ -19,12 +19,14 @@
  */
 package org.xwiki.extension;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.stability.Unstable;
@@ -37,6 +39,14 @@ import org.xwiki.stability.Unstable;
  */
 public interface Extension extends Comparable<Extension>
 {
+    /**
+     * Type instance for List<Extension>.
+     *
+     * @since 8.0M1
+     */
+    public static final ParameterizedType TYPE_LIST =
+        new DefaultParameterizedType(null, List.class, Extension.class);
+
     /**
      * @see #getRepository()
      * @since 7.0RC1
