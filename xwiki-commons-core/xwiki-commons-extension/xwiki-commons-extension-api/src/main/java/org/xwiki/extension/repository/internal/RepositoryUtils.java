@@ -29,7 +29,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
+import org.xwiki.extension.repository.result.AggregatedIterableResult;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
+import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
 import org.xwiki.extension.repository.search.ExtensionQuery.Filter;
@@ -325,5 +327,32 @@ public final class RepositoryUtils
     public static void sort(List<? extends Extension> extensions, Collection<SortClause> sortClauses)
     {
         Collections.sort(extensions, new SortClauseComparator(sortClauses));
+    }
+
+    /**
+     * Merge provided search results.
+     * 
+     * @param previousSearchResult all the previous search results
+     * @param result the new search result to append
+     * @return the new aggregated search result
+     * @since 8.1M1
+     */
+    public static <E extends Extension> IterableResult<E> appendSearchResults(IterableResult<E> previousSearchResult,
+        IterableResult<E> result)
+    {
+        AggregatedIterableResult<E> newResult;
+
+        if (previousSearchResult instanceof AggregatedIterableResult) {
+            newResult = ((AggregatedIterableResult<E>) previousSearchResult);
+        } else if (previousSearchResult != null) {
+            newResult = new AggregatedIterableResult<E>(previousSearchResult.getOffset());
+            newResult.addSearchResult(previousSearchResult);
+        } else {
+            return result;
+        }
+
+        newResult.addSearchResult(result);
+
+        return newResult;
     }
 }
