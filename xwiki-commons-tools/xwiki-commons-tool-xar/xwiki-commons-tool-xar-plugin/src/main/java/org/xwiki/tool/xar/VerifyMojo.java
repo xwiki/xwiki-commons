@@ -52,6 +52,8 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  */
 public class VerifyMojo extends AbstractVerifyMojo
 {
+    private static final String SYNTAX_PLAIN = "plain/1.0";
+
     /**
      * Disables the plugin execution.
      *
@@ -135,6 +137,12 @@ public class VerifyMojo extends AbstractVerifyMojo
             if (!isTitlesMatching(xdoc.getReference(), xdoc.getTitle())) {
                 errors.add(String.format("[%s] ([%s]) page must have a title matching regex [%s]",
                     file.getName(), xdoc.getReference(), getTitlePatternRuleforPage(xdoc.getReference())));
+            }
+
+            // Verification 10: Verify that Translations documents are using the plain/1.0 syntax
+            if (file.getName().equals("Translations.xml") && !xdoc.getSyntaxId().equals(SYNTAX_PLAIN)) {
+                errors.add(String.format("[%s] ([%s]) page must use a [%s] syntax",
+                    file.getName(), xdoc.getReference(), SYNTAX_PLAIN));
             }
 
             // Display errors

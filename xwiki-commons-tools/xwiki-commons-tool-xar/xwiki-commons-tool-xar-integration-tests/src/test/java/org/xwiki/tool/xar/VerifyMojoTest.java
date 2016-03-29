@@ -150,6 +150,14 @@ public class VerifyMojoTest extends AbstractMojoTest
         verifier.verifyErrorFreeLog();
     }
 
+    @Test
+    public void executeWithWrongSyntax() throws Exception
+    {
+        verifyExecution("/wrongSyntax", "Verifying [Space/Translations.xml]... errors",
+            "- [Translations.xml] ([Space.Translations]) page must use a [plain/1.0] syntax",
+            "There are errors in the XAR XML files!");
+    }
+
     private void verifyExecution(Verifier verifier, String... messages) throws Exception
     {
         try {

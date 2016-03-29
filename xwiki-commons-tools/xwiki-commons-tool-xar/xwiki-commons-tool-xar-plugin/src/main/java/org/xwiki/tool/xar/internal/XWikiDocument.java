@@ -112,6 +112,11 @@ public class XWikiDocument
     private String title;
 
     /**
+     * @see #getSyntaxId()
+     */
+    private String syntaxId;
+
+    /**
      * Parse XML file to extract document information.
      *
      * @param file the xml file
@@ -173,6 +178,7 @@ public class XWikiDocument
         this.attachmentAuthors = readAttachmentAuthors(rootElement);
         this.isHidden = Boolean.parseBoolean(readElement(rootElement, "hidden"));
         this.title = readElement(rootElement, "title");
+        this.syntaxId = readElement(rootElement, "syntaxId");
     }
 
     /**
@@ -341,6 +347,15 @@ public class XWikiDocument
     public String getTitle()
     {
         return this.title;
+    }
+
+    /**
+     * @return the document's syntax id
+     * @since 8.1M1
+     */
+    public String getSyntaxId()
+    {
+        return this.syntaxId;
     }
 
     /**
