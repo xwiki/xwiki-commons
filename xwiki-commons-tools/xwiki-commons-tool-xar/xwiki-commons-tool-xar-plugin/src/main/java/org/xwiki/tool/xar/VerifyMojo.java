@@ -41,6 +41,7 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  *   <li>ensure that technical pages are hidden</li>
  *   <li>ensure that the default language is set properly</li>
  *   <li>ensure titles follow any defined rules (when defined by the user)</li>
+ *   <li>ensure that Translations pages are using the plain/1.0 syntax</li>
  * </ul>
  *
  * @version $Id$
