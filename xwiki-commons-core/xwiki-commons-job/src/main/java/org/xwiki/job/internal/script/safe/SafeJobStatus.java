@@ -44,7 +44,7 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
      * @param status the wrapped job status
      * @param safeProvider the provider of instances safe for public scripts
      */
-    public SafeJobStatus(J status, ScriptSafeProvider< ? > safeProvider)
+    public SafeJobStatus(J status, ScriptSafeProvider<?> safeProvider)
     {
         super(status, safeProvider);
     }
