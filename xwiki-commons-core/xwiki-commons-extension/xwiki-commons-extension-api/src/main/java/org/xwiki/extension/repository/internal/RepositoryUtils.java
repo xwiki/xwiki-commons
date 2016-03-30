@@ -336,6 +336,7 @@ public final class RepositoryUtils
      * @param result the new search result to append
      * @return the new aggregated search result
      * @since 8.1M1
+     * @param <E> the type of element in the {@link Collection}
      */
     public static <E extends Extension> IterableResult<E> appendSearchResults(IterableResult<E> previousSearchResult,
         IterableResult<E> result)

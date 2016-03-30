@@ -164,6 +164,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     @Inject
     protected CoreExtensionRepository coreExtensionRepository;
 
+    @Inject
+    protected NamespaceValidator namespaceResolver;
+
     /**
      * Used to make sure dependencies are compatible between each other in the whole plan.
      * <p>
@@ -171,9 +174,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      */
     protected Map<String, Map<String, ModifableExtensionPlanNode>> extensionsNodeCache =
         new HashMap<String, Map<String, ModifableExtensionPlanNode>>();
-
-    @Inject
-    private NamespaceValidator namespaceResolver;
 
     protected void setExtensionTree(ModifableExtensionPlanTree extensionTree)
     {

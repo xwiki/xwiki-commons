@@ -315,7 +315,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public IterableResult<Extension> search(ExtensionQuery query)
     {
-        IterableResult<? extends Extension> searchResult = null;
+        IterableResult<Extension> searchResult = null;
 
         int currentOffset = query.getOffset() > 0 ? query.getOffset() : 0;
         int currentNb = query.getLimit();
@@ -368,10 +368,10 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
      * @return the updated maximum number of search results to return
      * @throws SearchException error while searching on provided repository
      */
-    private IterableResult<? extends Extension> search(ExtensionRepository repository, ExtensionQuery query,
-        IterableResult<? extends Extension> previousSearchResult) throws SearchException
+    private IterableResult<Extension> search(ExtensionRepository repository, ExtensionQuery query,
+        IterableResult<Extension> previousSearchResult) throws SearchException
     {
-        IterableResult<? extends Extension> result;
+        IterableResult<Extension> result;
 
         if (repository instanceof Searchable) {
             if (repository instanceof AdvancedSearchable) {
