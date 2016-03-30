@@ -1164,12 +1164,12 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.4.3</version>
+          <version>0.4.5</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.6.3</version>
+              <version>0.7.0</version>
             </dependency>
           </dependencies>
           <executions>
@@ -1181,9 +1181,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             </execution>
           </executions>
           <configuration>
-            <oldArtifacts>
-              <artifact>${project.groupId}:${project.artifactId}:${project.packaging}:${xwiki.compatibility.previous.version}</artifact>
-            </oldArtifacts>
+            <oldVersion>${xwiki.compatibility.previous.version}</oldVersion>
             <skip>${xwiki.revapi.skip}</skip>
             <analysisConfiguration><![CDATA[
             {
