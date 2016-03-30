@@ -20,11 +20,8 @@
 package org.xwiki.extension.repository.internal.core;
 
 import java.net.URL;
-import java.util.Map;
 
-import org.apache.maven.model.Model;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.internal.MavenExtension;
 
 /**
@@ -44,29 +41,6 @@ public class MavenCoreExtension extends DefaultCoreExtension implements MavenExt
      * The name of the property containing the group id.
      */
     private static final String PKEY_MAVEN_GROUPID = "maven.groupId";
-
-    /**
-     * @param repository the core extension repository
-     * @param url the core extension URL
-     * @param id the id/version combination which makes the extension unique
-     * @param type the type of the extension
-     * @param mavenModel the Maven model
-     */
-    public MavenCoreExtension(DefaultCoreExtensionRepository repository, URL url, ExtensionId id, String type,
-        Model mavenModel)
-    {
-        super(repository, url, id, type);
-
-        putProperty(PKEY_MAVEN_ARTIFACTID, mavenModel.getArtifactId());
-        putProperty(PKEY_MAVEN_GROUPID, mavenModel.getGroupId());
-
-        for (Map.Entry<Object, Object> entry : mavenModel.getProperties().entrySet()) {
-            String key = (String) entry.getKey();
-            if (key.startsWith("xwiki.extension.")) {
-                putProperty(key, entry.getValue());
-            }
-        }
-    }
 
     /**
      * @param repository the core extension repository

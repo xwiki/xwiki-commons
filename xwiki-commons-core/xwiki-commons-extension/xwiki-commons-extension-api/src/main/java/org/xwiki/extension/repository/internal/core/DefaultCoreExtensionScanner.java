@@ -177,6 +177,9 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
             URL extensionURL = PathUtils.getExtensionURL(descriptorURL);
 
+            // Resolve Maven variables in critical places
+            MavenUtils.resolveVariables(mavenModel);
+
             Extension mavenExtension = this.converter.convert(Extension.class, mavenModel);
 
             DefaultCoreExtension coreExtension = new MavenCoreExtension(repository, extensionURL, mavenExtension);

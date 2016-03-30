@@ -19,9 +19,12 @@
  */
 package org.xwiki.extension.internal.maven;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Parent;
 import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionScmConnection;
 
@@ -72,6 +75,11 @@ public class MavenUtils
      * MANIFEST.MF attribute containing extension identifier.
      */
     public static final String MF_EXTENSION_ID = "XWiki-Extension-Id";
+
+    /**
+     * Unknown.
+     */
+    public static final String UNKNOWN = "unknown";
 
     /**
      * Parse a Maven scm URL to generate a {@link ExtensionScmConnection}.
@@ -140,5 +148,125 @@ public class MavenUtils
         }
 
         return packaging;
+    }
+
+    /**
+     * @param mavenModel the Maven Model instance
+     * @return the resolved version
+     * @since 8.1M1
+     */
+    public static String resolveVersion(Model mavenModel)
+    {
+        return resolveVersion(mavenModel.getVersion(), mavenModel, false);
+    }
+
+    /**
+     * @param modelVersion the current String representing the version to resolve
+     * @param mavenModel the Maven Model instance
+     * @param dependency indicate if it's a dependency version
+     * @return the resolved version
+     * @since 8.1M1
+     */
+    public static String resolveVersion(String modelVersion, Model mavenModel, boolean dependency)
+    {
+        String version = modelVersion;
+
+        // TODO: download parents and resolve pom.xml properties using standard tools ? could be pretty expensive for
+        // the init
+        if (version == null) {
+            if (!dependency) {
+                Parent parent = mavenModel.getParent();
+
+                if (parent != null) {
+                    version = parent.getVersion();
+                }
+            }
+        } else if (version.startsWith("$")) {
+            String propertyName = version.substring(2, version.length() - 1);
+
+            if (propertyName.equals("project.version") || propertyName.equals("pom.version")
+                || propertyName.equals("version")) {
+                version = resolveVersion(mavenModel.getVersion(), mavenModel, false);
+            } else {
+                String value = mavenModel.getProperties().getProperty(propertyName);
+                if (value != null) {
+                    version = value;
+                }
+            }
+        }
+
+        if (version == null) {
+            version = UNKNOWN;
+        }
+
+        return version;
+    }
+
+    /**
+     * @param mavenModel the Maven Model instance
+     * @return the resolved group id
+     * @since 8.1M1
+     */
+    public static String resolveGroupId(Model mavenModel)
+    {
+        return resolveGroupId(mavenModel.getGroupId(), mavenModel, false);
+    }
+
+    /**
+     * @param modelVersion the current String representing the group id to resolve
+     * @param mavenModel the Maven Model instance
+     * @param dependency indicate if it's a dependency group id
+     * @return the resolved group id
+     * @since 8.1M1
+     */
+    public static String resolveGroupId(String modelGroupId, Model mavenModel, boolean dependency)
+    {
+        String groupId = modelGroupId;
+
+        // TODO: download parents and resolve pom.xml properties using standard tools ? could be pretty expensive for
+        // the init
+        if (groupId == null) {
+            if (!dependency) {
+                Parent parent = mavenModel.getParent();
+
+                if (parent != null) {
+                    groupId = parent.getGroupId();
+                }
+            }
+        } else if (groupId.startsWith("$")) {
+            String propertyName = groupId.substring(2, groupId.length() - 1);
+
+            String value = mavenModel.getProperties().getProperty(propertyName);
+            if (value != null) {
+                groupId = value;
+            }
+        }
+
+        if (groupId == null) {
+            groupId = UNKNOWN;
+        }
+
+        return groupId;
+    }
+
+    /**
+     * @param model the Maven Model instance to update
+     */
+    // TODO: use standard Maven tools for that
+    public static void resolveVariables(Model model)
+    {
+        // Resolve version
+        model.setVersion(resolveVersion(model));
+
+        // Resolve groupid
+        model.setGroupId(resolveGroupId(model));
+
+        // Resolve properties
+        for (Map.Entry<Object, Object> entry : model.getProperties().entrySet()) {
+            if (entry.getValue() instanceof String) {
+                String value = (String) entry.getValue();
+                entry.setValue(value.replace("${project.version}", model.getVersion()));
+            }
+        }
     }
 }

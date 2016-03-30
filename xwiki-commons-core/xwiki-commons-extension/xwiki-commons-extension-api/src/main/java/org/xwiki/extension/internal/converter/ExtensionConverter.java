@@ -39,7 +39,6 @@ import org.apache.maven.model.Developer;
 import org.apache.maven.model.IssueManagement;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.Parent;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.Scm;
 import org.xwiki.component.annotation.Component;
@@ -73,11 +72,6 @@ import org.xwiki.properties.converter.ConversionException;
 @Singleton
 public class ExtensionConverter extends AbstractConverter<Extension>
 {
-    /**
-     * Unknown.
-     */
-    private static final String UNKNOWN = "unknown";
-
     @Inject
     private ExtensionLicenseManager licenseManager;
 
@@ -98,8 +92,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
     {
         Properties properties = (Properties) model.getProperties().clone();
 
-        String version = resolveVersion(model.getVersion(), model, false);
-        String groupId = resolveGroupId(model.getGroupId(), model, false);
+        String version = MavenUtils.resolveVersion(model);
+        String groupId = MavenUtils.resolveGroupId(model);
 
         DefaultMavenExtension extension = new DefaultMavenExtension(null, groupId, model.getArtifactId(), version,
             MavenUtils.packagingToType(model.getPackaging()));
@@ -197,10 +191,10 @@ public class ExtensionConverter extends AbstractConverter<Extension>
             if (!mavenDependency.isOptional() && (mavenDependency.getScope() == null
                 || mavenDependency.getScope().equals("compile") || mavenDependency.getScope().equals("runtime"))) {
 
-                String dependencyGroupId = resolveGroupId(mavenDependency.getGroupId(), model, true);
+                String dependencyGroupId = MavenUtils.resolveGroupId(mavenDependency.getGroupId(), model, true);
                 String dependencyArtifactId = mavenDependency.getArtifactId();
                 String dependencyClassifier = mavenDependency.getClassifier();
-                String dependencyVersion = resolveVersion(mavenDependency.getVersion(), model, true);
+                String dependencyVersion = MavenUtils.resolveVersion(mavenDependency.getVersion(), model, true);
 
                 DefaultExtensionDependency extensionDependency = new DefaultMavenExtensionDependency(
                     MavenUtils.toExtensionId(dependencyGroupId, dependencyArtifactId, dependencyClassifier),
@@ -251,70 +245,5 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         ExtensionLicense extensionLicense = this.licenseManager.getLicense(name);
 
         return extensionLicense != null ? extensionLicense : new ExtensionLicense(name, null);
-    }
-
-    private String resolveVersion(String modelVersion, Model mavenModel, boolean dependency)
-    {
-        String version = modelVersion;
-
-        // TODO: download parents and resolve pom.xml properties using aether ? could be pretty expensive for
-        // the init
-        if (version == null) {
-            if (!dependency) {
-                Parent parent = mavenModel.getParent();
-
-                if (parent != null) {
-                    version = parent.getVersion();
-                }
-            }
-        } else if (version.startsWith("$")) {
-            String propertyName = version.substring(2, version.length() - 1);
-
-            if (propertyName.equals("project.version") || propertyName.equals("pom.version")
-                || propertyName.equals("version")) {
-                version = resolveVersion(mavenModel.getVersion(), mavenModel, false);
-            } else {
-                String value = mavenModel.getProperties().getProperty(propertyName);
-                if (value != null) {
-                    version = value;
-                }
-            }
-        }
-
-        if (version == null) {
-            version = UNKNOWN;
-        }
-
-        return version;
-    }
-
-    private String resolveGroupId(String modelGroupId, Model mavenModel, boolean dependency)
-    {
-        String groupId = modelGroupId;
-
-        // TODO: download parents and resolve pom.xml properties using aether ? could be pretty expensive for
-        // the init
-        if (groupId == null) {
-            if (!dependency) {
-                Parent parent = mavenModel.getParent();
-
-                if (parent != null) {
-                    groupId = parent.getGroupId();
-                }
-            }
-        } else if (groupId.startsWith("$")) {
-            String propertyName = groupId.substring(2, groupId.length() - 1);
-
-            String value = mavenModel.getProperties().getProperty(propertyName);
-            if (value != null) {
-                groupId = value;
-            }
-        }
-
-        if (groupId == null) {
-            groupId = UNKNOWN;
-        }
-
-        return groupId;
     }
 }
