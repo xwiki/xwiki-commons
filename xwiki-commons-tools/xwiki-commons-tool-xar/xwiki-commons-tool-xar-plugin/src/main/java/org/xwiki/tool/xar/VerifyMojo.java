@@ -141,9 +141,9 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 10: Verify that Translations documents are using the plain/1.0 syntax
-            if (file.getName().endsWith("Translations.xml") && !xdoc.getSyntaxId().equals(SYNTAX_PLAIN)) {
-                errors.add(String.format("[%s] ([%s]) page must use a [%s] syntax",
-                    file.getName(), xdoc.getReference(), SYNTAX_PLAIN));
+            if (xdoc.containsTranslations()) {
+                errors.add(String.format("[%s] ([%s]) page must use a [%s] syntax", file.getName(),
+                    xdoc.getReference(), SYNTAX_PLAIN));
             }
 
             // Display errors

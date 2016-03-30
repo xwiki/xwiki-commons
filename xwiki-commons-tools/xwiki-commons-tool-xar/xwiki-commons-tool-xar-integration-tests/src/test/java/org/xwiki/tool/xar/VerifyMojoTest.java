@@ -151,10 +151,10 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithWrongSyntax() throws Exception
+    public void executeWithWrongSyntaxForTranslations() throws Exception
     {
-        verifyExecution("/wrongSyntax", "Verifying [Space/Translations.xml]... errors",
-            "- [Translations.xml] ([Space.Translations]) page must use a [plain/1.0] syntax",
+        verifyExecution("/wrongSyntaxForTranslations", "Verifying [Space/WatchListTranslations.xml]... errors",
+            "- [WatchListTranslations.xml] ([Space.WatchListTranslations]) page must use a [plain/1.0] syntax",
             "There are errors in the XAR XML files!");
     }
 

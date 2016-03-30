@@ -117,6 +117,11 @@ public class XWikiDocument
     private String syntaxId;
 
     /**
+     * @see #containsTranslations()
+     */
+    private boolean containsTranslations;
+
+    /**
      * Parse XML file to extract document information.
      *
      * @param file the xml file
@@ -179,6 +184,11 @@ public class XWikiDocument
         this.isHidden = Boolean.parseBoolean(readElement(rootElement, "hidden"));
         this.title = readElement(rootElement, "title");
         this.syntaxId = readElement(rootElement, "syntaxId");
+
+        // Does this document contain a XWiki.TranslationDocumentClass xobject?
+        if (rootElement.selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']").size() > 0) {
+            this.containsTranslations = true;
+        }
     }
 
     /**
@@ -347,6 +357,15 @@ public class XWikiDocument
     public String getTitle()
     {
         return this.title;
+    }
+
+    /**
+     * @return true if the document contains a XWiki.TranslationDocumentClass xobject
+     * @since 8.1M1
+     */
+    public boolean containsTranslations()
+    {
+        return this.containsTranslations;
     }
 
     /**
