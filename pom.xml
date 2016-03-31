@@ -1186,9 +1186,12 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             <analysisConfiguration><![CDATA[
             {
               "revapi": {
-                "filter": {
-                  "elements": {
-                    "exclude": [".*\\.internal\\..*", ".*\\.test\\..*"]
+                "java": {
+                  "filter": {
+                    "packages": {
+                      "include": ["org\\.xwiki\\..*"],
+                      "exclude": ["org\\.xwiki\\..*\\.internal(\\..*)?", "org\\.xwiki\\..*\\.test(\\..*)?"]
+                    }
                   }
                 }
               }
