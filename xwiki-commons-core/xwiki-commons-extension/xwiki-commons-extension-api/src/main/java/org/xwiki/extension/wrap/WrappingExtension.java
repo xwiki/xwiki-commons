@@ -132,9 +132,15 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingObje
     }
 
     @Override
-    public Collection<? extends ExtensionDependency> getDependencies()
+    public Collection<ExtensionDependency> getDependencies()
     {
         return getWrapped().getDependencies();
+    }
+
+    @Override
+    public Collection<ExtensionDependency> getManagedDependencies()
+    {
+        return getWrapped().getManagedDependencies();
     }
 
     @Override

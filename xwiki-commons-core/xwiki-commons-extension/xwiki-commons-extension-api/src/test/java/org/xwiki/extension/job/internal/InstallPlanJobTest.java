@@ -555,6 +555,93 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(0, node.getChildren().size());
     }
 
+    @Test
+    public void testInstallWithOverwrittenManagedDependency() throws Throwable
+    {
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_OVERWRITTEN_MANAGED_DEPENDENY_ID, "namespace");
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallWithManagedTransitiveDependency() throws Throwable
+    {
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_MANAGED_TRANSITIVEDEPENDENY_ID, "namespace");
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADEWITHDEPENDENCY10_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallWithManagedDependency() throws Throwable
+    {
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, "namespace");
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
     // Failures
 
     @Test(expected = InstallException.class)

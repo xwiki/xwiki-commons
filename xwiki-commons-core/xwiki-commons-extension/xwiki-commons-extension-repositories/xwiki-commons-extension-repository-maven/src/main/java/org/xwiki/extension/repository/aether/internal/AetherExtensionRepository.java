@@ -128,13 +128,12 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         this.repositoryFactory = repositoryFactory;
         this.plexusContainer = plexusContainer;
 
-        RemoteRepository.Builder repositoryBuilder =
-            new RemoteRepository.Builder(repositoryDescriptor.getId(), "default", repositoryDescriptor.getURI()
-                .toString());
+        RemoteRepository.Builder repositoryBuilder = new RemoteRepository.Builder(repositoryDescriptor.getId(),
+            "default", repositoryDescriptor.getURI().toString());
 
         // Don't use cached data
-        repositoryBuilder.setPolicy(new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_ALWAYS,
-            RepositoryPolicy.CHECKSUM_POLICY_WARN));
+        repositoryBuilder.setPolicy(
+            new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_ALWAYS, RepositoryPolicy.CHECKSUM_POLICY_WARN));
 
         // Authentication
         String username = getDescriptor().getProperty("auth.user");
@@ -253,9 +252,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             List<org.eclipse.aether.version.Version> versions = resolveVersionRange(id, range, session);
 
             if (commonVersions == null) {
-                commonVersions =
-                    versionConstraint.getRanges().size() > 1 ? new ArrayList<org.eclipse.aether.version.Version>(
-                        versions) : versions;
+                commonVersions = versionConstraint.getRanges().size() > 1
+                    ? new ArrayList<org.eclipse.aether.version.Version>(versions) : versions;
             } else {
                 // Find commons versions between all the ranges of the constraint
                 for (Iterator<org.eclipse.aether.version.Version> it = commonVersions.iterator(); it.hasNext();) {
@@ -268,8 +266,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         if (commonVersions == null || commonVersions.isEmpty()) {
-            throw new ResolveException("No versions available for id [" + id + "] and version constraint ["
-                + versionConstraint + "]");
+            throw new ResolveException(
+                "No versions available for id [" + id + "] and version constraint [" + versionConstraint + "]");
         }
 
         return commonVersions.get(commonVersions.size() - 1);
@@ -284,8 +282,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             List<org.eclipse.aether.version.Version> versions = resolveVersions(artifact, session);
 
             if (versions.isEmpty()) {
-                throw new ResolveException("No versions available for id [" + id + "] and version range ["
-                    + versionRange + "]");
+                throw new ResolveException(
+                    "No versions available for id [" + id + "] and version range [" + versionRange + "]");
             }
 
             return versions;
@@ -313,17 +311,14 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
             if (extensionDependency instanceof AetherExtensionDependency) {
                 artifact = ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact();
-                artifactExtension =
-                    ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact()
-                        .getExtension();
+                artifactExtension = ((AetherExtensionDependency) extensionDependency).getAetherDependency()
+                    .getArtifact().getExtension();
             } else {
-                artifact =
-                    AetherUtils.createArtifact(extensionDependency.getId(), extensionDependency.getVersionConstraint()
-                        .getValue());
+                artifact = AetherUtils.createArtifact(extensionDependency.getId(),
+                    extensionDependency.getVersionConstraint().getValue());
                 if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {
-                    artifact =
-                        artifact.setVersion(resolveVersionConstraint(extensionDependency.getId(),
-                            extensionDependency.getVersionConstraint(), session).toString());
+                    artifact = artifact.setVersion(resolveVersionConstraint(extensionDependency.getId(),
+                        extensionDependency.getVersionConstraint(), session).toString());
                 }
                 artifactExtension = null;
             }
@@ -376,28 +371,38 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         Extension mavenExtension = this.converter.convert(Extension.class, model);
 
-        Artifact filerArtifact =
-            new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
-                artifactExtension, artifact.getVersion());
+        Artifact filerArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(),
+            artifact.getClassifier(), artifactExtension, artifact.getVersion());
 
         AetherExtension extension = new AetherExtension(mavenExtension, filerArtifact, this);
 
         // Convert Maven dependencies to Aether dependencies
-        List<ExtensionDependency> dependencies = new ArrayList<>(mavenExtension.getDependencies().size());
+        extension.setDependencies(toAetherDependencies(mavenExtension.getDependencies(), session));
+
+        // Convert Managed Maven dependencies to Aether dependencies
+        extension.setManagedDependencies(toAetherDependencies(mavenExtension.getManagedDependencies(), session));
+
+        return extension;
+    }
+
+    private List<ExtensionDependency> toAetherDependencies(Collection<ExtensionDependency> mavenDependencies,
+        RepositorySystemSession session) throws ResolveException
+    {
+        List<ExtensionDependency> dependencies = new ArrayList<>(mavenDependencies.size());
+
         try {
             ArtifactTypeRegistry stereotypes = session.getArtifactTypeRegistry();
 
-            for (MavenExtensionDependency mavenDependency : (Collection<MavenExtensionDependency>) mavenExtension
-                .getDependencies()) {
-                dependencies.add(new AetherExtensionDependency(mavenDependency, convertToAether(
-                    mavenDependency.getMavenDependency(), stereotypes), this.getDescriptor()));
+            for (ExtensionDependency mavenDependency : mavenDependencies) {
+                dependencies.add(new AetherExtensionDependency(mavenDependency,
+                    convertToAether(((MavenExtensionDependency) mavenDependency).getMavenDependency(), stereotypes),
+                    this.getDescriptor()));
             }
         } catch (Exception e) {
             throw new ResolveException("Failed to resolve dependencies", e);
         }
-        extension.setDependencies(dependencies);
 
-        return extension;
+        return dependencies;
     }
 
     private Dependency convertToAether(org.apache.maven.model.Dependency dependency, ArtifactTypeRegistry stereotypes)
@@ -414,9 +419,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             props = Collections.singletonMap(ArtifactProperties.LOCAL_PATH, dependency.getSystemPath());
         }
 
-        Artifact artifact =
-            new DefaultArtifact(dependency.getGroupId(), dependency.getArtifactId(), dependency.getClassifier(), null,
-                dependency.getVersion(), props, stereotype);
+        Artifact artifact = new DefaultArtifact(dependency.getGroupId(), dependency.getArtifactId(),
+            dependency.getClassifier(), null, dependency.getVersion(), props, stereotype);
 
         List<Exclusion> exclusions = new ArrayList<Exclusion>(dependency.getExclusions().size());
         for (org.apache.maven.model.Exclusion exclusion : dependency.getExclusions()) {
@@ -444,8 +448,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return pomArtifact.setVersion(versionResult.getVersion());
     }
 
-    private Model loadPom(Artifact artifact, RepositorySystemSession session) throws VersionResolutionException,
-        ArtifactResolutionException, ModelBuildingException
+    private Model loadPom(Artifact artifact, RepositorySystemSession session)
+        throws VersionResolutionException, ArtifactResolutionException, ModelBuildingException
     {
         List<RemoteRepository> repositories = newResolutionRepositories(session);
 

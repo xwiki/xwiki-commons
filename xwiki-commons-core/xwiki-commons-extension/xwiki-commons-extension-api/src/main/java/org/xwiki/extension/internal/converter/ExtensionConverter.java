@@ -190,18 +190,20 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         for (Dependency mavenDependency : model.getDependencies()) {
             if (!mavenDependency.isOptional() && (mavenDependency.getScope() == null
                 || mavenDependency.getScope().equals("compile") || mavenDependency.getScope().equals("runtime"))) {
+                DefaultExtensionDependency extensionDependency = toExtensionDependency(mavenDependency, model);
 
-                String dependencyGroupId = MavenUtils.resolveGroupId(mavenDependency.getGroupId(), model, true);
-                String dependencyArtifactId = mavenDependency.getArtifactId();
-                String dependencyClassifier = mavenDependency.getClassifier();
-                String dependencyVersion = MavenUtils.resolveVersion(mavenDependency.getVersion(), model, true);
-
-                DefaultExtensionDependency extensionDependency = new DefaultMavenExtensionDependency(
-                    MavenUtils.toExtensionId(dependencyGroupId, dependencyArtifactId, dependencyClassifier),
-                    new DefaultVersionConstraint(dependencyVersion), mavenDependency);
-
-                extension.setRepositories(repositories);
+                extensionDependency.setRepositories(repositories);
                 extension.addDependency(extensionDependency);
+            }
+        }
+
+        // managed dependencies
+        if (model.getDependencyManagement() != null) {
+            for (Dependency mavenDependency : model.getDependencyManagement().getDependencies()) {
+                DefaultExtensionDependency extensionDependency = toExtensionDependency(mavenDependency, model);
+
+                extensionDependency.setRepositories(repositories);
+                extension.addManagedDependency(extensionDependency);
             }
         }
 
@@ -217,6 +219,20 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         }
 
         return extension;
+    }
+
+    private DefaultExtensionDependency toExtensionDependency(Dependency mavenDependency, Model model)
+    {
+        String dependencyGroupId = MavenUtils.resolveGroupId(mavenDependency.getGroupId(), model, true);
+        String dependencyArtifactId = mavenDependency.getArtifactId();
+        String dependencyClassifier = mavenDependency.getClassifier();
+        String dependencyVersion = MavenUtils.resolveVersion(mavenDependency.getVersion(), model, true);
+
+        DefaultMavenExtensionDependency dependency = new DefaultMavenExtensionDependency(
+            MavenUtils.toExtensionId(dependencyGroupId, dependencyArtifactId, dependencyClassifier),
+            new DefaultVersionConstraint(dependencyVersion), mavenDependency);
+
+        return dependency;
     }
 
     private String getProperty(Properties properties, String propertyName, boolean delete)

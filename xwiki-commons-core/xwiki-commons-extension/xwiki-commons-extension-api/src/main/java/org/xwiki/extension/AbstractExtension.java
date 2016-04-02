@@ -121,6 +121,12 @@ public abstract class AbstractExtension implements Extension
     protected List<ExtensionDependency> dependencies;
 
     /**
+     * @see #getManagedDependencies()
+     * @since 8.1M1
+     */
+    protected List<ExtensionDependency> managedDependencies;
+
+    /**
      * @see #getScm()
      */
     protected ExtensionScm scm;
@@ -191,6 +197,7 @@ public abstract class AbstractExtension implements Extension
         setAllowedNamespaces(extension.getAllowedNamespaces());
 
         setDependencies(extension.getDependencies());
+        setManagedDependencies(extension.getManagedDependencies());
 
         setProperties(extension.getProperties());
     }
@@ -532,7 +539,7 @@ public abstract class AbstractExtension implements Extension
     }
 
     @Override
-    public List<? extends ExtensionDependency> getDependencies()
+    public List<ExtensionDependency> getDependencies()
     {
         return this.dependencies != null ? this.dependencies : Collections.<ExtensionDependency>emptyList();
     }
@@ -545,6 +552,37 @@ public abstract class AbstractExtension implements Extension
     {
         this.dependencies = dependencies != null
             ? Collections.unmodifiableList(new ArrayList<ExtensionDependency>(dependencies)) : null;
+    }
+
+    /**
+     * Add a new managed dependency to the extension.
+     *
+     * @param managedDependency a managed dependency
+     * @since 8.1M1
+     */
+    public void addManagedDependency(ExtensionDependency managedDependency)
+    {
+        List<ExtensionDependency> newManagedDependencies = new ArrayList<ExtensionDependency>(getManagedDependencies());
+        newManagedDependencies.add(managedDependency);
+
+        this.managedDependencies = Collections.unmodifiableList(newManagedDependencies);
+    }
+
+    @Override
+    public List<ExtensionDependency> getManagedDependencies()
+    {
+        return this.managedDependencies != null ? this.managedDependencies
+            : Collections.<ExtensionDependency>emptyList();
+    }
+
+    /**
+     * @param managedDependencies the managed dependencies of the extension
+     * @see #getManagedDependencies()
+     */
+    public void setManagedDependencies(Collection<? extends ExtensionDependency> managedDependencies)
+    {
+        this.managedDependencies = managedDependencies != null
+            ? Collections.unmodifiableList(new ArrayList<ExtensionDependency>(managedDependencies)) : null;
     }
 
     @Override

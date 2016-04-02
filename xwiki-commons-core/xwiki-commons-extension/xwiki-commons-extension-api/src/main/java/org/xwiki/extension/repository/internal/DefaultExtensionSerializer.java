@@ -26,7 +26,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -120,6 +122,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private static final String ELEMENT_AAURL = "url";
 
     private static final String ELEMENT_DEPENDENCIES = "dependencies";
+
+    private static final String ELEMENT_MANAGEDDEPENDENCIES = "manageddependencies";
 
     private static final String ELEMENT_DDEPENDENCY = "dependency";
 
@@ -407,22 +411,10 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         extension.setIssueManagement(loadIssueManagement(extensionElement));
 
         // Dependencies
-        Node dependenciesNode = getNode(extensionElement, ELEMENT_DEPENDENCIES);
-        if (dependenciesNode != null) {
-            NodeList dependenciesNodeList = dependenciesNode.getChildNodes();
-            for (int i = 0; i < dependenciesNodeList.getLength(); ++i) {
-                Node dependency = dependenciesNodeList.item(i);
+        extension.setDependencies(loadDependencies(extensionElement, ELEMENT_DEPENDENCIES));
 
-                if (dependency.getNodeName().equals(ELEMENT_DDEPENDENCY)) {
-                    Node dependencyIdNode = getNode(dependency, ELEMENT_ID);
-                    Node dependencyVersionNode = getNode(dependency, ELEMENT_VERSION);
-
-                    extension.addDependency(new DefaultExtensionDependency(dependencyIdNode.getTextContent(),
-                        new DefaultVersionConstraint(dependencyVersionNode.getTextContent()),
-                        parseProperties((Element) dependency)));
-                }
-            }
-        }
+        // Managed dependencies
+        extension.setManagedDependencies(loadDependencies(extensionElement, ELEMENT_MANAGEDDEPENDENCIES));
 
         // Properties
         Map<String, Object> properties = parseProperties(extensionElement);
@@ -442,6 +434,35 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         if (namespaces != null) {
             extension.putProperty(InstalledExtension.PKEY_NAMESPACES, namespaces);
         }
+    }
+
+    private Collection<ExtensionDependency> loadDependencies(Element extensionElement, String dependenciesFiel)
+    {
+        Node dependenciesNode = getNode(extensionElement, dependenciesFiel);
+        if (dependenciesNode != null) {
+            NodeList dependenciesNodeList = dependenciesNode.getChildNodes();
+
+            List<ExtensionDependency> dependencies =
+                new ArrayList<ExtensionDependency>(dependenciesNodeList.getLength());
+
+            for (int i = 0; i < dependenciesNodeList.getLength(); ++i) {
+                Node dependency = dependenciesNodeList.item(i);
+
+                if (dependency.getNodeName().equals(ELEMENT_DDEPENDENCY)) {
+                    Node dependencyIdNode = getNode(dependency, ELEMENT_ID);
+                    Node dependencyVersionNode = getNode(dependency, ELEMENT_VERSION);
+
+                    dependencies.add(new DefaultExtensionDependency(dependencyIdNode.getTextContent(),
+                        dependencyVersionNode != null
+                            ? new DefaultVersionConstraint(dependencyVersionNode.getTextContent()) : null,
+                        parseProperties((Element) dependency)));
+                }
+            }
+
+            return dependencies;
+        }
+
+        return Collections.emptyList();
     }
 
     private ExtensionScm loadlScm(Element extensionElement)
@@ -587,6 +608,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         addIssueManagement(document, extensionElement, extension);
 
         addDependencies(document, extensionElement, extension);
+        addManagedDependencies(document, extensionElement, extension);
 
         addProperties(document, extensionElement, extension.getProperties());
 
@@ -732,11 +754,22 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private void addDependencies(Document document, Element parentElement, Extension extension)
     {
-        if (extension.getDependencies() != null && !extension.getDependencies().isEmpty()) {
-            Element dependenciesElement = document.createElement(ELEMENT_DEPENDENCIES);
+        addDependencies(document, parentElement, ELEMENT_DEPENDENCIES, extension.getDependencies());
+    }
+
+    private void addManagedDependencies(Document document, Element parentElement, Extension extension)
+    {
+        addDependencies(document, parentElement, ELEMENT_MANAGEDDEPENDENCIES, extension.getManagedDependencies());
+    }
+
+    private void addDependencies(Document document, Element parentElement, String fieldName,
+        Collection<ExtensionDependency> dependencies)
+    {
+        if (dependencies != null && !dependencies.isEmpty()) {
+            Element dependenciesElement = document.createElement(fieldName);
             parentElement.appendChild(dependenciesElement);
 
-            for (ExtensionDependency dependency : extension.getDependencies()) {
+            for (ExtensionDependency dependency : dependencies) {
                 Element dependencyElement = document.createElement(ELEMENT_DDEPENDENCY);
                 dependenciesElement.appendChild(dependencyElement);
 

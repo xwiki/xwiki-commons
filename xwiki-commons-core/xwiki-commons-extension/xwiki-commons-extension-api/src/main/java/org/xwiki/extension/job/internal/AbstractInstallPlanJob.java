@@ -21,6 +21,7 @@ package org.xwiki.extension.job.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -516,14 +517,20 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @param extensionDependency the extension dependency to install
      * @param namespace the namespace where to install the extension
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
+     * @param managedDependencies the managed dependencies
      * @throws InstallException error when trying to install provided extension
      * @throws ResolveException
      * @throws IncompatibleVersionConstraintException
      */
     private void installExtensionDependency(ExtensionDependency extensionDependency, String namespace,
-        List<ModifableExtensionPlanNode> parentBranch)
+        List<ModifableExtensionPlanNode> parentBranch, Map<String, ExtensionDependency> managedDependencies)
         throws InstallException, IncompatibleVersionConstraintException, ResolveException
     {
+        // Make sure the version have a version constraint
+        if (extensionDependency.getVersionConstraint() == null) {
+            throw new InstallException("Dependency [" + extensionDependency + "] does not have any version constraint");
+        }
+
         if (getRequest().isVerbose()) {
             if (namespace != null) {
                 this.logger.info(LOG_RESOLVEDEPENDENCY_NAMESPACE,
@@ -546,7 +553,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         // upgrade/downgrade/replace it)
         if (namespace != null && getRequest().isRootModificationsAllowed()
             && hasIncompatileRootDependency(extensionDependency)) {
-            installExtensionDependency(extensionDependency, null, parentBranch);
+            installExtensionDependency(extensionDependency, null, parentBranch, managedDependencies);
 
             return;
         }
@@ -576,7 +583,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         }
 
         // Not found locally, search it remotely
-        ModifableExtensionPlanNode node = installExtensionDependency(targetDependency, true, namespace);
+        ModifableExtensionPlanNode node =
+            installExtensionDependency(targetDependency, true, namespace, managedDependencies);
 
         node.versionConstraint = versionConstraint;
 
@@ -590,11 +598,13 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @param targetDependency used to search the extension to install in remote repositories
      * @param dependency indicate if the extension is installed as a dependency
      * @param namespace the namespace where to install the extension
+     * @param managedDependencies the managed dependencies
      * @return the install plan node for the provided extension
      * @throws InstallException error when trying to install provided extension
      */
     private ModifableExtensionPlanNode installExtensionDependency(ExtensionDependency targetDependency,
-        boolean dependency, String namespace) throws InstallException
+        boolean dependency, String namespace, Map<String, ExtensionDependency> managedDependencies)
+        throws InstallException
     {
         this.progressManager.pushLevelProgress(2, this);
 
@@ -607,7 +617,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             this.progressManager.startStep(this);
 
             try {
-                return installExtension(extension, dependency, namespace, targetDependency);
+                return installExtension(extension, dependency, namespace, targetDependency, managedDependencies);
             } catch (Exception e) {
                 throw new InstallException(
                     String.format("Failed to create an install plan for extension dependency [%s]", targetDependency),
@@ -647,6 +657,36 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         }
 
         return mergedVersionContraint;
+    }
+
+    private Map<String, ExtensionDependency> append(Map<String, ExtensionDependency> managedDependencies,
+        Extension extension)
+    {
+        Map<String, ExtensionDependency> newManagedDependencies =
+            managedDependencies != null ? new HashMap<>(managedDependencies) : new HashMap<>();
+
+        for (ExtensionDependency dependency : extension.getManagedDependencies()) {
+            newManagedDependencies.put(dependency.getId(), dependency);
+        }
+
+        return newManagedDependencies;
+    }
+
+    private ExtensionDependency getDependency(ExtensionDependency dependency,
+        Map<String, ExtensionDependency> managedDependencies, Extension extension)
+    {
+        ExtensionDependency managedDependency = managedDependencies.get(dependency.getId());
+
+        // If the dependency does not have any version try to find it in extension managed dependencies
+        if (managedDependency == null && dependency.getVersionConstraint() == null) {
+            for (ExtensionDependency extensionManagedDependency : extension.getManagedDependencies()) {
+                if (extensionManagedDependency.getId().equals(dependency.getId())) {
+                    managedDependency = extensionManagedDependency;
+                }
+            }
+        }
+
+        return managedDependency != null ? managedDependency : dependency;
     }
 
     /**
@@ -699,7 +739,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             this.progressManager.startStep(this);
 
             try {
-                return installExtension(extension, dependency, namespace, null);
+                return installExtension(extension, dependency, namespace, null, Collections.emptyMap());
             } catch (Exception e) {
                 throw new InstallException("Failed to resolve extension", e);
             }
@@ -762,16 +802,18 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @param extension the new extension to install
      * @param dependency indicate if the extension is installed as a dependency
      * @param namespace the namespace where to install the extension
-     * @return the install plan node for the provided extension
      * @param initialDependency the initial dependency used to resolve the extension
+     * @param managedDependencies the managed dependencies
+     * @return the install plan node for the provided extension
      * @throws InstallException error when trying to install provided extension
      * @throws IncompatibleVersionConstraintException
      * @throws UninstallException
      * @throws NamespaceNotAllowedException when passed namespace is not compatible with the passed extension
      */
     private ModifableExtensionPlanNode installExtension(Extension extension, boolean dependency, String namespace,
-        ExtensionDependency initialDependency) throws InstallException, ResolveException,
-        IncompatibleVersionConstraintException, UninstallException, NamespaceNotAllowedException
+        ExtensionDependency initialDependency, Map<String, ExtensionDependency> managedDependencies)
+        throws InstallException, ResolveException, IncompatibleVersionConstraintException, UninstallException,
+        NamespaceNotAllowedException
     {
         boolean allowed = this.namespaceResolver.isAllowed(extension.getAllowedNamespaces(), namespace);
 
@@ -780,7 +822,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             if (namespace != null) {
                 if (getRequest().isRootModificationsAllowed()) {
                     // Try to install it on root namespace
-                    return installExtension(extension, dependency, null, initialDependency);
+                    return installExtension(extension, dependency, null, initialDependency, managedDependencies);
                 }
             }
 
@@ -797,7 +839,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             // Check if the extension already exist on root, throw exception if not allowed
             if (checkRootExtension(extension)) {
                 // Restart install on root
-                return installExtension(extension, dependency, namespace, initialDependency);
+                return installExtension(extension, dependency, namespace, initialDependency, null);
             }
         }
 
@@ -861,10 +903,14 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                 try {
                     children = new ArrayList<ModifableExtensionPlanNode>();
-                    for (ExtensionDependency dependencyDependency : extension.getDependencies()) {
+                    for (ExtensionDependency extensionDependency : extension.getDependencies()) {
                         this.progressManager.startStep(this);
 
-                        installExtensionDependency(dependencyDependency, namespace, children);
+                        // Replace with managed dependency if any
+                        extensionDependency = getDependency(extensionDependency, managedDependencies, extension);
+
+                        installExtensionDependency(extensionDependency, namespace, children,
+                            append(managedDependencies, extension));
                     }
                 } finally {
                     this.progressManager.popLevelProgress(this);

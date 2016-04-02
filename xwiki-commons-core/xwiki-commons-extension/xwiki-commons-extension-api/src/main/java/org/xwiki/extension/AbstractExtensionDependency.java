@@ -205,7 +205,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      * @param value the property value
      * @see #getProperty(String)
      */
-    protected void putProperty(String key, Object value)
+    public void putProperty(String key, Object value)
     {
         this.properties.put(key, value);
     }
@@ -233,7 +233,16 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     @Override
     public String toString()
     {
-        return getId() + '-' + getVersionConstraint();
+        StringBuilder str = new StringBuilder();
+
+        str.append(getId());
+
+        if (getVersionConstraint() != null) {
+            str.append('-');
+            str.append(getVersionConstraint());
+        }
+
+        return str.toString();
     }
 
     @Override

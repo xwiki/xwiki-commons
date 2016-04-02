@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>rwithmanageddependency</id>
+  <version>version</version>
+  <type>test</type>
+  <dependencies>
+    <dependency>
+      <id>upgrade</id>
+    </dependency>
+  </dependencies>
+  <manageddependencies>
+    <dependency>
+      <id>upgrade</id>
+      <version>1.0</version>
+    </dependency>
+  </manageddependencies>
+</extension>

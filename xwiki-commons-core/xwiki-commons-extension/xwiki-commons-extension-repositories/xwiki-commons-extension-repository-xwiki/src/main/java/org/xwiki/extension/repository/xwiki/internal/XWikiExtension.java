@@ -25,6 +25,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -166,15 +168,27 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
         }
 
         // Dependencies
+        setDependencies(toXWikiExtensionDependencies(restExtension.getDependencies()));
 
-        for (ExtensionDependency dependency : restExtension.getDependencies()) {
-            addDependency(
-                new XWikiExtensionDependency(dependency, repository != null ? repository.getDescriptor() : null));
-        }
+        // Managed dependencies
+        setManagedDependencies(toXWikiExtensionDependencies(restExtension.getManagedDependencies()));
 
         // File
 
         setFile(new XWikiExtensionFile(repository, getId()));
+    }
+
+    private Collection<XWikiExtensionDependency> toXWikiExtensionDependencies(
+        List<ExtensionDependency> restDependencies)
+    {
+        List<XWikiExtensionDependency> newDependencies = new ArrayList<>(restDependencies.size());
+
+        for (ExtensionDependency dependency : restDependencies) {
+            newDependencies.add(new XWikiExtensionDependency(dependency,
+                this.repository != null ? this.repository.getDescriptor() : null));
+        }
+
+        return newDependencies;
     }
 
     protected static DefaultExtensionScmConnection toDefaultExtensionScmConnection(ExtensionScmConnection connection)

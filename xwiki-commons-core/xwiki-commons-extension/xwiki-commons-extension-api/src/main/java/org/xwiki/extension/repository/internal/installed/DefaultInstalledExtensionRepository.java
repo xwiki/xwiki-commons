@@ -345,6 +345,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
         InvalidExtensionException dependencyException = null;
         for (ExtensionDependency dependency : localExtension.getDependencies()) {
             try {
+                // TODO: take into account managed dependencies
                 validateDependency(dependency, namespace);
             } catch (InvalidExtensionException e) {
                 // Continue to make sure all extension are validated in the right order

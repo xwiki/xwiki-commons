@@ -107,6 +107,15 @@ public class TestResources
 
     public static final ExtensionId REMOTE_WITH_ROOT_DEPENDENY20_ID = new ExtensionId("rwithrootdependency", "2.0");
 
+    public static final ExtensionId REMOTE_WITH_MANAGED_DEPENDENY_ID =
+        new ExtensionId("rwithmanageddependency", "version");
+
+    public static final ExtensionId REMOTE_WITH_MANAGED_TRANSITIVEDEPENDENY_ID =
+        new ExtensionId("rwithmanagedtransitivedependency", "version");
+
+    public static final ExtensionId REMOTE_WITH_OVERWRITTEN_MANAGED_DEPENDENY_ID =
+        new ExtensionId("rwithoverwrittenmanageddependency", "version");
+
     // Methods
 
     public void init(InstalledExtensionRepository installedExtensionRepository) throws ResolveException

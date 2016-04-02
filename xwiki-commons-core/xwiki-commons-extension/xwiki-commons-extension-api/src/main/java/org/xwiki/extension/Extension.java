@@ -260,7 +260,19 @@ public interface Extension extends Comparable<Extension>
     /**
      * @return the dependencies of the extension, an empty collection if there is none
      */
-    Collection<? extends ExtensionDependency> getDependencies();
+    Collection<ExtensionDependency> getDependencies();
+
+    /**
+     * Managed dependencies are used to override transitive dependencies (usually the version of this transitive
+     * dependency).
+     * 
+     * @return the managed dependencies, empty list if there is none
+     * @since 8.1M1
+     */
+    default Collection<ExtensionDependency> getManagedDependencies()
+    {
+        return Collections.emptyList();
+    }
 
     /**
      * Return extension file descriptor. Also allows to get the content of the file.

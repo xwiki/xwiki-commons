@@ -64,7 +64,11 @@
             type="extension:ExtensionDependency" minOccurs="0"
             maxOccurs="unbounded">
           </element>
-          <element name="repositories" type="extension:ExtensionRepository" minOccurs="0" maxOccurs="unbounded"></element>
+          <element name="managedDependencies" type="extension:ExtensionDependency" minOccurs="0" maxOccurs="unbounded"></element>
+          <element name="repositories"
+            type="extension:ExtensionRepository" minOccurs="0"
+            maxOccurs="unbounded">
+          </element>
         </sequence>
       </extension>
     </complexContent>

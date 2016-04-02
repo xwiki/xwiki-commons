@@ -92,6 +92,13 @@ public class DefaultExtensionSerializerTest
                 unserializedExtension.getDependencies().get(i).getProperties());
         }
 
+        for (int i = 0; i < extension.getManagedDependencies().size(); ++i) {
+            Assert.assertEquals(extension.getManagedDependencies().get(i),
+                unserializedExtension.getManagedDependencies().get(i));
+            Assert.assertEquals(extension.getManagedDependencies().get(i).getProperties(),
+                unserializedExtension.getManagedDependencies().get(i).getProperties());
+        }
+
         return unserializedExtension;
     }
 

@@ -34,4 +34,16 @@ public interface MavenExtensionDependency extends ExtensionDependency
      * @return the Maven dependency object
      */
     Dependency getMavenDependency();
+
+    /**
+     * @return the scope of dependency
+     * @since 8.1M1
+     */
+    String getScope();
+
+    /**
+     * @return true is the dependency is optional
+     * @since 8.1M1
+     */
+    boolean isOptional();
 }

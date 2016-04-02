@@ -38,6 +38,20 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
     public static final String PKEY_MAVEN_DEPENDENCY = "maven.Dependency";
 
     /**
+     * The key associated to the Maven dependency object.
+     * 
+     * @since 8.1M1
+     */
+    public static final String PKEY_MAVEN_DEPENDENCY_SCOPE = "maven.dependency.scope";
+
+    /**
+     * The key associated to the Maven dependency object.
+     * 
+     * @since 8.1M1
+     */
+    public static final String PKEY_MAVEN_DEPENDENCY_OPTIONAL = "maven.dependency.optional";
+
+    /**
      * Create new instance by cloning the provided one.
      *
      * @param dependency the extension dependency to copy
@@ -56,13 +70,50 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
     {
         super(extensionId, constraint);
 
-        // custom properties
-        putProperty(PKEY_MAVEN_DEPENDENCY, mavenDependency);
+        if (mavenDependency != null) {
+            // custom properties lost when saving
+            putProperty(PKEY_MAVEN_DEPENDENCY, mavenDependency);
+            // custom properties to remember
+            putProperty(PKEY_MAVEN_DEPENDENCY_SCOPE, mavenDependency.getScope());
+            putProperty(PKEY_MAVEN_DEPENDENCY_OPTIONAL, mavenDependency.isOptional());
+        }
+    }
+
+    /**
+     * @param dependency the generic dependency
+     * @return the scope of dependency
+     * @since 8.1M1
+     */
+    public static String getScope(ExtensionDependency dependency)
+    {
+        return (String) dependency.getProperty(PKEY_MAVEN_DEPENDENCY_SCOPE);
+    }
+
+    /**
+     * @param dependency the generic dependency
+     * @return true is the dependency is optional
+     * @since 8.1M1
+     */
+    public static boolean isOptional(ExtensionDependency dependency)
+    {
+        return dependency.getProperty(PKEY_MAVEN_DEPENDENCY_OPTIONAL, false);
     }
 
     @Override
     public Dependency getMavenDependency()
     {
         return (Dependency) getProperty(PKEY_MAVEN_DEPENDENCY);
+    }
+
+    @Override
+    public String getScope()
+    {
+        return getScope(this);
+    }
+
+    @Override
+    public boolean isOptional()
+    {
+        return isOptional(this);
     }
 }
