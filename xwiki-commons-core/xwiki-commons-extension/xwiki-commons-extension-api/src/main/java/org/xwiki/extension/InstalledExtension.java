@@ -49,7 +49,7 @@ public interface InstalledExtension extends LocalExtension
     /**
      * Custom property key containing {@link #getNamespaces()}.
      * <p>
-     * Since 4.3M1 it's a Map<String, Object>.
+     * Since 4.3M1 it's a {@code Map<String, Object>}.
      */
     String PKEY_NAMESPACES = PKEY_PREFIX + "namespaces";
 

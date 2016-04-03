@@ -72,7 +72,7 @@ public abstract class AbstractConverter<T> implements Converter<T>
     /**
      * Convert the input object into an output object of the specified type.
      * <p>
-     * Typical implementations will provide a minimum of <code>String --> type</code> conversion.
+     * Typical implementations will provide a minimum of {@code String --> type} conversion.
      *
      * @param <G> the type in which the provided value has o be converted
      * @param targetType Data type to which this value should be converted.
@@ -91,7 +91,7 @@ public abstract class AbstractConverter<T> implements Converter<T>
     /**
      * Convert the input object into an output object of the specified type.
      * <p>
-     * Typical implementations will provide a minimum of <code>String --> type</code> conversion.
+     * Typical implementations will provide a minimum of {@code String --> type} conversion.
      *
      * @param <G> the type in which the provided value has o be converted
      * @param type Data type to which this value should be converted.

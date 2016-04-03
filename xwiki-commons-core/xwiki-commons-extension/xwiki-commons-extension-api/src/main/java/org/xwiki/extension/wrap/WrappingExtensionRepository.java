@@ -32,7 +32,7 @@ import org.xwiki.extension.version.Version;
 /**
  * Wrap an {@link ExtensionRepository}.
  *
- * @param <T>
+ * @param <T> the type of the wrapped object
  * @version $Id$
  * @since 4.0M1
  */

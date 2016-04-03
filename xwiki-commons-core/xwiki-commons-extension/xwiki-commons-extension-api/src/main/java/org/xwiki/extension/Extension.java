@@ -202,7 +202,7 @@ public interface Extension extends Comparable<Extension>
     }
 
     /**
-     * Return the {@link ExtensionFeature} that matches the passed feature id.
+     * Return the {@link ExtensionId} object that matches the passed feature id.
      * 
      * @param featureId the id of the feature
      * @return the {@link ExtensionId} associated to the passed id

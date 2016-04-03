@@ -25,10 +25,10 @@ package org.xwiki.observation.event.filter;
  * <p>
  * For example, this allows writing {@link org.xwiki.observation.event.filter.RegexEventFilter} that can be used to
  * easily match several documents at once. The following will match all Documents which are saved which have a name
- * matching the <tt>".*Doc.*"</tt> regex: <code><pre>
- * new DocumentSaveEvent(new RegexEventFilter(&quot;.*Doc.*&quot;))
- * </pre></code>
- * </p>
+ * matching the {@code .*Doc.*} regex:
+ * <pre>{@code
+ * new DocumentSaveEvent(new RegexEventFilter(".*Doc.*"))
+ * }</pre>
  *
  * @version $Id$
  */

@@ -40,7 +40,7 @@ import com.google.common.base.Objects;
 public class ExtensionId implements Serializable, Comparable<ExtensionId>
 {
     /**
-     * Type instance for List<ExtensionId>.
+     * Type instance for {@code List<ExtensionId>}.
      *
      * @since 8.0M1
      */

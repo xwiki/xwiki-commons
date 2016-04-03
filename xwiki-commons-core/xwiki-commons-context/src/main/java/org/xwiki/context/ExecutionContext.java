@@ -153,13 +153,13 @@ public class ExecutionContext
 
     /**
      * Inherit properties marked for inheritance from the given execution context.
-     *
-     * Inheritance is performed both in {@link Execution#setContext()} and in {@link Execution.pushContext()}, if there
-     * is a current execution context.
-     *
+     * <p>
+     * Inheritance is performed both in {@link Execution#setContext(ExecutionContext)} and in
+     * {@link Execution#pushContext(ExecutionContext)} if there is a current execution context.
+     * <p>
      * All properties marked as 'inherited' will be copied into this context, unless the property already is declared in
      * this context.
-     *
+     * <p>
      * It is an error if this context contain a value that was declared as 'inherited' and 'final' in the inherited
      * execution context and an exception will be thrown.
      *

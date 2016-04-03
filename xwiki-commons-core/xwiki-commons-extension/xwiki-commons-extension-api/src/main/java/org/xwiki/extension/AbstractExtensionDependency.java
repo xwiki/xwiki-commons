@@ -142,7 +142,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
     /**
      * @param repositories the custom repositories provided by the extension (usually to resolve dependencies)
-     * @@since 7.3M1
+     * @since 7.3M1
      */
     public void setRepositories(Collection<? extends ExtensionRepositoryDescriptor> repositories)
     {

@@ -52,7 +52,8 @@ import org.xwiki.component.util.ReflectionUtils;
  * mocked for you. Then in your test code, do a lookup of your component under test and you'll get a component instance
  * which has all its injected dependencies mocked automatically.
  * <p>
- * For example: <code><pre>
+ * For example:
+ * <pre>{@code
  * public class MyComponentTest
  * {
  *     &#64;Rule
@@ -63,20 +64,21 @@ import org.xwiki.component.util.ReflectionUtils;
  *     public void someTest() throws Exception
  *     {
  *         MyComponent myComponent = mocker.getComponentUnderTest();
- *     ...
+ *         ...
+ *     }
+ * ...
  * }
- * </pre></code>
- * <p>
+ * }</pre>
+ *
  * Note that by default there are no component registered against the component manager except those mocked
  * automatically by the Rule (except for the MockitoComponentMockingRule itself, which means that if your component
  * under test is injected a default ComponentManager, it'll be the MockitoComponentMockingRule which will get injected.
  * See more below). This has 2 advantages:
  * <ul>
- * <li>This is the spirit of this Rule since it's for unit testing and this testing your component in isolation from the
- * rest</li>
- * <li>It makes the tests up to 10 times faster</li>
+ *   <li>This is the spirit of this Rule since it's for unit testing and this testing your component in isolation from
+ *       the rest</li>
+ *   <li>It makes the tests up to 10 times faster</li>
  * </ul>
- * <p>
  * If you really need to register some components, use the {@link org.xwiki.test.annotation.ComponentList} annotation
  * and if you really really need to register all components (it takes time) then use
  * {@link org.xwiki.test.annotation.AllComponents}.
@@ -87,7 +89,8 @@ import org.xwiki.component.util.ReflectionUtils;
  * with {@link org.xwiki.test.annotation.AfterComponent}.
  * <p>
  * This can be useful (for example) in the case you wish to register a mock ComponentManager in your component under
- * test. You would write: <code><pre>
+ * test. You would write:
+ * <pre>{@code
  * &#64;Rule
  * public final MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
  * 
@@ -96,7 +99,7 @@ import org.xwiki.component.util.ReflectionUtils;
  * {
  *     this.mocker.registerMockComponent(ComponentManager.class);
  * }
- * </pre></code>
+ * }</pre>
  *
  * @param <T> the component role type, used to provide a typed instance when calling {@link #getComponentUnderTest()}
  * @version $Id$

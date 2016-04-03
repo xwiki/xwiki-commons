@@ -51,17 +51,19 @@ import org.xwiki.test.jmock.annotation.MockingRequirements;
  * with {@link org.xwiki.test.jmock.annotation.MockingRequirement}, passing the implementation class you're testing.
  * Then in your test code, do a lookup of your component under test and you'll get a component instance which has all
  * its injected dependencies mocked automatically. For example:
- * <code><pre>
+ * <pre>{@code
  * &#64;MockingRequirement(MyComponentImplementation.class)
- * public class MyComponentTest extends AbstractMockingComponentTestCase&lt;MyComponent&gt;
+ * public class MyComponentTest extends AbstractMockingComponentTestCase<MyComponent>
  * {
  *     &#64;Test
  *     public void someTest() throws Exception
  *     {
  *         MyComponent myComponent = getMockedComponent();
- *     ...
+ *         ...
+ *     }
+ * ...
  * }
- * </code></pre>
+ * }</pre>
  *
  * Note that by default there are no component registered against the component manager except those mocked
  * automatically by the {@code @MockingRequirement} annotation. This has 2 advantages:

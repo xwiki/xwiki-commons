@@ -220,7 +220,7 @@ public class ExtensionQuery
     }
 
     /**
-     * @param limit limit of result list to set (so {@link #execute()}.size() will be <= limit).
+     * @param limit the number of results to return when querying extensions
      * @return this query.
      */
     public ExtensionQuery setLimit(int limit)

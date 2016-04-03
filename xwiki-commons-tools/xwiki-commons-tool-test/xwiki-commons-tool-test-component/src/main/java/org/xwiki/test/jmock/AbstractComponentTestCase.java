@@ -33,10 +33,8 @@ import org.xwiki.test.internal.MockConfigurationSource;
  * <p>
  * XWiki 2.2M1 also introduced {@link AbstractMockingComponentTestCase} which provides automatic mocking for injected
  * component dependencies and which is thus better when writing pure unit tests, isolated from the rest.
- * </p>
  * <p>
  * Consider using this class only for integration tests.
- * </p>
  *
  * @deprecated starting with 4.3.1 use {@link org.xwiki.test.ComponentManagerRule} instead
  */
@@ -49,6 +47,8 @@ public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
 
     /**
      * Tests that require fine-grained initializations can override this method and not call super.
+     *
+     * @throws Exception in case of errors
      */
     @Before
     public void setUp() throws Exception
@@ -64,6 +64,8 @@ public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
 
     /**
      * Clean up test states.
+     *
+     * @throws Exception in case of errors
      */
     @After
     public void tearDown() throws Exception
@@ -72,7 +74,9 @@ public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
     }
 
     /**
-     * Register custom/mock components
+     * Register custom/mock components.
+     *
+     * @throws Exception in case of errors
      */
     protected void registerComponents() throws Exception
     {
@@ -94,6 +98,8 @@ public abstract class AbstractComponentTestCase extends AbstractMockingTestCase
     }
 
     /**
+     * @param componentClass the class of the component to register
+     * @throws Exception in case of errors
      * @since 3.2M3
      */
     public void registerComponent(Class<?> componentClass) throws Exception

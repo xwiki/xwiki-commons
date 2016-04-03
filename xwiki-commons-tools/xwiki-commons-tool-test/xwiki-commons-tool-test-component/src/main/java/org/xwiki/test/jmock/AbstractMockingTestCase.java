@@ -51,10 +51,12 @@ public abstract class AbstractMockingTestCase
     /**
      * @return a configured Component Manager (which uses the plexus.xml file in the test resources directory) which can
      *         then be put in the XWiki Context for testing.
+     * @throws Exception in case of errors
      */
     public abstract MockingComponentManager getComponentManager() throws Exception;
 
     /**
+     * @throws Exception in case of errors
      * @since 3.0M3
      */
     public <T> T registerMockComponent(Class<T> role, String hint, String mockId) throws Exception
@@ -63,6 +65,7 @@ public abstract class AbstractMockingTestCase
     }
 
     /**
+     * @throws Exception in case of errors
      * @since 4.0M1
      */
     public <T> T registerMockComponent(Type role, String hint, String mockId) throws Exception
@@ -71,6 +74,7 @@ public abstract class AbstractMockingTestCase
     }
 
     /**
+     * @throws Exception in case of errors
      * @since 2.4RC1
      */
     public <T> T registerMockComponent(Class<T> role, String hint) throws Exception
@@ -79,6 +83,7 @@ public abstract class AbstractMockingTestCase
     }
 
     /**
+     * @throws Exception in case of errors
      * @since 4.0M1
      */
     public <T> T registerMockComponent(Type role, String hint) throws Exception
@@ -87,6 +92,7 @@ public abstract class AbstractMockingTestCase
     }
 
     /**
+     * @throws Exception in case of errors
      * @since 2.4RC1
      */
     public <T> T registerMockComponent(Class<T> role) throws Exception
@@ -95,6 +101,7 @@ public abstract class AbstractMockingTestCase
     }
 
     /**
+     * @throws Exception in case of errors
      * @since 4.0M1
      */
     public <T> T registerMockComponent(Type role) throws Exception
