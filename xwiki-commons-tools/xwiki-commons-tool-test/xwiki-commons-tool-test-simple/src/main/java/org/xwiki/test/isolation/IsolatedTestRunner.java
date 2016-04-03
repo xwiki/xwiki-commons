@@ -17,9 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.xwiki.test.isolation;
-
 
 import java.net.URLClassLoader;
 
@@ -29,16 +27,17 @@ import org.junit.runners.model.InitializationError;
 /**
  * Specialized JUnit4 runner to isolate some classes during the execution of a test class.
  * This runner should be used in combination with the {@link IsolatedClassPrefix} annotation.
- *
+ * <p>
  * Isolation is helpful when you do not want to pollute the application ClassLoader with some
  * classes under test, or some dynamically loaded classes during a test. It could be used to
  * reinitialize statics and drop out those dynamically loaded classes after the test.
- *
+ * <p>
  * To use this class, define a JUnit {@code @RunWith} annotation on your test class and also
  * add a {@link IsolatedClassPrefix} annotation to define the list of class prefixes that should
  * be isolated from the rest of your tests.
- *
- * For example: <code><pre>
+ * <p>
+ * For example:
+ * <pre>{@code
  * &#64;RunWith(IsolatedTestRunner)
  * &#64;IsolatedClassPrefix("org.xwiki.mypackage")
  * public class MyPackageTest
@@ -47,17 +46,19 @@ import org.junit.runners.model.InitializationError;
  *     public void someTest() throws Exception
  *     {
  *     ...
+ *     }
+ * ...
  * }
- * </pre></code>
+ * }</pre>
  *
  * The prefixes should at least include a prefix that match your test class, else the initialization will fail,
  * since your test would not be run in isolation properly.
  *
  * If you are mocking some of your isolated classes with Mockito in different tests (either isolated or not), you
  * will need to disable the class cache used by Mockito to avoid ClassCastException during mocking. You can disable
- * the cache by adding the following class to your test Jar :
+ * the cache by adding the following class to your test Jar:
  *
- * <code><pre>
+ * <pre>{@code
  * package org.mockito.configuration;
  * public class MockitoConfiguration extends DefaultMockitoConfiguration
  * {
@@ -67,7 +68,7 @@ import org.junit.runners.model.InitializationError;
  *         return false;
  *     }
  * }
- * </pre></code>
+ * }</pre>
  *
  * @version $Id$
  * @since 5.0M2

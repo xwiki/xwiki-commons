@@ -42,17 +42,16 @@ import ch.qos.logback.core.read.ListAppender;
  *       output anything and if it needs to assert something, it has to be done in the test itself.</li>
  *   <li>it allows to assert the output log messages</li>
  * </ul>
- * <p/>
  * This code was inspired by code written by Christian Baranowski in a
  * <a href="http://tux2323.blogspot.fr/2011/06/test-logging-via-junit-rule.html">blog</a> post.
- * <p/>
+ * <p>
  * Example usage:
- * <code><pre>
+ * <pre>{@code
  *  &#64;Rule public LogRule logRule = new LogRule() {{
  *      record(LogLevel.WARN);
  *      recordLoggingForType(RestrictParseLocationEventHandler.class);
  *  }};
- * </pre></code>
+ * }</pre>
  *
  * @version $Id$
  * @since 4.2RC1
