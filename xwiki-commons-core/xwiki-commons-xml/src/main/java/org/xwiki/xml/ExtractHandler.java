@@ -34,9 +34,14 @@ import org.xml.sax.helpers.DefaultHandler;
  * (input) XML's inner text. The ExtractHandler is used in feed plug-in to obtain a preview of an XML (HTML, to be more
  * specific). Another use case could be to paginate an XML source (keeping pages well-formed).
  * <p>
- * As an example, the result of applying an {@code ExtractHandler(3, 13)} to:<br>
- * {@code <p>click <a href="realyLongURL" title="Here">here</a> to view the result</p></code>
- * <br/>is:<br/> <code><p>ck <a href="realyLongURL" title="Here">here</a> to</p>}
+ * As an example, the result of applying an {@code ExtractHandler(3, 13)} to:
+ * <pre>{@code
+ * <p>click <a href="realyLongURL" title="Here">here</a> to view the result</p>
+ * }</pre>
+ * is
+ * <pre>{@code
+ * <p>ck <a href="realyLongURL" title="Here">here</a> to</p>
+ * }</pre>
  *
  * @version $Id$
  * @since 1.6M2
