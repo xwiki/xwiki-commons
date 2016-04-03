@@ -54,15 +54,18 @@ public final class HTMLUtils
         "area", "base", "br", "col", "hr", "img", "input", "link", "meta", "param");
 
     /**
-     * JDOM's XMLOutputter class converts reserved XML characters (<, >, ' , &, \r and \n) into their entity format
-     * (&lt;, &gt; &apos; &amp; &#xD; and \r\n). However since we're using HTML Cleaner
+     * JDOM's XMLOutputter class converts reserved XML characters ({@code <, >, ' , &, \r and \n}) into their entity
+     * format {@code &lt;, &gt; &apos; &amp; &#xD; and \r\n}. However since we're using HTML Cleaner
      * (http://htmlcleaner.sourceforge.net/) and since it's buggy for character escapes we have turned off character
      * escaping for it and thus we need to perform selective escaping here.
      * <p>
      * Moreover, since we support HTML5, we need to
      * expand empty elements on some elements and not on the others. For example: {@code <span></span>} is valid
-     * meanwhile {@code <br>
-     * </br>} is not. See {@code OMIT_ELEMENT_EXPANDING_SET} for the list of elements to not expand.
+     * meanwhile:
+     * <pre>{@code
+     * <br>
+     * </br>}</pre>
+     * is not. See {@code OMIT_ELEMENT_EXPANDING_SET} for the list of elements to not expand.
      */
     // TODO: Remove the complex escaping code when SF HTML Cleaner will do proper escaping
     public static class XWikiXMLOutputter extends XMLOutputter

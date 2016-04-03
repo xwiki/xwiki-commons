@@ -154,11 +154,10 @@ public final class XMLUtils
     /**
      * XML comment does not support some characters inside its content but there is no official escaping/unescaping for
      * it so we made our own.
-     * <p>
      * <ul>
-     * <li>1) Escape existing \</li>
-     * <li>2) Escape --</li>
-     * <li>3) Add "\" (unescaped as "") at the end if the last char is -</li>
+     *   <li>1) Escape existing \</li>
+     *   <li>2) Escape --</li>
+     *   <li>3) Add {@code \} (unescaped as {@code ""}) at the end if the last char is {@code -}</li>
      * </ul>
      *
      * @param content the XML comment content to escape

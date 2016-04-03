@@ -28,15 +28,15 @@ package org.xwiki.xml.html;
 public interface HTMLConstants
 {
     /**
-     * White space characters.<br/>
-     * <p>
-     * {@code \u0020} - Ascii space.<br/>
-     * {@code \u0009} - Ascii tab.<br/>
-     * {@code \u000C} - Ascii form feed. <br/>
-     * {@code \u200B} - Zero width space.<br/>
-     * {@code \u000A} - New line.<br/>
-     * {@code \u000D} - Carriage return.<br/>
-     * </p>
+     * White space characters.
+     * <ul>
+     *   <li>{@code \u0020} - Ascii space.</li>
+     *   <li>{@code \u0009} - Ascii tab.</li>
+     *   <li>{@code \u000C} - Ascii form feed.</li>
+     *   <li>{@code \u200B} - Zero width space.</li>
+     *   <li>{@code \u000A} - New line.</li>
+     *   <li>{@code \u000D} - Carriage return.</li>
+     * </ul>
      */
     String WHITE_SPACE_CHARS = "\u0020\u0009\u000C\u200B\n\r";
 

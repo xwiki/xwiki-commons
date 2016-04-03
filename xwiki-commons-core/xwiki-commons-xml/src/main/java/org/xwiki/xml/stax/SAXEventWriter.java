@@ -33,6 +33,7 @@ import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.ProcessingInstruction;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.util.XMLEventConsumer;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -49,7 +50,7 @@ import javanet.staxutils.helpers.XMLFilterImplEx;
 /**
  * Receive and convert StAX events to SAX events.
  * <p>
- * Extends {@link SAXEventConsumer} with {@link javax.xml.stream.XMLEventWriter} methods.
+ * Extends {@link XMLEventConsumer} with {@link javax.xml.stream.XMLEventWriter} methods.
  *
  * @version $Id$
  * @since 5.2M1
