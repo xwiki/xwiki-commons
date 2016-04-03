@@ -659,36 +659,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         return mergedVersionContraint;
     }
 
-    private Map<String, ExtensionDependency> append(Map<String, ExtensionDependency> managedDependencies,
-        Extension extension)
-    {
-        Map<String, ExtensionDependency> newManagedDependencies =
-            managedDependencies != null ? new HashMap<>(managedDependencies) : new HashMap<>();
-
-        for (ExtensionDependency dependency : extension.getManagedDependencies()) {
-            newManagedDependencies.put(dependency.getId(), dependency);
-        }
-
-        return newManagedDependencies;
-    }
-
-    private ExtensionDependency getDependency(ExtensionDependency dependency,
-        Map<String, ExtensionDependency> managedDependencies, Extension extension)
-    {
-        ExtensionDependency managedDependency = managedDependencies.get(dependency.getId());
-
-        // If the dependency does not have any version try to find it in extension managed dependencies
-        if (managedDependency == null && dependency.getVersionConstraint() == null) {
-            for (ExtensionDependency extensionManagedDependency : extension.getManagedDependencies()) {
-                if (extensionManagedDependency.getId().equals(dependency.getId())) {
-                    managedDependency = extensionManagedDependency;
-                }
-            }
-        }
-
-        return managedDependency != null ? managedDependency : dependency;
-    }
-
     /**
      * Extract extension with the provided id from the provided extension.
      *

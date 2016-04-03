@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
@@ -285,5 +287,35 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace), installedExtension,
                 previousExtensions);
         }
+    }
+
+    protected Map<String, ExtensionDependency> append(Map<String, ExtensionDependency> managedDependencies,
+        Extension extension)
+    {
+        Map<String, ExtensionDependency> newManagedDependencies =
+            managedDependencies != null ? new HashMap<>(managedDependencies) : new HashMap<>();
+
+        for (ExtensionDependency dependency : extension.getManagedDependencies()) {
+            newManagedDependencies.put(dependency.getId(), dependency);
+        }
+
+        return newManagedDependencies;
+    }
+
+    protected ExtensionDependency getDependency(ExtensionDependency dependency,
+        Map<String, ExtensionDependency> managedDependencies, Extension extension)
+    {
+        ExtensionDependency managedDependency = managedDependencies.get(dependency.getId());
+
+        // If the dependency does not have any version try to find it in extension managed dependencies
+        if (managedDependency == null && dependency.getVersionConstraint() == null) {
+            for (ExtensionDependency extensionManagedDependency : extension.getManagedDependencies()) {
+                if (extensionManagedDependency.getId().equals(dependency.getId())) {
+                    managedDependency = extensionManagedDependency;
+                }
+            }
+        }
+
+        return managedDependency != null ? managedDependency : dependency;
     }
 }
