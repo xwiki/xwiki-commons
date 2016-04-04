@@ -66,15 +66,36 @@ public class UnstableAnnotationCheckTest extends BaseCheckTestSupport
     }
 
     @Test
+    public void checkWithUnstableOkAtMethodLevel() throws Exception
+    {
+        final String[] expected = CommonUtils.EMPTY_STRING_ARRAY;
+
+        verify(this.checkConfig, getPath("TestClassWithUnstableOkAtMethodLevel.java"), expected);
+    }
+
+    @Test
     public void checkWithUnstableAnnotationShouldBeRemoved() throws Exception
     {
         final String[] expected = {
             "29:1: The @Unstable annotation for [org.xwiki.tool.checkstyle.test."
-            + "TestClassWithUnstableAnnotationShouldBeRemoved] must be removed since its been there for more than a "
+            + "TestClassWithUnstableAnnotationShouldBeRemoved] must be removed since it's been there for more than a "
             + "full development cycle (was introduced in [6.0] and current version is [8.1-SNAPSHOT])"
         };
 
         verify(this.checkConfig, getPath("TestClassWithUnstableAnnotationShouldBeRemoved.java"), expected);
+    }
+
+    @Test
+    public void checkWithUnstableAnnotationShouldBeRemovedAtMethodLevel() throws Exception
+    {
+        final String[] expected = {
+            "29:5: The @Unstable annotation for [org.xwiki.tool.checkstyle.test."
+                + "TestClassWithUnstableAnnotationShouldBeRemovedAtMethodLevel.method()] must be removed since it's "
+                + "been there for more than a full development cycle (was introduced in [6.0] and current version is "
+                + "[8.1-SNAPSHOT])"
+        };
+
+        verify(this.checkConfig, getPath("TestClassWithUnstableAnnotationShouldBeRemovedAtMethodLevel.java"), expected);
     }
 
     @Override

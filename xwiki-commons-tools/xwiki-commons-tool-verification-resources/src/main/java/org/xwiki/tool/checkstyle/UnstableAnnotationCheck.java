@@ -118,7 +118,7 @@ public class UnstableAnnotationCheck extends AbstractCheck
                         if (this.currentVersionMajor - 2 >= sinceMajor) {
                             log(annotation.getLineNo(), annotation.getColumnNo(),
                                 String.format("The @Unstable annotation "
-                                + "for [%s] must be removed since it's been there for more than a full "
+                                + "for [%s] must be removed since it''s been there for more than a full "
                                 + "development cycle (was introduced in [%s] and current version is [%s])",
                                 computeElementName(annotatedElementName), sinceVersion, this.currentVersion));
                         }
