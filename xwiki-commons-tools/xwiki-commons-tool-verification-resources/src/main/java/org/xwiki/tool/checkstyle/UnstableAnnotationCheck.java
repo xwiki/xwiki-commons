@@ -94,11 +94,16 @@ public class UnstableAnnotationCheck extends AbstractCheck
                 String annotationName = annotation.findFirstToken(TokenTypes.IDENT).getText();
                 if (annotationName.equals("Unstable")) {
                     FileContents contents = getFileContents();
-                    TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
                     String annotatedElementName = ast.findFirstToken(TokenTypes.IDENT).getText();
-                    String sinceVersion = extractSinceVersionFromJavadoc(cmt.getText());
+                    // Get the Javadoc before the annotation in order to locate a @Since annotation and to extract
+                    // the XWiki version mentioned there.
+                    String sinceVersion = null;
+                    TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
+                    if (cmt != null) {
+                        sinceVersion = extractSinceVersionFromJavadoc(cmt.getText());
+                    }
                     if (sinceVersion == null) {
-                        log(annotation.getLineNo(), annotation.getColumnNo(), String.format("There's an @Unstable "
+                        log(annotation.getLineNo(), annotation.getColumnNo(), String.format("There is an @Unstable "
                             + "annotation for [%s] but the @since javadoc tag is missing, you must add it!",
                             computeElementName(annotatedElementName)));
                         return;
