@@ -47,14 +47,26 @@ public class UnstableAnnotationCheckTest extends BaseCheckTestSupport
     }
 
     @Test
-    public void checkWithNoSinceJavadocTag() throws Exception
+    public void checkWithNoSinceJavadocTagAtClassLevel() throws Exception
     {
         final String[] expected = {
-            "24:1: There is an @Unstable annotation for [org.xwiki.tool.checkstyle.test.TestClassWithNoSinceJavadocTag] "
-                + "but the @since javadoc tag is missing, you must add it!"
+            "24:1: There is an @Unstable annotation for [org.xwiki.tool.checkstyle.test."
+            + "TestClassWithNoSinceJavadocTagAtClassLevel] but the @since javadoc tag is missing, you must add it!"
         };
 
-        verify(this.checkConfig, getPath("TestClassWithNoSinceJavadocTag.java"), expected);
+        verify(this.checkConfig, getPath("TestClassWithNoSinceJavadocTagAtClassLevel.java"), expected);
+    }
+
+    @Test
+    public void checkWithNoSinceJavadocTagAtMethodLevel() throws Exception
+    {
+        final String[] expected = {
+            "26:5: There is an @Unstable annotation for [org.xwiki.tool.checkstyle.test."
+            + "TestClassWithNoSinceJavadocTagAtMethodLevel.method()] but the @since javadoc tag is missing, you must "
+            + "add it!"
+        };
+
+        verify(this.checkConfig, getPath("TestClassWithNoSinceJavadocTagAtMethodLevel.java"), expected);
     }
 
     @Test
