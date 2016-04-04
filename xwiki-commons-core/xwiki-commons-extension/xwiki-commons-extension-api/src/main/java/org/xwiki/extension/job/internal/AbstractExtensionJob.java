@@ -185,11 +185,11 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
         }
 
         try {
-            if (action.getAction() == Action.INITIALIZE) {
+            if (action.getAction() == Action.REPAIR) {
                 InstalledExtension installedExtension = (InstalledExtension) action.getExtension();
 
                 // Initialize
-                initializeExtension(installedExtension, namespace);
+                repairExtension(installedExtension, namespace);
             } else if (action.getAction() == Action.UNINSTALL) {
                 InstalledExtension installedExtension = (InstalledExtension) action.getExtension();
 
@@ -224,10 +224,14 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
      * @param namespace the namespace in which to perform the action
      * @throws ExtensionException failed to initialize extension
      */
-    private void initializeExtension(InstalledExtension installedExtension, String namespace) throws ExtensionException
+    private void repairExtension(InstalledExtension installedExtension, String namespace) throws ExtensionException
     {
-        // Initialize extension
+        // Initialize extension (invalid extensions are not initialized at startup)
         this.extensionHandlerManager.initialize(installedExtension, namespace);
+
+        // Repair the extension
+        this.installedExtensionRepository.installExtension(installedExtension, namespace,
+            installedExtension.isDependency(namespace));
 
         this.observationManager.notify(new ExtensionUninstalledEvent(installedExtension.getId(), namespace),
             installedExtension);

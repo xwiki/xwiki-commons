@@ -903,7 +903,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     action = Action.UPGRADE;
                 }
             } else if (extension instanceof InstalledExtension) {
-                action = Action.INITIALIZE;
+                action = Action.REPAIR;
             } else {
                 action = Action.INSTALL;
             }

@@ -60,7 +60,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         action = node.getAction();
 
         Assert.assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.INITIALIZE, action.getAction());
+        Assert.assertEquals(Action.REPAIR, action.getAction());
         Assert.assertEquals(0, action.getPreviousExtensions().size());
         Assert.assertNull(action.getNamespace());
         Assert.assertEquals(1, node.getChildren().size());
@@ -142,7 +142,7 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
         action = node.getAction();
 
         Assert.assertEquals(TestResources.INSTALLED_WITHMISSINDEPENDENCY_ID, action.getExtension().getId());
-        Assert.assertEquals(Action.INITIALIZE, action.getAction());
+        Assert.assertEquals(Action.REPAIR, action.getAction());
         Assert.assertEquals(0, action.getPreviousExtensions().size());
         Assert.assertNull(action.getNamespace());
         Assert.assertEquals(1, node.getChildren().size());

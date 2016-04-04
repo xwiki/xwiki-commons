@@ -686,8 +686,9 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
     {
         DefaultInstalledExtension installedExtension = this.extensions.get(extension.getId());
 
-        if (installedExtension != null && installedExtension.isInstalled(namespace)) {
-            if (installedExtension.isDependency() == dependency) {
+        if (installedExtension != null && installedExtension.isInstalled(namespace)
+            && installedExtension.isValid(namespace)) {
+            if (installedExtension.isDependency(namespace) == dependency) {
                 throw new InstallException(String.format("The extension [%s] is already installed on namespace [%s]",
                     installedExtension, namespace));
             }
