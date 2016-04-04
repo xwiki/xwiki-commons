@@ -21,7 +21,12 @@ package org.xwiki.tool.checkstyle.test;
 
 import org.xwiki.stability.Unstable;
 
+/**
+ * Whatever.
+ *
+ * @since 7.0
+ */
 @Unstable
-public class TestClassWithNoSinceJavadocTag
+public class TestClassWithUnstableOkAtClassLevel
 {
 }
