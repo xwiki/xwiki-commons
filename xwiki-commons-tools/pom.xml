@@ -37,6 +37,8 @@
          Note that we don't run the checkstyle plugin by default in the tools but we still need to disable it in case
          someone runs "mvn checkstyle:check" from the command line. -->
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+    <!-- Don't run backward-compatibility checks in tools modules since we don't consider them public API -->
+    <xwiki.revapi.skip>true</xwiki.revapi.skip>
   </properties>
   <modules>
     <!-- Sorted Alphabetically -->

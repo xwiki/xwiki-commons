@@ -32,8 +32,8 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Component - API</description>
   <properties>
-    <!-- Skipping CLIRR since xwiki-commons-legacy-component-api wraps this module and runs CLIRR on it -->
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+    <!-- Skipping revapi since xwiki-commons-legacy-component-api wraps this module and runs checks on it -->
+    <xwiki.revapi.skip>true</xwiki.revapi.skip>
     <xwiki.jacoco.instructionRatio>0.41</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>

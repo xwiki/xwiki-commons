@@ -48,10 +48,6 @@
      </plugin>
     </plugins>
   </build>
-  <properties>
-    <!-- Don't run CLIRR since we don't have java code in this module -->
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
-  </properties>
   <profiles>
     <!-- Override default check for javadoc JAR since this module doesn't contain any Java file and this doesn't
          make the Maven Central Repository check fail (they must check for Java files in the main JAR before deciding

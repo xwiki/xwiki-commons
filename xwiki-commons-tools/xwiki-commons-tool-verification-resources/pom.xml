@@ -33,8 +33,6 @@
   <description>XWiki Commons - Tools - Verification Resources (Checkstyle files, etc)</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.33</xwiki.jacoco.instructionRatio>
-    <!-- Don't run CLIRR since we don't care to break backward compatibility here -->
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
   <dependencies>
     <dependency>

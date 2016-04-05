@@ -31,10 +31,6 @@
   <name>XWiki Commons - Tools - XAR Tools - XAR Handlers</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Tools - XAR Tools - XAR Handlers (Lifecycle and ArtifactHandler)</description>
-  <properties>
-    <!-- Don't run CLIRR since we don't have java code in this module -->
-    <xwiki.clirr.skip>true</xwiki.clirr.skip>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
