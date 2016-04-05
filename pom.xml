@@ -1117,6 +1117,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
                 "java": {
                   "filter": {
                     "packages": {
+                      "regex": true,
                       "include": ["org\\.xwiki\\..*"],
                       "exclude": ["org\\.xwiki\\..*\\.internal(\\..*)?", "org\\.xwiki\\..*\\.test(\\..*)?"]
                     }
