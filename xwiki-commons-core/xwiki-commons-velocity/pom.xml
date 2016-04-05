@@ -30,7 +30,7 @@
   <artifactId>xwiki-commons-velocity</artifactId>
   <name>XWiki Commons - Velocity</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Velocity</description>
+  <description>APIs to evaluate content with Velocity</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
     <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
