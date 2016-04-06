@@ -1097,7 +1097,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.7.0</version>
+              <version>0.8.0</version>
             </dependency>
           </dependencies>
           <executions>
