@@ -38,7 +38,7 @@ import org.xwiki.filter.input.BeanInputFilterStream;
 import org.xwiki.filter.type.FilterStreamType;
 
 /**
- * @param <P>
+ * @param <P> the type of the class containing the parameters of the filter
  * @version $Id$
  * @since 6.2M1
  */

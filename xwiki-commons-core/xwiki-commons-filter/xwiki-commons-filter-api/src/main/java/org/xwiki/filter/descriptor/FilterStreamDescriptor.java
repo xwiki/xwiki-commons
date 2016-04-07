@@ -42,6 +42,7 @@ public interface FilterStreamDescriptor
     /**
      * Return descriptor for the provided property name. The property name is not case sensitive.
      *
+     * @param <T> the type of value associated to this property
      * @param propertyName the name of the property
      * @return the descriptor of the property.
      */
