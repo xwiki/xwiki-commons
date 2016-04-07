@@ -980,9 +980,14 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.6</version>
           <configuration>
-            <!-- Add some useful information about the extension in the manifest file. -->
             <archive>
+              <manifest>
+                <!-- Make easier to get various standard information trough java.lang.Package -->
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              </manifest>
               <manifestEntries>
+                <!-- Add some useful information about the extension in the manifest file. -->
                 <XWiki-Extension-Id>${project.groupId}:${project.artifactId}</XWiki-Extension-Id>
               </manifestEntries>
             </archive>
