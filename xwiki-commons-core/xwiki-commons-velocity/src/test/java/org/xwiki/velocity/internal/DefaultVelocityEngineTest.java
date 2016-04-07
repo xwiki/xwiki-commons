@@ -254,4 +254,12 @@ public class DefaultVelocityEngineTest
         // Mark namespace "namespace" as not used anymore
         this.engine.stoppedUsingMacroNamespace("namespace");
     }
+
+    @Test
+    public void testEvaluateWithStopCommand() throws Exception
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("hello world", "hello world#stop", "mytemplate");
+    }
 }

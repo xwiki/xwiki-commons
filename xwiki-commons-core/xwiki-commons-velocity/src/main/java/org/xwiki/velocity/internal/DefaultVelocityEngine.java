@@ -220,6 +220,9 @@ public class DefaultVelocityEngine extends AbstractSLF4JLogChute implements Velo
             }
 
             return evaluateInternal(context, out, namespace, source);
+        } catch (StopCommand s) {
+            // Someone explicitly stopped the script with something like #stop. No reason to make a scene.
+            return true;
         } catch (Exception e) {
             throw new XWikiVelocityException("Failed to evaluate content with id [" + templateName + "]", e);
         } finally {
