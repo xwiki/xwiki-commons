@@ -41,8 +41,8 @@ public interface VelocityManager
      *
      * @return the current Velocity Engine retrieved from the Execution Context
      * @throws XWikiVelocityException if the Velocity Engine cannot be created
-     * @todo Move the engine creation to some initialization method instead and remove the need for throwing an
-     *       exception
      */
+    // TODO: Move the engine creation to some initialization method instead and remove the need for throwing an
+    // exception
     VelocityEngine getVelocityEngine() throws XWikiVelocityException;
 }

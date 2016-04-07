@@ -23,10 +23,12 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Implements the specification regarding CSS identifier serialization.
+ * <p>
+ * See https://drafts.csswg.org/cssom/#serialize-an-identifier
+ * </p>
  * 
  * @version $Id$
  * @since 6.4.7, 7.1.4, 7.4M1
- * @see https://drafts.csswg.org/cssom/#serialize-an-identifier
  */
 public class CSSIdentifierSerializer
 {
@@ -37,12 +39,14 @@ public class CSSIdentifierSerializer
      * Serialize a CSS identifier.
      * <p>
      * NOTE: This code was adapted from Mathias Bynens' CSS.escape polyfill, available under the MIT license.
+     * </p>
+     * <p>
+     * See https://drafts.csswg.org/cssom/#serialize-an-identifier and https://github.com/mathiasbynens/CSS.escape.
+     * </p>
      * 
      * @param identifier the identifier to serialize
      * @return the serialized identifier
      * @throws IllegalArgumentException if the input contains U+0000
-     * @see https://drafts.csswg.org/cssom/#serialize-an-identifier
-     * @see https://github.com/mathiasbynens/CSS.escape
      */
     public String serialize(String identifier)
     {
@@ -87,7 +91,7 @@ public class CSSIdentifierSerializer
     }
 
     /**
-     * @see https://drafts.csswg.org/cssom/#escape-a-character-as-code-point
+     * See https://drafts.csswg.org/cssom/#escape-a-character-as-code-point.
      */
     private boolean shouldEscapeAsCodePoint(int codeUnit, int index, int firstCodeUnit)
     {

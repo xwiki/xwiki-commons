@@ -40,8 +40,9 @@ public class NIOTool
 {
     /**
      * See {@link Files#newDirectoryStream(Path)}.
-     * <p/>
+     * <p>
      * Velocity Example:
+     * </p>
      * <code><pre>
      * #set ($dirStream = $niotool.newDirectoryStream("attach:Sandbox.WebHome@vma.txt.zip/"))
      * #foreach ($entry in $dirStream)
@@ -153,8 +154,9 @@ public class NIOTool
 
     /**
      * See {@link Files#readAllBytes(Path)}.
-     * <p/>
+     * <p>
      * Velocity Example:
+     * </p>
      * <code><pre>
      * $stringtool.toString($niotool.readAllBytes("attach:Sandbox.WebHome@vma.txt.zip/vma.txt"), "utf-8")
      * </pre></code>

@@ -68,9 +68,9 @@ public interface VelocityFactory
      * @return the newly created Velocity Engine, or an existing one, if an engine was previously created for the same
      *         key.
      * @throws XWikiVelocityException if the Velocity Engine cannot be initialized for some reason
-     * @todo How to create a new engine instance when parameters have changed? Shouldn't this discard the old instance
-     *       and create a new one, instead?
      */
+    // TODO: How to create a new engine instance when parameters have changed? Shouldn't this discard the old instance
+    // and create a new one, instead?
     VelocityEngine createVelocityEngine(String key, Properties properties) throws XWikiVelocityException;
 
     /**

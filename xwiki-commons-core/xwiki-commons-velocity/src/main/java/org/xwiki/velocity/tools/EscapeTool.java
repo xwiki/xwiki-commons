@@ -207,10 +207,12 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
 
     /**
      * Escapes a CSS identifier.
+     * <p>
+     * See https://drafts.csswg.org/cssom/#serialize-an-identifier.
+     * </p>
      * 
      * @param identifier the identifier to escape
      * @return the escaped identifier
-     * @see https://drafts.csswg.org/cssom/#serialize-an-identifier
      * @since 6.4.7, 7.1.4, 7.4M1
      */
     public String css(String identifier)

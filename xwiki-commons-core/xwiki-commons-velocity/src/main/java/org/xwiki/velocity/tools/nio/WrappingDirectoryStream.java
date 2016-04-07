@@ -27,8 +27,9 @@ import java.util.Iterator;
 /**
  * Wrap the {@link DirectoryStream} returned by {@link java.nio.file.Files#newDirectoryStream} since the returned class
  * may be private and Velocity tries to call it.
- * <p/>
+ * <p>
  * See <a href="https://issues.apache.org/jira/browse/VELOCITY-870">VELOCITY-870</a>
+ * </p>
  *
  * @version $Id$
  * @since 7.4M2
