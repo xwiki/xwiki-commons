@@ -39,7 +39,7 @@ import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.stability.Unstable;
 
 /**
- * @param <P>
+ * @param <P> the type of the class containing the parameters of the filter
  * @version $Id$
  * @since 6.2M1
  */

@@ -30,6 +30,8 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescriptor implements
     FilterStreamBeanDescriptor
+public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescriptor
+    implements FilterStreamBeanDescriptor
 {
     /**
      * The description of the properties bean.
@@ -37,9 +39,9 @@ public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescr
     private BeanDescriptor propertiesBeanDescriptor;
 
     /**
-     * @param name
-     * @param description
-     * @param parametersBeanDescriptor
+     * @param name the display name of the filter
+     * @param description the description of the filter
+     * @param parametersBeanDescriptor the description of filter parameter
      */
     public DefaultFilterStreamBeanDescriptor(String name, String description, BeanDescriptor parametersBeanDescriptor)
     {

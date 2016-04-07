@@ -27,7 +27,7 @@ import org.xwiki.stability.Unstable;
  * Represent a source of data used by a filter input stream. What kind of {@link InputSource} is supported by each input
  * stream is entirely input stream choice.
  * <p>
- * {@link #clone()} is only closing {@link Closeable} created by the {@link InputSource} itself. For example
+ * {@link #close()} is only closing {@link Closeable} created by the {@link InputSource} itself. For example
  * {@link DefaultInputStreamInputSource} is not going to close the {@link java.io.InputStream} passed to its constructor
  * because it did not created it.
  *
