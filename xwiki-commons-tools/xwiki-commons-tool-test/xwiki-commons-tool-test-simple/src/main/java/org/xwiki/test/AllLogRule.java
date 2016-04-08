@@ -19,9 +19,7 @@
  */
 package org.xwiki.test;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -30,12 +28,11 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
-import org.xwiki.test.LogRule.LogLevel;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
+import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.read.ListAppender;
 
 /**
@@ -64,10 +61,6 @@ public class AllLogRule implements TestRule
     private final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
 
     private final Set<Integer> assertedMessages = new HashSet<>();
-
-    private List<Appender<ILoggingEvent>> savedAppenders = new ArrayList<>();
-
-    private Level savedLevel;
 
     private LogLevel level;
 
@@ -114,7 +107,7 @@ public class AllLogRule implements TestRule
         /**
          * Setup Logback capturing.
          */
-        private void before()
+        private void before() throws Throwable
         {
             initializeLoggers();
             listAppender.start();
@@ -123,7 +116,7 @@ public class AllLogRule implements TestRule
         /**
          * Stop Logback capturing.
          */
-        private void after(boolean verify)
+        private void after(boolean verify) throws Throwable
         {
             listAppender.stop();
             uninitializeLogger(verify);
@@ -195,39 +188,22 @@ public class AllLogRule implements TestRule
 
     private void initializeLoggers()
     {
+        // Reinitialize completely Logback
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        context.reset();
+
+        // Configure the root logger to use our list appender and to log at the level asked.
         Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-
-        // Save all appenders
-        Iterator<Appender<ILoggingEvent>> it = logger.iteratorForAppenders();
-        while (it.hasNext()) {
-            this.savedAppenders.add(it.next());
-        }
-
-        // Disable all appenders and enable our appender
-        logger.detachAndStopAllAppenders();
         logger.addAppender(this.listAppender);
-
-        // Save the logging level
-        this.savedLevel = logger.getLevel();
         logger.setLevel(this.level.getLevel());
     }
 
-    private void uninitializeLogger(boolean verify)
+    private void uninitializeLogger(boolean verify) throws Exception
     {
-        Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        logger.detachAppender(this.listAppender);
-
-        // Put back logging leve
-        logger.setLevel(this.savedLevel);
-
-        // Put back appenders
-        for (Appender<ILoggingEvent> appender : this.savedAppenders) {
-            logger.addAppender(appender);
-        }
-
-        // Verify that all appender list messages have been asserted.
-        if (verify && this.listAppender.list.size() != this.assertedMessages.size()) {
-            throw new AssertionError("All messages must be asserted!");
-        }
+        // Reinitialize Logback (by reading its config from the logback-test.xml file in the classpath)
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        context.reset();
+        ContextInitializer initializer = new ContextInitializer(context);
+        initializer.autoConfig();
     }
 }

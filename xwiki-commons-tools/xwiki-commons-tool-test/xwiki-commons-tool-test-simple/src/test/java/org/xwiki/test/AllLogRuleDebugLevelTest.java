@@ -27,22 +27,23 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for {@link AllLogRule}.
+ * Test {@link AllLogRule} with a DEBUG log level.
  *
  * @version $Id$
  * @since 8.1M2
  */
-public class AllLogRuleTest
+public class AllLogRuleDebugLevelTest
 {
-    public static final Logger LOGGER = LoggerFactory.getLogger(AllLogRuleTest.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(AllLogRuleDebugLevelTest.class);
 
     @Rule
-    public AllLogRule logRule = new AllLogRule();
+    public AllLogRule logRule = new AllLogRule(LogLevel.DEBUG);
 
     @Test
     public void staticLogger()
     {
-        LOGGER.info("test");
-        assertEquals("test", this.logRule.getMessage(0));
+        LOGGER.debug("test1");
+        LOGGER.trace("test2");
+        assertEquals("test1", this.logRule.getMessage(0));
     }
 }
