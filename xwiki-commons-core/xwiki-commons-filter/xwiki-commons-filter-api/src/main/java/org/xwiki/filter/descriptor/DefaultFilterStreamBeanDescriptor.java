@@ -28,8 +28,6 @@ import org.xwiki.stability.Unstable;
  * @since 6.2M1
  */
 @Unstable
-public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescriptor implements
-    FilterStreamBeanDescriptor
 public class DefaultFilterStreamBeanDescriptor extends AbstractFilterStreamDescriptor
     implements FilterStreamBeanDescriptor
 {
