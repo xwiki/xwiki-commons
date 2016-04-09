@@ -42,13 +42,12 @@ public class NIOTool
      * See {@link Files#newDirectoryStream(Path)}.
      * <p>
      * Velocity Example:
-     * </p>
-     * <code><pre>
+     * <pre>{@code
      * #set ($dirStream = $niotool.newDirectoryStream("attach:Sandbox.WebHome@vma.txt.zip/"))
      * #foreach ($entry in $dirStream)
      *   * {{{$entry}}}
      * #end
-     * </pre></code>
+     * }</pre>
      *
      * @param dir See {@link Files#newDirectoryStream(Path)}
      * @return See {@link Files#newDirectoryStream(Path)}
