@@ -182,6 +182,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     /**
      * @return the list of XAR XML files in this project
+     * @exception MojoFailureException when an error happens reading the XAR XML files on the file system
      */
     protected Collection<File> getXARXMLFiles() throws MojoFailureException
     {
@@ -234,6 +235,9 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      *     <li>If there are other translations ("(prefix).(language).xml" format) then the default language should be
      *         {@link #defaultLanguage}</li>
      * </ul>
+     * @param file the XML file for which to guess the default language that it should have
+     * @param xwikiXmlFiles the list of all XML files that is used to check for translations of the passed XML file
+     * @return the default language as a string (e.g. "en" for English or "" for an empty default language)
      * @since 5.4.1
      */
     protected String guessDefaultLanguage(File file, Collection<File> xwikiXmlFiles)
@@ -343,7 +347,10 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     }
 
     /**
-     * Executes a mojo of the Maven License plugin (used for adding or checking for license headers.
+     * Executes a goal of the Maven License plugin (used for adding or checking for license headers.
+     *
+     * @param goal the goal of the Maven License plugin to call
+     * @exception MojoExecutionException when the License plugins fails or if it's not found
      */
     protected void executeLicenseGoal(String goal) throws MojoExecutionException
     {
