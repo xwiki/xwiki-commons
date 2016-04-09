@@ -155,10 +155,9 @@ public class NIOTool
      * See {@link Files#readAllBytes(Path)}.
      * <p>
      * Velocity Example:
-     * </p>
-     * <code><pre>
+     * <pre>{@code
      * $stringtool.toString($niotool.readAllBytes("attach:Sandbox.WebHome@vma.txt.zip/vma.txt"), "utf-8")
-     * </pre></code>
+     * }</pre>
      *
      * @param path See {@link Files#readAllBytes(Path)}
      * @return See {@link Files#readAllBytes(Path)}
