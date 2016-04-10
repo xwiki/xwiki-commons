@@ -25,41 +25,40 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.archiver.ArchiverException;
 
 /**
  * Expand a XAR file.
  * 
  * @version $Id$
- * @goal unxar
- * @requiresProject
- * @requiresDependencyResolution compile
- * @threadSafe
  */
+@Mojo(
+    name = "unxar",
+    requiresDependencyResolution = ResolutionScope.COMPILE,
+    threadSafe = true
+)
 public class UnXARMojo extends AbstractXARMojo
 {
     /**
      * The groupId of the XAR dependency to expand.
-     * 
-     * @parameter
-     * @required
      */
+    @Parameter(required = true)
     private String groupId;
 
     /**
      * The artifactId of the XAR dependency to expand.
-     * 
-     * @parameter
-     * @required
      */
+    @Parameter(required = true)
     private String artifactId;
 
     /**
      * The location where to put the expanded XAR.
-     * 
-     * @parameter
-     * @required
      */
+    @Parameter(required = true)
     private File outputDirectory;
 
     @Override

@@ -32,6 +32,10 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.codehaus.plexus.archiver.ArchiveEntry;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.dom4j.Document;
@@ -49,26 +53,25 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  * provided.
  * 
  * @version $Id$
- * @goal xar
- * @phase package
- * @requiresProject
- * @requiresDependencyResolution compile
- * @threadSafe
  */
+@Mojo(
+    name = "xar",
+    defaultPhase = LifecyclePhase.PACKAGE,
+    requiresDependencyResolution = ResolutionScope.COMPILE,
+    threadSafe = true
+)
 public class XARMojo extends AbstractXARMojo
 {
     /**
      * Indicate if XAR dependencies should be included in the produced XAR package.
-     * 
-     * @parameter expression="${includeDependencies}" default-value="false"
      */
+    @Parameter(property = "includeDependencies", defaultValue = "false")
     private boolean includeDependencies;
 
     /**
      * List of XML transformations to execute on the XML files.
-     *
-     * @parameter
      */
+    @Parameter
     private List<Transformation> transformations;
 
     @Override

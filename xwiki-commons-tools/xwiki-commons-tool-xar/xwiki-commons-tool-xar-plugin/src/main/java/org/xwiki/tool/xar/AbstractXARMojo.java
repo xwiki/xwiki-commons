@@ -35,6 +35,8 @@ import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.TypeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
@@ -90,82 +92,62 @@ abstract class AbstractXARMojo extends AbstractMojo
 
     /**
      * List of files to include. Specified as fileset patterns.
-     * 
-     * @parameter expression="${includes}"
      */
+    @Parameter(property = "includes")
     protected String[] includes;
 
     /**
      * List of files to exclude. Specified as fileset patterns.
-     *
-     * @parameter expression="${excludes}"
      */
+    @Parameter(property = "excludes")
     protected String[] excludes;
 
     /**
      * The maven project.
-     * 
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
      */
+    @Parameter(property = "project", required = true, readonly = true)
     protected MavenProject project;
 
     /**
      * The encoding to use when generating the package summary file and when storing file names.
-     * 
-     * @parameter expression="${project.build.sourceEncoding}"
      */
+    @Parameter(property = "project.build.sourceEncoding")
     protected String encoding = DEFAULT_ENCODING;
 
     /**
      * List of Remote Repositories used by the resolver.
-     * 
-     * @parameter expression="${project.remoteArtifactRepositories}"
-     * @readonly
-     * @required
      */
+    @Parameter(property = "project.remoteArtifactRepositories", readonly = true, required = true)
     protected List<ArtifactRepository> remoteRepos;
 
     /**
      * Project builder -- builds a model from a pom.xml.
-     * 
-     * @component role="org.apache.maven.project.MavenProjectBuilder"
-     * @required
-     * @readonly
      */
+    @Component
     protected MavenProjectBuilder mavenProjectBuilder;
 
     /**
      * Used to look up Artifacts in the remote repository.
-     * 
-     * @component
      */
+    @Component
     protected ArtifactFactory factory;
 
     /**
      * Used to look up Artifacts in the remote repository.
-     * 
-     * @component
      */
+    @Component
     protected ArtifactResolver resolver;
 
     /**
      * The target directory where to extract XAR pages.
-     * 
-     * @parameter default-value="${project.build.outputDirectory}"
-     * @required
-     * @readonly
      */
+    @Parameter(property = "project.build.outputDirectory", readonly = true, required = true)
     private File outputBuildDirectory;
 
     /**
      * Location of the local repository.
-     * 
-     * @parameter expression="${localRepository}"
-     * @readonly
-     * @required
      */
+    @Parameter(property = "localRepository", readonly = true, required = true)
     private ArtifactRepository local;
 
     /**

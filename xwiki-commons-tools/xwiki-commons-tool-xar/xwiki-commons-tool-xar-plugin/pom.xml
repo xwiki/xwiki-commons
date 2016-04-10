@@ -93,6 +93,12 @@
       <artifactId>maven-model</artifactId>
       <version>${mavenVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>3.4</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- Used to get access to the Maven Logger to log on the console -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -138,6 +144,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-descriptor</id>
+            <phase>process-classes</phase>
+          </execution>
+        </executions>
         <configuration>
           <!-- This to allow calling mvn xar:<mojo> from the command line. For example mvn xar:format
                Without this users would need to call mvn xwiki-commons-tool-xar-plugin:format -->

@@ -37,6 +37,8 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.components.io.fileselectors.FileSelector;
 import org.codehaus.plexus.components.io.fileselectors.IncludeExcludeFileSelector;
 import org.codehaus.plexus.components.io.resources.PlexusIoFileResourceCollection;
@@ -73,40 +75,34 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
 
     /**
      * If true then don't check if the packaging is XAR before running mojos.
-     *
-     * @parameter expression="${force}"
-     * @readonly
      */
+    @Parameter(property = "force", readonly = true)
     protected boolean force;
 
     /**
      * The language in which non-translated documents are written in.
-     *
-     * @parameter expression="${defaultLanguage}" default-value="en"
      */
+    @Parameter(property = "defaultLanguage", defaultValue = "en")
     protected String defaultLanguage;
 
     /**
      * If true then add license header to XML files.
-     *
-     * @parameter expression="${formatLicense}"
-     * @readonly
      */
+    @Parameter(property = "formatLicense", readonly = true)
     protected boolean formatLicense;
 
     /**
      * The Commons version to be used by this mojo.
-     *
-     * @parameter expression="${commons.version}" default-value="${commons.version}"
      */
+    @Parameter(property = "commons.version")
     protected String commonsVersion;
 
     /**
      * Defines expectations for the Title field of pages.
      *
-     * @parameter expression="${xar.verify.titles}"
      * @since 7.3RC1
      */
+    @Parameter(property = "xar.verify.titles")
     protected Properties titles;
 
     /**
@@ -116,35 +112,30 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      * page for the default language check. Thus this configuration property is useful for pages such as Translations
      * pages (even though they may not have any translations at first).
      *
-     * @parameter expression="${xar.verify.contentPages}"
      * @since 7.1M1
      */
+    @Parameter(property = "xar.verify.contentPages")
     private List<String> contentPages;
 
     /**
      * Explicitly define a list of pages (it's a regex) that should  be considered as technical pages. Any matching
      * page defined in this list has precedence over pages matching {@link #contentPages}.
      *
-     * @parameter expression="${xar.verify.technicalPages}"
      * @since 7.1M1
      */
+    @Parameter(property = "xar.verify.technicalPages")
     private List<String> technicalPages;
 
     /**
      * The current Maven session.
-     *
-     * @parameter expression="${session}"
-     * @required
-     * @readonly
      */
+    @Parameter(property = "session", required = true, readonly = true)
     private MavenSession mavenSession;
 
     /**
      * The Maven BuildPluginManager component.
-     *
-     * @component
-     * @required
      */
+    @Component
     private BuildPluginManager pluginManager;
 
     private List<Pattern> contentPagePatterns;

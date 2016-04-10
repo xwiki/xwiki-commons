@@ -27,6 +27,10 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
@@ -45,12 +49,13 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  * </ul>
  *
  * @version $Id$
- * @goal verify
- * @phase verify
- * @requiresProject
- * @requiresDependencyResolution compile
- * @threadSafe
  */
+@Mojo(
+    name = "verify",
+    defaultPhase = LifecyclePhase.VERIFY,
+    requiresDependencyResolution = ResolutionScope.COMPILE,
+    threadSafe = true
+)
 public class VerifyMojo extends AbstractVerifyMojo
 {
     private static final String SYNTAX_PLAIN = "plain/1.0";
@@ -58,9 +63,9 @@ public class VerifyMojo extends AbstractVerifyMojo
     /**
      * Disables the plugin execution.
      *
-     * @parameter expression="${xar.verify.skip}" default-value="false"
      * @since 4.3M1
      */
+    @Parameter(property = "xar.verify.skip", defaultValue = "false")
     private boolean skip;
 
     @Override

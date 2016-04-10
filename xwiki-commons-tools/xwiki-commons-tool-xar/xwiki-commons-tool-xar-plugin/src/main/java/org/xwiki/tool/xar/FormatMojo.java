@@ -26,6 +26,9 @@ import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -37,19 +40,18 @@ import org.dom4j.io.XMLWriter;
  * Pretty prints and set valid authors and version to XAR XML files.
  *
  * @version $Id$
- * @goal format
- * @requiresProject
- * @requiresDependencyResolution compile
- * @threadSafe
  */
+@Mojo(
+    name = "format",
+    requiresDependencyResolution = ResolutionScope.COMPILE,
+    threadSafe = true
+)
 public class FormatMojo extends AbstractVerifyMojo
 {
     /**
      * If false then don't pretty print the XML.
-     *
-     * @parameter expression="${pretty}"
-     * @readonly
      */
+    @Parameter(property = "pretty", readonly = true)
     private boolean pretty = true;
 
     @Override
