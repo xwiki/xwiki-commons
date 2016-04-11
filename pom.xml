@@ -1514,18 +1514,6 @@ mm
         </plugins>
       </build>
     </profile>
-    <profile>
-      <!-- TODO: Java 8 is now stricter for checking validity of javadoc. We need to fix our errors and then we can
-           disable this. Note that a better strategy would be to disable javadoc checking only in failing modules but
-           we're doing this ATM because we're in a hurry for the 8.1M1 release -->
-      <id>disable-java8-doclint</id>
-      <activation>
-        <jdk>[1.8,)</jdk>
-      </activation>
-      <properties>
-        <additionalparam>-Xdoclint:none</additionalparam>
-      </properties>
-    </profile>
   </profiles>
   <distributionManagement>
     <site>
