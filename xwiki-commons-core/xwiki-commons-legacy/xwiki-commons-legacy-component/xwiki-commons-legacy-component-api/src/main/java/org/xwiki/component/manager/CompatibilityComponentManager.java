@@ -40,7 +40,7 @@ public interface CompatibilityComponentManager
      * @param role the class (aka role) that the component implements
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
-     * @deprecated since 4.0M1 use {@link #getInstance(java.lang.reflect.Type)} instead
+     * @deprecated since 4.0M1 use {@code #getInstance(java.lang.reflect.Type)} instead
      */
     @Deprecated
     <T> T lookup(Class<T> role) throws ComponentLookupException;
@@ -55,7 +55,7 @@ public interface CompatibilityComponentManager
      *            registered with a hint; the "default" hint being the default)
      * @return the component instance
      * @throws ComponentLookupException in case the component cannot be found
-     * @deprecated since 4.0M1 use {@link #getInstance(java.lang.reflect.Type, String)} instead
+     * @deprecated since 4.0M1 use {@code #getInstance(java.lang.reflect.Type, String)} instead
      */
     @Deprecated
     <T> T lookup(Class<T> role, String hint) throws ComponentLookupException;
@@ -67,7 +67,7 @@ public interface CompatibilityComponentManager
      * @return the components
      * @param <T> the type of the components role
      * @throws ComponentLookupException if any error happen during component search
-     * @deprecated since 4.0M1 use {@link #getInstanceList(java.lang.reflect.Type)} instead
+     * @deprecated since 4.0M1 use {@code #getInstanceList(java.lang.reflect.Type)} instead
      */
     @Deprecated
     <T> List<T> lookupList(Class<T> role) throws ComponentLookupException;
@@ -79,7 +79,7 @@ public interface CompatibilityComponentManager
      * @return the components
      * @param <T> the type of the components role
      * @throws ComponentLookupException if any error happen during component search
-     * @deprecated since 4.0M1 use {@link #getInstanceMap(java.lang.reflect.Type)} instead
+     * @deprecated since 4.0M1 use {@code #getInstanceMap(java.lang.reflect.Type)} instead
      */
     @Deprecated
     <T> Map<String, T> lookupMap(Class<T> role) throws ComponentLookupException;
@@ -88,7 +88,7 @@ public interface CompatibilityComponentManager
      * @param <T> the component role type
      * @param role the class (aka role) that the component implements
      * @return true if the component is registered or false otherwise
-     * @deprecated since 4.0M1 use {@link #hasComponent(Type)} instead
+     * @deprecated since 4.0M1 use {@code #hasComponent(Type)} instead
      */
     @Deprecated
     <T> boolean hasComponent(Class<T> role);
@@ -99,7 +99,7 @@ public interface CompatibilityComponentManager
      * @param hint the hint that differentiates a component implementation from another one (each component is
      *            registered with a hint; the "default" hint being the default)
      * @return true if the component is registered for the passed hint or false otherwise
-     * @deprecated since 4.0M1 use {@link #hasComponent(Type, String)} instead
+     * @deprecated since 4.0M1 use {@code #hasComponent(Type, String)} instead
      */
     @Deprecated
     <T> boolean hasComponent(Class<T> role, String hint);
@@ -111,7 +111,7 @@ public interface CompatibilityComponentManager
      * @param role the role identifying the component
      * @param hint the hint identifying the component
      * @since 2.0M2
-     * @deprecated since 4.0M1 use {@link #unregisterComponent(Type, String)} instead
+     * @deprecated since 4.0M1 use {@code #unregisterComponent(Type, String)} instead
      */
     @Deprecated
     <T> void unregisterComponent(Class<T> role, String hint);
@@ -122,7 +122,7 @@ public interface CompatibilityComponentManager
      * @param hint the hint identifying the component
      * @return the descriptor for the component matching the passed parameter or null if this component doesn't exist
      * @since 2.0M1
-     * @deprecated since 4.0M1 use {@link #getComponentDescriptor(Type, String)} instead
+     * @deprecated since 4.0M1 use {@code #getComponentDescriptor(Type, String)} instead
      */
     @Deprecated
     <T> ComponentDescriptor<T> getComponentDescriptor(Class<T> role, String hint);
