@@ -63,6 +63,7 @@ public class ListFilter extends AbstractHTMLFilter
      * {@inheritDoc}
      * <p>
      * The {@link ListFilter} does not use any cleaningParameters passed in.
+     * </p>
      */
     @Override
     public void filter(Document document, Map<String, String> cleaningParameters)

@@ -63,11 +63,6 @@ public class XWikiLoggerManager extends AbstractLoggerManager
     {
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.plexus.logging.LoggerManager#setThresholds(int)
-     */
     @Override
     public void setThresholds(int arg0)
     {

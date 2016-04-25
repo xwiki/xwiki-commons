@@ -212,8 +212,11 @@ public class FilterTestSuite extends Suite
     }
 
     /**
-     * {@inheritDoc} We override this method so that the JUnit results are not displayed in a test hierarchy with a
+     * {@inheritDoc}
+     * <p>
+     * We override this method so that the JUnit results are not displayed in a test hierarchy with a
      * single test result for each node (as it would be otherwise since RenderingTest has a single test method).
+     * </p>
      */
     @Override
     public Description getDescription()
