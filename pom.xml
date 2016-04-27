@@ -46,7 +46,7 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>7.4.3</commons.version>
+    <commons.version>7.4.4-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project for CLIRR, used to catch API breakages. -->
     <xwiki.clirr.previous.version>7.4.2</xwiki.clirr.previous.version>
@@ -835,7 +835,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               -->
               <skip>true</skip>
               <rules>
-                <requireUpperBoundDeps />
+                <requireUpperBoundDeps/>
               </rules>
             </configuration>
           </execution>
@@ -1382,7 +1382,7 @@ mm
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
-                    <mkdir dir="${project.build.directory}/apidocs" />
+                    <mkdir dir="${project.build.directory}/apidocs"/>
                   </target>
                 </configuration>
                 <goals>
