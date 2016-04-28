@@ -189,4 +189,33 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
     @Unstable
     IterableResult<InstalledExtension> searchInstalledExtensions(String namespace, ExtensionQuery query)
         throws SearchException;
+
+    /**
+     * Search installed extensions based of the provided query.
+     *
+     * @param query the extension query used to filter and order the result
+     * @return the found extensions descriptors, empty list if nothing could be found
+     * @throws SearchException error when trying to search provided pattern
+     * @since 8.1RC1
+     */
+    default IterableResult<InstalledExtension> searchInstalledExtensions(ExtensionQuery query) throws SearchException
+    {
+        return searchInstalledExtensions((String) null, query);
+    }
+
+    /**
+     * Search installed extensions based of the provided query and only in the passed namespaces.
+     *
+     * @param namespaces the namespaces where to search
+     * @param query the extension query used to filter and order the result
+     * @return the found extensions descriptors, empty list if nothing could be found
+     * @throws SearchException error when trying to search provided pattern
+     * @since 8.1RC1
+     */
+    default IterableResult<InstalledExtension> searchInstalledExtensions(Collection<String> namespaces,
+        ExtensionQuery query) throws SearchException
+    {
+        return searchInstalledExtensions(
+            namespaces != null && !namespaces.isEmpty() ? namespaces.iterator().next() : null, query);
+    }
 }

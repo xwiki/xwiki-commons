@@ -544,7 +544,7 @@ public class DefaultInstalledExtensionRepositoryTest
         query.addFilter(Extension.FIELD_ID, TestResources.INSTALLED_ID.getId(), COMPARISON.EQUAL);
 
         IterableResult<InstalledExtension> result =
-            this.installedExtensionRepository.searchInstalledExtensions(null, query);
+            this.installedExtensionRepository.searchInstalledExtensions((String) null, query);
 
         assertEquals(1, result.getTotalHits());
         assertEquals(1, result.getSize());

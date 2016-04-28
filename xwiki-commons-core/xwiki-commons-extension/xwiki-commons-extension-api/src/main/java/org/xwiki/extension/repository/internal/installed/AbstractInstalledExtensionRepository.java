@@ -20,6 +20,7 @@
 package org.xwiki.extension.repository.internal.installed;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -44,8 +45,8 @@ import org.xwiki.extension.repository.search.SearchException;
  * @version $Id$
  * @since 7.0M2
  */
-public abstract class AbstractInstalledExtensionRepository<E extends InstalledExtension> extends
-    AbstractCachedExtensionRepository<E> implements InstalledExtensionRepository
+public abstract class AbstractInstalledExtensionRepository<E extends InstalledExtension>
+    extends AbstractCachedExtensionRepository<E> implements InstalledExtensionRepository
 {
     @Override
     public int countExtensions()
@@ -98,6 +99,19 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
     }
 
     @Override
+    public IterableResult<InstalledExtension> searchInstalledExtensions(ExtensionQuery query)
+    {
+        return searchInstalledExtensions((List<String>) null, query, this.extensions.values());
+    }
+
+    @Override
+    public IterableResult<InstalledExtension> searchInstalledExtensions(Collection<String> namespaces,
+        ExtensionQuery query)
+    {
+        return searchInstalledExtensions(namespaces, query, this.extensions.values());
+    }
+
+    @Override
     public IterableResult<InstalledExtension> searchInstalledExtensions(String namespace, ExtensionQuery query)
         throws SearchException
     {
@@ -107,17 +121,14 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
     protected IterableResult<InstalledExtension> searchInstalledExtensions(String namespace, ExtensionQuery query,
         Collection<? extends InstalledExtension> installedExtensions)
     {
-        Pattern patternMatcher = RepositoryUtils.createPatternMatcher(query.getQuery());
+        return searchInstalledExtensions(Arrays.asList(namespace), query, installedExtensions);
+    }
 
-        List<InstalledExtension> result = new ArrayList<InstalledExtension>(installedExtensions.size());
-
-        for (InstalledExtension installedExtension : installedExtensions) {
-            if (installedExtension.isInstalled(namespace)) {
-                if (RepositoryUtils.matches(patternMatcher, query.getFilters(), installedExtension)) {
-                    result.add(installedExtension);
-                }
-            }
-        }
+    protected IterableResult<InstalledExtension> searchInstalledExtensions(Collection<String> namespaces,
+        ExtensionQuery query, Collection<? extends InstalledExtension> installedExtensions)
+    {
+        // Filter extension matching passed query and namespaces
+        List<InstalledExtension> result = filter(namespaces, query, installedExtensions);
 
         // Make sure all the elements of the list are unique
         if (result.size() > 1) {
@@ -128,5 +139,32 @@ public abstract class AbstractInstalledExtensionRepository<E extends InstalledEx
         RepositoryUtils.sort(result, query.getSortClauses());
 
         return RepositoryUtils.getIterableResult(query.getOffset(), query.getLimit(), result);
+    }
+
+    protected List<InstalledExtension> filter(Collection<String> namespaces, ExtensionQuery query,
+        Collection<? extends InstalledExtension> installedExtensions)
+    {
+        Pattern patternMatcher = RepositoryUtils.createPatternMatcher(query.getQuery());
+
+        List<InstalledExtension> result = new ArrayList<>(installedExtensions.size());
+
+        for (InstalledExtension installedExtension : installedExtensions) {
+            if (namespaces == null || namespaces.isEmpty()) {
+                if (RepositoryUtils.matches(patternMatcher, query.getFilters(), installedExtension)) {
+                    result.add(installedExtension);
+                }
+            } else {
+                for (String namespace : namespaces) {
+                    if (installedExtension.isInstalled(namespace)) {
+                        if (RepositoryUtils.matches(patternMatcher, query.getFilters(), installedExtension)) {
+                            result.add(installedExtension);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+
     }
 }
