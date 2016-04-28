@@ -19,7 +19,7 @@
  */
 package org.xwiki.extension.job.plan.internal;
 
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.ExtensionPlanTree;
@@ -30,7 +30,7 @@ import org.xwiki.extension.job.plan.ExtensionPlanTree;
  * @version $Id$
  * @since 4.1M1
  */
-public class DefaultExtensionPlanTree extends ArrayList<ExtensionPlanNode> implements ExtensionPlanTree
+public class DefaultExtensionPlanTree extends CopyOnWriteArrayList<ExtensionPlanNode> implements ExtensionPlanTree
 {
     private static final long serialVersionUID = 1L;
 }

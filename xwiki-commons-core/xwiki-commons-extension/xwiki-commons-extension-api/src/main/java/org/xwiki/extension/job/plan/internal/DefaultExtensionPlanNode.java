@@ -19,9 +19,9 @@
  */
 package org.xwiki.extension.job.plan.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
@@ -85,7 +85,7 @@ public class DefaultExtensionPlanNode implements ExtensionPlanNode
     {
         this.action = action;
         if (children != null) {
-            this.children = new ArrayList<ExtensionPlanNode>(children);
+            this.children = new CopyOnWriteArrayList<>(children);
         } else {
             this.children = Collections.emptyList();
         }
