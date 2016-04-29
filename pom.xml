@@ -58,7 +58,7 @@
     <!-- Jackson -->
     <jackson.version>2.7.3</jackson.version>
 
-    <!-- Jackson -->
+    <!-- ASM -->
     <asm.version>5.0.4</asm.version>
 
     <!-- Selenium -->
