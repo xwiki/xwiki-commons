@@ -69,6 +69,15 @@ public interface JobStatus
     State getState();
 
     /**
+     * @return the {@link Throwable} on which the job stopped
+     * @since 8.1RC1
+     */
+    default Throwable getError()
+    {
+        return null;
+    }
+
+    /**
      * @return the job request provided when starting it
      */
     Request getRequest();

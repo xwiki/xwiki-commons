@@ -56,6 +56,12 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
     }
 
     @Override
+    public Throwable getError()
+    {
+        return getWrapped().getError();
+    }
+
+    @Override
     public Request getRequest()
     {
         return getWrapped().getRequest();

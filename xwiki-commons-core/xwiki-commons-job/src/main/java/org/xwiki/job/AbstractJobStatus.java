@@ -100,6 +100,11 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private State state = State.NONE;
 
     /**
+     * @see #getError()
+     */
+    private Throwable error;
+
+    /**
      * Request provided when starting the job.
      */
     private R request;
@@ -187,6 +192,21 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public void setState(State state)
     {
         this.state = state;
+    }
+
+    @Override
+    public Throwable getError()
+    {
+        return this.error;
+    }
+
+    /**
+     * @param error the {@link Throwable} on which the job stopped
+     * @since 8.1RC1
+     */
+    public void setError(Throwable error)
+    {
+        this.error = error;
     }
 
     @Override

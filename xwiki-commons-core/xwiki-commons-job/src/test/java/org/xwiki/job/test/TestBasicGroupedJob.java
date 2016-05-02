@@ -43,6 +43,8 @@ public class TestBasicGroupedJob implements GroupedJob, JobStatus
 
     private State state;
 
+    private Throwable error;
+
     private LogQueue logQueue = new LogQueue();
 
     private Thread thread;
@@ -123,6 +125,12 @@ public class TestBasicGroupedJob implements GroupedJob, JobStatus
     public State getState()
     {
         return this.state;
+    }
+
+    @Override
+    public Throwable getError()
+    {
+        return this.error;
     }
 
     @Override

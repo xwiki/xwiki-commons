@@ -36,6 +36,7 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.job.event.JobFinishedEvent;
+import org.xwiki.job.event.JobFinishingEvent;
 import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.job.event.status.JobProgressManager;
 import org.xwiki.job.event.status.JobStatus;
@@ -238,17 +239,16 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
     /**
      * Called when the job is done.
      *
-     * @param exception the exception throw during execution of the job
+     * @param error the exception throw during execution of the job
      */
-    protected void jobFinished(Throwable exception)
+    protected void jobFinished(Throwable error)
     {
         this.lock.lock();
 
         try {
             // Give a chance to any listener to do custom action associated to the job
-            // TODO: use a JobFinishingEvent instead ?
-            this.observationManager.notify(new JobFinishedEvent(getRequest().getId(), getType(), this.request), this,
-                exception);
+            this.observationManager.notify(new JobFinishingEvent(getRequest().getId(), getType(), this.request), this,
+                error);
 
             if (getStatus().getRequest().getId() != null) {
                 this.logger.info(LOG_END_ID, "Finished job of type [{}] with identifier [{}]", getType(),
@@ -258,6 +258,9 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
             }
 
             if (this.status instanceof AbstractJobStatus) {
+                // Store error
+                ((AbstractJobStatus) this.status).setError(error);
+
                 // Indicate when the job ended
                 ((AbstractJobStatus) this.status).setEndDate(new Date());
 
@@ -284,6 +287,10 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
             }
         } finally {
             this.lock.unlock();
+
+            // Notify listener that job is fully finished
+            this.observationManager.notify(new JobFinishedEvent(getRequest().getId(), getType(), this.request), this,
+                error);
         }
     }
 
