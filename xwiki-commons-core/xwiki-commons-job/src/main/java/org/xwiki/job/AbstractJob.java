@@ -246,6 +246,11 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
         this.lock.lock();
 
         try {
+            if (this.status instanceof AbstractJobStatus) {
+                // Store error
+                ((AbstractJobStatus) this.status).setError(error);
+            }
+
             // Give a chance to any listener to do custom action associated to the job
             this.observationManager.notify(new JobFinishingEvent(getRequest().getId(), getType(), this.request), this,
                 error);
@@ -258,9 +263,6 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
             }
 
             if (this.status instanceof AbstractJobStatus) {
-                // Store error
-                ((AbstractJobStatus) this.status).setError(error);
-
                 // Indicate when the job ended
                 ((AbstractJobStatus) this.status).setEndDate(new Date());
 
