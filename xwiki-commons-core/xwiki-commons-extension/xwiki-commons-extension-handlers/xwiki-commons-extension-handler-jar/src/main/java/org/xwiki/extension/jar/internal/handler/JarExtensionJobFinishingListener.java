@@ -46,21 +46,21 @@ import org.xwiki.extension.event.ExtensionUninstalledEvent;
 import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.handler.ExtensionInitializer;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
-import org.xwiki.job.event.JobFinishedEvent;
+import org.xwiki.job.event.JobFinishingEvent;
 import org.xwiki.job.event.JobStartedEvent;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.Event;
 
 /**
- * Listen to job finished events to properly refresh extension ClassLoader when an uninstall job has been executed.
+ * Listen to job finishing events to properly refresh extension ClassLoader when an uninstall job has been executed.
  *
  * @version $Id$
  * @since 4.0M1
  */
 @Component
 @Singleton
-@Named("JarExtensionJobFinishedListener")
-public class JarExtensionJobFinishedListener implements EventListener
+@Named("JarExtensionJobFinishingListener")
+public class JarExtensionJobFinishingListener implements EventListener
 {
     private static final class UninstalledExtensionCollection
     {
@@ -86,8 +86,8 @@ public class JarExtensionJobFinishedListener implements EventListener
     private static final String SUPPORTED_EXTENSION_TYPE = "jar";
 
     /** The list of events observed. */
-    private static final List<Event> EVENTS = Arrays.asList(new ExtensionUninstalledEvent(), new JobStartedEvent(),
-        new JobFinishedEvent());
+    private static final List<Event> EVENTS =
+        Arrays.asList(new ExtensionUninstalledEvent(), new JobStartedEvent(), new JobFinishingEvent());
 
     /**
      * Jar extension ClassLoader that will be properly refreshed.
@@ -339,16 +339,14 @@ public class JarExtensionJobFinishedListener implements EventListener
         throws UninstallException
     {
         try {
-            Collection<InstalledExtension> bDependencies =
-                this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId().getId(),
-                    namespace);
+            Collection<InstalledExtension> bDependencies = this.installedExtensionRepository
+                .getBackwardDependencies(installedExtension.getId().getId(), namespace);
 
             for (InstalledExtension bDependency : bDependencies) {
                 unloadJAR(bDependency, namespace, unloadedExtensions);
             }
         } catch (ResolveException e) {
-            this.logger.error(
-                "Failed to get backward dependencies for installed extension [{}] on namespace [{}]",
+            this.logger.error("Failed to get backward dependencies for installed extension [{}] on namespace [{}]",
                 installedExtension, namespace, e);
         }
 
