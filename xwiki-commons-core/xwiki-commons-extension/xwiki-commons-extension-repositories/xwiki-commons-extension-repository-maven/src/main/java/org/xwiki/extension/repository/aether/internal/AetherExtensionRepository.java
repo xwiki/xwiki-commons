@@ -65,6 +65,7 @@ import org.eclipse.aether.resolution.VersionRangeResult;
 import org.eclipse.aether.resolution.VersionRequest;
 import org.eclipse.aether.resolution.VersionResolutionException;
 import org.eclipse.aether.resolution.VersionResult;
+import org.eclipse.aether.transfer.ArtifactNotFoundException;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
@@ -72,6 +73,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.maven.MavenExtensionDependency;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
@@ -212,12 +214,12 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         List<org.eclipse.aether.version.Version> versions;
         try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
             versions = resolveVersions(artifact, session);
-
-            if (versions.isEmpty()) {
-                throw new ResolveException("No versions available for id [" + id + "]");
-            }
         } catch (Exception e) {
             throw new ResolveException("Failed to resolve versions for id [" + id + "]", e);
+        }
+
+        if (versions.isEmpty()) {
+            throw new ExtensionNotFoundException("No versions available for id [" + id + "]");
         }
 
         if (nb == 0 || offset >= versions.size()) {
@@ -266,7 +268,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
 
         if (commonVersions == null || commonVersions.isEmpty()) {
-            throw new ResolveException(
+            throw new ExtensionNotFoundException(
                 "No versions available for id [" + id + "] and version constraint [" + versionConstraint + "]");
         }
 
@@ -282,7 +284,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             List<org.eclipse.aether.version.Version> versions = resolveVersions(artifact, session);
 
             if (versions.isEmpty()) {
-                throw new ResolveException(
+                throw new ExtensionNotFoundException(
                     "No versions available for id [" + id + "] and version range [" + versionRange + "]");
             }
 
@@ -349,8 +351,15 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         Model model;
         try {
             model = loadPom(artifact, session);
-        } catch (Exception e) {
-            throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor", e);
+        } catch (ArtifactResolutionException e1) {
+            if (e1.getResult() != null && !e1.getResult().getExceptions().isEmpty()
+                && e1.getResult().getExceptions().get(0) instanceof ArtifactNotFoundException) {
+                throw new ExtensionNotFoundException("Could not find artifact [" + artifact + "] descriptor", e1);
+            } else {
+                throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor", e1);
+            }
+        } catch (Exception e2) {
+            throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor", e2);
         }
 
         if (model == null) {
