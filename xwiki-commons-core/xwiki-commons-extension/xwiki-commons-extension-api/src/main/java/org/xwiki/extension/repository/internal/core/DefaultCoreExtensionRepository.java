@@ -37,7 +37,6 @@ import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.CoreExtensionRepository;
@@ -58,8 +57,8 @@ import org.xwiki.extension.version.Version;
  */
 @Component
 @Singleton
-public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
-    implements CoreExtensionRepository, Initializable
+public class DefaultCoreExtensionRepository extends AbstractExtensionRepository implements CoreExtensionRepository,
+    Initializable
 {
     /**
      * The core extensions.
@@ -156,7 +155,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
 
         if (extension == null
             || (extensionId.getVersion() != null && !extension.getId().getVersion().equals(extensionId.getVersion()))) {
-            throw new ExtensionNotFoundException("Could not find extension [" + extensionId + "]");
+            throw new ResolveException("Could not find extension [" + extensionId + "]");
         }
 
         return extension;
@@ -169,7 +168,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
 
         if (extension == null
             || (!extensionDependency.getVersionConstraint().containsVersion(extension.getId().getVersion()))) {
-            throw new ExtensionNotFoundException("Could not find extension dependency [" + extensionDependency + "]");
+            throw new ResolveException("Could not find extension dependency [" + extensionDependency + "]");
         }
 
         return extension;
@@ -200,7 +199,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
         Extension extension = getCoreExtension(id);
 
         if (extension == null) {
-            throw new ExtensionNotFoundException("Could not find extension with id [" + id + "]");
+            throw new ResolveException("Could not find extension with id [" + id + "]");
         }
 
         Collection<Version> versions;

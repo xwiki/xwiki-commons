@@ -31,7 +31,6 @@ import java.util.regex.Pattern;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
@@ -182,7 +181,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
         E extension = this.extensions.get(extensionId);
 
         if (extension == null) {
-            throw new ExtensionNotFoundException("Can't find extension [" + extensionId + "]");
+            throw new ResolveException("Can't find extension [" + extensionId + "]");
         }
 
         return extension;
@@ -202,7 +201,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
             }
         }
 
-        throw new ExtensionNotFoundException("Can't find extension dependency [" + extensionDependency + "]");
+        throw new ResolveException("Can't find extension dependency [" + extensionDependency + "]");
     }
 
     @Override
@@ -221,7 +220,7 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
         List<E> versions = this.extensionsVersions.get(id);
 
         if (versions == null) {
-            throw new ExtensionNotFoundException("Can't find extension with id [" + id + "]");
+            throw new ResolveException("Can't find extension with id [" + id + "]");
         }
 
         if (nb == 0 || offset >= versions.size()) {

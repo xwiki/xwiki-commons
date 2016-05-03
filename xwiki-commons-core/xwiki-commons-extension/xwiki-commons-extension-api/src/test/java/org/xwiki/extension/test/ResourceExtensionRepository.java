@@ -30,7 +30,6 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
@@ -92,12 +91,11 @@ public class ResourceExtensionRepository extends AbstractExtensionRepository imp
         }
 
         if (descriptor == null) {
-            throw new ExtensionNotFoundException("Extension [" + extensionId + "] not found");
+            throw new ResolveException("Extension [" + extensionId + "] not found");
         }
 
         try {
-            DefaultLocalExtension localExtension =
-                this.extensionSerializer.loadLocalExtensionDescriptor(null, descriptor);
+            DefaultLocalExtension localExtension = this.extensionSerializer.loadLocalExtensionDescriptor(null, descriptor);
 
             return new ResourceExtension(this, localExtension);
         } catch (Exception e) {
@@ -108,8 +106,8 @@ public class ResourceExtensionRepository extends AbstractExtensionRepository imp
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        return resolve(new ExtensionId(extensionDependency.getId(),
-            new DefaultVersion(extensionDependency.getVersionConstraint().getValue())));
+        return resolve(new ExtensionId(extensionDependency.getId(), new DefaultVersion(extensionDependency
+            .getVersionConstraint().getValue())));
     }
 
     @Override
