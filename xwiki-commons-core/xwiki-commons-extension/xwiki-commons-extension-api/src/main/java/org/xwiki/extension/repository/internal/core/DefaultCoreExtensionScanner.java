@@ -115,7 +115,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     {
         Matcher matcher = MavenUtils.PARSER_ID.matcher(id);
         if (!matcher.matches()) {
-            throw new ResolveException("Bad id " + id + ", expected format is <groupId>:<artifactId>[:<classifier>]");
+            throw new ResolveException("Bad id [" + id + "], expected format is <groupId>:<artifactId>[:<classifier>]");
         }
 
         Dependency dependency = new Dependency();

@@ -35,6 +35,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
@@ -66,8 +67,8 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
         return this.directory;
     }
 
-    InputStream getFileAsStream(ExtensionId extensionId, String type) throws FileNotFoundException,
-        UnsupportedEncodingException
+    InputStream getFileAsStream(ExtensionId extensionId, String type)
+        throws FileNotFoundException, UnsupportedEncodingException
     {
         return new FileInputStream(getFile(extensionId, type));
     }
@@ -95,16 +96,19 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
         InputStream descriptor;
         try {
             descriptor = getFileAsStream(extensionId, "xed");
+        } catch (FileNotFoundException e) {
+            throw new ExtensionNotFoundException("Could not find extension [" + extensionId + "]", e);
         } catch (Exception e) {
             throw new ResolveException("Invalid extension id [" + extensionId + "]", e);
         }
 
         if (descriptor == null) {
-            throw new ResolveException("Extension [" + extensionId + "] not found");
+            throw new ExtensionNotFoundException("Extension [" + extensionId + "] not found");
         }
 
         try {
-            DefaultLocalExtension localExtension = this.extensionSerializer.loadLocalExtensionDescriptor(null, descriptor);
+            DefaultLocalExtension localExtension =
+                this.extensionSerializer.loadLocalExtensionDescriptor(null, descriptor);
 
             return new FileExtension(this, localExtension);
         } catch (Exception e) {
@@ -115,8 +119,8 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        return resolve(new ExtensionId(extensionDependency.getId(), new DefaultVersion(extensionDependency
-            .getVersionConstraint().getValue())));
+        return resolve(new ExtensionId(extensionDependency.getId(),
+            new DefaultVersion(extensionDependency.getVersionConstraint().getValue())));
     }
 
     @Override
@@ -132,9 +136,9 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
     @Override
     public IterableResult<Version> resolveVersions(final String id, int offset, int nb) throws ResolveException
     {
-        try {
-            List<Version> versions = new LinkedList<Version>();
+        List<Version> versions = new LinkedList<Version>();
 
+        try {
             for (File file : this.directory.listFiles(new FilenameFilter()
             {
                 @Override
@@ -147,7 +151,8 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
                 try {
                     fis = new FileInputStream(file);
 
-                    DefaultLocalExtension localExtension = this.extensionSerializer.loadLocalExtensionDescriptor(null, fis);
+                    DefaultLocalExtension localExtension =
+                        this.extensionSerializer.loadLocalExtensionDescriptor(null, fis);
 
                     versions.add(localExtension.getId().getVersion());
                 } finally {
@@ -157,16 +162,16 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
                 }
 
             }
-
-            if (versions.isEmpty()) {
-                throw new ResolveException("Extension [" + id + "] not found");
-            }
-
-            Collections.sort(versions);
-
-            return new CollectionIterableResult<Version>(0, offset, versions);
         } catch (Exception e) {
-            throw new ResolveException("Failed to resolve versions for extenions [" + id + "]", e);
+            throw new ResolveException("Failed to resolve versions for extenion [" + id + "]", e);
         }
+
+        if (versions.isEmpty()) {
+            throw new ExtensionNotFoundException("Extension [" + id + "] not found");
+        }
+
+        Collections.sort(versions);
+
+        return new CollectionIterableResult<Version>(0, offset, versions);
     }
 }

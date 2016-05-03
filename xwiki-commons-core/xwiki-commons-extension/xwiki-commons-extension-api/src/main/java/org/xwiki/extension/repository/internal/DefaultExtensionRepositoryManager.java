@@ -45,6 +45,7 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
@@ -204,20 +205,28 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public Extension resolve(ExtensionId extensionId) throws ResolveException
     {
-        ResolveException lastExtension = null;
+        ResolveException lastException = null;
 
         for (ExtensionRepository repository : this.repositories) {
             try {
                 return repository.resolve(extensionId);
-            } catch (ResolveException e) {
+            } catch (ExtensionNotFoundException e1) {
                 this.logger.debug("Could not find extension [{}] in repository [{}]", extensionId,
-                    repository.getDescriptor(), e);
+                    repository.getDescriptor(), e1);
+            } catch (ResolveException e2) {
+                this.logger.error("Unexpected error when trying to find extension [{}] in repository [{}]", extensionId,
+                    repository.getDescriptor(), e2);
 
-                lastExtension = e;
+                lastException = e2;
             }
         }
 
-        throw new ResolveException(MessageFormat.format("Could not find extension [{0}]", extensionId), lastExtension);
+        if (lastException != null) {
+            throw new ResolveException(MessageFormat.format("Failed to resolve extension [{0}]", extensionId),
+                lastException);
+        } else {
+            throw new ExtensionNotFoundException(MessageFormat.format("Could not find extension [{0}]", extensionId));
+        }
     }
 
     @Override
@@ -225,8 +234,9 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     {
         Set<ExtensionRepositoryDescriptor> checkedRepositories = new HashSet<>();
 
-        Exception lastExtension = null;
+        Exception lastException = null;
 
+        // Try repositories declared in the extension dependency
         for (ExtensionRepositoryDescriptor repositoryDescriptor : extensionDependency.getRepositories()) {
             if (checkedRepositories.contains(repositoryDescriptor)) {
                 continue;
@@ -247,14 +257,18 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
 
             try {
                 return repository.resolve(extensionDependency);
-            } catch (ResolveException e) {
+            } catch (ExtensionNotFoundException e1) {
                 this.logger.debug("Could not find extension dependency [{}] in repository [{}]", extensionDependency,
-                    repository.getDescriptor(), e);
+                    repository.getDescriptor(), e1);
+            } catch (ResolveException e2) {
+                this.logger.warn("Unexpected error when trying to find extension dependency [{}] in repository [{}]: ",
+                    extensionDependency, repository.getDescriptor(), ExceptionUtils.getRootCauseMessage(e2));
 
-                lastExtension = e;
+                lastException = e2;
             }
         }
 
+        // Try configured repositories
         for (ExtensionRepository repository : this.repositories) {
             if (checkedRepositories.contains(repository.getDescriptor())) {
                 continue;
@@ -265,22 +279,31 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
 
             try {
                 return repository.resolve(extensionDependency);
-            } catch (ResolveException e) {
+            } catch (ExtensionNotFoundException e1) {
                 this.logger.debug("Could not find extension dependency [{}] in repository [{}]", extensionDependency,
-                    repository.getDescriptor(), e);
+                    repository.getDescriptor(), e1);
+            } catch (ResolveException e2) {
+                this.logger.error("Unexpected error when trying to find extension dependency [{}] in repository [{}]",
+                    extensionDependency, repository.getDescriptor(), e2);
 
-                lastExtension = e;
+                lastException = e2;
             }
         }
 
-        throw new ResolveException(
-            MessageFormat.format("Could not find extension dependency [{0}]", extensionDependency), lastExtension);
+        if (lastException != null) {
+            throw new ResolveException(
+                MessageFormat.format("Failed to resolve extension dependency [{0}]", extensionDependency),
+                lastException);
+        } else {
+            throw new ExtensionNotFoundException(
+                MessageFormat.format("Could not find extension dependency [{0}]", extensionDependency));
+        }
     }
 
     @Override
     public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
     {
-        SortedSet<Version> versionSet = new TreeSet<Version>();
+        SortedSet<Version> versionSet = new TreeSet<>();
 
         for (ExtensionRepository repository : this.repositories) {
             try {
@@ -289,13 +312,17 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
                 for (Version version : versions) {
                     versionSet.add(version);
                 }
-            } catch (ResolveException e) {
-                this.logger.debug("Could not find versions for extension with id [{}]", id, e);
+            } catch (ExtensionNotFoundException e1) {
+                this.logger.debug("Could not find extension with id [{}] in repository [{}]", id,
+                    repository.getDescriptor(), e1);
+            } catch (ResolveException e2) {
+                this.logger.error("Unexpected error when trying to find versions for extension with id [{}]", id, e2);
             }
         }
 
         if (versionSet.isEmpty()) {
-            throw new ResolveException(MessageFormat.format("Could not find versions for extension with id [{0}]", id));
+            throw new ExtensionNotFoundException(
+                MessageFormat.format("Could not find versions for extension with id [{0}]", id));
         }
 
         return RepositoryUtils.getIterableResult(offset, nb, versionSet);

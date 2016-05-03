@@ -22,6 +22,7 @@ package org.xwiki.extension.repository;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
@@ -46,6 +47,7 @@ public interface ExtensionRepository
      *
      * @param extensionId the extension identifier
      * @return the found extension descriptor
+     * @throws ExtensionNotFoundException when the extension does not exist in the repository
      * @throws ResolveException failed to find extension in the repository
      */
     Extension resolve(ExtensionId extensionId) throws ResolveException;
@@ -56,6 +58,7 @@ public interface ExtensionRepository
      *
      * @param extensionDependency the target extension as a dependency
      * @return the found extension descriptor
+     * @throws ExtensionNotFoundException when the dependency does not match any extension in the repository
      * @throws ResolveException failed to find extension in the repository
      */
     Extension resolve(ExtensionDependency extensionDependency) throws ResolveException;
@@ -67,6 +70,7 @@ public interface ExtensionRepository
      * @param offset the offset from where to start returning versions
      * @param nb the maximum number of versions to return
      * @return the versions of the provided extension id
+     * @throws ExtensionNotFoundException when the extension does not exist in the repository
      * @throws ResolveException fail to find extension for provided id
      */
     IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException;
