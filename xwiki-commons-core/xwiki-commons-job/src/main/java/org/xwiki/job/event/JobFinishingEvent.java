@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.xwiki.job.Request;
-import org.xwiki.observation.event.Event;
 
 /**
  * Job finishing event launched just after a job is done and we start to save status etc. Give a chance to listeners to
@@ -41,7 +40,7 @@ import org.xwiki.observation.event.Event;
  * @version $Id$
  * @since 8.1RC1
  */
-public class JobFinishingEvent extends AbstractJobEvent implements Event
+public class JobFinishingEvent extends AbstractJobEvent
 {
     /**
      * Serialization identifier.
