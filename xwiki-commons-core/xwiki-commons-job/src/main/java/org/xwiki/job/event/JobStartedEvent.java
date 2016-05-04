@@ -26,7 +26,7 @@ import org.xwiki.job.Request;
 import org.xwiki.observation.event.BeginEvent;
 
 /**
- * Job started event launched when a new job start.
+ * Job started event triggered when a new job start.
  * <p>
  * The event also send the following parameters:
  * </p>

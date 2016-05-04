@@ -26,9 +26,9 @@ import java.util.List;
 import org.xwiki.job.Request;
 
 /**
- * Job finishing event launched just after a job is done and we start to save status etc. Give a chance to listeners to
- * do action as part of the job execution because it's "closed". Additional data may contains an exception if the job
- * has not been finished with success.
+ * Job finishing event triggered just after a job is done and we start to save status etc. Give a chance to listeners to
+ * do action as part of the job execution before it's "closed". Additional data may contains an exception if the job has
+ * not been finished with success.
  * <p>
  * The event also send the following parameters:
  * </p>

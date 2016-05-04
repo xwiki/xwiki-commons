@@ -27,8 +27,8 @@ import org.xwiki.job.Request;
 import org.xwiki.observation.event.EndEvent;
 
 /**
- * Job finished event launched when a job is finished. Additional data may contains an exception if the job has not been
- * finished with success.
+ * Job finished event triggered when a job is finished. Additional data may contains an exception if the job has not
+ * been finished with success.
  * <p>
  * The event also send the following parameters:
  * </p>
