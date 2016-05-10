@@ -37,11 +37,11 @@
   </properties>
   <dependencies>
     <!-- We need this dependency so that the wrapped module is built before this one -->
-    <!-- FIXME: this package should be scope provided otherwise it will be triggered as transitive dependency -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
