@@ -50,7 +50,7 @@ public class ExternalExtensionCheck extends AbstractPomCheck
 
     private static final String CONTRIB_GROUP_ID = "org.xwiki.contrib";
 
-    private static final List<String> RESERVED_GROUP_IDS = createReservedGroupIdsList();
+    private static final String CONTRIB_GROUP_ID_PREFIX = CONTRIB_GROUP_ID + '.';
 
     private static final List<String> CORE_GROUP_IDS = createCoreGroupIdsList();
 
@@ -72,22 +72,13 @@ public class ExternalExtensionCheck extends AbstractPomCheck
     {
         Model model = getResolvedModel(helper);
 
-        checkGroupId(model);
-
         if (isXWikiCoreCommitterExtension(model)) {
             checkCoreArtifactId(model);
         } else {
+            checkContribGroupId(model);
             checkNonCoreArtifactId(model);
             checkNonCoreDevelopers(model);
         }
-    }
-
-    private static List<String> createReservedGroupIdsList()
-    {
-        List<String> reservedGroupIds = new ArrayList<>();
-        reservedGroupIds.addAll(createCoreGroupIdsList());
-        reservedGroupIds.add(CONTRIB_GROUP_ID);
-        return reservedGroupIds;
     }
 
     private static List<String> createCoreGroupIdsList()
@@ -100,20 +91,6 @@ public class ExternalExtensionCheck extends AbstractPomCheck
         return reservedGroupIds;
     }
 
-    /**
-     * If a group id starts by "org.xwiki" but is not one of the known group ids used by the XWiki Development Team
-     * then we raise an error.
-     */
-    private void checkGroupId(Model model) throws EnforcerRuleException
-    {
-        String groupId = model.getGroupId();
-        if (!RESERVED_GROUP_IDS.contains(groupId) && groupId.startsWith("org.xwiki")) {
-            throw new EnforcerRuleException("You cannot use a group id starting with [org.xwiki] since that's "
-                + "reserved for the XWiki Core Committers. Please use a different groupId that represents your"
-                + "organization.");
-        }
-    }
-
     private boolean isXWikiCoreCommitterExtension(Model model)
     {
         String groupId = model.getGroupId();
@@ -121,6 +98,18 @@ public class ExternalExtensionCheck extends AbstractPomCheck
             return true;
         }
         return false;
+    }
+
+    /**
+     * Make sure the group id starts with "org.xwiki.contrib".
+     */
+    private void checkContribGroupId(Model model) throws EnforcerRuleException
+    {
+        String groupId = model.getGroupId();
+        if (!groupId.equals(CONTRIB_GROUP_ID) && !groupId.startsWith(CONTRIB_GROUP_ID_PREFIX)) {
+            throw new EnforcerRuleException(
+                String.format("Contrib extension group id have to be prefixed with [%s]", CONTRIB_GROUP_ID));
+        }
     }
 
     /**
