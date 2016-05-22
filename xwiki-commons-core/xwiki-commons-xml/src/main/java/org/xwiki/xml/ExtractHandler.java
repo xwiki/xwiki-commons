@@ -253,7 +253,7 @@ public class ExtractHandler extends DefaultHandler
         }
         int remainingLength = this.upperBound - this.counter;
         if (remainingLength <= length) {
-            String content = new String(ch, start, remainingLength);
+            String content = String.valueOf(ch, start, remainingLength);
             int spaceIndex = remainingLength;
             // If we're in the middle of a word, try to cut before it, so that we don't output half-words
             if (length > remainingLength && ch[start + remainingLength] != ' ') {
