@@ -243,13 +243,12 @@ public class ExtractHandler extends DefaultHandler
         if (offset > 0) {
             if (offset > length) {
                 this.counter += length;
-                return;
             } else {
                 this.counter = this.lowerBound;
                 openTags();
                 characters(ch, start + offset, length - offset);
-                return;
             }
+            return;
         }
         int remainingLength = this.upperBound - this.counter;
         if (remainingLength <= length) {

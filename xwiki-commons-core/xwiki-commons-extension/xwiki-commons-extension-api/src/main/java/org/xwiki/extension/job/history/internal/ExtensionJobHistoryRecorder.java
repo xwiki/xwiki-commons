@@ -100,19 +100,16 @@ public class ExtensionJobHistoryRecorder extends AbstractEventListener
 
     private void onJobStarted(Job job)
     {
-        if (!(job.getRequest() instanceof ExtensionRequest)) {
-            // This is not an extension job.
-            return;
-        }
+        if (job.getRequest() instanceof ExtensionRequest) {
+            if (job.getStatus() instanceof AbstractJobStatus && isSubJob((AbstractJobStatus<?>) job.getStatus())) {
+                // We record only the jobs that have been triggered explicitly or that are part of a replay.
+                return;
+            }
 
-        if (job.getStatus() instanceof AbstractJobStatus && isSubJob((AbstractJobStatus<?>) job.getStatus())) {
-            // We record only the jobs that have been triggered explicitly or that are part of a replay.
-            return;
-        }
-
-        String jobId = StringUtils.join(job.getRequest().getId(), '/');
-        if (jobId != null) {
-            this.answers.put(jobId, new HashMap<String, QuestionRecorder<Object>>());
+            String jobId = StringUtils.join(job.getRequest().getId(), '/');
+            if (jobId != null) {
+                this.answers.put(jobId, new HashMap<String, QuestionRecorder<Object>>());
+            }
         }
     }
 

@@ -111,19 +111,17 @@ public class XStreamParameterManager implements ParameterManager, Initializable
         StaxWriter staxWriter;
         try {
             staxWriter = this.staxDriver.createStaxWriter(xmlStreamWriter, false);
+
+            DataHolder dataHolder = new MapBackedDataHolder();
+            if (type != Object.class) {
+                dataHolder.put(DDEFAULTTYPE_NAME, type);
+            }
+
+            this.xstream.marshal(object, staxWriter, dataHolder);
         } catch (XMLStreamException e) {
             // Should never happen since that when sending start document event
             this.logger.error("Failed to create new instance of StaxWriter", e);
-
-            return;
         }
-
-        DataHolder dataHolder = new MapBackedDataHolder();
-        if (type != Object.class) {
-            dataHolder.put(DDEFAULTTYPE_NAME, type);
-        }
-
-        this.xstream.marshal(object, staxWriter, dataHolder);
     }
 
     @Override

@@ -78,26 +78,24 @@ public class CoreExtensionCache implements Initializable
      */
     public void store(DefaultCoreExtension extension) throws Exception
     {
-        if (this.folder == null) {
-            return;
-        }
+        if (this.folder != null) {
+            URL descriptorURL = extension.getDescriptorURL();
 
-        URL descriptorURL = extension.getDescriptorURL();
+            if (!descriptorURL.getPath().contains(PACKAGE_MARKER)) {
+                // Usually mean jars are not kept, don't cache that or it's going to be a nightmare when upgrading
+                return;
+            }
 
-        if (!descriptorURL.getPath().contains(PACKAGE_MARKER)) {
-            // Usually mean jars are not kept, don't cache that or it's going to be a nightmare when upgrading
-            return;
-        }
+            File file = getFile(descriptorURL);
 
-        File file = getFile(descriptorURL);
+            // Make sure the file parents exist
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+            }
 
-        // Make sure the file parents exist
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-        }
-
-        try (FileOutputStream stream = new FileOutputStream(file)) {
-            this.serializer.saveExtensionDescriptor(extension, stream);
+            try (FileOutputStream stream = new FileOutputStream(file)) {
+                this.serializer.saveExtensionDescriptor(extension, stream);
+            }
         }
     }
 
