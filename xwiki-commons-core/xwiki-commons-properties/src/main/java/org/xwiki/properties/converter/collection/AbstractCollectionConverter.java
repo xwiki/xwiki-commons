@@ -193,7 +193,7 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
     }
 
     /**
-     * Create and initializer a {@link StreamTokenizer} to parse the value.
+     * Create and initialize a {@link StreamTokenizer} to parse the value.
      *
      * @param value the string to parse
      * @return the {@link StreamTokenizer} used to parse the string
