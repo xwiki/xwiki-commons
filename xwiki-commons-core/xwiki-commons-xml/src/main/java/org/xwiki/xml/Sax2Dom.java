@@ -149,7 +149,7 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
 
         // No text nodes can be children of root (DOM006 exception)
         if (currentNode != this.document) {
-            final String text = new String(ch, start, length);
+            final String text = String.valueOf(ch, start, length);
             currentNode.appendChild(this.document.createTextNode(text));
         }
     }
@@ -253,7 +253,7 @@ public class Sax2Dom implements ContentHandler, LexicalHandler
     @Override
     public void comment(char[] ch, int start, int length)
     {
-        Comment comment = this.document.createComment(new String(ch, start, length));
+        Comment comment = this.document.createComment(String.valueOf(ch, start, length));
         if (comment != null) {
             this.nodes.peek().appendChild(comment);
         }

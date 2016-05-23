@@ -145,7 +145,7 @@ public class MessageParser
                 if (iNext != i) {
                     if (this.bufferIndex == i) {
                         // Create and return new MessageIndex
-                        String messageIndexString = new String(this.buffer, i, iNext - i);
+                        String messageIndexString = String.valueOf(this.buffer, i, iNext - i);
 
                         int messageIndex;
                         if (this.translations && messageIndexString.length() > 2) {
@@ -167,7 +167,7 @@ public class MessageParser
                     } else {
                         // Return previous plain text, the actual MessageIndex will be the next element
                         this.currentMessageElement =
-                            new MessageString(new String(this.buffer, this.bufferIndex, i - this.bufferIndex));
+                            new MessageString(String.valueOf(this.buffer, this.bufferIndex, i - this.bufferIndex));
                         this.bufferIndex = i;
 
                         return this.currentMessageElement;
@@ -180,7 +180,7 @@ public class MessageParser
             return null;
         }
 
-        this.currentMessageElement = new MessageString(new String(this.buffer, this.bufferIndex, i - this.bufferIndex));
+        this.currentMessageElement = new MessageString(String.valueOf(this.buffer, this.bufferIndex, i - this.bufferIndex));
 
         this.bufferIndex = i;
 

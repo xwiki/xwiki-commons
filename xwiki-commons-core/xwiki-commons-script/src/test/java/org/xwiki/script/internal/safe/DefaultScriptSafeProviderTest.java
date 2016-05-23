@@ -47,7 +47,7 @@ public class DefaultScriptSafeProviderTest
     @Test
     public void testGetWithNoProvider() throws Exception
     {
-        Object safe = new String();
+        Object safe = "";
 
         Assert.assertSame(safe, this.mocker.getComponentUnderTest().get(safe));
     }
