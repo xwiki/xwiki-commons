@@ -61,7 +61,8 @@ public class ExtensionConverterTest
         model.setArtifactId("artifactid");
         model.setVersion("version");
         model.addProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_CATEGORY, "category");
-        model.addProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_NAMESPACES, "namespace1, namespace2");
+        model.addProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_NAMESPACES,
+            "namespace1, namespace2,\r\n\t {root}, \"namespace3\", 'namespace4'");
         Repository repository = new Repository();
         repository.setId("repository-id");
         repository.setUrl("http://url");
@@ -73,10 +74,26 @@ public class ExtensionConverterTest
         assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
         assertEquals("category", extension.getCategory());
         assertNull(extension.getProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_CATEGORY));
-        assertEquals(Arrays.asList("namespace1", "namespace2"), new ArrayList<>(extension.getAllowedNamespaces()));
+        assertEquals(Arrays.asList("namespace1", "namespace2", "{root}", "namespace3", "namespace4"),
+            new ArrayList<>(extension.getAllowedNamespaces()));
         assertNull(extension.getProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_NAMESPACES));
         assertEquals(
             Arrays.asList(new DefaultExtensionRepositoryDescriptor("repository-id", "maven", new URI("http://url"))),
             extension.getRepositories());
+    }
+
+    @Test
+    public void testConvertFromExtensionAllowedOnRoot() throws SecurityException, ComponentLookupException
+    {
+        Model model = new Model();
+
+        model.setGroupId("groupid");
+        model.setArtifactId("artifactid");
+        model.setVersion("version");
+        model.addProperty(MavenUtils.MPKEYPREFIX + MavenUtils.MPNAME_NAMESPACES, "{root}");
+
+        Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
+
+        assertEquals(Arrays.asList("{root}"), new ArrayList<>(extension.getAllowedNamespaces()));
     }
 }

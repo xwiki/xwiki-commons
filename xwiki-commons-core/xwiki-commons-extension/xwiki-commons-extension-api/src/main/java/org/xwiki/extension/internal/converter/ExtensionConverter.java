@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.internal.converter;
 
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -26,6 +28,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -42,7 +45,6 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.Scm;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
@@ -58,7 +60,6 @@ import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
-import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.AbstractConverter;
 import org.xwiki.properties.converter.ConversionException;
 
@@ -75,8 +76,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
     @Inject
     private ExtensionLicenseManager licenseManager;
 
-    @Inject
-    private ConverterManager converter;
+    // @Inject
+    // private ConverterManager converter;
 
     @Override
     protected <G extends Extension> G convertToType(Type targetType, Object value)
@@ -143,9 +144,7 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         // features
         String featuresString = getProperty(properties, MavenUtils.MPNAME_FEATURES, true);
         if (StringUtils.isNotBlank(featuresString)) {
-            featuresString = featuresString.replaceAll("[\r\n]", "");
-            Collection<String> features = this.converter.<Collection<String>>convert(
-                new DefaultParameterizedType(null, List.class, String.class), featuresString);
+            Collection<String> features = toStringList(featuresString, true);
             for (String feature : features) {
                 extension
                     .addExtensionFeature(ExtensionIdConverter.toExtensionId(feature, extension.getId().getVersion()));
@@ -161,9 +160,7 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         // namespaces
         String namespacesString = getProperty(properties, MavenUtils.MPNAME_NAMESPACES, true);
         if (StringUtils.isNotBlank(namespacesString)) {
-            namespacesString = namespacesString.replaceAll("[\r\n]", "");
-            Collection<String> namespaces = this.converter.<Collection<String>>convert(
-                new DefaultParameterizedType(null, List.class, String.class), namespacesString);
+            Collection<String> namespaces = toStringList(namespacesString, true);
             extension.setAllowedNamespaces(namespaces);
         }
 
@@ -219,6 +216,58 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         }
 
         return extension;
+    }
+
+    private List<String> toStringList(String str, boolean trim)
+    {
+        try {
+            String cleanedString = str;
+
+            // Trom
+            if (trim) {
+                cleanedString = cleanedString.trim();
+            }
+
+            // Set up a StreamTokenizer on the characters in this String
+            StreamTokenizer st = new StreamTokenizer(new StringReader(cleanedString));
+
+            // Everything is word
+            st.ordinaryChars(0, 255);
+            st.wordChars(0, 255);
+
+            // Except quote chars
+            st.quoteChar('"');
+            st.quoteChar('\'');
+
+            // And delimiters
+            st.whitespaceChars(',', ',');
+            st.whitespaceChars(' ', ' ');
+            st.whitespaceChars('\t', '\t');
+            st.whitespaceChars('\n', '\n');
+            st.whitespaceChars('\r', '\r');
+
+            // Split comma-delimited tokens into a List
+            List<String> collection = new ArrayList<>();
+            while (true) {
+                int ttype = st.nextToken();
+                if (ttype == StreamTokenizer.TT_WORD || ttype > 0) {
+                    if (st.sval != null) {
+                        collection.add(st.sval);
+                    }
+                } else if (ttype == StreamTokenizer.TT_EOF) {
+                    break;
+                } else {
+                    throw new ConversionException("Encountered token of type " + ttype + " parsing elements.");
+                }
+            }
+
+            // Return the completed list
+            return collection;
+        } catch (Exception e) {
+            // Log ?
+        }
+
+        return Collections.emptyList();
     }
 
     private DefaultExtensionDependency toExtensionDependency(Dependency mavenDependency, Model model)
