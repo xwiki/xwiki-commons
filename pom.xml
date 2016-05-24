@@ -680,7 +680,7 @@
       <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
-        <version>1.4.5</version>
+        <version>1.4.7</version>
         <exclusions>
           <!-- We exclude it since it draws version 1.1 and other dependencies we have draw version 1.1.1 -->
           <exclusion>
