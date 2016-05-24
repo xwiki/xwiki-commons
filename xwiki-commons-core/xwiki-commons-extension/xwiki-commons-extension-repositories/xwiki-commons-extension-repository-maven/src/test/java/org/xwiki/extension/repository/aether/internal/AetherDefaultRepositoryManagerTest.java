@@ -220,6 +220,34 @@ public class AetherDefaultRepositoryManagerTest
     }
 
     @Test
+    public void testResolveAetherDependencyRange() throws ResolveException
+    {
+        Artifact artifact = new DefaultArtifact("groupid", "artifactid", "", "type", "[1.0,)");
+        Dependency aetherDependency = new Dependency(artifact, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency);
+
+        Extension extension = this.repositoryManager.resolve(dependency);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(this.extensionId.getId(), extension.getId().getId());
+        Assert.assertEquals("2.0", extension.getId().getVersion().toString());
+    }
+
+    @Test
+    public void testResolveAetherDependencyRange2() throws ResolveException
+    {
+        Artifact artifact = new DefaultArtifact("groupid", "artifactid", "", "type", "[1.0,2.0)");
+        Dependency aetherDependency = new Dependency(artifact, null);
+        AetherExtensionDependency dependency = new AetherExtensionDependency(aetherDependency);
+
+        Extension extension = this.repositoryManager.resolve(dependency);
+
+        Assert.assertNotNull(extension);
+        Assert.assertEquals(this.extensionId.getId(), extension.getId().getId());
+        Assert.assertEquals("1.0", extension.getId().getVersion().toString());
+    }
+
+    @Test
     public void testResolveOverriddenProperties() throws ResolveException
     {
         Extension extension = this.repositoryManager.resolve(new ExtensionId("groupid:oartifactid", "version"));
@@ -333,8 +361,8 @@ public class AetherDefaultRepositoryManagerTest
     {
         IterableResult<Version> versions = this.repositoryManager.resolveVersions(this.extensionId.getId(), 0, -1);
 
-        Assert.assertEquals(2, versions.getTotalHits());
-        Assert.assertEquals(2, versions.getSize());
+        Assert.assertEquals(4, versions.getTotalHits());
+        Assert.assertEquals(4, versions.getSize());
         Assert.assertEquals(0, versions.getOffset());
     }
 

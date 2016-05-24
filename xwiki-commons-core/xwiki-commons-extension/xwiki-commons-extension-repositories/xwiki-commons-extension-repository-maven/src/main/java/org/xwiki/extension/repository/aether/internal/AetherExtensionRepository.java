@@ -294,6 +294,22 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         }
     }
 
+    private org.eclipse.aether.version.Version resolveVersionConstraint(Artifact artifact,
+        RepositorySystemSession session) throws ResolveException
+    {
+        try {
+            List<org.eclipse.aether.version.Version> versions = resolveVersions(artifact, session);
+
+            if (versions.isEmpty()) {
+                throw new ResolveException("No versions available for artifact [" + artifact + "]");
+            }
+
+            return versions.get(versions.size() - 1);
+        } catch (Exception e) {
+            throw new ResolveException("Failed to resolve version range", e);
+        }
+    }
+
     List<org.eclipse.aether.version.Version> resolveVersions(Artifact artifact, RepositorySystemSession session)
         throws VersionRangeResolutionException
     {
@@ -316,16 +332,23 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
                 artifactExtension =
                     ((AetherExtensionDependency) extensionDependency).getAetherDependency().getArtifact()
                         .getExtension();
+
+                // Find the right version
+                if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {
+                    artifact = artifact.setVersion(resolveVersionConstraint(artifact, session).toString());
+                }
             } else {
                 artifact =
                     AetherUtils.createArtifact(extensionDependency.getId(), extensionDependency.getVersionConstraint()
                         .getValue());
+                artifactExtension = null;
+
+                // Find the right version
                 if (!extensionDependency.getVersionConstraint().getRanges().isEmpty()) {
                     artifact =
                         artifact.setVersion(resolveVersionConstraint(extensionDependency.getId(),
                             extensionDependency.getVersionConstraint(), session).toString());
                 }
-                artifactExtension = null;
             }
         }
 
