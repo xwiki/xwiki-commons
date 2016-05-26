@@ -41,7 +41,8 @@ public final class AetherUtils
     {
         Matcher matcher = PARSER_ID.matcher(id);
         if (!matcher.matches()) {
-            throw new ResolveException("Bad id " + id + ", expected format is <groupId>:<artifactId>[:<classifier>]");
+            throw new InvalidExtensionIdException(
+                "Bad id " + id + ", expected format is <groupId>:<artifactId>[:<classifier>]");
         }
 
         return new DefaultArtifact(matcher.group(1), matcher.group(2), StringUtils.defaultString(matcher.group(4), ""),

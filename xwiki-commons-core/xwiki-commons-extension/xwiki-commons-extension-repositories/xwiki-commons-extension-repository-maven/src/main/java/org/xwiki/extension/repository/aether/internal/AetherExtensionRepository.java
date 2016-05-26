@@ -187,29 +187,45 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     @Override
     public Extension resolve(ExtensionId extensionId) throws ResolveException
     {
-        if (getDescriptor().getType().equals("maven") && this.mavenDescriptorReader != null) {
-            return resolveMaven(extensionId);
-        } else {
-            // FIXME: impossible to resolve extension type as well as most of the information with pure Aether API
-            throw new ResolveException("Unsupported");
+        try {
+            if (getDescriptor().getType().equals("maven") && this.mavenDescriptorReader != null) {
+                return resolveMaven(extensionId);
+            } else {
+                // FIXME: impossible to resolve extension type as well as most of the information with pure Aether API
+                throw new ResolveException("Unsupported");
+            }
+        } catch (InvalidExtensionIdException e) {
+            // In case the id is invalid behave as if the extension simply did not exist (which is true anyway)
+            throw new ExtensionNotFoundException("Invalid extension id", e);
         }
     }
 
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        if (getDescriptor().getType().equals("maven") && this.mavenDescriptorReader != null) {
-            return resolveMaven(extensionDependency);
-        } else {
-            // FIXME: impossible to resolve extension type as well as most of the information with pure Aether API
-            throw new ResolveException("Unsupported");
+        try {
+            if (getDescriptor().getType().equals("maven") && this.mavenDescriptorReader != null) {
+                return resolveMaven(extensionDependency);
+            } else {
+                // FIXME: impossible to resolve extension type as well as most of the information with pure Aether API
+                throw new ResolveException("Unsupported");
+            }
+        } catch (InvalidExtensionIdException e) {
+            // In case the id is invalid behave as if the extension simply did not exist (which is true anyway)
+            throw new ExtensionNotFoundException("Invalid extension id", e);
         }
     }
 
     @Override
     public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
     {
-        Artifact artifact = AetherUtils.createArtifact(id, "(,)");
+        Artifact artifact;
+        try {
+            artifact = AetherUtils.createArtifact(id, "(,)");
+        } catch (InvalidExtensionIdException e) {
+            // In case the id is invalid behave as if the extension simply did not exist (which is true anyway)
+            throw new ExtensionNotFoundException("Invalid extension id", e);
+        }
 
         List<org.eclipse.aether.version.Version> versions;
         try (XWikiRepositorySystemSession session = createRepositorySystemSession()) {
