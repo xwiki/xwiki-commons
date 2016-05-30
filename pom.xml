@@ -90,7 +90,7 @@
     <izpack.version>5.0.6</izpack.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>6.18</checkstyle.version>
+    <checkstyle.version>6.19</checkstyle.version>
 
     <!-- By default Checkstyle, Backward compatibility check, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
