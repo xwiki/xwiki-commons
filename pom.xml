@@ -251,6 +251,11 @@
         <artifactId>httpcore-nio</artifactId>
         <version>4.4.4</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpasyncclient</artifactId>
+        <version>4.1.1</version>
+      </dependency>
       <!-- Old httpclient -->
       <dependency>
         <groupId>commons-httpclient</groupId>
