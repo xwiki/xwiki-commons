@@ -26,7 +26,7 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
 
-@Component
+@Component(staticRegistration = false)
 @Singleton
 public class GenericTestConverter extends AbstractCollectionConverter<List<Integer>>
 {
