@@ -302,6 +302,7 @@
          the code will simply use workarounds to hide the same amount of exit points. -->
     <module name="ReturnCount">
       <property name="max" value="5"/>
+      <property name="maxForVoid" value="5"/>
     </module>
 
     <module name="RightCurly"/>
