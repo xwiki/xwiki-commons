@@ -64,8 +64,8 @@ public class DefaultBeanManager implements BeanManager
     /**
      * Cache the already parsed classes.
      */
-    private Map<Class<?>, BeanDescriptor> beanDescriptorCache = Collections
-        .synchronizedMap(new HashMap<Class<?>, BeanDescriptor>());
+    private Map<Class<?>, BeanDescriptor> beanDescriptorCache =
+        Collections.synchronizedMap(new HashMap<Class<?>, BeanDescriptor>());
 
     /**
      * The logger to use for logging.
@@ -151,7 +151,7 @@ public class DefaultBeanManager implements BeanManager
             if (value != null) {
                 try {
                     // Convert
-                    Object convertedValue = this.converterManager.convert(propertyDescriptor.getPropertyClass(), value);
+                    Object convertedValue = this.converterManager.convert(propertyDescriptor.getPropertyType(), value);
 
                     if (propertyDescriptor.getWriteMethod() != null) {
                         Method writerMethod = propertyDescriptor.getWriteMethod();
@@ -181,8 +181,8 @@ public class DefaultBeanManager implements BeanManager
     }
 
     /**
-     * Support nested private classes with public setters. Workaround for <a
-     * href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4533479">java reflections bug JDK-4533479</a>.
+     * Support nested private classes with public setters. Workaround for
+     * <a href="http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4533479">java reflections bug JDK-4533479</a>.
      * 
      * @param classMember the class member to make accessible.
      */
@@ -208,8 +208,8 @@ public class DefaultBeanManager implements BeanManager
             Validator validator = getValidatorFactory().getValidator();
             Set<ConstraintViolation<Object>> constraintViolations = validator.validate(bean);
             if (!constraintViolations.isEmpty()) {
-                throw new PropertyException("Failed to validate bean: ["
-                    + constraintViolations.iterator().next().getMessage() + "]");
+                throw new PropertyException(
+                    "Failed to validate bean: [" + constraintViolations.iterator().next().getMessage() + "]");
             }
         }
     }

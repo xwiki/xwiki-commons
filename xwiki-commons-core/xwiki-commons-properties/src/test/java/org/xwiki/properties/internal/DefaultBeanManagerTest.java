@@ -19,6 +19,7 @@
  */
 package org.xwiki.properties.internal;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,9 +32,10 @@ import org.xwiki.properties.BeanManager;
 import org.xwiki.properties.PropertyException;
 import org.xwiki.properties.PropertyMandatoryException;
 import org.xwiki.properties.RawProperties;
-import org.xwiki.properties.internal.DefaultBeanDescriptorTest.BeanTest;
 import org.xwiki.properties.internal.converter.ConvertUtilsConverter;
 import org.xwiki.properties.internal.converter.EnumConverter;
+import org.xwiki.properties.test.GenericTestConverter;
+import org.xwiki.properties.test.TestBean;
 import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
 
@@ -43,7 +45,7 @@ import org.xwiki.test.annotation.ComponentList;
  * @version $Id$
  */
 @ComponentList({ DefaultBeanManager.class, DefaultConverterManager.class, EnumConverter.class,
-    ConvertUtilsConverter.class, ContextComponentManagerProvider.class })
+    ConvertUtilsConverter.class, ContextComponentManagerProvider.class, GenericTestConverter.class })
 public class DefaultBeanManagerTest
 {
     public static class RawPropertiesTest extends HashMap<String, Object> implements RawProperties
@@ -69,7 +71,7 @@ public class DefaultBeanManagerTest
     @Test
     public void testPopulate() throws PropertyException
     {
-        BeanTest beanTest = new BeanTest();
+        TestBean beanTest = new TestBean();
 
         Map<String, String> values = new HashMap<String, String>();
 
@@ -79,6 +81,7 @@ public class DefaultBeanManagerTest
         values.put("prop3", "true");
         values.put("hiddenProperty", "hiddenPropertyvalue");
         values.put("publicField", "publicFieldvalue");
+        values.put("genericProp", "1,2");
 
         this.defaultBeanManager.populate(beanTest, values);
 
@@ -88,12 +91,13 @@ public class DefaultBeanManagerTest
         Assert.assertEquals(true, beanTest.getProp3());
         Assert.assertEquals(null, beanTest.getHiddenProperty());
         Assert.assertEquals("publicFieldvalue", beanTest.publicField);
+        Assert.assertEquals(Arrays.asList(1, 2), beanTest.getGenericProp());
     }
 
     @Test(expected = PropertyMandatoryException.class)
     public void testPopulateWhenMissingMandatoryProperty() throws PropertyException
     {
-        this.defaultBeanManager.populate(new BeanTest(), new HashMap<String, String>());
+        this.defaultBeanManager.populate(new TestBean(), new HashMap<String, String>());
     }
 
     @Test
