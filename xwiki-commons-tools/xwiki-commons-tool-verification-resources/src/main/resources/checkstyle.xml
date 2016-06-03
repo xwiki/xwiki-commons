@@ -163,7 +163,7 @@
     <module name="IllegalImport"/>
 
     <module name="IllegalInstantiation">
-      <property name="classes" value="java.lang.Boolean, java.lang.String"/>
+      <property name="classes" value="java.lang.Boolean"/>
     </module>
 
     <module name="IllegalThrows"/>
