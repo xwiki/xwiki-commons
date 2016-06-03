@@ -26,11 +26,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.properties.PropertyDescriptor;
-import org.xwiki.properties.annotation.PropertyDescription;
-import org.xwiki.properties.annotation.PropertyHidden;
-import org.xwiki.properties.annotation.PropertyId;
-import org.xwiki.properties.annotation.PropertyMandatory;
-import org.xwiki.properties.annotation.PropertyName;
+import org.xwiki.properties.test.TestBean;
 
 /**
  * Validate {@link DefaultBeanDescriptor}.
@@ -39,129 +35,12 @@ import org.xwiki.properties.annotation.PropertyName;
  */
 public class DefaultBeanDescriptorTest
 {
-    public static class BeanTest
-    {
-        public static final String STATICFIELD = "staticfield";
-
-        private String lowerprop;
-
-        private String upperProp;
-
-        private String prop1 = "defaultprop1";
-
-        private int prop2;
-
-        private boolean prop3;
-
-        private String hiddenProperty;
-
-        private List<Integer> genericProp;
-
-        public String propertyWithDifferentId;
-
-        @PropertyName("Public Field")
-        @PropertyDescription("a public field")
-        public String publicField;
-
-        public List<Integer> genericField;
-
-        @PropertyId("impossible.field.name")
-        public String publicFieldWithDifferentId;
-
-        public void setLowerprop(String lowerprop)
-        {
-            this.lowerprop = lowerprop;
-        }
-
-        public String getLowerprop()
-        {
-            return this.lowerprop;
-        }
-
-        public void setUpperProp(String upperProp)
-        {
-            this.upperProp = upperProp;
-        }
-
-        public String getUpperProp()
-        {
-            return this.upperProp;
-        }
-
-        @PropertyDescription("prop1 description")
-        public void setProp1(String prop1)
-        {
-            this.prop1 = prop1;
-        }
-
-        public String getProp1()
-        {
-            return this.prop1;
-        }
-
-        @PropertyMandatory
-        @PropertyDescription("prop2 description")
-        public void setProp2(int prop2)
-        {
-            this.prop2 = prop2;
-        }
-
-        public int getProp2()
-        {
-            return this.prop2;
-        }
-
-        public void setProp3(boolean prop3)
-        {
-            this.prop3 = prop3;
-        }
-
-        @PropertyMandatory
-        @PropertyDescription("prop3 description")
-        public boolean getProp3()
-        {
-            return this.prop3;
-        }
-
-        @PropertyHidden
-        public void setHiddenProperty(String hiddenProperty)
-        {
-            this.hiddenProperty = hiddenProperty;
-        }
-
-        public String getHiddenProperty()
-        {
-            return this.hiddenProperty;
-        }
-
-        public List<Integer> getGenericProp()
-        {
-            return this.genericProp;
-        }
-
-        public void setGenericProp(List<Integer> genericProp)
-        {
-            this.genericProp = genericProp;
-        }
-
-        @PropertyId("impossible.method.name")
-        public String getPropertyWithDifferentId()
-        {
-            return this.propertyWithDifferentId;
-        }
-
-        public void setPropertyWithDifferentId(String propertyWithDifferentId)
-        {
-            this.propertyWithDifferentId = propertyWithDifferentId;
-        }
-    }
-
     private DefaultBeanDescriptor beanDescriptor;
 
     @Before
     public void setUp() throws Exception
     {
-        this.beanDescriptor = new DefaultBeanDescriptor(BeanTest.class);
+        this.beanDescriptor = new DefaultBeanDescriptor(TestBean.class);
     }
 
     @Test
