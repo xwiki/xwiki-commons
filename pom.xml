@@ -84,7 +84,7 @@
 
     <!-- Clover & Jacoco -->
     <clover.version>4.0.6</clover.version>
-    <jacoco.version>0.7.6.201602180812</jacoco.version>
+    <jacoco.version>0.7.7.201606060606</jacoco.version>
 
     <!-- IzPack -->
     <izpack.version>5.0.6</izpack.version>
