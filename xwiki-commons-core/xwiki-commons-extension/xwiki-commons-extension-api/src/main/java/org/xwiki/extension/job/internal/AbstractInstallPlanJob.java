@@ -798,7 +798,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
             // Extension is not allowed on target namespace
             throw new NamespaceNotAllowedException(
-                String.format("Extension [%s] is not allowed on namespace [%s]. Allowed namespace are: {}",
+                String.format("Extension [%s] is not allowed on namespace [%s]. Allowed namespace are: %s",
                     extension.getId(), namespace, extension.getAllowedNamespaces()));
         }
 
