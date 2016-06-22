@@ -233,7 +233,7 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
         this.installedExtensionRepository.installExtension(installedExtension, namespace,
             installedExtension.isDependency(namespace));
 
-        this.observationManager.notify(new ExtensionUninstalledEvent(installedExtension.getId(), namespace),
+        this.observationManager.notify(new ExtensionInstalledEvent(installedExtension.getId(), namespace),
             installedExtension);
     }
 
