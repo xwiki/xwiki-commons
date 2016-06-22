@@ -35,6 +35,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.internal.PathUtils;
+import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
 
 /**
@@ -139,7 +140,7 @@ public class CoreExtensionCache implements Initializable
     {
         URL extensionURL;
         try {
-            extensionURL = PathUtils.getExtensionURL(url);
+            extensionURL = PathUtils.getExtensionURL(url, MavenUtils.MAVENPACKAGE.replace('.', '/'));
         } catch (MalformedURLException e) {
             return null;
         }

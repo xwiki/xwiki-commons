@@ -24,8 +24,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import org.xwiki.extension.internal.maven.MavenUtils;
-
 /**
  * Various path utilities.
  * 
@@ -66,14 +64,16 @@ public final class PathUtils
 
     /**
      * @param descriptorURL the URL to the core extension descriptor
+     * @param pattern pattern to match inside the extension file
      * @return the URL to the core extension file
      * @throws MalformedURLException when failing to create a URL
      */
-    public static URL getExtensionURL(URL descriptorURL) throws MalformedURLException
+    public static URL getExtensionURL(URL descriptorURL, String pattern) throws MalformedURLException
     {
         String extensionURLStr = descriptorURL.toString();
-        extensionURLStr =
-            extensionURLStr.substring(0, descriptorURL.toString().indexOf(MavenUtils.MAVENPACKAGE.replace('.', '/')));
+        if (pattern != null) {
+            extensionURLStr = extensionURLStr.substring(0, descriptorURL.toString().indexOf(pattern));
+        }
 
         if (extensionURLStr.startsWith(JAR_PREFIX)) {
             int start = JAR_PREFIX.length();

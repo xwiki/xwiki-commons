@@ -21,6 +21,7 @@ package org.xwiki.extension.repository.internal.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -175,7 +176,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model mavenModel = reader.read(descriptorStream);
 
-            URL extensionURL = PathUtils.getExtensionURL(descriptorURL);
+            URL extensionURL = PathUtils.getExtensionURL(descriptorURL, MavenUtils.MAVENPACKAGE.replace('.', '/'));
 
             Extension mavenExtension = this.converter.convert(Extension.class, mavenModel);
 
@@ -337,9 +338,9 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     {
         Set<ExtensionDependency> dependencies = new HashSet<ExtensionDependency>();
 
-        Set<String> validaedFiles = new HashSet<String>();
+        Set<String> validatedFiles = new HashSet<String>();
         for (DefaultCoreExtension coreExtension : extensions.values()) {
-            validaedFiles.add(coreExtension.getURL().toString());
+            validatedFiles.add(coreExtension.getURL().toString());
 
             for (ExtensionDependency dependency : coreExtension.getDependencies()) {
                 if (!extensions.containsKey(dependency.getId())) {
@@ -352,12 +353,22 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         Map<String, Object[]> fileNames = new HashMap<String, Object[]>();
         Map<String, Object[]> guessedArtefacts = new HashMap<String, Object[]>();
-        Collection<URL> urls = ClasspathHelper.forClassLoader();
+        // ClasspathHelper.forClassLoader() get even the JARs that are made not reachable by the application server
+        // So the trick is to get all resources in which we can access a META-INF folder
+        Collection<URL> urls = ClasspathHelper.forPackage("META-INF");
 
         for (URL url : urls) {
-            if (!validaedFiles.contains(url.toString())) {
+            URL extensionURL;
+            try {
+                extensionURL = PathUtils.getExtensionURL(url, null);
+            } catch (MalformedURLException e) {
+                this.logger.error("Failed to convert to extension URL", e);
+                continue;
+            }
+
+            if (!validatedFiles.contains(extensionURL.toString())) {
                 try {
-                    String path = url.toURI().getPath();
+                    String path = extensionURL.toURI().getPath();
                     String filename = path.substring(path.lastIndexOf('/') + 1);
                     String type = null;
 
@@ -375,15 +386,15 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                     }
 
                     if (index != -1) {
-                        fileNames.put(filename, new Object[] { url });
+                        fileNames.put(filename, new Object[] { extensionURL });
 
                         String artefactname = filename.substring(0, index);
                         String version = filename.substring(index + 1);
 
-                        guessedArtefacts.put(artefactname, new Object[] { version, url, type });
+                        guessedArtefacts.put(artefactname, new Object[] { version, extensionURL, type });
                     }
                 } catch (Exception e) {
-                    this.logger.warn("Failed to parse resource name [{}]", url, e);
+                    this.logger.warn("Failed to parse resource name [{}]", extensionURL, e);
                 }
             }
         }
