@@ -63,15 +63,15 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
     private static final String PREFIX = "velocity.";
 
     /**
+     * Default Tools.
+     */
+    protected Properties defaultTools = new Properties();
+
+    /**
      * Defines from where to read the rendering configuration data.
      */
     @Inject
     private ConfigurationSource configuration;
-
-    /**
-     * Default Tools.
-     */
-    private Properties defaultTools = new Properties();
 
     /**
      * Default properties.

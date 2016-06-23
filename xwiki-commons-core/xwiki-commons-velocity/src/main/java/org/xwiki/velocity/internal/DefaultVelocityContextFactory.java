@@ -82,12 +82,16 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
         if (properties != null) {
             for (Enumeration<?> props = properties.propertyNames(); props.hasMoreElements();) {
                 String key = props.nextElement().toString();
-                String value = properties.getProperty(key);
+                Object value = properties.get(key);
                 Object toolInstance;
-                try {
-                    toolInstance = Class.forName(value).newInstance();
-                } catch (Exception e) {
-                    throw new InitializationException("Failed to initialize tool [" + value + "]", e);
+                if (value instanceof String) {
+                    try {
+                        toolInstance = Class.forName((String) value).newInstance();
+                    } catch (Exception e) {
+                        throw new InitializationException("Failed to initialize tool [" + value + "]", e);
+                    }
+                } else {
+                    toolInstance = value;
                 }
                 this.toolsContext.put(key, toolInstance);
                 this.logger.debug("Setting tool [{}] = [{}]", key, value);
