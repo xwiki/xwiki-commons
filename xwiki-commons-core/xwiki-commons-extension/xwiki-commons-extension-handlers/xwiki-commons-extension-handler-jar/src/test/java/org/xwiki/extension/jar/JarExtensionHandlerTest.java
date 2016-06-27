@@ -23,6 +23,7 @@ import java.io.File;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.xwiki.classloader.ClassLoaderManager;
@@ -47,6 +48,9 @@ import packagefile.jarextension.DefaultTestComponent;
 import packagefile.jarextension.TestComponent;
 import packagefile.jarextensionwithdeps.DefaultTestComponentWithDeps;
 import packagefile.jarextensionwithdeps.TestComponentWithDeps;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 {
@@ -162,11 +166,11 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         }
 
         // check repository status
-        Assert.assertNotNull(this.installedExtensionRepository.getInstalledExtension(
-            installedExtension.getId().getId(), namespace));
+        Assert.assertNotNull(
+            this.installedExtensionRepository.getInstalledExtension(installedExtension.getId().getId(), namespace));
         if (namespace != null) {
-            Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(installedExtension.getId()
-                .getId(), null));
+            Assert.assertNull(
+                this.installedExtensionRepository.getInstalledExtension(installedExtension.getId().getId(), null));
         }
     }
 
@@ -223,8 +227,8 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         if (namespace != null) {
             try {
-                this.jarExtensionClassLoader.getURLClassLoader(null, false).loadClass(
-                    ReflectionUtils.getTypeClass(loadedRole).getName());
+                this.jarExtensionClassLoader.getURLClassLoader(null, false)
+                    .loadClass(ReflectionUtils.getTypeClass(loadedRole).getName());
                 Assert.fail("the interface should not be in the root class loader");
             } catch (ClassNotFoundException expected) {
                 // expected
@@ -353,6 +357,52 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
 
         Type extensionRole2 = checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class);
         assertNotEquals(extensionRole1, extensionRole2);
+    }
+
+    @Test
+    public void testUpgradeAndDowngradeExtensionOnNamespace() throws Throwable
+    {
+        final ExtensionId extensionId1 = new ExtensionId("test", "1.0");
+        final ExtensionId extensionId2 = new ExtensionId("test", "2.0");
+
+        // install 1.0
+        InstalledExtension installedExtension = install(extensionId1, NAMESPACE);
+
+        checkInstallStatus(installedExtension, NAMESPACE);
+
+        Assert.assertSame(installedExtension,
+            this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), NAMESPACE));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
+
+        Class<?> clazz = Class.forName("test.TestClass", true, getExtensionClassloader(NAMESPACE));
+        assertNotNull(MethodUtils.getAccessibleMethod(clazz, "method1"));
+        assertNull(MethodUtils.getAccessibleMethod(clazz, "method2"));
+
+        // upgrade to 2.0
+        installedExtension = install(extensionId2, NAMESPACE);
+
+        checkInstallStatus(installedExtension, NAMESPACE);
+
+        Assert.assertSame(installedExtension,
+            this.installedExtensionRepository.getInstalledExtension(extensionId2.getId(), NAMESPACE));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId2.getId(), null));
+
+        clazz = Class.forName("test.TestClass", true, getExtensionClassloader(NAMESPACE));
+        assertNotNull(MethodUtils.getAccessibleMethod(clazz, "method1"));
+        assertNotNull(MethodUtils.getAccessibleMethod(clazz, "method2"));
+
+        // downgrade to 1.0
+        installedExtension = install(extensionId1, NAMESPACE);
+
+        checkInstallStatus(installedExtension, NAMESPACE);
+
+        Assert.assertSame(installedExtension,
+            this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), NAMESPACE));
+        Assert.assertNull(this.installedExtensionRepository.getInstalledExtension(extensionId1.getId(), null));
+
+        clazz = Class.forName("test.TestClass", true, getExtensionClassloader(NAMESPACE));
+        assertNotNull(MethodUtils.getAccessibleMethod(clazz, "method1"));
+        assertNull(MethodUtils.getAccessibleMethod(clazz, "method2"));
     }
 
     @Test
