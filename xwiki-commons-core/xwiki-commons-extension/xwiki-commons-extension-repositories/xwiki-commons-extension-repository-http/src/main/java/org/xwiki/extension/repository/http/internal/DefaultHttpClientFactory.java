@@ -22,6 +22,7 @@ package org.xwiki.extension.repository.http.internal;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -57,6 +58,35 @@ public class DefaultHttpClientFactory implements HttpClientFactory
         // Pre-configure with everything configured at JVM level
         httpClientBuilder.useSystemProperties();
 
+        HttpHost proxy = null;
+        CredentialsProvider proxyCredentialsProvider = null;
+        String proxyHost = System.getProperty("http.proxyHost");
+        String proxyPort = System.getProperty("http.proxyPort");
+        if ((proxyHost != null) && !proxyHost.isEmpty()) {
+            int port = 3128;
+            if (proxyPort != null && !proxyPort.isEmpty()) {
+                port = Integer.parseInt(proxyPort);
+            }
+
+            proxy =  new HttpHost(proxyHost, port);
+            httpClientBuilder.setProxy(proxy);
+        }
+
+        if (proxy != null) {
+            String proxyUser = System.getProperty("http.proxyUser");
+            if (proxyUser != null && !proxyUser.isEmpty()) {
+                String proxyPassword = System.getProperty("http.proxyPassword");
+
+                proxyCredentialsProvider = new BasicCredentialsProvider();
+                proxyCredentialsProvider.setCredentials(
+                        new AuthScope(proxy),
+                        new UsernamePasswordCredentials(proxyUser, proxyPassword)
+                );
+
+                httpClientBuilder.setDefaultCredentialsProvider(proxyCredentialsProvider);
+            }
+        }
+
         // Setup user agent
         httpClientBuilder.setUserAgent(this.configuration.getUserAgent());
 
@@ -68,7 +98,12 @@ public class DefaultHttpClientFactory implements HttpClientFactory
 
         // Setup authentication
         if (user != null) {
-            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            CredentialsProvider credentialsProvider;
+            if (proxyCredentialsProvider != null) {
+                credentialsProvider = proxyCredentialsProvider;
+            } else {
+                credentialsProvider = new BasicCredentialsProvider();
+            }
 
             credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
             httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
