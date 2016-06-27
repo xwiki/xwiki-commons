@@ -42,7 +42,9 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.event.ExtensionEvent;
 import org.xwiki.extension.event.ExtensionUninstalledEvent;
+import org.xwiki.extension.event.ExtensionUpgradedEvent;
 import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.handler.ExtensionInitializer;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
@@ -86,8 +88,8 @@ public class JarExtensionJobFinishingListener implements EventListener
     private static final String SUPPORTED_EXTENSION_TYPE = "jar";
 
     /** The list of events observed. */
-    private static final List<Event> EVENTS =
-        Arrays.asList(new ExtensionUninstalledEvent(), new JobStartedEvent(), new JobFinishingEvent());
+    private static final List<Event> EVENTS = Arrays.asList(new ExtensionUninstalledEvent(),
+        new ExtensionUpgradedEvent(), new JobStartedEvent(), new JobFinishingEvent());
 
     /**
      * Jar extension ClassLoader that will be properly refreshed.
@@ -212,29 +214,31 @@ public class JarExtensionJobFinishingListener implements EventListener
     public void onEvent(Event event, Object source, Object data)
     {
         if (event instanceof ExtensionUninstalledEvent) {
-            onExtensionUninstalledEvent(event, (InstalledExtension) source);
+            onExtensionRemovedEvent((ExtensionUninstalledEvent) event, (InstalledExtension) source);
+        } else if (event instanceof ExtensionUpgradedEvent) {
+            for (InstalledExtension previous : (Collection<InstalledExtension>) data) {
+                onExtensionRemovedEvent((ExtensionUpgradedEvent) event, previous);
+            }
         } else if (event instanceof JobStartedEvent) {
-            onJobStartedEvent(event);
+            onJobStartedEvent();
         } else {
-            onJobFinishedEvent(event);
+            onJobFinishedEvent();
         }
     }
 
-    private void onExtensionUninstalledEvent(Event event, InstalledExtension extension)
+    private void onExtensionRemovedEvent(ExtensionEvent event, InstalledExtension extension)
     {
         if (extension.getType().equals(SUPPORTED_EXTENSION_TYPE)) {
-            ExtensionUninstalledEvent uninstallEvent = (ExtensionUninstalledEvent) event;
-
-            addUninstalledExtension(uninstallEvent.getExtensionId(), uninstallEvent.getNamespace());
+            addUninstalledExtension(event.getExtensionId(), event.getNamespace());
         }
     }
 
-    private void onJobStartedEvent(Event event)
+    private void onJobStartedEvent()
     {
         pushUninstallLevel();
     }
 
-    private void onJobFinishedEvent(Event event)
+    private void onJobFinishedEvent()
     {
         UninstalledExtensionCollection collection = getCurrentJobUninstalledExtensions(false);
 
