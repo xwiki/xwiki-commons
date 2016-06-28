@@ -28,7 +28,7 @@ import org.xwiki.extension.ExtensionId;
  * </p>
  * <ul>
  * <li>source: the related new {@link org.xwiki.extension.InstalledExtension} instance</li>
- * <li>data: a java.util.Collection<org.xwiki.extension.InstalledExtension> containing the previous
+ * <li>data: a {@code java.util.Collection<org.xwiki.extension.InstalledExtension>} containing the previous
  * {@link org.xwiki.extension.InstalledExtension} instances</li>
  * </ul>
  *
