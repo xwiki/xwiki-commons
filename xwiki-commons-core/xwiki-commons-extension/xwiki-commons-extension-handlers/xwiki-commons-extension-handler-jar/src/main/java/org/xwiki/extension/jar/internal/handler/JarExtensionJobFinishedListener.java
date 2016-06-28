@@ -89,7 +89,7 @@ public class JarExtensionJobFinishedListener implements EventListener
 
     /** The list of events observed. */
     private static final List<Event> EVENTS = Arrays.asList(new ExtensionUninstalledEvent(),
-        new ExtensionUpgradedEvent(), new JobStartedEvent(), new JobFinishingEvent());
+        new ExtensionUpgradedEvent(), new JobStartedEvent(), new JobFinishedEvent());
 
     /**
      * Jar extension ClassLoader that will be properly refreshed.
