@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.filter.FilterException;
+import org.xwiki.filter.descriptor.FilterStreamPropertyDescriptor;
 import org.xwiki.filter.input.DefaultFileInputSource;
 import org.xwiki.filter.input.DefaultURLInputSource;
 import org.xwiki.filter.input.FileInputSource;
@@ -52,8 +53,8 @@ import org.xwiki.filter.utils.FilterStreamConstants;
 import org.xwiki.test.internal.MockConfigurationSource;
 
 /**
- * A generic JUnit Test used by {@link FilterTestSuite} to parse some passed content and verify it matches some
- * passed expectation. The format of the input/expectation is specified in {@link TestDataParser}.
+ * A generic JUnit Test used by {@link FilterTestSuite} to parse some passed content and verify it matches some passed
+ * expectation. The format of the input/expectation is specified in {@link TestDataParser}.
  * 
  * @version $Id$
  * @since 6.2M1
@@ -87,7 +88,7 @@ public class FilterTest
 
                 for (Map.Entry<String, String> entry : this.configuration.configuration.entrySet()) {
                     originalConfiguration.put(entry.getKey(),
-                        mockConfigurationSource.<String> getProperty(entry.getKey()));
+                        mockConfigurationSource.<String>getProperty(entry.getKey()));
                     mockConfigurationSource.setProperty(entry.getKey(), TestDataParser.interpret(entry.getValue()));
                 }
             }
@@ -124,6 +125,10 @@ public class FilterTest
 
         String sourceString = TestDataParser.interpret(value);
 
+        if (sourceString.startsWith("file:")) {
+            sourceString = sourceString.substring("file:".length());
+        }
+
         File file = new File(sourceString);
 
         if (file.exists()) {
@@ -150,14 +155,18 @@ public class FilterTest
         return source;
     }
 
-    private Map<String, Object> toInputConfiguration(TestConfiguration testConfiguration,
-        InputTestConfiguration inputTestConfiguration) throws FilterException
+    private Map<String, Object> toInputConfiguration(InputFilterStreamFactory inputFactory,
+        TestConfiguration testConfiguration, InputTestConfiguration inputTestConfiguration) throws FilterException
     {
         Map<String, Object> inputConfiguration = new HashMap<>();
         for (Map.Entry<String, String> entry : inputTestConfiguration.entrySet()) {
-            if (entry.getKey().equals(FilterStreamConstants.PROPERTY_SOURCE)) {
-                inputConfiguration.put(FilterStreamConstants.PROPERTY_SOURCE,
-                    getInputSource(testConfiguration, entry.getValue()));
+            FilterStreamPropertyDescriptor<?> propertyDescriptor =
+                inputFactory.getDescriptor().getPropertyDescriptor(entry.getKey());
+
+            if (propertyDescriptor != null && propertyDescriptor.getType() == InputSource.class
+                && entry.getValue() != null
+                && (entry.getKey().startsWith("file:") || entry.getKey().indexOf(':') < 0)) {
+                inputConfiguration.put(entry.getKey(), getInputSource(testConfiguration, entry.getValue()));
             } else {
                 inputConfiguration.put(entry.getKey(), TestDataParser.interpret(entry.getValue()));
             }
@@ -165,8 +174,8 @@ public class FilterTest
 
         // Generate a source f it does not exist
         if (!inputConfiguration.containsKey(FilterStreamConstants.PROPERTY_SOURCE)) {
-            inputConfiguration.put(FilterStreamConstants.PROPERTY_SOURCE, new StringInputSource(
-                inputTestConfiguration.buffer));
+            inputConfiguration.put(FilterStreamConstants.PROPERTY_SOURCE,
+                new StringInputSource(inputTestConfiguration.buffer));
         }
 
         return inputConfiguration;
@@ -221,20 +230,17 @@ public class FilterTest
 
         // Input
 
-        InputFilterStreamFactory inputFactory =
-            getComponentManager().getInstance(InputFilterStreamFactory.class,
-                this.configuration.inputConfiguration.typeId);
-        InputFilterStream inputFilter =
-            inputFactory.createInputFilterStream(toInputConfiguration(this.configuration,
-                this.configuration.inputConfiguration));
+        InputFilterStreamFactory inputFactory = getComponentManager().getInstance(InputFilterStreamFactory.class,
+            this.configuration.inputConfiguration.typeId);
+        InputFilterStream inputFilter = inputFactory.createInputFilterStream(
+            toInputConfiguration(inputFactory, this.configuration, this.configuration.inputConfiguration));
 
         // Output
 
         Map<String, Object> outputConfiguration =
             toOutputConfiguration(this.configuration, this.configuration.expectConfiguration, expect);
-        OutputFilterStreamFactory outputFactory =
-            getComponentManager().getInstance(OutputFilterStreamFactory.class,
-                this.configuration.expectConfiguration.typeId);
+        OutputFilterStreamFactory outputFactory = getComponentManager().getInstance(OutputFilterStreamFactory.class,
+            this.configuration.expectConfiguration.typeId);
         OutputFilterStream outputFilter = outputFactory.createOutputFilterStream(outputConfiguration);
 
         // Convert
