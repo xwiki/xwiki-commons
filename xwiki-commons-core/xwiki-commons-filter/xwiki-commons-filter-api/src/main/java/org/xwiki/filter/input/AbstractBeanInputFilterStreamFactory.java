@@ -39,6 +39,7 @@ import org.xwiki.filter.type.FilterStreamType;
 
 /**
  * @param <P> the type of the class containing the parameters of the filter
+ * @param <F> the type of the filter supported by this {@link InputFilterStream}
  * @version $Id$
  * @since 6.2M1
  */

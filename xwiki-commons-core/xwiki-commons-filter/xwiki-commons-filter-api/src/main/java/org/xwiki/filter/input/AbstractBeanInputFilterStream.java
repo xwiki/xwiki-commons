@@ -32,6 +32,7 @@ import org.xwiki.filter.FilterException;
 
 /**
  * @param <F> the type of the filter supported by this {@link InputFilterStream}
+ * @param <P> the type of the properties bean
  * @version $Id$
  * @since 6.2M1
  */
