@@ -31,6 +31,8 @@ import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.filter.input.InputFilterStream;
 import org.xwiki.filter.input.InputFilterStreamFactory;
+import org.xwiki.filter.job.FilterConversionFinished;
+import org.xwiki.filter.job.FilterConversionStarted;
 import org.xwiki.filter.job.FilterStreamConverterJobRequest;
 import org.xwiki.filter.job.FilterStreamJobRequest;
 import org.xwiki.filter.output.OutputFilterStream;
@@ -99,5 +101,25 @@ public class FilterStreamConverterJob
 
         inputFilter.close();
         outputFilter.close();
+    }
+
+    @Override
+    protected void jobStarting()
+    {
+        this.observationManager.notify(new FilterConversionStarted(getRequest().getId(), getType(), this.request),
+            this);
+
+        super.jobStarting();
+    }
+
+    @Override
+    protected void jobFinished(Throwable error)
+    {
+        try {
+            super.jobFinished(error);
+        } finally {
+            this.observationManager.notify(new FilterConversionFinished(getRequest().getId(), getType(), this.request),
+                this);
+        }
     }
 }

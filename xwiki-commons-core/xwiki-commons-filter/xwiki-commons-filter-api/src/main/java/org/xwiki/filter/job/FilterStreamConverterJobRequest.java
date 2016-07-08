@@ -56,6 +56,11 @@ public class FilterStreamConverterJobRequest extends AbstractRequest implements 
     private FilterStreamType outputType;
 
     /**
+     * @see #isEventsFolded()
+     */
+    private boolean eventsFolded;
+
+    /**
      * @see #getOutputProperties()
      */
     private Map<String, Object> outputProperties;
@@ -69,10 +74,24 @@ public class FilterStreamConverterJobRequest extends AbstractRequest implements 
     public FilterStreamConverterJobRequest(FilterStreamType inputType, Map<String, Object> inputProperties,
         FilterStreamType outputType, Map<String, Object> outputProperties)
     {
+        this(inputType, inputProperties, outputType, true, outputProperties);
+    }
+
+    /**
+     * @param inputType the type of the input module
+     * @param inputProperties the configuration of the input module
+     * @param outputType the type of the output module
+     * @param eventsFolded true if events produced during the conversion should be folded
+     * @param outputProperties the configuration of the output module
+     */
+    public FilterStreamConverterJobRequest(FilterStreamType inputType, Map<String, Object> inputProperties,
+        FilterStreamType outputType, boolean eventsFolded, Map<String, Object> outputProperties)
+    {
         this.inputType = inputType;
         this.inputProperties = inputProperties;
         this.outputType = outputType;
         this.outputProperties = outputProperties;
+        this.eventsFolded = eventsFolded;
 
         List<String> jobId = new ArrayList<String>();
         jobId.add(JOBID_PREFIX);
@@ -112,6 +131,15 @@ public class FilterStreamConverterJobRequest extends AbstractRequest implements 
     public FilterStreamType getOutputType()
     {
         return this.outputType;
+    }
+
+    /**
+     * @return true if events produced during the conversion should be folded
+     * @since 8.2RC1
+     */
+    public boolean isEventsFolded()
+    {
+        return this.eventsFolded;
     }
 
     /**
