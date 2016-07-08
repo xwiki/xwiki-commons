@@ -149,4 +149,11 @@ public class RegexToolTest
         RegexTool tool = new RegexTool();
         Assert.assertEquals(Pattern.quote("^(\\)[]"), tool.quote("^(\\)[]"));
     }
+
+    @Test
+    public void testQuoteReplacement()
+    {
+        RegexTool tool = new RegexTool();
+        Assert.assertEquals(Matcher.quoteReplacement("$1 \\$2"), tool.quoteReplacement("$1 \\$2"));
+    }
 }

@@ -163,4 +163,20 @@ public class RegexTool
     {
         return Pattern.quote(s);
     }
+
+    /**
+     * Returns a literal replacement {@code String} for the specified {@code String}. This method produces a
+     * {@code String} that will work as a literal replacement {@code s} in
+     * {@code String#replaceAll(regularExpression, s)}. The {@code String} produced will match the sequence of
+     * characters in {@code s} treated as a literal sequence. Slashes ('\') and dollar signs ('$') will be given no
+     * special meaning.
+     * 
+     * @param s the string to be literalized
+     * @return a literal string replacement
+     * @since 8.2RC1
+     */
+    public String quoteReplacement(String s)
+    {
+        return Matcher.quoteReplacement(s);
+    }
 }
