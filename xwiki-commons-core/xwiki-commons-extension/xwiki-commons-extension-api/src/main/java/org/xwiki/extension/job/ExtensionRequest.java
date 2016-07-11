@@ -36,16 +36,22 @@ public interface ExtensionRequest extends Request
 {
     /**
      * The prefix put behind all job ids.
+     * 
+     * @since 8.2RC1
      */
     String JOBID_PREFIX = "extension";
 
     /**
      * The prefix put behind all job ids which are actual actions.
+     * 
+     * @since 8.2RC1
      */
     String JOBID_ACTION_PREFIX = "action";
 
     /**
      * The prefix put behind all job ids which are information gathering.
+     * 
+     * @since 8.2RC1
      */
     String JOBID_PLAN_PREFIX = "plan";
 
@@ -55,6 +61,7 @@ public interface ExtensionRequest extends Request
      * @param extensionId the id of the extension for which to create a job id
      * @param namespace the namespace for which to create a job id
      * @return the job id
+     * @since 8.2RC1
      */
     static List<String> getJobId(String prefix, String extensionId, String namespace)
     {
