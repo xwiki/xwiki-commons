@@ -54,12 +54,12 @@ public interface InstalledExtension extends LocalExtension
     String PKEY_NAMESPACES = PKEY_PREFIX + "namespaces";
 
     /**
-     * Custom property key containing {@link #getNamespaces()}.
+     * Custom property key containing the namespace.
      */
     String PKEY_NAMESPACES_NAMESPACE = PKEY_NAMESPACES + ".namespace";
 
     /**
-     * Custom property key containing {@link #isInstalled(String)}.
+     * Custom property key containing {@link #isDependency(String)}.
      */
     String PKEY_NAMESPACES_DEPENDENCY = PKEY_NAMESPACES + ".dependency";
 

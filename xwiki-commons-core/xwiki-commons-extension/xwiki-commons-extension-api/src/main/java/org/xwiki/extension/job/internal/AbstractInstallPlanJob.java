@@ -45,6 +45,7 @@ import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
+import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
@@ -878,10 +879,11 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                         this.progressManager.startStep(this);
 
                         // Replace with managed dependency if any
-                        extensionDependency = getDependency(extensionDependency, managedDependencies, extension);
+                        extensionDependency =
+                            ExtensionUtils.getDependency(extensionDependency, managedDependencies, extension);
 
                         installExtensionDependency(extensionDependency, namespace, children,
-                            append(managedDependencies, extension));
+                            ExtensionUtils.append(managedDependencies, extension));
                     }
                 } finally {
                     this.progressManager.popLevelProgress(this);

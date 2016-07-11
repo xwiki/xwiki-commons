@@ -81,8 +81,9 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     /**
      * @param extension the extension
      * @return true if the extension is installed
+     * @see InstalledExtension#isInstalled()
      */
-    static boolean isInstalled(Extension extension)
+    public static boolean isInstalled(Extension extension)
     {
         return extension.getProperty(PKEY_INSTALLED, false);
     }
@@ -91,11 +92,46 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      * @param extension the extension
      * @param namespace the namespace to look at, if null it means the extension is installed for all the namespaces
      * @return true if the extension is installed in the provided namespace
+     * @see InstalledExtension#isInstalled(String)
      */
     public static boolean isInstalled(Extension extension, String namespace)
     {
         return isInstalled(extension)
             && (getNamespaces(extension) == null || getNamespaces(extension).contains(namespace));
+    }
+
+    /**
+     * Indicate if the extension as been installed as a dependency of another one.
+     *
+     * @param extension the extension
+     * @param namespace the namespace to look at, null indicate the root namespace
+     * @return true if the the extension has been installed only because it was a dependency of another extension
+     * @see InstalledExtension#isDependency(String)
+     * @since 8.2RC1
+     */
+    public static boolean isDependency(Extension extension, String namespace)
+    {
+        boolean isDependency = false;
+
+        if (namespace == null) {
+            isDependency = extension.getProperty(PKEY_DEPENDENCY, false);
+        } else {
+            Object namespacesObject = extension.getProperty(PKEY_NAMESPACES);
+
+            // RETRO-COMPATIBILITY: used to be a String collection with just the actual namespaces
+            if (namespacesObject instanceof Map) {
+                Map<String, Object> installedNamespace =
+                    ((Map<String, Map<String, Object>>) namespacesObject).get(namespace);
+
+                isDependency =
+                    installedNamespace != null ? (installedNamespace.get(PKEY_NAMESPACES_DEPENDENCY) == Boolean.TRUE)
+                        : isDependency(extension, null);
+            } else {
+                isDependency = isDependency(extension, null);
+            }
+        }
+
+        return isDependency;
     }
 
     /**
@@ -297,22 +333,6 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
         return installedNamespaces;
     }
 
-    private Map<String, Map<String, Object>> maybeCreateInstalledNamespaces()
-    {
-        Map<String, Map<String, Object>> installedNamespaces;
-
-        synchronized (this.propertiesLock) {
-            installedNamespaces = getProperty(PKEY_NAMESPACES);
-
-            if (installedNamespaces == null) {
-                installedNamespaces = Collections.emptyMap();
-                putProperty(PKEY_NAMESPACES, installedNamespaces);
-            }
-        }
-
-        return installedNamespaces;
-    }
-
     /**
      * @param namespace the namespace
      * @param create indicate if the {@link InstalledNamespace} should be create if it does not exists
@@ -369,18 +389,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     @Override
     public boolean isDependency(String namespace)
     {
-        boolean isDependency;
-
-        if (namespace == null) {
-            isDependency = getProperty(PKEY_DEPENDENCY, false);
-        } else {
-            Map<String, Object> installedNamespace = getInstalledNamespace(namespace, false);
-
-            isDependency = installedNamespace != null
-                ? (installedNamespace.get(PKEY_NAMESPACES_DEPENDENCY) == Boolean.TRUE) : isDependency(null);
-        }
-
-        return isDependency;
+        return isDependency(this, namespace);
     }
 
     /**
