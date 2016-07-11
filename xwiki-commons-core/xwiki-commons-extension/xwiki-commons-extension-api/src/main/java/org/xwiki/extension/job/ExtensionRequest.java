@@ -19,7 +19,9 @@
  */
 package org.xwiki.extension.job;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.job.Request;
@@ -32,6 +34,41 @@ import org.xwiki.job.Request;
  */
 public interface ExtensionRequest extends Request
 {
+    /**
+     * The prefix put behind all job ids.
+     */
+    String JOBID_PREFIX = "extension";
+
+    /**
+     * The prefix put behind all job ids which are actual actions.
+     */
+    String JOBID_ACTION_PREFIX = "action";
+
+    /**
+     * The prefix put behind all job ids which are information gathering.
+     */
+    String JOBID_PLAN_PREFIX = "plan";
+
+    /**
+     * @param prefix the prefix, usually {@link ExtensionRequest#JOBID_ACTION_PREFIX} or
+     *            {@link ExtensionRequest#JOBID_PLAN_PREFIX}
+     * @param extensionId the id of the extension for which to create a job id
+     * @param namespace the namespace for which to create a job id
+     * @return the job id
+     */
+    static List<String> getJobId(String prefix, String extensionId, String namespace)
+    {
+        List<String> jobId;
+
+        if (namespace != null) {
+            jobId = Arrays.asList(JOBID_PREFIX, prefix, extensionId, namespace);
+        } else {
+            jobId = Arrays.asList(JOBID_PREFIX, prefix, extensionId);
+        }
+
+        return jobId;
+    }
+
     /**
      * @return the extension on which to apply the task.
      */
