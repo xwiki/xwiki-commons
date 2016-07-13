@@ -17,14 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.logging;
+package org.xwiki.logging.event;
 
 import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xwiki.logging.event.LogEvent;
+import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.LogQueue;
 
 /**
  * Test {@link LogEvent}.
@@ -51,5 +52,17 @@ public class LogEventTest
         logEvent = new LogEvent(null, LogLevel.ERROR, "message {}", new Object[] { "" }, null);
 
         Assert.assertEquals(logEvent.getMessageElements(), Arrays.asList("message ", ""));
+    }
+
+    @Test
+    public void testLogLogger()
+    {
+        LogEvent logEvent = new LogEvent(null, LogLevel.ERROR, "message", null, null);
+
+        LogQueue queue = new LogQueue();
+
+        logEvent.log(queue);
+
+        Assert.assertEquals(logEvent.getMessage(), "message");
     }
 }

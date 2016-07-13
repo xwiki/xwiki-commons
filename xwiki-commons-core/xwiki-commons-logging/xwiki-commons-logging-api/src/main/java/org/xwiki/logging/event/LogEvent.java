@@ -77,8 +77,8 @@ public class LogEvent extends Message implements Event
      */
     public LogEvent(LogEvent logEvent)
     {
-        this(logEvent.getMarker(), logEvent.getLevel(), logEvent.getMessage(), logEvent.getArgumentArray(), logEvent
-            .getThrowable(), logEvent.getTimeStamp());
+        this(logEvent.getMarker(), logEvent.getLevel(), logEvent.getMessage(), logEvent.getArgumentArray(),
+            logEvent.getThrowable(), logEvent.getTimeStamp());
     }
 
     /**
@@ -131,21 +131,58 @@ public class LogEvent extends Message implements Event
      */
     public void log(Logger targetLogger)
     {
-        switch (this.level) {
+        Object[] argumentArray = getArgumentArray();
+        if (getArgumentArray() == null) {
+            log(targetLogger, getLevel(), getMarker(), getMessage(), getThrowable());
+        } else {
+            if (getThrowable() != null) {
+                argumentArray = ArrayUtils.add(getArgumentArray(), getThrowable());
+            }
+
+            log(targetLogger, getLevel(), getMarker(), getMessage(), argumentArray);
+        }
+    }
+
+    private static void log(Logger targetLogger, LogLevel level, Marker marker, String message, Object[] argumentArray)
+    {
+        switch (level) {
             case TRACE:
-                targetLogger.trace(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                targetLogger.trace(marker, message, argumentArray);
                 break;
             case DEBUG:
-                targetLogger.debug(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                targetLogger.debug(marker, message, argumentArray);
                 break;
             case INFO:
-                targetLogger.info(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                targetLogger.info(marker, message, argumentArray);
                 break;
             case WARN:
-                targetLogger.warn(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                targetLogger.warn(marker, message, argumentArray);
                 break;
             case ERROR:
-                targetLogger.error(getMarker(), getMessage(), ArrayUtils.add(getArgumentArray(), getThrowable()));
+                targetLogger.error(marker, message, argumentArray);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private static void log(Logger targetLogger, LogLevel level, Marker marker, String message, Throwable throwable)
+    {
+        switch (level) {
+            case TRACE:
+                targetLogger.trace(marker, message, throwable);
+                break;
+            case DEBUG:
+                targetLogger.debug(marker, message, throwable);
+                break;
+            case INFO:
+                targetLogger.info(marker, message, throwable);
+                break;
+            case WARN:
+                targetLogger.warn(marker, message, throwable);
+                break;
+            case ERROR:
+                targetLogger.error(marker, message, throwable);
                 break;
             default:
                 break;
