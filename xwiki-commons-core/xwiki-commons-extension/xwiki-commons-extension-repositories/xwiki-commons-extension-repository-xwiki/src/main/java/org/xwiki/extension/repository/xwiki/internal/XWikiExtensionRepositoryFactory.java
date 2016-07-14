@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
@@ -51,30 +52,38 @@ public class XWikiExtensionRepositoryFactory extends AbstractExtensionRepository
     @Inject
     private HttpClientFactory httpClientFactory;
 
-    private Marshaller marshaller;
-
-    private Unmarshaller unmarshaller;
+    private JAXBContext jaxbContext;
 
     @Override
     public void initialize() throws InitializationException
     {
         try {
-            JAXBContext context = JAXBContext.newInstance("org.xwiki.extension.repository.xwiki.model.jaxb");
-            this.marshaller = context.createMarshaller();
-            this.unmarshaller = context.createUnmarshaller();
-        } catch (Exception e) {
+            this.jaxbContext = JAXBContext.newInstance("org.xwiki.extension.repository.xwiki.model.jaxb");
+        } catch (JAXBException e) {
             throw new InitializationException("Failed to create JAXB context", e);
         }
     }
 
-    public Marshaller getMarshaller()
+    /**
+     * JAXBContext is thread safe but Marshaller is not.
+     * 
+     * @return a new instance of Marshaller
+     * @throws JAXBException if an error was encountered while creating the <tt>Marshaller</tt> object
+     */
+    public Marshaller createMarshaller() throws JAXBException
     {
-        return this.marshaller;
+        return this.jaxbContext.createMarshaller();
     }
 
-    public Unmarshaller getUnmarshaller()
+    /**
+     * JAXBContext is thread safe but Unmarshaller is not.
+     * 
+     * @return a new instance of Unmarshaller
+     * @throws JAXBException if an error was encountered while creating the <tt>Unmarshaller</tt> object
+     */
+    public Unmarshaller createUnmarshaller() throws JAXBException
     {
-        return this.unmarshaller;
+        return this.jaxbContext.createUnmarshaller();
     }
 
     // ExtensionRepositoryFactory
