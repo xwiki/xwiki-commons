@@ -299,7 +299,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
         throws IllegalStateException, IOException, JAXBException
     {
         StringWriter writer = new StringWriter();
-        this.repositoryFactory.getMarshaller().marshal(restObject, writer);
+        this.repositoryFactory.createMarshaller().marshal(restObject, writer);
 
         return getRESTObject(postRESTResource(builder, writer.toString(), values));
     }
@@ -309,7 +309,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository implem
     {
         try {
             try (InputStream inputStream = response.getEntity().getContent()) {
-                return (T) this.repositoryFactory.getUnmarshaller().unmarshal(inputStream);
+                return (T) this.repositoryFactory.createUnmarshaller().unmarshal(inputStream);
             }
         } finally {
             response.close();
