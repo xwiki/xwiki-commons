@@ -73,7 +73,7 @@ public class XWikiExtensionRepositoryTest
         when(repositoryDescriptor.getURI()).thenReturn(new URI("http://extensions.xwiki.org/xwiki/rest"));
 
         XWikiExtensionRepositoryFactory repositoryFactory = mock(XWikiExtensionRepositoryFactory.class);
-        when(repositoryFactory.getUnmarshaller()).thenReturn(this.unmarshaller);
+        when(repositoryFactory.createUnmarshaller()).thenReturn(this.unmarshaller);
 
         // Simulate a call to the remote URL through HttpClient and a valid answer
         HttpEntity httpEntity = mock(HttpEntity.class);
