@@ -181,7 +181,11 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     protected XWikiRepositorySystemSession createRepositorySystemSession()
     {
-        return this.repositoryFactory.createRepositorySystemSession();
+        XWikiRepositorySystemSession session = this.repositoryFactory.createRepositorySystemSession();
+
+        session.addConfigurationProperties(getDescriptor().getProperties());
+
+        return session;
     }
 
     @Override

@@ -21,6 +21,7 @@ package org.xwiki.extension.repository.aether.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
@@ -63,8 +64,8 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
         File localDir = Files.createTempDir();
         LocalRepository localRepository = new LocalRepository(localDir);
-        this.session.setLocalRepositoryManager(repositorySystem
-            .newLocalRepositoryManager(this.session, localRepository));
+        this.session
+            .setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(this.session, localRepository));
 
         // Proxy selector
 
@@ -79,10 +80,10 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
         if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
             DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
                 (DefaultArtifactTypeRegistry) artifactTypeRegistry;
-            defaultArtifactTypeRegistry.add(new DefaultArtifactType("bundle", MavenUtils.JAR_EXTENSION, "",
-                MavenUtils.JAVA_LANGUAGE));
-            defaultArtifactTypeRegistry.add(new DefaultArtifactType("eclipse-plugin", MavenUtils.JAR_EXTENSION, "",
-                MavenUtils.JAVA_LANGUAGE));
+            defaultArtifactTypeRegistry
+                .add(new DefaultArtifactType("bundle", MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
+            defaultArtifactTypeRegistry
+                .add(new DefaultArtifactType("eclipse-plugin", MavenUtils.JAR_EXTENSION, "", MavenUtils.JAVA_LANGUAGE));
         }
 
         // Fail when the pom is missing or invalid
@@ -115,5 +116,15 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
     public void setUserAgent(String userAgent)
     {
         this.session.setConfigProperty(ConfigurationProperties.USER_AGENT, userAgent);
+    }
+
+    /**
+     * @param properties the custom properties
+     */
+    public void addConfigurationProperties(Map<String, String> properties)
+    {
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            this.session.setConfigProperty(entry.getKey(), entry.getValue());
+        }
     }
 }
