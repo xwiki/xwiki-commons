@@ -19,7 +19,11 @@
  */
 package org.xwiki.extension.repository.http.internal;
 
+import java.util.Map;
+
+import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.xwiki.component.annotation.Role;
 
 /**
@@ -33,6 +37,32 @@ import org.xwiki.component.annotation.Role;
 public interface HttpClientFactory
 {
     /**
+     * Defines the socket timeout ({@code SO_TIMEOUT}) in milliseconds, which is the timeout for waiting for data or,
+     * put differently, a maximum period inactivity between two consecutive data packets). A timeout value of zero is
+     * interpreted as an infinite timeout.
+     * <p>
+     * This parameter expects a value of type {@link Integer}.
+     * </p>
+     * 
+     * @see java.net.SocketOptions#SO_TIMEOUT
+     * @since 8.3M1
+     */
+    String SOCKET_TIMEOUT = "http.socket.timeout";
+
+    /**
+     * Determines the timeout in milliseconds until a connection is established. A timeout value of zero is interpreted
+     * as an infinite timeout.
+     * <p>
+     * Please note this parameter can only be applied to connections that are bound to a particular local address.
+     * <p>
+     * This parameter expects a value of type {@link Integer}.
+     * </p>
+     * 
+     * @since 8.3M1
+     */
+    String CONNECTION_TIMEOUT = "http.connection.timeout";
+
+    /**
      * @param user the user if the remote repository requires authentication, or null if no authentication is required
      * @param password the password if the remote repository requires authentication, or null if no authentication is
      *            required
@@ -40,4 +70,22 @@ public interface HttpClientFactory
      *         Repository
      */
     CloseableHttpClient createClient(String user, String password);
+
+    /**
+     * @param user the user if the remote repository requires authentication, or null if no authentication is required
+     * @param password the password if the remote repository requires authentication, or null if no authentication is
+     *            required
+     * @return the pre-configured {@link HttpClientBuilder} instance that can be customized and used to build the actual
+     *         {@link HttpClient}
+     * @since 8.3M1
+     */
+    HttpClientBuilder createHttpClientBuilder(String user, String password);
+
+    /**
+     * @param properties properties
+     * @return the pre-configured {@link HttpClientBuilder} instance that can be customized and used to build the actual
+     *         {@link HttpClient}
+     * @since 8.3M1
+     */
+    HttpClientBuilder createHttpClientBuilder(Map<String, String> properties);
 }

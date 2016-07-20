@@ -19,12 +19,16 @@
  */
 package org.xwiki.extension.repository.http.internal;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -50,7 +54,7 @@ public class DefaultHttpClientFactory implements HttpClientFactory
     private ExtensionManagerConfiguration configuration;
 
     @Override
-    public CloseableHttpClient createClient(String user, String password)
+    public HttpClientBuilder createHttpClientBuilder(String user, String password)
     {
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
 
@@ -60,12 +64,6 @@ public class DefaultHttpClientFactory implements HttpClientFactory
         // Setup user agent
         httpClientBuilder.setUserAgent(this.configuration.getUserAgent());
 
-        // Setup timeout
-        BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
-        SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(60000).build();
-        connectionManager.setSocketConfig(socketConfig);
-        httpClientBuilder.setConnectionManager(connectionManager);
-
         // Setup authentication
         if (user != null) {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -74,6 +72,38 @@ public class DefaultHttpClientFactory implements HttpClientFactory
             httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
         }
 
-        return httpClientBuilder.build();
+        return httpClientBuilder;
+    }
+
+    @Override
+    public CloseableHttpClient createClient(String user, String password)
+    {
+        return createHttpClientBuilder(user, password).build();
+    }
+
+    @Override
+    public HttpClientBuilder createHttpClientBuilder(Map<String, String> properties)
+    {
+        HttpClientBuilder httpClientBuilder =
+            createHttpClientBuilder(properties.get("auth.user"), properties.get("auth.password"));
+
+        // Set socket timeouts
+        BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
+        SocketConfig.Builder socketConfigBuilder = SocketConfig.custom();
+        socketConfigBuilder.setSoTimeout(getIntProperty(properties, SOCKET_TIMEOUT, 30000));
+        connectionManager.setSocketConfig(socketConfigBuilder.build());
+        httpClientBuilder.setConnectionManager(connectionManager);
+
+        // Set request timeouts
+        RequestConfig.Builder requestBuilder = RequestConfig.custom();
+        requestBuilder = requestBuilder.setConnectTimeout(getIntProperty(properties, CONNECTION_TIMEOUT, 30000));
+        httpClientBuilder.setDefaultRequestConfig(requestBuilder.build());
+
+        return httpClientBuilder;
+    }
+
+    private int getIntProperty(Map<String, String> properties, String key, int def)
+    {
+        return NumberUtils.toInt(properties.get(key), def);
     }
 }
