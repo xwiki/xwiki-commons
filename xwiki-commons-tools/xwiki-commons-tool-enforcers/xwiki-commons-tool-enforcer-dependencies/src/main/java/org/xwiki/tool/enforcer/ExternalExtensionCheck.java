@@ -40,15 +40,19 @@ import org.apache.maven.model.Model;
  */
 public class ExternalExtensionCheck extends AbstractPomCheck
 {
-    private static final String COMMONS_GROUP_ID = "org.xwiki.commons";
+    private static final String CORE_GROUP_ID = "org.xwiki";
 
-    private static final String RENDERING_GROUP_ID = "org.xwiki.rendering";
+    private static final String CORE_GROUP_ID_PREFIX = CORE_GROUP_ID + '.';
 
-    private static final String PLATFORM_GROUP_ID = "org.xwiki.platform";
+    private static final String COMMONS_GROUP_ID = CORE_GROUP_ID_PREFIX + "commons";
 
-    private static final String ENTERPRISE_GROUP_ID = "org.xwiki.enterprise";
+    private static final String RENDERING_GROUP_ID = CORE_GROUP_ID_PREFIX + "rendering";
 
-    private static final String CONTRIB_GROUP_ID = "org.xwiki.contrib";
+    private static final String PLATFORM_GROUP_ID = CORE_GROUP_ID_PREFIX + "platform";
+
+    private static final String ENTERPRISE_GROUP_ID = CORE_GROUP_ID_PREFIX + "enterprise";
+
+    private static final String CONTRIB_GROUP_ID = CORE_GROUP_ID_PREFIX + "contrib";
 
     private static final String CONTRIB_GROUP_ID_PREFIX = CONTRIB_GROUP_ID + '.';
 
@@ -75,7 +79,7 @@ public class ExternalExtensionCheck extends AbstractPomCheck
         if (isXWikiCoreCommitterExtension(model)) {
             checkCoreArtifactId(model);
         } else {
-            checkContribGroupId(model);
+            checkNonCoreGroupId(model);
             checkNonCoreArtifactId(model);
             checkNonCoreDevelopers(model);
         }
@@ -101,12 +105,13 @@ public class ExternalExtensionCheck extends AbstractPomCheck
     }
 
     /**
-     * Make sure the group id starts with "org.xwiki.contrib".
+     * Make sure the group id does not start with "org.xwiki" or starts with "org.xwiki.contrib".
      */
-    private void checkContribGroupId(Model model) throws EnforcerRuleException
+    private void checkNonCoreGroupId(Model model) throws EnforcerRuleException
     {
         String groupId = model.getGroupId();
-        if (!groupId.equals(CONTRIB_GROUP_ID) && !groupId.startsWith(CONTRIB_GROUP_ID_PREFIX)) {
+        if (groupId.equals(CORE_GROUP_ID) || (groupId.startsWith(CORE_GROUP_ID_PREFIX)
+            && !groupId.equals(CONTRIB_GROUP_ID) && !groupId.startsWith(CONTRIB_GROUP_ID_PREFIX))) {
             throw new EnforcerRuleException(
                 String.format("Contrib extension group id have to be prefixed with [%s]", CONTRIB_GROUP_ID));
         }
