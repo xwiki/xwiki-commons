@@ -340,10 +340,10 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
     private DefaultInstalledExtension validateExtension(LocalExtension localExtension, String namespace,
         Map<String, ExtensionDependency> managedDependencies) throws InvalidExtensionException
     {
-        InstalledExtension installedExtension = getInstalledExtension(localExtension.getId());
-        if (installedExtension != null && installedExtension.isInstalled()) {
+        DefaultInstalledExtension installedExtension = this.extensions.get(localExtension.getId());
+        if (installedExtension != null && installedExtension.isValidated(namespace)) {
             // Already validated
-            return (DefaultInstalledExtension) installedExtension;
+            return installedExtension;
         }
 
         // Actually validate
