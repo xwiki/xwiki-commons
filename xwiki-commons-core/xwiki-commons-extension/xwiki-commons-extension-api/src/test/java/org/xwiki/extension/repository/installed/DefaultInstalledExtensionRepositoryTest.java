@@ -217,10 +217,33 @@ public class DefaultInstalledExtensionRepositoryTest
         assertEquals("1.0", extension.getId().getVersion().toString());
 
         // installedorphaneddependency
+
         extension = this.installedExtensionRepository.getInstalledExtension("installedorphaneddependency", null);
 
         assertNotNull(extension);
         assertTrue(extension.isValid(null));
+        assertEquals("version", extension.getId().getVersion().toString());
+
+        // install on several namespaces
+
+        extension = this.installedExtensionRepository.getInstalledExtension("installedonseveralnamespaces", null);
+
+        assertNull(extension);
+
+        extension =
+            this.installedExtensionRepository.getInstalledExtension("installedonseveralnamespaces", "namespace1");
+
+        assertNotNull(extension);
+        assertTrue(extension.isValid("namespace1"));
+        assertTrue(extension.isInstalled("namespace1"));
+        assertEquals("version", extension.getId().getVersion().toString());
+
+        extension =
+            this.installedExtensionRepository.getInstalledExtension("installedonseveralnamespaces", "namespace2");
+
+        assertNotNull(extension);
+        assertTrue(extension.isValid("namespace2"));
+        assertTrue(extension.isInstalled("namespace2"));
         assertEquals("version", extension.getId().getVersion().toString());
     }
 
@@ -483,14 +506,14 @@ public class DefaultInstalledExtensionRepositoryTest
     {
         IterableResult<Extension> result = this.installedExtensionRepository.search(null, 0, -1);
 
-        assertEquals(13, result.getTotalHits());
-        assertEquals(13, result.getSize());
+        assertEquals(15, result.getTotalHits());
+        assertEquals(15, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search("", 0, -1);
 
-        assertEquals(13, result.getTotalHits());
-        assertEquals(13, result.getSize());
+        assertEquals(15, result.getTotalHits());
+        assertEquals(15, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search("extension", 0, -1);
@@ -507,49 +530,49 @@ public class DefaultInstalledExtensionRepositoryTest
 
         result = this.installedExtensionRepository.search("dependency", 0, -1);
 
-        assertEquals(7, result.getTotalHits());
-        assertEquals(7, result.getSize());
+        assertEquals(8, result.getTotalHits());
+        assertEquals(8, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 0, 0);
 
-        assertEquals(13, result.getTotalHits());
+        assertEquals(15, result.getTotalHits());
         assertEquals(0, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 0, 2);
 
-        assertEquals(13, result.getTotalHits());
+        assertEquals(15, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 0, 1);
 
-        assertEquals(13, result.getTotalHits());
+        assertEquals(15, result.getTotalHits());
         assertEquals(1, result.getSize());
         assertEquals(0, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 1, 2);
 
-        assertEquals(13, result.getTotalHits());
+        assertEquals(15, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(1, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, 2, 2);
 
-        assertEquals(13, result.getTotalHits());
+        assertEquals(15, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(2, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, -1, 2);
 
-        assertEquals(13, result.getTotalHits());
+        assertEquals(15, result.getTotalHits());
         assertEquals(2, result.getSize());
         assertEquals(-1, result.getOffset());
 
         result = this.installedExtensionRepository.search(null, -1, 1);
 
-        assertEquals(13, result.getTotalHits());
+        assertEquals(15, result.getTotalHits());
         assertEquals(1, result.getSize());
         assertEquals(-1, result.getOffset());
     }

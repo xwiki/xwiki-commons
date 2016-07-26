@@ -182,7 +182,11 @@ public class DefaultExtensionInitializer implements ExtensionInitializer
                             installedExtension, dependency));
                     }
 
-                    initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
+                    try {
+                        initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
+                    } catch (Exception e) {
+                        throw new ExtensionException("Failed to initialize dependency [" + dependency + "]", e);
+                    }
                 }
             }
 
