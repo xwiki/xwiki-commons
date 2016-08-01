@@ -31,7 +31,7 @@
   <name>XWiki Commons - Script</name>
   <description>XWiki Commons - Script</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.28</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.27</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

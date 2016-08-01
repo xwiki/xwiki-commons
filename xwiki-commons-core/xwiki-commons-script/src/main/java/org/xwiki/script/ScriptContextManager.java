@@ -39,4 +39,14 @@ public interface ScriptContextManager
      *         for which there are no {@link org.xwiki.script.ScriptContextInitializer} will not be modified.
      */
     ScriptContext getScriptContext();
+
+    /**
+     * @return the current {@link ScriptContext} instance without any modification. This is mostly used when the only
+     *         need to to set values in the script context. In doubt always use {@link #getScriptContext()}.
+     * @see #getScriptContext()
+     * @since 8.3M1
+     */
+    default ScriptContext getCurrentScriptContext() {
+        return getScriptContext();
+    }
 }

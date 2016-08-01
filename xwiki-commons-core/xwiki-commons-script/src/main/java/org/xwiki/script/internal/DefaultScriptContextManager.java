@@ -54,11 +54,7 @@ public class DefaultScriptContextManager implements ScriptContextManager
     @Override
     public ScriptContext getScriptContext()
     {
-        // The Script Context is set in ScriptExecutionContextInitializer, when the XWiki Execution Context is
-        // initialized so we are guaranteed it is defined when this method is called.
-        ScriptContext context =
-            (ScriptContext) this.execution.getContext()
-                .getProperty(ScriptExecutionContextInitializer.SCRIPT_CONTEXT_ID);
+        ScriptContext context = getCurrentScriptContext();
 
         // We re-initialize the Script Context with all Script Context Initializers. We do this in order to ensure
         // that the Script Context always contain correct values even if user scripts or XWiki code have modified them.
@@ -70,5 +66,14 @@ public class DefaultScriptContextManager implements ScriptContextManager
         }
 
         return context;
+    }
+
+    @Override
+    public ScriptContext getCurrentScriptContext()
+    {
+        // The Script Context is set in ScriptExecutionContextInitializer, when the XWiki Execution Context is
+        // initialized so we are guaranteed it is defined when this method is called.
+        return (ScriptContext) this.execution.getContext()
+            .getProperty(ScriptExecutionContextInitializer.SCRIPT_CONTEXT_ID);
     }
 }

@@ -19,6 +19,11 @@
  */
 package org.xwiki.velocity;
 
+import java.io.Reader;
+import java.io.Writer;
+
+import javax.script.ScriptContext;
+
 import org.apache.velocity.VelocityContext;
 import org.xwiki.component.annotation.Role;
 
@@ -32,9 +37,18 @@ import org.xwiki.component.annotation.Role;
 public interface VelocityManager
 {
     /**
-     * @return the current Velocity Context retrieved from the Execution Context
+     * @return the up to date current Velocity Context
      */
     VelocityContext getVelocityContext();
+
+    /**
+     * @return the current Velocity Context without any modification
+     * @since 8.3M1
+     */
+    default VelocityContext getCurrentVelocityContext()
+    {
+        return getVelocityContext();
+    }
 
     /**
      * Get the current Velocity Engine or create one if none has been created.
@@ -45,4 +59,24 @@ public interface VelocityManager
     // TODO: Move the engine creation to some initialization method instead and remove the need for throwing an
     // exception
     VelocityEngine getVelocityEngine() throws XWikiVelocityException;
+
+    /**
+     * Renders the input string using the context into the output writer.
+     * <p>
+     * The current {@link ScriptContext} will be used and updated after the execution.
+     * <p>
+     * Anything set in the current {@link VelocityContext} will also be taken into account.
+     *
+     * @param out the writer in which to render the output
+     * @param templateName the string to be used as the template name for log messages in case of error. Also used
+     *            internally by Velocity as a cache index key for caching macros.
+     * @param source the input containing the VTL to be rendered, as a Reader
+     * @return false if empty, true otherwise
+     * @throws XWikiVelocityException in case of error
+     * @since 8.3M1
+     */
+    default boolean evaluate(Writer out, String templateName, Reader source) throws XWikiVelocityException
+    {
+        return getVelocityEngine().evaluate(getVelocityContext(), out, templateName, source);
+    }
 }
