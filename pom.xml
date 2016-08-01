@@ -536,6 +536,13 @@
         </exclusions>
       </dependency>
 
+      <!-- JTA -->
+      <dependency>
+        <groupId>javax.transaction</groupId>
+        <artifactId>jta</artifactId>
+        <version>1.1</version>
+      </dependency>
+
       <!-- Bouncy Castle -->
       <dependency>
         <groupId>org.bouncycastle</groupId>
