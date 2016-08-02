@@ -22,7 +22,6 @@ package org.xwiki.filter.event.extension;
 import org.xwiki.filter.FilterEventParameters;
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.annotation.Default;
-import org.xwiki.filter.annotation.Name;
 
 /**
  * Extension related events.
@@ -41,8 +40,7 @@ public interface ExtensionFilter
      * @param parameters the parameters of the namespace
      * @throws FilterException when failing to send event
      */
-    void beginNamespace(@Name("name") String name,
-        @Default(FilterEventParameters.DEFAULT) @Name(FilterEventParameters.NAME) FilterEventParameters parameters)
+    void beginNamespace(String name, @Default(FilterEventParameters.DEFAULT) FilterEventParameters parameters)
         throws FilterException;
 
     /**
@@ -50,8 +48,7 @@ public interface ExtensionFilter
      * @param parameters the parameters of the namespace
      * @throws FilterException when failing to send event
      */
-    void endNamespace(@Name("name") String name,
-        @Default(FilterEventParameters.DEFAULT) @Name(FilterEventParameters.NAME) FilterEventParameters parameters)
+    void endNamespace(String name, @Default(FilterEventParameters.DEFAULT) FilterEventParameters parameters)
         throws FilterException;
 
     /**
@@ -60,9 +57,8 @@ public interface ExtensionFilter
      * @param parameters the parameters of the extension
      * @throws FilterException when failing to send event
      */
-    void beginExtension(@Name("id") String id, @Name("version") String version,
-        @Default(FilterEventParameters.DEFAULT) @Name(FilterEventParameters.NAME) FilterEventParameters parameters)
-        throws FilterException;
+    void beginExtension(String id, String version,
+        @Default(FilterEventParameters.DEFAULT) FilterEventParameters parameters) throws FilterException;
 
     /**
      * @param id the id of the extension
@@ -70,7 +66,6 @@ public interface ExtensionFilter
      * @param parameters the parameters of the extension
      * @throws FilterException when failing to send event
      */
-    void endExtension(@Name("id") String id, @Name("version") String version,
-        @Default(FilterEventParameters.DEFAULT) @Name(FilterEventParameters.NAME) FilterEventParameters parameters)
-        throws FilterException;
+    void endExtension(String id, String version,
+        @Default(FilterEventParameters.DEFAULT) FilterEventParameters parameters) throws FilterException;
 }

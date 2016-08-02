@@ -19,12 +19,6 @@
  */
 package org.xwiki.filter.internal;
 
-import static org.junit.Assert.assertNotSame;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-
 import java.awt.Color;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -53,6 +47,12 @@ import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import static org.junit.Assert.assertNotSame;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
 public class FilterDescriptorManagerTest
 {
     @Rule
@@ -65,17 +65,16 @@ public class FilterDescriptorManagerTest
     public void before() throws ComponentLookupException
     {
         // Make sure we also support filters through proxies
-        Object filter =
-            Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { TestFilter.class },
-                new InvocationHandler()
+        Object filter = Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { TestFilter.class },
+            new InvocationHandler()
+            {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
                 {
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-                    {
-                        // Do nothing
-                        return null;
-                    }
-                });
+                    // Do nothing
+                    return null;
+                }
+            });
 
         this.filterDescriptor = this.mocker.getComponentUnderTest().getFilterDescriptor(filter.getClass());
     }
@@ -88,8 +87,9 @@ public class FilterDescriptorManagerTest
         Assert.assertNotNull(filterElement);
 
         FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
+        parameter0 = filterElement.getParameter("param0");
 
-        Assert.assertNull(parameter0.getName());
+        Assert.assertEquals("param0", parameter0.getName());
         Assert.assertEquals(0, parameter0.getIndex());
         Assert.assertEquals(String.class, parameter0.getType());
     }
@@ -114,9 +114,8 @@ public class FilterDescriptorManagerTest
     @Test
     public void testNameInheritance() throws ComponentLookupException
     {
-        FilterElementDescriptor filterElement =
-            this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class)
-                .getElement("containerwithnamedparameters");
+        FilterElementDescriptor filterElement = this.mocker.getComponentUnderTest()
+            .getFilterDescriptor(TestFilterImplementation.class).getElement("containerwithnamedparameters");
 
         Assert.assertNotNull(filterElement);
 
@@ -138,13 +137,13 @@ public class FilterDescriptorManagerTest
         Mockito.when(converter.convert(int.class, "42")).thenReturn(42);
         Mockito.when(converter.convert(String.class, "default value")).thenReturn("default value");
         Mockito.when(converter.convert(Color.class, "#ffffff")).thenReturn(Color.WHITE);
-        Mockito.when(
-            converter.convert(new DefaultParameterizedType(null, Map.class, new Type[] { String.class, String.class }),
-                "")).thenThrow(ConversionException.class);
+        Mockito
+            .when(converter
+                .convert(new DefaultParameterizedType(null, Map.class, new Type[] { String.class, String.class }), ""))
+            .thenThrow(ConversionException.class);
 
-        FilterElementDescriptor filterElement =
-            this.mocker.getComponentUnderTest().getFilterDescriptor(TestFilterImplementation.class)
-                .getElement("childwithdefaultvalue");
+        FilterElementDescriptor filterElement = this.mocker.getComponentUnderTest()
+            .getFilterDescriptor(TestFilterImplementation.class).getElement("childwithdefaultvalue");
 
         Assert.assertNotNull(filterElement);
 
@@ -171,9 +170,8 @@ public class FilterDescriptorManagerTest
         UnknownFilter filter = mock(UnknownFilter.class);
         doThrow(FilterException.class).when(filter).onUnknwon(anyString(), any(FilterEventParameters.class));
 
-        UnknownFilter proxyFilter =
-            this.mocker.getComponentUnderTest().createFilterProxy(filter, UnknownFilter.class,
-                FilterDescriptorManager.class);
+        UnknownFilter proxyFilter = this.mocker.getComponentUnderTest().createFilterProxy(filter, UnknownFilter.class,
+            FilterDescriptorManager.class);
 
         assertNotSame(filter, proxyFilter);
 

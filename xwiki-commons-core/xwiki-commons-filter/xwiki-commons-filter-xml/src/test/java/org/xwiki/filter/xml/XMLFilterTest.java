@@ -118,13 +118,13 @@ public class XMLFilterTest
     @Test
     public void testContainerWithParameters() throws Exception
     {
-        assertParseAndSerialize("<containerWithParameters _0=\"value0\" _1=\"1\"></containerWithParameters>");
+        assertParseAndSerialize("<containerWithParameters param0=\"value0\" param1=\"1\"></containerWithParameters>");
     }
 
     @Test
     public void testContainerWithNamedParameters() throws Exception
     {
-        assertParseAndSerialize("<containerWithNamedParameters namedParam=\"value0\" _1=\"1\"></containerWithNamedParameters>");
+        assertParseAndSerialize("<containerWithNamedParameters namedParam=\"value0\" param1=\"1\"></containerWithNamedParameters>");
     }
 
     @Test
@@ -146,7 +146,7 @@ public class XMLFilterTest
     @Test
     public void testFromSAX() throws Exception
     {
-        assertParseAndSerializeFromSAX("<containerWithNamedParameters namedParam=\"value0\" _1=\"1\"></containerWithNamedParameters>");
+        assertParseAndSerializeFromSAX("<containerWithNamedParameters namedParam=\"value0\" param1=\"1\"></containerWithNamedParameters>");
     }
 
     // Serialize

@@ -20,6 +20,7 @@
 package org.xwiki.filter.internal;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -145,17 +146,22 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      */
     private FilterDescriptor createDescriptor(Class<?> type)
     {
-        FilterDescriptor descriptor = new FilterDescriptor();
+        // Proxy "loose" various reflection informations (like method parameter names)
+        if (Proxy.isProxyClass(type)) {
+            return getFilterDescriptor(type.getInterfaces());
+        } else {
+            FilterDescriptor descriptor = new FilterDescriptor();
 
-        for (Method method : getMethods(type)) {
-            String elementName = getElementName(method.getName());
+            for (Method method : getMethods(type)) {
+                String elementName = getElementName(method.getName());
 
-            if (elementName != null) {
-                addElement(elementName, descriptor, method);
+                if (elementName != null) {
+                    addElement(elementName, descriptor, method);
+                }
             }
-        }
 
-        return descriptor;
+            return descriptor;
+        }
     }
 
     /**
@@ -203,7 +209,9 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
         if (!nameAnnotations.isEmpty()) {
             name = nameAnnotations.get(0).value();
         } else {
-            name = null;
+            // Fallback on reflection to get the parameter name
+            Parameter parameter = method.getParameters()[index];
+            name = parameter.isNamePresent() ? method.getParameters()[index].getName() : null;
         }
 
         // @Default
@@ -293,7 +301,6 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
             interfaces.addAll(ClassUtils.getAllInterfaces(filter.getClass()));
         }
 
-        return (F) Proxy.newProxyInstance(loader, interfaces.toArray(CLASS_ARRAY),
-            new CompositeFilter(this, filters));
+        return (F) Proxy.newProxyInstance(loader, interfaces.toArray(CLASS_ARRAY), new CompositeFilter(this, filters));
     }
 }
