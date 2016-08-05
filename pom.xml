@@ -1104,7 +1104,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>xml-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.0</version>
+          <version>1.0.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.izpack</groupId>
