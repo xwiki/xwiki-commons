@@ -77,7 +77,7 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
      */
     public ExtensionId(String id, String version)
     {
-        this(id, new DefaultVersion(version));
+        this(id, version != null ? new DefaultVersion(version) : null);
     }
 
     /**
