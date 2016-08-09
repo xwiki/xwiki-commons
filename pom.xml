@@ -402,11 +402,10 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- Version greater than 20140107 require Java 8 -->
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>20140107</version>
+        <version>20160807</version>
       </dependency>
 
       <!-- Jackson -->
