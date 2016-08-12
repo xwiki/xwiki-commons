@@ -33,6 +33,18 @@ import org.xwiki.component.annotation.Role;
 public interface ExtensionRepositorySource
 {
     /**
+     * The priority used to order extension repositories. The lowest values have the highest priorities and are listed
+     * first. For example a repository priority of 100 will be checked before one with a priority of 500.
+     *
+     * @return the priority
+     * @since 8.3M1
+     */
+    default int getPriority()
+    {
+        return ExtensionRepositoryManager.DEFAULT_PRIORITY;
+    }
+
+    /**
      * @return the extension repositories identifiers
      * @deprecated since 4.3M1 use {@link #getExtensionRepositoryDescriptors()} instead
      */

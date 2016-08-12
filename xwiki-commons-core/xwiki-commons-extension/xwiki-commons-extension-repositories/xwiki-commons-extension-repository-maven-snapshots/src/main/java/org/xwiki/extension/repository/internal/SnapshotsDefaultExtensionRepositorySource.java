@@ -32,6 +32,7 @@ import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.extension.repository.ExtensionRepositoryManager;
 
 /**
  * Provides the XWiki snapshots repository as default maven repository.
@@ -49,6 +50,13 @@ public class SnapshotsDefaultExtensionRepositorySource extends AbstractExtension
      */
     @Inject
     private ExtensionManagerConfiguration configuration;
+
+    @Override
+    public int getPriority()
+    {
+        // Make default repositories checked last
+        return ExtensionRepositoryManager.DEFAULT_PRIORITY + 100;
+    }
 
     @Override
     public Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors()

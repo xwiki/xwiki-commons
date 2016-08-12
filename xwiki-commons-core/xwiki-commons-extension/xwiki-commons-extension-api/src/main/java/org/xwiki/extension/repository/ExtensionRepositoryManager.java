@@ -41,6 +41,13 @@ import org.xwiki.extension.version.Version;
 public interface ExtensionRepositoryManager
 {
     /**
+     * The default priority for extension repository ordering.
+     * 
+     * @since 8.3M1
+     */
+    int DEFAULT_PRIORITY = 500;
+
+    /**
      * Create and add a new repository.
      *
      * @param repositoryId the repository identifier
@@ -63,9 +70,34 @@ public interface ExtensionRepositoryManager
         throws ExtensionRepositoryException;
 
     /**
+     * Create and add a new repository.
+     *
+     * @param priority the priority in the list of repositories
+     * @param repositoryDescriptor the repository descriptor
+     * @return the newly created repository
+     * @throws ExtensionRepositoryException failed to create {@link ExtensionRepository} for provided identifier
+     * @since 8.3M1
+     */
+    default ExtensionRepository addRepository(ExtensionRepositoryDescriptor repositoryDescriptor, int priority)
+        throws ExtensionRepositoryException
+    {
+        return addRepository(repositoryDescriptor);
+    }
+
+    /**
      * @param repository add an existing repository
      */
     void addRepository(ExtensionRepository repository);
+
+    /**
+     * @param priority the priority in the list of repositories
+     * @param repository add an existing repository
+     * @since 8.3M1
+     */
+    default void addRepository(ExtensionRepository repository, int priority)
+    {
+        addRepository(repository);
+    }
 
     /**
      * Remove a repository form the list.

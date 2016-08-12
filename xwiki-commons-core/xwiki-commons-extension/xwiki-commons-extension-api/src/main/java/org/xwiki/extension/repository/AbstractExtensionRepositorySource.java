@@ -31,6 +31,12 @@ import java.util.Collection;
 public abstract class AbstractExtensionRepositorySource implements ExtensionRepositorySource
 {
     @Override
+    public int getPriority()
+    {
+        return 100;
+    }
+
+    @Override
     public Collection<ExtensionRepositoryId> getExtensionRepositories()
     {
         Collection<ExtensionRepositoryId> repositories = new ArrayList<ExtensionRepositoryId>();

@@ -20,7 +20,6 @@
 package org.xwiki.extension.repository.internal;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -93,12 +94,42 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     /**
      * The registered repositories.
      */
-    private final Map<String, ExtensionRepository> repositoryMap =
-        Collections.synchronizedMap(new LinkedHashMap<String, ExtensionRepository>());
+    private final Map<String, ExtensionRepositoryEntry> repositoryMap =
+        Collections.synchronizedMap(new LinkedHashMap<>());
 
-    private Collection<ExtensionRepository> repositories = Collections.emptyList();
+    private List<ExtensionRepository> repositories = Collections.emptyList();
 
     private LRUMap<ExtensionRepositoryDescriptor, ExtensionRepository> repositoriesCache = new LRUMap<>(100);
+
+    private class ExtensionRepositoryEntry implements Comparable<ExtensionRepositoryEntry>
+    {
+        private ExtensionRepository repository;
+
+        private int priority;
+
+        public ExtensionRepositoryEntry(ExtensionRepository repository, int priority)
+        {
+            this.repository = repository;
+            this.priority = priority;
+        }
+
+        @Override
+        public int compareTo(ExtensionRepositoryEntry other)
+        {
+            return this.priority - other.priority;
+        }
+
+        public ExtensionRepository getRepository()
+        {
+            return this.repository;
+        }
+
+        @Override
+        public String toString()
+        {
+            return getRepository().toString();
+        }
+    }
 
     @Override
     public void initialize() throws InitializationException
@@ -108,7 +139,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
             for (ExtensionRepositoryDescriptor repositoryDescriptor : repositoriesSource
                 .getExtensionRepositoryDescriptors()) {
                 try {
-                    addRepository(repositoryDescriptor);
+                    addRepository(repositoryDescriptor, repositoriesSource.getPriority());
                 } catch (ExtensionRepositoryException e) {
                     this.logger.error("Failed to add repository [" + repositoryDescriptor + "]", e);
                 }
@@ -127,6 +158,13 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     public ExtensionRepository addRepository(ExtensionRepositoryDescriptor repositoryDescriptor)
         throws ExtensionRepositoryException
     {
+        return addRepository(repositoryDescriptor, DEFAULT_PRIORITY);
+    }
+
+    @Override
+    public ExtensionRepository addRepository(ExtensionRepositoryDescriptor repositoryDescriptor, int priority)
+        throws ExtensionRepositoryException
+    {
         ExtensionRepository repository;
 
         try {
@@ -135,7 +173,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
 
             repository = repositoryFactory.createRepository(repositoryDescriptor);
 
-            addRepository(repository);
+            addRepository(repository, priority);
         } catch (ComponentLookupException e) {
             throw new ExtensionRepositoryException(
                 "Unsupported repository type [" + repositoryDescriptor.getType() + "]", e);
@@ -147,21 +185,47 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public void addRepository(ExtensionRepository repository)
     {
-        this.repositoryMap.put(repository.getDescriptor().getId(), repository);
-        this.repositories = new ArrayList<>(this.repositoryMap.values());
+        addRepository(repository, DEFAULT_PRIORITY);
+    }
+
+    private void updateRepositories()
+    {
+        // Get values
+        Stream<ExtensionRepositoryEntry> entryStream = this.repositoryMap.values().stream();
+
+        // Sort
+        entryStream = entryStream.sorted();
+
+        // Convert to list of ExtensionRepository
+        this.repositories = entryStream.map(ExtensionRepositoryEntry::getRepository).collect(Collectors.toList());
+    }
+
+    @Override
+    public void addRepository(ExtensionRepository repository, int priority)
+    {
+        // Update the map
+        this.repositoryMap.put(repository.getDescriptor().getId(), new ExtensionRepositoryEntry(repository, priority));
+
+        // Update the list
+        updateRepositories();
     }
 
     @Override
     public void removeRepository(String repositoryId)
     {
+        // Update the map
         this.repositoryMap.remove(repositoryId);
-        this.repositories = new ArrayList<>(this.repositoryMap.values());
+
+        // Update the list
+        updateRepositories();
     }
 
     @Override
     public ExtensionRepository getRepository(String repositoryId)
     {
-        return this.repositoryMap.get(repositoryId);
+        ExtensionRepositoryEntry entry = this.repositoryMap.get(repositoryId);
+
+        return entry != null ? entry.getRepository() : null;
     }
 
     private ExtensionRepository getRepository(ExtensionRepositoryDescriptor repositoryDescriptor)
@@ -199,7 +263,7 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     @Override
     public Collection<ExtensionRepository> getRepositories()
     {
-        return Collections.unmodifiableCollection(this.repositories);
+        return this.repositories;
     }
 
     @Override

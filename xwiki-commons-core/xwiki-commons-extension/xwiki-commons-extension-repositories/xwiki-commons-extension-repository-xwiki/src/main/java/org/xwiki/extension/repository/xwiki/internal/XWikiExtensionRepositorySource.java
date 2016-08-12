@@ -33,6 +33,7 @@ import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.extension.repository.ExtensionRepositoryManager;
 
 /**
  * Extensions repositories identifier stored in the configuration.
@@ -52,6 +53,14 @@ public class XWikiExtensionRepositorySource extends AbstractExtensionRepositoryS
     private ExtensionManagerConfiguration configuration;
 
     @Override
+    public int getPriority()
+    {
+        // Make extensions.xwiki.org repository checked after Nexus (Nexus much more extensions including most of those
+        // located on extensions.xwiki.org)
+        return ExtensionRepositoryManager.DEFAULT_PRIORITY + 200;
+    }
+
+    @Override
     public Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors()
     {
         Collection<ExtensionRepositoryDescriptor> configuredRepositories =
@@ -61,8 +70,8 @@ public class XWikiExtensionRepositorySource extends AbstractExtensionRepositoryS
 
         if (configuredRepositories == null) {
             try {
-                repositories.add(new DefaultExtensionRepositoryDescriptor("extensions.xwiki.org", "xwiki", new URI(
-                    "http://extensions.xwiki.org/xwiki/rest/")));
+                repositories.add(new DefaultExtensionRepositoryDescriptor("extensions.xwiki.org", "xwiki",
+                    new URI("http://extensions.xwiki.org/xwiki/rest/")));
             } catch (URISyntaxException e) {
                 // Should never happen
             }

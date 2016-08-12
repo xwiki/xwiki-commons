@@ -34,6 +34,7 @@ import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.extension.repository.ExtensionRepositoryManager;
 
 /**
  * Extensions repositories identifier stored in the configuration.
@@ -53,6 +54,13 @@ public class AetherExtensionRepositorySource extends AbstractExtensionRepository
     private ExtensionManagerConfiguration configuration;
 
     @Override
+    public int getPriority()
+    {
+        // Make default repositories checked last
+        return ExtensionRepositoryManager.DEFAULT_PRIORITY + 100;
+    }
+
+    @Override
     public Collection<ExtensionRepositoryDescriptor> getExtensionRepositoryDescriptors()
     {
         Collection<ExtensionRepositoryDescriptor> configuredRepositories =
@@ -62,8 +70,8 @@ public class AetherExtensionRepositorySource extends AbstractExtensionRepository
 
         if (configuredRepositories == null) {
             try {
-                repositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki", "maven", new URI(
-                    "http://nexus.xwiki.org/nexus/content/groups/public")));
+                repositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki", "maven",
+                    new URI("http://nexus.xwiki.org/nexus/content/groups/public")));
             } catch (URISyntaxException e) {
                 // Should never happen
                 return Collections.emptyList();

@@ -20,9 +20,11 @@
 package org.xwiki.extension.repository;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,7 +39,6 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.junit.Assert.assertSame;
-
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,19 +64,19 @@ public class DefaultExtensionRepositoryManagerTest
 
     private Extension testExtension;
 
+    private ExtensionRepositoryFactory factory;
+
     @Before
     public void before() throws Exception
     {
-        final ExtensionRepositoryFactory factory =
-            this.mocker.registerMockComponent(ExtensionRepositoryFactory.class, "test");
+        this.factory = this.mocker.registerMockComponent(ExtensionRepositoryFactory.class, "test");
         this.testRepository = mock(ExtensionRepository.class);
 
         this.descriptor =
             new DefaultExtensionRepositoryDescriptor("id", "test", new URI("http", "host", "/path", "fragment"));
 
-        this.unsupportedDescriptor =
-            new DefaultExtensionRepositoryDescriptor("unsupported", "unsupported", new URI("http", "unsupported",
-                "/unsupported", "unsupported"));
+        this.unsupportedDescriptor = new DefaultExtensionRepositoryDescriptor("unsupported", "unsupported",
+            new URI("http", "unsupported", "/unsupported", "unsupported"));
 
         when(factory.createRepository(same(this.descriptor))).thenReturn(this.testRepository);
         when(this.testRepository.getDescriptor()).thenReturn(this.descriptor);
@@ -86,6 +87,8 @@ public class DefaultExtensionRepositoryManagerTest
         when(this.testRepository.resolve(this.dependency)).thenReturn(testExtension);
     }
 
+    // Tests
+
     @Test
     public void addRepository() throws ExtensionRepositoryException, ComponentLookupException
     {
@@ -93,8 +96,6 @@ public class DefaultExtensionRepositoryManagerTest
 
         Assert.assertSame(this.testRepository, repository);
     }
-
-    // Tests
 
     @Test(expected = ExtensionRepositoryException.class)
     public void addRepository_unsuported() throws ComponentLookupException, ExtensionRepositoryException
@@ -162,5 +163,43 @@ public class DefaultExtensionRepositoryManagerTest
         this.mocker.getComponentUnderTest().addRepository(this.testRepository);
 
         assertSame(this.testExtension, this.mocker.getComponentUnderTest().resolve(this.dependency));
+    }
+
+    @Test
+    public void repositoryOrder() throws URISyntaxException, ExtensionRepositoryException, ComponentLookupException
+    {
+        ExtensionRepositoryDescriptor repDescriptor0 =
+            new DefaultExtensionRepositoryDescriptor("id0", "test", new URI("http", "host", "/path", "fragment"));
+        ExtensionRepository rep0 = mock(ExtensionRepository.class, "repo0");
+        when(this.factory.createRepository(same(repDescriptor0))).thenReturn(rep0);
+        when(rep0.getDescriptor()).thenReturn(repDescriptor0);
+        ExtensionRepositoryDescriptor repDescriptor1 =
+            new DefaultExtensionRepositoryDescriptor("id1", "test", new URI("http", "host", "/path", "fragment"));
+        ExtensionRepository rep1 = mock(ExtensionRepository.class, "repo1");
+        when(this.factory.createRepository(same(repDescriptor1))).thenReturn(rep1);
+        when(rep1.getDescriptor()).thenReturn(repDescriptor1);
+        ExtensionRepositoryDescriptor repDescriptor2 =
+            new DefaultExtensionRepositoryDescriptor("id2", "test", new URI("http", "host", "/path", "fragment"));
+        ExtensionRepository rep2 = mock(ExtensionRepository.class, "repo2");
+        when(this.factory.createRepository(same(repDescriptor2))).thenReturn(rep2);
+        when(rep2.getDescriptor()).thenReturn(repDescriptor2);
+        ExtensionRepositoryDescriptor repDescriptor3 =
+            new DefaultExtensionRepositoryDescriptor("id3", "test", new URI("http", "host", "/path", "fragment"));
+        ExtensionRepository rep3 = mock(ExtensionRepository.class, "repo3");
+        when(this.factory.createRepository(same(repDescriptor3))).thenReturn(rep3);
+        when(rep3.getDescriptor()).thenReturn(repDescriptor3);
+
+        this.mocker.getComponentUnderTest().addRepository(repDescriptor3, 3);
+        this.mocker.getComponentUnderTest().addRepository(repDescriptor2, 2);
+        this.mocker.getComponentUnderTest().addRepository(repDescriptor1, 1);
+        this.mocker.getComponentUnderTest().addRepository(repDescriptor0, 0);
+
+        Collection<ExtensionRepository> repositories = this.mocker.getComponentUnderTest().getRepositories();
+        Iterator<ExtensionRepository> it = repositories.iterator();
+
+        assertSame(rep0, it.next());
+        assertSame(rep1, it.next());
+        assertSame(rep2, it.next());
+        assertSame(rep3, it.next());
     }
 }
