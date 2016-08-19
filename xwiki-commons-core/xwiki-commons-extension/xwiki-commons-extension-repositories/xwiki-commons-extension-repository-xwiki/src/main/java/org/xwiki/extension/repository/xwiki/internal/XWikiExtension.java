@@ -35,9 +35,11 @@ import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.rating.DefaultExtensionRating;
 import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
@@ -69,8 +71,9 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
 
         setName(restExtension.getName());
         setSummary(restExtension.getSummary());
-        setDescription(restExtension.getDescription());
         setWebsite(restExtension.getWebsite());
+
+        setDescription(restExtension.getDescription());
 
         // Features
         for (org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionId feature : restExtension
@@ -176,6 +179,13 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
         // File
 
         setFile(new XWikiExtensionFile(repository, getId()));
+
+        // XWiki Repository often act as a proxy and the source extension might have more information that the XWiki
+        // Repository version supports
+        setName(ExtensionUtils.importProperty(this, Extension.FIELD_NAME, getName()));
+        setSummary(ExtensionUtils.importProperty(this, Extension.FIELD_SUMMARY, getSummary()));
+        setWebsite(ExtensionUtils.importProperty(this, Extension.FIELD_WEBSITE, getWebSite()));
+        setAllowedNamespaces(ExtensionUtils.importProperty(this, Extension.FIELD_NAMESPACES, getAllowedNamespaces()));
     }
 
     private Collection<XWikiExtensionDependency> toXWikiExtensionDependencies(

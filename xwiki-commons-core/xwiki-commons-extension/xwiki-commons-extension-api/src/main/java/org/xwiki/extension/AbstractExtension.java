@@ -239,6 +239,7 @@ public abstract class AbstractExtension implements Extension
                 return (T) getType();
             case FIELD_WEBSITE:
                 return (T) getWebSite();
+            case FIELD_NAMESPACES:
             case FIELD_ALLOWEDNAMESPACE:
             case FIELD_ALLOWEDNAMESPACES:
                 return (T) getAllowedNamespaces();
@@ -733,6 +734,29 @@ public abstract class AbstractExtension implements Extension
     public void setProperties(Map<String, Object> properties)
     {
         this.properties = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(properties));
+    }
+
+    /**
+     * Remove the property associated to the passed key and return its value.
+     * 
+     * @param <T> type of the property value
+     * @param key the property key
+     * @return the previous value associated with <tt>key</tt>, or <tt>null</tt> if there was no mapping for
+     *         <tt>key</tt>
+     * @since 8.3M1
+     */
+    public <T> T removeProperty(String key)
+    {
+        T previous;
+
+        synchronized (this.propertiesLock) {
+            Map<String, Object> newProperties = new LinkedHashMap<String, Object>(getProperties());
+            previous = (T) newProperties.remove(key);
+
+            this.properties = Collections.unmodifiableMap(newProperties);
+        }
+
+        return previous;
     }
 
     // Object

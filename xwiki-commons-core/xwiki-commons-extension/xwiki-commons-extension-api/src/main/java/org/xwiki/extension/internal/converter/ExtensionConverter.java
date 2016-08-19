@@ -19,8 +19,6 @@
  */
 package org.xwiki.extension.internal.converter;
 
-import java.io.StreamTokenizer;
-import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -28,7 +26,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -53,6 +50,7 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionScmConnection;
+import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.internal.maven.DefaultMavenExtension;
 import org.xwiki.extension.internal.maven.DefaultMavenExtensionDependency;
 import org.xwiki.extension.internal.maven.MavenExtension;
@@ -76,9 +74,6 @@ public class ExtensionConverter extends AbstractConverter<Extension>
     @Inject
     private ExtensionLicenseManager licenseManager;
 
-    // @Inject
-    // private ConverterManager converter;
-
     @Override
     protected <G extends Extension> G convertToType(Type targetType, Object value)
     {
@@ -99,9 +94,9 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         DefaultMavenExtension extension = new DefaultMavenExtension(null, groupId, model.getArtifactId(), version,
             MavenUtils.packagingToType(model.getPackaging()));
 
-        extension.setName(getPropertyString(properties, MavenUtils.MPNAME_NAME, true, model.getName()));
-        extension.setSummary(getPropertyString(properties, MavenUtils.MPNAME_SUMMARY, true, model.getDescription()));
-        extension.setWebsite(getPropertyString(properties, MavenUtils.MPNAME_WEBSITE, true, model.getUrl()));
+        extension.setName(getPropertyString(properties, Extension.FIELD_NAME, true, model.getName()));
+        extension.setSummary(getPropertyString(properties, Extension.FIELD_SUMMARY, true, model.getDescription()));
+        extension.setWebsite(getPropertyString(properties, Extension.FIELD_WEBSITE, true, model.getUrl()));
 
         // authors
         for (Developer developer : model.getDevelopers()) {
@@ -142,9 +137,9 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         }
 
         // features
-        String featuresString = getProperty(properties, MavenUtils.MPNAME_FEATURES, true);
+        String featuresString = getProperty(properties, Extension.FIELD_FEATURES, true);
         if (StringUtils.isNotBlank(featuresString)) {
-            Collection<String> features = toStringList(featuresString, true);
+            Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
             for (String feature : features) {
                 extension
                     .addExtensionFeature(ExtensionIdConverter.toExtensionId(feature, extension.getId().getVersion()));
@@ -152,15 +147,15 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         }
 
         // category
-        String categoryString = getProperty(properties, MavenUtils.MPNAME_CATEGORY, true);
+        String categoryString = getProperty(properties, Extension.FIELD_CATEGORY, true);
         if (StringUtils.isNotBlank(categoryString)) {
             extension.setCategory(categoryString);
         }
 
         // namespaces
-        String namespacesString = getProperty(properties, MavenUtils.MPNAME_NAMESPACES, true);
+        String namespacesString = getProperty(properties, Extension.FIELD_NAMESPACES, true);
         if (StringUtils.isNotBlank(namespacesString)) {
-            Collection<String> namespaces = toStringList(namespacesString, true);
+            Collection<String> namespaces = ExtensionUtils.importPropertyStringList(namespacesString, true);
             extension.setAllowedNamespaces(namespaces);
         }
 
@@ -218,58 +213,6 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         return extension;
     }
 
-    private List<String> toStringList(String str, boolean trim)
-    {
-        try {
-            String cleanedString = str;
-
-            // Trom
-            if (trim) {
-                cleanedString = cleanedString.trim();
-            }
-
-            // Set up a StreamTokenizer on the characters in this String
-            StreamTokenizer st = new StreamTokenizer(new StringReader(cleanedString));
-
-            // Everything is word
-            st.ordinaryChars(0, 255);
-            st.wordChars(0, 255);
-
-            // Except quote chars
-            st.quoteChar('"');
-            st.quoteChar('\'');
-
-            // And delimiters
-            st.whitespaceChars(',', ',');
-            st.whitespaceChars(' ', ' ');
-            st.whitespaceChars('\t', '\t');
-            st.whitespaceChars('\n', '\n');
-            st.whitespaceChars('\r', '\r');
-
-            // Split comma-delimited tokens into a List
-            List<String> collection = new ArrayList<>();
-            while (true) {
-                int ttype = st.nextToken();
-                if (ttype == StreamTokenizer.TT_WORD || ttype > 0) {
-                    if (st.sval != null) {
-                        collection.add(st.sval);
-                    }
-                } else if (ttype == StreamTokenizer.TT_EOF) {
-                    break;
-                } else {
-                    throw new ConversionException("Encountered token of type " + ttype + " parsing elements.");
-                }
-            }
-
-            // Return the completed list
-            return collection;
-        } catch (Exception e) {
-            // Log ?
-        }
-
-        return Collections.emptyList();
-    }
-
     private DefaultExtensionDependency toExtensionDependency(Dependency mavenDependency, Model model)
     {
         String dependencyGroupId = MavenUtils.resolveGroupId(mavenDependency.getGroupId(), model, true);
@@ -286,8 +229,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
 
     private String getProperty(Properties properties, String propertyName, boolean delete)
     {
-        return delete ? (String) properties.remove(MavenUtils.MPKEYPREFIX + propertyName)
-            : properties.getProperty(MavenUtils.MPKEYPREFIX + propertyName);
+        return delete ? (String) properties.remove(Extension.IKEYPREFIX + propertyName)
+            : properties.getProperty(Extension.IKEYPREFIX + propertyName);
     }
 
     private String getPropertyString(Properties properties, String propertyName, boolean delete, String def)

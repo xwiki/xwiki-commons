@@ -36,20 +36,6 @@ import org.xwiki.extension.ExtensionScmConnection;
  */
 public class MavenUtils
 {
-    public static final String MPKEYPREFIX = "xwiki.extension.";
-
-    public static final String MPNAME_NAME = "name";
-
-    public static final String MPNAME_SUMMARY = "summary";
-
-    public static final String MPNAME_WEBSITE = "website";
-
-    public static final String MPNAME_FEATURES = "features";
-
-    public static final String MPNAME_CATEGORY = "category";
-
-    public static final String MPNAME_NAMESPACES = "namespaces";
-
     public static final String PKEY_MAVEN_MODEL = "maven.Model";
 
     public static final String JAR_EXTENSION = "jar";

@@ -19,11 +19,21 @@
  */
 package org.xwiki.extension.internal;
 
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.properties.converter.ConversionException;
 
 /**
  * Various extension related utilities.
@@ -77,5 +87,116 @@ public final class ExtensionUtils
         }
 
         return newManagedDependencies;
+    }
+
+    /**
+     * Delete and return the value of the passed special property.
+     * 
+     * @param <T> type of the property value
+     * @param extension the extension from which to extract custom property
+     * @param propertySuffix the property suffix
+     * @return the value
+     * @ @since 8.3M1
+     */
+    public static <T> T importProperty(AbstractExtension extension, String propertySuffix)
+    {
+        return extension.removeProperty(Extension.IKEYPREFIX + propertySuffix);
+    }
+
+    /**
+     * Delete and return the value of the passed special property.
+     * 
+     * @param extension the extension from which to extract custom property
+     * @param propertySuffix the property suffix
+     * @param def the default value
+     * @return the value or {@code def} if none was found
+     * @since 8.3M1
+     */
+    public static String importProperty(AbstractExtension extension, String propertySuffix, String def)
+    {
+        return StringUtils.defaultString(importProperty(extension, propertySuffix), def);
+    }
+
+    /**
+     * Delete and return the value of the passed special property as a Collection of Strings.
+     * 
+     * @param extension the extension from which to extract custom property
+     * @param propertySuffix the property suffix
+     * @param def the default value
+     * @return the value or {@code def} if none was found
+     * @since 8.3M1
+     */
+    public static Collection<String> importProperty(AbstractExtension extension, String propertySuffix,
+        Collection<String> def)
+    {
+        Object obj = importProperty(extension, propertySuffix);
+
+        if (obj == null) {
+            return def;
+        } else if (obj instanceof Collection) {
+            return (Collection) obj;
+        } else if (obj instanceof String[]) {
+            return Arrays.asList((String[]) obj);
+        } else {
+            return importPropertyStringList(obj.toString(), true);
+        }
+    }
+
+    /**
+     * @param str the String to parse
+     * @param trim true if the passed String should be trimmed
+     * @return the collection of Strings extracted from the passed String
+     * @since 8.3M1
+     */
+    public static List<String> importPropertyStringList(String str, boolean trim)
+    {
+        try {
+            String cleanedString = str;
+
+            // Trim
+            if (trim) {
+                cleanedString = cleanedString.trim();
+            }
+
+            // Set up a StreamTokenizer on the characters in this String
+            StreamTokenizer st = new StreamTokenizer(new StringReader(cleanedString));
+
+            // Everything is word
+            st.ordinaryChars(0, 255);
+            st.wordChars(0, 255);
+
+            // Except quote chars
+            st.quoteChar('"');
+            st.quoteChar('\'');
+
+            // And delimiters
+            st.whitespaceChars(',', ',');
+            st.whitespaceChars(' ', ' ');
+            st.whitespaceChars('\t', '\t');
+            st.whitespaceChars('\n', '\n');
+            st.whitespaceChars('\r', '\r');
+
+            // Split comma-delimited tokens into a List
+            List<String> collection = new ArrayList<>();
+            while (true) {
+                int ttype = st.nextToken();
+                if (ttype == StreamTokenizer.TT_WORD || ttype > 0) {
+                    if (st.sval != null) {
+                        collection.add(st.sval);
+                    }
+                } else if (ttype == StreamTokenizer.TT_EOF) {
+                    break;
+                } else {
+                    throw new ConversionException("Encountered token of type " + ttype + " parsing elements.");
+                }
+            }
+
+            // Return the completed list
+            return collection;
+        } catch (Exception e) {
+            // Log ?
+        }
+
+        return Collections.emptyList();
     }
 }

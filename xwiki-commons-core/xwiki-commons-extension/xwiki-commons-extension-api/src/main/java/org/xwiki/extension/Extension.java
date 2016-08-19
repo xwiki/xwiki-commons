@@ -129,6 +129,12 @@ public interface Extension extends Comparable<Extension>
 
     /**
      * @see #getAllowedNamespaces()
+     * @since 8.3M1
+     */
+    String FIELD_NAMESPACES = "namespaces";
+
+    /**
+     * @see #getAllowedNamespaces()
      * @since 8.0M1
      */
     String FIELD_ALLOWEDNAMESPACE = "allowednamespace";
@@ -156,6 +162,13 @@ public interface Extension extends Comparable<Extension>
      * @since 7.4.3, 8.0.1, 8.1M1
      */
     String FIELD_PROPERTIES = "properties";
+
+    /**
+     * Prefix to use for custom properties names in external systems (Maven, etc).
+     * 
+     * @since 8.3M1
+     */
+    String IKEYPREFIX = "xwiki.extension.";
 
     /**
      * Get an extension field (name, summary, id, etc.) by name. Fallback on properties.
