@@ -82,7 +82,7 @@ public class JobStatusSerializer
             IOUtils.closeQuietly(stream);
         }
 
-        // Copy the file in it's final destination
+        // Copy the file to its final destination
         file.mkdirs();
         Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
