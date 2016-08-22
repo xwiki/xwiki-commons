@@ -986,9 +986,6 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <configuration>
             <source>1.8</source>
             <target>1.8</target>
-            <!-- Tell the compiler to preserve parameter names in the bytecode -->
-            <compilerArgument>-parameters</compilerArgument>
-            <testCompilerArgument>-parameters</testCompilerArgument>
           </configuration>
         </plugin>
         <plugin>
