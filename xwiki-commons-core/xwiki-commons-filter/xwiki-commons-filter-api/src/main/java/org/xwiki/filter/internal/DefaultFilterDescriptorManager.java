@@ -172,17 +172,22 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      */
     private FilterDescriptor createDescriptor(Class<?> type) throws IncompatibleFilterException
     {
-        FilterDescriptor descriptor = new FilterDescriptor();
+        // Proxy "loose" various reflection informations (like method parameter names)
+        if (Proxy.isProxyClass(type)) {
+            return getFilterDescriptor(type.getInterfaces());
+        } else {
+            FilterDescriptor descriptor = new FilterDescriptor();
 
-        for (Method method : getMethods(type)) {
-            String elementName = getElementName(method);
+            for (Method method : getMethods(type)) {
+                String elementName = getElementName(method);
 
-            if (elementName != null) {
-                addElement(elementName, descriptor, method);
+                if (elementName != null) {
+                    addElement(elementName, descriptor, method);
+                }
             }
-        }
 
-        return descriptor;
+            return descriptor;
+        }
     }
 
     /**
@@ -340,7 +345,6 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
             interfaces.addAll(ClassUtils.getAllInterfaces(filter.getClass()));
         }
 
-        return (F) Proxy.newProxyInstance(loader, interfaces.toArray(CLASS_ARRAY),
-            new CompositeFilter(this, filters));
+        return (F) Proxy.newProxyInstance(loader, interfaces.toArray(CLASS_ARRAY), new CompositeFilter(this, filters));
     }
 }
