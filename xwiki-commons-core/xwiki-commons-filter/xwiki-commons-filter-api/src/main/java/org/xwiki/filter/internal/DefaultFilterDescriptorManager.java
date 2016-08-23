@@ -32,7 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.ClassUtils.Interfaces;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.ReflectionMethodUtils;
@@ -118,15 +121,6 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     }
 
     /**
-     * @param clazz the class
-     * @return the methods of the passed class
-     */
-    private Method[] getMethods(Class<?> clazz)
-    {
-        return clazz.getMethods();
-    }
-
-    /**
      * @param method the method
      * @return the corresponding element name
      */
@@ -178,11 +172,17 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
         } else {
             FilterDescriptor descriptor = new FilterDescriptor();
 
-            for (Method method : getMethods(type)) {
-                String elementName = getElementName(method);
+            for (Method method : type.getMethods()) {
+                // Get top most method declaration
+                Set<Method> hierarchy = MethodUtils.getOverrideHierarchy(method, Interfaces.INCLUDE);
+                Method topMethod = IterableUtils.get(hierarchy, hierarchy.size() - 1);
 
+                // Get element name from method
+                String elementName = getElementName(topMethod);
+
+                // If a name can be found, continue
                 if (elementName != null) {
-                    addElement(elementName, descriptor, method);
+                    addElement(elementName, descriptor, topMethod);
                 }
             }
 

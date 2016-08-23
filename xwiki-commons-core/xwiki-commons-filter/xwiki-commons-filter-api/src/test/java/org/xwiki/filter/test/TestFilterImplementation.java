@@ -43,19 +43,19 @@ public class TestFilterImplementation implements TestFilter
     }
 
     @Override
-    public void onChildWithParameters(String param0, int param1)
+    public void onChildWithParameters(String differentParam0, int differentParam1)
     {
 
     }
 
     @Override
-    public void beginContainerWithParameters(String param0, int param1)
+    public void beginContainerWithParameters(String differentParam0, int differentParam1)
     {
 
     }
 
     @Override
-    public void endContainerWithParameters(String param0, int param1)
+    public void endContainerWithParameters(String differentParam0, int differentParam1)
     {
 
     }
