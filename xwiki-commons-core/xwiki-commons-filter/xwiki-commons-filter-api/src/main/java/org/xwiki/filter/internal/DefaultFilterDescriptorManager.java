@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.ReflectionMethodUtils;
 import org.xwiki.component.util.ReflectionUtils;
@@ -41,6 +42,7 @@ import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterElementDescriptor;
 import org.xwiki.filter.FilterElementParameterDescriptor;
+import org.xwiki.filter.IncompatibleFilterException;
 import org.xwiki.filter.annotation.Default;
 import org.xwiki.filter.annotation.Name;
 import org.xwiki.properties.ConverterManager;
@@ -84,6 +86,9 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     @Inject
     private ConverterManager converter;
 
+    @Inject
+    private Logger logger;
+
     @Override
     public FilterDescriptor getFilterDescriptor(Class<?>... interfaces)
     {
@@ -93,7 +98,13 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
             FilterDescriptor descriptor = this.descriptors.get(i);
 
             if (descriptor == null) {
-                descriptor = createDescriptor(i);
+                try {
+                    descriptor = createDescriptor(i);
+                } catch (IncompatibleFilterException e) {
+                    this.logger.error("Failed to create descriptor for filter [{}]", i, e);
+
+                    continue;
+                }
                 this.descriptors.put(i, descriptor);
             }
 
@@ -114,6 +125,21 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     private Method[] getMethods(Class<?> clazz)
     {
         return clazz.getMethods();
+    }
+
+    /**
+     * @param method the method
+     * @return the corresponding element name
+     */
+    public static String getElementName(Method method)
+    {
+        Name name = method.getAnnotation(Name.class);
+
+        if (name != null) {
+            return name.value();
+        }
+
+        return getElementName(method.getName());
     }
 
     /**
@@ -143,8 +169,9 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
     /**
      * @param type the class of the filter
      * @return the descriptor of the filter
+     * @throws IncompatibleFilterException when several methods/events are incompatibles
      */
-    private FilterDescriptor createDescriptor(Class<?> type)
+    private FilterDescriptor createDescriptor(Class<?> type) throws IncompatibleFilterException
     {
         // Proxy "loose" various reflection informations (like method parameter names)
         if (Proxy.isProxyClass(type)) {
@@ -153,7 +180,7 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
             FilterDescriptor descriptor = new FilterDescriptor();
 
             for (Method method : getMethods(type)) {
-                String elementName = getElementName(method.getName());
+                String elementName = getElementName(method);
 
                 if (elementName != null) {
                     addElement(elementName, descriptor, method);
@@ -168,15 +195,17 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
      * @param elementName the name of the element
      * @param descriptor the descriptor in which to add the element
      * @param method the method associated to the element
+     * @throws IncompatibleFilterException when passed method is not compatible with matching filter(s)
      */
     private void addElement(String elementName, FilterDescriptor descriptor, Method method)
+        throws IncompatibleFilterException
     {
         String lowerElementName = elementName.toLowerCase();
 
         FilterElementDescriptor element = descriptor.getElements().get(lowerElementName);
 
         Type[] methodTypes = method.getGenericParameterTypes();
-        // TODO: add support for multiple methods
+
         if (element == null || methodTypes.length > element.getParameters().length) {
             FilterElementParameterDescriptor<?>[] parameters =
                 new FilterElementParameterDescriptor<?>[methodTypes.length];
@@ -185,12 +214,30 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
                 parameters[i] = createFilterElementParameter(method, i, methodTypes[i]);
             }
 
+            // Make sure those parameters are compatible with any other matching element
+            if (element != null) {
+                checkCompatible(element, parameters);
+            }
+
             element = new FilterElementDescriptor(elementName, parameters);
 
             descriptor.getElements().put(lowerElementName, element);
         }
 
         addMethod(element, method);
+    }
+
+    private void checkCompatible(FilterElementDescriptor element, FilterElementParameterDescriptor<?>[] parameters)
+        throws IncompatibleFilterException
+    {
+        for (FilterElementParameterDescriptor<?> parameter : parameters) {
+            FilterElementParameterDescriptor<?> elementParameter = element.getParameter(parameter.getName());
+
+            if (elementParameter != null && !elementParameter.getType().equals(parameter.getType())) {
+                throw new IncompatibleFilterException("Parameter [" + parameter + "] is not compatible with parameter ["
+                    + elementParameter + "] (different types)");
+            }
+        }
     }
 
     /**

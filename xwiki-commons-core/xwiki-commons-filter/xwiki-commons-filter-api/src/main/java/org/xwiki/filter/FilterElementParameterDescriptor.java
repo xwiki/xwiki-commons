@@ -97,4 +97,18 @@ public class FilterElementParameterDescriptor<T>
     {
         return this.defaultValue;
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(getName());
+
+        builder.append(':');
+
+        builder.append(getType());
+
+        return builder.toString();
+    }
 }

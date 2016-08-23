@@ -33,6 +33,15 @@ public interface TestFilter
 
     void onChild();
 
+    @Name("containerwithname")
+    void beginNamedContainer();
+
+    @Name("containerwithname")
+    void endNamedContainer();
+
+    @Name("childwithname")
+    void onNamedChild();
+
     void onChildWithParameters(String param0, int param1);
 
     void beginContainerWithParameters(String param0, int param1);
