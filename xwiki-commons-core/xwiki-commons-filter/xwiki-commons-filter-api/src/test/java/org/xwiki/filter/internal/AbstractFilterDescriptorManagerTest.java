@@ -20,9 +20,6 @@
 package org.xwiki.filter.internal;
 
 import java.awt.Color;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
@@ -31,7 +28,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.filter.FilterDescriptor;
@@ -41,7 +37,6 @@ import org.xwiki.filter.FilterElementParameterDescriptor;
 import org.xwiki.filter.FilterEventParameters;
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.UnknownFilter;
-import org.xwiki.filter.test.TestFilter;
 import org.xwiki.filter.test.TestFilterImplementation;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
@@ -52,31 +47,35 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class FilterDescriptorManagerTest
+public abstract class AbstractFilterDescriptorManagerTest
 {
     @Rule
     public MockitoComponentMockingRule<FilterDescriptorManager> mocker =
         new MockitoComponentMockingRule<FilterDescriptorManager>(DefaultFilterDescriptorManager.class);
 
+    private Object filter;
+
     private FilterDescriptor filterDescriptor;
+
+    public AbstractFilterDescriptorManagerTest(Object filter)
+    {
+        this.filter = filter;
+    }
 
     @Before
     public void before() throws ComponentLookupException
     {
-        // Make sure we also support filters through proxies
-        Object filter = Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { TestFilter.class },
-            new InvocationHandler()
-            {
-                @Override
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-                {
-                    // Do nothing
-                    return null;
-                }
-            });
+        ConverterManager converter = this.mocker.getInstance(ConverterManager.class);
 
-        this.filterDescriptor = this.mocker.getComponentUnderTest().getFilterDescriptor(filter.getClass());
+        when(converter.convert(int.class, "42")).thenReturn(42);
+        when(converter.convert(String.class, "default value")).thenReturn("default value");
+        when(converter.convert(Color.class, "#ffffff")).thenReturn(Color.WHITE);
+        when(converter.convert(new DefaultParameterizedType(null, Map.class, new Type[] { String.class, String.class }),
+            "")).thenThrow(ConversionException.class);
+
+        this.filterDescriptor = this.mocker.getComponentUnderTest().getFilterDescriptor(this.filter.getClass());
     }
 
     @Test
@@ -132,16 +131,6 @@ public class FilterDescriptorManagerTest
     @Test
     public void testWithDefaultValue() throws ComponentLookupException
     {
-        ConverterManager converter = this.mocker.getInstance(ConverterManager.class);
-
-        Mockito.when(converter.convert(int.class, "42")).thenReturn(42);
-        Mockito.when(converter.convert(String.class, "default value")).thenReturn("default value");
-        Mockito.when(converter.convert(Color.class, "#ffffff")).thenReturn(Color.WHITE);
-        Mockito
-            .when(converter
-                .convert(new DefaultParameterizedType(null, Map.class, new Type[] { String.class, String.class }), ""))
-            .thenThrow(ConversionException.class);
-
         FilterElementDescriptor filterElement = this.mocker.getComponentUnderTest()
             .getFilterDescriptor(TestFilterImplementation.class).getElement("childwithdefaultvalue");
 
