@@ -96,9 +96,7 @@ public final class FilterProxy implements InvocationHandler
     private static void invokeUnkown(Object filter, FilterDescriptor descriptor, Method method, Object[] args)
         throws FilterException
     {
-        String methodName = method.getName();
-
-        String id = DefaultFilterDescriptorManager.getElementName(methodName);
+        String id = DefaultFilterDescriptorManager.getElementName(method);
 
         if (id != null) {
             FilterElementDescriptor element = descriptor.getElement(id);
@@ -113,11 +111,11 @@ public final class FilterProxy implements InvocationHandler
                 }
 
                 UnknownFilter unknownFilter = (UnknownFilter) filter;
-                if (methodName.startsWith(DefaultFilterDescriptorManager.PREFIX_BEGIN)) {
+                if (method.getName().startsWith(DefaultFilterDescriptorManager.PREFIX_BEGIN)) {
                     unknownFilter.beginUnknwon(id, metadata);
-                } else if (methodName.startsWith(DefaultFilterDescriptorManager.PREFIX_END)) {
+                } else if (method.getName().startsWith(DefaultFilterDescriptorManager.PREFIX_END)) {
                     unknownFilter.endUnknwon(id, metadata);
-                } else if (methodName.startsWith(DefaultFilterDescriptorManager.PREFIX_ON)) {
+                } else if (method.getName().startsWith(DefaultFilterDescriptorManager.PREFIX_ON)) {
                     unknownFilter.onUnknwon(id, metadata);
                 }
             }

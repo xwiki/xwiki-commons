@@ -165,6 +165,28 @@ public class FilterDescriptorManagerTest
         Assert.assertEquals(Collections.EMPTY_MAP, parameter3.getDefaultValue());
     }
 
+    @Test
+    public void testNamedChild()
+    {
+        FilterElementDescriptor filterElement = this.filterDescriptor.getElement("childwithname");
+
+        Assert.assertNotNull(filterElement);
+        Assert.assertNull(filterElement.getBeginMethod());
+        Assert.assertNull(filterElement.getEndMethod());
+        Assert.assertNotNull(filterElement.getOnMethod());
+    }
+
+    @Test
+    public void testNamedContainer()
+    {
+        FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithname");
+
+        Assert.assertNotNull(filterElement);
+        Assert.assertNotNull(filterElement.getBeginMethod());
+        Assert.assertNotNull(filterElement.getEndMethod());
+        Assert.assertNull(filterElement.getOnMethod());
+    }
+
     @Test(expected = FilterException.class)
     public void testProxyFailing() throws FilterException, ComponentLookupException
     {

@@ -145,4 +145,22 @@ public class TestFilterImplementation implements TestFilter
     {
 
     }
+
+    @Override
+    public void beginNamedContainer()
+    {
+
+    }
+
+    @Override
+    public void endNamedContainer()
+    {
+
+    }
+
+    @Override
+    public void onNamedChild()
+    {
+
+    }
 }

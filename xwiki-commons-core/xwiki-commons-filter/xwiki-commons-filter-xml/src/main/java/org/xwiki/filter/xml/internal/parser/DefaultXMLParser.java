@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -266,9 +267,8 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
         if (!this.blockStack.isEmpty()) {
             Block currentBlock = this.blockStack.peek();
 
-            result =
-                (this.elementDepth - currentBlock.elementDepth <= 1)
-                    && !this.configuration.getElementParameters().equals(elementName);
+            result = (this.elementDepth - currentBlock.elementDepth <= 1)
+                && !this.configuration.getElementParameters().equals(elementName);
         } else {
             result = true;
         }
@@ -306,7 +306,8 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
                 setParameter(block, filterParameter, value);
             } else {
-                LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}]", name, value, block.name);
+                LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are {})", name,
+                    value, block.name, Arrays.asList(block.filterElement.getParameters()));
 
                 block.setParameter(name, value);
             }
@@ -317,7 +318,8 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
             if (filterParameter != null) {
                 setParameter(block, filterParameter, value);
             } else {
-                LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}]", name, value, block.name);
+                LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are {})", name,
+                    value, block.name, Arrays.asList(block.filterElement.getParameters()));
 
                 block.setParameter(name, value);
             }
@@ -362,8 +364,8 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     {
         if (element.hasAttribute(this.configuration.getAttributeParameterType())) {
             String typeString = element.getAttribute(this.configuration.getAttributeParameterType());
-            return this.parameterManager.unSerialize(
-                Class.forName(typeString, true, Thread.currentThread().getContextClassLoader()), element);
+            return this.parameterManager
+                .unSerialize(Class.forName(typeString, true, Thread.currentThread().getContextClassLoader()), element);
         }
 
         return this.parameterManager.unSerialize(type, element);
@@ -439,8 +441,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 if (block.getParametersList().size() == 0
                     && this.filterDescriptor.getElement(qName).getParameters().length > 0) {
                     if (this.content != null && this.content.length() > 0) {
-                        block.setParameter(
-                            0,
+                        block.setParameter(0,
                             this.stringConverter.convert(
                                 this.filterDescriptor.getElement(qName).getParameters()[0].getType(),
                                 this.content.toString()));
