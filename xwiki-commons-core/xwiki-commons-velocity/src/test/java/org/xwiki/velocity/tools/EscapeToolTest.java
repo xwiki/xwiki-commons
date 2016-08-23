@@ -51,7 +51,7 @@ public class EscapeToolTest
     }
 
     @Test
-    public void testEscapeSimpleXML()
+    public void escapeSimpleXML()
     {
         String escapedText = this.tool.xml("a < a' && a' < a\" => a < a\"");
 
@@ -63,25 +63,25 @@ public class EscapeToolTest
     }
 
     @Test
-    public void testEscapeXMLApos()
+    public void escapeXMLApos()
     {
         Assert.assertFalse("' wrongly escaped to non-HTML &apos;", this.tool.xml("'").equals("&apos;"));
     }
 
     @Test
-    public void testEscapeXMLWithNull()
+    public void escapeXMLWithNull()
     {
         Assert.assertNull("null should be null", this.tool.xml(null));
     }
 
     @Test
-    public void testEscapeXMLNonAscii()
+    public void escapeXMLNonAscii()
     {
         Assert.assertTrue("Non-ASCII characters shouldn't be escaped", this.tool.xml("\u0123").equals("\u0123"));
     }
 
     @Test
-    public void testEscapeJSON()
+    public void escapeJSON()
     {
         String escapedText = this.tool.json("\"'\\/\b\f\n\r\t\u1234 plain  text");
 
@@ -99,13 +99,13 @@ public class EscapeToolTest
     }
 
     @Test
-    public void testEscapeJSONWithNullInput()
+    public void escapeJSONWithNullInput()
     {
         Assert.assertNull("Unexpected non-null output for null input", this.tool.json(null));
     }
 
     @Test
-    public void testEscapeJSONWithNonStringInput()
+    public void escapeJSONWithNonStringInput()
     {
         Assert.assertEquals("true", this.tool.json(true));
         Assert.assertEquals("42", this.tool.json(42));
@@ -113,90 +113,90 @@ public class EscapeToolTest
     }
 
     @Test
-    public void testQuotedPrintableWithSimpleText()
+    public void quotedPrintableWithSimpleText()
     {
         Assert.assertEquals("Hello World", this.tool.quotedPrintable("Hello World"));
     }
 
     @Test
-    public void testQuotedPrintableWithSpecialChars()
+    public void quotedPrintableWithSpecialChars()
     {
         Assert.assertEquals("a=3Db=0A", this.tool.quotedPrintable("a=b\n"));
     }
 
     @Test
-    public void testQuotedPrintableWithNonAsciiChars()
+    public void quotedPrintableWithNonAsciiChars()
     {
         Assert.assertEquals("=C4=A3", this.tool.quotedPrintable("\u0123"));
     }
 
     @Test
-    public void testQuotedPrintableWithNull()
+    public void quotedPrintableWithNull()
     {
         Assert.assertNull(this.tool.quotedPrintable(null));
     }
 
     @Test
-    public void testQWithSimpleText()
+    public void qWithSimpleText()
     {
         Assert.assertEquals("=?UTF-8?Q?Hello_World?=", this.tool.q("Hello World"));
     }
 
     @Test
-    public void testQWithSpecialChars()
+    public void qWithSpecialChars()
     {
         Assert.assertEquals("=?UTF-8?Q?a=3Db=3F=5F=0A?=", this.tool.q("a=b?_\n"));
     }
 
     @Test
-    public void testQWithNonAsciiChars()
+    public void qWithNonAsciiChars()
     {
         Assert.assertEquals("=?UTF-8?Q?=C4=A3?=", this.tool.q("\u0123"));
     }
 
     @Test
-    public void testQWithNull()
+    public void qWithNull()
     {
         Assert.assertNull(this.tool.q(null));
     }
 
     @Test
-    public void testBWithSimpleText()
+    public void bWithSimpleText()
     {
         Assert.assertEquals("=?UTF-8?B?SGVsbG8gV29ybGQ=?=", this.tool.b("Hello World"));
     }
 
     @Test
-    public void testBWithSpecialChars()
+    public void bWithSpecialChars()
     {
         Assert.assertEquals("=?UTF-8?B?YT1iPwo=?=", this.tool.b("a=b?\n"));
     }
 
     @Test
-    public void testBWithNonAsciiChars()
+    public void bWithNonAsciiChars()
     {
         Assert.assertEquals("=?UTF-8?B?xKM=?=", this.tool.b("\u0123"));
     }
 
     @Test
-    public void testBWithNull()
+    public void bWithNull()
     {
         Assert.assertNull(this.tool.b(null));
     }
 
     @Test
-    public void testURL()
+    public void url()
     {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new LinkedHashMap<>();
         map.put("hello", "world");
         map.put(null, "value");
-        map.put("B&B", "yes");
+        map.put("B& B", "yes");
         map.put("empty", null);
-        Assert.assertEquals("hello=world&B%26B=yes&empty=", this.tool.url(map));
+        Assert.assertEquals("hello=world&B%26%20B=yes&empty=", this.tool.url(map));
     }
 
     @Test
-    public void testURLWithDouble()
+    public void urlWithDouble()
     {
         HashMap<String, Double> map = new LinkedHashMap<>();
         map.put("A&A", 1.5);
@@ -205,7 +205,7 @@ public class EscapeToolTest
     }
 
     @Test
-    public void testURLWithArray()
+    public void urlWithArray()
     {
         HashMap<String, String[]> map = new HashMap<>();
         String[] array = {"M&M", null, "Astronomy&Astrophysics"};
@@ -214,7 +214,7 @@ public class EscapeToolTest
     }
 
     @Test
-    public void testURLWithCollection()
+    public void urlWithCollection()
     {
         HashMap<String, ArrayList<String>> map = new HashMap<>();
         ArrayList<String> collection1 = new ArrayList<>();
@@ -229,7 +229,7 @@ public class EscapeToolTest
     }
 
     /**
-     * @see https://drafts.csswg.org/cssom/#serialize-an-identifier
+     * @see <a href="https://drafts.csswg.org/cssom/#serialize-an-identifier">serialize-an-identifier</a>
      */
     @Test
     public void css()

@@ -19,6 +19,8 @@
  */
 package org.xwiki.velocity.tools;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
 
@@ -223,5 +225,33 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
             LOGGER.warn("Failed to escape CSS identifier. {}", e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * We override the implementation so that we sync it with the encoding strategy we use for generating URLs. Namely
+     * we encode all characters and we encode space as {@code %20} and not as {@code +} in the query string.
+     *
+     * @param string the url to encode
+     * @return the encoded URL
+     * @since 8.3M1
+     */
+    @Override
+    public String url(Object string)
+    {
+        // TODO: Introduce a xwiki-commons-url module and move this code in it so that we can share it with
+        // platform's XWikiServletURLFactory and functional test TestUtils class.
+        String encodedURL = null;
+        if (string != null) {
+            try {
+                encodedURL = URLEncoder.encode(String.valueOf(string), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                // Should not happen (UTF-8 is always available)
+                throw new RuntimeException("Missing charset [UTF-8]", e);
+            }
+            // The previous call will convert " " into "+" (and "+" into "%2B") so we need to convert "+" into "%20"
+            // It's ok since %20 is allowed in both the URL path and the query string (and anchor).
+            encodedURL = encodedURL.replaceAll("\\+", "%20");
+        }
+        return encodedURL;
     }
 }
