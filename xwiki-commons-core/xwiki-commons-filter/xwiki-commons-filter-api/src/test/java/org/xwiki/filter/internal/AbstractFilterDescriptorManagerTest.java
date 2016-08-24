@@ -19,12 +19,6 @@
  */
 package org.xwiki.filter.internal;
 
-import static org.junit.Assert.assertNotSame;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-
 import java.awt.Color;
 import java.lang.reflect.Type;
 import java.util.Collections;
