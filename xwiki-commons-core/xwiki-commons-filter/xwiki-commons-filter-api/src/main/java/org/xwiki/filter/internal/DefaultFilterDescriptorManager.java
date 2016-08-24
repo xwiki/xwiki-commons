@@ -123,6 +123,25 @@ public class DefaultFilterDescriptorManager implements FilterDescriptorManager
 
     /**
      * @param method the method
+     * @param searchTopMethod search for top most overridden method
+     * @return the corresponding element name
+     */
+    public static String getElementName(Method method, boolean searchTopMethod)
+    {
+        Method topMethod = method;
+
+        if (searchTopMethod) {
+            // Get top most method declaration
+            Set<Method> hierarchy = MethodUtils.getOverrideHierarchy(method, Interfaces.INCLUDE);
+            topMethod = IterableUtils.get(hierarchy, hierarchy.size() - 1);
+        }
+
+        // Get element name from method
+        return getElementName(topMethod);
+    }
+
+    /**
+     * @param method the method
      * @return the corresponding element name
      */
     public static String getElementName(Method method)

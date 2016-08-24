@@ -38,6 +38,7 @@ import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterElementDescriptor;
 import org.xwiki.filter.FilterElementParameterDescriptor;
+import org.xwiki.filter.internal.DefaultFilterDescriptorManager;
 import org.xwiki.filter.xml.XMLConfiguration;
 import org.xwiki.filter.xml.internal.XMLUtils;
 import org.xwiki.filter.xml.internal.parameter.ParameterManager;
@@ -65,8 +66,7 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
     private final XMLConfiguration configuration;
 
     public DefaultXMLSerializer(Result result, ParameterManager parameterManager, FilterDescriptor descriptor,
-        ConverterManager converter, XMLConfiguration configuration) throws XMLStreamException,
-        FactoryConfigurationError
+        ConverterManager converter, XMLConfiguration configuration) throws XMLStreamException, FactoryConfigurationError
     {
         this.parameterManager = parameterManager;
         this.descriptor = descriptor;
@@ -94,10 +94,9 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
             && !this.configuration.getAttributeParameterName().equals(parameterName);
     }
 
-    private String getBlockName(String eventName, String prefix)
+    private String getBlockName(String eventName)
     {
-        String blockName = eventName.substring(prefix.length());
-        blockName = Character.toLowerCase(blockName.charAt(0)) + blockName.substring(1);
+        String blockName = Character.toLowerCase(eventName.charAt(0)) + eventName.substring(1);
 
         return blockName;
     }
@@ -173,9 +172,9 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
         }
     }
 
-    private void beginEvent(String eventName, Object[] parameters) throws XMLStreamException
+    private void beginEvent(Method method, Object[] parameters) throws XMLStreamException
     {
-        String blockName = getBlockName(eventName, "begin");
+        String blockName = DefaultFilterDescriptorManager.getElementName(method, true);
 
         FilterElementDescriptor element = this.descriptor.getElement(blockName);
 
@@ -207,9 +206,9 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
         this.xmlStreamWriter.writeEndElement();
     }
 
-    private void onEvent(String eventName, Object[] parameters) throws XMLStreamException
+    private void onEvent(Method method, Object[] parameters) throws XMLStreamException
     {
-        String blockName = getBlockName(eventName, "on");
+        String blockName = DefaultFilterDescriptorManager.getElementName(method, true);
 
         FilterElementDescriptor element = this.descriptor.getElement(blockName);
 
@@ -235,7 +234,8 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
         }
 
         // Write complex parameters
-        if (parameters != null && parameters.length == 1 && XMLUtils.isSimpleType(element.getParameters()[0].getType())) {
+        if (parameters != null && parameters.length == 1
+            && XMLUtils.isSimpleType(element.getParameters()[0].getType())) {
             Object parameter = parameters[0];
             if (parameter != null && !Objects.equals(element.getParameters()[0].getDefaultValue(), parameter)) {
                 String value = parameter.toString();
@@ -344,14 +344,16 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
 
         if (method.getDeclaringClass() == Closeable.class) {
             close();
-        } else if (method.getName().startsWith("begin")) {
-            beginEvent(method.getName(), args);
-        } else if (method.getName().startsWith("end")) {
-            endEvent();
-        } else if (method.getName().startsWith("on")) {
-            onEvent(method.getName(), args);
         } else {
-            throw new NoSuchMethodException(method.toGenericString());
+            if (method.getName().startsWith("begin")) {
+                beginEvent(method, args);
+            } else if (method.getName().startsWith("end")) {
+                endEvent();
+            } else if (method.getName().startsWith("on")) {
+                onEvent(method, args);
+            } else {
+                throw new NoSuchMethodException(method.toGenericString());
+            }
         }
 
         return result;
