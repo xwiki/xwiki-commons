@@ -175,4 +175,15 @@ public class XMLFilterTest
 
         assertSerialized("<childWithDefaultValue></childWithDefaultValue>");
     }
+
+    @Test
+    public void testSerializeWithNamedChild() throws ComponentLookupException, XMLStreamException,
+        FactoryConfigurationError
+    {
+        TestFilter testFilter = createFilter();
+
+        testFilter.onNamedChild();
+
+        assertSerialized("<childwithname></childwithname>");
+    }
 }
