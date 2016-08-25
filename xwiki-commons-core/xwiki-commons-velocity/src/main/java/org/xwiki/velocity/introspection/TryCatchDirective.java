@@ -27,6 +27,7 @@ import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.directive.Directive;
+import org.apache.velocity.runtime.parser.node.ASTBlock;
 import org.apache.velocity.runtime.parser.node.Node;
 
 /**
@@ -66,14 +67,34 @@ public class TryCatchDirective extends Directive
     public boolean render(InternalContextAdapter context, Writer writer, Node node)
         throws IOException, ResourceNotFoundException, ParseErrorException, MethodInvocationException
     {
-        try {
-            // Make sure to clear any previous exception
-            context.remove(EXCEPTION_KEY_NAME);
-            return node.jjtGetChild(0).render(context, writer);
-        } catch (Exception e) {
-            // Save the exception in the $exception velocity context variable
-            context.put(EXCEPTION_KEY_NAME, e);
-            return true;
+        boolean result = true;
+
+        String exceptionVariableName = EXCEPTION_KEY_NAME;
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            if (node.jjtGetChild(i) != null) {
+                if (!(node.jjtGetChild(i) instanceof ASTBlock)) {
+                    // Reading and casting inline parameters. We handle one parameter which is the name of the Velocity
+                    // variable in which we'll save the exception. If not specified we'll use EXCEPTION_KEY_NAME
+                    if (i == 0) {
+                        exceptionVariableName = (String) node.jjtGetChild(i).value(context);
+                    } else {
+                        break;
+                    }
+                } else {
+                    try {
+                        // Make sure to clear any previous exception
+                        context.remove(exceptionVariableName);
+                        result = node.jjtGetChild(i).render(context, writer);
+                    } catch (Exception e) {
+                        // Save the exception in the $exception velocity context variable
+                        context.put(exceptionVariableName, e);
+                        result = true;
+                    }
+                    break;
+                }
+            }
         }
+
+        return result;
     }
 }
