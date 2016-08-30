@@ -40,6 +40,7 @@ import org.xwiki.xml.html.filter.HTMLFilter;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
 import org.xwiki.xml.internal.html.filter.FontFilter;
+import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
 import org.xwiki.xml.internal.html.filter.ListItemFilter;
 import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
@@ -51,7 +52,7 @@ import org.xwiki.xml.internal.html.filter.UniqueIdFilter;
  * @since 1.6M1
  */
 @ComponentList({ ListFilter.class, ListItemFilter.class, FontFilter.class, BodyFilter.class, AttributeFilter.class,
-UniqueIdFilter.class, DefaultHTMLCleaner.class })
+UniqueIdFilter.class, DefaultHTMLCleaner.class, LinkFilter.class })
 public class DefaultHTMLCleanerTest
 {
     public static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -373,6 +374,29 @@ public class DefaultHTMLCleanerTest
     public void verifySpanIsExpanded() throws Exception
     {
         assertHTML("<p><span class=\"fa fa-icon\"></span></p>", "<span class=\"fa fa-icon\" />");
+    }
+
+    @Test
+    public void verifyExternalLinksAreSecure() throws Exception
+    {
+        assertHTML("<p><a href=\"relativeLink\" target=\"_blank\">label</a></p>",
+                "<a href=\"relativeLink\" target=\"_blank\">label</a>");
+        assertHTML("<p><a href=\"http://xwiki.org\" rel=\" noopener noreferrer\" target=\"_blank\">label</a></p>",
+                "<a href=\"http://xwiki.org\" target=\"_blank\">label</a>");
+        assertHTML("<p><a href=\"http://xwiki.org\" rel=\" noopener noreferrer\" target=\"someframe\">label</a></p>",
+                "<a href=\"http://xwiki.org\" target=\"someframe\">label</a>");
+        assertHTML("<p><a href=\"http://xwiki.org\" target=\"_top\">label</a></p>",
+                "<a href=\"http://xwiki.org\" target=\"_top\">label</a>");
+        assertHTML("<p><a href=\"http://xwiki.org\" target=\"_parent\">label</a></p>",
+                "<a href=\"http://xwiki.org\" target=\"_parent\">label</a>");
+        assertHTML("<p><a href=\"http://xwiki.org\" target=\"_self\">label</a></p>",
+                "<a href=\"http://xwiki.org\" target=\"_self\">label</a>");
+        assertHTML("<p><a href=\"http://xwiki.org\" rel=\"noopener noreferrer\" target=\"_blank\">label</a></p>",
+                "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"noopener\">label</a>");
+        assertHTML("<p><a href=\"http://xwiki.org\" rel=\"noreferrer noopener\" target=\"_blank\">label</a></p>",
+                "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"noreferrer\">label</a>");
+        assertHTML("<p><a href=\"http://xwiki.org\" rel=\"hello noopener noreferrer\" target=\"_blank\">label</a></p>",
+                "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"hello\">label</a>");
     }
 
     private void assertHTML(String expected, String actual) throws ComponentLookupException

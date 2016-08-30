@@ -359,4 +359,14 @@ public interface HTMLConstants
      * HTML font size attribute.
      */
     String ATTRIBUTE_FONTSIZE = "size";
+
+    /**
+     * HTML target attribute.
+     */
+    String ATTRIBUTE_TARGET = "target";
+
+    /**
+     * HTML rel attribute.
+     */
+    String ATTRIBUTE_REL = "rel";
 }

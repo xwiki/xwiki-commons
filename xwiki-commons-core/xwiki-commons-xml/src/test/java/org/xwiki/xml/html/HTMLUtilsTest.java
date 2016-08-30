@@ -34,6 +34,7 @@ import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
 import org.xwiki.xml.internal.html.filter.BodyFilter;
 import org.xwiki.xml.internal.html.filter.FontFilter;
+import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
 import org.xwiki.xml.internal.html.filter.ListItemFilter;
 
@@ -44,6 +45,7 @@ import org.xwiki.xml.internal.html.filter.ListItemFilter;
  * @since 1.8.3
  */
 @ComponentList({
+    LinkFilter.class,
     ListFilter.class,
     ListItemFilter.class,
     FontFilter.class,

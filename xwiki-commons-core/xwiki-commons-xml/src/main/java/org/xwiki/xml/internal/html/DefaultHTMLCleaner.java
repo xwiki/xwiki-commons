@@ -95,6 +95,13 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
     @Named("attribute")
     private HTMLFilter attributeFilter;
 
+    /**
+     * {@link HTMLFilter} for filtering HTML links.
+     */
+    @Inject
+    @Named("link")
+    private HTMLFilter linkFilter;
+
     @Inject
     private Execution execution;
 
@@ -190,7 +197,8 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             this.listItemFilter,
             this.listFilter,
             this.fontFilter,
-            this.attributeFilter));
+            this.attributeFilter,
+            this.linkFilter));
         return configuration;
     }
 
