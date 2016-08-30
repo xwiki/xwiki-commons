@@ -30,7 +30,20 @@ import org.xwiki.extension.job.plan.ExtensionPlanTree;
  * @version $Id$
  * @since 4.1M1
  */
-public class DefaultExtensionPlanTree extends CopyOnWriteArrayList<ExtensionPlanNode> implements ExtensionPlanTree
+public class DefaultExtensionPlanTree extends CopyOnWriteArrayList<ExtensionPlanNode>
+    implements ExtensionPlanTree, Cloneable
 {
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public DefaultExtensionPlanTree clone()
+    {
+        DefaultExtensionPlanTree tree = new DefaultExtensionPlanTree();
+
+        for (ExtensionPlanNode node : this) {
+            tree.add(((DefaultExtensionPlanNode) node).clone());
+        }
+
+        return tree;
+    }
 }

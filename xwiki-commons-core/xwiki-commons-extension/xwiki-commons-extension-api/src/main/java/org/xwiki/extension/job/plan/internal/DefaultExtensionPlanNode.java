@@ -33,7 +33,7 @@ import org.xwiki.extension.version.VersionConstraint;
  * @version $Id$
  * @since 4.0M1
  */
-public class DefaultExtensionPlanNode implements ExtensionPlanNode
+public class DefaultExtensionPlanNode implements ExtensionPlanNode, Cloneable
 {
     /**
      * @see #getAction()
@@ -90,6 +90,17 @@ public class DefaultExtensionPlanNode implements ExtensionPlanNode
             this.children = Collections.emptyList();
         }
         this.initialVersionConstraint = initialVersionConstraint;
+    }
+
+    @Override
+    protected DefaultExtensionPlanNode clone()
+    {
+        try {
+            return (DefaultExtensionPlanNode) super.clone();
+        } catch (CloneNotSupportedException e) {
+            // this shouldn't happen, since we are Cloneable
+            throw new InternalError();
+        }
     }
 
     @Override
