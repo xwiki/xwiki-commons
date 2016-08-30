@@ -56,7 +56,7 @@
     <restlet.version>2.0.14</restlet.version>
 
     <!-- Jackson -->
-    <jackson.version>2.8.1</jackson.version>
+    <jackson.version>2.8.2</jackson.version>
 
     <!-- ASM -->
     <asm.version>5.0.4</asm.version>
