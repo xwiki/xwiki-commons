@@ -66,29 +66,7 @@ import org.xwiki.extension.version.VersionConstraint;
  */
 public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends AbstractExtensionPlanJob<R>
 {
-    protected static class ModifableExtensionPlanTree extends DefaultExtensionPlanTree implements Cloneable
-    {
-        private static final long serialVersionUID = 1L;
-
-        public ModifableExtensionPlanTree()
-        {
-
-        }
-
-        @Override
-        public ModifableExtensionPlanTree clone()
-        {
-            ModifableExtensionPlanTree tree = new ModifableExtensionPlanTree();
-
-            for (ExtensionPlanNode node : this) {
-                tree.add(((ModifableExtensionPlanNode) node).clone());
-            }
-
-            return tree;
-        }
-    }
-
-    protected static class ModifableExtensionPlanNode extends DefaultExtensionPlanNode implements Cloneable
+    protected static class ModifableExtensionPlanNode extends DefaultExtensionPlanNode
     {
         // never change
 
@@ -118,17 +96,6 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             this.initialDependency = initialDependency;
 
             set(node);
-        }
-
-        @Override
-        protected ModifableExtensionPlanNode clone()
-        {
-            try {
-                return (ModifableExtensionPlanNode) super.clone();
-            } catch (CloneNotSupportedException e) {
-                // this shouldn't happen, since we are Cloneable
-                throw new InternalError();
-            }
         }
 
         public void set(ModifableExtensionPlanNode node)
@@ -177,7 +144,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     protected Map<String, Map<String, ModifableExtensionPlanNode>> extensionsNodeCache =
         new HashMap<String, Map<String, ModifableExtensionPlanNode>>();
 
-    protected void setExtensionTree(ModifableExtensionPlanTree extensionTree)
+    protected void setExtensionTree(DefaultExtensionPlanTree extensionTree)
     {
         this.extensionTree = extensionTree;
         this.status.setTree(this.extensionTree);
@@ -292,7 +259,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
      * @throws InstallException error when trying to install provided extension
      */
-    protected void installExtension(ExtensionId extensionId, String namespace, ModifableExtensionPlanTree parentBranch)
+    protected void installExtension(ExtensionId extensionId, String namespace, DefaultExtensionPlanTree parentBranch)
         throws InstallException
     {
         try {
@@ -313,7 +280,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @throws ResolveException unexpected exception has been raised
      */
     protected void installExtension(ExtensionId extensionId, boolean dependency, String namespace,
-        ModifableExtensionPlanTree parentBranch) throws InstallException, ResolveException
+        DefaultExtensionPlanTree parentBranch) throws InstallException, ResolveException
     {
         if (getRequest().isVerbose()) {
             if (namespace != null) {

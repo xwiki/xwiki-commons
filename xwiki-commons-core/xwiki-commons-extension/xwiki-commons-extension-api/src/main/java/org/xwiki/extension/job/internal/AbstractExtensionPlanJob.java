@@ -31,12 +31,12 @@ import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
 import org.xwiki.extension.job.ExtensionRequest;
-import org.xwiki.extension.job.internal.AbstractInstallPlanJob.ModifableExtensionPlanTree;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanAction;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanNode;
+import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
 import org.xwiki.job.Job;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.logging.marker.TranslationMarker;
@@ -75,7 +75,7 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
     /**
      * The install plan.
      */
-    protected ModifableExtensionPlanTree extensionTree = new ModifableExtensionPlanTree();
+    protected DefaultExtensionPlanTree extensionTree = new DefaultExtensionPlanTree();
 
     @Override
     protected DefaultExtensionPlan<R> createNewStatus(R request)
@@ -226,9 +226,8 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
         }
 
         // Uninstall the extension
-        DefaultExtensionPlanAction action =
-            new DefaultExtensionPlanAction(installedExtension, Collections.singleton(installedExtension),
-                Action.UNINSTALL, namespace, false);
+        DefaultExtensionPlanAction action = new DefaultExtensionPlanAction(installedExtension,
+            Collections.singleton(installedExtension), Action.UNINSTALL, namespace, false);
         parentBranch.add(new DefaultExtensionPlanNode(action, children, null));
     }
 
