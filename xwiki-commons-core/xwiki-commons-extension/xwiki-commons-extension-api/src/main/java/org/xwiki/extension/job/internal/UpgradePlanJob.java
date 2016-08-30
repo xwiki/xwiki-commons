@@ -32,6 +32,7 @@ import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.job.InstallRequest;
+import org.xwiki.extension.job.plan.internal.DefaultExtensionPlanTree;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
 import org.xwiki.job.Request;
@@ -149,7 +150,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
      */
     protected boolean tryInstallExtension(ExtensionId extensionId, String namespace)
     {
-        ModifableExtensionPlanTree currentTree = this.extensionTree.clone();
+        DefaultExtensionPlanTree currentTree = this.extensionTree.clone();
 
         try {
             installExtension(extensionId, namespace, currentTree);
