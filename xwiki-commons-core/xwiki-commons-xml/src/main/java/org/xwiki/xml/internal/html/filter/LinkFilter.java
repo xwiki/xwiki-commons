@@ -46,6 +46,7 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
  * But because Firefox does not handle it, we also need to add the "noreferer" value.
  *
  * @version $Id$
+ * @since 7.4.5, 8.2.2, 8.3M2
  */
 @Component
 @Named("link")
@@ -100,7 +101,10 @@ public class LinkFilter extends AbstractHTMLFilter
                 relAttributes.add(NOREFERRER);
             }
 
-            link.setAttribute(ATTRIBUTE_REL, String.join(" ", relAttributes));
+            // Serialize the attributes
+            if (!relAttributes.isEmpty()) {
+                link.setAttribute(ATTRIBUTE_REL, String.join(" ", relAttributes));
+            }
         }
     }
 
