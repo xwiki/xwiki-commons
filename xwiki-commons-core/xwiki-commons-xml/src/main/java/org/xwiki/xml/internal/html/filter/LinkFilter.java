@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xwiki.component.annotation.Component;
@@ -103,7 +104,7 @@ public class LinkFilter extends AbstractHTMLFilter
 
             // Serialize the attributes
             if (!relAttributes.isEmpty()) {
-                link.setAttribute(ATTRIBUTE_REL, String.join(" ", relAttributes));
+                link.setAttribute(ATTRIBUTE_REL, StringUtils.join(relAttributes, " "));
             }
         }
     }
