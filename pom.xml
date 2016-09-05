@@ -1276,7 +1276,6 @@ mm
               <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
                 <configuration>
                   <!-- Always exclude the internal package since it's not user-public -->
                   <excludePackageNames>*.internal.*</excludePackageNames>
@@ -1342,6 +1341,31 @@ mm
               <version>${slf4j.version}</version>
             </dependency>
           </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.jvnet.jaxb2.maven2</groupId>
+          <artifactId>maven-jaxb2-plugin</artifactId>
+          <version>0.13.1</version>
+          <configuration>
+            <extension>true</extension>
+            <args>
+              <arg>-Xfluent-api</arg>
+            </args>
+            <verbose>true</verbose>
+            <removeOldOutput>false</removeOldOutput>
+            <plugins>
+              <plugin>
+                <groupId>org.jvnet.jaxb2_commons</groupId>
+                <artifactId>jaxb2-fluent-api</artifactId>
+                <version>3.0</version>
+              </plugin>
+              <plugin>
+                <groupId>org.jvnet.jaxb2_commons</groupId>
+                <artifactId>jaxb2-default-value</artifactId>
+                <version>1.1</version>
+              </plugin>
+            </plugins>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>

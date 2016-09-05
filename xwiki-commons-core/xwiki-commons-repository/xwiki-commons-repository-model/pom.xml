@@ -43,27 +43,8 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.12.3</version>
         <configuration>
-          <extension>true</extension>
-          <args>
-            <arg>-Xfluent-api</arg>
-          </args>
           <generatePackage>org.xwiki.extension.repository.xwiki.model.jaxb</generatePackage>
-          <verbose>true</verbose>
-          <removeOldOutput>false</removeOldOutput>
-          <plugins>
-            <plugin>
-              <groupId>org.jvnet.jaxb2_commons</groupId>
-              <artifactId>jaxb2-fluent-api</artifactId>
-              <version>3.0</version>
-            </plugin>
-            <plugin>
-              <groupId>org.jvnet.jaxb2_commons</groupId>
-              <artifactId>jaxb2-default-value</artifactId>
-              <version>1.1</version>
-            </plugin>
-          </plugins>
         </configuration>
         <executions>
           <execution>
