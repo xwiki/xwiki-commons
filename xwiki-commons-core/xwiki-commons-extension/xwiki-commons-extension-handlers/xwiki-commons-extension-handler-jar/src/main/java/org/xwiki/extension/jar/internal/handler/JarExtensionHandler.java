@@ -118,7 +118,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
                     // We failed to unregister some components, we probably failed to register them in the first
                     // place too so let's just ignore it. Better than making impossible to uninstall the extension.
                     // We catch Throwable because most of the time we end up with a LinkageError
-                    this.logger.warn("Failed to unregistere components of the JAR extension [{}]",
+                    this.logger.warn("Failed to unregister some components of the JAR extension [{}]",
                         installedExtension.getId(), e);
                 }
 
@@ -189,7 +189,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
         List<ComponentDeclaration> componentDeclarations = getDeclaredComponents(jarFile);
 
         if (componentDeclarations == null) {
-            this.logger.debug("[{}] does not contain any components to unload", jarFile.getName());
+            this.logger.debug("[{}] does not contain any component", jarFile.getName());
             return;
         }
 
