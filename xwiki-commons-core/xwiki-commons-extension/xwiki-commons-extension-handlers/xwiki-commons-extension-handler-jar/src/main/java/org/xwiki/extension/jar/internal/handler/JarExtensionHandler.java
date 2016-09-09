@@ -112,7 +112,15 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
 
             if (namespace == null || classLoader.getNamespace().equals(namespace)) {
                 // unregister components
-                unloadComponents(installedExtension.getFile(), classLoader, namespace);
+                try {
+                    unloadComponents(installedExtension.getFile(), classLoader, namespace);
+                } catch (Throwable e) {
+                    // We failed to unregister some components, we probably failed to register them in the first
+                    // place too so let's just ignore it. Better than making impossible to uninstall the extension.
+                    // We catch Throwable because most of the time we end up with a LinkageError
+                    this.logger.warn("Failed to unregistere components of the JAR extension [{}]",
+                        installedExtension.getId(), e);
+                }
 
                 // The ClassLoader(s) will be replaced and reloaded at the end of the job
                 // @see org.xwiki.extension.jar.internal.handler.JarExtensionJobFinishedListener
@@ -153,8 +161,8 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
                         componentManager.setComponentEventManager(componentEventManager);
                     }
 
-                    stackingComponentEventManager.setObservationManager(componentManager
-                        .<ObservationManager>getInstance(ObservationManager.class));
+                    stackingComponentEventManager.setObservationManager(
+                        componentManager.<ObservationManager>getInstance(ObservationManager.class));
                     stackingComponentEventManager.shouldStack(false);
                     stackingComponentEventManager.flushEvents();
                 }
@@ -176,20 +184,16 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     }
 
     private void unloadComponents(LocalExtensionFile jarFile, NamespaceURLClassLoader classLoader, String namespace)
-        throws UninstallException
+        throws IOException
     {
-        try {
-            List<ComponentDeclaration> componentDeclarations = getDeclaredComponents(jarFile);
+        List<ComponentDeclaration> componentDeclarations = getDeclaredComponents(jarFile);
 
-            if (componentDeclarations == null) {
-                this.logger.debug("[{}] does not contain any components to unload", jarFile.getName());
-                return;
-            }
-
-            this.jarLoader.unregister(this.componentManagerManager.getComponentManager(namespace, false), classLoader,
-                componentDeclarations);
-        } catch (Exception e) {
-            throw new UninstallException("Failed to unload jar file components", e);
+        if (componentDeclarations == null) {
+            this.logger.debug("[{}] does not contain any components to unload", jarFile.getName());
+            return;
         }
+
+        this.jarLoader.unregister(this.componentManagerManager.getComponentManager(namespace, false), classLoader,
+            componentDeclarations);
     }
 }
