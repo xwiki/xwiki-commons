@@ -151,6 +151,9 @@ public class XWikiExtension extends AbstractRatingExtension implements RatingExt
             setAllowedNamespaces(namespaces.getNamespaces());
         }
 
+        // Recommended
+        setRecommended(restExtension.isRecommended());
+
         // Properties
         for (Property restProperty : restExtension.getProperties()) {
             putProperty(restProperty.getKey(), restProperty.getStringValue());

@@ -58,4 +58,10 @@ public interface ExtensionManagerConfiguration
      * @return the user agent to declare when communication with external services (generally repositories)
      */
     String getUserAgent();
+
+    /**
+     * @return true if XWiki should try to get more informations about the core extensions using the repositories
+     * @since 8.3RC1
+     */
+    boolean resolveCoreExtensions();
 }

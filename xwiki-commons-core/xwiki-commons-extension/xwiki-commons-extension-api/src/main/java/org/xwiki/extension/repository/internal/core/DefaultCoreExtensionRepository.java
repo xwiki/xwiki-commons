@@ -37,6 +37,7 @@ import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
@@ -86,6 +87,9 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     @Inject
     private ExtensionRepositoryManager repositoryManager;
 
+    @Inject
+    private ExtensionManagerConfiguration configuration;
+
     /**
      * Default constructor.
      */
@@ -124,8 +128,8 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
                 }
             }
 
-            // Update core extensions only if there is any remote repository
-            if (!this.repositoryManager.getRepositories().isEmpty()) {
+            // Update core extensions only if there is any remote repository and it's not disabled
+            if (this.configuration.resolveCoreExtensions() && !this.repositoryManager.getRepositories().isEmpty()) {
                 // Start a background thread to get more details about the found extensions
                 Thread thread = new Thread(new Runnable()
                 {

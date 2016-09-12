@@ -72,6 +72,11 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     private static final String CK_PREFIX = "extension.";
 
     /**
+     * The prefix of all the core extension related properties.
+     */
+    private static final String CK_CORE_PREFIX = CK_PREFIX + "core.";
+
+    /**
      * The prefix of all the extension repository related properties.
      */
     private static final String CK_REPOSITORIES_PREFIX = CK_PREFIX + "repositories.";
@@ -228,5 +233,11 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     {
         // TODO: add version (need a way to get platform version first)
         return this.configuration.get().getProperty(CK_PREFIX + "userAgent", DEFAULT_USERAGENT);
+    }
+
+    @Override
+    public boolean resolveCoreExtensions()
+    {
+        return this.configuration.get().getProperty(CK_CORE_PREFIX + "resolve", true);
     }
 }
