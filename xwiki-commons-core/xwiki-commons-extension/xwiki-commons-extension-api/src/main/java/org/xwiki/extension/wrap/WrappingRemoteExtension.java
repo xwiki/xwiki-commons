@@ -19,32 +19,30 @@
  */
 package org.xwiki.extension.wrap;
 
-import org.xwiki.extension.rating.ExtensionRating;
-import org.xwiki.extension.rating.RatingExtension;
+import org.xwiki.extension.RemoteExtension;
 
 /**
- * Wrap a rating extension.
+ * Wrap a remote extension.
  *
  * @param <T> the extension type
  * @version $Id$
- * @since 6.4M3
+ * @since 8.3RC1
  */
-public class WrappingRatingExtension<T extends RatingExtension> extends WrappingRemoteExtension<T>
-    implements RatingExtension
+public class WrappingRemoteExtension<T extends RemoteExtension> extends WrappingExtension<T> implements RemoteExtension
 {
     /**
-     * @param ratingExtension the wrapped rating extension
+     * @param remoteExtension the wrapped local extension
      */
-    public WrappingRatingExtension(T ratingExtension)
+    public WrappingRemoteExtension(T remoteExtension)
     {
-        super(ratingExtension);
+        super(remoteExtension);
     }
 
-    // RatingExtension
+    // RremoteExtension
 
     @Override
-    public ExtensionRating getRating()
+    public boolean isRecommended()
     {
-        return getWrapped().getRating();
+        return getWrapped().isRecommended();
     }
 }

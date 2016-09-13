@@ -159,9 +159,11 @@
           </element>
           <element name="features" type="string" minOccurs="0"
             maxOccurs="unbounded">
-                        <annotation>
-                          <documentation>@Deprecated since 8.0M1, use extensionFeatures instead</documentation>
-                        </annotation>
+            <annotation>
+              <documentation>
+                @Deprecated since 8.0M1, use extensionFeatures instead
+              </documentation>
+            </annotation>
           </element>
           <element name="extensionFeatures" type="extension:ExtensionId"
             minOccurs="0" maxOccurs="unbounded">
@@ -176,7 +178,10 @@
           <element name="category" type="string" minOccurs="0"
             maxOccurs="1">
           </element>
-          <element name="allowedNamespaces" type="extension:Namespaces" minOccurs="0" maxOccurs="1"></element>
+          <element name="allowedNamespaces" type="extension:Namespaces"
+            minOccurs="0" maxOccurs="1">
+          </element>
+          <element name="recommended" type="boolean" minOccurs="0" maxOccurs="1"></element>
           <element name="properties" type="extension:Property"
             minOccurs="0" maxOccurs="unbounded">
           </element>

@@ -19,29 +19,30 @@
  */
 package org.xwiki.extension;
 
-import org.xwiki.extension.rating.ExtensionRating;
 import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link RatingExtension} implementations.
  *
  * @version $Id$
- * @since 7.2M1
+ * @since 8.3RC1
  */
-public abstract class AbstractRatingExtension extends AbstractRemoteExtension implements RatingExtension
+@Unstable
+public abstract class AbstractRemoteExtension extends AbstractExtension implements RemoteExtension
 {
     /**
-     * @see #getRating()
+     * @see #isRecommended()
      */
-    protected ExtensionRating rating;
+    protected boolean recommended;
 
     /**
      * @param repository the repository where this extension comes from
      * @param id the extension identifier
      * @param type the extension type
      */
-    public AbstractRatingExtension(ExtensionRepository repository, ExtensionId id, String type)
+    public AbstractRemoteExtension(ExtensionRepository repository, ExtensionId id, String type)
     {
         super(repository, id, type);
     }
@@ -52,33 +53,32 @@ public abstract class AbstractRatingExtension extends AbstractRemoteExtension im
      * @param repository the repository where this extension comes from
      * @param extension the extension to copy
      */
-    public AbstractRatingExtension(ExtensionRepository repository, Extension extension)
+    public AbstractRemoteExtension(ExtensionRepository repository, Extension extension)
     {
         super(repository, extension);
     }
 
     @Override
-    public ExtensionRating getRating()
+    public boolean isRecommended()
     {
-        return this.rating;
+        return this.recommended;
     }
 
     /**
-     * @param rating an extension's rating
+     * @param recommended true if the extension is recommended
+     * @see #isRecommended()
      */
-    public void setRating(ExtensionRating rating)
+    public void setRecommended(boolean recommended)
     {
-        this.rating = rating;
+        this.recommended = recommended;
     }
 
     @Override
     public <T> T get(String fieldName)
     {
         switch (fieldName.toLowerCase()) {
-            case FIELD_AVERAGE_VOTE:
-                return (T) (Float) (getRating() != null ? getRating().getAverageVote() : -1f);
-            case FIELD_TOTAL_VOTES:
-                return (T) (Integer) (getRating() != null ? getRating().getTotalVotes() : 0);
+            case FIELD_RECOMMENDED:
+                return (T) (Boolean) isRecommended();
             default:
                 return super.get(fieldName);
         }

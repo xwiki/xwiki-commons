@@ -63,5 +63,8 @@ public interface ExtensionManagerConfiguration
      * @return true if XWiki should try to get more informations about the core extensions using the repositories
      * @since 8.3RC1
      */
-    boolean resolveCoreExtensions();
+    default boolean resolveCoreExtensions()
+    {
+        return true;
+    }
 }

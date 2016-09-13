@@ -20,6 +20,7 @@
 package org.xwiki.extension.rating;
 
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.RemoteExtension;
 
 /**
  * Combine {@link Extension} and {@link Rating}.
@@ -27,7 +28,7 @@ import org.xwiki.extension.Extension;
  * @version $Id$
  * @since 6.4M3
  */
-public interface RatingExtension extends Extension, Rating
+public interface RatingExtension extends RemoteExtension, Rating
 {
     /**
      * @see #getRating()

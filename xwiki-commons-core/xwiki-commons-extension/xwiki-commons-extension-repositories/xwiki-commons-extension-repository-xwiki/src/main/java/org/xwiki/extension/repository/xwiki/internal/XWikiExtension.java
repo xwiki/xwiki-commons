@@ -41,7 +41,6 @@ import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.rating.DefaultExtensionRating;
-import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
@@ -62,7 +61,7 @@ import org.xwiki.extension.version.internal.DefaultVersion;
  * @version $Id$
  * @since 4.0M1
  */
-public class XWikiExtension extends AbstractRatingExtension implements RatingExtension
+public class XWikiExtension extends AbstractRatingExtension
 {
     public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion restExtension,
         ExtensionLicenseManager licenseManager)
