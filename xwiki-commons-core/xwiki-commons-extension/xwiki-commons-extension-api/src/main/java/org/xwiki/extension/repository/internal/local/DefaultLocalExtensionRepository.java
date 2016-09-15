@@ -54,9 +54,11 @@ import org.xwiki.extension.repository.internal.AbstractCachedExtensionRepository
 @Component
 @Singleton
 // TODO: make it threadsafe bulletproofs
-public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepository<DefaultLocalExtension> implements
-    LocalExtensionRepository, Initializable
+public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepository<DefaultLocalExtension>
+    implements LocalExtensionRepository, Initializable
 {
+    private static final String ID = "local";
+
     /**
      * Used to get repository path.
      */
@@ -98,7 +100,7 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
             throw new InitializationException("Failed to intialize local extension storage", e);
         }
 
-        setDescriptor(new DefaultExtensionRepositoryDescriptor("local", "xwiki", this.storage.getRootFolder().toURI()));
+        setDescriptor(new DefaultExtensionRepositoryDescriptor(ID, ID, this.storage.getRootFolder().toURI()));
 
         try {
             this.storage.loadExtensions();
@@ -136,8 +138,8 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
     {
         Collection<DefaultLocalExtension> versions = this.extensionsVersions.get(id);
 
-        return versions != null ? Collections.<LocalExtension>unmodifiableCollection(versions) : Collections
-            .<LocalExtension>emptyList();
+        return versions != null ? Collections.<LocalExtension>unmodifiableCollection(versions)
+            : Collections.<LocalExtension>emptyList();
     }
 
     /**
@@ -187,8 +189,8 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
                     e);
             }
         } else {
-            throw new LocalExtensionRepositoryException("Extension [" + extension
-                + "] already exists in local repository");
+            throw new LocalExtensionRepositoryException(
+                "Extension [" + extension + "] already exists in local repository");
         }
 
         return localExtension;
@@ -205,8 +207,8 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
             try {
                 this.storage.saveDescriptor(extension);
             } catch (Exception e) {
-                throw new LocalExtensionRepositoryException("Failed to save descriptor for extension ["
-                    + localExtension + "]", e);
+                throw new LocalExtensionRepositoryException(
+                    "Failed to save descriptor for extension [" + localExtension + "]", e);
             }
         }
     }

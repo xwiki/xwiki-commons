@@ -206,7 +206,7 @@ public final class RepositoryUtils
      * @param patternMatcher the pattern to match
      * @param filters the filters
      * @param extension the extension to match
-     * @return true if one of the element is matched
+     * @return false if one of the filter is not matching the extension
      * @since 7.0M2
      */
     public static boolean matches(Pattern patternMatcher, Collection<Filter> filters, Extension extension)
@@ -223,6 +223,27 @@ public final class RepositoryUtils
         }
 
         return false;
+    }
+
+    /**
+     * Make sure the passed extension matches all filters.
+     *
+     * @param filters the filters
+     * @param extension the extension to match
+     * @return false if one of the filter is not matching the extension
+     * @since 8.3RC1
+     */
+    public static boolean matches(Collection<Filter> filters, Extension extension)
+    {
+        if (filters != null) {
+            for (Filter filter : filters) {
+                if (!matches(filter, extension)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**

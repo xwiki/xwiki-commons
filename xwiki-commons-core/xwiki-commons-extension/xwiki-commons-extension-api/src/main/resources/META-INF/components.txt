@@ -26,3 +26,4 @@ org.xwiki.extension.repository.internal.core.DefaultCoreExtensionScanner
 org.xwiki.extension.repository.internal.core.CoreExtensionCache
 org.xwiki.extension.repository.internal.installed.DefaultInstalledExtensionRepository
 org.xwiki.extension.repository.internal.local.DefaultLocalExtensionRepository
+org.xwiki.extension.repository.internal.recommended.RecommendedExtensionRepository

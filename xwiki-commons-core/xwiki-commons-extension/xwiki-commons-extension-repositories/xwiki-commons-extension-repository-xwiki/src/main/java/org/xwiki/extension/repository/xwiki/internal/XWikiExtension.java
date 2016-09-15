@@ -151,7 +151,10 @@ public class XWikiExtension extends AbstractRatingExtension
         }
 
         // Recommended
-        setRecommended(restExtension.isRecommended());
+        Boolean recommended = restExtension.isRecommended();
+        if (recommended != null) {
+            setRecommended(restExtension.isRecommended());
+        }
 
         // Properties
         for (Property restProperty : restExtension.getProperties()) {

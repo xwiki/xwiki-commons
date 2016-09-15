@@ -23,9 +23,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.Extension;
@@ -74,6 +79,13 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     @Inject
     private InstalledExtensionRepository installedExtensionRepository;
 
+    @Inject
+    @Named("context")
+    private Provider<ComponentManager> componentManagerProvider;
+
+    @Inject
+    private Logger logger;
+
     /**
      * The standard repositories.
      */
@@ -119,6 +131,7 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     }
 
     @Override
+    @Deprecated
     public Extension resolveExtension(ExtensionDependency extensionDependency) throws ResolveException
     {
         try {
@@ -133,8 +146,7 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     }
 
     @Override
-    public Extension resolveExtension(ExtensionDependency extensionDependency, String namespace)
-        throws ResolveException
+    public Extension resolveExtension(ExtensionDependency extensionDependency, String namespace) throws ResolveException
     {
         try {
             return this.coreExtensionRepository.resolve(extensionDependency);
@@ -158,8 +170,20 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
     @Override
     public ExtensionRepository getRepository(String repositoryId)
     {
+        // Try internal repositories
         ExtensionRepository repository = this.standardRepositories.get(repositoryId);
 
+        // Try component repositories
+        ComponentManager componentManager = this.componentManagerProvider.get();
+        if (componentManager.hasComponent(ExtensionRepository.class, repositoryId)) {
+            try {
+                return componentManager.getInstance(ExtensionRepository.class, repositoryId);
+            } catch (ComponentLookupException e) {
+                this.logger.error("Failed to lookup component", e);
+            }
+        }
+
+        // Try remote repositories
         if (repository == null) {
             repository = this.repositoryManager.getRepository(repositoryId);
         }

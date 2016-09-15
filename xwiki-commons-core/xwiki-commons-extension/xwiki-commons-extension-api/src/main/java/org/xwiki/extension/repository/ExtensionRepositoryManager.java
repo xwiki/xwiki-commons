@@ -28,17 +28,19 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.ExtensionQuery;
+import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.version.Version;
 
 /**
- * Proxy behind remote repositories.
+ * Proxy repository in to make easier to search in all remove extension repositories.
  *
  * @version $Id$
  * @since 4.0M1
  */
 @Role
-public interface ExtensionRepositoryManager
+public interface ExtensionRepositoryManager extends ExtensionRepository, AdvancedSearchable
 {
     /**
      * The default priority for extension repository ordering.
@@ -119,6 +121,8 @@ public interface ExtensionRepositoryManager
      */
     Collection<ExtensionRepository> getRepositories();
 
+    // ExtensionRepository
+
     /**
      * Get extension descriptor found in one of the repositories.
      * <p>
@@ -129,6 +133,7 @@ public interface ExtensionRepositoryManager
      * @throws ExtensionNotFoundException when the extension does not exist in any of the repositories
      * @throws ResolveException failed to find extension in the repository
      */
+    @Override
     Extension resolve(ExtensionId extensionId) throws ResolveException;
 
     /**
@@ -145,6 +150,7 @@ public interface ExtensionRepositoryManager
      * @throws ExtensionNotFoundException when the dependency does not match any extension in any of the repositories
      * @throws ResolveException failed to find extension in the repository
      */
+    @Override
     Extension resolve(ExtensionDependency extensionDependency) throws ResolveException;
 
     /**
@@ -157,7 +163,10 @@ public interface ExtensionRepositoryManager
      * @throws ExtensionNotFoundException when the extension does not exist in any of the repositories
      * @throws ResolveException fail to find extension for provided id
      */
+    @Override
     IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException;
+
+    // AdvancedSearchable
 
     /**
      * Search among all repositories implementing {@link org.xwiki.extension.repository.search.Searchable} interface.
@@ -169,7 +178,8 @@ public interface ExtensionRepositoryManager
      * @return the found extensions descriptors, empty list if nothing could be found
      * @see org.xwiki.extension.repository.search.Searchable
      */
-    IterableResult<Extension> search(String pattern, int offset, int nb);
+    @Override
+    IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException;
 
     /**
      * Search among all repositories implementing {@link org.xwiki.extension.repository.search.AdvancedSearchable}
@@ -180,5 +190,6 @@ public interface ExtensionRepositoryManager
      * @see org.xwiki.extension.repository.search.AdvancedSearchable
      * @since 7.1M1
      */
-    IterableResult<Extension> search(ExtensionQuery query);
+    @Override
+    IterableResult<Extension> search(ExtensionQuery query) throws SearchException;
 }

@@ -63,9 +63,20 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
     }
 
     /**
+     * Constructor to use only for "virtual" repositories having no storage like the ExtensionRepositoryManager.
+     * 
+     * @param id the unique identifier
+     * @since 8.3RC1
+     */
+    public DefaultExtensionRepositoryDescriptor(String id)
+    {
+        this(id, null, null);
+    }
+
+    /**
      * @param id the unique identifier
      * @param type the repository type (maven, xwiki, etc.)
-     * @param uri the repository adress
+     * @param uri the repository address
      */
     public DefaultExtensionRepositoryDescriptor(String id, String type, URI uri)
     {

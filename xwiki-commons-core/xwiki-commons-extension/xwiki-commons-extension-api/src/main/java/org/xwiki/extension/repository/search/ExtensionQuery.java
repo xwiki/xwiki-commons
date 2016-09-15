@@ -274,6 +274,18 @@ public class ExtensionQuery
     }
 
     /**
+     * @param newFilters the filters to add
+     * @return this
+     * @since 8.3RC1
+     */
+    public ExtensionQuery addFilters(List<Filter> newFilters)
+    {
+        this.filters.addAll(newFilters);
+
+        return this;
+    }
+
+    /**
      * @return the criteria used to sort the result
      */
     public List<SortClause> getSortClauses()

@@ -48,6 +48,8 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.repository.AbstractAdvancedSearchableExtensionRepository;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
@@ -71,7 +73,8 @@ import org.xwiki.extension.version.Version;
  */
 @Component
 @Singleton
-public class DefaultExtensionRepositoryManager implements ExtensionRepositoryManager, Initializable
+public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchableExtensionRepository
+    implements ExtensionRepositoryManager, Initializable
 {
     /**
      * Used to lookup {@link ExtensionRepositoryFactory}s.
@@ -131,10 +134,15 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
         }
     }
 
+    // Initializable
+
     @Override
     public void initialize() throws InitializationException
     {
-        // Load extension repositories
+        // Set descriptor
+        setDescriptor(new DefaultExtensionRepositoryDescriptor("remote"));
+
+        // Load default extension repositories
         for (ExtensionRepositorySource repositoriesSource : this.repositoriesSources) {
             for (ExtensionRepositoryDescriptor repositoryDescriptor : repositoriesSource
                 .getExtensionRepositoryDescriptors()) {
@@ -145,6 +153,20 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
                 }
             }
         }
+    }
+
+    // ExtensionRepositoryManager
+
+    private void updateRepositories()
+    {
+        // Get values
+        Stream<ExtensionRepositoryEntry> entryStream = this.repositoryMap.values().stream();
+
+        // Sort
+        entryStream = entryStream.sorted();
+
+        // Convert to list of ExtensionRepository
+        this.repositories = entryStream.map(ExtensionRepositoryEntry::getRepository).collect(Collectors.toList());
     }
 
     @Override
@@ -186,18 +208,6 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     public void addRepository(ExtensionRepository repository)
     {
         addRepository(repository, DEFAULT_PRIORITY);
-    }
-
-    private void updateRepositories()
-    {
-        // Get values
-        Stream<ExtensionRepositoryEntry> entryStream = this.repositoryMap.values().stream();
-
-        // Sort
-        entryStream = entryStream.sorted();
-
-        // Convert to list of ExtensionRepository
-        this.repositories = entryStream.map(ExtensionRepositoryEntry::getRepository).collect(Collectors.toList());
     }
 
     @Override
@@ -265,6 +275,8 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     {
         return this.repositories;
     }
+
+    // ExtensionRepository
 
     @Override
     public Extension resolve(ExtensionId extensionId) throws ResolveException
@@ -393,15 +405,18 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
     }
 
     @Override
-    public IterableResult<Extension> search(String pattern, int offset, int nb)
+    public boolean exists(ExtensionId extensionId)
     {
-        ExtensionQuery query = new ExtensionQuery(pattern);
+        for (ExtensionRepository repository : this.repositories) {
+            if (repository.exists(extensionId)) {
+                return true;
+            }
+        }
 
-        query.setOffset(offset);
-        query.setLimit(nb);
-
-        return search(query);
+        return false;
     }
+
+    // AdvancedSearchable
 
     @Override
     public IterableResult<Extension> search(ExtensionQuery query)
@@ -483,5 +498,29 @@ public class DefaultExtensionRepositoryManager implements ExtensionRepositoryMan
         }
 
         return result;
+    }
+
+    @Override
+    public boolean isFilterable()
+    {
+        for (ExtensionRepository repository : this.repositories) {
+            if (repository instanceof AdvancedSearchable && ((AdvancedSearchable) repository).isFilterable()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean isSortable()
+    {
+        for (ExtensionRepository repository : this.repositories) {
+            if (repository instanceof AdvancedSearchable && ((AdvancedSearchable) repository).isSortable()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
