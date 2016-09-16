@@ -419,7 +419,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
     // AdvancedSearchable
 
     @Override
-    public IterableResult<Extension> search(ExtensionQuery query)
+    public IterableResult<Extension> search(ExtensionQuery query) throws SearchException
     {
         IterableResult<Extension> searchResult = null;
 

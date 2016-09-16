@@ -1235,7 +1235,7 @@ mm
             <!-- Always exclude the internal package since it's not user-public -->
             <excludePackageNames>*.internal.*</excludePackageNames>
             <!-- Make sure javadoc has enough memory -->
-            <maxmemory>300m</maxmemory>
+            <maxmemory>1024m</maxmemory>
           </configuration>
         </plugin>
         <plugin>
