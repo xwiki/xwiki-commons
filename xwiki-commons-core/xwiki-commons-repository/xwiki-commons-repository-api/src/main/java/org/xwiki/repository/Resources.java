@@ -39,6 +39,12 @@ public interface Resources
      */
     String VERSION11 = "1.1";
 
+    /**
+     * Version 1.2 of the protocol.
+     * @since 8.3RC1
+     */
+    String VERSION12 = "1.2";
+
     // Entry point
 
     /**
