@@ -22,6 +22,8 @@ package org.xwiki.extension.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
@@ -43,6 +45,7 @@ import org.xwiki.extension.version.Version;
  */
 public abstract class AbstractFilteredExtensionRepository extends AbstractAdvancedSearchableExtensionRepository
 {
+    @Inject
     private ExtensionRepositoryManager repositories;
 
     private List<Filter> filters = new ArrayList<>();
