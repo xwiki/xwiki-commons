@@ -63,7 +63,8 @@ public interface ExtensionManager
      * @param extensionDependency the extension as dependency
      * @return the resolved extension
      * @throws ResolveException error when trying to resolve extension
-     * @deprecated starting with 5.3M1, use {@link #resolveExtension(ExtensionDependency, String)} instead
+     * @since 3.3M2
+     * @deprecated since 5.3M1, use {@link #resolveExtension(ExtensionDependency, String)} instead
      */
     @Deprecated
     Extension resolveExtension(ExtensionDependency extensionDependency) throws ResolveException;
