@@ -32,7 +32,7 @@ import org.xwiki.cache.event.CacheEntryListener;
 /**
  * Base class for {@link Cache} implementations. It provides events {@link DisposableCacheValue} management.
  * 
- * @param <T>
+ * @param <T> the class of the data stored in the cache.
  * @version $Id$
  */
 public abstract class AbstractCache<T> implements Cache<T>
@@ -45,12 +45,29 @@ public abstract class AbstractCache<T> implements Cache<T>
     /**
      * The configuration used to create the cache.
      */
-    protected CacheConfiguration configuration;
+    protected final CacheConfiguration configuration;
 
     /**
      * The list of listener to called when events appends on a cache entry.
      */
     protected final EventListenerList cacheEntryListeners = new EventListenerList();
+
+    /**
+     * @deprecated since 8.3RC1, use {@link #AbstractCache(CacheConfiguration)} instead
+     */
+    @Deprecated
+    public AbstractCache()
+    {
+        this(null);
+    }
+
+    /**
+     * @param configuration the configuration of the cache
+     */
+    public AbstractCache(CacheConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
 
     @Override
     public void dispose()
@@ -125,7 +142,7 @@ public abstract class AbstractCache<T> implements Cache<T>
                 ((DisposableCacheValue) value).dispose();
             } catch (Throwable e) {
                 LOGGER.warn("Error when trying to dispose a cache object of cache [{}]",
-                    this.configuration.getConfigurationId(), e);
+                    this.configuration != null ? this.configuration.getConfigurationId() : null, e);
             }
         }
     }

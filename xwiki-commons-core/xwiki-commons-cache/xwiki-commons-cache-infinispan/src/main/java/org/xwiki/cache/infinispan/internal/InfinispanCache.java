@@ -71,6 +71,8 @@ public class InfinispanCache<T> extends AbstractCache<T>
      */
     InfinispanCache(EmbeddedCacheManager cacheManager, CacheConfiguration configuration)
     {
+        super(configuration);
+
         this.cacheManager = cacheManager;
         this.cache = cacheManager.<String, T>getCache(configuration.getConfigurationId());
 

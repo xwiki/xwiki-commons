@@ -28,6 +28,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.internal.MapCache;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.job.DefaultJobStatus;
@@ -37,6 +39,7 @@ import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -55,7 +58,7 @@ public class DefaultJobStatusStoreTest
     @Before
     public void before() throws Exception
     {
-        final JobManagerConfiguration jobManagerConfiguration =
+        JobManagerConfiguration jobManagerConfiguration =
             this.componentManager.getInstance(JobManagerConfiguration.class);
 
         FileUtils.deleteDirectory(new File("target/test/jobs/"));
@@ -63,6 +66,9 @@ public class DefaultJobStatusStoreTest
 
         when(jobManagerConfiguration.getStorage()).thenReturn(new File("target/test/jobs/status"));
         when(jobManagerConfiguration.getJobStatusCacheSize()).thenReturn(100);
+
+        CacheManager cacheManagerMock = this.componentManager.getInstance(CacheManager.class);
+        when(cacheManagerMock.createNewCache(any())).thenReturn(new MapCache<>());
     }
 
     @Test

@@ -23,12 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -37,12 +32,16 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import org.xwiki.cache.Cache;
+import org.xwiki.cache.CacheException;
+import org.xwiki.cache.CacheManager;
+import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -62,118 +61,6 @@ import org.xwiki.job.event.status.JobStatus;
 @Singleton
 public class DefaultJobStatusStore implements JobStatusStore, Initializable
 {
-    private static class Cache implements Map<List<String>, JobStatus>
-    {
-        // TODO: probably use JCache instead
-        private final Map<List<String>, JobStatus> cache;
-
-        private final Set<List<String>> noStatusCache;
-
-        Cache(int size)
-        {
-            this.cache = new LRUMap<>(size);
-            this.noStatusCache = new HashSet<List<String>>();
-        }
-
-        @Override
-        public int size()
-        {
-            return this.cache.size() + this.noStatusCache.size();
-        }
-
-        @Override
-        public boolean isEmpty()
-        {
-            return this.cache.isEmpty() && this.noStatusCache.isEmpty();
-        }
-
-        @Override
-        public boolean containsKey(Object key)
-        {
-            return this.cache.containsKey(key) || this.noStatusCache.contains(key);
-        }
-
-        @Override
-        public boolean containsValue(Object value)
-        {
-            // not used
-            return false;
-        }
-
-        @Override
-        public JobStatus get(Object key)
-        {
-            if (!this.noStatusCache.contains(key)) {
-                return this.cache.get(key);
-            }
-
-            return NOSTATUS;
-        }
-
-        @Override
-        public JobStatus put(List<String> key, JobStatus value)
-        {
-            JobStatus status = get(key);
-
-            if (value == null) {
-                this.cache.remove(key);
-                this.noStatusCache.add(key);
-            } else {
-                this.cache.put(key, value);
-                this.noStatusCache.remove(key);
-            }
-
-            return status;
-        }
-
-        @Override
-        public JobStatus remove(Object key)
-        {
-            JobStatus status = get(key);
-
-            this.cache.remove(key);
-            this.noStatusCache.remove(key);
-
-            return status;
-        }
-
-        @Override
-        public void putAll(Map<? extends List<String>, ? extends JobStatus> m)
-        {
-            for (Map.Entry<? extends List<String>, ? extends JobStatus> entry : m.entrySet()) {
-                put(entry.getKey(), entry.getValue());
-            }
-        }
-
-        @Override
-        public void clear()
-        {
-            this.cache.clear();
-            this.noStatusCache.clear();
-        }
-
-        @Override
-        public Set<List<String>> keySet()
-        {
-            // not used
-            return null;
-        }
-
-        @Override
-        public Collection<JobStatus> values()
-        {
-            // not used
-            return null;
-        }
-
-        @Override
-        public Set<java.util.Map.Entry<List<String>, JobStatus>> entrySet()
-        {
-            // not used
-            return null;
-        }
-    }
-
     /**
      * The current version of the store. Should be upgraded if any change is made.
      */
@@ -204,13 +91,16 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
      */
     private static final String FOLDER_NULL = "&null";
 
-    private static final JobStatus NOSTATUS = new DefaultJobStatus(null, null, null, null);
+    private static final JobStatus NOSTATUS = new DefaultJobStatus<>(null, null, null, null);
 
     /**
      * Used to get the storage directory.
      */
     @Inject
     private JobManagerConfiguration configuration;
+
+    @Inject
+    private CacheManager cacheManager;
 
     /**
      * The logger to log.
@@ -222,7 +112,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
     private ExecutorService executorService;
 
-    private Map<List<String>, JobStatus> cache;
+    private Cache<JobStatus> cache;
 
     class JobStatusSerializerRunnable implements Runnable
     {
@@ -268,7 +158,19 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         this.executorService =
             new ThreadPoolExecutor(0, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), threadFactory);
 
-        this.cache = Collections.synchronizedMap(new Cache(this.configuration.getJobStatusCacheSize()));
+        // Initialize cache
+        LRUCacheConfiguration cacheConfiguration =
+            new LRUCacheConfiguration("xwiki.groupservice.usergroups", this.configuration.getJobStatusCacheSize());
+        try {
+            this.cache = this.cacheManager.createNewCache(cacheConfiguration);
+        } catch (CacheException e) {
+            throw new InitializationException("Failed to initialize job status cache", e);
+        }
+    }
+
+    private String toUniqueString(List<String> id)
+    {
+        return StringUtils.join(id, '/');
     }
 
     /**
@@ -416,27 +318,34 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     @Override
     public JobStatus getJobStatus(List<String> id)
     {
-        JobStatus status = this.cache.get(id);
+        String idString = toUniqueString(id);
+
+        JobStatus status = this.cache.get(idString);
 
         if (status == null) {
-            synchronized (this.cache) {
-                status = this.cache.get(id);
-
-                if (status == null) {
-                    try {
-                        status = loadStatus(id);
-
-                        this.cache.put(id, status);
-                    } catch (Exception e) {
-                        this.logger.warn("Failed to load job status for id [{}]", id, e);
-
-                        this.cache.put(id, null);
-                    }
-                }
-            }
+            status = maybeLoadStatus(id, idString);
         }
 
         return status == NOSTATUS ? null : status;
+    }
+
+    private synchronized JobStatus maybeLoadStatus(List<String> id, String idString)
+    {
+        JobStatus status = this.cache.get(idString);
+
+        if (status == null) {
+            try {
+                status = loadStatus(id);
+
+                this.cache.set(idString, status);
+            } catch (Exception e) {
+                this.logger.warn("Failed to load job status for id {}", id, e);
+
+                this.cache.remove(idString);
+            }
+        }
+
+        return status;
     }
 
     @Override
@@ -455,7 +364,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     {
         if (status != null && status.getRequest() != null && status.getRequest().getId() != null) {
             synchronized (this.cache) {
-                this.cache.put(status.getRequest().getId(), status);
+                this.cache.set(toUniqueString(status.getRequest().getId()), status);
             }
 
             // Only store Serializable job status on file system
@@ -480,10 +389,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             } catch (IOException e) {
                 this.logger.warn("Failed to delete job folder [{}]", jobFolder, e);
             }
-
-            this.cache.remove(id);
         }
 
-        this.cache.remove(id);
+        this.cache.remove(toUniqueString(id));
     }
 }
