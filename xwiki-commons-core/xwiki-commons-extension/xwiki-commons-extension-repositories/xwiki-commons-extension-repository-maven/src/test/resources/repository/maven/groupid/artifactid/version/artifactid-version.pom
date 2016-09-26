@@ -39,8 +39,13 @@
   <properties>
     <xwiki.extension.features>
       groupid1:feature1,
-      groupid2:feature2
+      groupid2:feature2/42
     </xwiki.extension.features>
+    <xwiki.extension.category>category</xwiki.extension.category>
+    <xwiki.extension.namespaces>
+      namespace1,
+      {root}
+    </xwiki.extension.namespaces>
   </properties>
   <licenses>
     <license>
