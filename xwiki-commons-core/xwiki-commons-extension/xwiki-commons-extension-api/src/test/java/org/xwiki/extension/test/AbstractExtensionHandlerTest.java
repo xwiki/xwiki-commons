@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
+import org.xwiki.cache.CacheManager;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
@@ -62,6 +63,8 @@ public abstract class AbstractExtensionHandlerTest
         this.jobExecutor = this.mocker.getInstance(JobExecutor.class);
         this.localExtensionRepository = this.mocker.getInstance(LocalExtensionRepository.class);
         this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
+
+        this.mocker.registerMockComponent(CacheManager.class);
     }
 
     protected ExtensionPlanNode getNode(ExtensionId id, Collection<ExtensionPlanNode> nodes)
