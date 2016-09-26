@@ -28,7 +28,9 @@ import org.apache.commons.lang3.StringUtils;
  * </p>
  * 
  * @version $Id$
- * @since 6.4.7, 7.1.4, 7.4M1
+ * @since 6.4.7
+ * @since 7.1.4
+ * @since 7.4M1
  */
 public class CSSIdentifierSerializer
 {

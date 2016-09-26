@@ -26,7 +26,9 @@ import java.util.Locale;
  * Extends the default DateTool from velocity-tools with some useful methods.
  * 
  * @version $Id$
- * @since 6.2.6, 6.4.2, 7.0M2
+ * @since 6.2.6
+ * @since 6.4.2
+ * @since 7.0M2
  */
 public class ComparisonDateTool extends org.apache.velocity.tools.generic.ComparisonDateTool
 {

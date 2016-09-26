@@ -295,7 +295,8 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     /**
      * @param namespace the namespace
      * @return true if the extension has been explicitly indicated as valid or invalid
-     * @since 8.2.1, 8.3M1
+     * @since 8.2.1
+     * @since 8.3M1
      */
     public boolean isValidated(String namespace)
     {

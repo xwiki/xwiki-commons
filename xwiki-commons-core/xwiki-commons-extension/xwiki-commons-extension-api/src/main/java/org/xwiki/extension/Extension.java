@@ -159,7 +159,9 @@ public interface Extension extends Comparable<Extension>
 
     /**
      * @see #getProperties()
-     * @since 7.4.3, 8.0.1, 8.1M1
+     * @since 7.4.3
+     * @since 8.0.1
+     * @since 8.1M1
      */
     String FIELD_PROPERTIES = "properties";
 

@@ -215,7 +215,9 @@ public class EscapeTool extends org.apache.velocity.tools.generic.EscapeTool
      * 
      * @param identifier the identifier to escape
      * @return the escaped identifier
-     * @since 6.4.7, 7.1.4, 7.4M1
+     * @since 6.4.7
+     * @since 7.1.4
+     * @since 7.4M1
      */
     public String css(String identifier)
     {
