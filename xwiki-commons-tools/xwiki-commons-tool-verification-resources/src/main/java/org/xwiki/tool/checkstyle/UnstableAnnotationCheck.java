@@ -102,6 +102,12 @@ public class UnstableAnnotationCheck extends AbstractCheck
                     TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
                     if (cmt != null) {
                         sinceVersions = extractSinceVersionsFromJavadoc(cmt.getText());
+                        if (sinceVersions == null) {
+                            log(annotation.getLineNo(), annotation.getColumnNo(),
+                                String.format("There must be only a single version per @since tag for [%s]",
+                                    computeElementName(annotatedElementName)));
+                            return;
+                        }
                     }
                     if (sinceVersions.isEmpty()) {
                         log(annotation.getLineNo(), annotation.getColumnNo(), String.format("There is an @Unstable "
@@ -142,13 +148,22 @@ public class UnstableAnnotationCheck extends AbstractCheck
             annotatedElementName.equals(this.classOrInterfaceName) ? "" : "." + annotatedElementName + "()");
     }
 
+    /**
+     * @return null if the since format is wrong
+     */
     private List<String> extractSinceVersionsFromJavadoc(String[] javadocLines)
     {
         List<String> sinceVersions = new ArrayList<>();
         for (String javadocLine : javadocLines) {
             int pos = javadocLine.indexOf("@since");
             if (pos > -1) {
-                String sinceVersion = javadocLine.substring(pos + "@since".length() + 1);
+                // Verify that the text after @since isn't of the form "A,B" since that's the wrong format to use.
+                // We're expecting a single version per @since tag
+                String text = javadocLine.substring(pos + "@since".length() + 1);
+                if (text.contains(",")) {
+                    return null;
+                }
+                String sinceVersion = text;
                 sinceVersions.add(sinceVersion);
             }
         }
