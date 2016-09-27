@@ -20,6 +20,7 @@
 package org.xwiki.tool.checkstyle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
@@ -97,33 +98,40 @@ public class UnstableAnnotationCheck extends AbstractCheck
                     String annotatedElementName = ast.findFirstToken(TokenTypes.IDENT).getText();
                     // Get the Javadoc before the annotation in order to locate a @Since annotation and to extract
                     // the XWiki version mentioned there.
-                    String sinceVersion = null;
+                    List<String> sinceVersions = Collections.emptyList();
                     TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
                     if (cmt != null) {
-                        sinceVersion = extractSinceVersionFromJavadoc(cmt.getText());
+                        sinceVersions = extractSinceVersionsFromJavadoc(cmt.getText());
                     }
-                    if (sinceVersion == null) {
+                    if (sinceVersions.isEmpty()) {
                         log(annotation.getLineNo(), annotation.getColumnNo(), String.format("There is an @Unstable "
                             + "annotation for [%s] but the @since javadoc tag is missing, you must add it!",
                             computeElementName(annotatedElementName)));
                         return;
                     }
-                    int sinceMajor = extractMajor(sinceVersion);
-                    if (sinceMajor == -1) {
-                        log(annotation.getLineNo(), annotation.getColumnNo(), String.format("The @since version [%s] "
-                            + "must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
-                        return;
-                    } else {
-                        // Log an error the @Unstable annotation has been there for more than a full cycle!
-                        if (this.currentVersionMajor - 2 >= sinceMajor) {
-                            log(annotation.getLineNo(), annotation.getColumnNo(),
-                                String.format("The @Unstable annotation "
-                                + "for [%s] must be removed since it''s been there for more than a full "
-                                + "development cycle (was introduced in [%s] and current version is [%s])",
-                                computeElementName(annotatedElementName), sinceVersion, this.currentVersion));
-                        }
+                    for (String sinceVersion : sinceVersions) {
+                        checkSingleSinceVersion(sinceVersion, annotation, annotatedElementName);
                     }
                 }
+            }
+        }
+    }
+
+    private void checkSingleSinceVersion(String sinceVersion, DetailAST annotation, String annotatedElementName)
+    {
+        int sinceMajor = extractMajor(sinceVersion);
+        if (sinceMajor == -1) {
+            log(annotation.getLineNo(), annotation.getColumnNo(), String.format("The @since version [%s] "
+                + "must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
+            return;
+        } else {
+            // Log an error the @Unstable annotation has been there for more than a full cycle!
+            if (this.currentVersionMajor - 2 >= sinceMajor) {
+                log(annotation.getLineNo(), annotation.getColumnNo(),
+                    String.format("The @Unstable annotation "
+                            + "for [%s] must be removed since it''s been there for more than a full "
+                            + "development cycle (was introduced in [%s] and current version is [%s])",
+                        computeElementName(annotatedElementName), sinceVersion, this.currentVersion));
             }
         }
     }
@@ -134,17 +142,17 @@ public class UnstableAnnotationCheck extends AbstractCheck
             annotatedElementName.equals(this.classOrInterfaceName) ? "" : "." + annotatedElementName + "()");
     }
 
-    private String extractSinceVersionFromJavadoc(String[] javadocLines)
+    private List<String> extractSinceVersionsFromJavadoc(String[] javadocLines)
     {
-        String sinceVersion = null;
+        List<String> sinceVersions = new ArrayList<>();
         for (String javadocLine : javadocLines) {
             int pos = javadocLine.indexOf("@since");
             if (pos > -1) {
-                sinceVersion = javadocLine.substring(pos + "@since".length() + 1);
-                break;
+                String sinceVersion = javadocLine.substring(pos + "@since".length() + 1);
+                sinceVersions.add(sinceVersion);
             }
         }
-        return sinceVersion;
+        return sinceVersions;
     }
 
     private int extractMajor(String version)

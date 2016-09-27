@@ -98,6 +98,18 @@ public class UnstableAnnotationCheckTest extends BaseCheckTestSupport
     }
 
     @Test
+    public void checkWithUnstableAnnotationShouldBeRemovedMultipleSince() throws Exception
+    {
+        final String[] expected = {
+            "30:1: The @Unstable annotation for [org.xwiki.tool.checkstyle.test."
+            + "TestClassWithUnstableAnnotationShouldBeRemovedMultipleSince] must be removed since it's been there for "
+            + "more than a full development cycle (was introduced in [6.0] and current version is [8.1-SNAPSHOT])"
+        };
+
+        verify(this.checkConfig, getPath("TestClassWithUnstableAnnotationShouldBeRemovedMultipleSince.java"), expected);
+    }
+
+    @Test
     public void checkWithUnstableAnnotationShouldBeRemovedAtMethodLevel() throws Exception
     {
         final String[] expected = {
