@@ -56,19 +56,19 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
     /**
      * Holds Component Managers based on identifiers.
      */
-    private Map<String, ComponentManager> componentManagers = new ConcurrentHashMap<String, ComponentManager>();
+    private Map<String, ComponentManager> componentManagers = new ConcurrentHashMap<>();
 
     @Override
-    public ComponentManager getComponentManager(String path, boolean create)
+    public ComponentManager getComponentManager(String namespace, boolean create)
     {
         ComponentManager componentManager;
-        if (path == null) {
+        if (namespace == null) {
             componentManager = this.rootComponentManager;
         } else {
-            componentManager = this.componentManagers.get(path);
+            componentManager = this.componentManagers.get(namespace);
             if (componentManager == null && create) {
-                componentManager = createComponentManager(path);
-                this.componentManagers.put(path, componentManager);
+                componentManager = createComponentManager(namespace);
+                this.componentManagers.put(namespace, componentManager);
             }
         }
 
@@ -78,12 +78,12 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
     /**
      * Create a new {@link ComponentManager} for the provided id.
      *
-     * @param id the identifier of the component manager
+     * @param namespace the identifier of the component manager
      * @return a new {@link ComponentManager} instance
      */
-    private ComponentManager createComponentManager(String id)
+    private ComponentManager createComponentManager(String namespace)
     {
-        String prefix = NamespaceUtils.getPrefix(id);
+        String prefix = NamespaceUtils.getPrefix(namespace);
 
         ComponentManagerFactory componentManagerFactory;
         try {
@@ -92,6 +92,6 @@ public class DefaultComponentManagerManager implements ComponentManagerManager
             componentManagerFactory = this.defaultComponentManagerFactory;
         }
 
-        return componentManagerFactory.createComponentManager(id, this.rootComponentManager);
+        return componentManagerFactory.createComponentManager(namespace, this.rootComponentManager);
     }
 }

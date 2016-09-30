@@ -35,10 +35,10 @@ import org.xwiki.component.manager.ComponentManager;
 public interface ComponentManagerManager
 {
     /**
-     * @param id the identifier of the {@link ComponentManager} to return or create
+     * @param namespace the identifier of the {@link ComponentManager} to return or create
      * @param create if true the {@link ComponentManager} is created if it does not exists
      * @return a {@link ComponentManager} instance or null if none exists associated to the provided id and
      *         <code>create</code> is false
      */
-    ComponentManager getComponentManager(String id, boolean create);
+    ComponentManager getComponentManager(String namespace, boolean create);
 }
