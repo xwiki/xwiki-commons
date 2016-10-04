@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
@@ -103,11 +101,7 @@ public class UnstableAnnotationCheck extends AbstractCheck
                     List<String> sinceVersions = Collections.emptyList();
                     TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
                     if (cmt != null) {
-                        sinceVersions =
-                            extractSinceVersionsFromJavadoc(cmt.getText(), annotation, annotatedElementName);
-                        if (sinceVersions == null) {
-                            return;
-                        }
+                        sinceVersions = extractSinceVersionsFromJavadoc(cmt.getText(), annotation, annotatedElementName);
                     }
                     if (sinceVersions.isEmpty()) {
                         log(annotation.getLineNo(), annotation.getColumnNo(), String.format("There is an @Unstable "
@@ -158,16 +152,7 @@ public class UnstableAnnotationCheck extends AbstractCheck
         for (String javadocLine : javadocLines) {
             int pos = javadocLine.indexOf("@since");
             if (pos > -1) {
-                // Verify that the text after @since isn't of the form "A,B" since that's the wrong format to use.
-                // We're expecting a single version per @since tag
-                String text = javadocLine.substring(pos + "@since".length() + 1);
-                if (StringUtils.containsAny(text, ',', '/', '\\', ';', ':', '+')) {
-                    log(annotation.getLineNo(), annotation.getColumnNo(),
-                        String.format("There must be only a single version per @since tag for [%s]. Got [%s]",
-                            computeElementName(annotatedElementName), text));
-                    return null;
-                }
-                String sinceVersion = text;
+                String sinceVersion = javadocLine.substring(pos + "@since".length() + 1);
                 sinceVersions.add(sinceVersion);
             }
         }

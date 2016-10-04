@@ -21,13 +21,11 @@ package org.xwiki.tool.checkstyle.test;
 
 import org.xwiki.stability.Unstable;
 
-public class TestClassWithUnstableAnnotationShouldBeRemovedAtMethodLevel
+/**
+ * Some text.
+ *
+ * @since 8.0, 6.0
+ */
+public class TestClassWithNoSinceJavadocTagAtClassLevel
 {
-    /**
-     * @since 6.0, 8.0
-     */
-    @Unstable
-    public void method()
-    {
-    }
 }
