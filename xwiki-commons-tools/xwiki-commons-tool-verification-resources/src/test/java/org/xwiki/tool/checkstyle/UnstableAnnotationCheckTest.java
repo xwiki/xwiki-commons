@@ -114,7 +114,8 @@ public class UnstableAnnotationCheckTest extends BaseCheckTestSupport
     {
         final String[] expected = {
             "29:5: There must be only a single version per @since tag for "
-            + "[org.xwiki.tool.checkstyle.test.TestClassWithUnstableAnnotationShouldBeRemovedAtMethodLevel.method()]"
+            + "[org.xwiki.tool.checkstyle.test.TestClassWithUnstableAnnotationShouldBeRemovedAtMethodLevel.method()]. "
+            + "Got [6.0, 8.0]"
         };
 
         verify(this.checkConfig, getPath("TestClassWithUnstableAnnotationAndWrongSinceFormat.java"), expected);

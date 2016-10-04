@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
@@ -101,11 +103,9 @@ public class UnstableAnnotationCheck extends AbstractCheck
                     List<String> sinceVersions = Collections.emptyList();
                     TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
                     if (cmt != null) {
-                        sinceVersions = extractSinceVersionsFromJavadoc(cmt.getText());
+                        sinceVersions =
+                            extractSinceVersionsFromJavadoc(cmt.getText(), annotation, annotatedElementName);
                         if (sinceVersions == null) {
-                            log(annotation.getLineNo(), annotation.getColumnNo(),
-                                String.format("There must be only a single version per @since tag for [%s]",
-                                    computeElementName(annotatedElementName)));
                             return;
                         }
                     }
@@ -151,7 +151,8 @@ public class UnstableAnnotationCheck extends AbstractCheck
     /**
      * @return null if the since format is wrong
      */
-    private List<String> extractSinceVersionsFromJavadoc(String[] javadocLines)
+    private List<String> extractSinceVersionsFromJavadoc(String[] javadocLines, DetailAST annotation,
+        String annotatedElementName)
     {
         List<String> sinceVersions = new ArrayList<>();
         for (String javadocLine : javadocLines) {
@@ -160,7 +161,10 @@ public class UnstableAnnotationCheck extends AbstractCheck
                 // Verify that the text after @since isn't of the form "A,B" since that's the wrong format to use.
                 // We're expecting a single version per @since tag
                 String text = javadocLine.substring(pos + "@since".length() + 1);
-                if (text.contains(",")) {
+                if (StringUtils.containsAny(text, ',', '/', '\\', ';', ':', '+')) {
+                    log(annotation.getLineNo(), annotation.getColumnNo(),
+                        String.format("There must be only a single version per @since tag for [%s]. Got [%s]",
+                            computeElementName(annotatedElementName), text));
                     return null;
                 }
                 String sinceVersion = text;
