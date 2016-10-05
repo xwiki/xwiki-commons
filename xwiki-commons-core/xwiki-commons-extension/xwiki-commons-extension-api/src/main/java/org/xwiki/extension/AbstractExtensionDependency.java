@@ -30,7 +30,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.VersionConstraint;
-import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
  * Base class for {@link ExtensionDependency} implementations.
@@ -100,7 +99,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     public AbstractExtensionDependency(String id, VersionConstraint versionConstraint, Map<String, Object> properties)
     {
         this.id = id;
-        this.versionConstraint = versionConstraint != null ? versionConstraint : DefaultVersionConstraint.ALL;
+        this.versionConstraint = versionConstraint;
         if (properties != null) {
             this.properties.putAll(properties);
         }

@@ -53,13 +53,6 @@ import org.xwiki.extension.version.VersionRangeCollection;
 public class DefaultVersionConstraint implements VersionConstraint
 {
     /**
-     * {@link VersionConstraint} supporting any version.
-     * 
-     * @since 8.3
-     */
-    public static final DefaultVersionConstraint ALL = new DefaultVersionConstraint("(,)");
-
-    /**
      * Serialization identifier.
      */
     private static final long serialVersionUID = 1L;
