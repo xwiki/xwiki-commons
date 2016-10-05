@@ -65,7 +65,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     /**
      * The core extensions.
      */
-    protected transient Map<String, DefaultCoreExtension> extensions;
+    protected transient Map<String, DefaultCoreExtension> extensions = new ConcurrentHashMap<>();
 
     /**
      * The extension associated to the environment.
@@ -114,7 +114,7 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     public void initialize() throws InitializationException
     {
         try {
-            this.extensions = new ConcurrentHashMap<String, DefaultCoreExtension>(this.scanner.loadExtensions(this));
+            this.extensions.putAll(this.scanner.loadExtensions(this));
 
             this.environmentExtension = this.scanner.loadEnvironmentExtension(this);
             if (this.environmentExtension != null) {
