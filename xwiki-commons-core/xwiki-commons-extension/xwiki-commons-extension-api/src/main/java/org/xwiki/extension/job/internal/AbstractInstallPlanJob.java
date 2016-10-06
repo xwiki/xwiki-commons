@@ -778,7 +778,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             // Check if the extension already exist on root, throw exception if not allowed
             if (checkRootExtension(extension)) {
                 // Restart install on root
-                return installExtension(extension, dependency, namespace, initialDependency, null);
+                return installExtension(extension, dependency, null, initialDependency, managedDependencies);
             }
         }
 
