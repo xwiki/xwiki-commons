@@ -17,13 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.aether.internal;
+package org.xwiki.extension.repository.xwiki.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,9 +43,16 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
  */
 @Component
 @Singleton
-@Named("default.aether")
-public class AetherExtensionRepositorySource extends AbstractExtensionRepositorySource
+@Named("default.xwiki")
+public class ExtensionXWikiOrgExtensionRepositorySource extends AbstractExtensionRepositorySource
 {
+    /**
+     * The priority of extensions.xwiki.org repository.
+     */
+    // Make extensions.xwiki.org repository checked after Nexus (Nexus contains much more extensions including most of
+    // those located on extensions.xwiki.org)
+    public static final int PRIORITY = ExtensionRepositoryManager.DEFAULT_PRIORITY + 200;
+
     /**
      * Used to get configuration properties containing repositories.
      */
@@ -56,8 +62,7 @@ public class AetherExtensionRepositorySource extends AbstractExtensionRepository
     @Override
     public int getPriority()
     {
-        // Make default repositories checked last
-        return ExtensionRepositoryManager.DEFAULT_PRIORITY + 100;
+        return PRIORITY;
     }
 
     @Override
@@ -70,11 +75,10 @@ public class AetherExtensionRepositorySource extends AbstractExtensionRepository
 
         if (configuredRepositories == null) {
             try {
-                repositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki", "maven",
-                    new URI("http://nexus.xwiki.org/nexus/content/groups/public")));
+                repositories.add(new DefaultExtensionRepositoryDescriptor("extensions.xwiki.org", "xwiki",
+                    new URI("http://extensions.xwiki.org/xwiki/rest/")));
             } catch (URISyntaxException e) {
                 // Should never happen
-                return Collections.emptyList();
             }
         }
 

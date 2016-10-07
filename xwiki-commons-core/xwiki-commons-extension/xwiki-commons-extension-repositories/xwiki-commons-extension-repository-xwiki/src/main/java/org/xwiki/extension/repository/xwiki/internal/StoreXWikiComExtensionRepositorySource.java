@@ -33,18 +33,17 @@ import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.extension.repository.ExtensionRepositoryManager;
 
 /**
  * Extensions repositories identifier stored in the configuration.
  *
  * @version $Id$
- * @since 4.0M1
+ * @since 8.3
  */
 @Component
 @Singleton
-@Named("default.xwiki")
-public class XWikiExtensionRepositorySource extends AbstractExtensionRepositorySource
+@Named("default.xwikisas.xwiki")
+public class StoreXWikiComExtensionRepositorySource extends AbstractExtensionRepositorySource
 {
     /**
      * Used to get configuration properties containing repositories.
@@ -55,9 +54,7 @@ public class XWikiExtensionRepositorySource extends AbstractExtensionRepositoryS
     @Override
     public int getPriority()
     {
-        // Make extensions.xwiki.org repository checked after Nexus (Nexus much more extensions including most of those
-        // located on extensions.xwiki.org)
-        return ExtensionRepositoryManager.DEFAULT_PRIORITY + 200;
+        return ExtensionXWikiOrgExtensionRepositorySource.PRIORITY - 10;
     }
 
     @Override
@@ -66,12 +63,12 @@ public class XWikiExtensionRepositorySource extends AbstractExtensionRepositoryS
         Collection<ExtensionRepositoryDescriptor> configuredRepositories =
             this.configuration.getExtensionRepositoryDescriptors();
 
-        Collection<ExtensionRepositoryDescriptor> repositories = new ArrayList<ExtensionRepositoryDescriptor>();
+        Collection<ExtensionRepositoryDescriptor> repositories = new ArrayList<>();
 
         if (configuredRepositories == null) {
             try {
-                repositories.add(new DefaultExtensionRepositoryDescriptor("extensions.xwiki.org", "xwiki",
-                    new URI("http://extensions.xwiki.org/xwiki/rest/")));
+                repositories.add(new DefaultExtensionRepositoryDescriptor("store.xwiki.com", "xwiki",
+                    new URI("https://store.xwiki.com/xwiki/rest/")));
             } catch (URISyntaxException e) {
                 // Should never happen
             }
