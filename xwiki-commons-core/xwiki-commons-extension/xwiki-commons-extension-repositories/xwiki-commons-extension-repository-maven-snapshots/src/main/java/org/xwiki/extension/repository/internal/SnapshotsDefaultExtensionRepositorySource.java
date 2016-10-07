@@ -54,7 +54,7 @@ public class SnapshotsDefaultExtensionRepositorySource extends AbstractExtension
     @Override
     public int getPriority()
     {
-        // Test snapshtos repository just before release one to reduce loading on nexus.xwiki.org
+        // Test snapshots repository just before release one to reduce loading on nexus.xwiki.org
         return NexusXWikiOrgExtensionRepositorySource.PRIORITY - 1;
     }
 
