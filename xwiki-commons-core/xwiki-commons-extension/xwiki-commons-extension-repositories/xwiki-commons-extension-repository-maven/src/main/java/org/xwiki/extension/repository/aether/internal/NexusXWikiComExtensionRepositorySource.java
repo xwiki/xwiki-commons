@@ -17,12 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.xwiki.internal;
+package org.xwiki.extension.repository.aether.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,18 +34,17 @@ import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.extension.repository.ExtensionRepositoryManager;
 
 /**
  * Extensions repositories identifier stored in the configuration.
  *
  * @version $Id$
- * @since 4.0M1
+ * @since 8.3
  */
 @Component
 @Singleton
-@Named("default.xwikisas.xwiki")
-public class XWikiSASXWikiExtensionRepositorySource extends AbstractExtensionRepositorySource
+@Named("default.xwikisas.aether")
+public class NexusXWikiComExtensionRepositorySource extends AbstractExtensionRepositorySource
 {
     /**
      * Used to get configuration properties containing repositories.
@@ -55,8 +55,8 @@ public class XWikiSASXWikiExtensionRepositorySource extends AbstractExtensionRep
     @Override
     public int getPriority()
     {
-        // Give low priority to XWiki SAS repository since they have a lot less extensions
-        return ExtensionRepositoryManager.DEFAULT_PRIORITY + 1100;
+        // Give low priority to XWiki SAS repository since it has a lot less extensions
+        return NexusXWikiOrgExtensionRepositorySource.PRIORITY + 10;
     }
 
     @Override
@@ -69,10 +69,11 @@ public class XWikiSASXWikiExtensionRepositorySource extends AbstractExtensionRep
 
         if (configuredRepositories == null) {
             try {
-                repositories.add(new DefaultExtensionRepositoryDescriptor("store.xwiki.com", "xwiki",
-                    new URI("https://store.xwiki.com/xwiki/rest/")));
+                repositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwikicom", "maven",
+                    new URI("https://nexus.xwiki.com/nexus/content/repositories/public-store-releases/")));
             } catch (URISyntaxException e) {
                 // Should never happen
+                return Collections.emptyList();
             }
         }
 

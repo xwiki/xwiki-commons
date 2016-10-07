@@ -44,9 +44,14 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
  */
 @Component
 @Singleton
-@Named("default.xwikisas.aether")
-public class XWikiSASAetherExtensionRepositorySource extends AbstractExtensionRepositorySource
+@Named("default.aether")
+public class NexusXWikiOrgExtensionRepositorySource extends AbstractExtensionRepositorySource
 {
+    /**
+     * The priority of nexus.xwiki.org repository.
+     */
+    public static final int PRIORITY = ExtensionRepositoryManager.DEFAULT_PRIORITY + 100;
+
     /**
      * Used to get configuration properties containing repositories.
      */
@@ -56,8 +61,7 @@ public class XWikiSASAetherExtensionRepositorySource extends AbstractExtensionRe
     @Override
     public int getPriority()
     {
-        // Give low priority to XWiki SAS repository since they have a lot less extensions
-        return ExtensionRepositoryManager.DEFAULT_PRIORITY + 1000;
+        return PRIORITY;
     }
 
     @Override
@@ -66,12 +70,12 @@ public class XWikiSASAetherExtensionRepositorySource extends AbstractExtensionRe
         Collection<ExtensionRepositoryDescriptor> configuredRepositories =
             this.configuration.getExtensionRepositoryDescriptors();
 
-        Collection<ExtensionRepositoryDescriptor> repositories = new ArrayList<>();
+        Collection<ExtensionRepositoryDescriptor> repositories = new ArrayList<ExtensionRepositoryDescriptor>();
 
         if (configuredRepositories == null) {
             try {
-                repositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwikicom", "maven",
-                    new URI("https://nexus.xwiki.com/nexus/content/repositories/public-store-releases/")));
+                repositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki", "maven",
+                    new URI("http://nexus.xwiki.org/nexus/content/groups/public")));
             } catch (URISyntaxException e) {
                 // Should never happen
                 return Collections.emptyList();

@@ -32,7 +32,7 @@ import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositorySource;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.extension.repository.aether.internal.NexusXWikiOrgExtensionRepositorySource;
 
 /**
  * Provides the XWiki snapshots repository as default maven repository.
@@ -54,8 +54,8 @@ public class SnapshotsDefaultExtensionRepositorySource extends AbstractExtension
     @Override
     public int getPriority()
     {
-        // Make default repositories checked last
-        return ExtensionRepositoryManager.DEFAULT_PRIORITY + 100;
+        // Test snapshtos repository just before release one to reduce loading on nexus.xwiki.org
+        return NexusXWikiOrgExtensionRepositorySource.PRIORITY - 1;
     }
 
     @Override
@@ -66,10 +66,9 @@ public class SnapshotsDefaultExtensionRepositorySource extends AbstractExtension
 
         Collection<ExtensionRepositoryDescriptor> newRepositories = new ArrayList<>();
 
-        if (configuredRepositories == null
-            && !"true".equals(System.getProperty("skipSnapshotModules"))) {
-            newRepositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki-snapshot", "maven", URI
-                .create("http://nexus.xwiki.org/nexus/content/groups/public-snapshots")));
+        if (configuredRepositories == null && !"true".equals(System.getProperty("skipSnapshotModules"))) {
+            newRepositories.add(new DefaultExtensionRepositoryDescriptor("maven-xwiki-snapshot", "maven",
+                URI.create("http://nexus.xwiki.org/nexus/content/groups/public-snapshots")));
         }
 
         return newRepositories;
