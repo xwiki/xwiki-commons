@@ -193,7 +193,7 @@
 
     <module name="JavadocType">
       <property name="scope" value="public"/>
-      <property name="versionFormat" value="\$Id.*\$"/>
+      <property name="versionFormat" value="\$Id$"/>
     </module>
 
     <module name="JavadocVariable">

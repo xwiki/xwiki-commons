@@ -78,7 +78,7 @@ public class DefaultVersion implements Version
     /**
      * Used to parse the string representation of the version.
      *
-     * @version $Id$
+     * @version $Id: d93b6a022c8471f521a2af7893c92d3f0e9ef48f $
      */
     static final class Tokenizer
     {
@@ -191,7 +191,7 @@ public class DefaultVersion implements Version
     /**
      * A peace of the version.
      *
-     * @version $Id$
+     * @version $Id: d93b6a022c8471f521a2af7893c92d3f0e9ef48f $
      */
     static final class Element implements Comparable<Element>
     {
@@ -203,7 +203,7 @@ public class DefaultVersion implements Version
         /**
          * The kind of element.
          *
-         * @version $Id$
+         * @version $Id: d93b6a022c8471f521a2af7893c92d3f0e9ef48f $
          */
         enum ElementType
         {
