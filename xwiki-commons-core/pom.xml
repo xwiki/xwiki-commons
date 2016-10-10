@@ -163,18 +163,6 @@
                   }
                 },
                 "ignore": [
-                {
-                  "code": "java.method.exception.checkedAdded",
-                  "old": "method org.xwiki.extension.repository.result.IterableResult<org.xwiki.extension.Extension> org.xwiki.extension.repository.ExtensionRepositoryManager::search(java.lang.String, int, int)",
-                  "new": "method org.xwiki.extension.repository.result.IterableResult<org.xwiki.extension.Extension> org.xwiki.extension.repository.ExtensionRepositoryManager::search(java.lang.String, int, int) throws org.xwiki.extension.repository.search.SearchException",
-                  "justification": "Align with ExtensionRepository API"
-                },
-                {
-                  "code": "java.method.exception.checkedAdded",
-                  "old": "method org.xwiki.extension.repository.result.IterableResult<org.xwiki.extension.Extension> org.xwiki.extension.repository.ExtensionRepositoryManager::search(org.xwiki.extension.repository.search.ExtensionQuery)",
-                  "new": "method org.xwiki.extension.repository.result.IterableResult<org.xwiki.extension.Extension> org.xwiki.extension.repository.ExtensionRepositoryManager::search(org.xwiki.extension.repository.search.ExtensionQuery) throws org.xwiki.extension.repository.search.SearchException",
-                  "justification": "Align with ExtensionRepository API"
-                  }
                 ]
               }
             }
