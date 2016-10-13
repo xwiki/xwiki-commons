@@ -29,6 +29,10 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.job.annotation.Serializable;
 
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.mapper.Mapper;
+
 /**
  * Various XStream related utilities.
  *
@@ -41,8 +45,8 @@ public final class XStreamUtils
      * Some famous unserializable classes. Fields with this classes are supposed to be made <code>transient</code> in
      * placed that may end up serialized but never too careful...
      */
-    private final static List<Class<?>> UNSERIALIZABLE_CLASSES = Arrays.<Class<?>>asList(Logger.class, Provider.class,
-        ComponentManager.class);
+    private final static List<Class<?>> UNSERIALIZABLE_CLASSES =
+        Arrays.<Class<?>>asList(Logger.class, Provider.class, ComponentManager.class);
 
     private XStreamUtils()
     {
@@ -87,5 +91,30 @@ public final class XStreamUtils
         }
 
         return false;
+    }
+
+    public static void serializeField(String name, Class<?> defaultType, Object value, HierarchicalStreamWriter writer,
+        MarshallingContext context, Mapper mapper)
+    {
+        if (value != null) {
+            // Start node
+            writer.startNode(name);
+
+            Class<?> actualType = value.getClass();
+
+            if (actualType != defaultType) {
+                String serializedClassName = mapper.serializedClass(actualType);
+                String attributeName = mapper.aliasForSystemAttribute("class");
+                if (attributeName != null) {
+                    writer.addAttribute(attributeName, serializedClassName);
+                }
+            }
+
+            // Value
+            context.convertAnother(value);
+
+            // End node
+            writer.endNode();
+        }
     }
 }
