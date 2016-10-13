@@ -30,18 +30,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Request;
-import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.job.annotation.Serializable;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.test.SerializableStandaloneComponent;
 import org.xwiki.job.test.StandaloneComponent;
-
-import static org.junit.Assert.assertNull;
+import org.xwiki.logging.marker.TranslationMarker;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
@@ -56,31 +56,34 @@ public class JobStatusSerializerTest
 
     private File testFile = new File("target/test/status.xml");
 
-    private static class CrossReferenceObject
+    @Serializable
+    private static class SerializableCrossReferenceObject
     {
-        public CrossReferenceObject field;
+        public SerializableCrossReferenceObject field;
 
-        public CrossReferenceObject()
+        public SerializableCrossReferenceObject()
         {
             this.field = this;
         }
     }
 
-    private static class ObjectTest
+    @Serializable
+    private static class SerializableObjectTest
     {
         public Object field;
 
-        public ObjectTest(Object field)
+        public SerializableObjectTest(Object field)
         {
             this.field = field;
         }
     }
 
-    private static class CustomObject
+    @Serializable
+    private static class CustomSerializableObject
     {
         public String field;
 
-        public CustomObject(String field)
+        public CustomSerializableObject(String field)
         {
             this.field = field;
         }
@@ -88,7 +91,7 @@ public class JobStatusSerializerTest
         @Override
         public boolean equals(Object obj)
         {
-            return Objects.equals(((CustomObject) obj).field, this.field);
+            return Objects.equals(((CustomSerializableObject) obj).field, this.field);
         }
     }
 
@@ -153,6 +156,23 @@ public class JobStatusSerializerTest
         }
     }
 
+    private static class TestException extends Exception
+    {
+        private Object custom;
+
+        public TestException(String message, Throwable cause, Object custom)
+        {
+            super(message, cause);
+
+            this.custom = custom;
+        }
+
+        public Object getCustom()
+        {
+            return this.custom;
+        }
+    }
+
     @Before
     public void before() throws ParserConfigurationException
     {
@@ -177,7 +197,7 @@ public class JobStatusSerializerTest
     }
 
     @Test
-    public void testLog() throws IOException
+    public void testLogMessage() throws IOException
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
@@ -190,17 +210,33 @@ public class JobStatusSerializerTest
     }
 
     @Test
+    public void testLogMarker() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+
+        status.getLog().error(new TranslationMarker("translation.key"), "error message");
+
+        status = writeread(status);
+
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals(new TranslationMarker("translation.key"), status.getLog().peek().getMarker());
+    }
+
+    @Test
     public void testLogWithException() throws IOException
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new Exception("exception message", new Exception("cause")));
+        status.getLog().error("error message", new TestException("exception message", new Exception("cause"), "custom"));
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
         assertEquals("exception message", status.getLog().peek().getThrowable().getMessage());
+        assertEquals("cause", status.getLog().peek().getThrowable().getCause().getMessage());
+        assertNull("exception message", ((TestException)status.getLog().peek().getThrowable()).getCustom());
     }
 
     @Test
@@ -257,8 +293,7 @@ public class JobStatusSerializerTest
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals(SerializableStandaloneComponent.class,
-            status.getLog().peek().getArgumentArray()[0].getClass());
+        assertEquals(SerializableStandaloneComponent.class, status.getLog().peek().getArgumentArray()[0].getClass());
     }
 
     @Test
@@ -266,12 +301,13 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("message", new CrossReferenceObject());
+        status.getLog().error("message", new SerializableCrossReferenceObject());
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
-        CrossReferenceObject obj = (CrossReferenceObject) status.getLog().peek().getArgumentArray()[0];
+        SerializableCrossReferenceObject obj =
+            (SerializableCrossReferenceObject) status.getLog().peek().getArgumentArray()[0];
         assertSame(obj, obj.field);
     }
 
@@ -280,12 +316,12 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new ObjectTest(new DefaultJobStatusStore()));
+        status.getLog().error("error message", new SerializableObjectTest(new DefaultJobStatusStore()));
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
-        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -293,12 +329,12 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new ObjectTest(new StandaloneComponent()));
+        status.getLog().error("error message", new SerializableObjectTest(new StandaloneComponent()));
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
-        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -306,12 +342,12 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new ObjectTest(mock(Logger.class)));
+        status.getLog().error("error message", new SerializableObjectTest(mock(Logger.class)));
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
-        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -319,12 +355,12 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new ObjectTest(mock(Provider.class)));
+        status.getLog().error("error message", new SerializableObjectTest(mock(Provider.class)));
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
-        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -332,12 +368,12 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new ObjectTest(mock(ComponentManager.class)));
+        status.getLog().error("error message", new SerializableObjectTest(mock(ComponentManager.class)));
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
-        assertNull(((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
+        assertNull(((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field);
     }
 
     @Test
@@ -345,14 +381,14 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new ObjectTest(new SerializableProvider()));
+        status.getLog().error("error message", new SerializableObjectTest(new SerializableProvider()));
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
         assertEquals(SerializableProvider.class,
-            ((ObjectTest) status.getLog().peek().getArgumentArray()[0]).field.getClass());
+            ((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field.getClass());
     }
 
     @Test
@@ -360,14 +396,14 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new ObjectTest(new SerializableImplementationProvider()));
+        status.getLog().error("error message", new SerializableObjectTest(new SerializableImplementationProvider()));
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals(SerializableImplementationProvider.class, ((ObjectTest) status.getLog().peek()
-            .getArgumentArray()[0]).field.getClass());
+        assertEquals(SerializableImplementationProvider.class,
+            ((SerializableObjectTest) status.getLog().peek().getArgumentArray()[0]).field.getClass());
     }
 
     @Test
@@ -375,13 +411,13 @@ public class JobStatusSerializerTest
     {
         JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
 
-        status.getLog().error("error message", new CustomObject("value"));
+        status.getLog().error("error message", new CustomSerializableObject("value"));
 
         status = writeread(status);
 
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
-        assertEquals(new CustomObject("value"), status.getLog().peek().getArgumentArray()[0]);
+        assertEquals(new CustomSerializableObject("value"), status.getLog().peek().getArgumentArray()[0]);
     }
 
     @Test

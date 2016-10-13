@@ -40,6 +40,16 @@ public class SafeXStream extends XStream
         // Cleaner array serialization
         registerConverter(new SafeArrayConverter(this));
 
+        // Cleaner messages
+        registerConverter(new SafeMessageConverter(this));
+
+        // Cleaner log
+        registerConverter(new SafeLogEventConverter(this));
+
+        // cleaner exceptions
+        registerConverter(
+            new SafeThrowableConverter(getMapper(), getConverterLookup().lookupConverterForType(Object.class)));
+
         // We don't care if some field from the XML does not exist anymore
         ignoreUnknownElements();
 
