@@ -40,19 +40,19 @@ import org.xwiki.xml.stax.StAXUtils;
  */
 public final class XMLInputFilterStreamUtils
 {
-    public static XMLEventReader createXMLEventReader(XMLInputProperties properties) throws XMLStreamException,
-        IOException, FilterException
+    private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory.newInstance();
+
+    public static XMLEventReader createXMLEventReader(XMLInputProperties properties)
+        throws XMLStreamException, IOException, FilterException
     {
         XMLEventReader xmlEventReader;
 
         InputSource source = properties.getSource();
 
         if (source instanceof ReaderInputSource) {
-            xmlEventReader =
-                XMLInputFactory.newInstance().createXMLEventReader(((ReaderInputSource) source).getReader());
+            xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(((ReaderInputSource) source).getReader());
         } else if (source instanceof InputStreamInputSource) {
-            xmlEventReader =
-                XMLInputFactory.newInstance().createXMLEventReader(((InputStreamInputSource) source).getInputStream());
+            xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(((InputStreamInputSource) source).getInputStream());
         } else if (source instanceof SourceInputSource) {
             xmlEventReader = StAXUtils.getXMLEventReader(((SourceInputSource) source).getSource());
         } else {
@@ -62,19 +62,17 @@ public final class XMLInputFilterStreamUtils
         return xmlEventReader;
     }
 
-    public static XMLStreamReader createXMLStreamReader(XMLInputProperties properties) throws XMLStreamException,
-        IOException, FilterException
+    public static XMLStreamReader createXMLStreamReader(XMLInputProperties properties)
+        throws XMLStreamException, IOException, FilterException
     {
         XMLStreamReader xmlStreamReader;
 
         InputSource source = properties.getSource();
 
         if (source instanceof ReaderInputSource) {
-            xmlStreamReader =
-                XMLInputFactory.newInstance().createXMLStreamReader(((ReaderInputSource) source).getReader());
+            xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(((ReaderInputSource) source).getReader());
         } else if (source instanceof InputStreamInputSource) {
-            xmlStreamReader =
-                XMLInputFactory.newInstance().createXMLStreamReader(((InputStreamInputSource) source).getInputStream());
+            xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(((InputStreamInputSource) source).getInputStream());
         } else if (source instanceof SourceInputSource) {
             xmlStreamReader = StAXUtils.getXMLStreamReader(((SourceInputSource) source).getSource());
         } else {

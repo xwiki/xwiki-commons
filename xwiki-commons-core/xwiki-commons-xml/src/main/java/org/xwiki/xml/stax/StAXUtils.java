@@ -42,6 +42,10 @@ import javanet.staxutils.XMLStreamEventReader;
  */
 public final class StAXUtils
 {
+    private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory.newInstance();
+
+    private static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+
     /**
      * Utility class.
      */
@@ -70,7 +74,7 @@ public final class StAXUtils
                 throw new XMLStreamException("XMLEventReader is not supported as source");
             }
         } else {
-            xmlStreamReader = XMLInputFactory.newInstance().createXMLStreamReader(source);
+            xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(source);
         }
 
         return xmlStreamReader;
@@ -96,7 +100,7 @@ public final class StAXUtils
                 xmlEventReader = new XMLStreamEventReader(staxSource.getXMLStreamReader());
             }
         } else {
-            xmlEventReader = XMLInputFactory.newInstance().createXMLEventReader(source);
+            xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(source);
         }
 
         return xmlEventReader;
@@ -125,7 +129,7 @@ public final class StAXUtils
                 xmlStreamWriter = new XMLEventStreamWriter(staxResult.getXMLEventWriter());
             }
         } else {
-            xmlStreamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(result);
+            xmlStreamWriter = XML_OUTPUT_FACTORY.createXMLStreamWriter(result);
         }
 
         return xmlStreamWriter;

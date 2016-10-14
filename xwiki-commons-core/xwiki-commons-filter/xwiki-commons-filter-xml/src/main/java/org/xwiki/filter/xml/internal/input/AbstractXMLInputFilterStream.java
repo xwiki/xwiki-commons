@@ -41,6 +41,8 @@ import javanet.staxutils.XMLStreamUtils;
  */
 public abstract class AbstractXMLInputFilterStream<P extends XMLInputProperties> implements InputFilterStream
 {
+    private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory.newInstance();
+
     protected P parameters;
 
     public AbstractXMLInputFilterStream(P parameters)
@@ -57,12 +59,9 @@ public abstract class AbstractXMLInputFilterStream<P extends XMLInputProperties>
             XMLEventReader xmlEventReader;
 
             if (source instanceof ReaderInputSource) {
-                xmlEventReader =
-                    XMLInputFactory.newInstance().createXMLEventReader(((ReaderInputSource) source).getReader());
+                xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(((ReaderInputSource) source).getReader());
             } else if (source instanceof InputStreamInputSource) {
-                xmlEventReader =
-                    XMLInputFactory.newInstance().createXMLEventReader(
-                        ((InputStreamInputSource) source).getInputStream());
+                xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(((InputStreamInputSource) source).getInputStream());
             } else {
                 throw new FilterException("Unknown source type [" + source.getClass() + "]");
             }
