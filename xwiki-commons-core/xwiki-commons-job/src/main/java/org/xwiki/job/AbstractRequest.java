@@ -97,6 +97,15 @@ public abstract class AbstractRequest implements Request
         setId(Arrays.asList(id));
     }
 
+    /**
+     * @param id the id elements
+     * @since 8.4RC1
+     */
+    public void setId(String... id)
+    {
+        this.id = Arrays.asList(id);
+    }
+
     @Override
     public boolean isRemote()
     {
