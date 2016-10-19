@@ -64,6 +64,13 @@ public abstract class AbstractX509FileSystemStore
     private BinaryStringEncoder base64;
 
     /**
+     * Used to encode/decode certificates, private keys and subject keys.
+     */
+    @Inject
+    @Named("Hex")
+    private BinaryStringEncoder hex;
+
+    /**
      * Used to create certificate from encoded bytes.
      */
     @Inject
@@ -183,7 +190,7 @@ public abstract class AbstractX509FileSystemStore
     {
         byte[] keyId = publicKey.getSubjectKeyIdentifier();
         if (keyId != null) {
-            return this.base64.encode(keyId);
+            return this.hex.encode(keyId);
         }
         return publicKey.getSerialNumber().toString() + ", " + publicKey.getIssuer().getName();
     }
