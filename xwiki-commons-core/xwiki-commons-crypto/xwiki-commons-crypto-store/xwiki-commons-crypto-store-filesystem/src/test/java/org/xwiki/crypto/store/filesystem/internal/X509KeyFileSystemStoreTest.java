@@ -68,6 +68,7 @@ public class X509KeyFileSystemStoreTest
     private static final String ENCODED_CERTIFICATE = "encoded_certificate";
     private static final byte[] SUBJECT_KEYID = "subjectKeyId".getBytes();
     private static final String ENCODED_SUBJECTKEYID = "encoded_subjectKeyId";
+    private static final String HEXENCODED_SUBJECTKEYID = "hex_encoded_subjectKeyId";
     private static final String SUBJECT = "CN=Subject";
     private static final String ISSUER = "CN=Issuer";
     private static final BigInteger SERIAL = new BigInteger("1234567890");
@@ -77,9 +78,9 @@ public class X509KeyFileSystemStoreTest
     private static final File FILE = new File(TEST_DIR, "my.key");
     private static final File DIRECTORY = new File(TEST_DIR, "keystore");
 
-    private static final File CERT_FILE = new File(DIRECTORY, ENCODED_SUBJECTKEYID + ".cert");
+    private static final File CERT_FILE = new File(DIRECTORY, HEXENCODED_SUBJECTKEYID + ".cert");
 
-    private static final File KEY_FILE = new File(DIRECTORY, ENCODED_SUBJECTKEYID + ".key");
+    private static final File KEY_FILE = new File(DIRECTORY, HEXENCODED_SUBJECTKEYID + ".key");
 
     private static final StoreReference SINGLE_STORE_REF = new FileStoreReference(FILE);
     private static final StoreReference MULTI_STORE_REF = new FileStoreReference(DIRECTORY, true);
@@ -113,15 +114,18 @@ public class X509KeyFileSystemStoreTest
     @Before
     public void setUp() throws Exception
     {
-        BinaryStringEncoder encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
-        when(encoder.encode(PRIVATEKEY, 64)).thenReturn(ENCODED_PRIVATEKEY);
-        when(encoder.decode(ENCODED_PRIVATEKEY)).thenReturn(PRIVATEKEY);
-        when(encoder.encode(ENCRYPTED_PRIVATEKEY, 64)).thenReturn(ENCODED_ENCRYPTED_PRIVATEKEY);
-        when(encoder.decode(ENCODED_ENCRYPTED_PRIVATEKEY)).thenReturn(ENCRYPTED_PRIVATEKEY);
-        when(encoder.encode(CERTIFICATE, 64)).thenReturn(ENCODED_CERTIFICATE);
-        when(encoder.decode(ENCODED_CERTIFICATE)).thenReturn(CERTIFICATE);
-        when(encoder.encode(SUBJECT_KEYID)).thenReturn(ENCODED_SUBJECTKEYID);
-        when(encoder.decode(ENCODED_SUBJECTKEYID)).thenReturn(SUBJECT_KEYID);
+        BinaryStringEncoder base64Encoder = mocker.getInstance(BinaryStringEncoder.class, "Base64");
+        when(base64Encoder.encode(PRIVATEKEY, 64)).thenReturn(ENCODED_PRIVATEKEY);
+        when(base64Encoder.decode(ENCODED_PRIVATEKEY)).thenReturn(PRIVATEKEY);
+        when(base64Encoder.encode(ENCRYPTED_PRIVATEKEY, 64)).thenReturn(ENCODED_ENCRYPTED_PRIVATEKEY);
+        when(base64Encoder.decode(ENCODED_ENCRYPTED_PRIVATEKEY)).thenReturn(ENCRYPTED_PRIVATEKEY);
+        when(base64Encoder.encode(CERTIFICATE, 64)).thenReturn(ENCODED_CERTIFICATE);
+        when(base64Encoder.decode(ENCODED_CERTIFICATE)).thenReturn(CERTIFICATE);
+        when(base64Encoder.encode(SUBJECT_KEYID)).thenReturn(ENCODED_SUBJECTKEYID);
+        when(base64Encoder.decode(ENCODED_SUBJECTKEYID)).thenReturn(SUBJECT_KEYID);
+
+        BinaryStringEncoder hexEncoder = mocker.getInstance(BinaryStringEncoder.class, "Hex");
+        when(hexEncoder.encode(SUBJECT_KEYID)).thenReturn(HEXENCODED_SUBJECTKEYID);
 
         privateKey = mock(PrivateKeyParameters.class);
         when(privateKey.getEncoded()).thenReturn(PRIVATEKEY);
