@@ -50,7 +50,7 @@ public class RSAKeyGenerationParameters extends GenericKeyGenerationParameters i
     /**
      * Build a new instance with all defaults.
      *
-     * The default key strength is {@value #DEFAULT_STRENGTH}.
+     * The default key strength is {@value #DEFAULT_STRENGTH} bytes.
      * The default public exponent is 0x10001.
      * The default certainty for prime evaluation is {@value #DEFAULT_CERTAINTY}.
      */
@@ -65,7 +65,7 @@ public class RSAKeyGenerationParameters extends GenericKeyGenerationParameters i
      * The default public exponent is 0x10001.
      * The default certainty for prime evaluation is {@value #DEFAULT_CERTAINTY}.
      *
-     * @param strength the strength in bits.
+     * @param strength the strength in bytes.
      */
     public RSAKeyGenerationParameters(int strength)
     {
@@ -73,9 +73,11 @@ public class RSAKeyGenerationParameters extends GenericKeyGenerationParameters i
     }
 
     /**
-     * Build a new instance with all custom parameters.
+     * Build a new instance with the given strength and public exponent.
      *
-     * @param strength the key strength.
+     * The default certainty for prime evaluation is {@value #DEFAULT_CERTAINTY}.
+     *
+     * @param strength the key strength in bytes.
      * @param publicExponent the public exponent.
      */
     public RSAKeyGenerationParameters(int strength, BigInteger publicExponent)
@@ -84,9 +86,11 @@ public class RSAKeyGenerationParameters extends GenericKeyGenerationParameters i
     }
 
     /**
-     * Build a new instance with all custom parameters.
+     * Build a new instance with the given strength and certainty for prime evaluation.
      *
-     * @param strength the key strength.
+     * The default public exponent is 0x10001.
+     *
+     * @param strength the key strength in bytes.
      * @param certainty certainty for prime evaluation.
      */
     public RSAKeyGenerationParameters(int strength, int certainty)
@@ -97,7 +101,7 @@ public class RSAKeyGenerationParameters extends GenericKeyGenerationParameters i
     /**
      * Build a new instance with all custom parameters.
      *
-     * @param strength the key strength.
+     * @param strength the key strength in bytes.
      * @param publicExponent the public exponent.
      * @param certainty certainty for prime evaluation.
      */
