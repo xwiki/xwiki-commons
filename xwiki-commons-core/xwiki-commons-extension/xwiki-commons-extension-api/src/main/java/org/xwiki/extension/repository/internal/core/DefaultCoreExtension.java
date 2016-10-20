@@ -20,10 +20,12 @@
 package org.xwiki.extension.repository.internal.core;
 
 import java.net.URL;
+import java.util.Collection;
 
 import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 
 /**
@@ -72,11 +74,27 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
         super(repository, extension);
 
         setURL(url);
+    }
 
-        // Reset data which are useless for core extensions and can take a lot of memory
-        this.allowedNamespaces = null;
-        this.managedDependencies = null;
-        this.dependencies = null;
+    @Override
+    public void setAllowedNamespaces(Collection<String> namespaces)
+    {
+        // Filter useless stuff from {@link CoreExtension} point of view that could take a lot of memory in the end
+        // TODO: dynamically load it from the cache when possible
+    }
+
+    @Override
+    public void setManagedDependencies(Collection<? extends ExtensionDependency> managedDependencies)
+    {
+        // Filter useless stuff from {@link CoreExtension} point of view that could take a lot of memory in the end
+        // TODO: dynamically load it from the cache when possible
+    }
+
+    @Override
+    public void setDependencies(Collection<? extends ExtensionDependency> dependencies)
+    {
+        // Filter useless stuff from {@link CoreExtension} point of view that could take a lot of memory in the end
+        // TODO: dynamically load it from the cache when possible
     }
 
     /**
