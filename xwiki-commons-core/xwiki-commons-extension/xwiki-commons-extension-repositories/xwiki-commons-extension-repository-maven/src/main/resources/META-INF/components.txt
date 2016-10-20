@@ -1,5 +1,4 @@
 org.xwiki.extension.repository.aether.internal.AetherExtensionRepositoryFactory
 org.xwiki.extension.repository.aether.internal.configuration.DefaultAetherConfiguration
 org.xwiki.extension.repository.aether.internal.components.PlexusContainerProvider
-org.xwiki.extension.repository.aether.internal.NexusXWikiComExtensionRepositorySource
 org.xwiki.extension.repository.aether.internal.NexusXWikiOrgExtensionRepositorySource
