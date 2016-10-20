@@ -60,6 +60,9 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
     // Extension
 
     /**
+     * Copy the passed {@link Extension} but filter useless stuff from {@link CoreExtension} point of view like managed
+     * dependencies.
+     * 
      * @param repository the core extension repository
      * @param url the core extension URL
      * @param extension the extension to copy
@@ -69,6 +72,11 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
         super(repository, extension);
 
         setURL(url);
+
+        // Reset data which are useless for core extensions and can take a lot of memory
+        this.allowedNamespaces = null;
+        this.managedDependencies = null;
+        this.dependencies = null;
     }
 
     /**
