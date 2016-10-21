@@ -20,6 +20,7 @@
 package org.xwiki.extension.internal;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -32,9 +33,7 @@ import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
 
-@ComponentList({
-    DefaultExtensionLicenseManager.class
-})
+@ComponentList({ DefaultExtensionLicenseManager.class })
 public class DefaultExtensionLicenseManagerTest
 {
     @Rule
@@ -59,9 +58,9 @@ public class DefaultExtensionLicenseManagerTest
     {
         ExtensionLicense license = this.licenseManager.getLicense("Apache License 2.0");
 
-        List<String> content =
-            IOUtils.readLines(getClass().getResourceAsStream("/extension/licenses/Apache License 2.0.license"));
-        content = content.subList(4, content.size());
+        List<String> content = IOUtils.readLines(
+            getClass().getResourceAsStream("/extension/licenses/Apache License 2.0.license"), StandardCharsets.UTF_8);
+        content = content.subList(8, content.size());
 
         Assert.assertNotNull(license);
         Assert.assertEquals("Apache License 2.0", license.getName());
