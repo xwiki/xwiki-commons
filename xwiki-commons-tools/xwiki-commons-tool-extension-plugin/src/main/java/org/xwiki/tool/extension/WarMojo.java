@@ -57,7 +57,7 @@ import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.properties.converter.Converter;
 
 /**
- * Create a runnable XWiki instance using Jetty as the Servlet Container and HSQLDB as the Database.
+ * Generate complete extension descriptor for each artifact packaged in the WAR and for the WAR itself.
  *
  * @version $Id$
  * @since 8.4RC1
