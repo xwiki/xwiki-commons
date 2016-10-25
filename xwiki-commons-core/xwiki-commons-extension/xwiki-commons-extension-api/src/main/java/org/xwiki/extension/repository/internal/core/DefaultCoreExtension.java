@@ -90,13 +90,6 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
         // TODO: dynamically load it from the cache when possible
     }
 
-    @Override
-    public void setDependencies(Collection<? extends ExtensionDependency> dependencies)
-    {
-        // Filter useless stuff from {@link CoreExtension} point of view that could take a lot of memory in the end
-        // TODO: dynamically load it from the cache when possible
-    }
-
     /**
      * @return true if the extension come from the cache
      */
