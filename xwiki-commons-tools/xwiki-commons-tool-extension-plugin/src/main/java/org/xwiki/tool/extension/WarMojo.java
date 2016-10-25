@@ -72,12 +72,6 @@ public class WarMojo extends AbstractMojo
     private File webappDirectory;
 
     /**
-     * The directory where the war is generated.
-     */
-    @Parameter(defaultValue = "${project.build.outputDirectory}/", required = true)
-    private File resourceDirectory;
-
-    /**
      * The maven project.
      */
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
@@ -132,13 +126,10 @@ public class WarMojo extends AbstractMojo
             if (id != null) {
                 // Override features
                 String featuresString = extensionOverride.get(Extension.FIELD_FEATURES);
-                System.out.println(featuresString);
                 if (featuresString != null) {
                     Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
-                    System.out.println(features);
                     extension.setExtensionFeatures(
                         ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
-                    System.out.println(extension.getExtensionFeatures());
                 }
             }
         }
@@ -147,7 +138,7 @@ public class WarMojo extends AbstractMojo
     private void registerWAR() throws MojoExecutionException
     {
         // Make sure "/META-INF/" exists
-        File directory = new File(this.resourceDirectory, "META-INF");
+        File directory = new File(this.webappDirectory, "META-INF");
         directory.mkdirs();
 
         // Write descriptor
