@@ -140,10 +140,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         String featuresString = getProperty(properties, Extension.FIELD_FEATURES, true);
         if (StringUtils.isNotBlank(featuresString)) {
             Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
-            for (String feature : features) {
-                extension
-                    .addExtensionFeature(ExtensionIdConverter.toExtensionId(feature, extension.getId().getVersion()));
-            }
+            extension
+                .setExtensionFeatures(ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
         }
 
         // category

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.xwiki.commons</groupId>
+    <artifactId>xwiki-commons-tools</artifactId>
+    <version>8.4-SNAPSHOT</version>
+  </parent>
+  <artifactId>xwiki-commons-tool-extension-plugin</artifactId>
+  <name>XWiki Commons - Tools - Extension Plugin</name>
+  <packaging>maven-plugin</packaging>
+  <description>
+    A Maven plugin providing various XWiki Extension related tools
+   </description>
+  <properties>
+    <mavenVersion>3.0.5</mavenVersion>
+    <xwiki.jacoco.instructionRatio>0.01</xwiki.jacoco.instructionRatio>
+  </properties>
+  <dependencies>
+    <!-- Maven -->
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${mavenVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>3.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Plexus -->
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-archiver</artifactId>
+      <version>2.4.3</version>
+      <exclusions>
+        <!-- We draw version 1.0-alpha-9-stable-1 but org.xwiki.commons:xwiki-commons-tool-xar-plugin draws
+             org.codehaus.plexus:plexus-container-default:1.5.5 -->
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-container-default</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-default</artifactId>
+      <version>${commons.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-extension-api</artifactId>
+      <version>${commons.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <configuration>
+          <goalPrefix>extension</goalPrefix>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-invoker-plugin</artifactId>
+            <configuration>
+              <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+              <settingsFile>src/it/settings.xml</settingsFile>
+              <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+              <postBuildHookScript>verify</postBuildHookScript>
+              <goals>
+                <goal>clean</goal>
+                <goal>package</goal>
+              </goals>
+              <showErrors>true</showErrors>
+              <!-- Don't display debug logs by default because it takes more time and one test asserts that there's no
+                   extra debug log displayed since we don't want that when we execute this plugin on projects -->
+              <debug>false</debug>
+            </configuration>
+            <executions>
+              <execution>
+                <id>integration-test</id>
+                <goals>
+                  <goal>install</goal>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!-- The Packager plugin uses XWiki oldcore which gets Clovered and thus we need to have the Clover JAR in the
+         execution classpath of the plugin. Since that plugin is used in the integration tests we need to tell the
+         Maven Invoker plugin to execute the Maven projects using the Clover profile. -->
+    <profile>
+      <id>clover</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-invoker-plugin</artifactId>
+            <configuration>
+              <profiles>
+                <profile>clover</profile>
+              </profiles>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
