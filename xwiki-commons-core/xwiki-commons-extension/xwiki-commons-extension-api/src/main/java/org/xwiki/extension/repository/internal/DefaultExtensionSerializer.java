@@ -133,11 +133,11 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_EFFID = "feature";
 
+    private static final String ELEMENT_EFFVERSION = "version";
+
     private static final String ELEMENT_ALLOWEDNAMESPACES = "allowednamespaces";
 
     private static final String ELEMENT_ANNAMESPACE = "namespace";
-
-    private static final String ELEMENT_EFFVERSION = "version";
 
     private static final String ELEMENT_SCM = "scm";
 
@@ -687,7 +687,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                 featuresElement.appendChild(authorElement);
 
                 addElement(document, authorElement, ELEMENT_EFFID, feature.getId());
-                addElement(document, authorElement, ELEMENT_EFFVERSION, feature.getVersion());
+                addElement(document, authorElement, ELEMENT_EFFVERSION, feature.getVersion().getValue());
             }
         }
     }

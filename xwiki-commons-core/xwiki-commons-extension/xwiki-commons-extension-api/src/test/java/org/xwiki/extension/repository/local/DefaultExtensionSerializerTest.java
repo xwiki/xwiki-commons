@@ -139,6 +139,7 @@ public class DefaultExtensionSerializerTest
 
         extension.addAuthor(new DefaultExtensionAuthor("authorname", new URL("http://authorurl")));
         extension.addFeature("feature1");
+        extension.addExtensionFeature(new ExtensionId("feature2", "version"));
         extension.addAllowedNamespace("namespae1");
         extension.addLicense(new ExtensionLicense("licensename", Arrays.asList("license content")));
         dependency.setProperties(Collections.<String, Object>singletonMap("dependencykey", "dependencyvalue"));
