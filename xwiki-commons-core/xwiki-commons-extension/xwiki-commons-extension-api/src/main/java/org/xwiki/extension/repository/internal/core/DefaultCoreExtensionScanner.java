@@ -364,11 +364,23 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 return null;
             }
 
+            // Load XED stream
+            InputStream xedStream;
+            try {
+                xedStream = xedURL.openStream();
+            } catch (IOException e) {
+                // We assume it means the xed does not exist so we just ignore it
+                this.logger.debug("Failed to load [{}]", xedURL, e);
+                return null;
+            }
+
             // Load XED file
-            try (InputStream xedStream = xedURL.openStream()) {
+            try {
                 return this.parser.loadCoreExtensionDescriptor(repository, xedURL, xedStream);
             } catch (Exception e) {
                 this.logger.error("Failed to load [{}]", xedURL, e);
+            } finally {
+                IOUtils.closeQuietly(xedStream);
             }
         }
 
