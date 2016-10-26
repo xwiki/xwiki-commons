@@ -56,7 +56,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
@@ -73,6 +72,7 @@ import org.xwiki.extension.ExtensionScm;
 import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.InvalidExtensionException;
+import org.xwiki.extension.MutableExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
@@ -288,7 +288,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         return typeNode.getTextContent();
     }
 
-    private void loadExtensionDescriptor(AbstractExtension extension, Element extensionElement)
+    private void loadExtensionDescriptor(MutableExtension extension, Element extensionElement)
         throws InvalidExtensionException
     {
         Node nameNode = getNode(extensionElement, ELEMENT_NAME);

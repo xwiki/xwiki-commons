@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.MutableExtension;
 import org.xwiki.properties.converter.ConversionException;
 
 /**
@@ -98,7 +98,7 @@ public final class ExtensionUtils
      * @return the value
      * @ @since 8.3M1
      */
-    public static <T> T importProperty(AbstractExtension extension, String propertySuffix)
+    public static <T> T importProperty(MutableExtension extension, String propertySuffix)
     {
         return extension.removeProperty(Extension.IKEYPREFIX + propertySuffix);
     }
@@ -112,7 +112,7 @@ public final class ExtensionUtils
      * @return the value or {@code def} if none was found
      * @since 8.3M1
      */
-    public static String importProperty(AbstractExtension extension, String propertySuffix, String def)
+    public static String importProperty(MutableExtension extension, String propertySuffix, String def)
     {
         return StringUtils.defaultString(importProperty(extension, propertySuffix), def);
     }
@@ -126,7 +126,7 @@ public final class ExtensionUtils
      * @return the value or {@code def} if none was found
      * @since 8.3M1
      */
-    public static Collection<String> importProperty(AbstractExtension extension, String propertySuffix,
+    public static Collection<String> importProperty(MutableExtension extension, String propertySuffix,
         Collection<String> def)
     {
         Object obj = importProperty(extension, propertySuffix);

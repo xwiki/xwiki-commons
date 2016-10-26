@@ -41,7 +41,7 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 4.0M1
  */
-public abstract class AbstractExtension implements Extension
+public abstract class AbstractExtension implements MutableExtension
 {
     /**
      * @see #getId()
@@ -177,12 +177,8 @@ public abstract class AbstractExtension implements Extension
         set(extension);
     }
 
-    /**
-     * Update optional informations based on the provided extension.
-     *
-     * @param extension the extension from which to get informations
-     */
-    protected void set(Extension extension)
+    @Override
+    public void set(Extension extension)
     {
         setName(extension.getName());
         setDescription(extension.getDescription());
@@ -278,10 +274,7 @@ public abstract class AbstractExtension implements Extension
         return this.features != null ? this.features : Collections.<String>emptyList();
     }
 
-    /**
-     * @param features the extension ids also provided by this extension
-     * @deprecated since 8.0M1, use {@link #setExtensionFeatures(Collection)} instead
-     */
+    @Override
     @Deprecated
     public void setFeatures(Collection<String> features)
     {
@@ -293,12 +286,7 @@ public abstract class AbstractExtension implements Extension
         setExtensionFeatures(extensionFeatures);
     }
 
-    /**
-     * Add a new feature to the extension.
-     *
-     * @param feature a feature name
-     * @deprecated since 8.0M1, use {@link #addExtensionFeature(ExtensionId)} instead
-     */
+    @Override
     @Deprecated
     public void addFeature(String feature)
     {
@@ -330,9 +318,9 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * @param features the {@link ExtensionId}s also provided by this extension
      * @since 8.0M1
      */
+    @Override
     public void setExtensionFeatures(Collection<ExtensionId> features)
     {
         Map<String, ExtensionId> map = new LinkedHashMap<>();
@@ -344,11 +332,9 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * Add a new feature to the extension.
-     *
-     * @param feature a feature name
      * @since 8.0M1
      */
+    @Override
     public void addExtensionFeature(ExtensionId feature)
     {
         Map<String, ExtensionId> map = this.featuresMap != null
@@ -391,9 +377,7 @@ public abstract class AbstractExtension implements Extension
         return this.name;
     }
 
-    /**
-     * @param name the display name of the extension
-     */
+    @Override
     public void setName(String name)
     {
         this.name = name;
@@ -405,19 +389,13 @@ public abstract class AbstractExtension implements Extension
         return this.licenses != null ? this.licenses : Collections.<ExtensionLicense>emptyList();
     }
 
-    /**
-     * @param licenses the licenses of the extension
-     */
+    @Override
     public void setLicenses(Collection<ExtensionLicense> licenses)
     {
         this.licenses = Collections.unmodifiableList(new ArrayList<ExtensionLicense>(licenses));
     }
 
-    /**
-     * Add a new license to the extension.
-     *
-     * @param license a license
-     */
+    @Override
     public void addLicense(ExtensionLicense license)
     {
         List<ExtensionLicense> newLicenses = new ArrayList<ExtensionLicense>(getLicenses());
@@ -432,9 +410,7 @@ public abstract class AbstractExtension implements Extension
         return this.summary;
     }
 
-    /**
-     * @param summary a short description of the extension
-     */
+    @Override
     public void setSummary(String summary)
     {
         this.summary = summary;
@@ -446,9 +422,7 @@ public abstract class AbstractExtension implements Extension
         return this.description;
     }
 
-    /**
-     * @param description a description of the extension
-     */
+    @Override
     public void setDescription(String description)
     {
         this.description = description;
@@ -460,19 +434,13 @@ public abstract class AbstractExtension implements Extension
         return this.authors != null ? this.authors : Collections.<ExtensionAuthor>emptyList();
     }
 
-    /**
-     * @param authors the authors of the extension
-     */
+    @Override
     public void setAuthors(Collection<? extends ExtensionAuthor> authors)
     {
         this.authors = Collections.unmodifiableList(new ArrayList<ExtensionAuthor>(authors));
     }
 
-    /**
-     * Add a new author to the extension.
-     *
-     * @param author an author
-     */
+    @Override
     public void addAuthor(ExtensionAuthor author)
     {
         List<ExtensionAuthor> newAuthors = new ArrayList<ExtensionAuthor>(getAuthors());
@@ -487,9 +455,7 @@ public abstract class AbstractExtension implements Extension
         return this.website;
     }
 
-    /**
-     * @param website an URL for the extension website
-     */
+    @Override
     public void setWebsite(String website)
     {
         this.website = website;
@@ -502,11 +468,9 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * Add a new allowed namespace to the extension.
-     *
-     * @param namespace a namespace
      * @since 8.0M1
      */
+    @Override
     public void addAllowedNamespace(String namespace)
     {
         Set<String> newNamespaces = this.allowedNamespaces != null ? new LinkedHashSet<String>(this.allowedNamespaces)
@@ -517,20 +481,16 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * @param namespaces the namespaces where it's allowed to install this extension
      * @since 8.0M1
      */
+    @Override
     public void setAllowedNamespaces(Collection<String> namespaces)
     {
         this.allowedNamespaces =
             namespaces != null ? Collections.unmodifiableSet(new LinkedHashSet<>(namespaces)) : null;
     }
 
-    /**
-     * Add a new dependency to the extension.
-     *
-     * @param dependency a dependency
-     */
+    @Override
     public void addDependency(ExtensionDependency dependency)
     {
         List<ExtensionDependency> newDependencies = new ArrayList<ExtensionDependency>(getDependencies());
@@ -545,10 +505,7 @@ public abstract class AbstractExtension implements Extension
         return this.dependencies != null ? this.dependencies : Collections.<ExtensionDependency>emptyList();
     }
 
-    /**
-     * @param dependencies the dependencies of the extension
-     * @see #getDependencies()
-     */
+    @Override
     public void setDependencies(Collection<? extends ExtensionDependency> dependencies)
     {
         this.dependencies = dependencies != null
@@ -556,11 +513,9 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * Add a new managed dependency to the extension.
-     *
-     * @param managedDependency a managed dependency
      * @since 8.1M1
      */
+    @Override
     public void addManagedDependency(ExtensionDependency managedDependency)
     {
         List<ExtensionDependency> newManagedDependencies = new ArrayList<ExtensionDependency>(getManagedDependencies());
@@ -576,10 +531,7 @@ public abstract class AbstractExtension implements Extension
             : Collections.<ExtensionDependency>emptyList();
     }
 
-    /**
-     * @param managedDependencies the managed dependencies of the extension
-     * @see #getManagedDependencies()
-     */
+    @Override
     public void setManagedDependencies(Collection<? extends ExtensionDependency> managedDependencies)
     {
         this.managedDependencies = managedDependencies != null
@@ -608,9 +560,9 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * @param scm informations related to extensions's Source Control Management
      * @since 6.3M1
      */
+    @Override
     public void setScm(ExtensionScm scm)
     {
         this.scm = scm;
@@ -623,9 +575,9 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * @param issueManagement informations related to extension's issues management
      * @since 6.3M1
      */
+    @Override
     public void setIssueManagement(ExtensionIssueManagement issueManagement)
     {
         this.issueManagement = issueManagement;
@@ -652,10 +604,10 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * @param categrory the category of the extension
      * @since 7.0M2
      */
     @Unstable
+    @Override
     public void setCategory(String categrory)
     {
         this.category = categrory;
@@ -668,20 +620,18 @@ public abstract class AbstractExtension implements Extension
     }
 
     /**
-     * @param repositories the custom repositories provided by the extension (usually to resolve dependencies)
      * @since 7.3M1
      */
+    @Override
     public void setRepositories(Collection<? extends ExtensionRepositoryDescriptor> repositories)
     {
         this.repositories = repositories != null ? Collections.unmodifiableList(new ArrayList<>(repositories)) : null;
     }
 
     /**
-     * Add a new repository to the extension.
-     *
-     * @param repository a repository descriptor
      * @since 7.3M1
      */
+    @Override
     public void addRepository(ExtensionRepositoryDescriptor repository)
     {
         List<ExtensionRepositoryDescriptor> newrepositories =
@@ -709,13 +659,7 @@ public abstract class AbstractExtension implements Extension
         return getProperties().containsKey(key) ? (T) getProperties().get(key) : def;
     }
 
-    /**
-     * Set a property.
-     *
-     * @param key the property key
-     * @param value the property value
-     * @see #getProperty(String)
-     */
+    @Override
     public void putProperty(String key, Object value)
     {
         synchronized (this.propertiesLock) {
@@ -726,25 +670,16 @@ public abstract class AbstractExtension implements Extension
         }
     }
 
-    /**
-     * Replace existing properties with provided properties.
-     *
-     * @param properties the properties
-     */
+    @Override
     public void setProperties(Map<String, Object> properties)
     {
         this.properties = Collections.unmodifiableMap(new LinkedHashMap<String, Object>(properties));
     }
 
     /**
-     * Remove the property associated to the passed key and return its value.
-     * 
-     * @param <T> type of the property value
-     * @param key the property key
-     * @return the previous value associated with <tt>key</tt>, or <tt>null</tt> if there was no mapping for
-     *         <tt>key</tt>
      * @since 8.3M1
      */
+    @Override
     public <T> T removeProperty(String key)
     {
         T previous;

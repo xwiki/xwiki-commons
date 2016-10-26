@@ -45,8 +45,8 @@ import org.apache.maven.project.ProjectBuildingResult;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
-import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.MutableExtension;
 import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
@@ -141,9 +141,9 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     {
         // Get Extension instance
         Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
-        AbstractExtension mutableExtension;
-        if (mavenExtension instanceof AbstractExtension) {
-            mutableExtension = (AbstractExtension) mavenExtension;
+        MutableExtension mutableExtension;
+        if (mavenExtension instanceof MutableExtension) {
+            mutableExtension = (MutableExtension) mavenExtension;
         } else {
             mutableExtension = new DefaultLocalExtension(null, mavenExtension);
         }
@@ -159,7 +159,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
         }
     }
 
-    protected void override(AbstractExtension extension)
+    protected void override(MutableExtension extension)
     {
         if (this.extensionOverrides != null) {
             for (ExtensionOverride extensionOverride : this.extensionOverrides) {
