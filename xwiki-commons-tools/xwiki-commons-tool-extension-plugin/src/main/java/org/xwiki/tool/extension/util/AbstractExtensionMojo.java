@@ -45,6 +45,7 @@ import org.apache.maven.project.ProjectBuildingResult;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
@@ -65,7 +66,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
      * The current Maven session being executed.
      */
     @Parameter(defaultValue = "${session}", required = true, readonly = true)
-    private MavenSession session;
+    protected MavenSession session;
 
     /**
      * Project builder -- builds a model from a pom.xml.
@@ -74,7 +75,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     protected ProjectBuilder projectBuilder;
 
     @Parameter
-    private List<ExtensionOverride> extensionOverrides;
+    protected List<ExtensionOverride> extensionOverrides;
 
     protected ExtensionSerializer extensionSerializer;
 
@@ -140,30 +141,37 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     {
         // Get Extension instance
         Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
-        DefaultLocalExtension extension = new DefaultLocalExtension(null, mavenExtension);
+        AbstractExtension mutableExtension;
+        if (mavenExtension instanceof AbstractExtension) {
+            mutableExtension = (AbstractExtension) mavenExtension;
+        } else {
+            mutableExtension = new DefaultLocalExtension(null, mavenExtension);
+        }
 
         if (!path.exists()) {
             // Apply overrides
-            override(extension);
+            override(mutableExtension);
 
             // Save the Extension descriptor
             try (FileOutputStream stream = new FileOutputStream(path)) {
-                this.extensionSerializer.saveExtensionDescriptor(extension, stream);
+                this.extensionSerializer.saveExtensionDescriptor(mavenExtension, stream);
             }
         }
     }
 
-    protected void override(DefaultLocalExtension extension)
+    protected void override(AbstractExtension extension)
     {
-        for (ExtensionOverride extensionOverride : this.extensionOverrides) {
-            String id = extensionOverride.get(Extension.FIELD_ID);
-            if (id != null) {
-                // Override features
-                String featuresString = extensionOverride.get(Extension.FIELD_FEATURES);
-                if (featuresString != null) {
-                    Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
-                    extension.setExtensionFeatures(
-                        ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
+        if (this.extensionOverrides != null) {
+            for (ExtensionOverride extensionOverride : this.extensionOverrides) {
+                String id = extensionOverride.get(Extension.FIELD_ID);
+                if (id != null) {
+                    // Override features
+                    String featuresString = extensionOverride.get(Extension.FIELD_FEATURES);
+                    if (featuresString != null) {
+                        Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
+                        extension.setExtensionFeatures(
+                            ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
+                    }
                 }
             }
         }
