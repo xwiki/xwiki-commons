@@ -43,6 +43,7 @@
   <modules>
     <!-- Sorted Alphabetically -->
     <module>xwiki-commons-tool-enforcers</module>
+    <module>xwiki-commons-tool-extension-plugin</module>
     <module>xwiki-commons-tool-license-resources</module>
     <module>xwiki-commons-tool-test</module>
     <module>xwiki-commons-tool-verification-resources</module>
