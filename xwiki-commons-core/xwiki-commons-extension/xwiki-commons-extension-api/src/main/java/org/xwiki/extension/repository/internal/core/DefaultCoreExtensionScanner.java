@@ -57,7 +57,6 @@ import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.PathUtils;
 import org.xwiki.extension.internal.maven.MavenExtension;
@@ -356,6 +355,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         int extIndex = jarString.lastIndexOf('.');
         if (extIndex > 0) {
+            // Find XED file URL
             URL xedURL;
             try {
                 xedURL = new URL(jarString.substring(0, extIndex) + ".xed");
@@ -364,20 +364,11 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 return null;
             }
 
-            InputStream xedStream;
-            try {
-                xedStream = xedURL.openStream();
-            } catch (IOException e) {
-                // We assume it means the xed does not exist
-                return null;
-            }
-
-            try {
+            // Load XED file
+            try (InputStream xedStream = xedURL.openStream()) {
                 return this.parser.loadCoreExtensionDescriptor(repository, xedURL, xedStream);
-            } catch (InvalidExtensionException e) {
+            } catch (Exception e) {
                 this.logger.error("Failed to load [{}]", xedURL, e);
-            } finally {
-                IOUtils.closeQuietly(xedStream);
             }
         }
 
