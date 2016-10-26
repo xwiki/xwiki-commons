@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -55,12 +57,14 @@ import org.xwiki.environment.Environment;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.PathUtils;
 import org.xwiki.extension.internal.maven.MavenExtension;
 import org.xwiki.extension.internal.maven.MavenExtensionDependency;
 import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.extension.repository.internal.ExtensionSerializer;
 import org.xwiki.properties.ConverterManager;
 
 import com.google.common.base.Predicates;
@@ -103,6 +107,9 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
     @Inject
     private CoreExtensionCache cache;
+
+    @Inject
+    private ExtensionSerializer parser;
 
     private boolean shouldStop;
 
@@ -189,7 +196,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
             // If no parent is provided no need to resolve it to get more details
             if (mavenModel.getParent() == null) {
                 this.cache.store(coreExtension);
-                coreExtension.setCached(true);
+                coreExtension.setComplete(true);
             }
 
             return coreExtension;
@@ -208,16 +215,16 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 break;
             }
 
-            if (!extension.isCached()) {
+            if (!extension.isComplete()) {
                 try {
                     Extension remoteExtension = this.repositoryManager.resolve(extension.getId());
 
                     extension.set(remoteExtension);
+                    extension.setComplete(true);
 
                     // Cache it
                     if (extension.getDescriptorURL() != null) {
                         this.cache.store(extension);
-                        extension.setCached(true);
                     }
                 } catch (ResolveException e) {
                     this.logger.debug("Can't find remote extension with id [{}]", extension.getId(), e);
@@ -232,7 +239,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     @Override
     public Map<String, DefaultCoreExtension> loadExtensions(DefaultCoreExtensionRepository repository)
     {
-        Map<String, DefaultCoreExtension> extensions = new HashMap<String, DefaultCoreExtension>();
+        Map<String, DefaultCoreExtension> extensions = new HashMap<>();
 
         loadExtensionsFromClassloaders(extensions, repository);
 
@@ -242,12 +249,27 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     @Override
     public DefaultCoreExtension loadEnvironmentExtension(DefaultCoreExtensionRepository repository)
     {
-        InputStream is = this.environment.getResourceAsStream("/META-INF/MANIFEST.MF");
+        //////////
+        // XED
 
-        if (is != null) {
+        URL xedURL = this.environment.getResource("/META-INF/extension.xed");
+        if (xedURL != null) {
+            try (InputStream xedStream = this.environment.getResourceAsStream("/META-INF/extension.xed")) {
+                return this.parser.loadCoreExtensionDescriptor(repository, null, xedStream);
+            } catch (Exception e) {
+                this.logger.error("Failed to load [{}] descriptor file", xedURL, e);
+            }
+        }
+
+        //////////
+        // MAVEN
+
+        InputStream manifestString = this.environment.getResourceAsStream("/META-INF/MANIFEST.MF");
+
+        if (manifestString != null) {
             // Probably running in an application server
             try {
-                Manifest manifest = new Manifest(is);
+                Manifest manifest = new Manifest(manifestString);
 
                 Attributes manifestAttributes = manifest.getMainAttributes();
                 String extensionId = manifestAttributes.getValue(MavenUtils.MF_EXTENSION_ID);
@@ -275,11 +297,89 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
             } catch (IOException e) {
                 this.logger.error("Failed to parse environment META-INF/MANIFEST.MF file", e);
             } finally {
-                IOUtils.closeQuietly(is);
+                IOUtils.closeQuietly(manifestString);
             }
         }
 
+        //////////
+        // Could not find any valid descriptor
+
         this.logger.debug("No declared environmennt extension");
+
+        return null;
+    }
+
+    private Collection<URL> getJARs()
+    {
+        // ClasspathHelper.forClassLoader() get even the JARs that are made not reachable by the application server
+        // So the trick is to get all resources in which we can access a META-INF folder
+        Collection<URL> urls = ClasspathHelper.forPackage("META-INF");
+
+        Collection<URL> jarURLs = new ArrayList<>(urls.size());
+
+        for (URL url : urls) {
+            try {
+                jarURLs.add(PathUtils.getExtensionURL(url, null));
+            } catch (MalformedURLException e) {
+                this.logger.error("Failed to convert to extension URL", e);
+            }
+        }
+
+        return jarURLs;
+    }
+
+    private void addCoreExtension(Map<String, DefaultCoreExtension> extensions, DefaultCoreExtension coreExtension)
+    {
+        DefaultCoreExtension existingCoreExtension = extensions.get(coreExtension.getId().getId());
+
+        if (existingCoreExtension == null) {
+            extensions.put(coreExtension.getId().getId(), coreExtension);
+        } else {
+            this.logger.warn("Collision between core extension [{} ({})] and [{} ({})]", coreExtension.getId(),
+                coreExtension.getDescriptorURL(), existingCoreExtension.getId(),
+                existingCoreExtension.getDescriptorURL());
+
+            if (coreExtension.getId().getVersion().compareTo(existingCoreExtension.getId().getVersion()) > 0) {
+                extensions.put(coreExtension.getId().getId(), coreExtension);
+
+                this.logger.warn("[{} ({})] is selected", coreExtension.getId(), coreExtension.getDescriptorURL());
+            } else {
+                this.logger.warn("[{} ({})] is selected", existingCoreExtension.getId(),
+                    existingCoreExtension.getDescriptorURL());
+            }
+        }
+    }
+
+    private DefaultCoreExtension loadCoreExtensionFromXED(URL jarURL, DefaultCoreExtensionRepository repository)
+    {
+        String jarString = jarURL.toExternalForm();
+
+        int extIndex = jarString.lastIndexOf('.');
+        if (extIndex > 0) {
+            URL xedURL;
+            try {
+                xedURL = new URL(jarString.substring(0, extIndex) + ".xed");
+            } catch (MalformedURLException e) {
+                // Cannot really happen
+                return null;
+            }
+
+            InputStream xedStream;
+            try {
+                xedStream = xedURL.openStream();
+            } catch (IOException e) {
+                // We assume it means the xed does not exist
+                return null;
+            }
+
+            try {
+                return this.parser.loadCoreExtensionDescriptor(repository, xedURL, xedStream);
+            } catch (InvalidExtensionException e) {
+                this.logger.error("Failed to load [{}]", xedURL, e);
+            } finally {
+                IOUtils.closeQuietly(xedStream);
+            }
+        }
 
         return null;
     }
@@ -287,11 +387,51 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     private void loadExtensionsFromClassloaders(Map<String, DefaultCoreExtension> extensions,
         DefaultCoreExtensionRepository repository)
     {
-        Collection<URL> mavenURLs = ClasspathHelper.forPackage(MavenUtils.MAVENPACKAGE);
+        ////////////////////
+        // Get all jar files
 
+        Collection<URL> jars = getJARs();
+
+        ////////////////////
+        // Try to find associated xed files
+
+        fromXED(extensions, jars, repository);
+
+        ////////////////////
+        // Try to find associated Maven files
+
+        fromMaven(extensions, jars, repository);
+
+        ////////////////////
+        // Work some magic to guess the rest of the jar files
+
+        guess(extensions, repository, jars);
+    }
+
+    private void fromXED(Map<String, DefaultCoreExtension> extensions, Collection<URL> jars,
+        DefaultCoreExtensionRepository repository)
+    {
+        for (Iterator<URL> it = jars.iterator(); it.hasNext();) {
+            URL jarURL = it.next();
+
+            DefaultCoreExtension coreExtension = loadCoreExtensionFromXED(jarURL, repository);
+
+            if (coreExtension != null) {
+                // Add the core extension
+                addCoreExtension(extensions, coreExtension);
+
+                // Remove the jar from the list
+                it.remove();
+            }
+        }
+    }
+
+    private void fromMaven(Map<String, DefaultCoreExtension> extensions, Collection<URL> jars,
+        DefaultCoreExtensionRepository repository)
+    {
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.setScanners(new ResourcesScanner());
-        configurationBuilder.setUrls(mavenURLs);
+        configurationBuilder.setUrls(jars);
         configurationBuilder.filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(MavenUtils.MAVENPACKAGE)));
 
         Reflections reflections = new Reflections(configurationBuilder);
@@ -305,26 +445,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 try {
                     DefaultCoreExtension coreExtension = getCoreExension(descriptorURL, repository);
 
-                    DefaultCoreExtension existingCoreExtension = extensions.get(coreExtension.getId().getId());
-
-                    if (existingCoreExtension == null) {
-                        extensions.put(coreExtension.getId().getId(), coreExtension);
-                    } else {
-                        this.logger.warn("Collision between core extension [{} ({})] and [{} ({})]",
-                            coreExtension.getId(), coreExtension.getDescriptorURL(), existingCoreExtension.getId(),
-                            existingCoreExtension.getDescriptorURL());
-
-                        if (coreExtension.getId().getVersion()
-                            .compareTo(existingCoreExtension.getId().getVersion()) > 0) {
-                            extensions.put(coreExtension.getId().getId(), coreExtension);
-
-                            this.logger.warn("[{} ({})] is selected", coreExtension.getId(),
-                                coreExtension.getDescriptorURL());
-                        } else {
-                            this.logger.warn("[{} ({})] is selected", existingCoreExtension.getId(),
-                                existingCoreExtension.getDescriptorURL());
-                        }
-                    }
+                    addCoreExtension(extensions, coreExtension);
                 } catch (Exception e) {
                     this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorURL, descriptor, e);
                 }
@@ -332,20 +453,14 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 this.logger.error("Could not find resource URL for descriptor [{}]", descriptor);
             }
         }
-
-        // Try to find more
-
-        guess(extensions, repository);
     }
 
-    private void guess(Map<String, DefaultCoreExtension> extensions, DefaultCoreExtensionRepository repository)
+    private void guess(Map<String, DefaultCoreExtension> extensions, DefaultCoreExtensionRepository repository,
+        Collection<URL> jars)
     {
-        Set<ExtensionDependency> dependencies = new HashSet<ExtensionDependency>();
+        Set<ExtensionDependency> dependencies = new HashSet<>();
 
-        Set<String> validatedFiles = new HashSet<String>();
         for (DefaultCoreExtension coreExtension : extensions.values()) {
-            validatedFiles.add(coreExtension.getURL().toString());
-
             for (ExtensionDependency dependency : coreExtension.getDependencies()) {
                 if (!extensions.containsKey(dependency.getId())) {
                     dependencies.add(dependency);
@@ -355,51 +470,40 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         // Normalize and guess
 
-        Map<String, Object[]> fileNames = new HashMap<String, Object[]>();
-        Map<String, Object[]> guessedArtefacts = new HashMap<String, Object[]>();
-        // ClasspathHelper.forClassLoader() get even the JARs that are made not reachable by the application server
-        // So the trick is to get all resources in which we can access a META-INF folder
-        Collection<URL> urls = ClasspathHelper.forPackage("META-INF");
+        Map<String, Object[]> fileNames = new HashMap<>();
+        Map<String, Object[]> guessedArtefacts = new HashMap<>();
 
-        for (URL url : urls) {
-            URL extensionURL;
+        for (Iterator<URL> it = jars.iterator(); it.hasNext();) {
+            URL jarURL = it.next();
+
             try {
-                extensionURL = PathUtils.getExtensionURL(url, null);
-            } catch (MalformedURLException e) {
-                this.logger.error("Failed to convert to extension URL", e);
-                continue;
-            }
+                String path = jarURL.toURI().getPath();
+                String filename = path.substring(path.lastIndexOf('/') + 1);
+                String type = null;
 
-            if (!validatedFiles.contains(extensionURL.toString())) {
-                try {
-                    String path = extensionURL.toURI().getPath();
-                    String filename = path.substring(path.lastIndexOf('/') + 1);
-                    String type = null;
-
-                    int extIndex = filename.lastIndexOf('.');
-                    if (extIndex != -1) {
-                        type = filename.substring(extIndex + 1);
-                        filename = filename.substring(0, extIndex);
-                    }
-
-                    int index;
-                    if (!filename.endsWith(MavenUtils.SNAPSHOTSUFFIX)) {
-                        index = filename.lastIndexOf('-');
-                    } else {
-                        index = filename.lastIndexOf('-', filename.length() - MavenUtils.SNAPSHOTSUFFIX.length());
-                    }
-
-                    if (index != -1) {
-                        fileNames.put(filename, new Object[] { extensionURL });
-
-                        String artefactname = filename.substring(0, index);
-                        String version = filename.substring(index + 1);
-
-                        guessedArtefacts.put(artefactname, new Object[] { version, extensionURL, type });
-                    }
-                } catch (Exception e) {
-                    this.logger.warn("Failed to parse resource name [{}]", extensionURL, e);
+                int extIndex = filename.lastIndexOf('.');
+                if (extIndex != -1) {
+                    type = filename.substring(extIndex + 1);
+                    filename = filename.substring(0, extIndex);
                 }
+
+                int index;
+                if (!filename.endsWith(MavenUtils.SNAPSHOTSUFFIX)) {
+                    index = filename.lastIndexOf('-');
+                } else {
+                    index = filename.lastIndexOf('-', filename.length() - MavenUtils.SNAPSHOTSUFFIX.length());
+                }
+
+                if (index != -1) {
+                    fileNames.put(filename, new Object[] { jarURL });
+
+                    String artefactname = filename.substring(0, index);
+                    String version = filename.substring(index + 1);
+
+                    guessedArtefacts.put(artefactname, new Object[] { version, jarURL, type });
+                }
+            } catch (Exception e) {
+                this.logger.warn("Failed to parse resource name [{}]", jarURL, e);
             }
         }
 

@@ -42,9 +42,9 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
     private static final String PKEY_DESCRIPTORURL = "core.descriptorurl";
 
     /**
-     * @see #isCached()
+     * @see #isComplete()
      */
-    private boolean cached;
+    private boolean complete;
 
     /**
      * @param repository the core extension repository
@@ -91,19 +91,21 @@ public class DefaultCoreExtension extends AbstractExtension implements CoreExten
     }
 
     /**
-     * @return true if the extension come from the cache
+     * @return true if the extension come from a complete descriptor (xed file, the cache, etc.)
+     * @since 8.4RC1
      */
-    public boolean isCached()
+    public boolean isComplete()
     {
-        return this.cached;
+        return this.complete;
     }
 
     /**
-     * @param cached true if the extension come from the cache
+     * @param complete true if the extension come from a complete descriptor (xed file, the cache, etc.)
+     * @since 8.4RC1
      */
-    public void setCached(boolean cached)
+    public void setComplete(boolean complete)
     {
-        this.cached = cached;
+        this.complete = complete;
     }
 
     @Override

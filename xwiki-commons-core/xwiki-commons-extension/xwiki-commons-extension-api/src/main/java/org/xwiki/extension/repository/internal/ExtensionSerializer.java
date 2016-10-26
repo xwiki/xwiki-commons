@@ -74,6 +74,6 @@ public interface ExtensionSerializer
      * @throws ParserConfigurationException error when serializing
      * @throws TransformerException error when serializing
      */
-    void saveExtensionDescriptor(Extension extension, OutputStream os) throws ParserConfigurationException,
-        TransformerException;
+    void saveExtensionDescriptor(Extension extension, OutputStream os)
+        throws ParserConfigurationException, TransformerException;
 }

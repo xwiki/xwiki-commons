@@ -125,8 +125,6 @@ public class CoreExtensionCache implements Initializable
                 DefaultCoreExtension coreExtension =
                     this.serializer.loadCoreExtensionDescriptor(repository, descriptorURL, stream);
 
-                coreExtension.setCached(true);
-
                 return coreExtension;
             } catch (Exception e) {
                 this.logger.warn("Failed to parse cached core extension", e);

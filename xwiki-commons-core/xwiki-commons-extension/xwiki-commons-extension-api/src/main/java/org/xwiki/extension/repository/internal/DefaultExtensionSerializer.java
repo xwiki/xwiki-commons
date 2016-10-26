@@ -235,6 +235,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         loadExtensionDescriptor(coreExtension, extensionElement);
 
+        coreExtension.setComplete(true);
+
         return coreExtension;
     }
 
