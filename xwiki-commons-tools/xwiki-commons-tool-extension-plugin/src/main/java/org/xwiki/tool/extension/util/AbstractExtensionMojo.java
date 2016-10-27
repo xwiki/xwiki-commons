@@ -180,7 +180,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     protected void saveExtension(Artifact artifact, File directory) throws MojoExecutionException
     {
         // Get path
-        File path = new File(directory, artifact.getArtifactId() + '-' + artifact.getVersion() + ".xed");
+        File path = new File(directory, artifact.getArtifactId() + '-' + artifact.getBaseVersion() + ".xed");
 
         try {
             saveExtension(path, artifact);
