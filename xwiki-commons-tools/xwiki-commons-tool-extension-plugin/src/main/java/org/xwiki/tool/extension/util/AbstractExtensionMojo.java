@@ -51,6 +51,7 @@ import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
+import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.properties.converter.Converter;
 import org.xwiki.tool.extension.ExtensionOverride;
 
@@ -164,13 +165,16 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
         if (this.extensionOverrides != null) {
             for (ExtensionOverride extensionOverride : this.extensionOverrides) {
                 String id = extensionOverride.get(Extension.FIELD_ID);
-                if (id != null) {
-                    // Override features
-                    String featuresString = extensionOverride.get(Extension.FIELD_FEATURES);
-                    if (featuresString != null) {
-                        Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
-                        extension.setExtensionFeatures(
-                            ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
+                if (extension.getId().getId().equals(id)) {
+                    String version = extensionOverride.get(Extension.FIELD_VERSION);
+                    if (version == null || extension.getId().getVersion().equals(new DefaultVersion(id))) {
+                        // Override features
+                        String featuresString = extensionOverride.get(Extension.FIELD_FEATURES);
+                        if (featuresString != null) {
+                            Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
+                            extension.setExtensionFeatures(
+                                ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
+                        }
                     }
                 }
             }
