@@ -64,6 +64,7 @@ import org.xwiki.extension.internal.maven.MavenExtensionDependency;
 import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
+import org.xwiki.extension.version.Version;
 import org.xwiki.properties.ConverterManager;
 
 import com.google.common.base.Predicates;
@@ -162,8 +163,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         return artifactId;
     }
 
-    private DefaultCoreExtension getCoreExension(URL descriptorURL, DefaultCoreExtensionRepository repository)
-        throws Exception
+    private DefaultCoreExtension getCoreExension(URL jarURL, URL descriptorURL,
+        DefaultCoreExtensionRepository repository) throws Exception
     {
         DefaultCoreExtension coreExtension = this.cache.getExtension(repository, descriptorURL);
 
@@ -171,10 +172,10 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
             return coreExtension;
         }
 
-        return parseMavenPom(descriptorURL, repository);
+        return parseMavenPom(jarURL, descriptorURL, repository);
     }
 
-    private DefaultCoreExtension parseMavenPom(URL descriptorURL, DefaultCoreExtensionRepository repository)
+    private DefaultCoreExtension parseMavenPom(URL jarURL, URL descriptorURL, DefaultCoreExtensionRepository repository)
         throws Exception
     {
         InputStream descriptorStream = descriptorURL.openStream();
@@ -182,14 +183,12 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model mavenModel = reader.read(descriptorStream);
 
-            URL extensionURL = PathUtils.getExtensionURL(descriptorURL, MavenUtils.MAVENPACKAGE.replace('.', '/'));
-
             // Resolve Maven variables in critical places
             MavenUtils.resolveVariables(mavenModel);
 
             Extension mavenExtension = this.converter.convert(Extension.class, mavenModel);
 
-            DefaultCoreExtension coreExtension = new MavenCoreExtension(repository, extensionURL, mavenExtension);
+            DefaultCoreExtension coreExtension = new MavenCoreExtension(repository, jarURL, mavenExtension);
             coreExtension.setDescriptorURL(descriptorURL);
 
             // If no parent is provided no need to resolve it to get more details
@@ -282,7 +281,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
                     if (descriptorURL != null) {
                         try {
-                            DefaultCoreExtension coreExtension = parseMavenPom(descriptorURL, repository);
+                            DefaultCoreExtension coreExtension =
+                                parseMavenPom(descriptorURL, descriptorURL, repository);
 
                             return coreExtension;
                         } catch (Exception e) {
@@ -334,17 +334,25 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         if (existingCoreExtension == null) {
             extensions.put(coreExtension.getId().getId(), coreExtension);
         } else {
-            this.logger.warn("Collision between core extension [{} ({})] and [{} ({})]", coreExtension.getId(),
-                coreExtension.getDescriptorURL(), existingCoreExtension.getId(),
-                existingCoreExtension.getDescriptorURL());
+            Version existingVersion = existingCoreExtension.getId().getVersion();
+            Version version = coreExtension.getId().getVersion();
 
-            if (coreExtension.getId().getVersion().compareTo(existingCoreExtension.getId().getVersion()) > 0) {
-                extensions.put(coreExtension.getId().getId(), coreExtension);
+            int comparizon = version.compareTo(existingVersion);
 
-                this.logger.warn("[{} ({})] is selected", coreExtension.getId(), coreExtension.getDescriptorURL());
-            } else {
-                this.logger.warn("[{} ({})] is selected", existingCoreExtension.getId(),
+            // Ignore collision between same versions
+            if (comparizon != 0) {
+                this.logger.warn("Collision between core extension [{} ({})] and [{} ({})]", coreExtension.getId(),
+                    coreExtension.getDescriptorURL(), existingCoreExtension.getId(),
                     existingCoreExtension.getDescriptorURL());
+
+                if (comparizon > 0) {
+                    extensions.put(coreExtension.getId().getId(), coreExtension);
+
+                    this.logger.warn("[{} ({})] is selected", coreExtension.getId(), coreExtension.getDescriptorURL());
+                } else {
+                    this.logger.warn("[{} ({})] is selected", existingCoreExtension.getId(),
+                        existingCoreExtension.getDescriptorURL());
+                }
             }
         }
     }
@@ -435,30 +443,55 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     private void fromMaven(Map<String, DefaultCoreExtension> extensions, Collection<URL> jars,
         DefaultCoreExtensionRepository repository)
     {
+        for (Iterator<URL> it = jars.iterator(); it.hasNext();) {
+            URL jar = it.next();
+
+            if (fromMaven(extensions, jar, repository)) {
+                // Remove the jar from the list
+                it.remove();
+            }
+        }
+    }
+
+    private boolean fromMaven(Map<String, DefaultCoreExtension> extensions, URL jarURL,
+        DefaultCoreExtensionRepository repository)
+    {
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.setScanners(new ResourcesScanner());
-        configurationBuilder.setUrls(jars);
+        configurationBuilder.setUrls(jarURL);
         configurationBuilder.filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(MavenUtils.MAVENPACKAGE)));
 
         Reflections reflections = new Reflections(configurationBuilder);
 
+        // We can get several pom.xml because the jar might embed several extensions
         Set<String> descriptors = reflections.getResources(Predicates.equalTo("pom.xml"));
 
+        boolean found = false;
         for (String descriptor : descriptors) {
-            URL descriptorURL = getClass().getClassLoader().getResource(descriptor);
+            // Create descriptor URL
+            URL descriptorURL;
+            try {
+                descriptorURL = new URL("jar:" + jarURL.toExternalForm() + "!/" + descriptor);
+            } catch (MalformedURLException e1) {
+                // Not supposed to happen (would mean there is a bug in Reflections)
+                this.logger.error("Failed to access resource [{}] from jar [{}]", descriptor, jarURL);
+                continue;
+            }
 
-            if (descriptorURL != null) {
-                try {
-                    DefaultCoreExtension coreExtension = getCoreExension(descriptorURL, repository);
+            try {
+                // Load Extension from descriptor
+                DefaultCoreExtension coreExtension = getCoreExension(jarURL, descriptorURL, repository);
 
-                    addCoreExtension(extensions, coreExtension);
-                } catch (Exception e) {
-                    this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorURL, descriptor, e);
-                }
-            } else {
-                this.logger.error("Could not find resource URL for descriptor [{}]", descriptor);
+                // Add the core extension
+                addCoreExtension(extensions, coreExtension);
+
+                found = true;
+            } catch (Exception e) {
+                this.logger.warn("Failed to parse extension descriptor [{}] ([{}])", descriptorURL, descriptor, e);
             }
         }
+
+        return found;
     }
 
     private void guess(Map<String, DefaultCoreExtension> extensions, DefaultCoreExtensionRepository repository,
