@@ -376,7 +376,10 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
             // Load XED file
             try {
-                return this.parser.loadCoreExtensionDescriptor(repository, xedURL, xedStream);
+                DefaultCoreExtension coreExtension =
+                    this.parser.loadCoreExtensionDescriptor(repository, jarURL, xedStream);
+                coreExtension.setDescriptorURL(xedURL);
+                return coreExtension;
             } catch (Exception e) {
                 this.logger.error("Failed to load [{}]", xedURL, e);
             } finally {
