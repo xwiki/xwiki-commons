@@ -22,6 +22,8 @@ package org.xwiki.extension.repository.xwiki.internal;
 import java.net.URISyntaxException;
 
 import org.xwiki.extension.AbstractExtensionDependency;
+import org.xwiki.extension.Extension;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionRepository;
@@ -38,9 +40,11 @@ public class XWikiExtensionDependency extends AbstractExtensionDependency
     /**
      * @param restDependency the REST representation of an Extension dependency
      * @param extensionRepository the repository of the parent extension
+     * @param factory tool to share instances of various parts of an {@link Extension}
+     * @since 8.4
      */
     public XWikiExtensionDependency(ExtensionDependency restDependency,
-        ExtensionRepositoryDescriptor extensionRepository)
+        ExtensionRepositoryDescriptor extensionRepository, ExtensionFactory factory)
     {
         super(restDependency.getId(), new DefaultVersionConstraint(restDependency.getConstraint()));
 
@@ -52,7 +56,7 @@ public class XWikiExtensionDependency extends AbstractExtensionDependency
         // Repositories
         for (ExtensionRepository restRepository : restDependency.getRepositories()) {
             try {
-                addRepository(XWikiExtension.toDefaultExtensionRepositoryDescriptor(restRepository));
+                addRepository(XWikiExtension.toExtensionRepositoryDescriptor(restRepository, factory));
             } catch (URISyntaxException e) {
                 // TODO: Log something ?
             }

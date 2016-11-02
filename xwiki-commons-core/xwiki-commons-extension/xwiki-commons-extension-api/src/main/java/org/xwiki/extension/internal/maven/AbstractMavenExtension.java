@@ -24,6 +24,7 @@ import org.xwiki.extension.AbstractExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.version.Version;
 
 /**
  * Base class for all Maven specific {@link Extension}s.
@@ -56,6 +57,23 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
      * @param type the extension type
      */
     public AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, String version,
+        String type)
+    {
+        super(repository, new ExtensionId(groupId + ':' + artifactId, version), type);
+
+        setMavenGroupId(groupId);
+        setMavenArtifactId(artifactId);
+    }
+
+    /**
+     * @param repository the repository where this extension comes from
+     * @param groupId the maven artifact group id
+     * @param artifactId the maven artifact artifact id
+     * @param version the maven artifact version
+     * @param type the extension type
+     * @since 8.4
+     */
+    public AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, Version version,
         String type)
     {
         super(repository, new ExtensionId(groupId + ':' + artifactId, version), type);

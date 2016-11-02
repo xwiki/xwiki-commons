@@ -99,6 +99,9 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     @Inject
     private Provider<ConfigurationSource> configuration;
 
+    @Inject
+    private ExtensionFactory extensionFactory;
+
     // Cache
 
     /**
@@ -146,7 +149,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
             for (String repositoryString : repositoryStrings) {
                 if (StringUtils.isNotBlank(repositoryString)) {
                     try {
-                        DefaultExtensionRepositoryDescriptor extensionRepositoryId = parseRepository(repositoryString);
+                        ExtensionRepositoryDescriptor extensionRepositoryId = parseRepository(repositoryString);
                         if (repositoriesMap.containsKey(extensionRepositoryId.getId())) {
                             this.logger.warn(
                                 "Duplicated repository id in [{}] first found in [{}]. The last one will be used.",
@@ -154,8 +157,8 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
                         }
                         repositoriesMap.put(extensionRepositoryId.getId(), extensionRepositoryId);
                     } catch (Exception e) {
-                        this.logger.warn("Ignoring invalid repository configuration [{}]. "
-                            + "Root cause [{}]", repositoryString, ExceptionUtils.getRootCauseMessage(e));
+                        this.logger.warn("Ignoring invalid repository configuration [{}]. " + "Root cause [{}]",
+                            repositoryString, ExceptionUtils.getRootCauseMessage(e));
                     }
                 } else {
                     this.logger.debug("Empty repository id found in the configuration");
@@ -213,19 +216,19 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
      * @throws URISyntaxException Failed to create an {@link URI} object from the configuration entry
      * @throws ExtensionManagerConfigurationException Failed to parse configuration
      */
-    private DefaultExtensionRepositoryDescriptor parseRepository(String repositoryString) throws URISyntaxException,
-        ExtensionManagerConfigurationException
+    private ExtensionRepositoryDescriptor parseRepository(String repositoryString)
+        throws URISyntaxException, ExtensionManagerConfigurationException
     {
         Matcher matcher = REPOSITORYIDPATTERN.matcher(repositoryString);
 
         if (matcher.matches()) {
-            return new DefaultExtensionRepositoryDescriptor(matcher.group(1), matcher.group(2), new URI(
-                matcher.group(3)));
+            return this.extensionFactory.getExtensionRepositoryDescriptor(matcher.group(1), matcher.group(2),
+                new URI(matcher.group(3)));
         }
 
-        throw new ExtensionManagerConfigurationException(String.format(
-            "Invalid repository configuration format for [%s]. Should have been matching [%s].", repositoryString,
-            REPOSITORYIDPATTERN.toString()));
+        throw new ExtensionManagerConfigurationException(
+            String.format("Invalid repository configuration format for [%s]. Should have been matching [%s].",
+                repositoryString, REPOSITORYIDPATTERN.toString()));
     }
 
     @Override

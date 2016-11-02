@@ -24,6 +24,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import com.google.common.base.Objects;
+
 /**
  * Default implementation of {@link ExtensionRepositoryDescriptor}.
  *
@@ -142,10 +146,11 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
     public boolean equals(Object obj)
     {
         if (obj instanceof ExtensionRepositoryDescriptor) {
-            ExtensionRepositoryDescriptor extensionId = (ExtensionRepositoryDescriptor) obj;
+            ExtensionRepositoryDescriptor repository = (ExtensionRepositoryDescriptor) obj;
 
-            return getId().equals(extensionId.getId()) && getType().equals(extensionId.getType())
-                && getURI().equals(extensionId.getURI());
+            return Objects.equal(getId(), repository.getId()) && Objects.equal(getType(), repository.getType())
+                && Objects.equal(getURI(), repository.getURI())
+                && Objects.equal(getProperties(), repository.getProperties());
         }
 
         return false;
@@ -154,7 +159,14 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
     @Override
     public int hashCode()
     {
-        return toString().hashCode();
+        HashCodeBuilder builder = new HashCodeBuilder();
+
+        builder.append(getId());
+        builder.append(getType());
+        builder.append(getURI());
+        builder.append(getProperties());
+
+        return builder.toHashCode();
     }
 
     @Override

@@ -50,6 +50,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.rating.ExtensionRating;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
@@ -98,6 +99,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
 
     private final transient HttpClientFactory httpClientFactory;
 
+    private final transient ExtensionFactory factory;
+
     private final transient UriBuilder rootUriBuider;
 
     private final transient UriBuilder extensionVersionUriBuider;
@@ -118,7 +121,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
 
     public XWikiExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         XWikiExtensionRepositoryFactory repositoryFactory, ExtensionLicenseManager licenseManager,
-        HttpClientFactory httpClientFactory) throws Exception
+        HttpClientFactory httpClientFactory, ExtensionFactory factory) throws Exception
     {
         super(repositoryDescriptor.getURI().getPath().endsWith("/")
             ? new DefaultExtensionRepositoryDescriptor(repositoryDescriptor.getId(), repositoryDescriptor.getType(),
@@ -128,6 +131,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         this.repositoryFactory = repositoryFactory;
         this.licenseManager = licenseManager;
         this.httpClientFactory = httpClientFactory;
+        this.factory = factory;
 
         // Uri builders
         this.rootUriBuider = createUriBuilder(Resources.ENTRYPOINT);
@@ -333,7 +337,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     {
         try {
             return new XWikiExtension(this, (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider,
-                extensionId.getId(), extensionId.getVersion().getValue()), this.licenseManager);
+                extensionId.getId(), extensionId.getVersion().getValue()), this.licenseManager, this.factory);
         } catch (ResourceNotFoundException e) {
             throw new ExtensionNotFoundException("Could not find extension [" + extensionId + "]", e);
         } catch (Exception e) {
@@ -365,7 +369,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
 
             return new XWikiExtension(this,
                 (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider, extensionDependency.getId(), version),
-                this.licenseManager);
+                this.licenseManager, this.factory);
         } catch (ResourceNotFoundException e) {
             throw new ExtensionNotFoundException(
                 "Could not find any extension to match dependency [" + extensionDependency + "]", e);
@@ -432,7 +436,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
 
         List<Extension> extensions = new ArrayList<Extension>(restExtensions.getExtensions().size());
         for (ExtensionVersion restExtension : restExtensions.getExtensions()) {
-            extensions.add(new XWikiExtension(this, restExtension, this.licenseManager));
+            extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
         }
 
         return new CollectionIterableResult<Extension>(restExtensions.getTotalHits(), restExtensions.getOffset(),
@@ -477,7 +481,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
 
         List<Extension> extensions = new ArrayList<Extension>(restExtensions.getExtensions().size());
         for (ExtensionVersion restExtension : restExtensions.getExtensions()) {
-            extensions.add(new XWikiExtension(this, restExtension, this.licenseManager));
+            extensions.add(new XWikiExtension(this, restExtension, this.licenseManager, this.factory));
         }
 
         return new CollectionIterableResult<Extension>(restExtensions.getTotalHits(), restExtensions.getOffset(),
@@ -504,7 +508,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         try {
             return new XWikiExtension(this,
                 (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider, extensionId, extensionVersion),
-                this.licenseManager).getRating();
+                this.licenseManager, this.factory).getRating();
         } catch (ResourceNotFoundException e) {
             throw new ExtensionNotFoundException(
                 "Could not find extension with id [" + extensionId + "] and version [" + extensionVersion + "]", e);

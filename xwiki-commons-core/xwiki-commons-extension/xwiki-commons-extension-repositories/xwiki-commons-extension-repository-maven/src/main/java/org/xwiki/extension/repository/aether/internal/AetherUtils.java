@@ -27,7 +27,9 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.maven.MavenUtils;
+import org.xwiki.extension.version.internal.DefaultVersion;
 
 /**
  * @version $Id$
@@ -51,9 +53,18 @@ public final class AetherUtils
 
     public static ExtensionId createExtensionId(Artifact artifact)
     {
+        return createExtensionId(artifact, null);
+    }
+
+    /**
+     * @since 8.4
+     */
+    public static ExtensionId createExtensionId(Artifact artifact, ExtensionFactory factory)
+    {
         String extensionId =
             MavenUtils.toExtensionId(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier());
 
-        return new ExtensionId(extensionId, artifact.getBaseVersion());
+        return new ExtensionId(extensionId, factory != null ? factory.getVersion(artifact.getBaseVersion())
+            : new DefaultVersion(artifact.getBaseVersion()));
     }
 }

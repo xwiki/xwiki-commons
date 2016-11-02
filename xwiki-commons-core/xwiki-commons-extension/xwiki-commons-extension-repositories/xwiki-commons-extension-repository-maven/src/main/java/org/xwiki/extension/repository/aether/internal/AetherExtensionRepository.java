@@ -75,6 +75,7 @@ import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.maven.MavenExtensionDependency;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
@@ -121,6 +122,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private transient AetherExtensionRepositoryFactory repositoryFactory;
 
+    private transient ExtensionFactory factory;
+
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
         AetherExtensionRepositoryFactory repositoryFactory, PlexusContainer plexusContainer,
         ComponentManager componentManager) throws Exception
@@ -153,6 +156,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         this.remoteRepository = repositoryBuilder.build();
 
         this.converter = componentManager.getInstance(ConverterManager.class);
+        this.factory = componentManager.getInstance(ExtensionFactory.class);
 
         this.versionRangeResolver = this.plexusContainer.lookup(VersionRangeResolver.class);
         this.versionResolver = this.plexusContainer.lookup(VersionResolver.class);
@@ -426,7 +430,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         Artifact filerArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(),
             artifact.getClassifier(), artifactExtension, artifact.getVersion());
 
-        AetherExtension extension = new AetherExtension(mavenExtension, filerArtifact, this);
+        AetherExtension extension = new AetherExtension(mavenExtension, filerArtifact, this, factory);
 
         // Convert Maven dependencies to Aether dependencies
         extension.setDependencies(toAetherDependencies(mavenExtension.getDependencies(), session));
