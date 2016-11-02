@@ -21,8 +21,6 @@ package org.xwiki.job.event.status;
 
 import java.util.List;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Event fired when an interactive job asks a question. The event listeners have the chance to answer the question
  * before it reaches the user. The event is send with the following parameters:
@@ -34,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 7.1RC1
  */
-@Unstable
 public class QuestionAskedEvent extends AbstractQuestionEvent
 {
     /**

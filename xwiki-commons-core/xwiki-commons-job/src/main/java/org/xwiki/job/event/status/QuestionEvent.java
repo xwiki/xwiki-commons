@@ -22,7 +22,6 @@ package org.xwiki.job.event.status;
 import java.util.List;
 
 import org.xwiki.observation.event.Event;
-import org.xwiki.stability.Unstable;
 
 /**
  * Common interface for job question events.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 7.1RC1
  */
-@Unstable
 public interface QuestionEvent extends Event
 {
     /**

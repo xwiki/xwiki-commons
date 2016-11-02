@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.xwiki.stability.Unstable;
 
 /**
  * Common implementation for job question events.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 7.1RC1
  */
-@Unstable
 public abstract class AbstractQuestionEvent implements QuestionEvent
 {
     /**
