@@ -43,12 +43,15 @@ import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.InvalidExtensionException;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.repository.internal.DefaultExtensionSerializer;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
+import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+@ComponentList(ExtensionFactory.class)
 public class DefaultExtensionSerializerTest
 {
     @Rule

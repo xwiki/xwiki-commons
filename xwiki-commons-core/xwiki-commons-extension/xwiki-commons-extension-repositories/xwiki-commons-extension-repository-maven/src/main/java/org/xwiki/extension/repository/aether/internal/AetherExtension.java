@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.eclipse.aether.artifact.Artifact;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.maven.AbstractMavenExtension;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
@@ -37,11 +38,12 @@ public class AetherExtension extends AbstractMavenExtension
 {
     public static final String PKEY_AETHER_ARTIFACT = "aether.Artifact";
 
-    public AetherExtension(Extension mavenExtension, Artifact artifact, AetherExtensionRepository repository)
+    public AetherExtension(Extension mavenExtension, Artifact artifact, AetherExtensionRepository repository,
+        ExtensionFactory factory)
     {
         super(repository, mavenExtension);
 
-        setId(AetherUtils.createExtensionId(artifact));
+        setId(AetherUtils.createExtensionId(artifact, factory));
         setType(artifact.getExtension());
 
         setFile(new AetherExtensionFile(artifact, repository));

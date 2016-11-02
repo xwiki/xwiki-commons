@@ -37,6 +37,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.http.internal.HttpClientFactory;
 import org.xwiki.extension.repository.result.IterableResult;
@@ -87,10 +88,10 @@ public class XWikiExtensionRepositoryTest
         when(httpClient.execute(any(HttpGet.class))).thenReturn(response);
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
         when(httpClientFactory.createClient(null, null)).thenReturn(httpClient);
+        ExtensionFactory extensionFactory = new ExtensionFactory();
 
-        this.repository =
-            new XWikiExtensionRepository(repositoryDescriptor, repositoryFactory, mock(ExtensionLicenseManager.class),
-                httpClientFactory);
+        this.repository = new XWikiExtensionRepository(repositoryDescriptor, repositoryFactory,
+            mock(ExtensionLicenseManager.class), httpClientFactory, extensionFactory);
     }
 
     @Test

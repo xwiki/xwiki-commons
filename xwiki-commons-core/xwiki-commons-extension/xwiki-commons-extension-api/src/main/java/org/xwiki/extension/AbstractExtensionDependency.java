@@ -252,6 +252,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
         builder.append(getId());
         builder.append(getVersionConstraint());
+        builder.append(getProperties());
 
         return builder.toHashCode();
     }

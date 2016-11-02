@@ -31,6 +31,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.repository.AbstractExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
@@ -51,6 +52,9 @@ public class XWikiExtensionRepositoryFactory extends AbstractExtensionRepository
 
     @Inject
     private HttpClientFactory httpClientFactory;
+
+    @Inject
+    private ExtensionFactory factory;
 
     private JAXBContext jaxbContext;
 
@@ -93,8 +97,8 @@ public class XWikiExtensionRepositoryFactory extends AbstractExtensionRepository
         throws ExtensionRepositoryException
     {
         try {
-            return new XWikiExtensionRepository(repositoryDescriptor, this, this.licenseManager,
-                this.httpClientFactory);
+            return new XWikiExtensionRepository(repositoryDescriptor, this, this.licenseManager, this.httpClientFactory,
+                this.factory);
         } catch (Exception e) {
             throw new ExtensionRepositoryException("Failed to create repository [" + repositoryDescriptor + "]", e);
         }

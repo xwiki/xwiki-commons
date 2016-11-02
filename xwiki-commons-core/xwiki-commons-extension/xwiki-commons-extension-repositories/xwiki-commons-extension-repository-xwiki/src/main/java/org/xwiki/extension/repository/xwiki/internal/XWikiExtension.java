@@ -31,17 +31,16 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.xwiki.extension.AbstractRatingExtension;
-import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.rating.DefaultExtensionRating;
-import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionAuthor;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency;
 import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionIssueManagement;
@@ -53,7 +52,6 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionVersion;
 import org.xwiki.extension.repository.xwiki.model.jaxb.License;
 import org.xwiki.extension.repository.xwiki.model.jaxb.Namespaces;
 import org.xwiki.extension.repository.xwiki.model.jaxb.Property;
-import org.xwiki.extension.version.internal.DefaultVersion;
 
 /**
  * XWiki Repository implementation of {@link org.xwiki.extension.Extension}.
@@ -64,9 +62,10 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 public class XWikiExtension extends AbstractRatingExtension
 {
     public XWikiExtension(XWikiExtensionRepository repository, ExtensionVersion restExtension,
-        ExtensionLicenseManager licenseManager)
+        ExtensionLicenseManager licenseManager, ExtensionFactory factory)
     {
-        super(repository, new ExtensionId(restExtension.getId(), restExtension.getVersion()), restExtension.getType());
+        super(repository, new ExtensionId(restExtension.getId(), factory.getVersion(restExtension.getVersion())),
+            restExtension.getType());
 
         setName(restExtension.getName());
         setSummary(restExtension.getSummary());
@@ -78,7 +77,7 @@ public class XWikiExtension extends AbstractRatingExtension
         for (org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionId feature : restExtension
             .getExtensionFeatures()) {
             addExtensionFeature(new ExtensionId(feature.getId(),
-                feature.getVersion() != null ? new DefaultVersion(feature.getVersion()) : getId().getVersion()));
+                feature.getVersion() != null ? factory.getVersion(feature.getVersion()) : getId().getVersion()));
         }
 
         // Rating
@@ -97,7 +96,7 @@ public class XWikiExtension extends AbstractRatingExtension
                 url = null;
             }
 
-            addAuthor(new DefaultExtensionAuthor(restAuthor.getName(), url));
+            addAuthor(factory.getExtensionAuthor(restAuthor.getName(), url));
         }
 
         // License
@@ -138,7 +137,7 @@ public class XWikiExtension extends AbstractRatingExtension
         ExtensionIssueManagement restIssueManagement = restExtension.getIssueManagement();
         if (restIssueManagement != null) {
             setIssueManagement(
-                new DefaultExtensionIssueManagement(restIssueManagement.getSystem(), restIssueManagement.getUrl()));
+                factory.getExtensionIssueManagement(restIssueManagement.getSystem(), restIssueManagement.getUrl()));
         }
 
         // Category
@@ -169,17 +168,17 @@ public class XWikiExtension extends AbstractRatingExtension
         // Repositories
         for (ExtensionRepository restRepository : restExtension.getRepositories()) {
             try {
-                addRepository(toDefaultExtensionRepositoryDescriptor(restRepository));
+                addRepository(toExtensionRepositoryDescriptor(restRepository, factory));
             } catch (URISyntaxException e) {
                 // TODO: Log something ?
             }
         }
 
         // Dependencies
-        setDependencies(toXWikiExtensionDependencies(restExtension.getDependencies()));
+        setDependencies(toXWikiExtensionDependencies(restExtension.getDependencies(), factory));
 
         // Managed dependencies
-        setManagedDependencies(toXWikiExtensionDependencies(restExtension.getManagedDependencies()));
+        setManagedDependencies(toXWikiExtensionDependencies(restExtension.getManagedDependencies(), factory));
 
         // File
 
@@ -194,13 +193,13 @@ public class XWikiExtension extends AbstractRatingExtension
     }
 
     private Collection<XWikiExtensionDependency> toXWikiExtensionDependencies(
-        List<ExtensionDependency> restDependencies)
+        List<ExtensionDependency> restDependencies, ExtensionFactory factory)
     {
         List<XWikiExtensionDependency> newDependencies = new ArrayList<>(restDependencies.size());
 
         for (ExtensionDependency dependency : restDependencies) {
             newDependencies.add(new XWikiExtensionDependency(dependency,
-                this.repository != null ? this.repository.getDescriptor() : null));
+                this.repository != null ? this.repository.getDescriptor() : null, factory));
         }
 
         return newDependencies;
@@ -215,10 +214,10 @@ public class XWikiExtension extends AbstractRatingExtension
         }
     }
 
-    protected static DefaultExtensionRepositoryDescriptor toDefaultExtensionRepositoryDescriptor(
-        ExtensionRepository restRepository) throws URISyntaxException
+    protected static ExtensionRepositoryDescriptor toExtensionRepositoryDescriptor(ExtensionRepository restRepository,
+        ExtensionFactory factory) throws URISyntaxException
     {
-        return new DefaultExtensionRepositoryDescriptor(restRepository.getId(), restRepository.getType(),
+        return factory.getExtensionRepositoryDescriptor(restRepository.getId(), restRepository.getType(),
             new URI(restRepository.getUri()));
     }
 

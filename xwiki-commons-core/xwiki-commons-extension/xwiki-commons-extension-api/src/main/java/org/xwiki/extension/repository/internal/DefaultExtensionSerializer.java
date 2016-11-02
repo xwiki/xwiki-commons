@@ -56,9 +56,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionDependency;
-import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.Extension;
@@ -73,11 +70,11 @@ import org.xwiki.extension.ExtensionScmConnection;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.MutableExtension;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtensionRepository;
-import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 
 /**
  * Local repository storage serialization tool.
@@ -176,6 +173,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     @Inject
     private ExtensionLicenseManager licenseManager;
+
+    @Inject
+    private ExtensionFactory factory;
 
     /**
      * Used to parse XML descriptor file.
@@ -278,7 +278,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         Node idNode = extensionElement.getElementsByTagName(ELEMENT_ID).item(0);
         Node versionNode = extensionElement.getElementsByTagName(ELEMENT_VERSION).item(0);
 
-        return new ExtensionId(idNode.getTextContent(), versionNode.getTextContent());
+        return new ExtensionId(idNode.getTextContent(), this.factory.getVersion(versionNode.getTextContent()));
     }
 
     private String getExtensionType(Element extensionElement)
@@ -365,7 +365,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                         authorURL = null;
                     }
 
-                    extension.addAuthor(new DefaultExtensionAuthor(authorName, authorURL));
+                    extension.addAuthor(this.factory.getExtensionAuthor(authorName, authorURL));
                 }
             }
         }
@@ -385,7 +385,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     String version = versionNode != null ? versionNode.getTextContent() : null;
 
                     if (version != null) {
-                        extension.addExtensionFeature(new ExtensionId(id, version));
+                        extension.addExtensionFeature(new ExtensionId(id, this.factory.getVersion(version)));
                     } else {
                         extension.addExtensionFeature(new ExtensionId(id, extension.getId().getVersion()));
                     }
@@ -444,8 +444,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         if (dependenciesNode != null) {
             NodeList dependenciesNodeList = dependenciesNode.getChildNodes();
 
-            List<ExtensionDependency> dependencies =
-                new ArrayList<ExtensionDependency>(dependenciesNodeList.getLength());
+            List<ExtensionDependency> dependencies = new ArrayList<>(dependenciesNodeList.getLength());
 
             for (int i = 0; i < dependenciesNodeList.getLength(); ++i) {
                 Node dependency = dependenciesNodeList.item(i);
@@ -454,9 +453,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     Node dependencyIdNode = getNode(dependency, ELEMENT_ID);
                     Node dependencyVersionNode = getNode(dependency, ELEMENT_VERSION);
 
-                    dependencies.add(new DefaultExtensionDependency(dependencyIdNode.getTextContent(),
+                    dependencies.add(this.factory.getExtensionDependency(dependencyIdNode.getTextContent(),
                         dependencyVersionNode != null
-                            ? new DefaultVersionConstraint(dependencyVersionNode.getTextContent()) : null,
+                            ? this.factory.getVersionConstraint(dependencyVersionNode.getTextContent()) : null,
                         parseProperties((Element) dependency)));
                 }
             }
@@ -507,7 +506,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             Node urlNode = getNode(node, ELEMENT_IURL);
 
             if (systemNode != null) {
-                return new DefaultExtensionIssueManagement(systemNode.getTextContent(),
+                return this.factory.getExtensionIssueManagement(systemNode.getTextContent(),
                     urlNode != null ? urlNode.getTextContent() : null);
             }
         }

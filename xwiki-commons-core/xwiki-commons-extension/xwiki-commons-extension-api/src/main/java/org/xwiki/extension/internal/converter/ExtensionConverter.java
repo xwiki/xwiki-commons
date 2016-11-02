@@ -42,21 +42,20 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.Scm;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionDependency;
-import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionScmConnection;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.internal.maven.DefaultMavenExtension;
 import org.xwiki.extension.internal.maven.DefaultMavenExtensionDependency;
 import org.xwiki.extension.internal.maven.MavenExtension;
 import org.xwiki.extension.internal.maven.MavenUtils;
-import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.properties.converter.AbstractConverter;
 import org.xwiki.properties.converter.ConversionException;
@@ -74,6 +73,9 @@ public class ExtensionConverter extends AbstractConverter<Extension>
     @Inject
     private ExtensionLicenseManager licenseManager;
 
+    @Inject
+    private ExtensionFactory factory;
+
     @Override
     protected <G extends Extension> G convertToType(Type targetType, Object value)
     {
@@ -88,7 +90,7 @@ public class ExtensionConverter extends AbstractConverter<Extension>
     {
         Properties properties = (Properties) model.getProperties().clone();
 
-        String version = MavenUtils.resolveVersion(model);
+        Version version = this.factory.getVersion(MavenUtils.resolveVersion(model));
         String groupId = MavenUtils.resolveGroupId(model);
 
         DefaultMavenExtension extension = new DefaultMavenExtension(null, groupId, model.getArtifactId(), version,
@@ -109,8 +111,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
                 }
             }
 
-            extension.addAuthor(new DefaultExtensionAuthor(
-                StringUtils.defaultIfBlank(developer.getName(), developer.getId()), authorURL));
+            extension.addAuthor(this.factory
+                .getExtensionAuthor(StringUtils.defaultIfBlank(developer.getName(), developer.getId()), authorURL));
         }
 
         // licenses
@@ -133,7 +135,7 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         IssueManagement issueManagement = model.getIssueManagement();
         if (issueManagement != null && issueManagement.getUrl() != null) {
             extension.setIssueManagement(
-                new DefaultExtensionIssueManagement(issueManagement.getSystem(), issueManagement.getUrl()));
+                this.factory.getExtensionIssueManagement(issueManagement.getSystem(), issueManagement.getUrl()));
         }
 
         // features
@@ -165,8 +167,10 @@ public class ExtensionConverter extends AbstractConverter<Extension>
 
             for (Repository mavenRepository : mavenRepositories) {
                 try {
-                    repositories.add(new DefaultExtensionRepositoryDescriptor(mavenRepository.getId(), "maven",
-                        new URI(mavenRepository.getUrl())));
+                    ExtensionRepositoryDescriptor repositoryDescriptor = this.factory.getExtensionRepositoryDescriptor(
+                        mavenRepository.getId(), "maven", new URI(mavenRepository.getUrl()));
+
+                    repositories.add(repositoryDescriptor);
                 } catch (URISyntaxException e) {
                     // TODO: log ?
                 }
@@ -180,9 +184,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         for (Dependency mavenDependency : model.getDependencies()) {
             if (!mavenDependency.isOptional() && (mavenDependency.getScope() == null
                 || mavenDependency.getScope().equals("compile") || mavenDependency.getScope().equals("runtime"))) {
-                DefaultExtensionDependency extensionDependency = toExtensionDependency(mavenDependency, model);
+                ExtensionDependency extensionDependency = toExtensionDependency(mavenDependency, model, repositories);
 
-                extensionDependency.setRepositories(repositories);
                 extension.addDependency(extensionDependency);
             }
         }
@@ -190,9 +193,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         // managed dependencies
         if (model.getDependencyManagement() != null) {
             for (Dependency mavenDependency : model.getDependencyManagement().getDependencies()) {
-                DefaultExtensionDependency extensionDependency = toExtensionDependency(mavenDependency, model);
+                ExtensionDependency extensionDependency = toExtensionDependency(mavenDependency, model, repositories);
 
-                extensionDependency.setRepositories(repositories);
                 extension.addManagedDependency(extensionDependency);
             }
         }
@@ -211,7 +213,8 @@ public class ExtensionConverter extends AbstractConverter<Extension>
         return extension;
     }
 
-    private DefaultExtensionDependency toExtensionDependency(Dependency mavenDependency, Model model)
+    private ExtensionDependency toExtensionDependency(Dependency mavenDependency, Model model,
+        List<ExtensionRepositoryDescriptor> repositories)
     {
         String dependencyGroupId = MavenUtils.resolveGroupId(mavenDependency.getGroupId(), model, true);
         String dependencyArtifactId = mavenDependency.getArtifactId();
@@ -222,7 +225,9 @@ public class ExtensionConverter extends AbstractConverter<Extension>
             MavenUtils.toExtensionId(dependencyGroupId, dependencyArtifactId, dependencyClassifier),
             new DefaultVersionConstraint(dependencyVersion), mavenDependency);
 
-        return dependency;
+        dependency.setRepositories(repositories);
+
+        return this.factory.getExtensionDependency(dependency);
     }
 
     private String getProperty(Properties properties, String propertyName, boolean delete)
