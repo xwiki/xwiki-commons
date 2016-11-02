@@ -22,8 +22,6 @@ package org.xwiki.extension;
 import java.util.Collection;
 import java.util.Date;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Represent a local extension.
  * <p>
@@ -120,7 +118,6 @@ public interface InstalledExtension extends LocalExtension
      *         date is not available or if this extension is not installed on the specified namespace
      * @since 7.0M2
      */
-    @Unstable
     Date getInstallDate(String namespace);
 
     /**
@@ -132,7 +129,6 @@ public interface InstalledExtension extends LocalExtension
      * @return the value of the specified extension property on the given namespace
      * @since 7.0M2
      */
-    @Unstable
     Object getNamespaceProperty(String key, String namespace);
 
     // Deprecated

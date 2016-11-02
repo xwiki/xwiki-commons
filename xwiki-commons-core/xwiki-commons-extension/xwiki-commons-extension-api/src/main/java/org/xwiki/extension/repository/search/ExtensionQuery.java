@@ -23,15 +23,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * A query to an extension repository.
  * 
  * @version $Id$
  * @since 7.0M2
  */
-@Unstable
 public class ExtensionQuery
 {
     /**

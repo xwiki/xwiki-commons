@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.apache.commons.collections4.Predicate;
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * The history of extension jobs.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @since 7.1RC1
  */
 @Role
-@Unstable
 public interface ExtensionJobHistory
 {
     /**

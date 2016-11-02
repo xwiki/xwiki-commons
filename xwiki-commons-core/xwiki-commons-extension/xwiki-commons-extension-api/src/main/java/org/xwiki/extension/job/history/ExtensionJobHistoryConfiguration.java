@@ -22,7 +22,6 @@ package org.xwiki.extension.job.history;
 import java.io.File;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Configuration for {@link ExtensionJobHistory}.
@@ -31,7 +30,6 @@ import org.xwiki.stability.Unstable;
  * @since 7.1RC1
  */
 @Role
-@Unstable
 public interface ExtensionJobHistoryConfiguration
 {
     /**

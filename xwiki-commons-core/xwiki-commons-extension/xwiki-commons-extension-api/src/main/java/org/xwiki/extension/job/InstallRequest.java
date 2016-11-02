@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.xwiki.job.Request;
-import org.xwiki.stability.Unstable;
 
 /**
  * Request used in {@link org.xwiki.extension.job.internal.InstallJob}.
@@ -63,7 +62,6 @@ public class InstallRequest extends AbstractExtensionRequest
      *         this request
      * @since 7.0M2
      */
-    @Unstable
     public Map<String, Object> getExtensionProperties()
     {
         Map<String, Object> extensionProperties = getProperty(PROPERTY_EXTENSION_PROPERTIES);
@@ -83,7 +81,6 @@ public class InstallRequest extends AbstractExtensionRequest
      * @return the previous property value
      * @since 7.0M2
      */
-    @Unstable
     public Object setExtensionProperty(String key, Object value)
     {
         return getExtensionProperties().put(key, value);

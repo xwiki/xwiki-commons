@@ -26,7 +26,6 @@ import java.io.Writer;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * The interface used to serialize and deserialize the {@link ExtensionJobHistory}.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @since 7.1RC1
  */
 @Role
-@Unstable
 public interface ExtensionJobHistorySerializer
 {
     /**

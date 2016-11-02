@@ -22,7 +22,6 @@ package org.xwiki.extension.job.history;
 import java.util.List;
 
 import org.xwiki.job.AbstractRequest;
-import org.xwiki.stability.Unstable;
 
 /**
  * The request used for replaying records from the extension job history.
@@ -30,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 7.1RC1
  */
-@Unstable
 public class ReplayRequest extends AbstractRequest
 {
     /**

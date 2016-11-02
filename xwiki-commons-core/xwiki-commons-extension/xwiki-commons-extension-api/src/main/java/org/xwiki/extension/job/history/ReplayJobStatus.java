@@ -24,7 +24,6 @@ import java.util.List;
 import org.xwiki.job.DefaultJobStatus;
 import org.xwiki.logging.LoggerManager;
 import org.xwiki.observation.ObservationManager;
-import org.xwiki.stability.Unstable;
 
 /**
  * The status of the job that replays records from the extension job history.
@@ -32,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 7.1RC1
  */
-@Unstable
 public class ReplayJobStatus extends DefaultJobStatus<ReplayRequest>
 {
     private int currentRecordNumber;

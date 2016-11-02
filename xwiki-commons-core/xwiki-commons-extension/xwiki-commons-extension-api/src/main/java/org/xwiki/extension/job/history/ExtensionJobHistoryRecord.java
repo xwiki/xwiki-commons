@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.job.ExtensionRequest;
-import org.xwiki.stability.Unstable;
 
 /**
  * A record in the {@link ExtensionJobHistory}.
@@ -35,7 +34,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 7.1RC1
  */
-@Unstable
 public class ExtensionJobHistoryRecord
 {
     private final String jobType;

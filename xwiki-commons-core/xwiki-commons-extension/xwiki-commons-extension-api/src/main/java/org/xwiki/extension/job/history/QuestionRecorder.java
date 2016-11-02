@@ -22,7 +22,6 @@ package org.xwiki.extension.job.history;
 import java.io.Serializable;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.stability.Unstable;
 
 /**
  * Component used to record the answers given to a specific type of questions and to replay the recorded answers later
@@ -33,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @since 7.1RC1
  */
 @Role
-@Unstable
 public interface QuestionRecorder<T> extends Serializable
 {
     /**

@@ -34,7 +34,6 @@ import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.stability.Unstable;
 
 /**
  * A repository containing installed extension.
@@ -104,7 +103,6 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @throws InstallException error when trying to install provided extension
      * @since 7.0M2
      */
-    @Unstable
     InstalledExtension installExtension(LocalExtension extension, String namespace, boolean dependency,
         Map<String, Object> properties) throws InstallException;
 
@@ -186,7 +184,6 @@ public interface InstalledExtensionRepository extends ExtensionRepository, Advan
      * @throws SearchException error when trying to search provided pattern
      * @since 7.0M2
      */
-    @Unstable
     IterableResult<InstalledExtension> searchInstalledExtensions(String namespace, ExtensionQuery query)
         throws SearchException;
 
