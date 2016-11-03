@@ -52,15 +52,28 @@
           </dependency>
         </dependencies>
         <configuration>
-          <configLocation>checkstyle.xml</configLocation>
           <propertyExpansion>
             currentVersion=${project.version}
           </propertyExpansion>
+          <!-- Used by the "blocker" execution id and the "default-cli" one
+              (i.e. when executing "mvn checkstyle:check") -->
+          <configLocation>checkstyle-blocker.xml</configLocation>
           <!-- Force execution since by default it's off for tools modules, see tools pom -->
           <skip>false</skip>
         </configuration>
         <executions>
           <execution>
+            <id>default</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <configLocation>checkstyle.xml</configLocation>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- Checks that should never be excluded from executing in maven projects -->
+            <id>blocker</id>
             <goals>
               <goal>check</goal>
             </goals>

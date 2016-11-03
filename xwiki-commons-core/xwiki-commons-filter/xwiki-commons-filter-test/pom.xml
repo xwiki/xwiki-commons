@@ -69,28 +69,33 @@
   <build>
     <plugins>
       <plugin>
-        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <excludes>
-              org/xwiki/filter/test/integration/ExpectTestConfiguration.java,
-              org/xwiki/filter/test/integration/InputTestConfiguration.java,
-              org/xwiki/filter/test/integration/OutputTestConfiguration.java,
-              org/xwiki/filter/test/integration/TestConfiguration.java,
-              org/xwiki/filter/test/integration/TestDataGenerator.java,
-              org/xwiki/filter/test/integration/TestDataParser.java,
-              org/xwiki/filter/test/integration/TestResourceData.java,
-              org/xwiki/filter/test/integration/FilterTest.java,
-              org/xwiki/filter/test/integration/FilterTestSuite.java,
-              org/xwiki/filter/test/internal/DefaultFileAssertComparator.java,
-              org/xwiki/filter/test/internal/FileAssert.java,
-              org/xwiki/filter/test/internal/FileAssertComparator.java,
-              org/xwiki/filter/test/internal/StringFileAssertComparator.java,
-              org/xwiki/filter/test/internal/ZipFileAssert.java,
-              org/xwiki/filter/test/internal/ZIPFileAssertComparator.java
-          </excludes>
-        </configuration>
+        <executions>
+          <execution>
+            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
+            <id>default</id>
+            <configuration>
+              <excludes>
+                org/xwiki/filter/test/integration/ExpectTestConfiguration.java,
+                org/xwiki/filter/test/integration/InputTestConfiguration.java,
+                org/xwiki/filter/test/integration/OutputTestConfiguration.java,
+                org/xwiki/filter/test/integration/TestConfiguration.java,
+                org/xwiki/filter/test/integration/TestDataGenerator.java,
+                org/xwiki/filter/test/integration/TestDataParser.java,
+                org/xwiki/filter/test/integration/TestResourceData.java,
+                org/xwiki/filter/test/integration/FilterTest.java,
+                org/xwiki/filter/test/integration/FilterTestSuite.java,
+                org/xwiki/filter/test/internal/DefaultFileAssertComparator.java,
+                org/xwiki/filter/test/internal/FileAssert.java,
+                org/xwiki/filter/test/internal/FileAssertComparator.java,
+                org/xwiki/filter/test/internal/StringFileAssertComparator.java,
+                org/xwiki/filter/test/internal/ZipFileAssert.java,
+                org/xwiki/filter/test/internal/ZIPFileAssertComparator.java
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

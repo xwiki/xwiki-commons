@@ -170,20 +170,33 @@
           </dependency>
         </dependencies>
         <configuration>
-          <configLocation>checkstyle.xml</configLocation>
+          <!-- Used by the "blocker" execution id and the "default-cli" one
+              (i.e. when executing "mvn checkstyle:check") -->
+          <configLocation>checkstyle-blocker.xml</configLocation>
           <propertyExpansion>
             currentVersion=${project.version}
           </propertyExpansion>
-          <excludes>
-              **/AbstractXARMojo.java,
-              **/UnXARMojo.java,
-              **/XARMojo.java,
-              **/VerifyMojo.java,
-              **/FormatMojo.java
-          </excludes>
         </configuration>
         <executions>
           <execution>
+            <id>default</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <configLocation>checkstyle.xml</configLocation>
+              <excludes>
+                **/AbstractXARMojo.java,
+                **/UnXARMojo.java,
+                **/XARMojo.java,
+                **/VerifyMojo.java,
+                **/FormatMojo.java
+              </excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- Checks that should never be excluded from executing in maven projects -->
+            <id>blocker</id>
             <goals>
               <goal>check</goal>
             </goals>
