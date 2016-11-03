@@ -3,7 +3,8 @@
     "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
     "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 
-<!-- Checkstyle properties for XWiki projects -->
+<!-- Checkstyle properties for XWiki projects. Note that checks that should always executed and never be excluded
+     should be moved to checkstyle-blocker.xml -->
 <module name="Checker">
 
   <!--
@@ -360,22 +361,6 @@
     <module name="WhitespaceAfter"/>
 
     <module name="WhitespaceAround"/>
-
-    <!-- Verify that Script Services are not located in the internal package,
-         see http://jira.xwiki.org/browse/XWIKI-9482 -->
-    <module name="org.xwiki.tool.checkstyle.ScriptServiceCheck"/>
-
-    <!-- Verify that we always add a @since javadoc annotation when we add an @Unstable annotation and that when one
-         full dev cycle has passed the @Unstable annotation is removed -->
-    <module name="org.xwiki.tool.checkstyle.UnstableAnnotationCheck">
-      <property name="currentVersion" value="${currentVersion}" default=""/>
-    </module>
-
-    <!-- Verify that components.txt is in sync with @Component annotations -->
-    <module name="org.xwiki.tool.checkstyle.ComponentAnnotationCheck"/>
-
-    <!-- Verify that @since javadoc tags don't define several versions -->
-    <module name="org.xwiki.tool.checkstyle.SinceFormatCheck"/>
 
   </module>
 </module>
