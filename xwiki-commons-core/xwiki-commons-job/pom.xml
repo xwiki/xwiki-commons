@@ -107,21 +107,16 @@
   <build>
     <plugins>
       <plugin>
+        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
-            <id>default</id>
-            <configuration>
-              <excludes>
-                org/xwiki/job/AbstractJob.java,
-                org/xwiki/job/internal/xstream/SafeReflectionConverter.java,
-                org/xwiki/job/internal/xstream/XStreamUtils.java
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
+        <configuration>
+          <excludes>
+              org/xwiki/job/AbstractJob.java,
+              org/xwiki/job/internal/xstream/SafeReflectionConverter.java,
+              org/xwiki/job/internal/xstream/XStreamUtils.java
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>

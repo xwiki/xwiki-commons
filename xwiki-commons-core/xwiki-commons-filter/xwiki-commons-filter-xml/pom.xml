@@ -85,29 +85,23 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
-            <id>default</id>
-            <configuration>
-              <excludes>
-                org/xwiki/filter/xml/internal/parser/DefaultXMLParser.java,
-                org/xwiki/filter/xml/internal/serializer/DefaultXMLSerializer.java,
-                org/xwiki/filter/xml/internal/input/AbstractXMLBeanInputFilterStreamFactory.java,
-                org/xwiki/filter/xml/internal/input/AbstractXMLInputFilterStream.java,
-                org/xwiki/filter/xml/internal/input/DefaultSourceInputSource.java,
-                org/xwiki/filter/xml/internal/input/DefaultXMLInputFilterStream.java,
-                org/xwiki/filter/xml/internal/input/XMLInputFilterStreamUtils.java,
-                org/xwiki/filter/xml/internal/output/AbstractXMLBeanOutputFilterStreamFactory.java,
-                org/xwiki/filter/xml/internal/output/AbstractXMLOutputFilterStream.java,
-                org/xwiki/filter/xml/internal/output/DefaultResultInputSource.java,
-                org/xwiki/filter/xml/internal/output/DefaultXMLOutputFilterStream.java,
-                org/xwiki/filter/xml/internal/output/FilterStreamXMLStreamWriter.java,
-                org/xwiki/filter/xml/internal/output/XMLOutputFilterStreamUtils.java
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
+        <configuration>
+          <excludes>
+            org/xwiki/filter/xml/internal/parser/DefaultXMLParser.java,
+            org/xwiki/filter/xml/internal/serializer/DefaultXMLSerializer.java,
+            org/xwiki/filter/xml/internal/input/AbstractXMLBeanInputFilterStreamFactory.java,
+            org/xwiki/filter/xml/internal/input/AbstractXMLInputFilterStream.java,
+            org/xwiki/filter/xml/internal/input/DefaultSourceInputSource.java,
+            org/xwiki/filter/xml/internal/input/DefaultXMLInputFilterStream.java,
+            org/xwiki/filter/xml/internal/input/XMLInputFilterStreamUtils.java,
+            org/xwiki/filter/xml/internal/output/AbstractXMLBeanOutputFilterStreamFactory.java,
+            org/xwiki/filter/xml/internal/output/AbstractXMLOutputFilterStream.java,
+            org/xwiki/filter/xml/internal/output/DefaultResultInputSource.java,
+            org/xwiki/filter/xml/internal/output/DefaultXMLOutputFilterStream.java,
+            org/xwiki/filter/xml/internal/output/FilterStreamXMLStreamWriter.java,
+            org/xwiki/filter/xml/internal/output/XMLOutputFilterStreamUtils.java
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>
