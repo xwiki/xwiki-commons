@@ -33,7 +33,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link Extension} implementations.
@@ -606,7 +605,6 @@ public abstract class AbstractExtension implements MutableExtension
     /**
      * @since 7.0M2
      */
-    @Unstable
     @Override
     public void setCategory(String categrory)
     {
