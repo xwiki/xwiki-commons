@@ -146,23 +146,35 @@
               currentVersion=${project.version}
             </propertyExpansion>
             <failOnViolation>true</failOnViolation>
-            <!-- Used by the "blocker" execution id and the "default-cli" one
-                (i.e. when executing "mvn checkstyle:check") -->
+            <configLocation>checkstyle.xml</configLocation>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.xwiki.commons</groupId>
+          <artifactId>xwiki-commons-tool-checkstyle-plugin</artifactId>
+          <version>${project.version}</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+              <version>${commons.version}</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <propertyExpansion>
+              currentVersion=${project.version}
+            </propertyExpansion>
             <configLocation>checkstyle-blocker.xml</configLocation>
           </configuration>
           <executions>
             <execution>
-              <id>default</id>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <configuration>
-                <configLocation>checkstyle.xml</configLocation>
-              </configuration>
-            </execution>
-            <execution>
-              <!-- Checks that should never be excluded from executing in maven projects -->
-              <id>blocker</id>
               <goals>
                 <goal>check</goal>
               </goals>

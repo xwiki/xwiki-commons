@@ -190,6 +190,31 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-checkstyle-plugin</artifactId>
+        <version>${project.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+            <version>${commons.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <propertyExpansion>
+            currentVersion=${project.version}
+          </propertyExpansion>
+          <configLocation>checkstyle-blocker.xml</configLocation>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>

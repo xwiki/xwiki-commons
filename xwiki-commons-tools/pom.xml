@@ -42,6 +42,7 @@
   </properties>
   <modules>
     <!-- Sorted Alphabetically -->
+    <module>xwiki-commons-tool-checkstyle-plugin</module>
     <module>xwiki-commons-tool-enforcers</module>
     <module>xwiki-commons-tool-extension-plugin</module>
     <module>xwiki-commons-tool-license-resources</module>

@@ -154,27 +154,21 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
-            <id>default</id>
-            <configuration>
-              <excludes>
-                **/ExtensionConverter.java,
-                **/MavenUtils.java,
-                **/AbstractExtensionJob.java,
-                **/DefaultCoreExtensionScanner.java,
-                **/DefaultExtensionRepositoryManager.java,
-                **/DefaultExtensionSerializer.java,
-                **/DefaultInstalledExtensionRepository.java,
-                **/DefaultVersion.java,
-                **/AbstractInstallPlanJob.java,
-                **/UnmodifiableUtils.java,
-                **/AbstractExtension.java
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
+        <configuration>
+          <excludes>
+            **/ExtensionConverter.java,
+            **/MavenUtils.java,
+            **/AbstractExtensionJob.java,
+            **/DefaultCoreExtensionScanner.java,
+            **/DefaultExtensionRepositoryManager.java,
+            **/DefaultExtensionSerializer.java,
+            **/DefaultInstalledExtensionRepository.java,
+            **/DefaultVersion.java,
+            **/AbstractInstallPlanJob.java,
+            **/UnmodifiableUtils.java,
+            **/AbstractExtension.java
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>

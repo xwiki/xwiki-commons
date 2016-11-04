@@ -56,8 +56,34 @@
           <propertyExpansion>
             currentVersion=${project.version}
           </propertyExpansion>
+          <configLocation>checkstyle.xml</configLocation>
           <!-- Force execution since by default it's off for tools modules, see tools pom -->
           <skip>false</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-checkstyle-plugin</artifactId>
+        <version>${project.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+            <version>${commons.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <propertyExpansion>
+            currentVersion=${project.version}
+          </propertyExpansion>
+          <configLocation>checkstyle-blocker.xml</configLocation>
         </configuration>
         <executions>
           <execution>
