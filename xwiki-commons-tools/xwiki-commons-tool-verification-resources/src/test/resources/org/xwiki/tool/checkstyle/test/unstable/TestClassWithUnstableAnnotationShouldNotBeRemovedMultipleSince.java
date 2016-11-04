@@ -24,8 +24,8 @@ import org.xwiki.stability.Unstable;
 /**
  * Whatever.
  *
+ * @since 8.0
  * @since 6.0
- * @since 5.0
  */
 @Unstable
 public class TestClassWithUnstableAnnotationShouldBeRemovedMultipleSince

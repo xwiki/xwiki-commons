@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
@@ -109,30 +111,41 @@ public class UnstableAnnotationCheck extends AbstractCheck
                             computeElementName(annotatedElementName)));
                         return;
                     }
-                    for (String sinceVersion : sinceVersions) {
-                        checkSingleSinceVersion(sinceVersion, annotation, annotatedElementName);
-                    }
+                    checkSinceVersions(sinceVersions, annotation, annotatedElementName);
                 }
             }
         }
     }
 
-    private void checkSingleSinceVersion(String sinceVersion, DetailAST annotation, String annotatedElementName)
+    private void checkSinceVersions(List<String> sinceVersions, DetailAST annotation, String annotatedElementName)
     {
-        int sinceMajor = extractMajor(sinceVersion);
-        if (sinceMajor == -1) {
-            log(annotation.getLineNo(), annotation.getColumnNo(), String.format("The @since version [%s] "
-                + "must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
-            return;
-        } else {
-            // Log an error the @Unstable annotation has been there for more than a full cycle!
-            if (this.currentVersionMajor - 2 >= sinceMajor) {
-                log(annotation.getLineNo(), annotation.getColumnNo(),
-                    String.format("The @Unstable annotation "
-                            + "for [%s] must be removed since it''s been there for more than a full "
-                            + "development cycle (was introduced in [%s] and current version is [%s])",
-                        computeElementName(annotatedElementName), sinceVersion, this.currentVersion));
+        List<String> versions = new ArrayList<>();
+        boolean failing = false;
+        for (String sinceVersion : sinceVersions) {
+            int sinceMajor = extractMajor(sinceVersion);
+            if (sinceMajor == -1) {
+                log(annotation.getLineNo(), annotation.getColumnNo(), String.format("The @since version [%s] "
+                    + "must be of the type Major.* (e.g. 7.0-SNAPSHOT)", sinceVersion));
+                return;
+            } else {
+                versions.add(sinceVersion);
+                // We fail only if all since are failing since when we introduce a new API and backport it in an
+                // older version, we don't want to start the grace period to be that of the backport version.
+                if (this.currentVersionMajor - 2 >= sinceMajor) {
+                    failing = true;
+                } else {
+                    failing = false;
+                    break;
+                }
             }
+        }
+
+        if (failing) {
+            log(annotation.getLineNo(), annotation.getColumnNo(),
+                String.format("The @Unstable annotation "
+                        + "for [%s] must be removed since it''s been there for more than a full "
+                        + "development cycle (was introduced in %s and current version is [%s])",
+                    computeElementName(annotatedElementName), StringUtils.join(versions), this.currentVersion));
         }
     }
 
