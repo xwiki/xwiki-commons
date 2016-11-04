@@ -60,6 +60,9 @@ public class CheckMojo extends AbstractMojo
     @Parameter
     private String propertyExpansion;
 
+    @Parameter( property = "xwikicheckstyle.skip", defaultValue = "false" )
+    private boolean skip;
+
     /**
      * The maven project.
      */
@@ -85,13 +88,20 @@ public class CheckMojo extends AbstractMojo
         Plugin checkstylePlugin = this.project.getPluginManagement().getPluginsAsMap().get(
             "org.apache.maven.plugins:maven-checkstyle-plugin");
 
+        if (checkstylePlugin == null) {
+            getLog().info(String.format("No Checkstyle Plugin found in <pluginManagement>, skipping checks..."));
+            return;
+        }
+
         executeMojo(
             checkstylePlugin,
             goal("check"),
             configuration(
                 element(name("configLocation"), this.configLocation),
                 element(name("propertyExpansion"), this.propertyExpansion),
-                element(name("failOnViolation"), "true")
+                element(name("failOnViolation"), "true"),
+                element(name("consoleOutput"), "true"),
+                element(name("skip"), Boolean.toString(this.skip))
             ),
             executionEnvironment(
                 this.project,
