@@ -1367,6 +1367,11 @@ mm
             </plugins>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>net.alchim31.maven</groupId>
+          <artifactId>yuicompressor-maven-plugin</artifactId>
+          <version>1.3.2</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
