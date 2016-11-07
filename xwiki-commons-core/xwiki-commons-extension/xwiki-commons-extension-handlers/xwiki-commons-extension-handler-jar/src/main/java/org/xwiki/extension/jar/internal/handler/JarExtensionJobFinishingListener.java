@@ -85,8 +85,6 @@ public class JarExtensionJobFinishingListener implements EventListener
         }
     }
 
-    private static final String SUPPORTED_EXTENSION_TYPE = "jar";
-
     /** The list of events observed. */
     private static final List<Event> EVENTS = Arrays.asList(new ExtensionUninstalledEvent(),
         new ExtensionUpgradedEvent(), new JobStartedEvent(), new JobFinishingEvent());
@@ -110,7 +108,7 @@ public class JarExtensionJobFinishingListener implements EventListener
     private InstalledExtensionRepository installedExtensionRepository;
 
     @Inject
-    @Named(SUPPORTED_EXTENSION_TYPE)
+    @Named(JarExtensionHandler.JAR)
     private ExtensionHandler jarHandler;
 
     @Inject

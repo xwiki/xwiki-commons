@@ -30,10 +30,6 @@
   <artifactId>xwiki-commons-pom</artifactId>
   <name>XWiki Commons - Root POM</name>
   <packaging>pom</packaging>
-  <properties>
-    <!-- Follow the specifications regarding the WebJar content path. -->
-    <webjar.outputDirectory>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</webjar.outputDirectory>
-  </properties>
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
@@ -254,13 +250,5 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <extensions>
-      <!-- Needed to add support for the "webjar" packaging -->
-      <extension>
-        <groupId>org.xwiki.commons</groupId>
-        <artifactId>xwiki-commons-tool-webjar-handlers</artifactId>
-        <version>${commons.version}</version>
-      </extension>
-    </extensions>
   </build>
 </project>

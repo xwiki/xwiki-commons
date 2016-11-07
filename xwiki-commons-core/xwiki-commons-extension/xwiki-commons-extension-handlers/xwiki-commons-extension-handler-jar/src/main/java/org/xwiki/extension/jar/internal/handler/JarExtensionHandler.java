@@ -27,7 +27,6 @@ import java.net.URL;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.classloader.ClassLoaderManager;
@@ -57,11 +56,20 @@ import org.xwiki.observation.ObservationManager;
  * @version $Id$
  * @since 4.0M1
  */
-@Component
-@Named("jar")
+@Component(hints = {JarExtensionHandler.JAR, JarExtensionHandler.WEBJAR})
 @Singleton
 public class JarExtensionHandler extends AbstractExtensionHandler implements Initializable
 {
+    /**
+     * Type {@code jar}.
+     */
+    public static final String JAR = "jar";
+
+    /**
+     * Type {@code webjar}.
+     */
+    public static final String WEBJAR = "webjar";
+
     @Inject
     private ComponentManagerManager componentManagerManager;
 
@@ -69,6 +77,15 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     private ClassLoaderManager jarExtensionClassLoader;
 
     private ComponentAnnotationLoader jarLoader;
+
+    /**
+     * @param type the type to test
+     * @return true of the passed extension type is supported by this handler
+     */
+    public static boolean isSupported(String type)
+    {
+        return type != null && (type.equals(JarExtensionHandler.JAR) || type.equals(JarExtensionHandler.WEBJAR));
+    }
 
     @Override
     public void initialize() throws InitializationException
@@ -99,8 +116,10 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
             throw new InstallException("Failed to load jar file", e);
         }
 
-        // 2) load and register components
-        loadComponents(localExtension.getFile(), classLoader, namespace);
+        // 2) load and register components (only for standard jars)
+        if (localExtension.getType().equals(JAR)) {
+            loadComponents(localExtension.getFile(), classLoader, namespace);
+        }
     }
 
     @Override
