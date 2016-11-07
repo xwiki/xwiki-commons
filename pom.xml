@@ -123,7 +123,8 @@
 
   </properties>
   <prerequisites>
-    <maven>3.1.1</maven>
+    <!-- Custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
+    <maven>3.3.9</maven>
   </prerequisites>
   <licenses>
     <license>
