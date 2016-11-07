@@ -360,6 +360,27 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    public void testInstallAndUninstallWebjarExtension() throws Throwable
+    {
+        final ExtensionId extensionId = new ExtensionId("webjar", "test");
+
+        // actual install test
+        InstalledExtension installedExtension = install(extensionId);
+
+        checkInstallStatus(installedExtension);
+
+        // actual uninstall test
+        LocalExtension localExtension = uninstall(extensionId, null);
+
+        ckeckUninstallStatus(localExtension);
+
+        // actual reinstall test
+        installedExtension = install(extensionId);
+
+        checkInstallStatus(installedExtension);
+    }
+
+    @Test
     public void testUpgradeAndDowngradeExtensionOnNamespace() throws Throwable
     {
         final ExtensionId extensionId1 = new ExtensionId("test", "1.0");

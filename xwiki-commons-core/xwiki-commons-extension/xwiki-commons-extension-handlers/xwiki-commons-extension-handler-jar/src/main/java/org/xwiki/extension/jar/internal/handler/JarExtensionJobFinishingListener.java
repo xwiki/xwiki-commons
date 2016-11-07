@@ -226,7 +226,7 @@ public class JarExtensionJobFinishingListener implements EventListener
 
     private void onExtensionRemovedEvent(ExtensionEvent event, InstalledExtension extension)
     {
-        if (extension.getType().equals(SUPPORTED_EXTENSION_TYPE)) {
+        if (JarExtensionHandler.isSupported(extension.getType())) {
             addUninstalledExtension(event.getExtensionId(), event.getNamespace());
         }
     }
@@ -250,8 +250,10 @@ public class JarExtensionJobFinishingListener implements EventListener
                 // Drop class loaders
                 this.jarExtensionClassLoader.dropURLClassLoaders();
 
-                // Load extensions
-                this.extensionInitializer.initialize(null, SUPPORTED_EXTENSION_TYPE);
+                // Load JAR extensions
+                this.extensionInitializer.initialize(null, JarExtensionHandler.JAR);
+                // Load WEBJAR extensions
+                this.extensionInitializer.initialize(null, JarExtensionHandler.WEBJAR);
             } else if (collection.namespaces != null) {
                 for (String namespace : collection.namespaces) {
                     // Unload extensions
@@ -260,8 +262,10 @@ public class JarExtensionJobFinishingListener implements EventListener
                     // Drop class loader
                     this.jarExtensionClassLoader.dropURLClassLoader(namespace);
 
-                    // Load extensions
-                    this.extensionInitializer.initialize(namespace, SUPPORTED_EXTENSION_TYPE);
+                    // Load JAR extensions
+                    this.extensionInitializer.initialize(namespace, JarExtensionHandler.JAR);
+                    // Load WEBJAR extensions
+                    this.extensionInitializer.initialize(namespace, JarExtensionHandler.WEBJAR);
                 }
             }
         }
@@ -283,7 +287,7 @@ public class JarExtensionJobFinishingListener implements EventListener
         }
 
         for (InstalledExtension installedExtension : installedExtensions) {
-            if (SUPPORTED_EXTENSION_TYPE.equals(installedExtension.getType())) {
+            if (JarExtensionHandler.isSupported(installedExtension.getType())) {
                 if (namespace == null || !installedExtension.isInstalled(null)) {
                     try {
                         unloadJAR(installedExtension, namespace, unloadedExtensionsMap);
