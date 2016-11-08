@@ -52,11 +52,12 @@ public class ScriptServiceCheck extends AbstractCheck
                 break;
             case TokenTypes.CLASS_DEF:
                 // Check if the class name ends with ScriptService and report an error if it does and if we're in an
-                // internal package.
+                // internal package unless the name ends with InternalScriptService which makes it on purpose.
                 String className = ast.findFirstToken(TokenTypes.IDENT).getText();
-                if (className.endsWith("ScriptService") && this.packageName.contains("internal")) {
-                    log(ast.getLineNo(), "Script Service implementation [" + className
-                        + "] in package [" + this.packageName + "] should not be located in the internal package");
+                if (className.endsWith("ScriptService") && this.packageName.contains("internal")
+                    && !className.endsWith("InternalScriptService")) {
+                    log(ast.getLineNo(), "Script Service implementation [" + className + "] in package ["
+                        + this.packageName + "] should not be located in the internal package");
                 }
                 break;
             default:
