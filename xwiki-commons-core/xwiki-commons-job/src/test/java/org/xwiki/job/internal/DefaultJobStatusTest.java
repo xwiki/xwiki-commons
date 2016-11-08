@@ -34,7 +34,6 @@ import org.xwiki.observation.ObservationManager;
 import org.xwiki.observation.event.Event;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 /**

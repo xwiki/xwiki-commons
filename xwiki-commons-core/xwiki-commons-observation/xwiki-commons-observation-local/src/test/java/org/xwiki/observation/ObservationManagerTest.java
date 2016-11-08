@@ -25,7 +25,6 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -35,8 +34,9 @@ import org.xwiki.observation.event.Event;
 import org.xwiki.observation.internal.DefaultObservationManager;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.same;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -203,8 +203,7 @@ public class ObservationManagerTest
         this.mocker.getComponentUnderTest().addListener(listener);
 
         final Logger logger = this.mocker.getMockedLogger();
-        verify(logger).warn(Matchers.contains("listener is overwritting a previously registered listener"),
-            Matchers.anyObject(), Matchers.anyObject(), Matchers.anyObject());
+        verify(logger).warn(contains("listener is overwritting a previously registered listener"), any(), any(), any());
 
         // Verify that no log is logged if we remove the listener before re-registering it
         this.mocker.getComponentUnderTest().removeListener("mylistener");
