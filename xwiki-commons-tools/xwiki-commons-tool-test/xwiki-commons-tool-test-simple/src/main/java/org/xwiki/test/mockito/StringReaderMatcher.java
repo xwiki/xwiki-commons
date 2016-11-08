@@ -22,7 +22,6 @@ package org.xwiki.test.mockito;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 
-import org.hamcrest.Description;
 import org.mockito.ArgumentMatcher;
 import org.mockito.internal.matchers.Equality;
 
@@ -30,9 +29,9 @@ import org.mockito.internal.matchers.Equality;
  * Match a StringReader parameter with a String.
  * 
  * @version $Id$
- * @since 8.3M1
+ * @since 9.0RC1
  */
-public class StringReaderMatcher extends ArgumentMatcher<StringReader>
+public class StringReaderMatcher implements ArgumentMatcher<StringReader>
 {
     private final String str;
 
@@ -45,12 +44,8 @@ public class StringReaderMatcher extends ArgumentMatcher<StringReader>
     }
 
     @Override
-    public boolean matches(Object actual)
+    public boolean matches(StringReader argument)
     {
-        if (!(actual instanceof StringReader)) {
-            return false;
-        }
-
         Field field;
         try {
             field = StringReader.class.getDeclaredField("str");
@@ -61,15 +56,9 @@ public class StringReaderMatcher extends ArgumentMatcher<StringReader>
         field.setAccessible(true);
 
         try {
-            return Equality.areEqual(this.str, field.get(actual));
+            return Equality.areEqual(this.str, field.get(argument));
         } catch (Exception e) {
             return false;
         }
-    }
-
-    @Override
-    public void describeTo(Description description)
-    {
-        description.appendText(this.str);
     }
 }
