@@ -40,6 +40,7 @@ import org.xwiki.component.manager.ComponentEventManager;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
@@ -62,13 +63,24 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
 {
     /**
      * Type {@code jar}.
+     * 
+     * @since 9.0RC1
      */
     public static final String JAR = "jar";
 
     /**
      * Type {@code webjar}.
+     * 
+     * @since 9.0RC1
      */
     public static final String WEBJAR = "webjar";
+
+    /**
+     * Custom property containing a JAR sub type (for example {@code webjar}).
+     * 
+     * @since 9.0RC1
+     */
+    public static final String PROPERTY_TYPE = "xwiki.extension.jar.type";
 
     @Inject
     private ComponentManagerManager componentManagerManager;
@@ -81,10 +93,41 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
     /**
      * @param type the type to test
      * @return true of the passed extension type is supported by this handler
+     * @since 9.0RC1
      */
     public static boolean isSupported(String type)
     {
         return type != null && (type.equals(JarExtensionHandler.JAR) || type.equals(JarExtensionHandler.WEBJAR));
+    }
+
+    /**
+     * Find of the passes extension if a webjar.
+     * 
+     * @param extension the extension to test
+     * @return true of the passed extension is a webjar, false otherwise
+     * @since 9.0RC1
+     */
+    public static boolean isWebjar(Extension extension)
+    {
+        // Ideally webjar extensions should have "webjar" type
+        if (extension.getType().equals(WEBJAR)) {
+            return true;
+        }
+
+        ///////////////////////////////
+        // But it's not the case for:
+
+        // ** webjar.org releases (i.e. most of the webjars). We assume "org.webjars:*" id means it's a webjar
+        if (extension.getId().getId().startsWith("org.webjars:")) {
+            return true;
+        }
+        // ** contrib extensions which support version of XWiki older than 9.0RC1. We support a custom property which
+        // does not have any effect on older versions of XWiki
+        if (JarExtensionHandler.WEBJAR.equals(extension.getProperty(JarExtensionHandler.PROPERTY_TYPE))) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -117,9 +160,14 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
         }
 
         // 2) load and register components (only for standard jars)
-        if (localExtension.getType().equals(JAR)) {
+        if (containsComponents(localExtension)) {
             loadComponents(localExtension.getFile(), classLoader, namespace);
         }
+    }
+
+    private boolean containsComponents(Extension extension)
+    {
+        return extension != null && extension.getType().equals(JAR) && !isWebjar(extension);
     }
 
     @Override
