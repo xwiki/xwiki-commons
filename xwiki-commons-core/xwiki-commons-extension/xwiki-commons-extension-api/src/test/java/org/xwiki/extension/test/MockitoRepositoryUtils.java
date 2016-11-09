@@ -35,7 +35,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 
 public class MockitoRepositoryUtils extends RepositoryUtils
 {
@@ -62,7 +62,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         final Environment environment = this.componentManager.registerMockComponent(Environment.class);
         Mockito.when(environment.getPermanentDirectory()).thenReturn(getPermanentDirectory());
         Mockito.when(environment.getTemporaryDirectory()).thenReturn(getTemporaryDirectory());
-        Mockito.when(environment.getResourceAsStream(anyString())).thenReturn(null);
+        Mockito.when(environment.getResourceAsStream(any())).thenReturn(null);
 
         DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
         dcd.setRoleType(Environment.class);

@@ -44,7 +44,6 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.junit.Assert.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -179,7 +178,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     public void testProxyFailing() throws FilterException, ComponentLookupException
     {
         UnknownFilter filter = mock(UnknownFilter.class);
-        doThrow(FilterException.class).when(filter).onUnknwon(anyString(), any(FilterEventParameters.class));
+        doThrow(FilterException.class).when(filter).onUnknwon(any(), any(FilterEventParameters.class));
 
         UnknownFilter proxyFilter = this.mocker.getComponentUnderTest().createFilterProxy(filter, UnknownFilter.class,
             FilterDescriptorManager.class);
