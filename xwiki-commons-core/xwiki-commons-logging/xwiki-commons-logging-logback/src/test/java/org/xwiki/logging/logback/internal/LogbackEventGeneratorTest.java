@@ -38,7 +38,7 @@ import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**

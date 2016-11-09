@@ -49,7 +49,7 @@ import org.xwiki.extension.version.internal.DefaultVersion;
 import com.google.common.collect.Iterators;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

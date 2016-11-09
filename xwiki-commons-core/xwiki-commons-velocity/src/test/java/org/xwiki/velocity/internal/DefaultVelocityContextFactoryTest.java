@@ -35,7 +35,7 @@ import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityContextInitializer;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
