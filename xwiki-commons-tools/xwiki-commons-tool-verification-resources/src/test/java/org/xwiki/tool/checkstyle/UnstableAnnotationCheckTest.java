@@ -131,6 +131,22 @@ public class UnstableAnnotationCheckTest extends BaseCheckTestSupport
         verify(this.checkConfig, getPath("TestClassWithUnstableAnnotationShouldBeRemovedAtMethodLevel.java"), expected);
     }
 
+    @Test
+    public void checkPackageWithUnstable() throws Exception
+    {
+        final String[] expected = CommonUtils.EMPTY_STRING_ARRAY;
+
+        verify(this.checkConfig, getPath("TestPackageWithUnstable.java"), expected);
+    }
+
+    @Test
+    public void checkPackageWithOtherAnnotation() throws Exception
+    {
+        final String[] expected = CommonUtils.EMPTY_STRING_ARRAY;
+
+        verify(this.checkConfig, getPath("TestPackageWithOtherAnnotation.java"), expected);
+    }
+
     @Override
     protected String getPath(String filename) throws IOException
     {
