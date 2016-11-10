@@ -178,7 +178,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     public void testProxyFailing() throws FilterException, ComponentLookupException
     {
         UnknownFilter filter = mock(UnknownFilter.class);
-        doThrow(FilterException.class).when(filter).onUnknwon(any(), any(FilterEventParameters.class));
+        doThrow(FilterException.class).when(filter).onUnknwon(any(), any());
 
         UnknownFilter proxyFilter = this.mocker.getComponentUnderTest().createFilterProxy(filter, UnknownFilter.class,
             FilterDescriptorManager.class);
