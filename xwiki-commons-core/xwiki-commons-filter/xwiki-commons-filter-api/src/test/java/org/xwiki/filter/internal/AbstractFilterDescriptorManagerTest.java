@@ -34,7 +34,6 @@ import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
 import org.xwiki.filter.FilterElementDescriptor;
 import org.xwiki.filter.FilterElementParameterDescriptor;
-import org.xwiki.filter.FilterEventParameters;
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.UnknownFilter;
 import org.xwiki.filter.test.TestFilterImplementation;
