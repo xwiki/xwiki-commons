@@ -30,6 +30,10 @@
   <artifactId>xwiki-commons-pom</artifactId>
   <name>XWiki Commons - Root POM</name>
   <packaging>pom</packaging>
+  <properties>
+    <!-- By default legacy dependencies are forbidden -->
+    <xwiki.enforcer.no-legacy-dependencies.skip>false</xwiki.enforcer.no-legacy-dependencies.skip>
+  </properties>
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
@@ -102,6 +106,7 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
+              <skip>${xwiki.enforcer.no-legacy-dependencies.skip}</skip>
               <rules>
                 <xwikiBannedDependencies implementation="org.xwiki.tool.enforcer.XWikiBannedDependencies">
                   <searchTransitive>true</searchTransitive>
