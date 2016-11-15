@@ -43,6 +43,14 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- We need this dependency so that the module trigger the same dependencies than xwiki-commons-component-api -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

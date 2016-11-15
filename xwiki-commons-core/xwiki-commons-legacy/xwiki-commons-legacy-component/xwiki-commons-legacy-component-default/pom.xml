@@ -60,6 +60,29 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- We need this dependency so that the module trigger the same dependencies than xwiki-commons-component-default -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-default</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <exclusions>
+        <!-- Exclude to avoid false positives from Revapi. It seems that sometimes (the conditions are unknown) the
+             xwiki-commons-component-api JAR would appear before the xwiki-commons-legacy-component-api JAR when Revapi
+             executes, thus leading to an error such as:
+
+               java.class.noLongerImplementsInterface: class org.xwiki.component.embed.EmbeddableComponentManager: Class
+               no longer implements interface 'org.xwiki.component.manager.CompatibilityComponentManager'.
+
+             Note that for this case EmbeddableComponentManager (located in xwiki-commons-legacy-component-default)
+             extends ComponentManager which extends CompatibilityComponentManager in xwiki-commons-legacy-component-api.
+        -->
+        <exclusion>
+          <groupId>org.xwiki.commons</groupId>
+          <artifactId>xwiki-commons-component-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-legacy-component-api</artifactId>
