@@ -37,12 +37,6 @@
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-cache-api</xwiki.extension.features>
   </properties>
   <dependencies>
-    <!-- We only need this dependency for the Logging API/Implementation part -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-default</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-configuration-api</artifactId>
