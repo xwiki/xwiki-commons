@@ -39,13 +39,33 @@
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-properties</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <!-- Trigger legacy version -->
+        <exclusion>
+          <groupId>org.xwiki.commons</groupId>
+          <artifactId>xwiki-commons-component-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-legacy-component-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- Tests dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-tool-test-component</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <!-- Trigger legacy version -->
+        <exclusion>
+          <groupId>org.xwiki.commons</groupId>
+          <artifactId>xwiki-commons-component-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>
