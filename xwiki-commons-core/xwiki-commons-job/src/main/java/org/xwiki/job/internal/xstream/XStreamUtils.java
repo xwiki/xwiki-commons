@@ -65,7 +65,7 @@ public final class XStreamUtils
 
     /**
      * @param item the item to serialize
-     * @return true of the item looks like a component
+     * @return true of the item is serializable
      */
     public static boolean isSerializable(Object item)
     {
@@ -88,6 +88,8 @@ public final class XStreamUtils
 
                 return true;
             }
+        } else {
+            return true;
         }
 
         return false;
