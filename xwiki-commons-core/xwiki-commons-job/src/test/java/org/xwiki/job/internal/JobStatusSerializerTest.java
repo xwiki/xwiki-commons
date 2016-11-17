@@ -21,6 +21,8 @@ package org.xwiki.job.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import javax.inject.Provider;
@@ -252,6 +254,22 @@ public class JobStatusSerializerTest
         assertEquals("error message", status.getLog().peek().getMessage());
         assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
         assertEquals("arg2", status.getLog().peek().getArgumentArray()[1]);
+    }
+
+    @Test
+    public void testLogWithNullArguments() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+
+        status.getLog().error("error message", "arg1", null, "arg3");
+
+        status = writeread(status);
+
+        assertNotNull(status.getLog());
+        assertEquals("error message", status.getLog().peek().getMessage());
+        assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
+        assertEquals(null, status.getLog().peek().getArgumentArray()[1]);
+        assertEquals("arg3", status.getLog().peek().getArgumentArray()[2]);
     }
 
     @Test
