@@ -176,8 +176,8 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
             }
 
             this.logger.info(getTranslationMarker(action, null, true),
-                "Applying [{}] for extension [{}] on namespace [{}] from previous extension [{}]", action.getAction(),
-                extension.getId(), namespace, previousExtensionsIds);
+                "Applying [{}] for extension [{}] on namespace [{}] from previous extension(s) [{}]",
+                action.getAction(), extension.getId(), namespace, previousExtensionsIds);
         } else {
             previousExtensionsIds = null;
         }
@@ -203,13 +203,13 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
 
             if (getRequest().isVerbose()) {
                 this.logger.info(getTranslationMarker(action, "success", false),
-                    "Successfully applied [{}] for extension [{}] on namespace [{}] from previous extension [{}]",
+                    "Successfully applied [{}] for extension [{}] on namespace [{}] from previous extension(s) [{}]",
                     action.getAction(), extension.getId(), namespace, previousExtensionsIds);
             }
         } catch (ExtensionException e) {
             if (getRequest().isVerbose()) {
                 this.logger.error(getTranslationMarker(action, "failure", false),
-                    "Failed to apply [{}] for extension [{}] on namespace [{}] from previous extension [{}]",
+                    "Failed to apply [{}] for extension [{}] on namespace [{}] from previous extension(s) [{}]",
                     action.getAction(), extension.getId(), namespace, previousExtensionsIds, e);
             }
 
