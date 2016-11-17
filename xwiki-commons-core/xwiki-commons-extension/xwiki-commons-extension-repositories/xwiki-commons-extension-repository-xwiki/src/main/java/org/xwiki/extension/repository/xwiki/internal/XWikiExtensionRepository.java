@@ -248,8 +248,8 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
 
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                throw new ResourceNotFoundException(String.format("Resource with URI [%s] does not exist",
-                    response.getStatusLine().getStatusCode(), getMethod.getURI()));
+                throw new ResourceNotFoundException(
+                    String.format("Resource with URI [%s] does not exist", getMethod.getURI()));
             } else {
                 throw new IOException(String.format("Invalid answer [%s] from the server when requesting [%s]",
                     response.getStatusLine().getStatusCode(), getMethod.getURI()));
