@@ -37,46 +37,14 @@
     <xwiki.extension.features>org.xwiki.commons:xwiki-commons-component-default</xwiki.extension.features>
   </properties>
   <dependencies>
-    <!-- We need this dependency so that the wrapped module is built before this one -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-default</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-      <exclusions>
-        <!-- Exclude to avoid false positives from Revapi. It seems that sometimes (the conditions are unknown) the
-             xwiki-commons-component-api JAR would appear before the xwiki-commons-legacy-component-api JAR when Revapi
-             executes, thus leading to an error such as:
-
-               java.class.noLongerImplementsInterface: class org.xwiki.component.embed.EmbeddableComponentManager: Class
-               no longer implements interface 'org.xwiki.component.manager.CompatibilityComponentManager'.
-
-             Note that for this case EmbeddableComponentManager (located in xwiki-commons-legacy-component-default)
-             extends ComponentManager which extends CompatibilityComponentManager in xwiki-commons-legacy-component-api.
-        -->
-        <exclusion>
-          <groupId>org.xwiki.commons</groupId>
-          <artifactId>xwiki-commons-component-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- We need this dependency so that the module trigger the same dependencies than xwiki-commons-component-default -->
+    <!-- Trigger xwiki-commons-component-default dependencies (but without xwiki-commons-component-default jar itself) -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-default</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <exclusions>
-        <!-- Exclude to avoid false positives from Revapi. It seems that sometimes (the conditions are unknown) the
-             xwiki-commons-component-api JAR would appear before the xwiki-commons-legacy-component-api JAR when Revapi
-             executes, thus leading to an error such as:
-
-               java.class.noLongerImplementsInterface: class org.xwiki.component.embed.EmbeddableComponentManager: Class
-               no longer implements interface 'org.xwiki.component.manager.CompatibilityComponentManager'.
-
-             Note that for this case EmbeddableComponentManager (located in xwiki-commons-legacy-component-default)
-             extends ComponentManager which extends CompatibilityComponentManager in xwiki-commons-legacy-component-api.
-        -->
+        <!-- Trigger legacy version -->
         <exclusion>
           <groupId>org.xwiki.commons</groupId>
           <artifactId>xwiki-commons-component-api</artifactId>
@@ -87,21 +55,21 @@
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-legacy-component-api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <!-- We need this dependency so that the wrapped module is built before this one -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-component-default</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
       <exclusions>
-        <!-- [Revapi bug] Revapi seems to follow all transitive dependencies, even those with scope "provided"
-             so we force the exclude that should be useless from Maven point of view -->
+        <!-- Trigger legacy version -->
         <exclusion>
           <groupId>org.xwiki.commons</groupId>
           <artifactId>xwiki-commons-component-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <!-- Getting the transitive dependencies of xwiki-commons-component-api since we exclude it above -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-api</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
     </dependency>
 
     <!-- Test dependencies -->
