@@ -21,8 +21,10 @@ package org.xwiki.velocity.introspection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.RuntimeServicesAware;
 import org.apache.velocity.util.introspection.AbstractChainableUberspector;
@@ -80,7 +82,7 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
         // and a method that takes java.lang.Integer as a parameter."
         // Thus we need to apply the following logic:
         // - if the returned VelMethod has a different number of parameters than the signature asked for, then go into
-        //   our conversion code
+        // our conversion code
         // - if our conversion code doesn't find any match, then return the VelMethod found by Velocity.
 
         VelMethod initialVelMethod = super.getMethod(obj, methodName, args, i);
@@ -144,15 +146,15 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
     {
         for (Method method : obj.getClass().getMethods()) {
             if (method.getName().equalsIgnoreCase(methodName)
-//                && method.getParameterTypes().length == args.length) {
-                && (method.getParameterTypes().length == args.length || method.isVarArgs())) {
+                && (method.getGenericParameterTypes().length == args.length || method.isVarArgs())) {
                 try {
-                    return convertArguments(args, method.getParameterTypes(), method.isVarArgs());
+                    return convertArguments(args, method.getGenericParameterTypes(), method.isVarArgs());
                 } catch (Exception e) {
                     // Ignore and try the next method.
                 }
             }
         }
+
         return null;
     }
 
@@ -166,22 +168,24 @@ public class MethodArgumentsUberspector extends AbstractChainableUberspector imp
      * @param isVarArgs true if the method contains a varargs (ie the last parameter is a varargs)
      * @return a new array of arguments where some values have been converted to match the formal method parameter types
      */
-    private Object[] convertArguments(Object[] arguments, Class<?>[] parameterTypes, boolean isVarArgs)
+    private Object[] convertArguments(Object[] arguments, Type[] parameterTypes, boolean isVarArgs)
     {
         Object[] convertedArguments = Arrays.copyOf(arguments, arguments.length);
         for (int i = 0; i < arguments.length; i++) {
             // Try to convert the argument if it's not null and if it doesn't match the parameter type.
             // If the method is a varargs then extract the type from the vararg array
-            Class<?> expectedClass;
+            Type expectedType;
             if (isVarArgs && i >= parameterTypes.length - 1) {
-                expectedClass = parameterTypes[parameterTypes.length - 1].getComponentType();
+                expectedType = ((Class<?>) parameterTypes[parameterTypes.length - 1]).getComponentType();
             } else {
-                expectedClass = parameterTypes[i];
+                expectedType = parameterTypes[i];
             }
-            if (arguments[i] != null && !expectedClass.isInstance(arguments[i])) {
-                convertedArguments[i] = this.converterManager.convert(expectedClass, arguments[i]);
+
+            if (arguments[i] != null && !TypeUtils.isInstance(arguments[i], expectedType)) {
+                convertedArguments[i] = this.converterManager.convert(expectedType, arguments[i]);
             }
         }
+
         return convertedArguments;
     }
 

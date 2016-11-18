@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -31,6 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
@@ -41,8 +43,9 @@ import org.xwiki.velocity.internal.DefaultVelocityConfiguration;
 import org.xwiki.velocity.internal.DefaultVelocityContextFactory;
 import org.xwiki.velocity.internal.DefaultVelocityEngine;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link org.xwiki.velocity.introspection.MethodArgumentsUberspector}.
@@ -50,11 +53,7 @@ import static org.mockito.Mockito.*;
  * @version $Id$
  * @since 6.4M3
  */
-@ComponentList({
-    DefaultVelocityEngine.class,
-    DefaultVelocityConfiguration.class,
-    DefaultVelocityContextFactory.class
-})
+@ComponentList({ DefaultVelocityEngine.class, DefaultVelocityConfiguration.class, DefaultVelocityContextFactory.class })
 public class MethodArgumentUberspectorTest
 {
     @Rule
@@ -88,6 +87,15 @@ public class MethodArgumentUberspectorTest
         public String method(List parameter)
         {
             if (parameter.get(0).equals("converted")) {
+                return "success";
+            } else {
+                return "failure";
+            }
+        }
+
+        public String methodWithGeneric(List<Locale> genericParameter)
+        {
+            if (genericParameter.get(0) instanceof Locale) {
                 return "success";
             } else {
                 return "failure";
@@ -150,8 +158,7 @@ public class MethodArgumentUberspectorTest
     public void getMethodWhenVarargsWithConversionAndNoVarargParamPassed() throws Exception
     {
         when(this.converterManager.convert(Integer.class, "10")).thenReturn(10);
-        this.engine.evaluate(this.context, this.writer, "template",
-            new StringReader("$var.methodWithVararg('10')"));
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.methodWithVararg('10')"));
         assertEquals("success", writer.toString());
     }
 
@@ -226,5 +233,14 @@ public class MethodArgumentUberspectorTest
             assertEquals("IllegalArgumentException: wrong number of arguments",
                 ExceptionUtils.getRootCauseMessage(expected));
         }
+    }
+
+    @Test
+    public void getMethodWithGeneric() throws Exception
+    {
+        when(this.converterManager.convert(new DefaultParameterizedType(null, List.class, Locale.class), "en, fr"))
+            .thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
+        this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.methodWithGeneric('en, fr')"));
+        assertEquals("success", this.writer.toString());
     }
 }
