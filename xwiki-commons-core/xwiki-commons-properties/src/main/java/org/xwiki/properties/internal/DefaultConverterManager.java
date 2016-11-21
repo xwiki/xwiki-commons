@@ -21,6 +21,7 @@ package org.xwiki.properties.internal;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -88,6 +89,18 @@ public class DefaultConverterManager implements ConverterManager
             return (T) value;
         }
 
+        // Handle wildcards (<? extends OtherType>)
+        if (targetType instanceof WildcardType) {
+            Type[] upperBounds = ((WildcardType) targetType).getUpperBounds();
+
+            if (upperBounds.length == 0) {
+                // If the asked type is <?>, don't convert anything
+                return (T) value;
+            } else {
+                return convert(upperBounds[0], value);
+            }
+        }
+
         // Converter type
         Type converterType = targetType;
         if (converterType == String.class && value != null) {
@@ -100,8 +113,8 @@ public class DefaultConverterManager implements ConverterManager
         if (converter != null) {
             return converter.convert(targetType, value);
         } else {
-            throw new ConversionException("Cannot find Converter to convert value [" + value + "] to type ["
-                + targetType + "] ");
+            throw new ConversionException(
+                "Cannot find Converter to convert value [" + value + "] to type [" + targetType + "] ");
         }
     }
 

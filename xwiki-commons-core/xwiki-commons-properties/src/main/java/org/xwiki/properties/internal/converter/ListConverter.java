@@ -19,7 +19,6 @@
  */
 package org.xwiki.properties.internal.converter;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.inject.Singleton;
@@ -35,13 +34,4 @@ import org.xwiki.properties.converter.collection.AbstractCollectionConverter;
 @Singleton
 public class ListConverter extends AbstractCollectionConverter<List>
 {
-    @Override
-    protected <G extends List> G convertToType(Type targetType, Object value)
-    {
-        if (value instanceof List) {
-            return (G) value;
-        }
-
-        return super.convertToType(targetType, value);
-    }
 }

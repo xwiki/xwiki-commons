@@ -25,8 +25,13 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.test.jmock.AbstractComponentTestCase;
+
+import com.google.common.reflect.TypeToken;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Validate {@link ListConverter} component.
@@ -51,7 +56,7 @@ public class ListConverterTest extends AbstractComponentTestCase
     }
 
     @Test
-    public void testConvert() throws SecurityException, NoSuchFieldException
+    public void testConvertFromString() throws SecurityException, NoSuchFieldException
     {
         Assert.assertEquals(Arrays.asList("1", "2", "3"), this.converterManager.convert(List.class, "1, 2, 3"));
 
@@ -65,6 +70,31 @@ public class ListConverterTest extends AbstractComponentTestCase
             .convert(ListConverterTest.class.getField("listField2").getGenericType(), "'\\'1\\', 2, 3', \"4, 5, 6\""));
 
         Assert.assertEquals(Arrays.asList("1:2"), this.converterManager.convert(List.class, "1:2"));
+
+        assertEquals(Arrays.asList(1, 2, 3),
+            this.converterManager.convert(new DefaultParameterizedType(null, List.class, Integer.class), "1, 2, 3"));
+
+        assertEquals(Arrays.asList(1, 2, 3), this.converterManager.convert(new TypeToken<List<? extends Integer>>()
+        {
+        }.getType(), "1, 2, 3"));
+
+        assertEquals(Arrays.asList("1", "2", "3"), this.converterManager.convert(new TypeToken<List<?>>()
+        {
+        }.getType(), "1, 2, 3"));
+    }
+
+    @Test
+    public void testConvertFromIterable() throws SecurityException
+    {
+        assertEquals(Arrays.asList(1, 2, 3), this.converterManager
+            .convert(new DefaultParameterizedType(null, List.class, Integer.class), Arrays.asList("1", "2", "3")));
+    }
+
+    @Test
+    public void testConvertFromArray() throws SecurityException
+    {
+        assertEquals(Arrays.asList(1, 2, 3), this.converterManager
+            .convert(new DefaultParameterizedType(null, List.class, Integer.class), new String[] { "1", "2", "3" }));
     }
 
     @Test

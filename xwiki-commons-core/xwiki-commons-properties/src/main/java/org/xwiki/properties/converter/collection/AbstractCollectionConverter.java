@@ -22,6 +22,7 @@ package org.xwiki.properties.converter.collection;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -99,7 +100,61 @@ public abstract class AbstractCollectionConverter<T extends Collection> extends 
             elementType = ((ParameterizedType) targetType).getActualTypeArguments()[0];
         }
 
-        return parseElements(targetType, value.toString(), elementType);
+        if (value instanceof Iterable) {
+            return fromIterable(targetType, (Iterable) value, elementType);
+        } else if (value.getClass().isArray()) {
+            return fromArray(targetType, value, elementType);
+        } else {
+            return parseElements(targetType, value.toString(), elementType);
+        }
+    }
+
+    /**
+     * @param <G> the type in which the provided value has to be converted
+     * @param targetType Data type to which this value should be converted.
+     * @param values the values to be converted (or not) to the target element type
+     * @param elementType the generic type
+     * @return List of parsed elements.
+     * @throws ConversionException if the syntax of <code>value</code> is not syntactically valid
+     * @throws NullPointerException if <code>value</code> is <code>null</code>
+     * @since 7.4.6
+     * @since 8.4.1
+     * @since 9.0RC1
+     */
+    protected <G extends T> G fromIterable(Type targetType, Iterable<?> values, Type elementType)
+    {
+        T collection = newCollection(targetType);
+
+        for (Object value : values) {
+            collection.add(this.converterManager.convert(elementType, value));
+        }
+
+        return (G) collection;
+    }
+
+    /**
+     * @param <G> the type in which the provided value has to be converted
+     * @param targetType Data type to which this value should be converted.
+     * @param values the values to be converted (or not) to the target element type
+     * @param elementType the generic type
+     * @return List of parsed elements.
+     * @throws ConversionException if the syntax of <code>value</code> is not syntactically valid
+     * @throws NullPointerException if <code>value</code> is <code>null</code>
+     * @since 7.4.6
+     * @since 8.4.1
+     * @since 9.0RC1
+     */
+    protected <G extends T> G fromArray(Type targetType, Object values, Type elementType)
+    {
+        T collection = newCollection(targetType);
+
+        for (int i = 0; i < Array.getLength(values); ++i) {
+            Object value = Array.get(values, i);
+
+            collection.add(this.converterManager.convert(elementType, value));
+        }
+
+        return (G) collection;
     }
 
     /**
