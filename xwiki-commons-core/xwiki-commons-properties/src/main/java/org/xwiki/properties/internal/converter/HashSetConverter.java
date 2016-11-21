@@ -36,16 +36,6 @@ import org.xwiki.properties.converter.collection.AbstractSetConverter;
 public class HashSetConverter extends AbstractSetConverter<HashSet>
 {
     @Override
-    protected <G extends HashSet> G convertToType(Type targetType, Object value)
-    {
-        if (value instanceof HashSet) {
-            return (G) value;
-        }
-
-        return super.convertToType(targetType, value);
-    }
-
-    @Override
     protected HashSet newCollection(Type targetType)
     {
         return new HashSet();

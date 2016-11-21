@@ -78,9 +78,9 @@ public class ConvertUtilsConverter implements Converter, Initializable
         // BeanUtils converters will return the passed value if no converter has been found. Thus we need to check
         // that the returned value is compatible with the expected type and raise a ConversionException if not.
         if (!TypeUtils.isAssignable(targetType, result.getClass())) {
-            throw new org.xwiki.properties.converter.ConversionException(String.format(
-                "Failed to find a Converter to convert from [%s] to [%s]", sourceValue.getClass().getName(),
-                targetType.getName()));
+            throw new org.xwiki.properties.converter.ConversionException(
+                String.format("Failed to find a Converter to convert from [%s] to [%s]",
+                    sourceValue.getClass().getName(), targetType.getName()));
         }
 
         return result;
