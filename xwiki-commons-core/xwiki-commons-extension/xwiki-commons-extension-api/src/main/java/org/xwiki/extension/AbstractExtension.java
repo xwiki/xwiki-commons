@@ -217,6 +217,9 @@ public abstract class AbstractExtension implements MutableExtension
             case FIELD_FEATURE:
             case FIELD_FEATURES:
                 return (T) ExtensionIdConverter.toStringList(getExtensionFeatures());
+            case FIELD_EXTENSIONFEATURE:
+            case FIELD_EXTENSIONFEATURES:
+                return (T) getExtensionFeatures();
             case FIELD_SUMMARY:
                 return (T) getSummary();
             case FIELD_DESCRIPTION:
