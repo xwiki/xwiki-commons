@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>8.4.1-SNAPSHOT</version>
+  <version>8.4.1</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -154,7 +154,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>stable-8.4.x</tag>
+    <tag>xwiki-commons-8.4.1</tag>
   </scm>
   <mailingLists>
     <mailingList>
@@ -885,7 +885,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
               -->
               <skip>true</skip>
               <rules>
-                <requireUpperBoundDeps/>
+                <requireUpperBoundDeps />
               </rules>
             </configuration>
           </execution>
@@ -1456,7 +1456,7 @@ mm
                 <phase>generate-resources</phase>
                 <configuration>
                   <target>
-                    <mkdir dir="${project.build.directory}/apidocs"/>
+                    <mkdir dir="${project.build.directory}/apidocs" />
                   </target>
                 </configuration>
                 <goals>
