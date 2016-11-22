@@ -26,6 +26,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 
@@ -41,6 +42,11 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
      * @see #getExtension()
      */
     private Extension extension;
+
+    /**
+     * @see #getRewrittenExtension()
+     */
+    private Extension rewrittenExtension;
 
     /**
      * @see #getPreviousExtension()
@@ -64,18 +70,21 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
 
     /**
      * @param extension the extension on which to perform the action
+     * @param rewrittenExtension the result of {@link ExtensionRewriter#rewrite(Extension)} on the extension on which to
+     *            perform the actionO
      * @param previousExtensions the currently installed extensions. Used when upgrading
      * @param action the action to perform
      * @param namespace the namespace in which the action should be executed
      * @param dependency indicate indicate if the extension is a dependency of another one only in the plan
      */
-    public DefaultExtensionPlanAction(Extension extension, Collection<InstalledExtension> previousExtensions,
-        Action action, String namespace, boolean dependency)
+    public DefaultExtensionPlanAction(Extension extension, Extension rewrittenExtension,
+        Collection<InstalledExtension> previousExtensions, Action action, String namespace, boolean dependency)
     {
         this.extension = extension;
-        this.previousExtensions =
-            previousExtensions != null ? new LinkedHashSet<InstalledExtension>(previousExtensions) : Collections
-                .<InstalledExtension>emptyList();
+        this.rewrittenExtension = rewrittenExtension;
+
+        this.previousExtensions = previousExtensions != null ? new LinkedHashSet<InstalledExtension>(previousExtensions)
+            : Collections.<InstalledExtension>emptyList();
         this.action = action;
         this.namespace = namespace;
         this.dependency = dependency;
@@ -85,6 +94,12 @@ public class DefaultExtensionPlanAction implements ExtensionPlanAction
     public Extension getExtension()
     {
         return this.extension;
+    }
+
+    @Override
+    public Extension getRewrittenExtension()
+    {
+        return this.rewrittenExtension;
     }
 
     @Override

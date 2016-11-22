@@ -324,7 +324,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                 ModifableExtensionPlanNode node =
                     new ModifableExtensionPlanNode(extensionDependency, extensionDependency.getVersionConstraint());
-                node.setAction(new DefaultExtensionPlanAction(coreExtension, null, Action.NONE, null, true));
+                node.setAction(
+                    new DefaultExtensionPlanAction(coreExtension, coreExtension, null, Action.NONE, null, true));
 
                 parentBranch.add(node);
 
@@ -425,8 +426,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                     ModifableExtensionPlanNode node =
                         new ModifableExtensionPlanNode(extensionDependency, versionConstraint);
-                    node.setAction(new DefaultExtensionPlanAction(installedExtension, null, Action.NONE, namespace,
-                        installedExtension.isDependency(namespace)));
+                    node.setAction(new DefaultExtensionPlanAction(installedExtension, installedExtension, null,
+                        Action.NONE, namespace, installedExtension.isDependency(namespace)));
 
                     addExtensionNode(node);
                     parentBranch.add(node);
@@ -582,10 +583,19 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             // Check if the extension is already in local repository
             Extension extension = resolveExtension(targetDependency);
 
+            // Rewrite the extension
+            Extension rewrittenExtension;
+            if (getRequest().getRewriter() != null) {
+                rewrittenExtension = getRequest().getRewriter().rewrite(extension);
+            } else {
+                rewrittenExtension = extension;
+            }
+
             this.progressManager.startStep(this);
 
             try {
-                return installExtension(extension, dependency, namespace, targetDependency, managedDependencies);
+                return installExtension(extension, rewrittenExtension, dependency, namespace, targetDependency,
+                    managedDependencies);
             } catch (Exception e) {
                 throw new InstallException(
                     String.format("Failed to create an install plan for extension dependency [%s]", targetDependency),
@@ -671,13 +681,22 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         try {
             this.progressManager.startStep(this);
 
-            // Check is the extension is already in local repository
+            // Find the extension in a repository (starting with local one)
             Extension extension = resolveExtension(extensionId);
+
+            // Rewrite the extension
+            Extension rewrittenExtension;
+            if (getRequest().getRewriter() != null) {
+                rewrittenExtension = getRequest().getRewriter().rewrite(extension);
+            } else {
+                rewrittenExtension = extension;
+            }
 
             this.progressManager.startStep(this);
 
             try {
-                return installExtension(extension, dependency, namespace, null, Collections.emptyMap());
+                return installExtension(extension, rewrittenExtension, dependency, namespace, null,
+                    Collections.emptyMap());
             } catch (Exception e) {
                 throw new InstallException("Failed to resolve extension", e);
             }
@@ -737,7 +756,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     }
 
     /**
-     * @param extension the new extension to install
+     * @param sourceExtension the new extension to install
+     * @param rewrittenExtension the rewritten version of the passed extension
      * @param dependency indicate if the extension is installed as a dependency
      * @param namespace the namespace where to install the extension
      * @param initialDependency the initial dependency used to resolve the extension
@@ -748,45 +768,57 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @throws UninstallException
      * @throws NamespaceNotAllowedException when passed namespace is not compatible with the passed extension
      */
-    private ModifableExtensionPlanNode installExtension(Extension extension, boolean dependency, String namespace,
-        ExtensionDependency initialDependency, Map<String, ExtensionDependency> managedDependencies)
-        throws InstallException, ResolveException, IncompatibleVersionConstraintException, UninstallException,
-        NamespaceNotAllowedException
+    private ModifableExtensionPlanNode installExtension(Extension sourceExtension, Extension rewrittenExtension,
+        boolean dependency, String namespace, ExtensionDependency initialDependency,
+        Map<String, ExtensionDependency> managedDependencies) throws InstallException, ResolveException,
+        IncompatibleVersionConstraintException, UninstallException, NamespaceNotAllowedException
     {
-        boolean allowed = this.namespaceResolver.isAllowed(extension.getAllowedNamespaces(), namespace);
+        boolean allowed = this.namespaceResolver.isAllowed(rewrittenExtension.getAllowedNamespaces(), namespace);
 
         // Check if the namespace is compatible with the Extension
         if (!allowed) {
             if (namespace != null) {
                 if (getRequest().isRootModificationsAllowed()) {
                     // Try to install it on root namespace
-                    return installExtension(extension, dependency, null, initialDependency, managedDependencies);
+                    return installExtension(sourceExtension, rewrittenExtension, dependency, null, initialDependency,
+                        managedDependencies);
                 }
             }
 
             // Extension is not allowed on target namespace
             throw new NamespaceNotAllowedException(
                 String.format("Extension [%s] is not allowed on namespace [%s]. Allowed namespaces are: %s",
-                    extension.getId(), namespace, extension.getAllowedNamespaces()));
+                    rewrittenExtension.getId(), namespace, rewrittenExtension.getAllowedNamespaces()));
         }
 
         // Check if the extension is already in the install plan
-        checkExistingPlanNodeExtension(extension, namespace);
+        checkExistingPlanNodeExtension(rewrittenExtension, namespace);
 
         // Check if the extension matches a root extension
         if (namespace != null) {
             // Check if the extension already exist on root, throw exception if not allowed
-            if (checkRootExtension(extension)) {
+            if (checkRootExtension(rewrittenExtension)) {
                 // Restart install on root
-                return installExtension(extension, dependency, null, initialDependency, managedDependencies);
+                return installExtension(sourceExtension, rewrittenExtension, dependency, null, initialDependency,
+                    managedDependencies);
             }
         }
 
         // Check if the extension is already installed
-        extension = checkInstalledExtension(extension, namespace);
+        Extension installedExtension = checkInstalledExtension(rewrittenExtension, namespace);
+        if (installedExtension != rewrittenExtension) {
+            sourceExtension = installedExtension;
+
+            // Rewrite the extension
+            if (getRequest().getRewriter() != null) {
+                rewrittenExtension = getRequest().getRewriter().rewrite(installedExtension);
+            } else {
+                rewrittenExtension = installedExtension;
+            }
+        }
 
         // Check if the extension is a core extension
-        checkCoreExtension(extension);
+        checkCoreExtension(rewrittenExtension);
 
         // Find out what need to be upgraded and uninstalled
 
@@ -799,27 +831,28 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
             // Is type supported ?
             try {
-                extensionHandler = this.componentManager.getInstance(ExtensionHandler.class, extension.getType());
+                extensionHandler =
+                    this.componentManager.getInstance(ExtensionHandler.class, rewrittenExtension.getType());
             } catch (ComponentLookupException e) {
-                throw new InstallException(String.format("Unsupported type [%s]", extension.getType()), e);
+                throw new InstallException(String.format("Unsupported type [%s]", rewrittenExtension.getType()), e);
             }
 
             this.progressManager.startStep(this);
 
             // Is installing the extension allowed ?
-            extensionHandler.checkInstall(extension, namespace, getRequest());
+            extensionHandler.checkInstall(rewrittenExtension, namespace, getRequest());
 
             this.progressManager.startStep(this);
 
             // Find all existing versions of the extension
-            Set<InstalledExtension> previousExtensions = getReplacedInstalledExtensions(extension, namespace);
+            Set<InstalledExtension> previousExtensions = getReplacedInstalledExtensions(rewrittenExtension, namespace);
 
             this.progressManager.startStep(this);
 
             // Mark replaced extensions as uninstalled
             for (InstalledExtension previousExtension : new ArrayList<>(previousExtensions)) {
                 if (!previousExtension.isInstalled(namespace)
-                    || !previousExtension.getId().getId().equals(extension.getId().getId())) {
+                    || !previousExtension.getId().getId().equals(rewrittenExtension.getId().getId())) {
                     if (namespace == null && previousExtension.getNamespaces() != null) {
                         for (String previousNamespace : previousExtension.getNamespaces()) {
                             uninstallExtension(previousExtension, previousNamespace, this.extensionTree, false);
@@ -834,7 +867,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             this.progressManager.startStep(this);
 
             // Check dependencies
-            Collection<? extends ExtensionDependency> dependencies = extension.getDependencies();
+            Collection<? extends ExtensionDependency> dependencies = rewrittenExtension.getDependencies();
 
             List<ModifableExtensionPlanNode> children = null;
             if (!dependencies.isEmpty()) {
@@ -842,15 +875,15 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                 try {
                     children = new ArrayList<ModifableExtensionPlanNode>();
-                    for (ExtensionDependency extensionDependency : extension.getDependencies()) {
+                    for (ExtensionDependency extensionDependency : rewrittenExtension.getDependencies()) {
                         this.progressManager.startStep(this);
 
                         // Replace with managed dependency if any
                         extensionDependency =
-                            ExtensionUtils.getDependency(extensionDependency, managedDependencies, extension);
+                            ExtensionUtils.getDependency(extensionDependency, managedDependencies, rewrittenExtension);
 
                         installExtensionDependency(extensionDependency, namespace, children,
-                            ExtensionUtils.append(managedDependencies, extension));
+                            ExtensionUtils.append(managedDependencies, rewrittenExtension));
                     }
                 } finally {
                     this.progressManager.popLevelProgress(this);
@@ -867,19 +900,19 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
             Action action;
             if (!previousExtensions.isEmpty()) {
-                if (extension.compareTo(previousExtensions.iterator().next()) < 0) {
+                if (rewrittenExtension.compareTo(previousExtensions.iterator().next()) < 0) {
                     action = Action.DOWNGRADE;
                 } else {
                     action = Action.UPGRADE;
                 }
-            } else if (extension instanceof InstalledExtension) {
+            } else if (rewrittenExtension instanceof InstalledExtension) {
                 action = Action.REPAIR;
             } else {
                 action = Action.INSTALL;
             }
 
-            node.setAction(
-                new DefaultExtensionPlanAction(extension, previousExtensions, action, namespace, dependency));
+            node.setAction(new DefaultExtensionPlanAction(sourceExtension, rewrittenExtension, previousExtensions,
+                action, namespace, dependency));
 
             return node;
         } finally {

@@ -30,9 +30,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.InstalledExtension;
+import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.MutableExtension;
+import org.xwiki.extension.RemoteExtension;
+import org.xwiki.extension.rating.RatingExtension;
+import org.xwiki.extension.wrap.WrappingCoreExtension;
+import org.xwiki.extension.wrap.WrappingExtension;
+import org.xwiki.extension.wrap.WrappingInstalledExtension;
+import org.xwiki.extension.wrap.WrappingLocalExtension;
+import org.xwiki.extension.wrap.WrappingRatingExtension;
+import org.xwiki.extension.wrap.WrappingRemoteExtension;
 import org.xwiki.properties.converter.ConversionException;
 
 /**
@@ -198,5 +209,33 @@ public final class ExtensionUtils
         }
 
         return Collections.emptyList();
+    }
+
+    /**
+     * @param <T> the type
+     * @param extension the extension to wrap
+     * @return the wrapped version
+     * @since 8.4.2
+     * @since 9.0RC1
+     */
+    public static <T extends Extension> WrappingExtension<T> wrap(Extension extension)
+    {
+        WrappingExtension<?> wrapper;
+
+        if (extension instanceof CoreExtension) {
+            wrapper = new WrappingCoreExtension<>((CoreExtension) extension);
+        } else if (extension instanceof InstalledExtension) {
+            wrapper = new WrappingInstalledExtension<>((InstalledExtension) extension);
+        } else if (extension instanceof LocalExtension) {
+            wrapper = new WrappingLocalExtension<>((LocalExtension) extension);
+        } else if (extension instanceof RatingExtension) {
+            wrapper = new WrappingRatingExtension<>((RatingExtension) extension);
+        } else if (extension instanceof RemoteExtension) {
+            wrapper = new WrappingRemoteExtension<>((RemoteExtension) extension);
+        } else {
+            wrapper = new WrappingExtension<>(extension);
+        }
+
+        return (WrappingExtension<T>) wrapper;
     }
 }

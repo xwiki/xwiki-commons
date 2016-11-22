@@ -35,11 +35,13 @@ import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.extension.repository.internal.core.CoreExtensionScanner;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobExecutor;
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
+import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
@@ -56,6 +58,13 @@ public abstract class AbstractExtensionHandlerTest
     protected InstalledExtensionRepository installedExtensionRepository;
 
     protected JobExecutor jobExecutor;
+
+    @AfterComponent
+    public void afterComponent() throws Exception
+    {
+        // Skip core extension scanner
+        this.mocker.registerMockComponent(CoreExtensionScanner.class);
+    }
 
     @Before
     public void setUp() throws Exception

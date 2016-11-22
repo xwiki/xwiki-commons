@@ -44,6 +44,7 @@ import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepositoryException;
+import org.xwiki.extension.repository.internal.core.CoreExtensionScanner;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
@@ -51,6 +52,7 @@ import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
 import org.xwiki.extension.test.TestExtensionHandler;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
+import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.annotation.AllComponents;
 
 import static org.junit.Assert.assertEquals;
@@ -76,6 +78,13 @@ public class DefaultInstalledExtensionRepositoryTest
     private TestResources resources;
 
     private TestExtensionHandler handler;
+
+    @AfterComponent
+    public void afterComponent() throws Exception
+    {
+        // Skip core extension scanner
+        this.repositoryUtil.getComponentManager().registerMockComponent(CoreExtensionScanner.class);
+    }
 
     @Before
     public void setUp() throws Exception

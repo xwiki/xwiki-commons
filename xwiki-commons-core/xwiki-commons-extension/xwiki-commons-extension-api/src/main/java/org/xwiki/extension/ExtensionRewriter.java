@@ -17,38 +17,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.rating;
+package org.xwiki.extension;
 
-import org.xwiki.extension.Extension;
-import org.xwiki.extension.RemoteExtension;
+import org.xwiki.stability.Unstable;
 
 /**
- * Combine {@link Extension} and {@link Rating}.
+ * Interface used to allow external service modify manipulated extensions (change allowed namespaces, dependencies,
+ * etc.).
  * 
  * @version $Id$
- * @since 6.4M3
+ * @since 8.4.2
+ * @since 9.0RC1
  */
-public interface RatingExtension extends RemoteExtension, Rating
+@Unstable
+public interface ExtensionRewriter
 {
     /**
-     * @see #getRating()
-     * @see ExtensionRating#getTotalVotes()
-     * @since 7.2M1
+     * @param extension the extension to filter
+     * @return the filtered extension
      */
-    String FIELD_TOTAL_VOTES = "nbvotes";
-
-    /**
-     * @see #getRating()
-     * @see ExtensionRating#getAverageVote()
-     * @since 7.1.2
-     * @since 7.2M1
-     */
-    String FIELD_AVERAGE_VOTE = "averagevote";
-
-    /**
-     * @see #getRating()
-     * @since 9.0RC1
-     * @since 8.4.2
-     */
-    String FIELD_RATING = "rating";
+    Extension rewrite(Extension extension);
 }

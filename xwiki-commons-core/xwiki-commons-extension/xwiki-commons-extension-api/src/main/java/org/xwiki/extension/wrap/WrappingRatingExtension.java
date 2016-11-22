@@ -45,6 +45,10 @@ public class WrappingRatingExtension<T extends RatingExtension> extends Wrapping
     @Override
     public ExtensionRating getRating()
     {
+        if (this.overwrites.containsKey(RatingExtension.FIELD_AVERAGE_VOTE)) {
+            return (ExtensionRating) this.overwrites.get(RatingExtension.FIELD_AVERAGE_VOTE);
+        }
+
         return getWrapped().getRating();
     }
 }

@@ -79,6 +79,9 @@ public abstract class AbstractRatingExtension extends AbstractRemoteExtension im
                 return (T) (Float) (getRating() != null ? getRating().getAverageVote() : -1f);
             case FIELD_TOTAL_VOTES:
                 return (T) (Integer) (getRating() != null ? getRating().getTotalVotes() : 0);
+            case FIELD_RATING:
+                return (T) getRating();
+
             default:
                 return super.get(fieldName);
         }
