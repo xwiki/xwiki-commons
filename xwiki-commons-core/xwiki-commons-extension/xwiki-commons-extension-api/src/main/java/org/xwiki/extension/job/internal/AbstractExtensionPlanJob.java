@@ -48,19 +48,19 @@ import org.xwiki.logging.marker.TranslationMarker;
  * @version $Id$
  * @since 5.4RC1
  */
-public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> extends
-    AbstractExtensionJob<R, DefaultExtensionPlan<R>>
+public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
+    extends AbstractExtensionJob<R, DefaultExtensionPlan<R>>
 {
     protected static final TranslationMarker LOG_RESOLVE = new TranslationMarker("extension.log.job.plan.resolve");
 
-    protected static final TranslationMarker LOG_RESOLVE_NAMESPACE = new TranslationMarker(
-        "extension.log.job.plan.resolve.namespace");
+    protected static final TranslationMarker LOG_RESOLVE_NAMESPACE =
+        new TranslationMarker("extension.log.job.plan.resolve.namespace");
 
-    protected static final TranslationMarker LOG_RESOLVEDEPENDENCY = new TranslationMarker(
-        "extension.log.job.plan.resolvedependency");
+    protected static final TranslationMarker LOG_RESOLVEDEPENDENCY =
+        new TranslationMarker("extension.log.job.plan.resolvedependency");
 
-    protected static final TranslationMarker LOG_RESOLVEDEPENDENCY_NAMESPACE = new TranslationMarker(
-        "extension.log.job.plan.resolvedependency.namespace");
+    protected static final TranslationMarker LOG_RESOLVEDEPENDENCY_NAMESPACE =
+        new TranslationMarker("extension.log.job.plan.resolvedependency.namespace");
 
     /**
      * Error message used in exception throw when trying to uninstall an extension which is not installed.
@@ -191,8 +191,8 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
     {
         if (namespace != null) {
             if (installedExtension.getNamespaces() == null || !installedExtension.getNamespaces().contains(namespace)) {
-                throw new UninstallException(String.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension,
-                    namespace));
+                throw new UninstallException(
+                    String.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension, namespace));
             }
         }
 
@@ -226,7 +226,7 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
         }
 
         // Uninstall the extension
-        DefaultExtensionPlanAction action = new DefaultExtensionPlanAction(installedExtension,
+        DefaultExtensionPlanAction action = new DefaultExtensionPlanAction(installedExtension, installedExtension,
             Collections.singleton(installedExtension), Action.UNINSTALL, namespace, false);
         parentBranch.add(new DefaultExtensionPlanNode(action, children, null));
     }
@@ -244,9 +244,8 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
     {
         try {
             if (namespace != null) {
-                Collection<InstalledExtension> installedExtensions =
-                    this.installedExtensionRepository.getBackwardDependencies(installedExtension.getId().getId(),
-                        namespace);
+                Collection<InstalledExtension> installedExtensions = this.installedExtensionRepository
+                    .getBackwardDependencies(installedExtension.getId().getId(), namespace);
                 if (!installedExtensions.isEmpty()) {
                     uninstallExtensions(installedExtensions, namespace, parentBranch, withBackWard);
                 }
@@ -254,8 +253,8 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest> exten
                 uninstallBackwardDependencies(installedExtension, parentBranch, withBackWard);
             }
         } catch (ResolveException e) {
-            throw new UninstallException("Failed to resolve backward dependencies of extension [" + installedExtension
-                + "]", e);
+            throw new UninstallException(
+                "Failed to resolve backward dependencies of extension [" + installedExtension + "]", e);
         }
     }
 

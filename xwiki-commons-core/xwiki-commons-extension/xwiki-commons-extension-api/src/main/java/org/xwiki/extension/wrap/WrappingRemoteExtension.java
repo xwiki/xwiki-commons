@@ -43,6 +43,10 @@ public class WrappingRemoteExtension<T extends RemoteExtension> extends Wrapping
     @Override
     public boolean isRecommended()
     {
+        if (this.overwrites.containsKey(RemoteExtension.FIELD_RECOMMENDED)) {
+            return (boolean) this.overwrites.get(RemoteExtension.FIELD_RECOMMENDED);
+        }
+
         return getWrapped().isRecommended();
     }
 }

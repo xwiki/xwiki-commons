@@ -19,12 +19,16 @@
  */
 package org.xwiki.extension.job;
 
+import java.beans.Transient;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.job.Request;
+import org.xwiki.stability.Unstable;
 
 /**
  * Extension manipulation related {@link Request}.
@@ -99,5 +103,19 @@ public interface ExtensionRequest extends Request
     default boolean isRootModificationsAllowed()
     {
         return true;
+    }
+
+    /**
+     * Allow modifying manipulated {@link Extension}s on the fly (change allowed namespaces, dependencies, etc.).
+     * 
+     * @return the filter
+     * @since 8.4.2
+     * @since 9.0RC1
+     */
+    @Transient
+    @Unstable
+    default ExtensionRewriter getRewriter()
+    {
+        return null;
     }
 }

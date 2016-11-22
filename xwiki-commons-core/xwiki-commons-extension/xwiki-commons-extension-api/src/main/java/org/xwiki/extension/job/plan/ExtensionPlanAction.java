@@ -22,6 +22,7 @@ package org.xwiki.extension.job.plan;
 import java.util.Collection;
 
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.extension.InstalledExtension;
 
 /**
@@ -78,6 +79,17 @@ public interface ExtensionPlanAction
      * @return the extension on which to perform the action
      */
     Extension getExtension();
+
+    /**
+     * @return the result of {@link ExtensionRewriter#rewrite(Extension)} on the extension on which to perform the
+     *         action
+     * @since 8.4.2
+     * @since 9.0RC1
+     */
+    default Extension getRewrittenExtension()
+    {
+        return getExtension();
+    }
 
     /**
      * @return the currently installed extension. Used when upgrading.

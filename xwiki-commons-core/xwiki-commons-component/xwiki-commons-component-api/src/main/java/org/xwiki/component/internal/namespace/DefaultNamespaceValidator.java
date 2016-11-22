@@ -89,10 +89,12 @@ public class DefaultNamespaceValidator implements NamespaceValidator
         }
 
         // Check if it's a regexp
-        Matcher matcher = REGEXP_PATTERN.matcher(allowedNamespace);
-        if (matcher.matches()) {
-            String pattern = matcher.group(1);
-            return namespace.matches(pattern);
+        if (allowedNamespace != null) {
+            Matcher matcher = REGEXP_PATTERN.matcher(allowedNamespace);
+            if (matcher.matches()) {
+                String pattern = matcher.group(1);
+                return namespace.matches(pattern);
+            }
         }
 
         return false;

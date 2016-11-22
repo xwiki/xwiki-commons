@@ -58,12 +58,14 @@ public interface Extension extends Comparable<Extension>
     /**
      * @see #getFeatures()
      * @since 7.0RC1
+     * @deprecated since 9.0RC1/8.4.2, use {@link #FIELD_FEATURE} instead
      */
     String FIELD_FEATURE = "feature";
 
     /**
      * @see #getFeatures()
      * @since 7.0RC1
+     * @deprecated since 9.0RC1/8.4.2, use {@link #FIELD_FEATURES} instead
      */
     String FIELD_FEATURES = "features";
 
@@ -178,6 +180,27 @@ public interface Extension extends Comparable<Extension>
      * @since 8.1M1
      */
     String FIELD_PROPERTIES = "properties";
+
+    /**
+     * @see #getIssueManagement()
+     * @since 9.0RC1
+     * @since 8.4.2
+     */
+    String FIELD_ISSUEMANAGEMENT = "issuemanagement";
+
+    /**
+     * @see #getManagedDependencies()
+     * @since 9.0RC1
+     * @since 8.4.2
+     */
+    String FIELD_MANAGEDDEPENDENCIES = "manageddependencies";
+
+    /**
+     * @see #getDependencies()
+     * @since 9.0RC1
+     * @since 8.4.2
+     */
+    String FIELD_DEPENDENCIES = "dependencies";
 
     /**
      * Prefix to use for custom properties names in external systems (Maven, etc).

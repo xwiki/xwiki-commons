@@ -115,8 +115,8 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
 
             List<LogEvent> log = plan.getLog().getLogs(LogLevel.ERROR);
             if (!log.isEmpty()) {
-                throw new InstallException("Failed to create install plan: " + log.get(0).getFormattedMessage(), log
-                    .get(0).getThrowable());
+                throw new InstallException("Failed to create install plan: " + log.get(0).getFormattedMessage(),
+                    log.get(0).getThrowable());
             }
 
             this.progressManager.startStep(this);
