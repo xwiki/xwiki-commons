@@ -64,7 +64,7 @@ public class FilterStreamType implements Comparable<FilterStreamType>
     /**
      * The XAR format in version 1.3.
      *
-     * @since 8.0RC1
+     * @since 9.0RC1
      */
     public static final FilterStreamType XWIKI_XAR_13 = new FilterStreamType(SystemType.XWIKI, DATA_XAR, "1.3");
 
