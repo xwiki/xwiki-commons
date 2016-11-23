@@ -22,7 +22,7 @@ package org.xwiki.extension.repository.internal.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.inject.Inject;
@@ -35,7 +35,6 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.internal.PathUtils;
-import org.xwiki.extension.internal.maven.MavenUtils;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
 
 /**
@@ -138,8 +137,8 @@ public class CoreExtensionCache implements Initializable
     {
         URL extensionURL;
         try {
-            extensionURL = PathUtils.getExtensionURL(url, MavenUtils.MAVENPACKAGE.replace('.', '/'));
-        } catch (MalformedURLException e) {
+            extensionURL = PathUtils.getExtensionURL(url);
+        } catch (IOException e) {
             return null;
         }
 

@@ -121,9 +121,9 @@ public class DefaultCoreExtensionRepositoryTest
     public void testSearchWithSeveralFeatures() throws SearchException
     {
         this.coreExtensionRepository.addExtensions("extension", new DefaultVersion("version"),
-            new ExtensionId("feature1"), new ExtensionId("feature2"));
+            new ExtensionId("testfeature1"), new ExtensionId("testfeature2"));
 
-        IterableResult<Extension> result = this.coreExtensionRepository.search("feature", 0, -1);
+        IterableResult<Extension> result = this.coreExtensionRepository.search("testfeature", 0, -1);
 
         assertEquals(1, result.getTotalHits());
         assertEquals(1, result.getSize());
