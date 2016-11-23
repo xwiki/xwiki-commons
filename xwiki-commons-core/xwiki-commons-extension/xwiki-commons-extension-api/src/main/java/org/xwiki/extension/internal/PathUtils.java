@@ -22,7 +22,6 @@ package org.xwiki.extension.internal;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.JarURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -35,10 +34,6 @@ import java.net.URLEncoder;
  */
 public final class PathUtils
 {
-    private static final String JAR_PREFIX = "jar:";
-
-    private static final String JAR_SEPARATOR = "!/";
-
     private PathUtils()
     {
         // Utility class
@@ -67,35 +62,10 @@ public final class PathUtils
 
     /**
      * @param descriptorURL the URL to the core extension descriptor
-     * @param pattern pattern to match inside the extension file
-     * @return the URL to the core extension file
-     * @throws MalformedURLException when failing to create a URL
-     */
-    public static URL getExtensionURL(URL descriptorURL, String pattern) throws MalformedURLException
-    {
-        String extensionURLStr = descriptorURL.toString();
-        if (pattern != null) {
-            extensionURLStr = extensionURLStr.substring(0, descriptorURL.toString().indexOf(pattern));
-        }
-
-        if (extensionURLStr.startsWith(JAR_PREFIX)) {
-            int start = JAR_PREFIX.length();
-            int end = extensionURLStr.length();
-            if (extensionURLStr.endsWith(JAR_SEPARATOR)) {
-                end -= JAR_SEPARATOR.length();
-            }
-
-            extensionURLStr = extensionURLStr.substring(start, end);
-        }
-
-        return new URL(extensionURLStr);
-    }
-
-    /**
-     * @param descriptorURL the URL to the core extension descriptor
      * @return the URL to the core extension file
      * @throws IOException when failing to access passed URL
      * @since 8.4RC1
+     * @since 7.4.6
      */
     public static URL getExtensionURL(URL descriptorURL) throws IOException
     {

@@ -318,8 +318,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         for (URL url : urls) {
             try {
-                jarURLs.add(PathUtils.getExtensionURL(url, null));
-            } catch (MalformedURLException e) {
+                jarURLs.add(PathUtils.getExtensionURL(url));
+            } catch (IOException e) {
                 this.logger.error("Failed to convert to extension URL", e);
             }
         }

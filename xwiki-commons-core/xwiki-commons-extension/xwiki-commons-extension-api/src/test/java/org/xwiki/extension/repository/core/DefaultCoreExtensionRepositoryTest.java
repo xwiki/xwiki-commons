@@ -28,12 +28,10 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.CoreExtensionRepository;
-import org.xwiki.extension.repository.internal.core.CoreExtensionScanner;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.ConfigurableDefaultCoreExtensionRepository;
 import org.xwiki.extension.version.internal.DefaultVersion;
-import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
@@ -48,11 +46,13 @@ public class DefaultCoreExtensionRepositoryTest
 
     private ConfigurableDefaultCoreExtensionRepository coreExtensionRepository;
 
-    @AfterComponent
-    public void registerComponents() throws Exception
+    /**
+     * Validate core extension loading and others initializations.
+     */
+    @Test
+    public void testInit()
     {
-        // Skip core extension scanner
-        this.mocker.registerMockComponent(CoreExtensionScanner.class);
+        Assert.assertTrue(this.coreExtensionRepository.countExtensions() > 0);
     }
 
     @Before
@@ -121,9 +121,9 @@ public class DefaultCoreExtensionRepositoryTest
     public void testSearchWithSeveralFeatures() throws SearchException
     {
         this.coreExtensionRepository.addExtensions("extension", new DefaultVersion("version"),
-            new ExtensionId("feature1"), new ExtensionId("feature2"));
+            new ExtensionId("testfeature1"), new ExtensionId("testfeature2"));
 
-        IterableResult<Extension> result = this.coreExtensionRepository.search("feature", 0, -1);
+        IterableResult<Extension> result = this.coreExtensionRepository.search("testfeature", 0, -1);
 
         assertEquals(1, result.getTotalHits());
         assertEquals(1, result.getSize());
