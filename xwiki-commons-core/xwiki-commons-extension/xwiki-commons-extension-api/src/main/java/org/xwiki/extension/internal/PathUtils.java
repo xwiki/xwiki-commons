@@ -19,9 +19,12 @@
  */
 package org.xwiki.extension.internal;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 
 /**
@@ -67,7 +70,9 @@ public final class PathUtils
      * @param pattern pattern to match inside the extension file
      * @return the URL to the core extension file
      * @throws MalformedURLException when failing to create a URL
+     * @deprecated since 9.0RC1/8.4.2/7.4.6, use {@link #getExtensionURL(URL)} instead
      */
+    @Deprecated
     public static URL getExtensionURL(URL descriptorURL, String pattern) throws MalformedURLException
     {
         String extensionURLStr = descriptorURL.toString();
@@ -86,5 +91,22 @@ public final class PathUtils
         }
 
         return new URL(extensionURLStr);
+    }
+
+    /**
+     * @param descriptorURL the URL to the core extension descriptor
+     * @return the URL to the core extension file
+     * @throws IOException when failing to access passed URL
+     * @since 8.4RC1, 7.4.6
+     */
+    public static URL getExtensionURL(URL descriptorURL) throws IOException
+    {
+        URLConnection connection = descriptorURL.openConnection();
+
+        if (connection instanceof JarURLConnection) {
+            return ((JarURLConnection) connection).getJarFileURL();
+        }
+
+        return descriptorURL;
     }
 }

@@ -21,7 +21,6 @@ package org.xwiki.extension.repository.internal.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -176,7 +175,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
             MavenXpp3Reader reader = new MavenXpp3Reader();
             Model mavenModel = reader.read(descriptorStream);
 
-            URL extensionURL = PathUtils.getExtensionURL(descriptorURL, MavenUtils.MAVENPACKAGE.replace('.', '/'));
+            URL extensionURL = PathUtils.getExtensionURL(descriptorURL);
 
             Extension mavenExtension = this.converter.convert(Extension.class, mavenModel);
 
@@ -311,7 +310,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                             coreExtension.getId(), coreExtension.getDescriptorURL(), existingCoreExtension.getId(),
                             existingCoreExtension.getDescriptorURL());
 
-                        if (coreExtension.getId().getVersion().compareTo(existingCoreExtension.getId().getVersion()) > 0) {
+                        if (coreExtension.getId().getVersion()
+                            .compareTo(existingCoreExtension.getId().getVersion()) > 0) {
                             extensions.put(coreExtension.getId().getId(), coreExtension);
 
                             this.logger.warn("[{} ({})] is selected", coreExtension.getId(),
@@ -360,8 +360,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         for (URL url : urls) {
             URL extensionURL;
             try {
-                extensionURL = PathUtils.getExtensionURL(url, null);
-            } catch (MalformedURLException e) {
+                extensionURL = PathUtils.getExtensionURL(url);
+            } catch (IOException e) {
                 this.logger.error("Failed to convert to extension URL", e);
                 continue;
             }
@@ -386,12 +386,12 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                     }
 
                     if (index != -1) {
-                        fileNames.put(filename, new Object[] { extensionURL });
+                        fileNames.put(filename, new Object[] {extensionURL});
 
                         String artefactname = filename.substring(0, index);
                         String version = filename.substring(index + 1);
 
-                        guessedArtefacts.put(artefactname, new Object[] { version, extensionURL, type });
+                        guessedArtefacts.put(artefactname, new Object[] {version, extensionURL, type});
                     }
                 } catch (Exception e) {
                     this.logger.warn("Failed to parse resource name [{}]", extensionURL, e);
@@ -426,9 +426,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 if (extensionDependency instanceof MavenExtensionDependency) {
                     dependency = ((MavenExtensionDependency) extensionDependency).getMavenDependency();
                 } else {
-                    dependency =
-                        toDependency(extensionDependency.getId(),
-                            extensionDependency.getVersionConstraint().getValue(), null);
+                    dependency = toDependency(extensionDependency.getId(),
+                        extensionDependency.getVersionConstraint().getValue(), null);
                 }
 
                 String dependencyId = dependency.getGroupId() + ':' + dependency.getArtifactId();
@@ -445,16 +444,14 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                     Object[] guessedArtefact = guessedArtefacts.get(dependency.getArtifactId());
 
                     if (filenameArtifact != null) {
-                        coreExtension =
-                            new DefaultCoreExtension(repository, (URL) filenameArtifact[0], new ExtensionId(
-                                dependencyId, dependency.getVersion()),
-                                MavenUtils.packagingToType(dependency.getType()));
+                        coreExtension = new DefaultCoreExtension(repository, (URL) filenameArtifact[0],
+                            new ExtensionId(dependencyId, dependency.getVersion()),
+                            MavenUtils.packagingToType(dependency.getType()));
                         coreExtension.setGuessed(true);
                     } else if (guessedArtefact != null) {
-                        coreExtension =
-                            new DefaultCoreExtension(repository, (URL) guessedArtefact[1], new ExtensionId(
-                                dependencyId, (String) guessedArtefact[0]), MavenUtils.packagingToType(dependency
-                                .getType()));
+                        coreExtension = new DefaultCoreExtension(repository, (URL) guessedArtefact[1],
+                            new ExtensionId(dependencyId, (String) guessedArtefact[0]),
+                            MavenUtils.packagingToType(dependency.getType()));
                         coreExtension.setGuessed(true);
                     }
 
