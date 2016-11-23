@@ -516,7 +516,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
             URL jarURL = it.next();
 
             try {
-                String path = jarURL.toURI().getPath();
+                String path = jarURL.getPath();
                 String filename = path.substring(path.lastIndexOf('/') + 1);
                 String type = null;
 
