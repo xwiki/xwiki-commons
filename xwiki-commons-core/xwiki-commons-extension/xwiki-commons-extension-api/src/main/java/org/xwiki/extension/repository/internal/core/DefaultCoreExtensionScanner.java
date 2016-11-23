@@ -368,7 +368,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
             if (!validatedFiles.contains(extensionURL.toString())) {
                 try {
-                    String path = extensionURL.toURI().getPath();
+                    String path = extensionURL.getPath();
                     String filename = path.substring(path.lastIndexOf('/') + 1);
                     String type = null;
 
