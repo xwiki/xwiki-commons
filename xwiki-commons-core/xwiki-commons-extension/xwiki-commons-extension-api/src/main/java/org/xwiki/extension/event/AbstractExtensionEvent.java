@@ -64,6 +64,19 @@ public abstract class AbstractExtensionEvent implements ExtensionEvent
         this.noNamespace = false;
     }
 
+    /**
+     * @param extensionId the event related extension identifier
+     *
+     * @since 9.0RC1
+     * @since 8.4.1
+     * @since 7.4.6
+     */
+    protected AbstractExtensionEvent(ExtensionId extensionId)
+    {
+        this.extensionId = extensionId;
+        this.noNamespace = true;
+    }
+
     // ExtensionEvent
 
     @Override
