@@ -54,4 +54,32 @@ public class ExtensionUpgradedEvent extends AbstractExtensionEvent
     {
         super(extensionId, namespace);
     }
+
+    /**
+     * Matches only the specified extension id or/and version on every namespaces.
+     *
+     * @param extensionId the extension identifier
+     *
+     * @since 9.0RC1
+     * @since 8.4.1
+     * @since 7.4.6
+     */
+    public ExtensionUpgradedEvent(ExtensionId extensionId)
+    {
+        super(extensionId);
+    }
+
+    /**
+     * Matches only the specified extension id or/and version on every namespaces.
+     *
+     * @param extensionId the extension identifier
+     *
+     * @since 9.0RC1
+     * @since 8.4.1
+     * @since 7.4.6
+     */
+    public ExtensionUpgradedEvent(String extensionId)
+    {
+        super(new ExtensionId(extensionId));
+    }
 }
