@@ -468,11 +468,19 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         boolean found = false;
         for (String descriptor : descriptors) {
+            String path = jarURL.toExternalForm();
+
             // Create descriptor URL
             URL descriptorURL;
             try {
-                descriptorURL = new URL("jar:" + jarURL.toExternalForm() + "!/" + descriptor);
-            } catch (MalformedURLException e1) {
+                if (path.endsWith("/")) {
+                    // It's a folder
+                    descriptorURL = new URL(path + descriptor);
+                } else {
+                    // Probably a jar
+                    descriptorURL = new URL("jar:" + jarURL.toExternalForm() + "!/" + descriptor);
+                }
+            } catch (MalformedURLException e) {
                 // Not supposed to happen (would mean there is a bug in Reflections)
                 this.logger.error("Failed to access resource [{}] from jar [{}]", descriptor, jarURL);
                 continue;
