@@ -49,6 +49,16 @@ public class ExtensionId implements Serializable
 
     /**
      * @param id the extension identifier
+     * @since 8.0M1
+     * @since 7.4.6
+     */
+    public ExtensionId(String id)
+    {
+        this(id, (Version) null);
+    }
+
+    /**
+     * @param id the extension identifier
      * @param version the extension version
      */
     public ExtensionId(String id, String version)
