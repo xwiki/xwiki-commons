@@ -65,6 +65,7 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
     /**
      * @param id the extension identifier
      * @since 8.0M1
+     * @since 7.4.6
      */
     public ExtensionId(String id)
     {
