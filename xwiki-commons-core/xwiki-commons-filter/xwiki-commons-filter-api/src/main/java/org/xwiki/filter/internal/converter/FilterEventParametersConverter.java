@@ -39,7 +39,7 @@ import org.xwiki.properties.converter.ConversionException;
 // TODO: add real syntax support (only convert from empty String to empty Map right now)
 @Component
 @Singleton
-public class FilterElementParametersConverter extends AbstractConverter<FilterEventParameters>
+public class FilterEventParametersConverter extends AbstractConverter<FilterEventParameters>
 {
     @Override
     protected FilterEventParameters convertToType(Type type, Object value)
