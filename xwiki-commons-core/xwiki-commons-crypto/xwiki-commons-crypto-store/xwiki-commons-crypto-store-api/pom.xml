@@ -26,7 +26,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto-store</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>8.2.2-SNAPSHOT</version>
+    <version>8.2.2</version>
   </parent>
   <artifactId>xwiki-commons-crypto-store-api</artifactId>
   <packaging>jar</packaging>
