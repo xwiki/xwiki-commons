@@ -22,9 +22,12 @@ package org.xwiki.extension.internal;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.JarURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Various path utilities.
@@ -60,6 +63,23 @@ public final class PathUtils
         return encoded;
     }
 
+    // Workaround insane WebSphere bug (see http://jira.xwiki.org/browse/XWIKI-13898)
+    private static URL fixURL(URL jarURL)
+    {
+        String jarURLString = jarURL.toExternalForm();
+        if (StringUtils.contains(jarURLString, ' ')) {
+            jarURLString = jarURLString.replace(" ", "%20");
+
+            try {
+                return new URL(jarURLString);
+            } catch (MalformedURLException e) {
+                // TODO: Log something ?
+            }
+        }
+
+        return jarURL;
+    }
+
     /**
      * @param descriptorURL the URL to the core extension descriptor
      * @return the URL to the core extension file
@@ -72,7 +92,7 @@ public final class PathUtils
         URLConnection connection = descriptorURL.openConnection();
 
         if (connection instanceof JarURLConnection) {
-            return ((JarURLConnection) connection).getJarFileURL();
+            return fixURL(((JarURLConnection) connection).getJarFileURL());
         }
 
         return descriptorURL;
