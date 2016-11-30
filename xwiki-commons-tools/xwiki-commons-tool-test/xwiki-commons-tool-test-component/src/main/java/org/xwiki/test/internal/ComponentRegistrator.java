@@ -22,7 +22,9 @@ package org.xwiki.test.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.annotation.ComponentDeclaration;
@@ -148,7 +150,7 @@ public class ComponentRegistrator
     private List<ComponentDeclaration> getComponentDeclarationsFromAnnotation(Annotation[] annotations,
         List<Annotation> alreadyProcessedAnnotations)
     {
-        List<ComponentDeclaration> componentDeclarations = new ArrayList<>();
+        Set<ComponentDeclaration> componentDeclarations = new LinkedHashSet<>();
         for (Annotation annotation : annotations) {
             // Is the Annotation (or one of the Annotation annotating the Annotation) tagged with @ComponentList?
             // If so, then call the "value()" method to get the list of Component Declarations
@@ -166,7 +168,8 @@ public class ComponentRegistrator
                 }
             }
         }
-        return componentDeclarations;
+
+        return new ArrayList<>(componentDeclarations);
     }
 
     /**
