@@ -34,9 +34,11 @@ import org.xwiki.job.event.status.JobStatus;
  *
  * @version $Id$
  * @since 4.0M1
+ * @deprecated since 6.1M2, use {@link org.xwiki.job.internal.DefaultJobStatusStore} instead
  */
 @Component
 @Singleton
+@Deprecated
 public class DefaultJobStatusStorage implements JobStatusStorage
 {
     @Inject

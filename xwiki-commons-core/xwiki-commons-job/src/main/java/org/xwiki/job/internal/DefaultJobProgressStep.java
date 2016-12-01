@@ -32,15 +32,19 @@ import org.xwiki.logging.Message;
  */
 public class DefaultJobProgressStep implements JobProgressStep
 {
+    // Not stored data (used only during progress)
+
+    protected final transient DefaultJobProgressStep parent;
+
+    protected transient Object source;
+
+    protected transient Object levelSource;
+
+    // Stored data
+
     protected final Message message;
 
-    protected final DefaultJobProgressStep parent;
-
     protected final int index;
-
-    protected Object source;
-
-    protected Object levelSource;
 
     protected double offset;
 
@@ -50,11 +54,11 @@ public class DefaultJobProgressStep implements JobProgressStep
 
     protected List<DefaultJobProgressStep> children;
 
+    private final long startTime;
+
     private boolean finished;
 
     private boolean levelFinished;
-
-    private final long startTime;
 
     private long elapsedTime;
 

@@ -56,7 +56,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
 
     private final DefaultJobProgressStep rootStep;
 
-    private DefaultJobProgressStep currentStep;
+    private transient DefaultJobProgressStep currentStep;
 
     /**
      * Default constructor.
