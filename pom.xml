@@ -83,7 +83,7 @@
     <aspectj.version>1.8.9</aspectj.version>
 
     <!-- Clover & Jacoco -->
-    <clover.version>4.0.6</clover.version>
+    <clover.version>4.1.2</clover.version>
     <jacoco.version>0.7.7.201606060606</jacoco.version>
 
     <!-- IzPack -->
@@ -1204,19 +1204,16 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
         </plugin>
         <plugin>
           <groupId>com.atlassian.maven.plugins</groupId>
-          <artifactId>maven-clover2-plugin</artifactId>
+          <artifactId>clover-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
           <configuration>
-            <license>nrqrUjrDHDhJUHFmcbwQoxwhnrpAvvxtfireXcjcnFLfnhs
-mj2KyGJY&lt;oOR4f95&gt;VRjHIO22L01PV&lt;1&lt;v2Q64gRLmTAFh1
+            <license><![CDATA[nrqrUjrDHDhJUHFmcbwQoxwhnrpAvvxtfireXcjcnFLfnhs
+mj2KyGJY<oOR4f95>VRjHIO22L01PV<1<v2Q64gRLmTAFh1
 mnOmtsRNMRMORpMpnpmsSmNRqOqrNoqnqMVxvvVXvssmpRq
 RnmqmUUnrmoptpsmmmmmUUnrmoptpsmmmmmUUONfhfUUnmm
 mm
-</license>
-            <!-- For some reason there's currently a problem in the Rendering Include Macro test execution when
-                 IncludeMacroTest is clovered. Needs to be investigated. -->
-            <includesTestSourceRoots>false</includesTestSourceRoots>
+]]></license>
           </configuration>
         </plugin>
         <plugin>
