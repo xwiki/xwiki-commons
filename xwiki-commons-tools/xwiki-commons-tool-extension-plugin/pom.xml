@@ -120,20 +120,17 @@
         </plugins>
       </build>
     </profile>
-    <!-- The Packager plugin uses XWiki oldcore which gets Clovered and thus we need to have the Clover JAR in the
-         execution classpath of the plugin. Since that plugin is used in the integration tests we need to tell the
-         Maven Invoker plugin to execute the Maven projects using the Clover profile. -->
     <profile>
       <id>clover</id>
       <build>
         <plugins>
+          <!-- Override the skip done at the level of commons-tools since that's need when running with the clover
+               profile -->
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-invoker-plugin</artifactId>
+            <groupId>com.atlassian.maven.plugins</groupId>
+            <artifactId>clover-maven-plugin</artifactId>
             <configuration>
-              <profiles>
-                <profile>clover</profile>
-              </profiles>
+              <skip>false</skip>
             </configuration>
           </plugin>
         </plugins>
