@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.building.ModelBuildingRequest;
@@ -70,6 +71,12 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     protected MavenSession session;
 
     /**
+     * The local Maven repository used to resolve required artifacts.
+     */
+    @Parameter(property = "localRepository")
+    protected ArtifactRepository localRepository;
+
+    /**
      * Project builder -- builds a model from a pom.xml.
      */
     @Component
@@ -104,6 +111,8 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
             ProjectBuildingRequest request = new DefaultProjectBuildingRequest(this.session.getProjectBuildingRequest())
                 // We don't want to execute any plugin here
                 .setProcessPlugins(false)
+                // The local repository
+                .setLocalRepository(this.localRepository)
                 // It's not this plugin job to validate this pom.xml
                 .setValidationLevel(ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL)
                 // Use the repositories configured for the built project instead of the default Maven ones
