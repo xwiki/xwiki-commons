@@ -260,7 +260,7 @@ public class XARMojo extends AbstractXARMojo
      * @param files the list of files that we want to include in the generated package XML file.
      * @return the DOM4J Document containing the generated XML
      */
-    private Document toXML(Collection<ArchiveEntry> files)
+    private Document toXML(Collection<ArchiveEntry> files) throws Exception
     {
         Document doc = new DOMDocument();
 
@@ -326,20 +326,18 @@ public class XARMojo extends AbstractXARMojo
      * @param files the list of files that we want to include in the generated package XML file.
      * @param filesElement the files element to which to add to
      */
-    private void addFileElements(Collection<ArchiveEntry> files, Element filesElement)
+    private void addFileElements(Collection<ArchiveEntry> files, Element filesElement) throws Exception
     {
         for (ArchiveEntry entry : files) {
             // Don't add files in META-INF to the package.xml file
             if (entry.getName().indexOf("META-INF") == -1) {
                 XWikiDocument xdoc = getDocFromXML(entry.getFile());
-                if (xdoc != null) {
-                    String reference = xdoc.getReference();
-                    Element element = new DOMElement(FILE_TAG);
-                    element.setText(reference);
-                    element.addAttribute("language", xdoc.getLocale());
-                    element.addAttribute("defaultAction", "0");
-                    filesElement.add(element);
-                }
+                String reference = xdoc.getReference();
+                Element element = new DOMElement(FILE_TAG);
+                element.setText(reference);
+                element.addAttribute("language", xdoc.getLocale());
+                element.addAttribute("defaultAction", "0");
+                filesElement.add(element);
             }
         }
     }
