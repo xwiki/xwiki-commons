@@ -163,6 +163,13 @@ public class XWikiDocument
             String name = readElement(rootElement, "name");
             String space = readElement(rootElement, "web");
 
+            // If the reference, name and space don't exist we consider that we're not readin an XMKL that corresponds
+            // to a wiki page.
+            if (name == null && space == null) {
+                throw new DocumentException(String.format("Content doesn't point to valid wiki page XML",
+                    domdoc.getName()));
+            }
+
             this.reference = space == null ? name : escapeSpaceOrPageName(space) + '.' + escapeSpaceOrPageName(name);
         }
 

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 
+import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.codehaus.plexus.archiver.zip.ZipEntry;
 import org.codehaus.plexus.archiver.zip.ZipFile;
@@ -42,11 +43,9 @@ import static org.junit.Assert.*;
  * @version $Id$
  * @since 4.2M1
  */
-public class XARMojoTest extends AbstractMojoTest
-{
+public class XARMojoTest extends AbstractMojoTest {
     @Test
-    public void invalidPackageXmlThrowsException() throws Exception
-    {
+    public void invalidPackageXmlThrowsException() throws Exception {
         Verifier verifier = createVerifier("/invalidPackageFile");
 
         try {
@@ -60,8 +59,7 @@ public class XARMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void validPackageXml() throws Exception
-    {
+    public void validPackageXml() throws Exception {
         Verifier verifier = createVerifier("/validXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
@@ -96,12 +94,11 @@ public class XARMojoTest extends AbstractMojoTest
             }
         }
         assertEquals("The newly created xar archive doesn't contain the required documents", documentNames.size(),
-            countEntries);
+                countEntries);
     }
 
     @Test
-    public void noPackageXml() throws Exception
-    {
+    public void noPackageXml() throws Exception {
         Verifier verifier = createVerifier("/noPackageXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
@@ -133,17 +130,16 @@ public class XARMojoTest extends AbstractMojoTest
                 String documentName = XWikiDocument.getReference(currentFile);
                 if (!documentNames.contains(documentName)) {
                     fail(String.format("Document [%s] cannot be found in the newly created xar archive.",
-                        documentName));
+                            documentName));
                 }
             }
         }
         assertEquals("The newly created xar archive doesn't contain the required documents", documentNames.size(),
-            countEntries);
+                countEntries);
     }
 
     @Test
-    public void nestedSpacesXml() throws Exception
-    {
+    public void nestedSpacesXml() throws Exception {
         Verifier verifier = createVerifier("/nestedSpaces");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
@@ -164,15 +160,28 @@ public class XARMojoTest extends AbstractMojoTest
         assertEquals("The newly created xar archive doesn't contain the required documents", 1, documentNames.size());
 
         assertEquals("Page reference not properly serialized in the package.xml", "1.2.page", documentNames.iterator()
-            .next());
+                .next());
     }
 
     @Test
     @Ignore("Could not make it work, for some reason the plugin configuration is not taken into account!")
-    public void transformXML() throws Exception
-    {
+    public void transformXML() throws Exception {
         Verifier verifier = createVerifier("/transformedXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
+    }
+
+    @Test
+    public void invalidXml() throws Exception
+    {
+        Verifier verifier = createVerifier("/invalidXml");
+        try {
+            verifier.executeGoals(Arrays.asList("clean", "package"));
+            fail("Should have failed with an exception here!");
+        } catch (VerificationException expected) {
+            verifier.verifyTextInLog("Error while creating XAR file");
+            verifier.verifyTextInLog("Content doesn't point to valid wiki page XML");
+            verifier.verifyTextInLog("Failed to parse");
+        }
     }
 }

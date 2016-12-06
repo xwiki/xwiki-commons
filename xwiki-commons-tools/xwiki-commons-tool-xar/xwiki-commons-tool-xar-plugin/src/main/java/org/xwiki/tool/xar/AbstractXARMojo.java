@@ -301,7 +301,7 @@ abstract class AbstractXARMojo extends AbstractMojo
      * @param file the file to parse.
      * @return the loaded document object or null if the document cannot be parsed
      */
-    protected XWikiDocument getDocFromXML(File file)
+    protected XWikiDocument getDocFromXML(File file) throws MojoExecutionException
     {
         XWikiDocument doc;
 
@@ -309,9 +309,7 @@ abstract class AbstractXARMojo extends AbstractMojo
             doc = new XWikiDocument();
             doc.fromXML(file);
         } catch (Exception e) {
-            getLog().warn(String.format("Failed to parse [%s], skipping it. The error was [%s]",
-                file.getAbsolutePath(), e.getMessage()));
-            doc = null;
+            throw new MojoExecutionException(String.format("Failed to parse [%s].", file.getAbsolutePath()), e);
         }
 
         return doc;
