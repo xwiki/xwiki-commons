@@ -39,13 +39,15 @@ import static org.junit.Assert.*;
 
 /**
  * Integration tests for the XAR Mojo.
- * 
+ *
  * @version $Id$
  * @since 4.2M1
  */
-public class XARMojoTest extends AbstractMojoTest {
+public class XARMojoTest extends AbstractMojoTest
+{
     @Test
-    public void invalidPackageXmlThrowsException() throws Exception {
+    public void invalidPackageXmlThrowsException() throws Exception
+    {
         Verifier verifier = createVerifier("/invalidPackageFile");
 
         try {
@@ -59,7 +61,8 @@ public class XARMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void validPackageXml() throws Exception {
+    public void validPackageXml() throws Exception
+    {
         Verifier verifier = createVerifier("/validXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
@@ -98,7 +101,8 @@ public class XARMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void noPackageXml() throws Exception {
+    public void noPackageXml() throws Exception
+    {
         Verifier verifier = createVerifier("/noPackageXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
@@ -139,7 +143,8 @@ public class XARMojoTest extends AbstractMojoTest {
     }
 
     @Test
-    public void nestedSpacesXml() throws Exception {
+    public void nestedSpacesXml() throws Exception
+    {
         Verifier verifier = createVerifier("/nestedSpaces");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
@@ -165,7 +170,8 @@ public class XARMojoTest extends AbstractMojoTest {
 
     @Test
     @Ignore("Could not make it work, for some reason the plugin configuration is not taken into account!")
-    public void transformXML() throws Exception {
+    public void transformXML() throws Exception
+    {
         Verifier verifier = createVerifier("/transformedXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
