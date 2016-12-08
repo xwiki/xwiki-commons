@@ -214,7 +214,15 @@ public class ExtensionFactory
      */
     public Version getVersion(String rawVersion)
     {
-        return getVersion(new DefaultVersion(rawVersion));
+        Version version = this.versions.get(rawVersion);
+
+        if (version == null) {
+            version = new DefaultVersion(rawVersion);
+
+            this.versions.put(rawVersion, version);
+        }
+
+        return version;
     }
 
     /**
@@ -238,6 +246,14 @@ public class ExtensionFactory
      */
     public VersionConstraint getVersionConstraint(String rawConstraint)
     {
-        return getVersionConstraint(new DefaultVersionConstraint(rawConstraint));
+        VersionConstraint constraint = this.versionConstrains.get(rawConstraint);
+
+        if (constraint == null) {
+            constraint = new DefaultVersionConstraint(rawConstraint);
+
+            this.versionConstrains.put(rawConstraint, constraint);
+        }
+
+        return constraint;
     }
 }
