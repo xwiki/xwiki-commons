@@ -56,6 +56,8 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
      */
     private Map<String, String> properties = new HashMap<String, String>();
 
+    private int hashCode = -1;
+
     /**
      * @param descriptor the identifier to clone
      */
@@ -159,14 +161,18 @@ public class DefaultExtensionRepositoryDescriptor implements ExtensionRepository
     @Override
     public int hashCode()
     {
-        HashCodeBuilder builder = new HashCodeBuilder();
+        if (this.hashCode == -1) {
+            HashCodeBuilder builder = new HashCodeBuilder();
 
-        builder.append(getId());
-        builder.append(getType());
-        builder.append(getURI());
-        builder.append(getProperties());
+            builder.append(getId());
+            builder.append(getType());
+            builder.append(getURI());
+            builder.append(getProperties());
 
-        return builder.toHashCode();
+            this.hashCode = builder.toHashCode();
+        }
+
+        return this.hashCode;
     }
 
     @Override

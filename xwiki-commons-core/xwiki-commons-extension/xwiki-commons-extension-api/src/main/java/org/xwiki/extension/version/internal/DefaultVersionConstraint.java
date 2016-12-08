@@ -77,6 +77,8 @@ public class DefaultVersionConstraint implements VersionConstraint
      */
     private String value;
 
+    private int hashCode = -1;
+
     /**
      * @param rawConstraint the version range to parse
      */
@@ -159,16 +161,16 @@ public class DefaultVersionConstraint implements VersionConstraint
             int index = constraint.indexOf('}');
 
             if (index < 0) {
-                throw new InvalidVersionConstraintException(String.format("Unbounded version range [{%s}]",
-                    rawConstraint));
+                throw new InvalidVersionConstraintException(
+                    String.format("Unbounded version range [{%s}]", rawConstraint));
             }
 
             String range = constraint.substring(1, index);
             try {
                 newRanges.add(new DefaultVersionRangeCollection(range));
             } catch (InvalidVersionRangeException e) {
-                throw new InvalidVersionConstraintException(String.format(
-                    "Failed to parse version range [%s] in constraint [%s]", range, rawConstraint), e);
+                throw new InvalidVersionConstraintException(
+                    String.format("Failed to parse version range [%s] in constraint [%s]", range, rawConstraint), e);
             }
 
             constraint = constraint.substring(index + 1).trim();
@@ -183,12 +185,12 @@ public class DefaultVersionConstraint implements VersionConstraint
                 try {
                     newRanges.add(new DefaultVersionRangeCollection(constraint));
                 } catch (InvalidVersionRangeException e) {
-                    throw new InvalidVersionConstraintException(String.format("Failed to parse version range [{%s}]",
-                        constraint), e);
+                    throw new InvalidVersionConstraintException(
+                        String.format("Failed to parse version range [{%s}]", constraint), e);
                 }
             } else {
-                throw new InvalidVersionConstraintException(String.format(
-                    "Invalid version range [{%s}], expected [ or ( but got [{%s}]", rawConstraint, constraint));
+                throw new InvalidVersionConstraintException(String
+                    .format("Invalid version range [{%s}], expected [ or ( but got [{%s}]", rawConstraint, constraint));
             }
         }
 
@@ -280,9 +282,8 @@ public class DefaultVersionConstraint implements VersionConstraint
                 ? versionConstraintWithVersion : versionConstraint;
         } else {
             if (!versionConstraint.containsVersion(versionConstraintWithVersion.getVersion())) {
-                throw new IncompatibleVersionConstraintException("Version ["
-                    + versionConstraintWithVersion.getVersion() + "] is not part of version constraint ["
-                    + versionConstraint + "]");
+                throw new IncompatibleVersionConstraintException("Version [" + versionConstraintWithVersion.getVersion()
+                    + "] is not part of version constraint [" + versionConstraint + "]");
             }
 
             return versionConstraintWithVersion;
@@ -323,8 +324,8 @@ public class DefaultVersionConstraint implements VersionConstraint
         for (VersionRange otherRange : otherRanges) {
             for (VersionRange range : this.ranges) {
                 if (!range.isCompatible(otherRange)) {
-                    throw new IncompatibleVersionConstraintException("Ranges [" + range + "] and [" + otherRange
-                        + "] are incompatibles");
+                    throw new IncompatibleVersionConstraintException(
+                        "Ranges [" + range + "] and [" + otherRange + "] are incompatibles");
                 }
             }
         }
@@ -387,11 +388,15 @@ public class DefaultVersionConstraint implements VersionConstraint
     @Override
     public int hashCode()
     {
-        HashCodeBuilder builder = new HashCodeBuilder(17, 31);
-        builder.append(getRanges());
-        builder.append(getVersion());
+        if (this.hashCode == -1) {
+            HashCodeBuilder builder = new HashCodeBuilder(17, 31);
+            builder.append(getRanges());
+            builder.append(getVersion());
 
-        return builder.toHashCode();
+            this.hashCode = builder.toHashCode();
+        }
+
+        return this.hashCode;
     }
 
     // Serializable
