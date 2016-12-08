@@ -84,7 +84,7 @@ public class DefaultVersionConstraint implements VersionConstraint
      */
     public DefaultVersionConstraint(String rawConstraint)
     {
-        setConstraint(rawConstraint);
+        this.value = rawConstraint;
     }
 
     /**
@@ -104,7 +104,7 @@ public class DefaultVersionConstraint implements VersionConstraint
     public DefaultVersionConstraint(Collection<? extends VersionRangeCollection> ranges, Version version)
     {
         if (ranges != null && !ranges.isEmpty()) {
-            this.ranges = new ArrayList<VersionRangeCollection>(ranges);
+            this.ranges = new ArrayList<>(ranges);
         } else {
             this.ranges = Collections.emptyList();
         }
@@ -120,29 +120,26 @@ public class DefaultVersionConstraint implements VersionConstraint
         this.version = version;
     }
 
-    /**
-     * @param rawConstraint the constraint to parse
-     */
-    private void setConstraint(String rawConstraint)
+    private void init()
     {
-        this.value = rawConstraint;
+        if (this.ranges == null && this.value != null) {
+            // Parse
 
-        // Parse
+            List<VersionRangeCollection> newRanges = null;
+            try {
+                newRanges = parseRanges(this.value);
+            } catch (InvalidVersionConstraintException e) {
+                // Invalid range syntax, lets use it as version
+            }
 
-        List<VersionRangeCollection> newRanges = null;
-        try {
-            newRanges = parseRanges(rawConstraint);
-        } catch (InvalidVersionConstraintException e) {
-            // Invalid range syntax, lets use it as version
-        }
+            // Version
 
-        // Version
-
-        if (newRanges == null || newRanges.isEmpty()) {
-            this.version = new DefaultVersion(rawConstraint);
-            this.ranges = Collections.emptyList();
-        } else {
-            this.ranges = newRanges;
+            if (newRanges == null || newRanges.isEmpty()) {
+                this.version = new DefaultVersion(this.value);
+                this.ranges = Collections.emptyList();
+            } else {
+                this.ranges = newRanges;
+            }
         }
     }
 
@@ -155,7 +152,7 @@ public class DefaultVersionConstraint implements VersionConstraint
     {
         String constraint = rawConstraint;
 
-        List<VersionRangeCollection> newRanges = new ArrayList<VersionRangeCollection>();
+        List<VersionRangeCollection> newRanges = new ArrayList<>();
 
         while (VersionUtils.startsWith(constraint, '{')) {
             int index = constraint.indexOf('}');
@@ -197,25 +194,34 @@ public class DefaultVersionConstraint implements VersionConstraint
         return newRanges;
     }
 
+    private List<VersionRangeCollection> getRangesInternal()
+    {
+        init();
+
+        return this.ranges;
+    }
+
     @Override
     public Collection<VersionRangeCollection> getRanges()
     {
-        return this.ranges;
+        return getRangesInternal();
     }
 
     @Override
     public Version getVersion()
     {
+        init();
+
         return this.version;
     }
 
     @Override
     public boolean containsVersion(Version version)
     {
-        if (this.ranges.isEmpty()) {
-            return this.version != null && this.version.equals(version);
+        if (getRangesInternal().isEmpty()) {
+            return getVersion() != null && getVersion().equals(version);
         } else {
-            for (VersionRange range : this.ranges) {
+            for (VersionRange range : getRangesInternal()) {
                 if (!range.containsVersion(version)) {
                     return false;
                 }
@@ -228,8 +234,7 @@ public class DefaultVersionConstraint implements VersionConstraint
     @Override
     public boolean isCompatible(Version version)
     {
-        boolean compatible = true;
-
+        boolean compatible;
         if (getVersion() == null) {
             compatible = containsVersion(version);
         } else {
@@ -259,7 +264,7 @@ public class DefaultVersionConstraint implements VersionConstraint
     private VersionConstraint mergeVersions(VersionConstraint versionConstraint)
         throws IncompatibleVersionConstraintException
     {
-        if (this.version != null) {
+        if (getVersion() != null) {
             return mergeVersions(this, versionConstraint);
         } else if (versionConstraint.getVersion() != null) {
             return mergeVersions(versionConstraint, this);
@@ -306,9 +311,8 @@ public class DefaultVersionConstraint implements VersionConstraint
         // Validate
         validateCompatibility(otherRanges);
 
-        Collection<VersionRangeCollection> newRanges =
-            new ArrayList<VersionRangeCollection>(this.ranges.size() + otherRanges.size());
-        newRanges.addAll(this.ranges);
+        Collection<VersionRangeCollection> newRanges = new ArrayList<>(getRangesInternal().size() + otherRanges.size());
+        newRanges.addAll(getRangesInternal());
         newRanges.addAll(otherRanges);
 
         return new DefaultVersionConstraint(newRanges, null);
@@ -322,7 +326,7 @@ public class DefaultVersionConstraint implements VersionConstraint
         throws IncompatibleVersionConstraintException
     {
         for (VersionRange otherRange : otherRanges) {
-            for (VersionRange range : this.ranges) {
+            for (VersionRange range : getRangesInternal()) {
                 if (!range.isCompatible(otherRange)) {
                     throw new IncompatibleVersionConstraintException(
                         "Ranges [" + range + "] and [" + otherRange + "] are incompatibles");
@@ -340,10 +344,10 @@ public class DefaultVersionConstraint implements VersionConstraint
             if (getVersion() != null) {
                 builder.append(getVersion());
             } else {
-                if (this.ranges.size() == 1) {
-                    builder.append(this.ranges.get(0).getValue());
+                if (getRangesInternal().size() == 1) {
+                    builder.append(getRangesInternal().get(0).getValue());
                 } else {
-                    for (VersionRange range : getRanges()) {
+                    for (VersionRange range : getRangesInternal()) {
                         if (builder.length() > 0) {
                             builder.append(RANGE_SEPARATOR);
                         }
@@ -379,10 +383,12 @@ public class DefaultVersionConstraint implements VersionConstraint
             return false;
         }
 
+        init();
+
         VersionConstraint versionConstraint = (VersionConstraint) obj;
 
-        return this.ranges.equals(versionConstraint.getRanges())
-            && Objects.equals(this.version, versionConstraint.getVersion());
+        return getRangesInternal().equals(versionConstraint.getRanges())
+            && Objects.equals(getVersion(), versionConstraint.getVersion());
     }
 
     @Override
@@ -390,7 +396,7 @@ public class DefaultVersionConstraint implements VersionConstraint
     {
         if (this.hashCode == -1) {
             HashCodeBuilder builder = new HashCodeBuilder(17, 31);
-            builder.append(getRanges());
+            builder.append(getRangesInternal());
             builder.append(getVersion());
 
             this.hashCode = builder.toHashCode();
@@ -417,6 +423,6 @@ public class DefaultVersionConstraint implements VersionConstraint
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
     {
-        setConstraint((String) in.readObject());
+        this.value = (String) in.readObject();
     }
 }
