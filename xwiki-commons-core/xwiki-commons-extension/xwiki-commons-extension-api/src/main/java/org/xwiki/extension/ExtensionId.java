@@ -44,8 +44,7 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
      *
      * @since 8.0M1
      */
-    public static final ParameterizedType TYPE_LIST =
-        new DefaultParameterizedType(null, List.class, ExtensionId.class);
+    public static final ParameterizedType TYPE_LIST = new DefaultParameterizedType(null, List.class, ExtensionId.class);
 
     /**
      * Serialization identifier.
@@ -61,6 +60,8 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
      * @see #getVersion()
      */
     private final Version version;
+
+    private int hashCode = -1;
 
     /**
      * @param id the extension identifier
@@ -122,12 +123,16 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
     @Override
     public int hashCode()
     {
-        HashCodeBuilder builder = new HashCodeBuilder();
+        if (this.hashCode == -1) {
+            HashCodeBuilder builder = new HashCodeBuilder();
 
-        builder.append(getId());
-        builder.append(getVersion());
+            builder.append(getId());
+            builder.append(getVersion());
 
-        return builder.toHashCode();
+            this.hashCode = builder.toHashCode();
+        }
+
+        return this.hashCode;
     }
 
     @Override

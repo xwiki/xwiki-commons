@@ -75,6 +75,8 @@ public class DefaultVersion implements Version
      */
     private Type type = Type.STABLE;
 
+    private int hashCode = -1;
+
     /**
      * Used to parse the string representation of the version.
      *
@@ -491,9 +493,13 @@ public class DefaultVersion implements Version
     @Override
     public int hashCode()
     {
-        initElements();
+        if (this.hashCode == -1) {
+            initElements();
 
-        return this.elements.hashCode();
+            this.hashCode = this.elements.hashCode();
+        }
+
+        return this.hashCode;
     }
 
     @Override
