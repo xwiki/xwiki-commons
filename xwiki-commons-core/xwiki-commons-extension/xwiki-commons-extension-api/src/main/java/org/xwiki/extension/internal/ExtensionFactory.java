@@ -22,7 +22,6 @@ package org.xwiki.extension.internal;
 import java.net.URI;
 import java.net.URL;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import javax.inject.Singleton;
 
@@ -51,52 +50,17 @@ import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 @Singleton
 public class ExtensionFactory
 {
-    private WeakHashMap<ExtensionDependency, ExtensionDependency> dependencies = new WeakHashMap<>();
+    private SoftCache<ExtensionDependency, ExtensionDependency> dependencies = new SoftCache<>();
 
-    private WeakHashMap<ExtensionAuthor, ExtensionAuthor> authors = new WeakHashMap<>();
+    private SoftCache<ExtensionAuthor, ExtensionAuthor> authors = new SoftCache<>();
 
-    private WeakHashMap<ExtensionRepositoryDescriptor, ExtensionRepositoryDescriptor> repositories =
-        new WeakHashMap<>();
+    private SoftCache<ExtensionRepositoryDescriptor, ExtensionRepositoryDescriptor> repositories = new SoftCache<>();
 
-    private WeakHashMap<ExtensionIssueManagement, ExtensionIssueManagement> issueManagements = new WeakHashMap<>();
+    private SoftCache<ExtensionIssueManagement, ExtensionIssueManagement> issueManagements = new SoftCache<>();
 
-    private WeakHashMap<String, Version> versions = new WeakHashMap<>();
+    private SoftCache<String, Version> versions = new SoftCache<>();
 
-    private WeakHashMap<String, VersionConstraint> versionConstrains = new WeakHashMap<>();
-
-    private static <T> T get(WeakHashMap<T, T> map, T entry)
-    {
-        // Check if we only know an equal entry
-        T sharedEntry = map.get(entry);
-
-        if (sharedEntry == null) {
-            // If no entry can be found, store and return the passed one
-            sharedEntry = entry;
-        }
-
-        // Make sure to remember the entry
-        map.put(sharedEntry, sharedEntry);
-
-        // Return the shared entry
-        return sharedEntry;
-    }
-
-    private static <K, V> V get(WeakHashMap<K, V> map, K key, V value)
-    {
-        // Check if we only know an equal entry
-        V sharedValue = map.get(key);
-
-        if (sharedValue == null) {
-            // If no entry can be found, store and return the passed one
-            sharedValue = value;
-        }
-
-        // Make sure to remember the entry
-        map.put(key, sharedValue);
-
-        // Return the shared entry
-        return sharedValue;
-    }
+    private SoftCache<String, VersionConstraint> versionConstrains = new SoftCache<>();
 
     /**
      * Store and return a weak reference equals to the passed {@link ExtensionDependency}.
@@ -106,7 +70,7 @@ public class ExtensionFactory
      */
     public ExtensionDependency getExtensionDependency(ExtensionDependency dependency)
     {
-        return get(this.dependencies, dependency);
+        return this.dependencies.get(dependency, dependency);
     }
 
     /**
@@ -131,7 +95,7 @@ public class ExtensionFactory
      */
     public ExtensionAuthor getExtensionAuthor(ExtensionAuthor author)
     {
-        return get(this.authors, author);
+        return this.authors.get(author, author);
     }
 
     /**
@@ -154,7 +118,7 @@ public class ExtensionFactory
      */
     public ExtensionRepositoryDescriptor getExtensionRepositoryDescriptor(ExtensionRepositoryDescriptor repository)
     {
-        return get(this.repositories, repository);
+        return this.repositories.get(repository, repository);
     }
 
     /**
@@ -178,7 +142,7 @@ public class ExtensionFactory
      */
     public ExtensionIssueManagement getExtensionIssueManagement(ExtensionIssueManagement issueManagement)
     {
-        return get(this.issueManagements, issueManagement);
+        return this.issueManagements.get(issueManagement, issueManagement);
     }
 
     /**
@@ -203,7 +167,7 @@ public class ExtensionFactory
     {
         // Use the initial value as key because it's displayed and for example displaying "1.0" instead of "1.0.0.GA"
         // might produce a WTF effect even if it's exactly the same version.
-        return get(this.versions, version.getValue(), version);
+        return this.versions.get(version.getValue(), version);
     }
 
     /**
@@ -235,7 +199,7 @@ public class ExtensionFactory
     {
         // Use the initial value as key because it's displayed and for example displaying "[1.0]" instead of
         // "[1.0.0.GA]" might produce a WTF effect even if it's exactly the same version constraint.
-        return get(this.versionConstrains, versionConstraint.getValue(), versionConstraint);
+        return this.versionConstrains.get(versionConstraint.getValue(), versionConstraint);
     }
 
     /**
