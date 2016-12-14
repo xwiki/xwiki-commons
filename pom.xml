@@ -639,6 +639,11 @@
         <artifactId>plexus-utils</artifactId>
         <version>3.0.22</version>
       </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-component-annotations</artifactId>
+        <version>1.7.1</version>
+      </dependency>
 
       <!-- Everybody tests -->
       <dependency>
