@@ -83,7 +83,7 @@
     <mockito.version>2.3.0</mockito.version>
 
     <!-- AspectJ -->
-    <aspectj.version>1.8.9</aspectj.version>
+    <aspectj.version>1.8.10</aspectj.version>
 
     <!-- Clover & Jacoco -->
     <clover.version>4.1.2</clover.version>
