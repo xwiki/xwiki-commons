@@ -30,9 +30,20 @@ public class DefaultReaderInputSource implements ReaderInputSource
 {
     private final Reader reader;
 
+    private final boolean close;
+
     public DefaultReaderInputSource(Reader reader)
     {
+        this(reader, false);
+    }
+
+    /**
+     * @since 9.0RC1
+     */
+    public DefaultReaderInputSource(Reader reader, boolean close)
+    {
         this.reader = reader;
+        this.close = close;
     }
 
     @Override
@@ -50,7 +61,9 @@ public class DefaultReaderInputSource implements ReaderInputSource
     @Override
     public void close() throws IOException
     {
-        // Closing the reader is the responsibility of the caller
+        if (this.close) {
+            this.reader.close();
+        }
     }
 
     @Override
