@@ -1062,7 +1062,7 @@ XWiki uses SLF4J for logging. Don't use Commons Logging or Log4J.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.10</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
