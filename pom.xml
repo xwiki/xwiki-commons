@@ -68,9 +68,7 @@
     <selenium.version>2.44.0</selenium.version>
 
     <!-- SLF4J -->
-    <!-- When upgrading also publish the custom jcl-over-slf4j version with embedded commons-logging maven descriptor.
-        See http://jira.qos.ch/browse/SLF4J-340. -->
-    <slf4j.version>1.7.21</slf4j.version>
+    <slf4j.version>1.7.22</slf4j.version>
 
     <!-- Hamcrest -->
     <hamcrest.version>1.3</hamcrest.version>
