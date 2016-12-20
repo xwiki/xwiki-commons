@@ -30,9 +30,20 @@ public class DefaultWriterOutputTarget implements WriterOutputTarget
 {
     private final Writer writer;
 
+    private final boolean close;
+
     public DefaultWriterOutputTarget(Writer writer)
     {
+        this(writer, false);
+    }
+
+    /**
+     * @since 9.0RC1
+     */
+    public DefaultWriterOutputTarget(Writer writer, boolean close)
+    {
         this.writer = writer;
+        this.close = close;
     }
 
     @Override
@@ -50,7 +61,9 @@ public class DefaultWriterOutputTarget implements WriterOutputTarget
     @Override
     public void close() throws IOException
     {
-        // Closing the writer is the responsibility of the caller
+        if (this.close) {
+            this.writer.close();
+        }
     }
 
     @Override
