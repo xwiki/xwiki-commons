@@ -48,9 +48,9 @@ public class DefaultJobProgress implements EventListener, JobProgress
     /**
      * Listened events.
      */
-    private static final List<Event> EVENTS = Arrays.<Event>asList(new PushLevelProgressEvent(),
-        PopLevelProgressEvent.INSTANCE, StepProgressEvent.INSTANCE, StartStepProgressEvent.INSTANCE,
-        EndStepProgressEvent.INSTANCE);
+    private static final List<Event> EVENTS =
+        Arrays.<Event>asList(new PushLevelProgressEvent(), PopLevelProgressEvent.INSTANCE, StepProgressEvent.INSTANCE,
+            StartStepProgressEvent.INSTANCE, EndStepProgressEvent.INSTANCE);
 
     private final String listenerName;
 
@@ -96,7 +96,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
     public void onEvent(Event event, Object source, Object message)
     {
         if (event instanceof PushLevelProgressEvent) {
-            onPushLevelProgress(((PushLevelProgressEvent) event).getSteps(), source);
+            onPushLevelProgress(((PushLevelProgressEvent) event).getSteps(), source, false);
         } else if (event instanceof PopLevelProgressEvent) {
             onPopLevelProgress(source);
         } else if (event instanceof StartStepProgressEvent) {
@@ -110,10 +110,8 @@ public class DefaultJobProgress implements EventListener, JobProgress
 
     /**
      * Adds a new level to the progress stack.
-     *
-     * @param event the event that was fired
      */
-    private void onPushLevelProgress(int steps, Object source)
+    private void onPushLevelProgress(int steps, Object source, boolean singlesteplevel)
     {
         if (this.currentStep.isLevelFinished()) {
             // If current step is done move to next one
@@ -121,7 +119,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
         }
 
         // Add level
-        this.currentStep = this.currentStep.addLevel(steps, source);
+        this.currentStep = this.currentStep.addLevel(steps, source, singlesteplevel);
     }
 
     /**
@@ -140,7 +138,6 @@ public class DefaultJobProgress implements EventListener, JobProgress
         }
 
         this.currentStep = step;
-
         this.currentStep.finish();
     }
 
@@ -149,9 +146,13 @@ public class DefaultJobProgress implements EventListener, JobProgress
         if (this.currentStep.getParent() == null) {
             // If we are still on root node, create a level
             this.currentStep = this.currentStep.addLevel(source);
-        } else if (!this.currentStep.isLevelFinished() && this.currentStep.source != source) {
+        } else if (!this.currentStep.isFinished() && this.currentStep.source != source) {
             // If current step is from a different source add a level
-            onPushLevelProgress(0, source);
+            onPushLevelProgress(0, source, true);
+        } else if (this.currentStep.getParent().levelStep && this.currentStep.getParent().source == source) {
+            // If current step is not part of an explicit level and parent level is asked, go back to it
+            this.currentStep = this.currentStep.getParent();
+            this.currentStep.finishLevel();
         }
 
         // Start a new step

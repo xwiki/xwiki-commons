@@ -40,6 +40,8 @@ public class DefaultJobProgressStep implements JobProgressStep
 
     protected transient Object levelSource;
 
+    protected transient boolean levelStep;
+
     // Stored data
 
     protected final Message message;
@@ -167,7 +169,7 @@ public class DefaultJobProgressStep implements JobProgressStep
      */
     public DefaultJobProgressStep addLevel(Object newLevelSource)
     {
-        return addLevel(0, newLevelSource);
+        return addLevel(0, newLevelSource, false);
     }
 
     /**
@@ -175,9 +177,10 @@ public class DefaultJobProgressStep implements JobProgressStep
      * 
      * @param steps the number of step
      * @param newLevelSource who asked to create this new level
+     * @param levelStep the new level can contains only one step
      * @return the new step
      */
-    public DefaultJobProgressStep addLevel(int steps, Object newLevelSource)
+    public DefaultJobProgressStep addLevel(int steps, Object newLevelSource, boolean levelStep)
     {
         assertModifiable();
 
@@ -193,6 +196,8 @@ public class DefaultJobProgressStep implements JobProgressStep
         } else {
             this.children = new ArrayList<>();
         }
+
+        this.levelStep = levelStep;
 
         // Create a virtual child
         return new DefaultJobProgressStep(null, newLevelSource, this);
