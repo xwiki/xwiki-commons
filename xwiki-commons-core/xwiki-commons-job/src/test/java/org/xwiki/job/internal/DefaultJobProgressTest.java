@@ -373,31 +373,40 @@ public class DefaultJobProgressTest
     @Test
     public void testStartStepFromDifferentSource()
     {
-        // Root level
-        this.observation.notify(new PushLevelProgressEvent(), null, null);
-
         Object source1 = "source1";
         Object source11 = "source11";
         Object source12 = "source12";
 
-        // First step in source11 level
+        // Root level
+        this.observation.notify(new PushLevelProgressEvent(), source1, null);
+
+        // Start first step in source1 level
         this.observation.notify(new StartStepProgressEvent(), source1, null);
 
         assertEquals(1, this.progress.getRootStep().getChildren().size());
 
-        // First step in source11 level (from source11)
+        // Start first step in source11 level
         this.observation.notify(new StartStepProgressEvent(), source11, null);
 
         assertEquals(1, this.progress.getRootStep().getChildren().size());
         assertEquals(1, this.progress.getRootStep().getChildren().get(0).getChildren().size());
 
-        // Close the step
+        // Close the step, back to source1 level
         this.observation.notify(new EndStepProgressEvent(), source11, null);
 
-        // Second step in source11 level (from source12)
+        // Start first step in source12 level
         this.observation.notify(new StartStepProgressEvent(), source12, null);
 
         assertEquals(1, this.progress.getRootStep().getChildren().size());
+        assertEquals(2, this.progress.getRootStep().getChildren().get(0).getChildren().size());
+
+        // Close the step, back to source1 level
+        this.observation.notify(new EndStepProgressEvent(), source12, null);
+
+        // Start second step in source1 level
+        this.observation.notify(new StartStepProgressEvent(), source1, null);
+
+        assertEquals(2, this.progress.getRootStep().getChildren().size());
         assertEquals(2, this.progress.getRootStep().getChildren().get(0).getChildren().size());
     }
 }
