@@ -376,6 +376,7 @@ public class DefaultJobProgressTest
         Object source1 = "source1";
         Object source11 = "source11";
         Object source12 = "source12";
+        Object source1b = "source1b";
 
         // Root level
         this.observation.notify(new PushLevelProgressEvent(), source1, null);
@@ -391,7 +392,7 @@ public class DefaultJobProgressTest
         assertEquals(1, this.progress.getRootStep().getChildren().size());
         assertEquals(1, this.progress.getRootStep().getChildren().get(0).getChildren().size());
 
-        // Close the step, back to source1 level
+        // Close the step
         this.observation.notify(new EndStepProgressEvent(), source11, null);
 
         // Start first step in source12 level
@@ -400,7 +401,7 @@ public class DefaultJobProgressTest
         assertEquals(1, this.progress.getRootStep().getChildren().size());
         assertEquals(2, this.progress.getRootStep().getChildren().get(0).getChildren().size());
 
-        // Close the step, back to source1 level
+        // Close the step
         this.observation.notify(new EndStepProgressEvent(), source12, null);
 
         // Start second step in source1 level
@@ -408,5 +409,17 @@ public class DefaultJobProgressTest
 
         assertEquals(2, this.progress.getRootStep().getChildren().size());
         assertEquals(2, this.progress.getRootStep().getChildren().get(0).getChildren().size());
+        assertEquals(0, this.progress.getRootStep().getChildren().get(1).getChildren().size());
+
+        // Close the step
+        this.observation.notify(new EndStepProgressEvent(), source1, null);
+
+        // Start third step in source1 level (but with a different source)
+        this.observation.notify(new StartStepProgressEvent(), source1b, null);
+
+        assertEquals(3, this.progress.getRootStep().getChildren().size());
+        assertEquals(2, this.progress.getRootStep().getChildren().get(0).getChildren().size());
+        assertEquals(0, this.progress.getRootStep().getChildren().get(1).getChildren().size());
+        assertEquals(0, this.progress.getRootStep().getChildren().get(2).getChildren().size());
     }
 }
