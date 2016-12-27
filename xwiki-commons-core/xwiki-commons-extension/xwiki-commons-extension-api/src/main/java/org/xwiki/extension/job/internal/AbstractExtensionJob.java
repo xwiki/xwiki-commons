@@ -150,6 +150,8 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
                 if (action.getAction() != Action.NONE) {
                     applyAction(action);
                 }
+
+                this.progressManager.endStep(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);

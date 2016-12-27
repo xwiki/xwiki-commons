@@ -109,6 +109,8 @@ public class UninstallJob extends AbstractExtensionJob<UninstallRequest, Default
                 throw new UninstallException("Failed to create install plan", plan.getError());
             }
 
+            this.progressManager.endStep(this);
+
             this.progressManager.startStep(this);
 
             // Put the plan in context

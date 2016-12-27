@@ -198,6 +198,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                             this.progressManager.startStep(this);
 
                             installExtension(extensionId, namespace, this.extensionTree);
+
+                            this.progressManager.endStep(this);
                         }
                     } finally {
                         this.progressManager.popLevelProgress(this);
@@ -205,6 +207,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 } else {
                     installExtension(extensionId, null, this.extensionTree);
                 }
+
+                this.progressManager.endStep(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -591,6 +595,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 rewrittenExtension = extension;
             }
 
+            this.progressManager.endStep(this);
+
             this.progressManager.startStep(this);
 
             try {
@@ -691,6 +697,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             } else {
                 rewrittenExtension = extension;
             }
+
+            this.progressManager.endStep(this);
 
             this.progressManager.startStep(this);
 
@@ -837,15 +845,21 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 throw new InstallException(String.format("Unsupported type [%s]", rewrittenExtension.getType()), e);
             }
 
+            this.progressManager.endStep(this);
+
             this.progressManager.startStep(this);
 
             // Is installing the extension allowed ?
             extensionHandler.checkInstall(rewrittenExtension, namespace, getRequest());
 
+            this.progressManager.endStep(this);
+
             this.progressManager.startStep(this);
 
             // Find all existing versions of the extension
             Set<InstalledExtension> previousExtensions = getReplacedInstalledExtensions(rewrittenExtension, namespace);
+
+            this.progressManager.endStep(this);
 
             this.progressManager.startStep(this);
 
@@ -863,6 +877,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                     }
                 }
             }
+
+            this.progressManager.endStep(this);
 
             this.progressManager.startStep(this);
 
@@ -884,11 +900,15 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                         installExtensionDependency(extensionDependency, namespace, children,
                             ExtensionUtils.append(managedDependencies, rewrittenExtension));
+
+                        this.progressManager.endStep(this);
                     }
                 } finally {
                     this.progressManager.popLevelProgress(this);
                 }
             }
+
+            this.progressManager.endStep(this);
 
             this.progressManager.startStep(this);
 

@@ -177,6 +177,8 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                 if (namespace == null || !installedExtension.isInstalled(null)) {
                     upgradeExtension(installedExtension, namespace, filterDependencies);
                 }
+
+                this.progressManager.endStep(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -201,11 +203,15 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                             this.progressManager.startStep(this);
 
                             upgradeExtension(installedExtension, namespace, filterDependencies);
+
+                            this.progressManager.endStep(this);
                         }
                     } finally {
                         this.progressManager.popLevelProgress(this);
                     }
                 }
+
+                this.progressManager.endStep(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -275,6 +281,8 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                     this.progressManager.startStep(this);
 
                     upgrade(namespace, getInstalledExtensions(namespace), filterDependencies);
+
+                    this.progressManager.endStep(this);
                 }
             } finally {
                 this.progressManager.popLevelProgress(this);

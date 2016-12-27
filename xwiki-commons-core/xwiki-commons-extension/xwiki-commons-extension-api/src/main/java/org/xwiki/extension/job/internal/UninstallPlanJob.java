@@ -94,6 +94,8 @@ public class UninstallPlanJob extends AbstractExtensionPlanJob<UninstallRequest>
                         uninstallExtension(extensionId.getId(), (String) null, this.extensionTree, true);
                     }
                 }
+
+                this.progressManager.endStep(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);

@@ -103,6 +103,8 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
                 this.progressManager.startStep(this);
 
                 uninstallExtension(extensionId, namespace, parentBranch, withBackWard);
+
+                this.progressManager.endStep(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -150,6 +152,8 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
                 this.progressManager.startStep(this);
 
                 uninstallExtension(installedExtension, namespace, parentBranch, withBackWard);
+
+                this.progressManager.endStep(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -173,6 +177,8 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
                 this.progressManager.startStep(this);
 
                 uninstallExtension(backardDependency, namespace, parentBranch, withBackWard);
+
+                this.progressManager.endStep(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);
@@ -278,6 +284,8 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
                 this.progressManager.startStep(this);
 
                 uninstallExtensions(entry.getValue(), entry.getKey(), parentBranch, withBackWard);
+
+                this.progressManager.endStep(this);
             }
         } finally {
             this.progressManager.popLevelProgress(this);

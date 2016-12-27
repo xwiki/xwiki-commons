@@ -115,6 +115,8 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
                 throw new InstallException("Failed to create install plan", plan.getError());
             }
 
+            this.progressManager.endStep(this);
+
             this.progressManager.startStep(this);
 
             // Put the plan in context
@@ -127,17 +129,21 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
 
             // Download all extensions
 
-            this.progressManager.pushLevelProgress(actions.size(), this);
+            this.progressManager.pushLevelProgress(actions.size(), actions);
 
             try {
                 for (ExtensionPlanAction action : actions) {
-                    this.progressManager.startStep(this);
+                    this.progressManager.startStep(actions);
 
                     store(action);
+
+                    this.progressManager.endStep(actions);
                 }
             } finally {
-                this.progressManager.popLevelProgress(this);
+                this.progressManager.popLevelProgress(actions);
             }
+
+            this.progressManager.endStep(this);
 
             this.progressManager.startStep(this);
 
