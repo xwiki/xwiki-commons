@@ -59,13 +59,6 @@ public abstract class AbstractExtensionHandlerTest
 
     protected JobExecutor jobExecutor;
 
-    @AfterComponent
-    public void afterComponent() throws Exception
-    {
-        // Skip core extension scanner
-        this.mocker.registerMockComponent(CoreExtensionScanner.class);
-    }
-
     @Before
     public void setUp() throws Exception
     {

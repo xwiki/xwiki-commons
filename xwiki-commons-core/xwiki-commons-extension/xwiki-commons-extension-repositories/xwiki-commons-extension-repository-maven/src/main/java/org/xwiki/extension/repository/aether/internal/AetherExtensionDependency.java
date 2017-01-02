@@ -25,8 +25,8 @@ import java.util.List;
 import org.eclipse.aether.graph.Dependency;
 import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.ExtensionDependency;
-import org.xwiki.extension.internal.maven.DefaultMavenExtensionDependency;
-import org.xwiki.extension.internal.maven.MavenUtils;
+import org.xwiki.extension.maven.internal.DefaultMavenExtensionDependency;
+import org.xwiki.extension.maven.internal.MavenUtils;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 

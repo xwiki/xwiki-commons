@@ -36,4 +36,12 @@ public class DefaultExtensionScmConnection extends AbstractExtensionScmConnectio
         super(system, path);
     }
 
+    /**
+     * @param str the serialized scm connection
+     * @since 9.0RC1
+     */
+    public DefaultExtensionScmConnection(String str)
+    {
+        super(str);
+    }
 }

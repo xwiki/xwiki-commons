@@ -76,7 +76,8 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.ExtensionFactory;
-import org.xwiki.extension.internal.maven.MavenExtensionDependency;
+import org.xwiki.extension.maven.internal.MavenExtensionDependency;
+import org.xwiki.extension.maven.internal.converter.ModelConverter;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
@@ -85,7 +86,7 @@ import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.VersionRange;
 import org.xwiki.extension.version.internal.DefaultVersion;
-import org.xwiki.properties.ConverterManager;
+import org.xwiki.properties.converter.Converter;
 
 /**
  * @version $Id$
@@ -118,7 +119,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
     private transient RemoteRepositoryManager remoteRepositoryManager;
 
-    private transient ConverterManager converter;
+    private transient Converter<Model> extensionConverter;
 
     private transient AetherExtensionRepositoryFactory repositoryFactory;
 
@@ -155,7 +156,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         this.remoteRepository = repositoryBuilder.build();
 
-        this.converter = componentManager.getInstance(ConverterManager.class);
+        this.extensionConverter = componentManager.getInstance(ModelConverter.ROLE);
         this.factory = componentManager.getInstance(ExtensionFactory.class);
 
         this.versionRangeResolver = this.plexusContainer.lookup(VersionRangeResolver.class);
@@ -425,7 +426,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
         }
 
-        Extension mavenExtension = this.converter.convert(Extension.class, model);
+        Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
 
         Artifact filerArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(),
             artifact.getClassifier(), artifactExtension, artifact.getVersion());

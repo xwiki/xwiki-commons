@@ -37,7 +37,6 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
-import org.xwiki.extension.repository.internal.core.CoreExtensionScanner;
 import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 import org.xwiki.logging.LogLevel;
@@ -66,9 +65,6 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
     @AfterComponent
     public void registerComponents() throws Exception
     {
-        // Skip core extension scanner
-        this.mocker.registerMockComponent(CoreExtensionScanner.class);
-
         // Override the system ClassLoader to isolate class loading of extensions from the current ClassLoader
         // (which already contains the extensions)
         this.mocker.registerComponent(TestJarExtensionClassLoaderManager.class);

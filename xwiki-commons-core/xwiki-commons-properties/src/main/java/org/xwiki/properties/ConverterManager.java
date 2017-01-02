@@ -22,6 +22,7 @@ package org.xwiki.properties;
 import java.lang.reflect.Type;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.properties.converter.Converter;
 
 /**
  * Simple API to do universal conversion between two types.
@@ -44,4 +45,15 @@ public interface ConverterManager
      * @since 3.0M1
      */
     <T> T convert(Type targetType, Object sourceValue);
+
+    /**
+     * @param <T> the type in which the provided value has to be converted
+     * @param targetType the type for which the converter has been registered
+     * @return the converter associated to the provided type or null if none could be found
+     * @since 9.0RC1
+     */
+    default <T> Converter<T> getConverter(Type targetType)
+    {
+        return null;
+    }
 }

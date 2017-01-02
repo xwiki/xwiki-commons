@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal.converter;
+package org.xwiki.extension.maven.internal.converter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.maven.internal.converter.ModelConverter;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.internal.DefaultConverterManager;
@@ -40,12 +41,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
- * Validate {@link ExtensionConverter} component.
+ * Validate {@link ModelConverter} component.
  *
  * @version $Id$
  */
 @AllComponents
-public class ExtensionConverterTest
+public class ModelConverterTest
 {
     @Rule
     public MockitoComponentMockingRule<ConverterManager> mocker =

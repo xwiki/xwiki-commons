@@ -27,12 +27,12 @@
     <artifactId>xwiki-commons-extension</artifactId>
     <version>9.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-extension-api</artifactId>
-  <name>XWiki Commons - Extension - API</name>
+  <artifactId>xwiki-commons-extension-maven</artifactId>
+  <name>XWiki Commons - Extension - Maven</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Extension - API</description>
+  <description>XWiki Commons - Extension - Maven</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.69</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-api</xwiki.extension.features>
     <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->
@@ -41,76 +41,13 @@
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-api</artifactId>
+      <artifactId>xwiki-commons-extension-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-configuration-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-context</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-observation-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-properties</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-logging-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-environment-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-job</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-    </dependency>
-    <!-- Core extensions -->
-    <!-- The version of Reflections used below draws version 2.x of com.google.code.findbugs:annotations.
-         However this prevents the xwiki-platform-vfs module from being installed with the Extension Manager since the
-         TrueVFS library it uses require version 3.0.0 of the Findbug Annotation artifact. Thus for now, we force
-         Reflections to use version 3.0.0 for it. Note that the next version of Reflections has replaced this
-         dependency by net.jcip:jcip-annotations.
-         @TODO: When we upgrade Reflections, remove this explicit dependency (after having verified that the
-         xwiki-platform-vfs-ui module can be properly installed with EM. -->
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>annotations</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>${maven.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
@@ -156,17 +93,9 @@
             <id>default</id>
             <configuration>
               <excludes>
-                **/ExtensionConverter.java,
+                **/ModelConverter.java,
                 **/MavenUtils.java,
-                **/AbstractExtensionJob.java,
-                **/DefaultCoreExtensionScanner.java,
-                **/DefaultExtensionRepositoryManager.java,
-                **/DefaultExtensionSerializer.java,
-                **/DefaultInstalledExtensionRepository.java,
-                **/DefaultVersion.java,
-                **/AbstractInstallPlanJob.java,
-                **/UnmodifiableUtils.java,
-                **/AbstractExtension.java
+                **/MavenExtensionScanner.java
               </excludes>
             </configuration>
           </execution>

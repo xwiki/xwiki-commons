@@ -36,7 +36,7 @@ import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
 import org.eclipse.aether.util.repository.JreProxySelector;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
-import org.xwiki.extension.internal.maven.MavenUtils;
+import org.xwiki.extension.maven.internal.MavenUtils;
 
 import com.google.common.io.Files;
 

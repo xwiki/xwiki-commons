@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal.maven;
+package org.xwiki.extension.maven.internal;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -79,22 +79,7 @@ public class MavenUtils
             return null;
         }
 
-        String path = connectionURL;
-
-        if (path.startsWith("scm:")) {
-            path = path.substring("scm:".length());
-        }
-
-        String system = "git";
-        int index = path.indexOf(':');
-        if (index >= 0) {
-            if (index != 0) {
-                system = path.substring(0, index);
-            }
-            path = path.substring(index + 1);
-        }
-
-        return new DefaultExtensionScmConnection(system, path);
+        return new DefaultExtensionScmConnection(connectionURL);
     }
 
     /**

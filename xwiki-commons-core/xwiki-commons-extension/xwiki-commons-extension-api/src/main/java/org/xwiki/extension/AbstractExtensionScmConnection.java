@@ -30,9 +30,11 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 public abstract class AbstractExtensionScmConnection implements ExtensionScmConnection
 {
-    private String system;
+    private static final String SCM_PREFIX = "scm:";
 
-    private String path;
+    private final String system;
+
+    private final String path;
 
     /**
      * @param system the system name
@@ -42,6 +44,31 @@ public abstract class AbstractExtensionScmConnection implements ExtensionScmConn
     {
         this.system = system;
         this.path = path;
+    }
+
+    /**
+     * @param str the serialized scm connection
+     * @since 9.0RC1
+     */
+    public AbstractExtensionScmConnection(String str)
+    {
+        String tempPath = str;
+
+        if (tempPath.startsWith(SCM_PREFIX)) {
+            tempPath = tempPath.substring(SCM_PREFIX.length());
+        }
+
+        String tempSystem = "git";
+        int index = tempPath.indexOf(':');
+        if (index >= 0) {
+            if (index != 0) {
+                tempSystem = tempPath.substring(0, index);
+            }
+            tempPath = tempPath.substring(index + 1);
+        }
+
+        this.path = tempPath;
+        this.system = tempSystem;
     }
 
     @Override

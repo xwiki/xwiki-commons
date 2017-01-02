@@ -122,10 +122,11 @@
          for ITs -->
     <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
 
+    <maven.buid.version>3.3.9</maven.buid.version>
   </properties>
   <prerequisites>
     <!-- Custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
-    <maven>3.3.9</maven>
+    <maven>${maven.buid.version}</maven>
   </prerequisites>
   <licenses>
     <license>

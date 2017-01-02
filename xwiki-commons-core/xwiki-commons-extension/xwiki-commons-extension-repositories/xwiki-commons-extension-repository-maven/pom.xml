@@ -54,7 +54,7 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-extension-api</artifactId>
+      <artifactId>xwiki-commons-extension-maven</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- Aether -->

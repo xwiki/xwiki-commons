@@ -17,12 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal.core;
+package org.xwiki.extension.maven.internal;
 
 import java.net.URL;
 
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.repository.internal.MavenExtension;
+import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
+import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
 
 /**
  * Extends {@link DefaultCoreExtension} with Maven related informations.

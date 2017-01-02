@@ -17,16 +17,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.repository.internal;
+package org.xwiki.extension.repository.internal.core;
+
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
 
 /**
- * Implemented by extensions coming from a Maven repository or a pom.xml.
- *
+ * Various base utilities for {@link ExtensionScanner} implementations.
+ * 
  * @version $Id$
- * @since 6.1M1
- * @deprecated since 7.2RC1, use {@link org.xwiki.extension.internal.maven.MavenExtension} instead
+ * @since 9.0RC1
  */
-@Deprecated
-public interface MavenExtension extends org.xwiki.extension.internal.maven.MavenExtension
+public abstract class AbstractExtensionScanner implements ExtensionScanner
 {
+    @Inject
+    protected Logger logger;
+
+    protected void addCoreExtension(Map<String, DefaultCoreExtension> extensions, DefaultCoreExtension coreExtension)
+    {
+        DefaultCoreExtensionScanner.addCoreExtension(extensions, coreExtension, this.logger);
+    }
 }

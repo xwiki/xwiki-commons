@@ -45,6 +45,7 @@
   </dependencies>
   <modules>
     <module>xwiki-commons-extension-api</module>
+    <module>xwiki-commons-extension-maven</module>
     <module>xwiki-commons-extension-handlers</module>
     <module>xwiki-commons-extension-repositories</module>
   </modules>

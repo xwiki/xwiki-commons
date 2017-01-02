@@ -1,0 +1,2 @@
+org.xwiki.extension.maven.internal.MavenExtensionScanner
+org.xwiki.extension.maven.internal.converter.ModelConverter

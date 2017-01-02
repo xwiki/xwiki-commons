@@ -25,7 +25,7 @@ import java.util.List;
 import org.eclipse.aether.artifact.Artifact;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.internal.ExtensionFactory;
-import org.xwiki.extension.internal.maven.AbstractMavenExtension;
+import org.xwiki.extension.maven.internal.AbstractMavenExtension;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 
 /**

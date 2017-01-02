@@ -46,15 +46,6 @@ public class DefaultCoreExtensionRepositoryTest
 
     private ConfigurableDefaultCoreExtensionRepository coreExtensionRepository;
 
-    /**
-     * Validate core extension loading and others initializations.
-     */
-    @Test
-    public void testInit()
-    {
-        Assert.assertTrue(this.coreExtensionRepository.countExtensions() > 0);
-    }
-
     @Before
     public void before() throws Exception
     {
@@ -62,6 +53,15 @@ public class DefaultCoreExtensionRepositoryTest
 
         this.coreExtensionRepository =
             (ConfigurableDefaultCoreExtensionRepository) this.mocker.getInstance(CoreExtensionRepository.class);
+    }
+
+    /**
+     * Validate core extension loading and others initializations.
+     */
+    @Test
+    public void testInit()
+    {
+        Assert.assertEquals(0, this.coreExtensionRepository.countExtensions());
     }
 
     /**

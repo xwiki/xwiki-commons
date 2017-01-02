@@ -17,33 +17,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal.maven;
+package org.xwiki.extension.maven.internal;
 
-import org.apache.maven.model.Dependency;
-import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.Extension;
 
 /**
- * An {@link ExtensionDependency} specific to Maven.
+ * An {@link Extension} specific to Maven.
  * 
  * @version $Id$
  * @since 7.3M1
  */
-public interface MavenExtensionDependency extends ExtensionDependency
+public interface MavenExtension extends Extension
 {
     /**
-     * @return the Maven dependency object
+     * @return the Maven artifact id
      */
-    Dependency getMavenDependency();
+    String getMavenArtifactId();
 
     /**
-     * @return the scope of dependency
-     * @since 8.1M1
+     * @return the Maven group id
      */
-    String getScope();
-
-    /**
-     * @return true is the dependency is optional
-     * @since 8.1M1
-     */
-    boolean isOptional();
+    String getMavenGroupId();
 }

@@ -152,12 +152,8 @@ public class DefaultConverterManager implements ConverterManager
         return converter;
     }
 
-    /**
-     * @param <T> the type in which the provided value has to be converted
-     * @param targetType the type for which the converter has been registered
-     * @return the converter associated to the provided type
-     */
-    private <T> Converter<T> getConverter(Type targetType)
+    @Override
+    public <T> Converter<T> getConverter(Type targetType)
     {
         try {
             ComponentManager componentManager = this.componentManagerProvider.get();

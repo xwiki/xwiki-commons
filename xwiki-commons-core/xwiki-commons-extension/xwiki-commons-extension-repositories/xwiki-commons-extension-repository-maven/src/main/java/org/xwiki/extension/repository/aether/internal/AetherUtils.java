@@ -28,7 +28,7 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.internal.ExtensionFactory;
-import org.xwiki.extension.internal.maven.MavenUtils;
+import org.xwiki.extension.maven.internal.MavenUtils;
 import org.xwiki.extension.version.internal.DefaultVersion;
 
 /**
