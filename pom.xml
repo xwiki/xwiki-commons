@@ -98,6 +98,9 @@
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
 
+    <!-- Enable by default auto release on Jira -->
+    <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Functional UI tests should not check if an XWiki instance is already running before starting XWiki since
@@ -1382,6 +1385,7 @@ mm
       </activation>
       <build>
         <plugins>
+          <!-- Deploy source package -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
@@ -1394,6 +1398,7 @@ mm
               </execution>
             </executions>
           </plugin>
+          <!-- Deploy javadoc package -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
@@ -1406,6 +1411,7 @@ mm
               </execution>
             </executions>
           </plugin>
+          <!-- Force the Java version to use to build release -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
@@ -1426,6 +1432,7 @@ mm
               </execution>
             </executions>
           </plugin>
+          <!-- Sign artifacts -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
@@ -1458,6 +1465,24 @@ mm
                 </configuration>
                 <goals>
                   <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- Automatically release on Jira -->
+          <plugin>
+            <groupId>net.sigmalab.maven.plugins</groupId>
+            <artifactId>jira-maven-plugin</artifactId>
+            <version>0.4</version>
+            <configuration>
+              <skip>${xwiki.release.jira.skip}</skip>
+              <settingsKey>jira.xwiki.org</settingsKey>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>release-jira-version</goal>
                 </goals>
               </execution>
             </executions>
