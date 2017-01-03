@@ -85,6 +85,8 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Parameter
     protected List<ExtensionOverride> extensionOverrides;
 
+    protected EmbeddableComponentManager componentManager;
+
     protected ExtensionSerializer extensionSerializer;
 
     protected Converter<Extension> extensionConverter;
@@ -92,17 +94,22 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     protected void initializeComponents() throws MojoExecutionException
     {
         // Initialize ComponentManager
-        EmbeddableComponentManager componentManager = new EmbeddableComponentManager();
-        componentManager.initialize(this.getClass().getClassLoader());
+        this.componentManager = new EmbeddableComponentManager();
+        this.componentManager.initialize(this.getClass().getClassLoader());
 
         // Initialize components
         try {
-            this.extensionSerializer = componentManager.getInstance(ExtensionSerializer.class);
+            this.extensionSerializer = this.componentManager.getInstance(ExtensionSerializer.class);
             this.extensionConverter =
-                componentManager.getInstance(new DefaultParameterizedType(null, Converter.class, Extension.class));
+                this.componentManager.getInstance(new DefaultParameterizedType(null, Converter.class, Extension.class));
         } catch (ComponentLookupException e) {
             throw new MojoExecutionException("Failed to load components", e);
         }
+    }
+
+    protected void disposeComponents()
+    {
+        this.componentManager.dispose();
     }
 
     protected MavenProject getMavenProject(Artifact artifact) throws MojoExecutionException

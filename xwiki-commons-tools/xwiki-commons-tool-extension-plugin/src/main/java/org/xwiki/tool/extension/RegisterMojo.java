@@ -57,6 +57,8 @@ public class RegisterMojo extends AbstractExtensionMojo
 
         // Register the WAR
         register();
+
+        disposeComponents();
     }
 
     private void register() throws MojoExecutionException
