@@ -132,7 +132,10 @@
     -->
     <maven.dependencies.version>${maven.runtime.version}</maven.dependencies.version>
 
+    <!-- The version of Maven Enforcer plugin -->
     <maven-enforcer.version>1.4.1</maven-enforcer.version>
+    <!-- The version of Maven used by enforcer plugin -->
+    <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
   </properties>
   <prerequisites>
     <!-- Custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->

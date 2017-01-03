@@ -31,6 +31,10 @@
   <name>XWiki Commons - Tools - Enforcers</name>
   <packaging>pom</packaging>
   <description>Rule enforcers to verify Maven project validity</description>
+  <properties>
+    <!-- Depend on same Maven version than Enforcer plugin -->
+    <maven.dependencies.version>${maven.maven-enforcer.version}</maven.dependencies.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.enforcer</groupId>
