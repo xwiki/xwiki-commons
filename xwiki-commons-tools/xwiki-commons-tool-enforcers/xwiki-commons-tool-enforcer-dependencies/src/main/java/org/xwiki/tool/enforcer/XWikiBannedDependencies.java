@@ -36,7 +36,14 @@ import org.apache.maven.plugins.enforcer.BannedDependencies;
 public class XWikiBannedDependencies extends BannedDependencies
 {
     @Override
-    protected boolean compareDependency(String[] pattern, Artifact artifact) throws EnforcerRuleException
+    protected boolean compareDependency(String pattern, Artifact artifact) throws EnforcerRuleException
+    {
+        String[] patternParts = pattern.split(":", 7);
+
+        return compareDependency(patternParts, artifact);
+    }
+
+    private boolean compareDependency(String[] pattern, Artifact artifact) throws EnforcerRuleException
     {
         boolean result = false;
         if (pattern.length > 0) {
@@ -53,9 +60,8 @@ public class XWikiBannedDependencies extends BannedDependencies
                 result = true;
             } else {
                 try {
-                    result =
-                        AbstractVersionEnforcer.containsVersion(VersionRange.createFromVersionSpec(pattern[2]),
-                            new DefaultArtifactVersion(artifact.getBaseVersion()));
+                    result = AbstractVersionEnforcer.containsVersion(VersionRange.createFromVersionSpec(pattern[2]),
+                        new DefaultArtifactVersion(artifact.getBaseVersion()));
                 } catch (InvalidVersionSpecificationException e) {
                     throw new EnforcerRuleException("Invalid Version Range: ", e);
                 }
