@@ -122,7 +122,15 @@
          for ITs -->
     <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
 
+    <!-- Version of Maven used at runtime (by Extension Manager mostly) -->
+    <maven.runtime.version>3.3.9</maven.runtime.version>
+    <!-- Minimum version of Maven supported at build time  -->
     <maven.buid.version>3.3.9</maven.buid.version>
+    <!--
+      The version of Maven used when declaring dependencies.
+      Use runtime version by default, overwrite it to change to build version (usually for Maven plugins)
+    -->
+    <maven.dependencies.version>${maven.runtime.version}</maven.dependencies.version>
   </properties>
   <prerequisites>
     <!-- Custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
@@ -652,6 +660,44 @@
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-annotations</artifactId>
         <version>1.7.1</version>
+      </dependency>
+
+      <!-- Maven -->
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${maven.dependencies.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-aether-provider</artifactId>
+        <version>${maven.dependencies.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact</artifactId>
+        <version>${maven.dependencies.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${maven.dependencies.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>${maven.dependencies.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-compat</artifactId>
+        <version>${maven.dependencies.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.plugin-tools</groupId>
+        <artifactId>maven-plugin-annotations</artifactId>
+        <version>3.5</version>
+        <scope>provided</scope>
       </dependency>
 
       <!-- Everybody tests -->

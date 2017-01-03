@@ -32,14 +32,12 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Tools - WEBJAR Handlers (Lifecycle and ArtifactHandler)</description>
   <properties>
-    <mavenVersion>3.3.9</mavenVersion>
     <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>${mavenVersion}</version>
     </dependency>
   </dependencies>
   <profiles>

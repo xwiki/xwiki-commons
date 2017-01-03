@@ -47,7 +47,6 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>${maven.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
