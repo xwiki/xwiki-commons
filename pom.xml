@@ -613,6 +613,13 @@
         <groupId>org.restlet.jee</groupId>
         <artifactId>org.restlet.ext.servlet</artifactId>
         <version>${restlet.version}</version>
+        <exclusions>
+          <exclusion>
+            <!-- We use "se" version of the client API -->
+            <groupId>org.restlet.jee</groupId>
+            <artifactId>org.restlet</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- JTA -->
