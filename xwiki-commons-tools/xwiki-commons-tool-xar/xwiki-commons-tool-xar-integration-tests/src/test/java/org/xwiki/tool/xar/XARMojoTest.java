@@ -20,6 +20,7 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -81,25 +82,30 @@ public class XARMojoTest extends AbstractMojoTest
         unarchiver.extract();
 
         try (ZipFile zip = new ZipFile(xarFile)) {
-            Enumeration<ZipArchiveEntry> entries = zip.getEntries();
-            assertTrue(entries.hasMoreElements());
-            assertEquals(entries.nextElement().toString(), XARMojo.PACKAGE_XML);
+            ZipArchiveEntry packageEntry = zip.getEntry(XARMojo.PACKAGE_XML);
 
-            File classesDir = new File(verifier.getBasedir(), "target/classes");
-            Collection<String> documentNames = XARMojo.getDocumentNamesFromXML(new File(classesDir, "package.xml"));
+            Collection<String> documentNames;
+            try (InputStream packageStream = zip.getInputStream(packageEntry)) {
+                documentNames = XARMojo.getDocumentNamesFromXML(packageStream);
+            }
+
+            Enumeration<ZipArchiveEntry> entries = zip.getEntries();
 
             int countEntries = 0;
             while (entries.hasMoreElements()) {
                 String entryName = entries.nextElement().toString();
-                ++countEntries;
+                if (!entryName.equals(XARMojo.PACKAGE_XML)) {
+                    ++countEntries;
 
-                File currentFile = new File(tempDir, entryName);
-                String documentName = XWikiDocument.getReference(currentFile);
-                if (!documentNames.contains(documentName)) {
-                    fail(
-                        String.format("Document [%s] cannot be found in the newly created xar archive.", documentName));
+                    File currentFile = new File(tempDir, entryName);
+                    String documentName = XWikiDocument.getReference(currentFile);
+                    if (!documentNames.contains(documentName)) {
+                        fail(String.format("Document [%s] cannot be found in the newly created xar archive.",
+                            documentName));
+                    }
                 }
             }
+
             assertEquals("The newly created xar archive doesn't contain the required documents", documentNames.size(),
                 countEntries);
         }

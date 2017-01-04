@@ -20,8 +20,10 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -54,12 +56,7 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  * 
  * @version $Id$
  */
-@Mojo(
-    name = "xar",
-    defaultPhase = LifecyclePhase.PACKAGE,
-    requiresDependencyResolution = ResolutionScope.COMPILE,
-    threadSafe = true
-)
+@Mojo(name = "xar", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 public class XARMojo extends AbstractXARMojo
 {
     /**
@@ -103,12 +100,12 @@ public class XARMojo extends AbstractXARMojo
 
         // Check that there are files in the source dir
         if (sourceDir.listFiles() == null) {
-            throw new Exception(String.format(
-                "No XAR XML files found in [%s]. Has the Maven Resource plugin be called?", sourceDir));
+            throw new Exception(
+                String.format("No XAR XML files found in [%s]. Has the Maven Resource plugin be called?", sourceDir));
         }
 
-        File xarFile = new File(this.project.getBuild().getDirectory(), this.project.getArtifactId()
-            + "-" + this.project.getVersion() + ".xar");
+        File xarFile = new File(this.project.getBuild().getDirectory(),
+            this.project.getArtifactId() + "-" + this.project.getVersion() + ".xar");
 
         ZipArchiver archiver = new ZipArchiver();
         archiver.setEncoding(this.encoding);
@@ -158,8 +155,8 @@ public class XARMojo extends AbstractXARMojo
         };
         String[] fileNames = resourcesDir.list(packageXmlFiler);
         if (fileNames == null) {
-            throw new MojoExecutionException(String.format("Couldn't get list of files in resources dir [%s]",
-                resourcesDir));
+            throw new MojoExecutionException(
+                String.format("Couldn't get list of files in resources dir [%s]", resourcesDir));
         }
         return fileNames.length != 0;
     }
@@ -204,8 +201,8 @@ public class XARMojo extends AbstractXARMojo
                         if ("xar".equals(artifact.getType())) {
                             String id = String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId());
                             if (id.equals(transformation.getArtifact())) {
-                                unpackXARToOutputDirectory(artifact,
-                                    new String[] {transformation.getFile()}, new String[] {});
+                                unpackXARToOutputDirectory(artifact, new String[] {transformation.getFile()},
+                                    new String[] {});
                             }
                         }
                     }
@@ -213,7 +210,6 @@ public class XARMojo extends AbstractXARMojo
             }
         }
     }
-
 
     /**
      * Unpack XAR dependencies before pack then into it.
@@ -351,9 +347,16 @@ public class XARMojo extends AbstractXARMojo
      */
     protected static Collection<String> getDocumentNamesFromXML(File file) throws Exception
     {
+        try (FileInputStream stream = new FileInputStream(file)) {
+            return getDocumentNamesFromXML(stream);
+        }
+    }
+
+    public static Collection<String> getDocumentNamesFromXML(InputStream stream) throws Exception
+    {
         SAXReader reader = new SAXReader();
         Document domdoc;
-        domdoc = reader.read(file);
+        domdoc = reader.read(stream);
 
         Element filesElement = domdoc.getRootElement().element(FILES_TAG);
 
@@ -429,10 +432,10 @@ public class XARMojo extends AbstractXARMojo
                     //
                     // Note: DO NOT USE String.split since it requires a regexp. Under Windows XP, the FileSeparator is
                     // '\' when not escaped is a special character of the regexp
-                    //     String archivedFilePath =
-                    //         currentFile.getAbsolutePath().split(sourceDir.getAbsolutePath() + File.separator)[1];
-                    String archivedFilePath = currentFile.getAbsolutePath().substring(
-                        (sourceDir.getAbsolutePath() + File.separator).length());
+                    // String archivedFilePath =
+                    // currentFile.getAbsolutePath().split(sourceDir.getAbsolutePath() + File.separator)[1];
+                    String archivedFilePath = currentFile.getAbsolutePath()
+                        .substring((sourceDir.getAbsolutePath() + File.separator).length());
                     archivedFilePath = archivedFilePath.replace(File.separatorChar, '/');
 
                     archiver.addFile(currentFile, archivedFilePath);
