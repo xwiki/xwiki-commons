@@ -42,7 +42,6 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>2.1.1</version>
     </dependency>
     <!-- Required by the Format mojo to write XML files -->
     <dependency>
@@ -95,29 +94,6 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-container-default</artifactId>
-      <version>1.5.5</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>junit</artifactId>
-          <groupId>junit</groupId>
-        </exclusion>
-        <!-- org.apache.maven:maven-compat:3.0.4 draws org.apache.maven:maven-core:3.0.4 which draws
-             org.codehaus.plexus:plexus-classworlds:2.4. The problem is that plexus-container-default:1.5.5 draws
-             org.codehaus.plexus:plexus-classworlds:2.2.2. -->
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-classworlds</artifactId>
-        </exclusion>
-        <!-- We use SLF4J for logging -->
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging-api</artifactId>
-        </exclusion>
-      </exclusions>
       <scope>runtime</scope>
     </dependency>
     <dependency>

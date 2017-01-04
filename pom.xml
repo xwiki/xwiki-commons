@@ -684,6 +684,28 @@
         <artifactId>plexus-interactivity-api</artifactId>
         <version>1.0-alpha-6 </version>
       </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-archiver</artifactId>
+        <version>3.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-classworlds</artifactId>
+        <version>2.5.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>org.eclipse.sisu.plexus</artifactId>
+        <version>0.3.3</version>
+        <exclusions>
+          <!-- This dependency is now deprecated and replaced by annotation-api. -->
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
 
       <!-- Maven -->
       <dependency>

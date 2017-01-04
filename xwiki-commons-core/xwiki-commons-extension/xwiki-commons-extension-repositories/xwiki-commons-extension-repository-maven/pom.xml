@@ -100,14 +100,6 @@
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <version>0.3.3</version>
-      <exclusions>
-        <!-- This dependency is now deprecated and replaced by annotation-api. -->
-        <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>jsr250-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <!-- Explicitly depending on it since we've excluded the deprecated package above and we want
          the other dependencies that were working with jsr250-api to still work properly.  -->
