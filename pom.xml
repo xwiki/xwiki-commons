@@ -407,7 +407,6 @@
         <artifactId>xpp3_min</artifactId>
         <version>1.1.4c</version>
       </dependency>
-
       <!-- What is included in the JRE is too old and Oracle does not seems to plan to upgrade it anytime soon -->
       <dependency>
         <groupId>xerces</groupId>
@@ -424,6 +423,11 @@
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
+        <version>2.7.2</version>
+      </dependency>
+      <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>serializer</artifactId>
         <version>2.7.2</version>
       </dependency>
 
