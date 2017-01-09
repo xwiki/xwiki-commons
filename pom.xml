@@ -50,7 +50,7 @@
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>8.4.3</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>8.4.4</xwiki.compatibility.previous.version>
 
     <!-- REST -->
     <restlet.version>2.0.14</restlet.version>
