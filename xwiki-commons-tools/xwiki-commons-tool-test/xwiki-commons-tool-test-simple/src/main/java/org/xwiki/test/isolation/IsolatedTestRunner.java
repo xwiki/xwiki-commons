@@ -91,7 +91,8 @@ public class IsolatedTestRunner extends BlockJUnit4ClassRunner
      * @return an isolated version of the test class, using an separated ClassLoader.
      * @throws InitializationError if the test class is malformed.
      */
-    private static Class<?> getFromTestClassloader(Class<?> clazz) throws InitializationError {
+    private static Class<?> getFromTestClassloader(Class<?> clazz) throws InitializationError
+    {
         String name = clazz.getName();
         IsolatedClassPrefix isolatedClassPrefix = clazz.getAnnotation(IsolatedClassPrefix.class);
 
@@ -153,10 +154,23 @@ public class IsolatedTestRunner extends BlockJUnit4ClassRunner
         public Class<?> loadClass(String name) throws ClassNotFoundException {
             for (String prefix : prefixes) {
                 if (name.startsWith(prefix)) {
-                    return super.findClass(name);
+                    return loadLocalClass(name);
                 }
             }
             return super.loadClass(name);
+        }
+
+        private Class<?> loadLocalClass(String name) throws ClassNotFoundException
+        {
+            synchronized (getClassLoadingLock(name)) {
+                // First, check if the class has already been loaded
+                Class<?> c = findLoadedClass(name);
+                if (c == null) {
+                    c = findClass(name);
+                }
+
+                return c;
+            }
         }
     }
 }
