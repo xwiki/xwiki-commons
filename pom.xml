@@ -1198,6 +1198,9 @@
           <configuration>
             <source>${java.version}</source>
             <target>${java.version}</target>
+
+            <!-- Avoid surprises. If a module needs annotation processing it can enabled it easily -->
+            <proc>none</proc>
           </configuration>
         </plugin>
         <plugin>
