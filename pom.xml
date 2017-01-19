@@ -675,6 +675,7 @@
       </dependency>
 
       <!-- Used by reflections and other projects in commons, platform and rendering -->
+      <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
