@@ -1290,6 +1290,9 @@
             <complianceLevel>${java.version}</complianceLevel>
             <source>${java.version}</source>
             <target>${java.version}</target>
+
+            <!-- Avoid surprises. If a module needs annotation processing it can enabled it easily -->
+            <proc>none</proc>
           </configuration>
           <!-- Override so that we can use the AspectJ version we wish -->
           <dependencies>
