@@ -99,7 +99,8 @@
     <xwiki.license.skip>false</xwiki.license.skip>
 
     <!-- Enable by default auto release on Jira -->
-    <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
+    <!-- FIXME: Disabling by default while waiting for version including https://github.com/schrepfler/jira-maven-plugin/issues/12 (most probably 0.5) -->
+    <xwiki.release.jira.skip>true</xwiki.release.jira.skip>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
