@@ -21,6 +21,7 @@ package org.xwiki.job;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -231,6 +232,14 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     @Override
     public void ask(Object question) throws InterruptedException
     {
+        ask(question, 0, null);
+    }
+
+    @Override
+    public boolean ask(Object question, long time, TimeUnit unit) throws InterruptedException
+    {
+        boolean notTimeout = true;
+
         this.question = question;
 
         this.askLock.lockInterruptibly();
@@ -247,13 +256,19 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
                 if (event.isAnswered()) {
                     answered();
                 } else {
-                    this.answered.await();
+                    if (unit != null) {
+                        notTimeout = this.answered.await(time, unit);
+                    } else {
+                        this.answered.await();
+                    }
                 }
             }
             this.state = State.RUNNING;
         } finally {
             this.askLock.unlock();
         }
+
+        return notTimeout;
     }
 
     @Override

@@ -21,6 +21,7 @@ package org.xwiki.job.event.status;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
@@ -94,10 +95,27 @@ public interface JobStatus
 
     /**
      * @param question the question to ask as a Java bean
-     * @throws InterruptedException if the current thread is interrupted
+     * @throws InterruptedException if the current thread is interrupted (and interruption of thread suspension is
+     *             supported)
      * @since 4.0M2
      */
     void ask(Object question) throws InterruptedException;
+
+    /**
+     * @param question the question to ask as a Java bean
+     * @param time the maximum time to wait
+     * @param unit the time unit of the {@code time} argument
+     * @return {@code false} if the waiting time detectably elapsed before return from the method, else {@code true}
+     * @throws InterruptedException if the current thread is interrupted (and interruption of thread suspension is
+     *             supported)
+     * @since 9.1RC1
+     */
+    default boolean ask(Object question, long time, TimeUnit unit) throws InterruptedException
+    {
+        ask(question);
+
+        return true;
+    }
 
     /**
      * @return the question
