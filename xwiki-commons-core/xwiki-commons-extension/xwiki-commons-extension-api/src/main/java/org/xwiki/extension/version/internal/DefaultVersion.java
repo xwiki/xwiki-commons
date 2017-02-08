@@ -75,7 +75,7 @@ public class DefaultVersion implements Version
      */
     private Type type = Type.STABLE;
 
-    private int hashCode = -1;
+    private transient int hashCode = -1;
 
     /**
      * Used to parse the string representation of the version.

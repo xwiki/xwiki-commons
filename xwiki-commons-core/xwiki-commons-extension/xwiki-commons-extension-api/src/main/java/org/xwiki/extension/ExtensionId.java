@@ -61,7 +61,7 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
      */
     private final Version version;
 
-    private int hashCode = -1;
+    private transient int hashCode = -1;
 
     /**
      * @param id the extension identifier
