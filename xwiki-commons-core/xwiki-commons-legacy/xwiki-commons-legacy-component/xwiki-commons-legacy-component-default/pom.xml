@@ -149,6 +149,15 @@
           </classpathDependencyExcludes>
         </configuration>
       </plugin>
+      <!-- Since we have runtime dependencies defined above this could lead to some problems for revapi by causing
+           classpath ordering problems. So we need to avoid this. -->
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <configuration>
+          <resolveProvidedDependencies>false</resolveProvidedDependencies>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
