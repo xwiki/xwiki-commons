@@ -33,10 +33,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.CleanerTransformations;
 import org.htmlcleaner.DoctypeToken;
+import org.htmlcleaner.DomSerializer;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.TagTransformation;
-import org.htmlcleaner.XWikiDOMSerializer;
 import org.w3c.dom.Document;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -167,15 +167,9 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         }
 
         try {
-            // Ideally we would use SF's HTMLCleaner DomSerializer but there are outstanding issues with it, so we're
-            // using a custom XWikiDOMSerializer (see its javadoc for more details).
-            // Replace by the following when fixed:
-            //   result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
-
             cleanedNode.setDocType(new DoctypeToken("html", "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
                 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
-            result =
-                new XWikiDOMSerializer(cleanerProperties, false).createDOM(getAvailableDocumentBuilder(), cleanedNode);
+            result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
         } catch (ParserConfigurationException ex) {
             throw new RuntimeException("Error while serializing TagNode into w3c dom.", ex);
         }

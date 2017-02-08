@@ -175,21 +175,30 @@ public class DefaultHTMLCleanerTest
             "<ul> \n<em>1</em><!--x-->2<ins>3</ins><li>item</li></ul>");
     }
 
-    /**
-     * Verify that scripts are not cleaned and that we can have a CDATA section inside. Also verify CDATA behaviors.
-     */
     @Test
-    public void scriptAndCData() throws ComponentLookupException
+    public void scriptAndCDataWithoutComments() throws ComponentLookupException
     {
         assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\nalert(\"Hello World\")\n\n//]]></script>",
             "<script type=\"text/javascript\"><![CDATA[\nalert(\"Hello World\")\n]]></script>");
+    }
 
+    @Test
+    public void scriptAndCDataWithSingleLineStyleComments() throws ComponentLookupException
+    {
         assertHTML("<script type=\"text/javascript\">//<![CDATA[\n//\nalert(\"Hello World\")\n\n//]]></script>",
             "<script type=\"text/javascript\">//<![CDATA[\nalert(\"Hello World\")\n//]]></script>");
+    }
 
+    @Test
+    public void scriptAndCDataWithBlockStyleComments() throws ComponentLookupException
+    {
         assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\nalert(\"Hello World\")\n\n//]]></script>",
             "<script type=\"text/javascript\">/*<![CDATA[*/\nalert(\"Hello World\")\n/*]]>*/</script>");
+    }
 
+    @Test
+    public void scriptAndCDataWithSpecialCharactersAndComments() throws ComponentLookupException
+    {
         assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\n\n" + "function escapeForXML(origtext) {\n"
             + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
             + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n\n\n//]]>"
@@ -198,32 +207,66 @@ public class DefaultHTMLCleanerTest
             + "   return origtext.replace(/\\&/g,'&'+'amp;').replace(/</g,'&'+'lt;')\n"
             + "       .replace(/>/g,'&'+'gt;').replace(/\'/g,'&'+'apos;').replace(/\"/g,'&'+'quot;');" + "}\n"
             + "/*]]>*/\n" + "</script>");
+    }
 
+    @Test
+    public void scriptWithEntitiesAndNoCData() throws ComponentLookupException
+    {
         assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script>&lt;&gt;</script>");
-        assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script><></script>");
+    }
 
-        // Verify that CDATA not inside SCRIPT or STYLE elements are considered comments in HTML and thus stripped
-        // when cleaned.
+    @Test
+    public void scriptWithReservedCharactersAndNoCData() throws ComponentLookupException
+    {
+        assertHTML("<script>//<![CDATA[\n<>\n//]]></script>", "<script><></script>");
+    }
+
+    /*
+     * Verify that CDATA not inside SCRIPT or STYLE elements are considered comments in HTML and thus stripped
+     * when cleaned.
+     */
+    @Test
+    public void cDataNotInsideScriptOrStyleTags() throws ComponentLookupException
+    {
         assertHTML("<p></p>", "<p><![CDATA[&]]></p>");
+    }
+
+    @Test
+    public void cDataNotInsideScriptOrStyleTagsAndSurroundedByAReservedCharacters() throws ComponentLookupException
+    {
         assertHTML("<p>&amp;&amp;</p>", "<p>&<![CDATA[&]]>&</p>");
     }
 
-    /**
-     * Verify that inline style elements are not cleaned and that we can have a CDATA section inside.
-     */
     @Test
-    public void styleAndCData() throws ComponentLookupException
+    public void styleAndCDataWithoutComments() throws ComponentLookupException
     {
         assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
             "<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>");
+    }
 
+    @Test
+    public void styleAndCDataWithBlockStyleComments() throws ComponentLookupException
+    {
         assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
             "<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>");
+    }
 
+    @Test
+    public void styleWithEntitiesAndNoCData() throws ComponentLookupException
+    {
         assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/a>span { color: blue;}\n/*]]>*/</style>",
             "<style type=\"text/css\">a&gt;span { color: blue;}</style>");
+    }
 
+    @Test
+    public void styleWithEntitiesAndNoCData2() throws ComponentLookupException
+    {
         assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style>&lt;&gt;</style>");
+    }
+
+    @Test
+    public void styleWithReservedCharactersAndNoCData() throws ComponentLookupException
+    {
         assertHTMLWithHeadContent("<style>/*<![CDATA[*/<>\n/*]]>*/</style>", "<style><></style>");
     }
 
