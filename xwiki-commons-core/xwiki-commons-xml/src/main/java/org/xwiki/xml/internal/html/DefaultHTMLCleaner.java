@@ -169,7 +169,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         try {
             cleanedNode.setDocType(new DoctypeToken("html", "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
                 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
-            result = new DomSerializer(cleanerProperties, false).createDOM(cleanedNode);
+            result = new DomSerializer(cleanerProperties, false, true).createDOM(cleanedNode);
         } catch (ParserConfigurationException ex) {
             throw new RuntimeException("Error while serializing TagNode into w3c dom.", ex);
         }
