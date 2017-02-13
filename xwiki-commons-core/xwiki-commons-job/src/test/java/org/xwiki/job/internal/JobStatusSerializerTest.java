@@ -465,4 +465,16 @@ public class JobStatusSerializerTest
         assertEquals("error message", status.getLog().peek().getMessage());
         assertEquals("value", status.getLog().peek().getArgumentArray()[0]);
     }
+
+    @Test
+    public void testProgress() throws IOException
+    {
+        JobStatus status = new DefaultJobStatus<Request>(new DefaultRequest(), null, null, null);
+
+        status = writeread(status);
+
+        assertNotNull(status.getProgress());
+        assertEquals(0.0d, status.getProgress().getOffset(), 0.1d);
+        assertEquals(0.0d, status.getProgress().getCurrentLevelOffset(), 0.1d);
+    }
 }
