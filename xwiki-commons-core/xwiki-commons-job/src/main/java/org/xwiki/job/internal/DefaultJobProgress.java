@@ -247,7 +247,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
     @Override
     public double getCurrentLevelOffset()
     {
-        return this.currentStep.getParent() != null ? this.currentStep.getParent().getOffset() : getOffset();
+        return getCurrentStep().getParent() != null ? getCurrentStep().getParent().getOffset() : getOffset();
     }
 
     @Override
@@ -259,6 +259,7 @@ public class DefaultJobProgress implements EventListener, JobProgress
     @Override
     public DefaultJobProgressStep getCurrentStep()
     {
-        return this.currentStep;
+        // currentStep could be null for unserialized job progress
+        return this.currentStep != null ? this.currentStep : this.rootStep;
     }
 }
