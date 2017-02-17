@@ -190,7 +190,6 @@
                     "package": "org\.xwiki\..*",
                     "justification": "Dragging of other XWiki types to the API is OK."
                   },
-                  // Add more ignores below...
                   {
                     "code": "java.field.serialVersionUIDUnchanged",
                     "old": "field org.xwiki.extension.ExtensionId.serialVersionUID",
@@ -203,7 +202,19 @@
                       deserializing some data serialized with the previous XWiki version should at worse initialize it
                       to the default value which is -1 and ok. In any case we're using the ignoreUnknownElements()
                       option on the XStream side so we should be ok anyway!"
+                  },
+                  {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.extension.job.AbstractExtensionRequest.serialVersionUID",
+                    "new": "field org.xwiki.extension.job.AbstractExtensionRequest.serialVersionUID",
+                    "package": "org.xwiki.extension.job",
+                    "classSimpleName": "AbstractExtensionRequest",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "Does not break anything: new static field with no impact on the serialization/unserialization"
                   }
+
+                  // Add more ignores below...
                 ]
               }
             }

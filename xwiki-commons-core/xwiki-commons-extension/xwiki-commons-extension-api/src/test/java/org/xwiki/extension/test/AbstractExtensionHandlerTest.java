@@ -35,13 +35,11 @@ import org.xwiki.extension.job.plan.ExtensionPlanNode;
 import org.xwiki.extension.job.plan.internal.DefaultExtensionPlan;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
-import org.xwiki.extension.repository.internal.core.CoreExtensionScanner;
 import org.xwiki.job.Job;
 import org.xwiki.job.JobExecutor;
 import org.xwiki.job.Request;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.event.LogEvent;
-import org.xwiki.test.annotation.AfterComponent;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
@@ -195,7 +193,19 @@ public abstract class AbstractExtensionHandlerTest
     protected ExtensionPlan installPlan(ExtensionId extensionId, String[] namespaces, boolean rootModifications,
         LogLevel failFrom) throws Throwable
     {
-        Job installJob = install("installplan", extensionId, namespaces, rootModifications, failFrom);
+        InstallRequest installRequest = createInstallRequest(extensionId, namespaces, rootModifications);
+
+        return installPlan(installRequest, failFrom);
+    }
+
+    protected ExtensionPlan installPlan(InstallRequest installRequest) throws Throwable
+    {
+        return installPlan(installRequest, LogLevel.WARN);
+    }
+
+    protected ExtensionPlan installPlan(InstallRequest installRequest, LogLevel failFrom) throws Throwable
+    {
+        Job installJob = executeJob("installplan", installRequest, failFrom);
 
         return (ExtensionPlan) installJob.getStatus();
     }
@@ -212,6 +222,11 @@ public abstract class AbstractExtensionHandlerTest
         InstallRequest installRequest = createInstallRequest(extensionId, namespaces, rootModifications);
 
         return executeJob(jobId, installRequest, failFrom);
+    }
+
+    protected InstallRequest createInstallRequest(ExtensionId extensionId)
+    {
+        return createInstallRequest(extensionId, null, true);
     }
 
     protected InstallRequest createInstallRequest(ExtensionId extensionId, String[] namespaces,

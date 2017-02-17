@@ -60,6 +60,11 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public static final String PROPERTY_ROOTMODIFICATIONSALLOWED = "rootModificationsAllowed";
 
     /**
+     * @see #isUninstallAllowed()
+     */
+    public static final String PROPERTY_UNINSTALLALLOWED = "uninstallAllowed";
+
+    /**
      * Serialization identifier.
      */
     private static final long serialVersionUID = 1L;
@@ -185,5 +190,20 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public ExtensionRewriter getRewriter()
     {
         return this.rewriter;
+    }
+
+    @Override
+    public boolean isUninstallAllowed()
+    {
+        return getProperty(PROPERTY_UNINSTALLALLOWED, true);
+    }
+
+    /**
+     * @param allowed true if it's allowed remove extension in conflict with the new extension(s)
+     * @since 9.1RC1
+     */
+    public void setUninstallAllowed(boolean allowed)
+    {
+        setProperty(PROPERTY_UNINSTALLALLOWED, allowed);
     }
 }

@@ -25,8 +25,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.job.Request;
 import org.xwiki.stability.Unstable;
 
@@ -117,5 +117,15 @@ public interface ExtensionRequest extends Request
     default ExtensionRewriter getRewriter()
     {
         return null;
+    }
+
+    /**
+     * @return true if it's allowed remove extension in conflict with the new extension(s)
+     * @since 9.1RC1
+     */
+    @Unstable
+    default boolean isUninstallAllowed()
+    {
+        return true;
     }
 }

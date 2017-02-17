@@ -29,6 +29,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.TestResources;
+import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
@@ -687,5 +688,14 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         } catch (InstallException e) {
 
         }
+    }
+
+    @Test(expected = InstallException.class)
+    public void testInstallPlanWithUpgradeOnDifferentIdNotAllowed() throws Throwable
+    {
+        InstallRequest installRequest = createInstallRequest(TestResources.REMOTE_NOTINSTALLED_ID);
+        installRequest.setUninstallAllowed(false);
+
+        installPlan(installRequest);
     }
 }

@@ -196,10 +196,17 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
         Collection<ExtensionPlanNode> parentBranch, boolean withBackWard) throws UninstallException
     {
         if (namespace != null) {
+            // Make sure the extension is installed
             if (installedExtension.getNamespaces() == null || !installedExtension.getNamespaces().contains(namespace)) {
                 throw new UninstallException(
                     String.format(EXCEPTION_NOTINSTALLEDNAMESPACE, installedExtension, namespace));
             }
+        }
+
+        // Make sure it's allowed to uninstall extensions
+        if (!getRequest().isUninstallAllowed()) {
+            throw new UninstallException(
+                "Uninstalling extension [" + installedExtension.getId() + "] is not allowed in this job");
         }
 
         ExtensionHandler extensionHandler;
