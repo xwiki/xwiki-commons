@@ -68,7 +68,7 @@
     <selenium.version>2.44.0</selenium.version>
 
     <!-- SLF4J -->
-    <slf4j.version>1.7.23</slf4j.version>
+    <slf4j.version>1.7.24</slf4j.version>
 
     <!-- Hamcrest -->
     <hamcrest.version>1.3</hamcrest.version>
