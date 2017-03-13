@@ -96,18 +96,6 @@
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <!-- Core extensions -->
-    <!-- The version of Reflections used below draws version 2.x of com.google.code.findbugs:annotations.
-         However this prevents the xwiki-platform-vfs module from being installed with the Extension Manager since the
-         TrueVFS library it uses require version 3.0.0 of the Findbug Annotation artifact. Thus for now, we force
-         Reflections to use version 3.0.0 for it. Note that the next version of Reflections has replaced this
-         dependency by net.jcip:jcip-annotations.
-         @TODO: When we upgrade Reflections, remove this explicit dependency (after having verified that the
-         xwiki-platform-vfs-ui module can be properly installed with EM. -->
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>annotations</artifactId>
-      <version>3.0.0</version>
-    </dependency>
     <dependency>
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
