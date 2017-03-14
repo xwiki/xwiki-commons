@@ -20,30 +20,27 @@
 package org.xwiki.extension.event;
 
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.observation.event.EndEvent;
+import org.xwiki.observation.event.BeginEvent;
 
 /**
- * An event triggered when a extension has been upgraded.
+ * An event triggered when a extension is going to be uninstalled.
  * <p>
  * The event also send the following parameters:
  * </p>
  * <ul>
- * <li>source: the related new {@link org.xwiki.extension.InstalledExtension} instance</li>
- * <li>data: a {@code java.util.Collection<org.xwiki.extension.InstalledExtension>} containing the previous
- * {@link org.xwiki.extension.InstalledExtension} instances</li>
+ * <li>source: the related {@link org.xwiki.extension.InstalledExtension} instance</li>
+ * <li>data: null</li>
  * </ul>
- * <p>
- * Implements {@link EndEvent} since 9.2RC1.
  *
  * @version $Id$
  * @since 4.0M1
  */
-public class ExtensionUpgradedEvent extends AbstractExtensionEvent implements EndEvent
+public class ExtensionUninstallingEvent extends AbstractExtensionEvent implements BeginEvent
 {
     /**
      * Matches all extensions.
      */
-    public ExtensionUpgradedEvent()
+    public ExtensionUninstallingEvent()
     {
     }
 
@@ -51,36 +48,10 @@ public class ExtensionUpgradedEvent extends AbstractExtensionEvent implements En
      * Matches only the specified extension id or/and version.
      *
      * @param extensionId the extension identifier
-     * @param namespace the namespace on which the event happened
+     * @param namespace the namespace from which the extensions has been uninstalled
      */
-    public ExtensionUpgradedEvent(ExtensionId extensionId, String namespace)
+    public ExtensionUninstallingEvent(ExtensionId extensionId, String namespace)
     {
         super(extensionId, namespace);
-    }
-
-    /**
-     * Matches only the specified extension id or/and version on every namespaces.
-     *
-     * @param extensionId the extension identifier
-     * @since 9.0RC1
-     * @since 8.4.1
-     * @since 7.4.6
-     */
-    public ExtensionUpgradedEvent(ExtensionId extensionId)
-    {
-        super(extensionId);
-    }
-
-    /**
-     * Matches only the specified extension id or/and version on every namespaces.
-     *
-     * @param extensionId the extension identifier
-     * @since 9.0RC1
-     * @since 8.4.1
-     * @since 7.4.6
-     */
-    public ExtensionUpgradedEvent(String extensionId)
-    {
-        super(new ExtensionId(extensionId));
     }
 }

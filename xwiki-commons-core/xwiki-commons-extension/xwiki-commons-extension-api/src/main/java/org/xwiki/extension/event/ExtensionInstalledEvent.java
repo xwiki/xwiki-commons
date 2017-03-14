@@ -20,6 +20,7 @@
 package org.xwiki.extension.event;
 
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.observation.event.EndEvent;
 
 /**
  * An event triggered when a extension has been installed.
@@ -30,11 +31,13 @@ import org.xwiki.extension.ExtensionId;
  * <li>source: the related {@link org.xwiki.extension.InstalledExtension} instance</li>
  * <li>data: null</li>
  * </ul>
+ * <p>
+ * Implements {@link EndEvent} since 9.2RC1.
  *
  * @version $Id$
  * @since 4.0M1
  */
-public class ExtensionInstalledEvent extends AbstractExtensionEvent
+public class ExtensionInstalledEvent extends AbstractExtensionEvent implements EndEvent
 {
     /**
      * Matches all extensions.

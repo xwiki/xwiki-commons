@@ -35,9 +35,15 @@ import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.UninstallException;
+import org.xwiki.extension.event.ExtensionInstallFailedEvent;
 import org.xwiki.extension.event.ExtensionInstalledEvent;
+import org.xwiki.extension.event.ExtensionInstallingEvent;
+import org.xwiki.extension.event.ExtensionUninstallFailedEvent;
 import org.xwiki.extension.event.ExtensionUninstalledEvent;
+import org.xwiki.extension.event.ExtensionUninstallingEvent;
+import org.xwiki.extension.event.ExtensionUpgradeFailedEvent;
 import org.xwiki.extension.event.ExtensionUpgradedEvent;
+import org.xwiki.extension.event.ExtensionUpgradingEvent;
 import org.xwiki.extension.handler.ExtensionHandlerManager;
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.InstallRequest;
@@ -226,15 +232,28 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
      */
     private void repairExtension(InstalledExtension installedExtension, String namespace) throws ExtensionException
     {
-        // Initialize extension (invalid extensions are not initialized at startup)
-        this.extensionHandlerManager.initialize(installedExtension, namespace);
-
-        // Repair the extension
-        this.installedExtensionRepository.installExtension(installedExtension, namespace,
-            installedExtension.isDependency(namespace));
-
-        this.observationManager.notify(new ExtensionInstalledEvent(installedExtension.getId(), namespace),
+        this.observationManager.notify(new ExtensionInstallingEvent(installedExtension.getId(), namespace),
             installedExtension);
+
+        boolean success = false;
+        try {
+            // Initialize extension (invalid extensions are not initialized at startup)
+            this.extensionHandlerManager.initialize(installedExtension, namespace);
+
+            // Repair the extension
+            this.installedExtensionRepository.installExtension(installedExtension, namespace,
+                installedExtension.isDependency(namespace));
+
+            success = true;
+        } finally {
+            if (success) {
+                this.observationManager.notify(new ExtensionInstalledEvent(installedExtension.getId(), namespace),
+                    installedExtension);
+            } else {
+                this.observationManager.notify(new ExtensionInstallFailedEvent(installedExtension.getId(), namespace),
+                    installedExtension);
+            }
+        }
     }
 
     /**
@@ -244,14 +263,27 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
      */
     private void uninstallExtension(InstalledExtension installedExtension, String namespace) throws UninstallException
     {
-        // Unload extension
-        this.extensionHandlerManager.uninstall(installedExtension, namespace, getRequest());
-
-        // Uninstall from local repository
-        this.installedExtensionRepository.uninstallExtension(installedExtension, namespace);
-
-        this.observationManager.notify(new ExtensionUninstalledEvent(installedExtension.getId(), namespace),
+        this.observationManager.notify(new ExtensionUninstallingEvent(installedExtension.getId(), namespace),
             installedExtension);
+
+        boolean success = false;
+        try {
+            // Unload extension
+            this.extensionHandlerManager.uninstall(installedExtension, namespace, getRequest());
+
+            // Uninstall from local repository
+            this.installedExtensionRepository.uninstallExtension(installedExtension, namespace);
+
+            success = true;
+        } finally {
+            if (success) {
+                this.observationManager.notify(new ExtensionUninstalledEvent(installedExtension.getId(), namespace),
+                    installedExtension);
+            } else {
+                this.observationManager.notify(new ExtensionUninstallFailedEvent(installedExtension.getId(), namespace),
+                    installedExtension);
+            }
+        }
     }
 
     /**
@@ -267,29 +299,50 @@ public abstract class AbstractExtensionJob<R extends ExtensionRequest, S extends
         Map<String, Object> properties = getRequest().getProperty(InstallRequest.PROPERTY_EXTENSION_PROPERTIES,
             Collections.<String, Object>emptyMap());
         if (previousExtensions.isEmpty()) {
-            this.extensionHandlerManager.install(extension, namespace, getRequest());
+            this.observationManager.notify(new ExtensionInstallingEvent(extension.getId(), namespace), extension);
 
-            InstalledExtension installedExtension =
-                this.installedExtensionRepository.installExtension(extension, namespace, dependency, properties);
+            InstalledExtension installedExtension = null;
+            try {
+                this.extensionHandlerManager.install(extension, namespace, getRequest());
 
-            this.observationManager.notify(new ExtensionInstalledEvent(extension.getId(), namespace),
-                installedExtension);
-        } else {
-            this.extensionHandlerManager.upgrade(previousExtensions, extension, namespace, getRequest());
-
-            for (InstalledExtension previousExtension : previousExtensions) {
-                try {
-                    this.installedExtensionRepository.uninstallExtension(previousExtension, namespace);
-                } catch (UninstallException e) {
-                    this.logger.error("Failed to uninstall extension [" + previousExtension.getId() + "]", e);
+                installedExtension =
+                    this.installedExtensionRepository.installExtension(extension, namespace, dependency, properties);
+            } finally {
+                if (installedExtension != null) {
+                    this.observationManager.notify(new ExtensionInstalledEvent(extension.getId(), namespace),
+                        installedExtension);
+                } else {
+                    this.observationManager.notify(new ExtensionInstallFailedEvent(extension.getId(), namespace),
+                        extension);
                 }
             }
-
-            InstalledExtension installedExtension =
-                this.installedExtensionRepository.installExtension(extension, namespace, dependency, properties);
-
-            this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace), installedExtension,
+        } else {
+            this.observationManager.notify(new ExtensionUpgradingEvent(extension.getId(), namespace), extension,
                 previousExtensions);
+
+            InstalledExtension installedExtension = null;
+            try {
+                this.extensionHandlerManager.upgrade(previousExtensions, extension, namespace, getRequest());
+
+                for (InstalledExtension previousExtension : previousExtensions) {
+                    try {
+                        this.installedExtensionRepository.uninstallExtension(previousExtension, namespace);
+                    } catch (UninstallException e) {
+                        this.logger.error("Failed to uninstall extension [" + previousExtension.getId() + "]", e);
+                    }
+                }
+
+                installedExtension =
+                    this.installedExtensionRepository.installExtension(extension, namespace, dependency, properties);
+            } finally {
+                if (installedExtension != null) {
+                    this.observationManager.notify(new ExtensionUpgradedEvent(extension.getId(), namespace),
+                        installedExtension, previousExtensions);
+                } else {
+                    this.observationManager.notify(new ExtensionUpgradeFailedEvent(extension.getId(), namespace),
+                        extension, previousExtensions);
+                }
+            }
         }
     }
 }
