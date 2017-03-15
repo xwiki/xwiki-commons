@@ -97,6 +97,11 @@
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
+    <xwiki.enforcer.enforce-plugins.skip>false</xwiki.enforcer.enforce-plugins.skip>
+    <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>false</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
+    <xwiki.enforcer.enforce-commons-lang3.skip>false</xwiki.enforcer.enforce-commons-lang3.skip>
+    <xwiki.enforcer.enforce-upper-bounds.skip>false</xwiki.enforcer.enforce-upper-bounds.skip>
+    <xwiki.enforcer.enforce-java.skip>false</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
 
     <!-- Enable by default auto release on Jira -->
@@ -1048,6 +1053,7 @@
                   <banSnapshots>false</banSnapshots>
                 </requirePluginVersions>
               </rules>
+              <skip>${xwiki.enforcer.enforce-plugins.skip}</skip>
             </configuration>
           </execution>
           <!-- Check that we're using SLF4J only -->
@@ -1057,6 +1063,7 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
+              <skip>${xwiki.enforcer.enforce-jcl-log4j-isolation.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
@@ -1077,6 +1084,7 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
+              <skip>${xwiki.enforcer.enforce-commons-lang3.skip}</skip>
               <rules>
                 <bannedDependencies>
                   <searchTransitive>false</searchTransitive>
@@ -1097,6 +1105,7 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
+              <skip>${xwiki.enforcer.enforce-upper-bounds.skip}</skip>
               <rules>
                 <requireUpperBoundDeps />
               </rules>
@@ -1673,6 +1682,7 @@ mm
                   <goal>enforce</goal>
                 </goals>
                 <configuration>
+                  <skip>${xwiki.enforcer.enforce-java.skip}</skip>
                   <rules>
                     <requireJavaVersion>
                       <message>You must release with Java 8!</message>
