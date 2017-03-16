@@ -82,8 +82,8 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
     {
         Job currentJob = this.jobContext.getCurrentJob();
         JobStatus currentJobStatus = currentJob != null ? currentJob.getStatus() : null;
-        return new DefaultExtensionPlan<R>(request, this.observationManager, this.loggerManager, this.extensionTree,
-            currentJobStatus);
+        return new DefaultExtensionPlan<>(getType(), request, this.observationManager, this.loggerManager,
+            this.extensionTree, currentJobStatus);
     }
 
     /**

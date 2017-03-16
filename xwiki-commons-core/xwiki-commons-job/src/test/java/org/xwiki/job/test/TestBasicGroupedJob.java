@@ -37,6 +37,8 @@ public class TestBasicGroupedJob implements GroupedJob, JobStatus
 {
     private final transient ReentrantLock lock = new ReentrantLock();
 
+    private String jobType;
+
     private Request request;
 
     private JobGroupPath jobGroupPath;
@@ -49,10 +51,17 @@ public class TestBasicGroupedJob implements GroupedJob, JobStatus
 
     private Thread thread;
 
-    public TestBasicGroupedJob(JobGroupPath jobGroupPath, Request request)
+    public TestBasicGroupedJob(String jobType, JobGroupPath jobGroupPath, Request request)
     {
+        this.jobType = jobType;
         this.jobGroupPath = jobGroupPath;
         this.request = request;
+    }
+
+    @Override
+    public String getJobType()
+    {
+        return this.jobType;
     }
 
     @Override

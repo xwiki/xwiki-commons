@@ -40,10 +40,27 @@ public class DefaultJobStatus<R extends Request> extends AbstractJobStatus<R>
      *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
+     * @deprecated since 9.2RC1, use
+     *             {@link #DefaultJobStatus(String, Request, JobStatus, ObservationManager, LoggerManager)} instead
      */
+    @Deprecated
     public DefaultJobStatus(R request, JobStatus parentJobStatus, ObservationManager observationManager,
         LoggerManager loggerManager)
     {
         super(request, parentJobStatus, observationManager, loggerManager);
+    }
+
+    /**
+     * @param jobType the type of the job
+     * @param request the request provided when started the job
+     * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
+     *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
+     * @param observationManager the observation manager component
+     * @param loggerManager the logger manager component
+     */
+    public DefaultJobStatus(String jobType, R request, JobStatus parentJobStatus, ObservationManager observationManager,
+        LoggerManager loggerManager)
+    {
+        super(jobType, request, parentJobStatus, observationManager, loggerManager);
     }
 }

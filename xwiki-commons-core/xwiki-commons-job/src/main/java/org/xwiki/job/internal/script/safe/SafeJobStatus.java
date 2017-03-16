@@ -50,6 +50,12 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
     }
 
     @Override
+    public String getJobType()
+    {
+        return getWrapped().getJobType();
+    }
+
+    @Override
     public State getState()
     {
         return getWrapped().getState();

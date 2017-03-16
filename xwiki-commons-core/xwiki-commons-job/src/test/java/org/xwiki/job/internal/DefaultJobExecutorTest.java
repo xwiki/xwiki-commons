@@ -56,7 +56,7 @@ public class DefaultJobExecutorTest
 
     private TestBasicGroupedJob groupedJob(String... path)
     {
-        return new TestBasicGroupedJob(new JobGroupPath(Arrays.asList(path)), new DefaultRequest());
+        return new TestBasicGroupedJob("type", new JobGroupPath(Arrays.asList(path)), new DefaultRequest());
     }
 
     // Tests

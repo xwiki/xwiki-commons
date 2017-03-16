@@ -96,6 +96,11 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private transient volatile Object question;
 
     /**
+     * @see #getJobType()
+     */
+    private String jobType;
+
+    /**
      * General state of the job.
      */
     private State state = State.NONE;
@@ -131,10 +136,28 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
+     * @deprecated since 9.2RC1, use
+     *             {@link #AbstractJobStatus(String, Request, JobStatus, ObservationManager, LoggerManager)} instead
      */
+    @Deprecated
     public AbstractJobStatus(R request, JobStatus parentJobStatus, ObservationManager observationManager,
         LoggerManager loggerManager)
     {
+        this(null, request, parentJobStatus, observationManager, loggerManager);
+    }
+
+    /**
+     * @param jobType the type of the job
+     * @param request the request provided when started the job
+     * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
+     *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
+     * @param observationManager the observation manager component
+     * @param loggerManager the logger manager component
+     */
+    public AbstractJobStatus(String jobType, R request, JobStatus parentJobStatus,
+        ObservationManager observationManager, LoggerManager loggerManager)
+    {
+        this.jobType = jobType;
         this.request = request;
         this.parentJobStatus = parentJobStatus;
 
@@ -180,6 +203,12 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     }
 
     // JobStatus
+
+    @Override
+    public String getJobType()
+    {
+        return this.jobType;
+    }
 
     @Override
     public State getState()

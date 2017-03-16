@@ -65,6 +65,15 @@ public interface JobStatus
     }
 
     /**
+     * @return the type of the job
+     * @since 9.2RC1
+     */
+    default String getJobType()
+    {
+        return null;
+    }
+
+    /**
      * @return the general state of the job
      */
     State getState();

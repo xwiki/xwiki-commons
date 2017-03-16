@@ -50,6 +50,7 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
     protected transient ExtensionPlanTree tree;
 
     /**
+     * @param jobType the type of the job
      * @param request the request provided when started the job
      * @param observationManager the observation manager component
      * @param loggerManager the logger manager component
@@ -58,10 +59,10 @@ public class DefaultExtensionPlan<R extends ExtensionRequest> extends AbstractJo
      * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
      *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
      */
-    public DefaultExtensionPlan(R request, ObservationManager observationManager, LoggerManager loggerManager,
-        ExtensionPlanTree tree, JobStatus parentJobStatus)
+    public DefaultExtensionPlan(String jobType, R request, ObservationManager observationManager,
+        LoggerManager loggerManager, ExtensionPlanTree tree, JobStatus parentJobStatus)
     {
-        super(request, parentJobStatus, observationManager, loggerManager);
+        super(jobType, request, parentJobStatus, observationManager, loggerManager);
 
         this.tree = tree;
     }
