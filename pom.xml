@@ -65,7 +65,7 @@
     <asm.version>5.2</asm.version>
 
     <!-- Selenium -->
-    <selenium.version>2.44.0</selenium.version>
+    <selenium.version>3.3.1</selenium.version>
 
     <!-- SLF4J -->
     <slf4j.version>1.7.24</slf4j.version>
@@ -680,16 +680,15 @@
       </dependency>
 
       <!-- Used by reflections and other projects in commons, platform and rendering -->
-      <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>20.0</version>
+        <version>21.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava-testlib</artifactId>
-        <version>20.0</version>
+        <version>21.0</version>
       </dependency>
 
       <!-- Groovy engine. Used in both commons and platform -->
