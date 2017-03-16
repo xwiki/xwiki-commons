@@ -157,7 +157,7 @@ public class DefaultJobStatusStoreTest
 
         DefaultRequest request = new DefaultRequest();
         request.setId(id);
-        JobStatus jobStatus = new DefaultJobStatus(request, null, null, null);
+        JobStatus jobStatus = new DefaultJobStatus("type", request, null, null, null);
 
         this.componentManager.getComponentUnderTest().store(jobStatus);
 

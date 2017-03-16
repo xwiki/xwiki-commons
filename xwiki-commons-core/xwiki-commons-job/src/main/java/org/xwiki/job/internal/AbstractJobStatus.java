@@ -45,6 +45,6 @@ public abstract class AbstractJobStatus<R extends Request> extends org.xwiki.job
     public AbstractJobStatus(R request, ObservationManager observationManager, LoggerManager loggerManager,
         JobStatus parentJobStatus)
     {
-        super(request, parentJobStatus, observationManager, loggerManager);
+        super(null, request, parentJobStatus, observationManager, loggerManager);
     }
 }
