@@ -38,8 +38,8 @@
       // versioning. However we still want to detect this for non XWiki classes.
       {
         "regex": true,
-        "code": "java\.class\.externalClassExposedInAPI",
-        "package": "org\.xwiki\..*",
+        "code": "java\\.class\\.externalClassExposedInAPI",
+        "package": "org\\.xwiki\\..*",
         "justification": "Dragging of other XWiki types to the API is OK."
       }
     ]
