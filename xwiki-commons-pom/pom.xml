@@ -131,6 +131,25 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Configure revapi to use a common configuration -->
+      <plugin>
+        <groupId>org.revapi</groupId>
+        <artifactId>revapi-maven-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-tool-license-resources</artifactId>
+            <version>9.2-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <analysisConfigurationFiles>
+            <configurationFile>
+              <resource>revapi.json</resource>
+            </configurationFile>
+          </analysisConfigurationFiles>
+        </configuration>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>

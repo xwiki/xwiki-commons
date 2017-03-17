@@ -150,75 +150,24 @@
         <groupId>org.revapi</groupId>
         <artifactId>revapi-maven-plugin</artifactId>
         <configuration>
-          <analysisConfiguration><![CDATA[
-            {
-              "revapi": {
-                "java": {
-                  "filter": {
-                    "packages": {
-                      "regex": true,
-                      // Note that we currently don't include non-XWiki classes in the checks, the reason being that
-                      // third-party deps break backward-compat or source compat all the time and we would need to have
-                      // excludes all the time. So we currently trust them that the breakages are not real breakages
-                      // that will affect us. We should probably improve this in the future.
-                      "include": ["org\\.xwiki\\..*"],
-                      "exclude": ["org\\.xwiki\\..*\\.internal(\\..*)?", "org\\.xwiki\\..*\\.test(\\..*)?"]
-                    }
-                  }
-                },
-                "ignore" : [
-                  {
-                    "code": "java.annotation.removed",
-                    "annotationType": "org.xwiki.stability.Unstable",
-                    "justification": "These are marker annotations that have no semantical consequences."
-                  },
-                  {
-                    "code": "java.annotation.added",
-                    "annotationType": "org.xwiki.stability.Unstable",
-                    "justification": "Not a breakage. Indicates API readiness only and has no semantic consequences."
-                  },
-                  // The "externalClassExposedInAPI" check is used to detect code smells. It's documented as:
-                  // "This is reported for classes from dependencies that are exposed in the API (for example as a
-                  // return value). This is generally discouraged practice because it makes updating the dependency
-                  // version a more complex task (you want a bugfix but you don’t want the changed API to leak to your
-                  // users)."
-                  // In the case of XWiki it's not a problem because we release all modules together using the same
-                  // versioning. However we still want to detect this for non XWiki classes.
-                  {
-                    "regex": true,
-                    "code": "java\.class\.externalClassExposedInAPI",
-                    "package": "org\.xwiki\..*",
-                    "justification": "Dragging of other XWiki types to the API is OK."
-                  },
-                  {
-                    "code": "java.field.serialVersionUIDUnchanged",
-                    "old": "field org.xwiki.extension.ExtensionId.serialVersionUID",
-                    "new": "field org.xwiki.extension.ExtensionId.serialVersionUID",
-                    "package": "org.xwiki.extension",
-                    "classSimpleName": "ExtensionId",
-                    "fieldName": "serialVersionUID",
-                    "elementKind": "field",
-                    "justification": "The ExtensionId.hashCode field was wrongly introduced as non transient and
-                      deserializing some data serialized with the previous XWiki version should at worse initialize it
-                      to the default value which is -1 and ok. In any case we're using the ignoreUnknownElements()
-                      option on the XStream side so we should be ok anyway!"
-                  },
-                  {
-                    "code": "java.field.serialVersionUIDUnchanged",
-                    "old": "field org.xwiki.extension.job.AbstractExtensionRequest.serialVersionUID",
-                    "new": "field org.xwiki.extension.job.AbstractExtensionRequest.serialVersionUID",
-                    "package": "org.xwiki.extension.job",
-                    "classSimpleName": "AbstractExtensionRequest",
-                    "fieldName": "serialVersionUID",
-                    "elementKind": "field",
-                    "justification": "Does not break anything: new static field with no impact on the serialization/unserialization"
-                  }
-
-                  // Add more ignores below...
-                ]
-              }
-            }
-          ]]></analysisConfiguration>
+          <analysisConfiguration>
+            <revapi.ignore>
+              <item>
+                <code>java.field.serialVersionUIDUnchanged</code>
+                <new>field org.xwiki.extension.ExtensionId.serialVersionUID</new>
+                <justification>The ExtensionId.hashCode field was wrongly introduced as non transient and
+                  deserializing some data serialized with the previous XWiki version should at worse initialize it
+                  to the default value which is -1 and ok. In any case we're using the ignoreUnknownElements()
+                  option on the XStream side so we should be ok anyway!</justification>
+              </item>
+              <item>
+                <code>java.field.serialVersionUIDUnchanged</code>
+                <new>field org.xwiki.extension.ExtensionId.serialVersionUID</new>
+                <justification>Does not break anything: new static field with no impact on the
+                  serialization/unserialization</justification>
+              </item>
+            </revapi.ignore>
+          </analysisConfiguration>
         </configuration>
       </plugin>
       <!-- Verify that unit tests don't output anything to stdout/stderr -->
