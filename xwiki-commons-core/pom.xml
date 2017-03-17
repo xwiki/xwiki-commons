@@ -178,8 +178,6 @@
                     "elementKind": "field",
                     "justification": "Does not break anything: new static field with no impact on the serialization/unserialization"
                   }
-
-                  // Add more ignores below...
                 ]
               }
             }
