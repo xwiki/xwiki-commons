@@ -32,6 +32,8 @@ import org.xwiki.observation.event.BeginEvent;
  * <li>data: null</li>
  * </ul>
  *
+ * @see ExtensionInstalledEvent
+ * @see ExtensionInstallFailedEvent
  * @version $Id$
  * @since 9.2RC1
  */

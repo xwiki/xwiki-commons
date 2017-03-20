@@ -33,6 +33,8 @@ import org.xwiki.observation.event.EndEvent;
  * <li>data: null</li>
  * </ul>
  *
+ * @see ExtensionInstalledEvent
+ * @see ExtensionInstallingEvent
  * @version $Id$
  * @since 9.2RC1
  */

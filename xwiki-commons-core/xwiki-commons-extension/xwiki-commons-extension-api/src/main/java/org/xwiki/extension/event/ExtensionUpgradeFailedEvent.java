@@ -34,6 +34,8 @@ import org.xwiki.observation.event.EndEvent;
  * {@link org.xwiki.extension.InstalledExtension} instances</li>
  * </ul>
  *
+ * @see ExtensionUpgradedEvent
+ * @see ExtensionUpgradingEvent
  * @version $Id$
  * @since 9.2RC1
  */

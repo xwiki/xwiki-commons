@@ -33,6 +33,8 @@ import org.xwiki.observation.event.BeginEvent;
  * {@link org.xwiki.extension.InstalledExtension} instances</li>
  * </ul>
  *
+ * @see ExtensionUpgradedEvent
+ * @see ExtensionUpgradeFailedEvent
  * @version $Id$
  * @since 9.2RC1
  */

@@ -32,6 +32,8 @@ import org.xwiki.observation.event.BeginEvent;
  * <li>data: null</li>
  * </ul>
  *
+ * @see ExtensionUninstalledEvent
+ * @see ExtensionUninstallFailedEvent
  * @version $Id$
  * @since 4.0M1
  */

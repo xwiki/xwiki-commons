@@ -35,6 +35,8 @@ import org.xwiki.observation.event.EndEvent;
  * <p>
  * Implements {@link EndEvent} since 9.2RC1.
  *
+ * @see ExtensionUpgradeFailedEvent
+ * @see ExtensionUpgradingEvent
  * @version $Id$
  * @since 4.0M1
  */
