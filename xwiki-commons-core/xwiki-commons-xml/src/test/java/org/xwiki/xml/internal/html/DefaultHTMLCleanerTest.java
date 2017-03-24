@@ -293,7 +293,7 @@ public class DefaultHTMLCleanerTest
 
     /**
      * Test that tags with a namespace are not considered as unknown tags by HTMLCleaner (see also <a
-     * href="http://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
+     * href="https://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
      */
     @Test
     public void cleanSVGTags() throws Exception
@@ -308,10 +308,10 @@ public class DefaultHTMLCleanerTest
     /**
      * Test that cleaning works when there's a TITLE element in the body (but with a namespace). The issue was that
      * HTMLCleaner would consider it a duplicate of the TITLE element in the HEAD even though it's namespaced. (see also
-     * <a href="http://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
+     * <a href="https://jira.xwiki.org/browse/XWIKI-9753">XWIKI-9753</a>).
      */
     @Test
-    @Ignore("See http://jira.xwiki.org/browse/XWIKI-9753")
+    @Ignore("See https://jira.xwiki.org/browse/XWIKI-9753")
     public void cleanTitleWithNamespace() throws Exception
     {
         // Test with TITLE in HEAD
@@ -354,7 +354,7 @@ public class DefaultHTMLCleanerTest
 
     /**
      * Test that cleaning an empty DIV works (it used to fail, see <a
-     * href="http://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
+     * href="https://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
      */
     @Test
     public void cleanEmptyDIV() throws Exception

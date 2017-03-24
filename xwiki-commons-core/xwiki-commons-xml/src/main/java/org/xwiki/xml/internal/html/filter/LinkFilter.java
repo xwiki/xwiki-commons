@@ -41,7 +41,7 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
  * dangerous phishing attacks.
  *
  * See: https://mathiasbynens.github.io/rel-noopener/ or https://dev.to/phishing or
- * http://jira.xwiki.org/browse/XRENDERING-462
+ * https://jira.xwiki.org/browse/XRENDERING-462
  *
  * To avoid this vulnerability, we automatically add the "noopener" value to the "rel" attribute of the anchor.
  * But because Firefox does not handle it, we also need to add the "noreferer" value.

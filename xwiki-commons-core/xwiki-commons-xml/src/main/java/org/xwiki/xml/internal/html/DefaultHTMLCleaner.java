@@ -235,7 +235,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
         
         // By default, we are cleaning XHTML 1.0 code, not HTML 5.
         // Note: Tests are broken if we don't set the version 4, meaning that supporting HTML5 requires some work.
-        // TODO: handle HTML5 correctly (see: http://jira.xwiki.org/browse/XCOMMONS-901)
+        // TODO: handle HTML5 correctly (see: https://jira.xwiki.org/browse/XCOMMONS-901)
         defaultProperties.setHtmlVersion(4);
 
         return defaultProperties;

@@ -191,7 +191,7 @@ public class MethodArgumentUberspectorTest
     }
 
     /**
-     * This used to fail, see <a href="http://jira.xwiki.org/browse/XCOMMONS-710">XCOMMONS-710</a>.
+     * This used to fail, see <a href="https://jira.xwiki.org/browse/XCOMMONS-710">XCOMMONS-710</a>.
      */
     @Test
     public void getMethodWhenAddingSameMethodNameToExtendingClassAndConversion() throws Exception

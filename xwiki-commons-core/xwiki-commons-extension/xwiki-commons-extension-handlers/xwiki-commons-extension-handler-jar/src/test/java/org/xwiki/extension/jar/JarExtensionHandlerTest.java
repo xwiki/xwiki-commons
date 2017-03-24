@@ -722,7 +722,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
 
         // actual install test
-        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        // TODO: go back to LogLevel.WARN when https://jira.xwiki.org/browse/XCOMMONS-213 is fixed
         installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
@@ -787,7 +787,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionDep1 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
 
-        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        // TODO: go back to LogLevel.WARN when https://jira.xwiki.org/browse/XCOMMONS-213 is fixed
         installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
@@ -841,7 +841,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionDep1 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
 
-        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        // TODO: go back to LogLevel.WARN when https://jira.xwiki.org/browse/XCOMMONS-213 is fixed
         installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);
@@ -887,7 +887,7 @@ public class JarExtensionHandlerTest extends AbstractExtensionHandlerTest
         Type extensionDep1 =
             checkJarExtensionAvailability(TestComponent.TYPE_STRING, DefaultTestComponent.class, namespace1);
 
-        // TODO: go back to LogLevel.WARN when http://jira.xwiki.org/browse/XCOMMONS-213 is fixed
+        // TODO: go back to LogLevel.WARN when https://jira.xwiki.org/browse/XCOMMONS-213 is fixed
         installedExtension = install(extensionId, namespace2, LogLevel.ERROR);
 
         checkInstallStatus(installedExtension, namespace2);

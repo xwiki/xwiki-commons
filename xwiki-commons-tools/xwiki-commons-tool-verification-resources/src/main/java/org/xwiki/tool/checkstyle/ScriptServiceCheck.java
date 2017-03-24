@@ -26,7 +26,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 
 /**
  * Verify that ScriptService classes are not located in the internal package
- * (see http://jira.xwiki.org/browse/XWIKI-9482).
+ * (see https://jira.xwiki.org/browse/XWIKI-9482).
  *
  * @version $Id$
  * @since 5.3M1

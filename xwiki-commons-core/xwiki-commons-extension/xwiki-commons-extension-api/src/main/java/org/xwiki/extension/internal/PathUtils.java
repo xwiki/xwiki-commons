@@ -63,7 +63,7 @@ public final class PathUtils
         return encoded;
     }
 
-    // Workaround insane WebSphere bug (see http://jira.xwiki.org/browse/XWIKI-13898)
+    // Workaround insane WebSphere bug (see https://jira.xwiki.org/browse/XWIKI-13898)
     private static URL fixURL(URL jarURL)
     {
         String jarURLString = jarURL.toExternalForm();
