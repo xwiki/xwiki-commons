@@ -158,7 +158,7 @@
   </licenses>
   <issueManagement>
     <system>jira</system>
-    <url>http://jira.xwiki.org/jira/browse/XCOMMONS</url>
+    <url>https://jira.xwiki.org/jira/browse/XCOMMONS</url>
   </issueManagement>
   <developers>
     <!-- Note that this information is read by XWiki's Extension Manager and passed to the XWiki Repository Application

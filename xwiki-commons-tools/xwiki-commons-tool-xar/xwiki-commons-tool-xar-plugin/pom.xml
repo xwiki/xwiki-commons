@@ -51,7 +51,7 @@
       <scope>runtime</scope>
     </dependency>
     <!-- This dependency is drawn by XOM which draws it from Jaxen. However, Jaxen 1.1.4 draws XOM 1.0 which draws
-         ICU4J 2.6 which has the problem (see http://jira.xwiki.org/browse/XCOMMONS-354). The problem is fixed in
+         ICU4J 2.6 which has the problem (see https://jira.xwiki.org/browse/XCOMMONS-354). The problem is fixed in
          ICU4J 2.8+ and we've chosen to use the latest version of ICU4J available. -->
     <dependency>
       <groupId>com.ibm.icu</groupId>

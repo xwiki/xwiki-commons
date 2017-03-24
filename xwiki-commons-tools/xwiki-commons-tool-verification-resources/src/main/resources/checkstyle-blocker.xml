@@ -14,7 +14,7 @@
   <module name="TreeWalker">
 
     <!-- Verify that Script Services are not located in the internal package,
-         see http://jira.xwiki.org/browse/XWIKI-9482 -->
+         see https://jira.xwiki.org/browse/XWIKI-9482 -->
     <module name="org.xwiki.tool.checkstyle.ScriptServiceCheck"/>
 
     <!-- Verify that we always add a @since javadoc annotation when we add an @Unstable annotation and that when one
