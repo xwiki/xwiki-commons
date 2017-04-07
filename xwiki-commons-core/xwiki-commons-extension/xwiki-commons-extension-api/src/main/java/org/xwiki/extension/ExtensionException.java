@@ -44,6 +44,16 @@ public class ExtensionException extends Exception
     }
 
     /**
+     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt>
+     *            value is permitted, and indicates that the cause is nonexistent or unknown.)
+     * @since 9.3RC1
+     */
+    public ExtensionException(Throwable cause)
+    {
+        super(cause);
+    }
+
+    /**
      * Constructs a new exception with the specified detail message and cause.
      *
      * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method)
