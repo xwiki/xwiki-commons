@@ -1,6 +1,10 @@
-# Build
+# Maven Build
 target
 target-eclipse
+
+# Gradle Build
+build
+.gradle
 
 # IDEA
 *.iml

@@ -1,0 +1,33 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+// WARNING: NOT WORKING, WORK IN PROGRESS. USE THE MAVEN BUILD WHICH IS THE XWIKI OFFICIAL BUILD TOOL.
+
+dependencies {
+    compile "junit:junit:${junitVersion}"
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'commons-io:commons-io:2.5'
+    compile('org.jmock:jmock-junit4:2.6.0') {
+        // junit-dep is deprecated and junit should be used instead
+        exclude(group: 'junit', module: 'junit-dep')
+    }
+    compile "org.mockito:mockito-core:${mockitoVersion}"
+}
