@@ -24,35 +24,32 @@ if ( !JavaVersion.current().java8Compatible ) {
     throw new GradleException( "Gradle must be run with Java 8" )
 }
 
-include 'xwiki-blame-api'
-project(':xwiki-blame-api').projectDir = new File(rootProject.projectDir, "xwiki-commons-core/xwiki-commons-blame/xwiki-commons-blame-api")
+includeCoreDir("blame", "blame-api")
+includeCoreDir("component", "component-api")
+includeCoreDir("stability")
+includeCoreDir("text")
+includeCoreDir("component", "component-default")
+includeCoreDir("component", "component-observation")
+includeCoreDir("configuration", "configuration-api")
+includeCoreDir("context")
+includeCoreDir("observation", "observation-api")
 
-include 'xwiki-component-api'
-project(':xwiki-component-api').projectDir = new File(rootProject.projectDir, "xwiki-commons-core/xwiki-commons-component/xwiki-commons-component-api")
+includeToolDir("test", "test-component")
+includeToolDir("test", "test-simple")
 
-include 'xwiki-stability'
-project(':xwiki-stability').projectDir = new File(rootProject.projectDir, "xwiki-commons-core/xwiki-commons-stability")
+void includeCoreDir(String... path) {
+    includeDir('xwiki-commons-core', 'xwiki-commons', path)
+}
 
-include 'xwiki-text'
-project(':xwiki-text').projectDir = new File(rootProject.projectDir, "xwiki-commons-core/xwiki-commons-text")
+void includeToolDir(String... path) {
+    includeDir('xwiki-commons-tools', 'xwiki-commons-tool', path)
+}
 
-include 'xwiki-test-component'
-project(':xwiki-test-component').projectDir = new File(rootProject.projectDir, "xwiki-commons-tools/xwiki-commons-tool-test/xwiki-commons-tool-test-component")
-
-include 'xwiki-observation-api'
-project(':xwiki-observation-api').projectDir = new File(rootProject.projectDir, "xwiki-commons-core/xwiki-commons-observation/xwiki-commons-observation-api")
-
-include 'xwiki-test-simple'
-project(':xwiki-test-simple').projectDir = new File(rootProject.projectDir, "xwiki-commons-tools/xwiki-commons-tool-test/xwiki-commons-tool-test-simple")
-
-include 'xwiki-component-default'
-project(':xwiki-component-default').projectDir = new File(rootProject.projectDir, "xwiki-commons-core/xwiki-commons-component/xwiki-commons-component-default")
-
-include 'xwiki-component-observation'
-project(':xwiki-component-observation').projectDir = new File(rootProject.projectDir, "xwiki-commons-core/xwiki-commons-component/xwiki-commons-component-observation")
-
-include 'xwiki-configuration-api'
-project(':xwiki-configuration-api').projectDir = new File(rootProject.projectDir, "xwiki-commons-core/xwiki-commons-configuration/xwiki-commons-configuration-api")
-
-include 'xwiki-context'
-project(':xwiki-context').projectDir = new File(rootProject.projectDir, "xwiki-commons-core/xwiki-commons-context")
+void includeDir(String rootPath, String prefix, String... path) {
+    StringBuilder builder = new StringBuilder(rootPath)
+    path.each() {
+        builder.append("/${prefix}-${it}")
+    }
+    include("xwiki-${path.last()}")
+    project(":xwiki-${path.last()}").projectDir = new File(rootProject.projectDir, builder.toString())
+}
