@@ -42,6 +42,17 @@
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+    </dependency>
+    <!-- TODO: This dep should be brought by the IDE itself but apparently the latest EAP of IntelliJ IDEA doesn't work
+         yet with M4 so we need to add this additional dep for the moment. -->
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>1.0.0-M4</version>
+    </dependency>
+    <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
     </dependency>
