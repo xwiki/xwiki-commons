@@ -75,7 +75,6 @@
 
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
-    <junit5.version>5.0.0-M4</junit5.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
@@ -856,11 +855,6 @@
         <version>${junit.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>${junit5.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>${jmock.version}</version>
@@ -1231,9 +1225,6 @@
             <includes>
               <include>**/*Test.class</include>
             </includes>
-            <excludes>
-              <exclude>**/Abstract*Test.class</exclude>
-            </excludes>
             <systemProperties>
               <property>
                 <name>xwiki.test.verifyRunningXWikiAtStart</name>
@@ -1241,24 +1232,6 @@
               </property>
             </systemProperties>
           </configuration>
-          <dependencies>
-            <!-- Allow running both JUnit4 and JUnit5 tests -->
-            <dependency>
-              <groupId>org.junit.platform</groupId>
-              <artifactId>junit-platform-surefire-provider</artifactId>
-              <version>1.0.0-M4</version>
-            </dependency>
-            <dependency>
-              <groupId>org.junit.jupiter</groupId>
-              <artifactId>junit-jupiter-engine</artifactId>
-              <version>${junit5.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.junit.vintage</groupId>
-              <artifactId>junit-vintage-engine</artifactId>
-              <version>4.12.0-M4</version>
-            </dependency>
-          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

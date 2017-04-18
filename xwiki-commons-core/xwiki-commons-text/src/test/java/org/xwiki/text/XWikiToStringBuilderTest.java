@@ -24,9 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.Assert;
 
 /**
  * Unit tests for {@link XWikiToStringBuilder}.
@@ -64,7 +64,7 @@ public class XWikiToStringBuilderTest
     @Test
     public void toStringBuilder()
     {
-        assertEquals("field1 = [value1], field2 = [100], field3 = [[key1] = [value1], [key2] = [value2]], "
+        Assert.assertEquals("field1 = [value1], field2 = [100], field3 = [[key1] = [value1], [key2] = [value2]], "
             + "field4 = [[value]]", new TestClass().toString());
     }
 }

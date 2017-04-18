@@ -19,28 +19,25 @@
  */
 package org.xwiki.text;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Validate {@link StringUtils}.
  * 
  * @version $Id$
  */
-class StringUtilsTest
+public class StringUtilsTest
 {
     @Test
-    @DisplayName("Doubling of characters")
-    void doubleChar()
+    public void testDoubleChar()
     {
-        assertEquals(null, StringUtils.doubleChar(null, 'a'));
-        assertEquals("", StringUtils.doubleChar("", 'a'));
-        assertEquals("b", StringUtils.doubleChar("b", 'a'));
-        assertEquals("aa", StringUtils.doubleChar("a", 'a'));
-        assertEquals("aaaa", StringUtils.doubleChar("aa", 'a'));
-        assertEquals("baabaa", StringUtils.doubleChar("baba", 'a'));
-        assertEquals("aabaab", StringUtils.doubleChar("abab", 'a'));
+        Assert.assertEquals(null, StringUtils.doubleChar(null, 'a'));
+        Assert.assertEquals("", StringUtils.doubleChar("", 'a'));
+        Assert.assertEquals("b", StringUtils.doubleChar("b", 'a'));
+        Assert.assertEquals("aa", StringUtils.doubleChar("a", 'a'));
+        Assert.assertEquals("aaaa", StringUtils.doubleChar("aa", 'a'));
+        Assert.assertEquals("baabaa", StringUtils.doubleChar("baba", 'a'));
+        Assert.assertEquals("aabaab", StringUtils.doubleChar("abab", 'a'));
     }
 }
