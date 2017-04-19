@@ -178,7 +178,7 @@
     <connection>scm:git:git://github.com/xwiki/xwiki-commons.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki/xwiki-commons.git</developerConnection>
     <url>https://github.com/xwiki/xwiki-commons/tree/master/</url>
-    <tag>stable-8.4.x</tag>
+    <tag>stable-9.3.x</tag>
   </scm>
   <mailingLists>
     <mailingList>
