@@ -20,8 +20,6 @@
 
 // WARNING: NOT WORKING, WORK IN PROGRESS. USE THE MAVEN BUILD WHICH IS THE XWIKI OFFICIAL BUILD TOOL.
 
-description = 'API to produce blame/annotate/praise information from a history of changes'
-
 dependencies {
     compile project(':xwiki-component-api')
     compile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
