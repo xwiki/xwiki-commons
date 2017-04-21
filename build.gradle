@@ -22,26 +22,40 @@
 
 ext {
     junitVersion = '4.12'
-    slf4jVersion =  '1.7.25'
+    slf4jVersion = '1.7.25'
     commonsLang3Version = '3.5'
-    mockitoVersion= '2.6.3'
+    mockitoVersion = '2.6.3'
 }
 
 allprojects {
+    apply plugin: 'maven'
+
     group = 'org.xwiki.commons'
     version = '9.3-SNAPSHOT'
 
+    repositories {
+        mavenLocal()
+        maven { url "http://nexus.xwiki.org/nexus/content/groups/public" }
+        maven { url "http://nexus.xwiki.org/nexus/content/groups/public-snapshots" }
+    }
+}
+
+subprojects {
     apply plugin: 'java'
-    apply plugin: 'maven'
+    apply plugin: "jacoco"
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-
-    repositories {
-        mavenCentral()
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
     }
 
     dependencies {
         testCompile "junit:junit:${junitVersion}"
     }
+
+    jacoco {
+        toolVersion = "0.7.9"
+    }
 }
+
