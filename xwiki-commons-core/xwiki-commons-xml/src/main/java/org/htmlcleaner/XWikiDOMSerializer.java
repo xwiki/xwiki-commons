@@ -164,7 +164,7 @@ public class XWikiDOMSerializer
             //
             // Flag the attribute as an ID attribute if appropriate. Thanks to Chris173
             //
-            if (attrName.equalsIgnoreCase("id")) {
+            if ("id".equalsIgnoreCase(attrName)) {
                 document.getDocumentElement().setIdAttribute(attrName, true);
             }
         }
