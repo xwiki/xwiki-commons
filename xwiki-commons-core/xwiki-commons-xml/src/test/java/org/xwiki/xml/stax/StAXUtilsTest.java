@@ -50,10 +50,10 @@ import org.mockito.Mockito;
  * @version $Id$
  * @since 5.2M1
  */
-public class StAXUtilsTests
+public class StAXUtilsTest
 {
     @Test
-    public void testGetXMLStreamReader() throws XMLStreamException
+    public void getXMLStreamReader() throws XMLStreamException
     {
         // TODO: add support for XMLEventReader
         // Assert.assertNotNull(StAXUtils.getXMLStreamReader(new StAXSource(mockXMLEventReader())));
@@ -62,7 +62,7 @@ public class StAXUtilsTests
     }
 
     @Test
-    public void testGetXMLEventReader() throws XMLStreamException
+    public void getXMLEventReader() throws XMLStreamException
     {
         Assert.assertNotNull(StAXUtils.getXMLEventReader(new StAXSource(mockXMLEventReader())));
         Assert.assertNotNull(StAXUtils.getXMLEventReader(new StAXSource(mockXMLStreamReader())));
@@ -70,7 +70,7 @@ public class StAXUtilsTests
     }
 
     @Test
-    public void testGetXMLStreamWriter() throws XMLStreamException
+    public void getXMLStreamWriter() throws XMLStreamException
     {
         Assert.assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLEventWriter.class))));
         Assert.assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLStreamWriter.class))));
@@ -78,7 +78,7 @@ public class StAXUtilsTests
     }
 
     @Test
-    public void testGetXMLStreamWriterWithSAXREsult() throws TransformerConfigurationException, XMLStreamException
+    public void getXMLStreamWriterWithSAXREsult() throws TransformerConfigurationException, XMLStreamException
     {
         TransformerFactory tf = TransformerFactory.newInstance();
         if (!tf.getFeature(SAXTransformerFactory.FEATURE)) {
