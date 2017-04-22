@@ -182,7 +182,7 @@ public class XWikiDOMSerializer
      * @param bufferedContent the buffered text content on which we need to perform the CDATA transformations
      * @param item the current HTML Cleaner node being processed
      */
-    private void flushContent(Document document, Element element, StringBuffer bufferedContent, Object item)
+    private void flushContent(Document document, Element element, StringBuilder bufferedContent, Object item)
     {
         if (bufferedContent.length() > 0 && !(item instanceof ContentNode)) {
             // Flush the buffered content
@@ -225,7 +225,7 @@ public class XWikiDOMSerializer
      */
     private String processCDATABlocks(String content)
     {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         Matcher matcher = CDATA_PATTERN.matcher(content);
         int cursor = 0;
         while (matcher.find()) {
@@ -279,7 +279,7 @@ public class XWikiDOMSerializer
         // Use case 3: useCData = false
         // Simply group all ContentToken together.
 
-        StringBuffer bufferedContent = new StringBuffer();
+        StringBuilder bufferedContent = new StringBuilder();
 
         if (tagChildren != null) {
             for (Object item : tagChildren) {
