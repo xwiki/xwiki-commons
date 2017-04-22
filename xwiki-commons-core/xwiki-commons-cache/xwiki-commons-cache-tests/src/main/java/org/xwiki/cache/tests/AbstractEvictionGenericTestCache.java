@@ -219,8 +219,6 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
         if (this.supportEvictionEvent) {
             eventListener = new CacheEntryListenerTest();
             cache.addCacheEntryListener(eventListener);
-        } else {
-            eventListener = null;
         }
 
         cache.set(KEY, VALUE);
