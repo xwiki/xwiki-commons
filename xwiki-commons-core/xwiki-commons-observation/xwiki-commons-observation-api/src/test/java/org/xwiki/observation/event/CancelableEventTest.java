@@ -66,8 +66,8 @@ public class CancelableEventTest
 
         // equals
 
-        Assert.assertTrue(event.equals(event));
-        Assert.assertTrue(event.equals(new TestCancelableEvent()));
+        Assert.assertEquals(event, event);
+        Assert.assertEquals(event, new TestCancelableEvent());
 
         Assert.assertFalse(event.equals(new TestCancelableEvent("name")));
         Assert.assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
@@ -99,9 +99,9 @@ public class CancelableEventTest
 
         // equals
 
-        Assert.assertTrue(event.equals(event));
-        Assert.assertTrue(event.equals(new TestCancelableEvent("name")));
-        Assert.assertTrue(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+        Assert.assertEquals(event, event);
+        Assert.assertEquals(event, new TestCancelableEvent("name"));
+        Assert.assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
 
         Assert.assertFalse(event.equals(null));
         Assert.assertFalse(event.equals(new TestCancelableEvent("name2")));
@@ -134,9 +134,9 @@ public class CancelableEventTest
 
         // equals
 
-        Assert.assertTrue(event.equals(event));
-        Assert.assertTrue(event.equals(new TestCancelableEvent("name")));
-        Assert.assertTrue(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+        Assert.assertEquals(event, event);
+        Assert.assertEquals(event, new TestCancelableEvent("name"));
+        Assert.assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
 
         Assert.assertFalse(event.equals(null));
         Assert.assertFalse(event.equals(new TestCancelableEvent("name2")));

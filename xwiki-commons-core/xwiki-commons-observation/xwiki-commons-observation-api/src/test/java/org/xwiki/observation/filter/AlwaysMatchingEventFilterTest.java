@@ -40,7 +40,7 @@ public class AlwaysMatchingEventFilterTest
         Assert.assertFalse(this.filter.equals(null));
         Assert.assertFalse(this.filter.equals(new FixedNameEventFilter("filter")));
 
-        Assert.assertTrue(this.filter.equals(this.filter));
+        Assert.assertEquals(this.filter, this.filter);
     }
 
     @Test

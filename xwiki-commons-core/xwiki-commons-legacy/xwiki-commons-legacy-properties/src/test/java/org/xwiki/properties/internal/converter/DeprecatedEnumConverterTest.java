@@ -66,7 +66,7 @@ public class DeprecatedEnumConverterTest extends AbstractComponentTestCase
     public void testConvertInvalid()
     {
         try {
-            Assert.assertEquals(null, this.enumConverter.convert(EnumTest.class, "notexistingvalue"));
+            Assert.assertNull(this.enumConverter.convert(EnumTest.class, "notexistingvalue"));
             Assert.fail("Should have thrown a ConversionException exception");
         } catch (ConversionException expected) {
             // expected
@@ -76,6 +76,6 @@ public class DeprecatedEnumConverterTest extends AbstractComponentTestCase
     @Test
     public void testConvertNull()
     {
-        Assert.assertEquals(null, this.enumConverter.convert(EnumTest.class, null));
+        Assert.assertNull(this.enumConverter.convert(EnumTest.class, null));
     }
 }

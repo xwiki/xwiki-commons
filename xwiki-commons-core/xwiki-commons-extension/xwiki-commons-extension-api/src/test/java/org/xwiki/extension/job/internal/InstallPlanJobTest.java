@@ -302,7 +302,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getExtension().getId());
         Assert.assertEquals(Action.INSTALL, action.getAction());
         Assert.assertEquals(0, action.getPreviousExtensions().size());
-        Assert.assertEquals(null, action.getNamespace());
+        Assert.assertNull(action.getNamespace());
         Assert.assertEquals(0, node.getChildren().size());
     }
 
@@ -333,7 +333,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
         Assert.assertEquals(Action.INSTALL, action.getAction());
         Assert.assertEquals(0, action.getPreviousExtensions().size());
-        Assert.assertEquals(null, action.getNamespace());
+        Assert.assertNull(action.getNamespace());
         Assert.assertEquals(0, node.getChildren().size());
     }
 
@@ -495,7 +495,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
         Assert.assertEquals(Action.UPGRADE, action.getAction());
         Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getPreviousExtension().getId());
-        Assert.assertEquals(null, action.getNamespace());
+        Assert.assertNull(action.getNamespace());
         Assert.assertEquals(0, node.getChildren().size());
     }
 

@@ -55,8 +55,8 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals("lowerprop", lowerPropertyDescriptor.getName());
         Assert.assertEquals("lowerprop", lowerPropertyDescriptor.getDescription());
         Assert.assertSame(String.class, lowerPropertyDescriptor.getPropertyClass());
-        Assert.assertEquals(null, lowerPropertyDescriptor.getDefaultValue());
-        Assert.assertEquals(false, lowerPropertyDescriptor.isMandatory());
+        Assert.assertNull(lowerPropertyDescriptor.getDefaultValue());
+        Assert.assertFalse(lowerPropertyDescriptor.isMandatory());
         Assert.assertNotNull(lowerPropertyDescriptor.getWriteMethod());
         Assert.assertNotNull(lowerPropertyDescriptor.getReadMethod());
         Assert.assertNull(lowerPropertyDescriptor.getField());
@@ -76,7 +76,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals("upperProp", upperPropertyDescriptor.getName());
         Assert.assertEquals("upperProp", upperPropertyDescriptor.getDescription());
         Assert.assertSame(String.class, upperPropertyDescriptor.getPropertyClass());
-        Assert.assertEquals(false, upperPropertyDescriptor.isMandatory());
+        Assert.assertFalse(upperPropertyDescriptor.isMandatory());
         Assert.assertNotNull(upperPropertyDescriptor.getWriteMethod());
         Assert.assertNotNull(upperPropertyDescriptor.getReadMethod());
         Assert.assertNull(upperPropertyDescriptor.getField());
@@ -92,7 +92,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals("Public Field", publicFieldPropertyDescriptor.getName());
         Assert.assertEquals("a public field", publicFieldPropertyDescriptor.getDescription());
         Assert.assertSame(String.class, publicFieldPropertyDescriptor.getPropertyClass());
-        Assert.assertEquals(false, publicFieldPropertyDescriptor.isMandatory());
+        Assert.assertFalse(publicFieldPropertyDescriptor.isMandatory());
         Assert.assertNull(publicFieldPropertyDescriptor.getWriteMethod());
         Assert.assertNull(publicFieldPropertyDescriptor.getReadMethod());
         Assert.assertNotNull(publicFieldPropertyDescriptor.getField());
@@ -113,7 +113,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals("prop1", prop1Descriptor.getId());
         Assert.assertEquals("prop1 description", prop1Descriptor.getDescription());
         Assert.assertSame(String.class, prop1Descriptor.getPropertyClass());
-        Assert.assertEquals(false, prop1Descriptor.isMandatory());
+        Assert.assertFalse(prop1Descriptor.isMandatory());
         Assert.assertNotNull(prop1Descriptor.getWriteMethod());
         Assert.assertNotNull(prop1Descriptor.getReadMethod());
         Assert.assertNull(prop1Descriptor.getField());
@@ -128,7 +128,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals("prop2", prop2Descriptor.getId());
         Assert.assertEquals("prop2 description", prop2Descriptor.getDescription());
         Assert.assertSame(int.class, prop2Descriptor.getPropertyClass());
-        Assert.assertEquals(true, prop2Descriptor.isMandatory());
+        Assert.assertTrue(prop2Descriptor.isMandatory());
         Assert.assertNotNull(prop2Descriptor.getWriteMethod());
         Assert.assertNotNull(prop2Descriptor.getReadMethod());
         Assert.assertNull(prop2Descriptor.getField());
@@ -143,7 +143,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals("prop3", prop3Descriptor.getId());
         Assert.assertEquals("prop3 description", prop3Descriptor.getDescription());
         Assert.assertSame(boolean.class, prop3Descriptor.getPropertyClass());
-        Assert.assertEquals(true, prop3Descriptor.isMandatory());
+        Assert.assertTrue(prop3Descriptor.isMandatory());
         Assert.assertNotNull(prop3Descriptor.getWriteMethod());
         Assert.assertNotNull(prop3Descriptor.getReadMethod());
         Assert.assertNull(prop3Descriptor.getField());
@@ -161,8 +161,8 @@ public class DefaultBeanDescriptorTest
         Assert.assertSame(List.class, ((ParameterizedType) genericPropertyDescriptor.getPropertyType()).getRawType());
         Assert.assertSame(Integer.class,
             ((ParameterizedType) genericPropertyDescriptor.getPropertyType()).getActualTypeArguments()[0]);
-        Assert.assertEquals(null, genericPropertyDescriptor.getDefaultValue());
-        Assert.assertEquals(false, genericPropertyDescriptor.isMandatory());
+        Assert.assertNull(genericPropertyDescriptor.getDefaultValue());
+        Assert.assertFalse(genericPropertyDescriptor.isMandatory());
         Assert.assertNotNull(genericPropertyDescriptor.getWriteMethod());
         Assert.assertNotNull(genericPropertyDescriptor.getReadMethod());
         Assert.assertNull(genericPropertyDescriptor.getField());
@@ -185,7 +185,7 @@ public class DefaultBeanDescriptorTest
             ((ParameterizedType) genericFieldPropertyDescriptor.getPropertyType()).getRawType());
         Assert.assertSame(Integer.class,
             ((ParameterizedType) genericFieldPropertyDescriptor.getPropertyType()).getActualTypeArguments()[0]);
-        Assert.assertEquals(false, genericFieldPropertyDescriptor.isMandatory());
+        Assert.assertFalse(genericFieldPropertyDescriptor.isMandatory());
         Assert.assertNull(genericFieldPropertyDescriptor.getWriteMethod());
         Assert.assertNull(genericFieldPropertyDescriptor.getReadMethod());
         Assert.assertNotNull(genericFieldPropertyDescriptor.getField());
@@ -201,7 +201,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals("impossible.field.name", propertyDescriptor.getName());
         Assert.assertEquals("impossible.field.name", propertyDescriptor.getDescription());
         Assert.assertSame(String.class, propertyDescriptor.getPropertyType());
-        Assert.assertEquals(false, propertyDescriptor.isMandatory());
+        Assert.assertFalse(propertyDescriptor.isMandatory());
         Assert.assertNull(propertyDescriptor.getWriteMethod());
         Assert.assertNull(propertyDescriptor.getReadMethod());
         Assert.assertNotNull(propertyDescriptor.getField());
@@ -217,7 +217,7 @@ public class DefaultBeanDescriptorTest
         Assert.assertEquals("impossible.method.name", propertyDescriptor.getName());
         Assert.assertEquals("propertyWithDifferentId", propertyDescriptor.getDescription());
         Assert.assertSame(String.class, propertyDescriptor.getPropertyType());
-        Assert.assertEquals(false, propertyDescriptor.isMandatory());
+        Assert.assertFalse(propertyDescriptor.isMandatory());
         Assert.assertNotNull(propertyDescriptor.getWriteMethod());
         Assert.assertNotNull(propertyDescriptor.getReadMethod());
         Assert.assertNull(propertyDescriptor.getField());

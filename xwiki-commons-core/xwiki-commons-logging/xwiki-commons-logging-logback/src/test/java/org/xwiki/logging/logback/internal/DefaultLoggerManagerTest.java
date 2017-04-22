@@ -116,7 +116,7 @@ public class DefaultLoggerManagerTest
         Assert.assertEquals("[test] after push", queue.poll().getMessage());
 
         // Make sure the log has not been sent to the logback appender
-        Assert.assertTrue(this.listAppender.list.size() == 1);
+        Assert.assertEquals(1, this.listAppender.list.size());
 
         Thread thread = new Thread(new Runnable()
         {

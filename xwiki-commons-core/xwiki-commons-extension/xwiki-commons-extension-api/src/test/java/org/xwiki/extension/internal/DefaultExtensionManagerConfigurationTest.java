@@ -98,7 +98,7 @@ public class DefaultExtensionManagerConfigurationTest
     @Test
     public void testGetExtensionRepositoryDescriptorsEmpty()
     {
-        Assert.assertEquals(null, this.configuration.getExtensionRepositoryDescriptors());
+        Assert.assertNull(this.configuration.getExtensionRepositoryDescriptors());
         Assert.assertEquals(0, this.logCapture.size());
     }
 

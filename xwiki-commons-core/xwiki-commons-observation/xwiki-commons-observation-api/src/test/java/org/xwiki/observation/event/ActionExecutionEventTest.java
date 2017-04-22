@@ -43,8 +43,8 @@ public class ActionExecutionEventTest
 
         // equals
 
-        Assert.assertTrue(event.equals(event));
-        Assert.assertTrue(event.equals(new ActionExecutionEvent("action")));
+        Assert.assertEquals(event, event);
+        Assert.assertEquals(event, new ActionExecutionEvent("action"));
 
         Assert.assertFalse(event.equals(new ActionExecutionEvent("action2")));
         Assert.assertFalse(event.equals(AllEvent.ALLEVENT));

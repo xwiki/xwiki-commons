@@ -268,7 +268,7 @@ public class JobStatusSerializerTest
         assertNotNull(status.getLog());
         assertEquals("error message", status.getLog().peek().getMessage());
         assertEquals("arg1", status.getLog().peek().getArgumentArray()[0]);
-        assertEquals(null, status.getLog().peek().getArgumentArray()[1]);
+        assertNull(status.getLog().peek().getArgumentArray()[1]);
         assertEquals("arg3", status.getLog().peek().getArgumentArray()[2]);
     }
 

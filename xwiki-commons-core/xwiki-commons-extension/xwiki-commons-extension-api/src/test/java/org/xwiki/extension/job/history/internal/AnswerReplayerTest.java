@@ -59,6 +59,6 @@ public class AnswerReplayerTest
         AnswerReplayer answerReplayer = new AnswerReplayer();
         answerReplayer.onEvent(questionAskedEvent, replayJobStatus, null);
 
-        assertEquals(true, questionAskedEvent.isAnswered());
+        assertTrue(questionAskedEvent.isAnswered());
     }
 }

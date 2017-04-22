@@ -88,8 +88,8 @@ public class DefaultBeanManagerTest
         Assert.assertEquals("lowerpropvalue", beanTest.getLowerprop());
         Assert.assertEquals("upperPropvalue", beanTest.getUpperProp());
         Assert.assertEquals(42, beanTest.getProp2());
-        Assert.assertEquals(true, beanTest.getProp3());
-        Assert.assertEquals(null, beanTest.getHiddenProperty());
+        Assert.assertTrue(beanTest.getProp3());
+        Assert.assertNull(beanTest.getHiddenProperty());
         Assert.assertEquals("publicFieldvalue", beanTest.publicField);
         Assert.assertEquals(Arrays.asList(1, 2), beanTest.getGenericProp());
     }

@@ -114,7 +114,7 @@ public class DefaultInstalledExtensionTest
     @Test
     public void testGetNamespaces()
     {
-        Assert.assertEquals(null, this.installedExtension.getNamespaces());
+        Assert.assertNull(this.installedExtension.getNamespaces());
 
         this.installedExtension.setInstalled(true, "namespace1");
 

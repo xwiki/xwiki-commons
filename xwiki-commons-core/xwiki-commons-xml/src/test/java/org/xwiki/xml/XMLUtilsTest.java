@@ -81,7 +81,7 @@ public class XMLUtilsTest
     @Test
     public void testEscapeNonAscii()
     {
-        Assert.assertTrue("Non-ASCII characters were escaped", XMLUtils.escape("\u0123").equals("\u0123"));
+        Assert.assertEquals("Non-ASCII characters were escaped", "\u0123", XMLUtils.escape("\u0123"));
     }
 
     @Test
@@ -119,8 +119,7 @@ public class XMLUtilsTest
     @Test
     public void testEscapeAttributeValueNonAscii()
     {
-        Assert.assertTrue("Non-ASCII characters were escaped", XMLUtils.escapeAttributeValue("\u0123")
-            .equals("\u0123"));
+        Assert.assertEquals("Non-ASCII characters were escaped", "\u0123", XMLUtils.escapeAttributeValue("\u0123"));
     }
 
     @Test
@@ -151,8 +150,7 @@ public class XMLUtilsTest
     @Test
     public void testEscapeElementContentNonAscii()
     {
-        Assert.assertTrue("Non-ASCII characters were escaped", XMLUtils.escapeElementContent("\u0123")
-            .equals("\u0123"));
+        Assert.assertEquals("Non-ASCII characters were escaped", "\u0123", XMLUtils.escapeElementContent("\u0123"));
     }
 
     @Test

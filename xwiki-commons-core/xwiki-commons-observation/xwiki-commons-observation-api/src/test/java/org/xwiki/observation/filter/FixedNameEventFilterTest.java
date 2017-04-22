@@ -35,7 +35,7 @@ public class FixedNameEventFilterTest
         Assert.assertFalse(filter.equals(AlwaysMatchingEventFilter.INSTANCE));
         Assert.assertFalse(filter.equals(new FixedNameEventFilter("filter2")));
 
-        Assert.assertTrue(filter.equals(filter));
-        Assert.assertTrue(filter.equals(new FixedNameEventFilter("filter")));
+        Assert.assertEquals(filter, filter);
+        Assert.assertEquals(filter, new FixedNameEventFilter("filter"));
     }
 }

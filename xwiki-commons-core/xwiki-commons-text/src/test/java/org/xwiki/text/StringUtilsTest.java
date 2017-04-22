@@ -32,7 +32,7 @@ public class StringUtilsTest
     @Test
     public void testDoubleChar()
     {
-        Assert.assertEquals(null, StringUtils.doubleChar(null, 'a'));
+        Assert.assertNull(StringUtils.doubleChar(null, 'a'));
         Assert.assertEquals("", StringUtils.doubleChar("", 'a'));
         Assert.assertEquals("b", StringUtils.doubleChar("b", 'a'));
         Assert.assertEquals("aa", StringUtils.doubleChar("a", 'a'));

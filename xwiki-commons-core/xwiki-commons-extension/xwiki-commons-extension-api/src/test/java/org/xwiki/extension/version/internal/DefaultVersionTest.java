@@ -49,7 +49,7 @@ public class DefaultVersionTest
     @Test
     public void testCompareTo()
     {
-        Assert.assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1")) == 0);
+        Assert.assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1")));
         Assert.assertTrue(new DefaultVersion("1.2").compareTo(new DefaultVersion("1.1")) > 0);
         Assert.assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.2")) < 0);
 

@@ -121,7 +121,7 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals(level.toString(), event.getMessage());
         Assert.assertEquals(Arrays.asList(level.toString()), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
+        Assert.assertNull(event.getThrowable());
         Assert.assertEquals(LogEvent.MARKER_BEGIN, event.getMarker());
 
         event = logs.next();
@@ -130,8 +130,8 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("msg" + index, event.getMessage());
         Assert.assertEquals(Arrays.asList("msg" + index), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
-        Assert.assertEquals(null, event.getMarker());
+        Assert.assertNull(event.getThrowable());
+        Assert.assertNull(event.getMarker());
         ++index;
 
         event = logs.next();
@@ -140,8 +140,8 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("msg{}", event.getMessage());
         Assert.assertEquals(Arrays.asList("msg", ""), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
-        Assert.assertEquals(null, event.getMarker());
+        Assert.assertNull(event.getThrowable());
+        Assert.assertNull(event.getMarker());
         ++index;
 
         event = logs.next();
@@ -150,8 +150,8 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("{}{}", event.getMessage());
         Assert.assertEquals(Arrays.asList("", "", ""), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
-        Assert.assertEquals(null, event.getMarker());
+        Assert.assertNull(event.getThrowable());
+        Assert.assertNull(event.getMarker());
         ++index;
 
         event = logs.next();
@@ -160,8 +160,8 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("{}{}{}{}", event.getMessage());
         Assert.assertEquals(Arrays.asList("", "", "", "", ""), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
-        Assert.assertEquals(null, event.getMarker());
+        Assert.assertNull(event.getThrowable());
+        Assert.assertNull(event.getMarker());
         ++index;
 
         event = logs.next();
@@ -171,7 +171,7 @@ public class Utils
         Assert.assertEquals("msg" + index, event.getMessage());
         Assert.assertEquals(Arrays.asList("msg" + index), event.getMessageElements());
         Assert.assertEquals("msg" + index, event.getThrowable().getMessage());
-        Assert.assertEquals(null, event.getMarker());
+        Assert.assertNull(event.getMarker());
         ++index;
 
         event = logs.next();
@@ -180,7 +180,7 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("msg" + index, event.getMessage());
         Assert.assertEquals(Arrays.asList("msg" + index), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
+        Assert.assertNull(event.getThrowable());
         Assert.assertEquals(MarkerFactory.getMarker("marker" + index), event.getMarker());
         ++index;
 
@@ -190,7 +190,7 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("msg{}", event.getMessage());
         Assert.assertEquals(Arrays.asList("msg", ""), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
+        Assert.assertNull(event.getThrowable());
         Assert.assertEquals(MarkerFactory.getMarker("marker" + index), event.getMarker());
         ++index;
 
@@ -200,7 +200,7 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("{}{}", event.getMessage());
         Assert.assertEquals(Arrays.asList("", "", ""), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
+        Assert.assertNull(event.getThrowable());
         Assert.assertEquals(MarkerFactory.getMarker("marker" + index), event.getMarker());
         ++index;
 
@@ -210,7 +210,7 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals("{}{}{}{}", event.getMessage());
         Assert.assertEquals(Arrays.asList("", "", "", "", ""), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
+        Assert.assertNull(event.getThrowable());
         Assert.assertEquals(MarkerFactory.getMarker("marker" + index), event.getMarker());
         ++index;
 
@@ -230,7 +230,7 @@ public class Utils
         Assert.assertEquals(level, event.getLevel());
         Assert.assertEquals(level.toString(), event.getMessage());
         Assert.assertEquals(Arrays.asList(level.toString()), event.getMessageElements());
-        Assert.assertEquals(null, event.getThrowable());
+        Assert.assertNull(event.getThrowable());
         Assert.assertEquals(LogEvent.MARKER_END, event.getMarker());
 
         return index;

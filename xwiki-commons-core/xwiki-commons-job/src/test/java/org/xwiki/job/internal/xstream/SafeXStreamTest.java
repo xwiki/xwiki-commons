@@ -272,6 +272,6 @@ public class SafeXStreamTest
                 "/xstream/NotSerializableObjectWithFailingToStringInArray.xml");
 
         assertNotNull(obj);
-        assertEquals(null, obj[0]);
+        assertNull(obj[0]);
     }
 }

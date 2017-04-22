@@ -50,8 +50,8 @@ public class ExecutionContextTest
 
         context.inheritFrom(parent);
 
-        assertTrue(context.getProperty("inherited").equals("test"));
-        assertTrue(context.getProperty("shadowed").equals("shadowed"));
+        assertEquals("test", context.getProperty("inherited"));
+        assertEquals("shadowed", context.getProperty("shadowed"));
     }
 
     @Test(expected = IllegalStateException.class)

@@ -77,7 +77,7 @@ public class EscapeToolTest
     @Test
     public void escapeXMLNonAscii()
     {
-        Assert.assertTrue("Non-ASCII characters shouldn't be escaped", this.tool.xml("\u0123").equals("\u0123"));
+        Assert.assertEquals("Non-ASCII characters shouldn't be escaped", "\u0123", this.tool.xml("\u0123"));
     }
 
     @Test

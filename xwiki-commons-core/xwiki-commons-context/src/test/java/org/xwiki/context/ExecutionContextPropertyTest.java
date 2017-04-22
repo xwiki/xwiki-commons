@@ -61,15 +61,15 @@ public class ExecutionContextPropertyTest
         context.newProperty(key).declare();
 
         Assert.assertFalse(fetch(context, key).isFinal());
-        Assert.assertTrue(key.equals(fetch(context, key).getKey()));
-        Assert.assertTrue(null == fetch(context, key).getValue());
+        Assert.assertEquals(key, fetch(context, key).getKey());
+        Assert.assertNull(fetch(context, key).getValue());
         Assert.assertFalse(fetch(context, key).isInherited());
 
         Object o = new Object();
         context.setProperty(key, o);
-        Assert.assertTrue(fetch(context, key).getValue() == o);
+        Assert.assertSame(fetch(context, key).getValue(), o);
         context.setProperty(key, null);
-        Assert.assertTrue(fetch(context, key).getValue() == null);
+        Assert.assertNull(fetch(context, key).getValue());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ExecutionContextPropertyTest
 
         context.newProperty(k1).initial(value).declare();
 
-        Assert.assertTrue(value == fetch(context, k1).clone().getValue());
+        Assert.assertSame(value, fetch(context, k1).clone().getValue());
 
         context.newProperty(k2).initial(value).cloneValue().declare();
 

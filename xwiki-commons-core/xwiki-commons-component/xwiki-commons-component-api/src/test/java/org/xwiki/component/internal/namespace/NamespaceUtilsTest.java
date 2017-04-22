@@ -24,6 +24,7 @@ import org.xwiki.component.namespace.Namespace;
 import org.xwiki.component.namespace.NamespaceUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Validate {@link NamespaceUtils}.
@@ -35,8 +36,8 @@ public class NamespaceUtilsTest
     @Test
     public void getPrefix()
     {
-        assertEquals(null, NamespaceUtils.getPrefix(null));
-        assertEquals(null, NamespaceUtils.getPrefix("namespace"));
+        assertNull(NamespaceUtils.getPrefix(null));
+        assertNull(NamespaceUtils.getPrefix("namespace"));
         assertEquals("type", NamespaceUtils.getPrefix("type:value"));
         assertEquals("t:pe", NamespaceUtils.getPrefix("t\\:pe:value"));
         assertEquals("", NamespaceUtils.getPrefix(":value"));
@@ -45,7 +46,7 @@ public class NamespaceUtilsTest
     @Test
     public void toNamespace()
     {
-        assertEquals(null, NamespaceUtils.toNamespace(null));
+        assertNull(NamespaceUtils.toNamespace(null));
         assertEquals(new Namespace(null, "namespace"), NamespaceUtils.toNamespace("namespace"));
         assertEquals(new Namespace("type", "value"), NamespaceUtils.toNamespace("type:value"));
         assertEquals(new Namespace("t:pe", "val\\ue"), NamespaceUtils.toNamespace("t\\:pe:val\\ue"));
