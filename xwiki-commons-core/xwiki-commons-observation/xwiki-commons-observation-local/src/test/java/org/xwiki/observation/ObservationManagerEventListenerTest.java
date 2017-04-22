@@ -78,7 +78,7 @@ public class ObservationManagerEventListenerTest
     }
 
     @Test
-    public void testNewListenerComponent() throws Exception
+    public void newListenerComponent() throws Exception
     {
         this.mocker.registerComponent(this.componentDescriptor, this.eventListenerMock);
 
@@ -86,18 +86,11 @@ public class ObservationManagerEventListenerTest
     }
 
     @Test
-    public void testRemovedListenerComponent() throws Exception
+    public void removedListenerComponent() throws Exception
     {
         this.mocker.registerComponent(this.componentDescriptor, this.eventListenerMock);
         this.mocker.unregisterComponent(this.componentDescriptor.getRoleType(), this.componentDescriptor.getRoleHint());
 
         Assert.assertNull(this.manager.getListener("mylistener"));
-    }
-
-    public void testInjectObservationManagerInAListener() throws ComponentLookupException, Exception
-    {
-        TestEventListener listener = this.mocker.getInstance(EventListener.class, "test");
-
-        Assert.assertNotNull(listener);
     }
 }
