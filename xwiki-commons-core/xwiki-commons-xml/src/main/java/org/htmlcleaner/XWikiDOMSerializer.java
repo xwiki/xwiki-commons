@@ -136,7 +136,7 @@ public class XWikiDOMSerializer
             // While the qualified name is "HTML" for some DocTypes, we want the actual document root name to be "html".
             // See bug #116
             //
-            if (qualifiedName.equals("HTML")) {
+            if ("HTML".equals(qualifiedName)) {
                 qualifiedName = HTML_TAG_NAME;
             }
             document = impl.createDocument(rootNode.getNamespaceURIOnPath(""), qualifiedName, documentType);
