@@ -49,7 +49,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
      * @throws Exception error.
      */
     @Test
-    public void testGetFactory() throws Exception
+    public void getFactory() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -64,7 +64,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
      * @throws Exception error.
      */
     @Test
-    public void testCreateAndDestroyCacheSimple() throws Exception
+    public void createAndDestroyCacheSimple() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -87,7 +87,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
      * @throws Exception error.
      */
     @Test
-    public void testRemove() throws Exception
+    public void remove() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -108,7 +108,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
      * @throws Exception error.
      */
     @Test
-    public void testRemoveAll() throws Exception
+    public void removeAll() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -129,7 +129,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
      * @throws Exception error.
      */
     @Test
-    public void testEvents() throws Exception
+    public void events() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -168,7 +168,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
      * @throws Exception error.
      */
     @Test
-    public void testSeveralCaches() throws Exception
+    public void severalCaches() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -186,7 +186,7 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
      * @throws Exception error
      */
     @Test
-    public void testRecreateCache() throws Exception
+    public void recreateCache() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 

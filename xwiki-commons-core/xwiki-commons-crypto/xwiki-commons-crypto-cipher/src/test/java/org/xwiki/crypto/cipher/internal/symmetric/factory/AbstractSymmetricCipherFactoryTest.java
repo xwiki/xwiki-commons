@@ -97,7 +97,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     protected int ANOTHER_BYTES_ENCRYPTED_SIZE;
 
     @Test
-    public void testGetCipherFactoryProperties() throws Exception
+    public void fetCipherFactoryProperties() throws Exception
     {
         assertThat(factory.getCipherAlgorithmName(),equalTo(CIPHER_ALGO));
         assertThat(factory.getIVSize(),equalTo(BLOCK_SIZE));
@@ -106,7 +106,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     }
 
     @Test
-    public void testGetCipherProperties() throws Exception
+    public void fetCipherProperties() throws Exception
     {
         Cipher cipher = getCipher(true);
 
@@ -185,7 +185,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     }
 
     @Test
-    public void testCipherOneShotEncryption() throws Exception
+    public void cipherOneShotEncryption() throws Exception
     {
         Cipher cipher = getCipher(true);
 
@@ -197,7 +197,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     }
 
     @Test
-    public void testCipherOneShotDecryption() throws Exception
+    public void cipherOneShotDecryption() throws Exception
     {
         Cipher cipher = getCipher(false);
 
@@ -244,21 +244,21 @@ public abstract class AbstractSymmetricCipherFactoryTest
     }
 
     @Test
-    public void testCipherProgressiveEncryption() throws Exception
+    public void cipherProgressiveEncryption() throws Exception
     {
         assertThat(getProgressive(true, BYTES, BYTES_ENCRYPTED_SIZE), equalTo(getEncrypted()));
         assertThat(getProgressive(true, ANOTHER_BYTES, ANOTHER_BYTES_ENCRYPTED_SIZE), equalTo(getAnotherEncrypted()));
     }
 
     @Test
-    public void testCipherProgressiveDecryption() throws Exception
+    public void cipherProgressiveDecryption() throws Exception
     {
         assertThat(getProgressive(false, getEncrypted(), BYTES.length), equalTo(BYTES));
         assertThat(getProgressive(false, getAnotherEncrypted(), ANOTHER_BYTES.length), equalTo(ANOTHER_BYTES));
     }
 
     @Test
-    public void testCipherOutputStreamEncryption() throws Exception
+    public void cipherOutputStreamEncryption() throws Exception
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTES_ENCRYPTED_SIZE);
         OutputStream encos = getCipher(true).getOutputStream(baos);
@@ -276,7 +276,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     }
 
     @Test
-    public void testCipherOutputStreamDecryption() throws Exception
+    public void cipherOutputStreamDecryption() throws Exception
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(BYTES.length);
         OutputStream encos = getCipher(false).getOutputStream(baos);
@@ -304,7 +304,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     }
 
     @Test
-    public void testCipheInputStreamEncryption() throws Exception
+    public void cipheInputStreamEncryption() throws Exception
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(BYTES);
         InputStream decis = getCipher(true).getInputStream(bais);
@@ -320,7 +320,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     }
 
     @Test
-    public void testCipheInputStreamDecryption() throws Exception
+    public void cipheInputStreamDecryption() throws Exception
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(getEncrypted());
         InputStream decis = getCipher(false).getInputStream(bais);
@@ -341,7 +341,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     { }
 
     @Test
-    public void testCipherWithWrongParameters() throws Exception
+    public void cipherWithWrongParameters() throws Exception
     {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Invalid parameters for cipher: " + WrongParameters.class.getName());
@@ -352,7 +352,7 @@ public abstract class AbstractSymmetricCipherFactoryTest
     { }
 
     @Test
-    public void testCipherWithAsymmetricParameters() throws Exception
+    public void cipherWithAsymmetricParameters() throws Exception
     {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Unexpected parameters received for a symmetric cipher: "

@@ -77,7 +77,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void testContainerWithParameters()
+    public void containerWithParameters()
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithparameters");
 
@@ -92,7 +92,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void testContainerWithNamedParameters()
+    public void containerWithNamedParameters()
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithnamedparameters");
 
@@ -109,7 +109,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void testNameInheritance() throws ComponentLookupException
+    public void nameInheritance() throws ComponentLookupException
     {
         FilterElementDescriptor filterElement = this.mocker.getComponentUnderTest()
             .getFilterDescriptor(TestFilterImplementation.class).getElement("containerwithnamedparameters");
@@ -127,7 +127,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void testWithDefaultValue() throws ComponentLookupException
+    public void withDefaultValue() throws ComponentLookupException
     {
         FilterElementDescriptor filterElement = this.mocker.getComponentUnderTest()
             .getFilterDescriptor(TestFilterImplementation.class).getElement("childwithdefaultvalue");
@@ -152,7 +152,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void testNamedChild()
+    public void namedChild()
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("childwithname");
 
@@ -163,7 +163,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test
-    public void testNamedContainer()
+    public void namedContainer()
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithname");
 
@@ -174,7 +174,7 @@ public abstract class AbstractFilterDescriptorManagerTest
     }
 
     @Test(expected = FilterException.class)
-    public void testProxyFailing() throws FilterException, ComponentLookupException
+    public void proxyFailing() throws FilterException, ComponentLookupException
     {
         UnknownFilter filter = mock(UnknownFilter.class);
         doThrow(FilterException.class).when(filter).onUnknwon(any(), any());

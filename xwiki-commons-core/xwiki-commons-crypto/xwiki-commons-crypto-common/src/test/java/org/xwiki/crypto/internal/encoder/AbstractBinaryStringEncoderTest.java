@@ -56,7 +56,7 @@ public abstract class AbstractBinaryStringEncoderTest
     }
 
     @Test
-    public void testEncode() throws Exception
+    public void encode() throws Exception
     {
         assertThat(encoder.encode(BYTES), equalTo(ENCODED_BYTES));
         assertThat(encoder.encode(BYTES, 64), equalTo(WRAPPED_ENCODED_BYTES));
@@ -68,14 +68,14 @@ public abstract class AbstractBinaryStringEncoderTest
     }
 
     @Test
-    public void testDecode() throws Exception
+    public void decode() throws Exception
     {
         assertThat(encoder.decode(ENCODED_BYTES), equalTo(BYTES));
         assertThat(encoder.decode(WRAPPED_ENCODED_BYTES), equalTo(BYTES));
     }
 
     @Test
-    public void testEncoderStream() throws Exception
+    public void encoderStream() throws Exception
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         OutputStream encos = encoder.getEncoderOutputStream(baos);
@@ -94,7 +94,7 @@ public abstract class AbstractBinaryStringEncoderTest
     }
 
     @Test
-    public void testEncoderWrappedStream() throws Exception
+    public void encoderWrappedStream() throws Exception
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         OutputStream encos = encoder.getEncoderOutputStream(baos, 64);
@@ -124,7 +124,7 @@ public abstract class AbstractBinaryStringEncoderTest
     }
 
     @Test
-    public void testDecoderStream() throws Exception
+    public void decoderStream() throws Exception
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(ENCODED_BYTES.getBytes());
         InputStream decis = encoder.getDecoderInputStream(bais);
@@ -136,7 +136,7 @@ public abstract class AbstractBinaryStringEncoderTest
     }
 
     @Test
-    public void testDecoderWrappedStream() throws Exception
+    public void decoderWrappedStream() throws Exception
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(WRAPPED_ENCODED_BYTES.getBytes());
         InputStream decis = encoder.getDecoderInputStream(bais);
@@ -148,7 +148,7 @@ public abstract class AbstractBinaryStringEncoderTest
     }
 
     @Test
-    public void testDecoderStreamNoMark() throws Exception
+    public void decoderStreamNoMark() throws Exception
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(ENCODED_BYTES.getBytes()) {
             @Override
@@ -166,7 +166,7 @@ public abstract class AbstractBinaryStringEncoderTest
     }
 
     @Test
-    public void testDecoderWrappedStreamNoMark() throws Exception
+    public void decoderWrappedStreamNoMark() throws Exception
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(WRAPPED_ENCODED_BYTES.getBytes()) {
             @Override

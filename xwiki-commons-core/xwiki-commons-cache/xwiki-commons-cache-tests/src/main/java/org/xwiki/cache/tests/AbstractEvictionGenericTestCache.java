@@ -68,7 +68,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
      * @throws Exception error
      */
     @Test
-    public void testCreateAndDestroyCacheLRUMaxEntries() throws Exception
+    public void createAndDestroyCacheLRUMaxEntries() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -114,7 +114,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
      * @throws Exception error
      */
     @Test
-    public void testCreateAndDestroyCacheLRUMAxIdle() throws Exception
+    public void createAndDestroyCacheLRUMAxIdle() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -157,7 +157,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
      * @throws Exception error
      */
     @Test
-    public void testCreateAndDestroyCacheLRULifespan() throws Exception
+    public void createAndDestroyCacheLRULifespan() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 
@@ -200,7 +200,7 @@ public abstract class AbstractEvictionGenericTestCache extends AbstractGenericTe
      * @throws Exception error
      */
     @Test
-    public void testCreateAndDestroyCacheLRUAll() throws Exception
+    public void createAndDestroyCacheLRUAll() throws Exception
     {
         CacheFactory factory = getCacheFactory();
 

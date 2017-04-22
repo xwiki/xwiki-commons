@@ -61,14 +61,14 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void testDigestFactoryProperties() throws Exception
+    public void digestFactoryProperties() throws Exception
     {
         assertThat(factory.getDigestAlgorithmName(), equalTo(digestAlgo));
         assertThat(factory.getDigestSize(), equalTo(digestSize));
     }
 
     @Test
-    public void testDigestProperties() throws Exception
+    public void digestProperties() throws Exception
     {
         assertThat(getDigestInstance().getAlgorithmName(), equalTo(digestAlgo));
         assertThat(getDigestInstance().getDigestSize(), equalTo(digestSize));
@@ -76,14 +76,14 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void testDigestOneShot() throws Exception
+    public void digestOneShot() throws Exception
     {
         assertThat(getDigestInstance().digest(BYTES), equalTo(digestResult));
         assertThat(getDigestInstance().digest(BYTES, 10, 20), not(equalTo(digestResult)));
     }
 
     @Test
-    public void testDigestMultiplePart() throws Exception
+    public void tdigestMultiplePart() throws Exception
     {
         Digest dig = getDigestInstance();
         byte[] b = BYTES;
@@ -98,7 +98,7 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void testDigestOutputStream() throws Exception
+    public void digestOutputStream() throws Exception
     {
         OutputStream os = getDigestInstance().getOutputStream();
         os.write(BYTES);
@@ -120,7 +120,7 @@ public abstract class AbstractDigestFactoryTest extends AbstractDigestFactoryTes
     }
 
     @Test
-    public void testDigestInputStream() throws Exception
+    public void digestInputStream() throws Exception
     {
         ByteArrayInputStream bais = new ByteArrayInputStream(BYTES);
         InputStream is = getDigestInstance().getInputStream(bais);
