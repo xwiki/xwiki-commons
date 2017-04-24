@@ -155,16 +155,6 @@
               "revapi": {
                 "ignore" : [
                   // Add more ignores below...
-                  {
-                    "code": "java.field.serialVersionUIDUnchanged",
-                    "old": "field org.xwiki.extension.ExtensionException.serialVersionUID",
-                    "new": "field org.xwiki.extension.ExtensionException.serialVersionUID",
-                    "package": "org.xwiki.extension",
-                    "classSimpleName": "ExtensionException",
-                    "fieldName": "serialVersionUID",
-                    "elementKind": "field",
-                    "justification": "Really don't see how adding a new constructor could be a breakage..."
-                  }
                 ]
               }
             }
