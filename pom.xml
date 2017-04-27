@@ -940,16 +940,9 @@
       </dependency>
       <!-- Mail -->
       <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>1.4.7</version>
-        <exclusions>
-          <!-- We exclude it since it draws version 1.1 and other dependencies we have draw version 1.1.1 -->
-          <exclusion>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>javax.mail</artifactId>
+        <version>1.5.6</version>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
