@@ -581,10 +581,20 @@
             <groupId>javax.xml.stream</groupId>
             <artifactId>stax-api</artifactId>
           </exclusion>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+          </exclusion>
           <!-- We use a more accurate and up to date JSON framework version -->
           <exclusion>
             <artifactId>org.restlet.lib.org.json</artifactId>
             <groupId>org.restlet.jse</groupId>
+          </exclusion>
+          <!-- The recent one have a different id so we can't rely on dependencyManagement -->
+          <exclusion>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -943,6 +953,13 @@
         <groupId>com.sun.mail</groupId>
         <artifactId>javax.mail</artifactId>
         <version>1.5.6</version>
+        <exclusions>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
