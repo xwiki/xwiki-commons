@@ -193,7 +193,9 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setNamespaces(Collection<String> namespaces)
     {
-        synchronized (this.propertiesLock) {
+        try {
+            this.propertiesLock.lock();
+
             if (namespaces == null) {
                 putProperty(PKEY_ROOT_NAMESPACE, isInstalled() ? new HashMap<String, Object>() : null);
                 putProperty(PKEY_NAMESPACES, null);
@@ -208,6 +210,8 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                     installedNamespaces.put(namespace, namespaceData);
                 }
             }
+        } finally {
+            this.propertiesLock.unlock();
         }
 
         this.namespacesCache = null;
@@ -250,7 +254,9 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setInstalled(boolean installed, String namespace)
     {
-        synchronized (this.propertiesLock) {
+        try {
+            this.propertiesLock.lock();
+
             if (namespace == null) {
                 if (installed && !isInstalled()) {
                     setValid(namespace, true);
@@ -278,6 +284,8 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                     }
                 }
             }
+        } finally {
+            this.propertiesLock.unlock();
         }
 
         if (!installed) {
@@ -371,7 +379,9 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     private Map<String, Object> maybeCreateInstalledNamespace(Map<String, Map<String, Object>> namespaces,
         String namespace)
     {
-        synchronized (this.propertiesLock) {
+        try {
+            this.propertiesLock.lock();
+
             // Can't use ConcurrentHashMap because we have null key (root namespace)
             Map<String, Map<String, Object>> newNamespaces;
             if (namespaces != null) {
@@ -391,6 +401,8 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
             this.namespacesCache = null;
 
             return installedNamespace;
+        } finally {
+            this.propertiesLock.unlock();
         }
     }
 
@@ -425,7 +437,9 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setDependency(boolean dependency, String namespace)
     {
-        synchronized (this.propertiesLock) {
+        try {
+            this.propertiesLock.unlock();
+
             if (namespace == null) {
                 putProperty(PKEY_DEPENDENCY, dependency);
             } else {
@@ -435,6 +449,8 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
                     installedNamespace.put(PKEY_NAMESPACES_DEPENDENCY, dependency);
                 }
             }
+        } finally {
+            this.propertiesLock.unlock();
         }
     }
 
@@ -487,11 +503,15 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
      */
     public void setNamespaceProperty(String key, Object value, String namespace)
     {
-        synchronized (this.propertiesLock) {
+        try {
+            this.propertiesLock.lock();
+
             Map<String, Object> namespaceProperties = getNamespaceProperties(namespace);
             if (namespaceProperties != null) {
                 namespaceProperties.put(key, value);
             }
+        } finally {
+            this.propertiesLock.unlock();
         }
     }
 
