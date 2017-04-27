@@ -438,7 +438,7 @@ public class DefaultInstalledExtension extends AbstractExtension implements Inst
     public void setDependency(boolean dependency, String namespace)
     {
         try {
-            this.propertiesLock.unlock();
+            this.propertiesLock.lock();
 
             if (namespace == null) {
                 putProperty(PKEY_DEPENDENCY, dependency);
