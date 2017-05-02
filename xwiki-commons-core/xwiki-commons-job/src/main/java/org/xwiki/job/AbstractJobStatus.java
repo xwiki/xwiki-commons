@@ -131,6 +131,11 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     private boolean isolated = true;
 
     /**
+     * Flag indicating if the job was canceled.
+     */
+    private boolean canceled;
+
+    /**
      * @param request the request provided when started the job
      * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
      *            {@code null} if this job hasn't been started by another job (i.e. if this is not a sub-job)
@@ -394,5 +399,24 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public List<LogEvent> getLog(LogLevel level)
     {
         return getLog().getLogs(level);
+    }
+
+    /**
+     * Cancel the job.
+     *
+     * @since 9.4RC1
+     */
+    public void cancel()
+    {
+        this.canceled = true;
+    }
+
+    /**
+     * @return {@code true} if the job was canceled, {@code false} otherwise
+     * @since 9.4RC1
+     */
+    public boolean isCanceled()
+    {
+        return this.canceled;
     }
 }
