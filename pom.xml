@@ -1521,12 +1521,16 @@ mm
           <!-- Lock down plugin version for build reproducibility -->
           <version>${jacoco.version}</version>
           <configuration>
-            <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
-                 error, see
-                 http://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
-                 TODO: remove when https://sourceforge.net/p/cssparser/bugs/53/ is fixed -->
             <excludes>
+              <!-- Don't run Jacoco on com/steadystate/css/parser/SACParserCSS21TokenManager since it generates an
+                   error, see
+                   http://stackoverflow.com/questions/14559117/how-do-i-disable-jacoco-agent-after-jacocoreport
+                   TODO: remove when https://sourceforge.net/p/cssparser/bugs/53/ is fixed -->
               <exclude>**com.steadystate.css.parser.SACParserCSS21TokenManager</exclude>
+
+              <!-- Jacoco instrumentation makes relaxng go nuts. See https://github.com/jacoco/jacoco/issues/528
+                   and https://github.com/validator/validator/issues/505 -->
+              <exclude>**com.thaiopensource.relaxng.impl.**</exclude>
             </excludes>
           </configuration>
         </plugin>
