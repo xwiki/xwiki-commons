@@ -1227,7 +1227,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.19.1</version>
+          <version>2.20</version>
           <!-- XWiki rule is to put test in *Test classes -->
           <configuration>
             <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
