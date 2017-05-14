@@ -36,7 +36,7 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>dom4j</groupId>
+      <groupId>org.dom4j</groupId>
       <artifactId>dom4j</artifactId>
     </dependency>
     <dependency>
@@ -47,7 +47,7 @@
     <dependency>
       <artifactId>jaxen</artifactId>
       <groupId>jaxen</groupId>
-      <version>1.1.4</version>
+      <version>1.1.6</version>
       <scope>runtime</scope>
     </dependency>
     <!-- This dependency is drawn by XOM which draws it from Jaxen. However, Jaxen 1.1.4 draws XOM 1.0 which draws
