@@ -195,15 +195,13 @@ public class DefaultJobProgress implements EventListener, JobProgress
         if (level == null) {
             LOGGER.warn("Could not find any matching step level for source [{}]. Ignoring PopLevelProgressEvent.",
                 source.toString());
+        } else {
+            // Move to parent step
+            this.currentStep = level;
 
-            return;
+            // Close the level
+            this.currentStep.finishLevel();
         }
-
-        // Move to parent step
-        this.currentStep = level;
-
-        // Close the level
-        this.currentStep.finishLevel();
     }
 
     private DefaultJobProgressStep findStep(DefaultJobProgressStep step, Object source)
