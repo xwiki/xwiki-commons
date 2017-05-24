@@ -26,9 +26,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -173,21 +175,17 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
     private Collection<URL> getJARs()
     {
-        Map<String, URL> urls = new HashMap<>();
+        Set<URL> urls = new HashSet<>();
         // ClasspathHelper.forClassLoader() get even the JARs that are made not reachable by the application server
         // So the trick is to get all resources in which we can access a META-INF folder
-        for (URL url : ClasspathHelper.forPackage("META-INF")) {
-            urls.put(url.toExternalForm(), url);
-        }
+        urls.addAll(ClasspathHelper.forPackage("META-INF"));
         // Workaround javax.inject 1 JAR which is incredibly hacky and does not even contain any META-INF folder so we have to do
         // something special for it
-        for (URL url : ClasspathHelper.forPackage("javax")) {
-            urls.put(url.toExternalForm(), url);
-        }
+        urls.addAll(ClasspathHelper.forPackage("javax"));
 
         Collection<URL> jarURLs = new ArrayList<>(urls.size());
 
-        for (URL url : urls.values()) {
+        for (URL url : urls) {
             try {
                 jarURLs.add(PathUtils.getExtensionURL(url));
             } catch (IOException e) {
