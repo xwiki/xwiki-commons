@@ -173,13 +173,21 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
     private Collection<URL> getJARs()
     {
+        Map<String, URL> urls = new HashMap<>();
         // ClasspathHelper.forClassLoader() get even the JARs that are made not reachable by the application server
         // So the trick is to get all resources in which we can access a META-INF folder
-        Collection<URL> urls = ClasspathHelper.forPackage("META-INF");
+        for (URL url : ClasspathHelper.forPackage("META-INF")) {
+            urls.put(url.toExternalForm(), url);
+        }
+        // Workaround javax.inject 1 JAR which is incredibly hacky and does not even contain any META-INF folder so we have to do
+        // something special for it
+        for (URL url : ClasspathHelper.forPackage("javax")) {
+            urls.put(url.toExternalForm(), url);
+        }
 
         Collection<URL> jarURLs = new ArrayList<>(urls.size());
 
-        for (URL url : urls) {
+        for (URL url : urls.values()) {
             try {
                 jarURLs.add(PathUtils.getExtensionURL(url));
             } catch (IOException e) {
