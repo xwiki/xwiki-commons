@@ -54,15 +54,20 @@ public class DefaultCacheManagerConfiguration implements CacheManagerConfigurati
     @Inject
     private Provider<ConfigurationSource> configuration;
 
+    protected ConfigurationSource getConfigurationSource()
+    {
+        return this.configuration.get();
+    }
+
     @Override
     public String getDefaultCache()
     {
-        return this.configuration.get().getProperty(PREFIX + "defaultCache", DEFAULT_CACHE_HINT);
+        return getConfigurationSource().getProperty(PREFIX + "defaultCache", DEFAULT_CACHE_HINT);
     }
 
     @Override
     public String getDefaultLocalCache()
     {
-        return this.configuration.get().getProperty(PREFIX + "defaultLocalCache", DEFAULT_LOCALCACHE_HINT);
+        return getConfigurationSource().getProperty(PREFIX + "defaultLocalCache", DEFAULT_LOCALCACHE_HINT);
     }
 }
