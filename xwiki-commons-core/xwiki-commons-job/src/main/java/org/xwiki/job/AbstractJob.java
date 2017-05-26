@@ -228,11 +228,13 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
             ((AbstractJobStatus) this.status).startListening();
         }
 
-        if (getStatus().getRequest().getId() != null) {
-            this.logger.info(LOG_BEGIN_ID, "Starting job of type [{}] with identifier [{}]", getType(),
-                getStatus().getRequest().getId());
-        } else {
-            this.logger.info(LOG_BEGIN, "Starting job of type [{}]", getType());
+        if (getRequest().isVerbose()) {
+            if (getStatus().getRequest().getId() != null) {
+                this.logger.info(LOG_BEGIN_ID, "Starting job of type [{}] with identifier [{}]", getType(),
+                    getStatus().getRequest().getId());
+            } else {
+                this.logger.info(LOG_BEGIN, "Starting job of type [{}]", getType());
+            }
         }
     }
 
@@ -255,11 +257,13 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
             this.observationManager.notify(new JobFinishingEvent(getRequest().getId(), getType(), this.request), this,
                 error);
 
-            if (getStatus().getRequest().getId() != null) {
-                this.logger.info(LOG_END_ID, "Finished job of type [{}] with identifier [{}]", getType(),
-                    getStatus().getRequest().getId());
-            } else {
-                this.logger.info(LOG_END, "Finished job of type [{}]", getType());
+            if (getRequest().isVerbose()) {
+                if (getStatus().getRequest().getId() != null) {
+                    this.logger.info(LOG_END_ID, "Finished job of type [{}] with identifier [{}]", getType(),
+                        getStatus().getRequest().getId());
+                } else {
+                    this.logger.info(LOG_END, "Finished job of type [{}]", getType());
+                }
             }
 
             if (this.status instanceof AbstractJobStatus) {
