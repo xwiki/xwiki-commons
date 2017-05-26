@@ -35,19 +35,24 @@ import org.xwiki.extension.version.Version;
 public abstract class AbstractMavenExtension extends AbstractExtension implements MavenExtension
 {
     /**
+     * The prefix used in all Maven related extension properties.
+     */
+    public static final String PKEY_MAVENPRFIX = "maven.";
+
+    /**
      * The name of the property containing the source Model if any.
      */
-    public static final String PKEY_MAVEN_MODEL = "maven.Model";
+    public static final String PKEY_MAVEN_MODEL = PKEY_MAVENPRFIX + ".Model";
 
     /**
      * The name of the property containing the artifact id.
      */
-    public static final String PKEY_MAVEN_ARTIFACTID = "maven.artifactid";
+    public static final String PKEY_MAVEN_ARTIFACTID = PKEY_MAVENPRFIX + ".artifactid";
 
     /**
      * The name of the property containing the group id.
      */
-    public static final String PKEY_MAVEN_GROUPID = "maven.groupid";
+    public static final String PKEY_MAVEN_GROUPID = PKEY_MAVENPRFIX + ".groupid";
 
     /**
      * @param repository the repository where this extension comes from
