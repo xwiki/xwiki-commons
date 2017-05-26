@@ -20,7 +20,7 @@
 package org.xwiki.cache.internal;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.xwiki.cache.CacheManagerConfiguration;
@@ -51,26 +51,18 @@ public class DefaultCacheManagerConfiguration implements CacheManagerConfigurati
      */
     private static final String DEFAULT_LOCALCACHE_HINT = "infinispan/local";
 
-    /**
-     * We read the cache configuration data only from the XWiki configuration file. We don't look for cache
-     * configuration in other sources (such as in the XWikiPreferences page for example) since the cache configuration
-     * is farm wide and shouldn't be overridden in wikis. In addition that would cause some cyclic dependency since the
-     * configuration source would look for config data in wiki pages thus calling the cache store which in turn would
-     * call this class again.
-     */
     @Inject
-    @Named("xwikiproperties")
-    private ConfigurationSource configuration;
+    private Provider<ConfigurationSource> configuration;
 
     @Override
     public String getDefaultCache()
     {
-        return this.configuration.getProperty(PREFIX + "defaultCache", DEFAULT_CACHE_HINT);
+        return this.configuration.get().getProperty(PREFIX + "defaultCache", DEFAULT_CACHE_HINT);
     }
 
     @Override
     public String getDefaultLocalCache()
     {
-        return this.configuration.getProperty(PREFIX + "defaultLocalCache", DEFAULT_LOCALCACHE_HINT);
+        return this.configuration.get().getProperty(PREFIX + "defaultLocalCache", DEFAULT_LOCALCACHE_HINT);
     }
 }
