@@ -99,9 +99,6 @@ public class InfinispanCacheFactory implements CacheFactory, Initializable, Disp
 
         if (configurationStream != null) {
             // CacheManager initialization
-
-            configurationStream = getConfigurationFileAsStream();
-
             try {
                 this.cacheManager = new DefaultCacheManager(configurationStream);
             } catch (IOException e) {
