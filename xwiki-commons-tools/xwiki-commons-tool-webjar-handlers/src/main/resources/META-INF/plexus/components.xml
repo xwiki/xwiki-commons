@@ -78,6 +78,8 @@
         <type>webjar</type>
         <extension>jar</extension>
         <packaging>webjar</packaging>
+        <addedToClasspath>true</addedToClasspath>
+        <includesDependencies>false</includesDependencies>
       </configuration>
     </component>
   </components>
