@@ -85,4 +85,17 @@ public class InstallRequest extends AbstractExtensionRequest
     {
         return getExtensionProperties().put(key, value);
     }
+
+    /**
+     * Sets custom extension properties to be set on each of the extensions that are going to be installed from this
+     * request.
+     * 
+     * @param properties the properties to add to custom extension properties
+     * @see #setExtensionProperty(String, Object)
+     * @since 9.5RC1
+     */
+    public void addExtensionProperties(Map<String, Object> properties)
+    {
+        getExtensionProperties().putAll(properties);
+    }
 }

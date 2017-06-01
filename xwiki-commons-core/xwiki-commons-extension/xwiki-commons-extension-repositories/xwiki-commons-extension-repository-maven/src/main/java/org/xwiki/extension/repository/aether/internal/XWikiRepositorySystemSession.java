@@ -51,32 +51,44 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 {
     static final JreProxySelector JREPROXYSELECTOR = new JreProxySelector();
 
-    private final DefaultRepositorySystemSession session;
+    private final RepositorySystemSession session;
+
+    private final boolean closable;
+
+    /**
+     * @param session a pre-existing session
+     */
+    public XWikiRepositorySystemSession(RepositorySystemSession session)
+    {
+        this.session = session;
+        this.closable = false;
+    }
 
     /**
      * @param repositorySystem the AETHER repository system component
      */
     public XWikiRepositorySystemSession(RepositorySystem repositorySystem)
     {
-        this.session = MavenRepositorySystemUtils.newSession();
+        DefaultRepositorySystemSession wsession = MavenRepositorySystemUtils.newSession();
+        this.session = wsession;
+        this.closable = true;
 
         // Local repository
 
         File localDir = Files.createTempDir();
         LocalRepository localRepository = new LocalRepository(localDir);
-        this.session
-            .setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(this.session, localRepository));
+        wsession.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(wsession, localRepository));
 
         // Proxy selector
 
-        this.session.setProxySelector(JREPROXYSELECTOR);
+        wsession.setProxySelector(JREPROXYSELECTOR);
 
         // Remove all system properties that could disrupt effective pom resolution
-        this.session.setSystemProperty("version", null);
-        this.session.setSystemProperty("groupId", null);
+        wsession.setSystemProperty("version", null);
+        wsession.setSystemProperty("groupId", null);
 
         // Add various type descriptors
-        ArtifactTypeRegistry artifactTypeRegistry = this.session.getArtifactTypeRegistry();
+        ArtifactTypeRegistry artifactTypeRegistry = wsession.getArtifactTypeRegistry();
         if (artifactTypeRegistry instanceof DefaultArtifactTypeRegistry) {
             DefaultArtifactTypeRegistry defaultArtifactTypeRegistry =
                 (DefaultArtifactTypeRegistry) artifactTypeRegistry;
@@ -87,7 +99,7 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
         }
 
         // Fail when the pom is missing or invalid
-        this.session.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
+        wsession.setArtifactDescriptorPolicy(new SimpleArtifactDescriptorPolicy(false, false));
     }
 
     @Override
@@ -99,13 +111,15 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
     @Override
     public void close()
     {
-        LocalRepository repository = this.session.getLocalRepository();
+        if (this.closable) {
+            LocalRepository repository = this.session.getLocalRepository();
 
-        if (repository.getBasedir().exists()) {
-            try {
-                FileUtils.deleteDirectory(repository.getBasedir());
-            } catch (IOException e) {
-                // TODO: Should probably log something even if it should be pretty rare
+            if (repository.getBasedir().exists()) {
+                try {
+                    FileUtils.deleteDirectory(repository.getBasedir());
+                } catch (IOException e) {
+                    // TODO: Should probably log something even if it should be pretty rare
+                }
             }
         }
     }
@@ -115,7 +129,10 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
      */
     public void setUserAgent(String userAgent)
     {
-        this.session.setConfigProperty(ConfigurationProperties.USER_AGENT, userAgent);
+        if (this.session instanceof DefaultRepositorySystemSession) {
+            ((DefaultRepositorySystemSession) this.session).setConfigProperty(ConfigurationProperties.USER_AGENT,
+                userAgent);
+        }
     }
 
     /**
@@ -123,8 +140,10 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
      */
     public void addConfigurationProperties(Map<String, String> properties)
     {
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
-            this.session.setConfigProperty(entry.getKey(), entry.getValue());
+        if (this.session instanceof DefaultRepositorySystemSession) {
+            for (Map.Entry<String, String> entry : properties.entrySet()) {
+                ((DefaultRepositorySystemSession) this.session).setConfigProperty(entry.getKey(), entry.getValue());
+            }
         }
     }
 }

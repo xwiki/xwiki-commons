@@ -1,0 +1,4 @@
+org.xwiki.tool.extension.util.ExtensionMojoHelper
+500:org.xwiki.tool.extension.internal.MavenBuildConfigurationSource
+500:org.xwiki.tool.extension.internal.ExtensionMojoCoreExtensionRepository
+500:org.xwiki.tool.extension.internal.ExtensionMojoInstallPlanJob

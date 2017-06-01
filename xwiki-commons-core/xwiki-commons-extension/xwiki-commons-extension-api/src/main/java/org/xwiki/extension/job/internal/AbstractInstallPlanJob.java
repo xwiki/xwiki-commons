@@ -141,8 +141,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * <p>
      * <id, <namespace, node>>.
      */
-    protected Map<String, Map<String, ModifableExtensionPlanNode>> extensionsNodeCache =
-        new HashMap<String, Map<String, ModifableExtensionPlanNode>>();
+    protected Map<String, Map<String, ModifableExtensionPlanNode>> extensionsNodeCache = new HashMap<>();
 
     protected void setExtensionTree(DefaultExtensionPlanTree extensionTree)
     {
@@ -167,7 +166,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             if (namespace == null) {
                 namespaces = null;
             } else {
-                namespaces = new HashSet<String>();
+                namespaces = new HashSet<>();
             }
 
             extensionsByNamespace.put(extensionId, namespaces);
@@ -238,7 +237,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         Map<String, ModifableExtensionPlanNode> extensionsById = this.extensionsNodeCache.get(id);
 
         if (extensionsById == null) {
-            extensionsById = new HashMap<String, ModifableExtensionPlanNode>();
+            extensionsById = new HashMap<>();
             this.extensionsNodeCache.put(id, extensionsById);
         }
 
@@ -763,6 +762,26 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         return extension;
     }
 
+    protected boolean isNamespaceAllowed(Extension extension, String namespace)
+    {
+        return this.namespaceResolver.isAllowed(extension.getAllowedNamespaces(), namespace);
+    }
+
+    protected void checkTypeInstall(Extension extension, String namespace) throws InstallException
+    {
+        ExtensionHandler extensionHandler;
+
+        // Is type supported ?
+        try {
+            extensionHandler = this.componentManager.getInstance(ExtensionHandler.class, extension.getType());
+        } catch (ComponentLookupException e) {
+            throw new InstallException(String.format("Unsupported type [%s]", extension.getType()), e);
+        }
+
+        // Is installing the extension allowed ?
+        extensionHandler.checkInstall(extension, namespace, getRequest());
+    }
+
     /**
      * @param sourceExtension the new extension to install
      * @param rewrittenExtension the rewritten version of the passed extension
@@ -781,7 +800,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         Map<String, ExtensionDependency> managedDependencies) throws InstallException, ResolveException,
         IncompatibleVersionConstraintException, UninstallException, NamespaceNotAllowedException
     {
-        boolean allowed = this.namespaceResolver.isAllowed(rewrittenExtension.getAllowedNamespaces(), namespace);
+        boolean allowed = isNamespaceAllowed(rewrittenExtension, namespace);
 
         // Check if the namespace is compatible with the Extension
         if (!allowed) {
@@ -830,27 +849,13 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         // Find out what need to be upgraded and uninstalled
 
-        this.progressManager.pushLevelProgress(6, this);
+        this.progressManager.pushLevelProgress(5, this);
 
         try {
             this.progressManager.startStep(this);
 
-            ExtensionHandler extensionHandler;
-
-            // Is type supported ?
-            try {
-                extensionHandler =
-                    this.componentManager.getInstance(ExtensionHandler.class, rewrittenExtension.getType());
-            } catch (ComponentLookupException e) {
-                throw new InstallException(String.format("Unsupported type [%s]", rewrittenExtension.getType()), e);
-            }
-
-            this.progressManager.endStep(this);
-
-            this.progressManager.startStep(this);
-
-            // Is installing the extension allowed ?
-            extensionHandler.checkInstall(rewrittenExtension, namespace, getRequest());
+            // Is installing the extension supported/allowed ?
+            checkTypeInstall(rewrittenExtension, namespace);
 
             this.progressManager.endStep(this);
 
@@ -890,7 +895,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                 this.progressManager.pushLevelProgress(dependencies.size() + 1, this);
 
                 try {
-                    children = new ArrayList<ModifableExtensionPlanNode>();
+                    children = new ArrayList<>();
                     for (ExtensionDependency extensionDependency : rewrittenExtension.getDependencies()) {
                         this.progressManager.startStep(this);
 
@@ -1008,7 +1013,8 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     private void checkCoreExtension(String feature) throws InstallException
     {
         if (this.coreExtensionRepository.exists(feature)) {
-            throw new InstallException(String.format("There is already a core covering feature [%s]", feature));
+            throw new InstallException(
+                String.format("There is already a core extension covering feature [%s]", feature));
         }
     }
 

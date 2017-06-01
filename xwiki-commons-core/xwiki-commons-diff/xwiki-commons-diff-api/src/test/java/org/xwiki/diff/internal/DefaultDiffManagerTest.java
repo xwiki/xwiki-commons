@@ -175,6 +175,7 @@ public class DefaultDiffManagerTest
             Arrays.asList("some new content"), Arrays.asList("some new content"), null);
 
         Assert.assertEquals(Arrays.asList("some new content"), result.getMerged());
+
     }
 
     @Test
@@ -247,19 +248,19 @@ public class DefaultDiffManagerTest
         result = this.mocker.getComponentUnderTest()
             .merge(toCharacters("abc"), toCharacters("ajbc"), toCharacters("aibc"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(toCharacters("ajibc"), result.getMerged());
 
         result = this.mocker.getComponentUnderTest()
             .merge(toCharacters("ab"), toCharacters("aijb"), toCharacters("aib"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(toCharacters("aijb"), result.getMerged());
 
         result = this.mocker.getComponentUnderTest()
             .merge(toCharacters("ab"), toCharacters("ajb"), toCharacters("aijb"), null);
 
-        Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
+        Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(toCharacters("aijb"), result.getMerged());
 
         result =

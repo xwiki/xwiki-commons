@@ -106,6 +106,8 @@ public class InstallJob extends AbstractExtensionJob<InstallRequest, DefaultJobS
             InstallRequest planRequest = new InstallRequest(getRequest());
             planRequest.setId((List<String>) null);
 
+            planRequest.setVerbose(getRequest().isVerbose());
+
             this.installPlanJob.initialize(planRequest);
             this.installPlanJob.run();
 

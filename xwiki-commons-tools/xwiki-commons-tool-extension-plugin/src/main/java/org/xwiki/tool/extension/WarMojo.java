@@ -26,7 +26,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProject;
 import org.xwiki.tool.extension.util.AbstractExtensionMojo;
 
 /**
@@ -44,24 +43,14 @@ public class WarMojo extends AbstractExtensionMojo
     @Parameter(defaultValue = "${project.build.directory}/${project.build.finalName}", required = true)
     private File webappDirectory;
 
-    /**
-     * The maven project.
-     */
-    @Parameter(defaultValue = "${project}", required = true, readonly = true)
-    protected MavenProject project;
-
     @Override
-    public void execute() throws MojoExecutionException
+    public void executeInternal() throws MojoExecutionException
     {
-        initializeComponents();
-
         // Register the WAR
         registerWAR();
 
         // Register dependencies
         registerDependencies();
-
-        disposeComponents();
     }
 
     private void registerWAR() throws MojoExecutionException
@@ -72,7 +61,7 @@ public class WarMojo extends AbstractExtensionMojo
 
         // Write descriptor
         try {
-            saveExtension(new File(directory, "extension.xed"), this.project.getModel());
+            this.extensionHelper.serializeExtension(new File(directory, "extension.xed"), this.project.getModel());
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to write WAR descriptor", e);
         }
@@ -85,6 +74,6 @@ public class WarMojo extends AbstractExtensionMojo
         libDirectory.mkdirs();
 
         // Register dependencies
-        saveExtensions(this.project.getArtifacts(), libDirectory, "jar");
+        this.extensionHelper.serializeExtensions(this.project.getArtifacts(), libDirectory, "jar");
     }
 }

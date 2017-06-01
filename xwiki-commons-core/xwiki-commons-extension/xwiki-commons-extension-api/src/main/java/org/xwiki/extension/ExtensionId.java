@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
 
@@ -138,7 +139,7 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
     @Override
     public String toString()
     {
-        return getId() + '-' + getVersion();
+        return ExtensionIdConverter.toString(this);
     }
 
     @Override

@@ -122,10 +122,8 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
             }
 
             // Put extensions features in the map
-            for (DefaultCoreExtension extension : this.extensions.values()) {
-                for (ExtensionId feature : extension.getExtensionFeatures()) {
-                    this.extensions.put(feature.getId(), extension);
-                }
+            for (DefaultCoreExtension coreExtension : this.extensions.values()) {
+                addExtensionFeatures(coreExtension);
             }
 
             // Update core extensions only if there is any remote repository and it's not disabled
@@ -148,6 +146,23 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
             }
         } catch (Exception e) {
             this.logger.warn("Failed to load core extensions", e);
+        }
+    }
+
+    /**
+     * @since 9.4RC1
+     */
+    protected void addExtension(DefaultCoreExtension coreExtension)
+    {
+        this.extensions.put(coreExtension.getId().getId(), coreExtension);
+
+        addExtensionFeatures(coreExtension);
+    }
+
+    private void addExtensionFeatures(DefaultCoreExtension coreExtension)
+    {
+        for (ExtensionId feature : coreExtension.getExtensionFeatures()) {
+            this.extensions.put(feature.getId(), coreExtension);
         }
     }
 

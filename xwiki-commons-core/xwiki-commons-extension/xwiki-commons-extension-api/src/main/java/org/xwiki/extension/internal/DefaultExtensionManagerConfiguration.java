@@ -145,7 +145,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
             repositories = null;
         } else {
             Map<String, ExtensionRepositoryDescriptor> repositoriesMap =
-                new LinkedHashMap<String, ExtensionRepositoryDescriptor>();
+                new LinkedHashMap<>();
             for (String repositoryString : repositoryStrings) {
                 if (StringUtils.isNotBlank(repositoryString)) {
                     try {

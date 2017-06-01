@@ -45,7 +45,7 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public static final String PROPERTY_EXTENSIONS = "extensions";
 
     /**
-     * @see #getExtensions()
+     * @see #getExcludedExtensions()
      */
     public static final String PROPERTY_EXCLUDEDEXTENSIONS = "extensions.excluded";
 
@@ -149,7 +149,7 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
         Collection<String> namespaces = getNamespaces();
 
         if (namespaces == null) {
-            namespaces = new ArrayList<String>();
+            namespaces = new ArrayList<>();
             setProperty(PROPERTY_NAMESPACES, namespaces);
         }
 

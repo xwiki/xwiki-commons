@@ -17,41 +17,40 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.test;
+package org.xwiki.tool.extension.internal;
 
-import java.util.Arrays;
-
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
+import org.apache.maven.artifact.Artifact;
+import org.xwiki.component.phase.InitializationException;
+import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
-import org.xwiki.extension.version.Version;
 
-@Component(staticRegistration = false)
-@Singleton
-public class ConfigurableDefaultCoreExtensionRepository extends DefaultCoreExtensionRepository
+/**
+ * @version $Id$
+ * @since 9.4RC1
+ */
+public class ExtensionMojoCoreExtensionRepository extends DefaultCoreExtensionRepository
 {
     @Override
-    public void addExtension(DefaultCoreExtension extension)
+    public void initialize() throws InitializationException
     {
-        super.addExtension(extension);
+        // Cancel standard DefaultCoreExtensionRepository#initialize() since we don't care about what's in Maven
+        // classloader
     }
 
-    public void addExtensions(String id, Version version, ExtensionId... features)
+    public void addExtension(Extension extension)
     {
-        DefaultCoreExtension coreExtension =
-            new DefaultCoreExtension(null, null, new ExtensionId(id, version), "unknown");
+        DefaultCoreExtension coreExtension = new DefaultCoreExtension(this, null, extension);
 
-        if (features.length > 0) {
-            coreExtension.setExtensionFeatures(Arrays.asList(features));
-        }
+        addExtension(coreExtension);
+    }
 
-        this.extensions.put(id, coreExtension);
+    public void addExtension(Artifact artifact)
+    {
+        DefaultCoreExtension coreExtension = new DefaultCoreExtension(this, null,
+            new ExtensionId(artifact.getGroupId() + ':' + artifact.getArtifactId()), artifact.getType());
 
-        for (ExtensionId feature : coreExtension.getExtensionFeatures()) {
-            this.extensions.put(feature.getId(), coreExtension);
-        }
+        addExtension(coreExtension);
     }
 }

@@ -34,8 +34,9 @@ import org.apache.maven.model.building.DefaultModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
+import org.apache.maven.project.ProjectBuildingRequest.RepositoryMerging;
+import org.apache.maven.project.ProjectModelResolver;
 import org.apache.maven.repository.internal.ArtifactDescriptorUtils;
-import org.apache.maven.repository.internal.PublicDefaultModelResolver;
 import org.codehaus.plexus.PlexusContainer;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -53,9 +54,7 @@ import org.eclipse.aether.impl.RemoteRepositoryManager;
 import org.eclipse.aether.impl.RepositoryConnectorProvider;
 import org.eclipse.aether.impl.VersionRangeResolver;
 import org.eclipse.aether.impl.VersionResolver;
-import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.repository.RepositoryPolicy;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -66,9 +65,9 @@ import org.eclipse.aether.resolution.VersionRequest;
 import org.eclipse.aether.resolution.VersionResolutionException;
 import org.eclipse.aether.resolution.VersionResult;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
-import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
@@ -79,7 +78,9 @@ import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.maven.internal.MavenExtensionDependency;
 import org.xwiki.extension.maven.internal.converter.ModelConverter;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
+import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
@@ -97,64 +98,47 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     /**
      * Used to parse the version.
      */
-    private static final GenericVersionScheme AETHERVERSIONSCHEME = new GenericVersionScheme();
+    protected static final GenericVersionScheme AETHERVERSIONSCHEME = new GenericVersionScheme();
 
-    private transient PlexusContainer plexusContainer;
+    protected final PlexusContainer plexusContainer;
 
-    private transient RemoteRepository remoteRepository;
+    protected final ComponentManager componentManager;
 
-    private transient ArtifactDescriptorReader mavenDescriptorReader;
+    protected RemoteRepository remoteRepository;
 
-    private transient VersionRangeResolver versionRangeResolver;
+    protected ArtifactDescriptorReader mavenDescriptorReader;
 
-    private transient VersionResolver versionResolver;
+    protected VersionRangeResolver versionRangeResolver;
 
-    private transient ModelBuilder modelBuilder;
+    protected VersionResolver versionResolver;
 
-    private transient ArtifactResolver artifactResolver;
+    protected ModelBuilder modelBuilder;
 
-    private transient RepositorySystem repositorySystem;
+    protected ArtifactResolver artifactResolver;
 
-    private transient RepositoryConnectorProvider repositoryConnectorProvider;
+    protected RepositorySystem repositorySystem;
 
-    private transient RemoteRepositoryManager remoteRepositoryManager;
+    protected RepositoryConnectorProvider repositoryConnectorProvider;
 
-    private transient Converter<Model> extensionConverter;
+    protected RemoteRepositoryManager remoteRepositoryManager;
 
-    private transient AetherExtensionRepositoryFactory repositoryFactory;
+    protected Converter<Model> extensionConverter;
 
-    private transient ExtensionFactory factory;
+    protected AetherExtensionRepositoryFactory repositoryFactory;
+
+    protected ExtensionFactory factory;
 
     public AetherExtensionRepository(ExtensionRepositoryDescriptor repositoryDescriptor,
-        AetherExtensionRepositoryFactory repositoryFactory, PlexusContainer plexusContainer,
-        ComponentManager componentManager) throws Exception
+        AetherExtensionRepositoryFactory repositoryFactory, RemoteRepository aetherRepository,
+        PlexusContainer plexusContainer, ComponentManager componentManager) throws Exception
     {
         super(repositoryDescriptor);
 
+        this.remoteRepository = aetherRepository;
+
         this.repositoryFactory = repositoryFactory;
         this.plexusContainer = plexusContainer;
-
-        RemoteRepository.Builder repositoryBuilder = new RemoteRepository.Builder(repositoryDescriptor.getId(),
-            "default", repositoryDescriptor.getURI().toString());
-
-        // Don't use cached data
-        repositoryBuilder.setPolicy(
-            new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_ALWAYS, RepositoryPolicy.CHECKSUM_POLICY_WARN));
-
-        // Authentication
-        String username = getDescriptor().getProperty("auth.user");
-        if (username != null) {
-            AuthenticationBuilder authenticationBuilder = new AuthenticationBuilder();
-            authenticationBuilder.addUsername(username);
-            authenticationBuilder.addPassword(getDescriptor().getProperty("auth.password"));
-            repositoryBuilder.setAuthentication(authenticationBuilder.build());
-        }
-
-        // Proxy
-        Proxy proxy = XWikiRepositorySystemSession.JREPROXYSELECTOR.getProxy(repositoryBuilder.build());
-        repositoryBuilder.setProxy(proxy);
-
-        this.remoteRepository = repositoryBuilder.build();
+        this.componentManager = componentManager;
 
         this.extensionConverter = componentManager.getInstance(ModelConverter.ROLE);
         this.factory = componentManager.getInstance(ExtensionFactory.class);
@@ -533,8 +517,8 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         modelRequest.setProcessPlugins(false);
         modelRequest.setTwoPhaseBuilding(false);
         modelRequest.setSystemProperties(toProperties(session.getUserProperties(), session.getSystemProperties()));
-        modelRequest.setModelResolver(new PublicDefaultModelResolver(session, null, "", this.artifactResolver,
-            this.versionRangeResolver, this.remoteRepositoryManager, repositories));
+        modelRequest.setModelResolver(new ProjectModelResolver(session, null, this.repositorySystem,
+            this.remoteRepositoryManager, repositories, RepositoryMerging.POM_DOMINANT, null));
         modelRequest.setPomFile(pomFile);
 
         return this.modelBuilder.build(modelRequest).getEffectiveModel();
@@ -552,18 +536,18 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return props;
     }
 
-    List<RemoteRepository> newResolutionRepositories(RepositorySystemSession session)
+    protected List<RemoteRepository> newResolutionRepositories(RepositorySystemSession session)
     {
         return newResolutionRepositories(session, false);
     }
 
-    List<RemoteRepository> newResolutionRepositories(RepositorySystemSession session, boolean all)
+    protected List<RemoteRepository> newResolutionRepositories(RepositorySystemSession session, boolean all)
     {
         List<RemoteRepository> repositories;
 
         if (all) {
             // Get all maven repositories
-            repositories = this.repositoryFactory.getAllMavenRepositories(this.remoteRepository);
+            repositories = getAllMavenRepositories();
         } else {
             repositories = Arrays.asList(this.remoteRepository);
         }
@@ -571,7 +555,36 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return this.repositorySystem.newResolutionRepositories(session, repositories);
     }
 
-    RemoteRepository newResolutionRepository(RepositorySystemSession session)
+    protected List<RemoteRepository> getAllMavenRepositories()
+    {
+        Collection<ExtensionRepository> extensionRepositories;
+        try {
+            extensionRepositories = this.componentManager
+                .<ExtensionRepositoryManager>getInstance(ExtensionRepositoryManager.class).getRepositories();
+        } catch (ComponentLookupException e) {
+            return Collections.singletonList(this.remoteRepository);
+        }
+
+        List<RemoteRepository> reposirories = new ArrayList<>(extensionRepositories.size());
+
+        // Put first repository
+        reposirories.add(this.remoteRepository);
+
+        // Add other repositories (and filter first one)
+        for (ExtensionRepository extensionRepository : extensionRepositories) {
+            if (extensionRepository instanceof AetherExtensionRepository) {
+                RemoteRepository repository = ((AetherExtensionRepository) extensionRepository).getRemoteRepository();
+
+                if (this.remoteRepository != repository) {
+                    reposirories.add(repository);
+                }
+            }
+        }
+
+        return reposirories;
+    }
+
+    protected RemoteRepository newResolutionRepository(RepositorySystemSession session)
     {
         return newResolutionRepositories(session).get(0);
     }

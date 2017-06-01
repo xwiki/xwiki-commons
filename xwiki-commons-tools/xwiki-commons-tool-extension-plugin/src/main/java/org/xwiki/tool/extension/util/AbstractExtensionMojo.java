@@ -19,42 +19,29 @@
  */
 package org.xwiki.tool.extension.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
+import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.DefaultProjectBuildingRequest;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.ProjectBuildingRequest;
-import org.apache.maven.project.ProjectBuildingResult;
-import org.xwiki.component.embed.EmbeddableComponentManager;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.util.DefaultParameterizedType;
+import org.apache.maven.repository.RepositorySystem;
+import org.codehaus.plexus.PlexusContainer;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.MutableExtension;
-import org.xwiki.extension.internal.ExtensionUtils;
-import org.xwiki.extension.internal.converter.ExtensionIdConverter;
-import org.xwiki.extension.repository.internal.ExtensionSerializer;
-import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
-import org.xwiki.extension.version.internal.DefaultVersion;
-import org.xwiki.properties.converter.Converter;
 import org.xwiki.tool.extension.ExtensionOverride;
+import org.xwiki.tool.extension.internal.ExtensionMojoCoreExtensionRepository;
 
 /**
  * Base class for Maven plugins manipulating extensions.
@@ -64,6 +51,15 @@ import org.xwiki.tool.extension.ExtensionOverride;
  */
 public abstract class AbstractExtensionMojo extends AbstractMojo
 {
+    @Component
+    protected PlexusContainer container;
+
+    @Component
+    private RepositorySystem repositorySystem;
+
+    @Component
+    private ArtifactHandlerManager artifactHandlers;
+
     /**
      * The current Maven session being executed.
      */
@@ -76,148 +72,120 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Parameter(property = "localRepository")
     protected ArtifactRepository localRepository;
 
-    /**
-     * Project builder -- builds a model from a pom.xml.
-     */
-    @Component
-    protected ProjectBuilder projectBuilder;
-
     @Parameter
     protected List<ExtensionOverride> extensionOverrides;
 
-    protected EmbeddableComponentManager componentManager;
+    /**
+     * The extensions (and their dependencies) to resolve as core extensions.
+     */
+    @Parameter
+    private List<ExtensionArtifact> coreExtensions;
 
-    protected ExtensionSerializer extensionSerializer;
+    /**
+     * List of remote repositories to be used by the plugin to resolve dependencies.
+     */
+    @Parameter(property = "project.remoteArtifactRepositories")
+    private List<ArtifactRepository> remoteRepositories;
 
-    protected Converter<Extension> extensionConverter;
+    @Parameter(defaultValue = "${project}", required = true, readonly = true)
+    protected MavenProject project;
 
-    protected void initializeComponents() throws MojoExecutionException
-    {
-        // Initialize ComponentManager
-        this.componentManager = new EmbeddableComponentManager();
-        this.componentManager.initialize(this.getClass().getClassLoader());
+    protected ExtensionMojoHelper extensionHelper;
 
-        // Initialize components
-        try {
-            this.extensionSerializer = this.componentManager.getInstance(ExtensionSerializer.class);
-            this.extensionConverter =
-                this.componentManager.getInstance(new DefaultParameterizedType(null, Converter.class, Extension.class));
-        } catch (ComponentLookupException e) {
-            throw new MojoExecutionException("Failed to load components", e);
-        }
-    }
-
-    protected void disposeComponents()
-    {
-        this.componentManager.dispose();
-    }
-
-    protected MavenProject getMavenProject(Artifact artifact) throws MojoExecutionException
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException
     {
         try {
-            ProjectBuildingRequest request = new DefaultProjectBuildingRequest(this.session.getProjectBuildingRequest())
-                // We don't want to execute any plugin here
-                .setProcessPlugins(false)
-                // The local repository
-                .setLocalRepository(this.localRepository)
-                // It's not this plugin job to validate this pom.xml
-                .setValidationLevel(ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL)
-                // Use the repositories configured for the built project instead of the default Maven ones
-                .setRemoteRepositories(this.session.getCurrentProject().getRemoteArtifactRepositories());
-            // Note: build() will automatically get the POM artifact corresponding to the passed artifact.
-            ProjectBuildingResult result = this.projectBuilder.build(artifact, request);
-            return result.getProject();
-        } catch (ProjectBuildingException e) {
-            throw new MojoExecutionException(String.format("Failed to build project for [%s]", artifact), e);
+            before();
+
+            executeInternal();
+        } finally {
+            after();
         }
     }
 
-    protected Extension toExtension(Artifact artifact) throws MojoExecutionException
+    protected void before() throws MojoExecutionException
     {
-        MavenProject mavenProject = getMavenProject(artifact);
+        initializeExtensionMojoHelper();
 
-        return toExtension(mavenProject.getModel());
+        // We need to know which JAR extension we don't want to install (usually those that are already part of the
+        // WAR)
+        registerCoreExtensions();
     }
 
-    protected Extension toExtension(Model model)
+    protected void after()
     {
-        return this.extensionConverter.convert(Extension.class, model);
+        this.extensionHelper.close();
     }
 
-    protected void saveExtension(File path, Artifact artifact)
-        throws MojoExecutionException, IOException, ParserConfigurationException, TransformerException
-    {
-        // Get MavenProject instance
-        MavenProject mavenProject = getMavenProject(artifact);
+    protected abstract void executeInternal() throws MojoExecutionException, MojoFailureException;
 
-        saveExtension(path, mavenProject.getModel());
+    protected void initializeExtensionMojoHelper() throws MojoExecutionException
+    {
+        System.setProperty("org.slf4j.simpleLogger.log.org", "warn");
+        System.setProperty("org.slf4j.simpleLogger.log.org.xwiki", "info");
+        // Explicitly ignore warnings about the logback system, since under Maven 3.1+ the logging framework used is
+        // slf4j-simple
+        System.setProperty("org.slf4j.simpleLogger.log.org.xwiki.logging.logback", "error");
+
+        this.extensionHelper = ExtensionMojoHelper.create(this.project);
+        this.extensionHelper.initalize(this.session, this.localRepository, this.container);
+
+        this.extensionHelper.setExtensionOverrides(this.extensionOverrides);
     }
 
-    protected void saveExtension(File path, Model model)
-        throws IOException, ParserConfigurationException, TransformerException
+    private Set<Artifact> resolveMavenArtifacts(List<ExtensionArtifact> input) throws MojoExecutionException
     {
-        // Get Extension instance
-        Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
-        MutableExtension mutableExtension;
-        if (mavenExtension instanceof MutableExtension) {
-            mutableExtension = (MutableExtension) mavenExtension;
-        } else {
-            mutableExtension = new DefaultLocalExtension(null, mavenExtension);
-        }
-
-        if (!path.exists()) {
-            // Apply overrides
-            override(mutableExtension);
-
-            // Save the Extension descriptor
-            try (FileOutputStream stream = new FileOutputStream(path)) {
-                this.extensionSerializer.saveExtensionDescriptor(mavenExtension, stream);
+        if (input != null) {
+            Set<Artifact> artifacts = new LinkedHashSet<>(input.size());
+            for (ExtensionArtifact extensionArtifact : input) {
+                artifacts.add(this.repositorySystem.createArtifact(extensionArtifact.getGroupId(),
+                    extensionArtifact.getArtifactId(), extensionArtifact.getVersion(), null,
+                    extensionArtifact.getType()));
             }
+
+            ArtifactResolutionRequest request = new ArtifactResolutionRequest().setArtifact(this.project.getArtifact())
+                .setRemoteRepositories(this.remoteRepositories).setArtifactDependencies(artifacts)
+                .setLocalRepository(this.localRepository).setManagedVersionMap(this.project.getManagedVersionMap())
+                .setResolveRoot(false);
+            ArtifactResolutionResult resolutionResult = this.repositorySystem.resolve(request);
+            if (resolutionResult.hasExceptions()) {
+                throw new MojoExecutionException(
+                    String.format("Failed to resolve artifacts [%s]", input, resolutionResult.getExceptions().get(0)));
+            }
+
+            return resolutionResult.getArtifacts();
         }
+
+        return null;
     }
 
-    protected void override(MutableExtension extension)
+    private void registerCoreExtensions() throws MojoExecutionException
     {
-        if (this.extensionOverrides != null) {
-            for (ExtensionOverride extensionOverride : this.extensionOverrides) {
-                String id = extensionOverride.get(Extension.FIELD_ID);
-                if (extension.getId().getId().equals(id)) {
-                    String version = extensionOverride.get(Extension.FIELD_VERSION);
-                    if (version == null || extension.getId().getVersion().equals(new DefaultVersion(id))) {
-                        // Override features
-                        String featuresString = extensionOverride.get(Extension.FIELD_FEATURES);
-                        if (featuresString != null) {
-                            Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
-                            extension.setExtensionFeatures(
-                                ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
+        if (this.coreExtensions != null) {
+            Set<Artifact> coreArtifacts = resolveMavenArtifacts(this.coreExtensions);
+
+            if (coreArtifacts != null) {
+                // Set excluded extensions as core extensions so that they don't end up in any install plan
+                ExtensionMojoCoreExtensionRepository repository =
+                    this.extensionHelper.getExtensionMojoCoreExtensionRepository();
+
+                for (Artifact artifact : coreArtifacts) {
+                    ArtifactHandler artifactHandler = this.artifactHandlers.getArtifactHandler(artifact.getType());
+
+                    // Only take into account artifacts which make sense as core extensions
+                    if (artifactHandler.isAddedToClasspath()) {
+                        try {
+                            Extension extension = this.extensionHelper.getExtension(artifact);
+
+                            repository.addExtension(extension);
+                        } catch (Exception e) {
+                            getLog().warn("Failed to resolve details for artifact [" + artifact + "] ("
+                                + ExceptionUtils.getRootCauseMessage(e) + "). Only considering the id.");
+
+                            repository.addExtension(artifact);
                         }
                     }
-                }
-            }
-        }
-    }
-
-    protected void saveExtension(Artifact artifact, File directory) throws MojoExecutionException
-    {
-        // Get path
-        // WAR plugin use based version for the name of the actual file stored in the package
-        File path = new File(directory, artifact.getArtifactId() + '-' + artifact.getBaseVersion() + ".xed");
-
-        try {
-            saveExtension(path, artifact);
-        } catch (Exception e) {
-            throw new MojoExecutionException("Failed to write descriptor for artifact [" + artifact + "]", e);
-        }
-    }
-
-    protected void saveExtensions(Collection<Artifact> artifacts, File directory, String type)
-        throws MojoExecutionException
-    {
-        // Register dependencies
-        for (Artifact artifact : artifacts) {
-            if (!artifact.isOptional()) {
-                if (type == null || type.equals(artifact.getType())) {
-                    saveExtension(artifact, directory);
                 }
             }
         }

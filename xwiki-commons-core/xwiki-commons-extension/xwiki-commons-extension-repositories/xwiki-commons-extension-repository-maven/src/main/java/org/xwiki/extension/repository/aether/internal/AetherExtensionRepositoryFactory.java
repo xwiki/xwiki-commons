@@ -19,10 +19,6 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -31,7 +27,10 @@ import javax.inject.Singleton;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RepositoryPolicy;
+import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
@@ -41,7 +40,6 @@ import org.xwiki.extension.repository.AbstractExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryException;
-import org.xwiki.extension.repository.ExtensionRepositoryManager;
 
 /**
  * @version $Id$
@@ -60,9 +58,6 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
 
     @Inject
     private ExtensionManagerConfiguration configuration;
-
-    @Inject
-    private Provider<ExtensionRepositoryManager> repositoryManagerProvider;
 
     private RepositorySystem repositorySystem;
 
@@ -90,33 +85,32 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         throws ExtensionRepositoryException
     {
         try {
-            return new AetherExtensionRepository(repositoryDescriptor, this, this.plexusProvider.get(),
-                this.componentManager);
+            RemoteRepository.Builder aetherRepositoryBuilder = new RemoteRepository.Builder(
+                repositoryDescriptor.getId(), "default", repositoryDescriptor.getURI().toString());
+
+            // Don't use cached data
+            aetherRepositoryBuilder.setPolicy(new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_ALWAYS,
+                RepositoryPolicy.CHECKSUM_POLICY_WARN));
+
+            // Authentication
+            String username = repositoryDescriptor.getProperty("auth.user");
+            if (username != null) {
+                AuthenticationBuilder authenticationBuilder = new AuthenticationBuilder();
+                authenticationBuilder.addUsername(username);
+                authenticationBuilder.addPassword(repositoryDescriptor.getProperty("auth.password"));
+                aetherRepositoryBuilder.setAuthentication(authenticationBuilder.build());
+            }
+
+            // Proxy
+            Proxy proxy = XWikiRepositorySystemSession.JREPROXYSELECTOR.getProxy(aetherRepositoryBuilder.build());
+            aetherRepositoryBuilder.setProxy(proxy);
+
+            RemoteRepository aetherRepository = aetherRepositoryBuilder.build();
+
+            return new AetherExtensionRepository(repositoryDescriptor, this, aetherRepository,
+                this.plexusProvider.get(), this.componentManager);
         } catch (Exception e) {
             throw new ExtensionRepositoryException("Failed to create repository [" + repositoryDescriptor + "]", e);
         }
-    }
-
-    List<RemoteRepository> getAllMavenRepositories(RemoteRepository firstRepository)
-    {
-        Collection<ExtensionRepository> extensionRepositories = this.repositoryManagerProvider.get().getRepositories();
-
-        List<RemoteRepository> reposirories = new ArrayList<RemoteRepository>(extensionRepositories.size());
-
-        // Put first repository
-        reposirories.add(firstRepository);
-
-        // Add other repositories (and filter first one)
-        for (ExtensionRepository extensionRepository : extensionRepositories) {
-            if (extensionRepository instanceof AetherExtensionRepository) {
-                RemoteRepository repository = ((AetherExtensionRepository) extensionRepository).getRemoteRepository();
-
-                if (firstRepository != repository) {
-                    reposirories.add(repository);
-                }
-            }
-        }
-
-        return reposirories;
     }
 }

@@ -221,6 +221,9 @@ public class DefaultDiffManager implements DiffManager
                         }
                     } else if (deltaCurrent.getType() == Type.INSERT) {
                         if (deltaNext.getType() == Type.INSERT) {
+                            // Conflict
+                            logConflict(mergeResult, deltaCurrent, deltaNext);
+
                             merged.addAll(or(deltaNext.getNext().getElements(), deltaCurrent.getNext().getElements()));
                             merged.add(commonAncestor.get(index));
                         } else {

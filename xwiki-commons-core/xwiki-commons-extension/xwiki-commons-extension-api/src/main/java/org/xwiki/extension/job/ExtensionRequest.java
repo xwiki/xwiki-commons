@@ -81,7 +81,7 @@ public interface ExtensionRequest extends Request
     }
 
     /**
-     * @return the extension on which to apply the task.
+     * @return the ids of the extensions on which to apply the task.
      */
     Collection<ExtensionId> getExtensions();
 
