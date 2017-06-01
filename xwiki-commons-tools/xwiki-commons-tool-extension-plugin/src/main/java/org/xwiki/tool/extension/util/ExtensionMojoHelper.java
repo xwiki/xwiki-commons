@@ -159,7 +159,7 @@ public class ExtensionMojoHelper implements AutoCloseable
     }
 
     /**
-     * Use {@link #create()}.
+     * Public for technical reason but {@link #create(MavenProject)} should be used.
      */
     public ExtensionMojoHelper()
     {
