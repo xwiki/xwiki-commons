@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -177,17 +176,61 @@ public class XARMojo extends AbstractXARMojo
             File file = new File(this.project.getBuild().getOutputDirectory(), transformation.getFile());
             Document document = reader.read(file);
             Node node = document.selectSingleNode(transformation.getXpath());
-            String value = transformation.getValue();
-            if (!StringUtils.isEmpty(value)) {
-                // Get the current value at node and replace $1 with it (if any)
-                String currentValue = node.getText();
-                node.setText(value.replace("$1", currentValue));
+
+            if (node != null) {
+                String value = transformation.getValue();
+                if (value != null) {
+                    // Get the current value at node and replace $1 with it (if any)
+                    String currentValue = node.getText();
+                    node.setText(value.replace("$1", currentValue));
+                } else if (transformation.getAction() != null) {
+                    // Parse xml value
+                    Document xmlDocument;
+                    Element xmlElement;
+                    if (transformation.getXml() != null) {
+                        xmlDocument = reader.read(transformation.getXml());
+                        xmlElement = xmlDocument.getRootElement();
+                    } else {
+                        xmlDocument = null;
+                        xmlElement = null;
+                    }
+
+                    // Apply action
+                    switch (transformation.getAction()) {
+                        case INSERT_CHILD:
+                            // Insert xml as a child of the node
+                            ((Element) node).add(xmlElement);
+                            break;
+
+                        case REPLACE:
+                            // Replace the node with the xml
+                            Element parent = node.getParent();
+                            if (parent == null) {
+                                document = xmlDocument;
+                            } else {
+                                List<Element> siblings = parent.elements();
+                                siblings.set(parent.indexOf(node), xmlElement);
+                            }
+                            break;
+
+                        case REMOVE:
+                            // Replace the node
+                            node.getParent().remove(node);
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
+                // Write the modified file to disk
+                XMLWriter writer = new XMLWriter(new FileOutputStream(file));
+                writer.write(document);
+                writer.flush();
+                writer.close();
+            } else {
+                getLog().warn("Can't find any node matching the xpath [" + transformation.getXpath() + "]");
             }
-            // Write the modified file to disk
-            XMLWriter writer = new XMLWriter(new FileOutputStream(file));
-            writer.write(document);
-            writer.flush();
-            writer.close();
         }
     }
 

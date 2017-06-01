@@ -19,6 +19,8 @@
  */
 package org.xwiki.tool.xar;
 
+import java.io.File;
+
 /**
  * Hold Transformation configuration as specified by the user in its pom.xml.
  *
@@ -27,17 +29,63 @@ package org.xwiki.tool.xar;
  */
 public class Transformation
 {
+    /**
+     * The action to apply.
+     * 
+     * @version $Id$
+     * @since 9.5RC1
+     */
+    public enum Action
+    {
+        /**
+         * Replace the found node with passed XML.
+         */
+        REPLACE,
+
+        /**
+         * Remove the found node.
+         */
+        REMOVE,
+
+        /**
+         * Add passed XML as child of the found node.
+         */
+        INSERT_CHILD
+    }
+
+    private Action action = Action.REPLACE;
+
     private String xpath;
 
     private String value;
+
+    private File xml;
 
     private String file;
 
     private String artifact;
 
     /**
-     * @return the optional id (in the format {@code groupId:artifactId} of the dependent XAR artifact where the page
-     *         to be transformed is located. If not specified then the page is considered to be in the current project
+     * @return the action to apply
+     * @since 9.5RC1
+     */
+    public Action getAction()
+    {
+        return action;
+    }
+
+    /**
+     * @param action the action to apply
+     * @since 9.5RC1
+     */
+    public void setAction(Action action)
+    {
+        this.action = action;
+    }
+
+    /**
+     * @return the optional id (in the format {@code groupId:artifactId} of the dependent XAR artifact where the page to
+     *         be transformed is located. If not specified then the page is considered to be in the current project
      */
     public String getArtifact()
     {
@@ -100,5 +148,23 @@ public class Transformation
     public void setValue(String value)
     {
         this.value = value;
+    }
+
+    /**
+     * @return the file containing the XML to insert
+     * @since 9.5RC1
+     */
+    public File getXml()
+    {
+        return xml;
+    }
+
+    /**
+     * @param xml the file containing the XML to insert
+     * @since 9.5RC1
+     */
+    public void setXml(File xml)
+    {
+        this.xml = xml;
     }
 }
