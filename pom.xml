@@ -1381,7 +1381,7 @@
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.9.0</version>
+          <version>0.9.1</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
