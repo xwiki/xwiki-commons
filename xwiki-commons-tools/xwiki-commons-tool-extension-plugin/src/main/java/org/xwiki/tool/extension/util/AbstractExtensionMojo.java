@@ -19,6 +19,7 @@
  */
 package org.xwiki.tool.extension.util;
 
+import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -90,6 +91,12 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;
 
+    /**
+     * The permanent directory.
+     */
+    @Parameter(defaultValue = "${project.build.directory}/data/")
+    protected File permanentDirectory;
+
     protected ExtensionMojoHelper extensionHelper;
 
     @Override
@@ -113,7 +120,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
         registerCoreExtensions();
     }
 
-    protected void after()
+    protected void after() throws MojoExecutionException
     {
         this.extensionHelper.close();
     }
@@ -128,7 +135,7 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
         // slf4j-simple
         System.setProperty("org.slf4j.simpleLogger.log.org.xwiki.logging.logback", "error");
 
-        this.extensionHelper = ExtensionMojoHelper.create(this.project);
+        this.extensionHelper = ExtensionMojoHelper.create(this.project, this.permanentDirectory);
         this.extensionHelper.initalize(this.session, this.localRepository, this.container);
 
         this.extensionHelper.setExtensionOverrides(this.extensionOverrides);

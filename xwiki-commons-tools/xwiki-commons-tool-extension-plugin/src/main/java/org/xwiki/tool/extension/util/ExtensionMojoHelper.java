@@ -118,15 +118,18 @@ public class ExtensionMojoHelper implements AutoCloseable
 
     private MavenBuildExtensionRepository extensionRepository;
 
-    private File dataDir;
+    private File permanentDirectory;
 
-    public static ExtensionMojoHelper create(MavenProject project) throws MojoExecutionException
+    public static ExtensionMojoHelper create(MavenProject project, File permanentDirectory)
+        throws MojoExecutionException
     {
-        File dataDir = new File(project.getBuild().getDirectory(), "data/");
+        if (permanentDirectory == null) {
+            permanentDirectory = new File(project.getBuild().getDirectory(), "data/");
+        }
 
         // Create and initialize a Component Manager
         EmbeddableComponentManager embeddableComponentManager =
-            (EmbeddableComponentManager) org.xwiki.environment.System.initialize(dataDir);
+            (EmbeddableComponentManager) org.xwiki.environment.System.initialize(permanentDirectory);
 
         // Disable default repositories
         try {
@@ -142,7 +145,7 @@ public class ExtensionMojoHelper implements AutoCloseable
             ExecutionContextManager ecim = embeddableComponentManager.getInstance(ExecutionContextManager.class);
             ecim.initialize(new ExecutionContext());
         } catch (Exception e) {
-            throw new MojoExecutionException("Failed to initialize Execution Context.", e);
+            throw new MojoExecutionException("Failed to initialize Execution Context Manager.", e);
         }
 
         // Lookup ExtensionMojoHelper
@@ -153,13 +156,13 @@ public class ExtensionMojoHelper implements AutoCloseable
             throw new MojoExecutionException("Failed to get ExtensionMojoHelper component", e);
         }
         extensionMojoHelper.project = project;
-        extensionMojoHelper.dataDir = dataDir;
+        extensionMojoHelper.permanentDirectory = permanentDirectory;
 
         return extensionMojoHelper;
     }
 
     /**
-     * Public for technical reason but {@link #create(MavenProject)} should be used.
+     * Public for technical reason, {@link #create(MavenProject)} should be used instead.
      */
     public ExtensionMojoHelper()
     {
@@ -213,9 +216,9 @@ public class ExtensionMojoHelper implements AutoCloseable
         disposeComponents();
     }
 
-    public File getDataDir()
+    public File getPermanentDirectory()
     {
-        return this.dataDir;
+        return this.permanentDirectory;
     }
 
     public LocalExtensionRepository getLocalExtensionRepository() throws MojoExecutionException

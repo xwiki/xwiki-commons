@@ -62,7 +62,7 @@ public class XIPMojo extends AbstractExtensionMojo
         archiver.setIncludeEmptyDirs(false);
         archiver.setCompress(true);
 
-        archiver.addFileSet(new DefaultFileSet(new File(this.extensionHelper.getDataDir(), "extension/repository")));
+        archiver.addFileSet(new DefaultFileSet(new File(this.extensionHelper.getPermanentDirectory(), "extension/repository")));
 
         try {
             archiver.createArchive();
