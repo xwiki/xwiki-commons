@@ -129,6 +129,8 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
 
     protected void initializeExtensionMojoHelper() throws MojoExecutionException
     {
+        getLog().info("Initializing extension tools...");
+
         System.setProperty("org.slf4j.simpleLogger.log.org", "warn");
         System.setProperty("org.slf4j.simpleLogger.log.org.xwiki", "info");
         // Explicitly ignore warnings about the logback system, since under Maven 3.1+ the logging framework used is
@@ -139,6 +141,8 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
         this.extensionHelper.initalize(this.session, this.localRepository, this.container);
 
         this.extensionHelper.setExtensionOverrides(this.extensionOverrides);
+
+        getLog().info("Done initializing extension tools");
     }
 
     private Set<Artifact> resolveMavenArtifacts(List<ExtensionArtifact> input) throws MojoExecutionException
@@ -170,6 +174,8 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     private void registerCoreExtensions() throws MojoExecutionException
     {
         if (this.coreExtensions != null) {
+            getLog().info("Registering core extensions...");
+
             Set<Artifact> coreArtifacts = resolveMavenArtifacts(this.coreExtensions);
 
             if (coreArtifacts != null) {
@@ -195,6 +201,8 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
                     }
                 }
             }
+
+            getLog().info("Done registering core extensions");
         }
     }
 }
