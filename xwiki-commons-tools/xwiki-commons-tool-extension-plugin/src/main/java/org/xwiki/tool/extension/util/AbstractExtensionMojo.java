@@ -102,9 +102,9 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
-        try {
-            before();
+        before();
 
+        try {
             executeInternal();
         } finally {
             after();
