@@ -365,6 +365,13 @@
         <version>2.1</version>
       </dependency>
 
+      <!-- XZ -->
+      <dependency>
+        <groupId>org.tukaani</groupId>
+        <artifactId>xz</artifactId>
+        <version>1.6</version>
+      </dependency>
+
       <!-- XML processing -->
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
