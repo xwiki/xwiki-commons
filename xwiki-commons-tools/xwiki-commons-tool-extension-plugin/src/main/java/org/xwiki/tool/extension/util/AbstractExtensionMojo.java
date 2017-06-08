@@ -73,11 +73,22 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Parameter(property = "localRepository")
     protected ArtifactRepository localRepository;
 
+    /**
+     * @since 9.5RC1
+     */
     @Parameter
     protected List<ExtensionOverride> extensionOverrides;
 
     /**
+     * @since 9.5RC1
+     */
+    @Parameter
+    protected boolean skip;
+
+    /**
      * The extensions (and their dependencies) to resolve as core extensions.
+     * 
+     * @since 9.5RC1
      */
     @Parameter
     private List<ExtensionArtifact> coreExtensions;
@@ -93,6 +104,8 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
 
     /**
      * The permanent directory.
+     * 
+     * @since 9.5RC1
      */
     @Parameter(defaultValue = "${project.build.directory}/data/")
     protected File permanentDirectory;
@@ -102,6 +115,12 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
+        if (isSkipExecution()) {
+            getLog().info("Skipping execution");
+
+            return;
+        }
+
         before();
 
         try {
@@ -109,6 +128,11 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
         } finally {
             after();
         }
+    }
+
+    protected boolean isSkipExecution()
+    {
+        return this.skip;
     }
 
     protected void before() throws MojoExecutionException
