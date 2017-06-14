@@ -20,7 +20,9 @@
 package org.xwiki.text;
 
 /**
- * Extends {@link org.apache.commons.lang3.StringUtils} with some more useful tools.
+ * Extends {@link org.apache.commons.lang3.StringUtils} with some more useful tools. Note that the reason we're
+ * extending Commons Lang instead of creating a separate class is because we're using this class as a Velocity tool
+ * and we want to offer a single binding to users.
  * 
  * @version $Id$
  * @since 6.2

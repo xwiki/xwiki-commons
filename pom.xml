@@ -214,7 +214,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.5</version>
+        <version>3.6</version>
       </dependency>
       <!-- We don't use Commons Lang 2.x ourselves (we use Commons Lang 3.x) but some of our transitive dependencies
            require Commons Lang. The issue is that Maven uses a "closest-to-root" strategy to resolve dependency
@@ -256,6 +256,11 @@
         <groupId>commons-chain</groupId>
         <artifactId>commons-chain</artifactId>
         <version>1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.1</version>
       </dependency>
       <!-- Apache HttpComponents -->
       <dependency>
