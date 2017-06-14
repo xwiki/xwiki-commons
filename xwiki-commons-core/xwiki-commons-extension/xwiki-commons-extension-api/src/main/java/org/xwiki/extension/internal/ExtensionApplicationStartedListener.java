@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.xwiki.extension.handler.internal;
+package org.xwiki.extension.internal;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +29,11 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.handler.ExtensionInitializer;
+import org.xwiki.extension.repository.CoreExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryManager;
+import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
 import org.xwiki.observation.EventListener;
 import org.xwiki.observation.event.ApplicationStartedEvent;
 import org.xwiki.observation.event.Event;
@@ -49,6 +53,15 @@ public class ExtensionApplicationStartedListener implements EventListener
      * The list of events observed.
      */
     private static final List<Event> EVENTS = Collections.<Event>singletonList(new ApplicationStartedEvent());
+
+    @Inject
+    private Provider<CoreExtensionRepository> coreExtensionsProvider;
+
+    @Inject
+    private Provider<ExtensionManagerConfiguration> configuration;
+
+    @Inject
+    private Provider<ExtensionRepositoryManager> repositoryManagerProvider;
 
     /**
      * The extension initializer.
@@ -73,6 +86,16 @@ public class ExtensionApplicationStartedListener implements EventListener
     @Override
     public void onEvent(Event arg0, Object arg1, Object arg2)
     {
-        this.extensionInitializer.get().initialize();
+        // Make sure installed extensions are initialized (it might have already been done but it's OK since initialize
+        // is automatically called only once)
+        this.extensionInitializer.get();
+
+        // Update core extension informations
+        // Only if enabled and only if there is any remote extension repositories enabled
+        CoreExtensionRepository coreExtensions = this.coreExtensionsProvider.get();
+        if (coreExtensions instanceof DefaultCoreExtensionRepository && this.configuration.get().resolveCoreExtensions()
+            && !this.repositoryManagerProvider.get().getRepositories().isEmpty()) {
+            ((DefaultCoreExtensionRepository) coreExtensions).updateExtensions();
+        }
     }
 }

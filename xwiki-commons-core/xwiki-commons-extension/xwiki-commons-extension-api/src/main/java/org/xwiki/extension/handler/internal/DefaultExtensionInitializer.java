@@ -31,6 +31,7 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionException;
 import org.xwiki.extension.InstalledExtension;
@@ -47,7 +48,7 @@ import org.xwiki.extension.repository.InstalledExtensionRepository;
  */
 @Component
 @Singleton
-public class DefaultExtensionInitializer implements ExtensionInitializer
+public class DefaultExtensionInitializer implements ExtensionInitializer, Initializable
 {
     /**
      * The local extension repository from which extension are initialized.

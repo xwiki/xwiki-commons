@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.io.IOUtils;
@@ -76,7 +77,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
      * Used to resolve found core extensions.
      */
     @Inject
-    private ExtensionRepositoryManager repositoryManager;
+    private Provider<ExtensionRepositoryManager> repositoryManagerProvider;
 
     @Inject
     private Environment environment;
@@ -101,6 +102,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
     @Override
     public void updateExtensions(Collection<DefaultCoreExtension> extensions)
     {
+        ExtensionRepositoryManager repositoryManager = this.repositoryManagerProvider.get();
+
         for (DefaultCoreExtension extension : extensions) {
             // If XWiki is stopping before this is finished then we need to exit.
             if (this.shouldStop) {
@@ -110,7 +113,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
             if (!extension.isComplete()) {
                 try {
-                    Extension remoteExtension = this.repositoryManager.resolve(extension.getId());
+                    Extension remoteExtension = repositoryManager.resolve(extension.getId());
 
                     extension.set(remoteExtension);
                     extension.setComplete(true);
@@ -179,7 +182,8 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         // ClasspathHelper.forClassLoader() get even the JARs that are made not reachable by the application server
         // So the trick is to get all resources in which we can access a META-INF folder
         urls.addAll(ClasspathHelper.forPackage("META-INF"));
-        // Workaround javax.inject 1 JAR which is incredibly hacky and does not even contain any META-INF folder so we have to do
+        // Workaround javax.inject 1 JAR which is incredibly hacky and does not even contain any META-INF folder so we
+        // have to do
         // something special for it
         urls.addAll(ClasspathHelper.forPackage("javax"));
 

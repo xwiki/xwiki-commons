@@ -1,7 +1,7 @@
 org.xwiki.extension.handler.internal.DefaultExtensionHandlerManager
 org.xwiki.extension.handler.internal.DefaultExtensionInitializer
 org.xwiki.extension.handler.internal.DefaultExtensionValidatorProvider
-org.xwiki.extension.handler.internal.ExtensionApplicationStartedListener
+org.xwiki.extension.internal.ExtensionApplicationStartedListener
 org.xwiki.extension.internal.ExtensionFactory
 org.xwiki.extension.internal.DefaultExtensionLicenseManager
 org.xwiki.extension.internal.DefaultExtensionManager

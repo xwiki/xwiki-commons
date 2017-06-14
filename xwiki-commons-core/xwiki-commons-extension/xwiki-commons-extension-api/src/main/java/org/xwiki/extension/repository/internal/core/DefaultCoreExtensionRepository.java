@@ -37,13 +37,11 @@ import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
-import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.internal.RepositoryUtils;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
@@ -84,12 +82,6 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
     @Inject
     private transient CoreExtensionScanner scanner;
 
-    @Inject
-    private ExtensionRepositoryManager repositoryManager;
-
-    @Inject
-    private ExtensionManagerConfiguration configuration;
-
     /**
      * Default constructor.
      */
@@ -126,27 +118,31 @@ public class DefaultCoreExtensionRepository extends AbstractExtensionRepository
                 addExtensionFeatures(coreExtension);
             }
 
-            // Update core extensions only if there is any remote repository and it's not disabled
-            if (this.configuration.resolveCoreExtensions() && !this.repositoryManager.getRepositories().isEmpty()) {
-                // Start a background thread to get more details about the found extensions
-                Thread thread = new Thread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        DefaultCoreExtensionRepository.this.scanner
-                            .updateExtensions(DefaultCoreExtensionRepository.this.extensions.values());
-                    }
-                });
-
-                thread.setPriority(Thread.MIN_PRIORITY);
-                thread.setDaemon(true);
-                thread.setName("Core extension repository updater");
-                thread.start();
-            }
         } catch (Exception e) {
             this.logger.warn("Failed to load core extensions", e);
         }
+    }
+
+    /**
+     * Update core extensions only if there is any remote repository and it's not disabled.
+     */
+    public void updateExtensions()
+    {
+        // Start a background thread to get more details about the found extensions
+        Thread thread = new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                DefaultCoreExtensionRepository.this.scanner
+                    .updateExtensions(DefaultCoreExtensionRepository.this.extensions.values());
+            }
+        });
+
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        thread.setName("Core extension repository updater");
+        thread.start();
     }
 
     /**
