@@ -156,4 +156,39 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
 
         return builder.toComparison();
     }
+
+    /**
+     * Same as {@link #equals(Object)} but with {@code null} version meaning "any version".
+     * 
+     * @param extensionId the extension identifier to match
+     * @return true if the passes extension id matches this extension id
+     * @since 9.5RC1
+     */
+    public boolean matches(ExtensionId extensionId)
+    {
+        if (Objects.equal(getId(), extensionId.getId())) {
+            if (getVersion() == null || extensionId.getVersion() == null
+                || Objects.equal(getVersion(), extensionId.getVersion())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param extensionIds the extension identifiers to match
+     * @return true if one of the passes extension ids matched this extension id
+     * @since 9.5RC1
+     */
+    public boolean matchesOne(Iterable<ExtensionId> extensionIds)
+    {
+        for (ExtensionId extensionId : extensionIds) {
+            if (matches(extensionId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

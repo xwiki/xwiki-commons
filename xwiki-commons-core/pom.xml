@@ -163,7 +163,17 @@
                     "classSimpleName": "InstallRequest",
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
-                    "justification": "No breackage real breackage here. Only adds a new method"
+                    "justification": "No real breackage here. Only adds a new method"
+                   },
+                   {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.extension.ExtensionId.serialVersionUID",
+                    "new": "field org.xwiki.extension.ExtensionId.serialVersionUID",
+                    "package": "org.xwiki.extension",
+                    "classSimpleName": "ExtensionId",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "No real breackage here. Only adds a new method"
                    }
                 ]
               }
