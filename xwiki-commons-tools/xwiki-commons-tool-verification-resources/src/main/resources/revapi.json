@@ -29,6 +29,11 @@
         "annotationType": "org.xwiki.stability.Unstable",
         "justification": "Not a breakage. Indicates API readiness only and has no semantic consequences."
       },
+      {
+        "code": "java.annotation.added",
+        "annotationType": "java.lang.SafeVarargs",
+        "justification": "Not a breakage. Indicates that the body of the annotated method or constructor does not perform potentially unsafe operations on its varargs parameter. It has no semantic consequences."
+      },
       // The "externalClassExposedInAPI" check is used to detect code smells. It's documented as:
       // "This is reported for classes from dependencies that are exposed in the API (for example as a
       // return value). This is generally discouraged practice because it makes updating the dependency
