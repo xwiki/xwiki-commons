@@ -31,6 +31,7 @@ import java.util.Stack;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -96,12 +97,6 @@ public class JarExtensionJobFinishingListener implements EventListener
     private ClassLoaderManager jarExtensionClassLoader;
 
     /**
-     * Extension initializer used to reinstall extensions in a new ClassLoader.
-     */
-    @Inject
-    private ExtensionInitializer extensionInitializer;
-
-    /**
      * The local extension repository from which extension are initialized.
      */
     @Inject
@@ -113,6 +108,12 @@ public class JarExtensionJobFinishingListener implements EventListener
 
     @Inject
     private Execution execution;
+
+    /**
+     * Extension initializer used to reinstall extensions in a new ClassLoader.
+     */
+    @Inject
+    private Provider<ExtensionInitializer> extensionInitializerProvider;
 
     /**
      * The logger to log.
@@ -236,6 +237,16 @@ public class JarExtensionJobFinishingListener implements EventListener
         pushUninstallLevel();
     }
 
+    private void initializeExtensions(String namespace)
+    {
+        ExtensionInitializer initializer = this.extensionInitializerProvider.get();
+
+        // Load JAR extensions
+        initializer.initialize(namespace, JarExtensionHandler.JAR);
+        // Load WEBJAR extensions
+        initializer.initialize(namespace, JarExtensionHandler.WEBJAR);
+    }
+
     private void onJobFinishedEvent()
     {
         UninstalledExtensionCollection collection = getCurrentJobUninstalledExtensions(false);
@@ -250,10 +261,7 @@ public class JarExtensionJobFinishingListener implements EventListener
                 // Drop class loaders
                 this.jarExtensionClassLoader.dropURLClassLoaders();
 
-                // Load JAR extensions
-                this.extensionInitializer.initialize(null, JarExtensionHandler.JAR);
-                // Load WEBJAR extensions
-                this.extensionInitializer.initialize(null, JarExtensionHandler.WEBJAR);
+                initializeExtensions(null);
             } else if (collection.namespaces != null) {
                 for (String namespace : collection.namespaces) {
                     // Unload extensions
@@ -262,10 +270,7 @@ public class JarExtensionJobFinishingListener implements EventListener
                     // Drop class loader
                     this.jarExtensionClassLoader.dropURLClassLoader(namespace);
 
-                    // Load JAR extensions
-                    this.extensionInitializer.initialize(namespace, JarExtensionHandler.JAR);
-                    // Load WEBJAR extensions
-                    this.extensionInitializer.initialize(namespace, JarExtensionHandler.WEBJAR);
+                    initializeExtensions(namespace);
                 }
             }
         }
