@@ -1477,63 +1477,6 @@ mm
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <!-- Lock down plugin version for build reproducibility -->
-          <version>3.3</version>
-          <!-- Site Plugin doesn’t automatically pull the Apache Wagon Dav implementation which is needed for
-               site:deploy goal when using Dav protocol. -->
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.maven.wagon</groupId>
-              <artifactId>wagon-webdav-jackrabbit</artifactId>
-              <version>2.6</version>
-            </dependency>
-          </dependencies>
-          <configuration>
-            <reportPlugins>
-              <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                  <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
-                       the repository locations of the dependencies in the report. -->
-                  <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
-                <reports>
-                  <report>summary</report>
-                  <report>index</report>
-                  <report>dependencies</report>
-                  <report>dependency-convergence</report>
-                  <report>mailing-list</report>
-                  <report>issue-tracking</report>
-                  <report>scm</report>
-                </reports>
-              </plugin>
-              <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                  <!-- Always exclude the internal package since it's not user-public -->
-                  <excludePackageNames>*.internal.*</excludePackageNames>
-                  <!-- Make sure javadoc has enough memory -->
-                  <maxmemory>300m</maxmemory>
-                </configuration>
-                <!-- Don't generate test javadoc -->
-                <reports>
-                  <report>javadoc</report>
-                </reports>
-              </plugin>
-              <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.1</version>
-              </plugin>
-            </reportPlugins>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
