@@ -350,10 +350,11 @@ public class ExtensionMojoHelper implements AutoCloseable
         // Minimum job log
         installRequest.setVerbose(false);
 
-        // Disable namespace check
-        ((ExtensionMojoInstallPlanJob) this.installPlanJobProvider).disableNamespaceCheck();
-
         Job installPlanJob = this.installPlanJobProvider.get();
+
+        // Disable namespace check
+        ((ExtensionMojoInstallPlanJob) installPlanJob).disableNamespaceCheck();
+
         installPlanJob.initialize(installRequest);
         installPlanJob.run();
 
