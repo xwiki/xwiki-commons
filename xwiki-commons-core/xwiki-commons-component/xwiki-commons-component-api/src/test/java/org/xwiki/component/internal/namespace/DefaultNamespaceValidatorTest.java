@@ -50,16 +50,17 @@ public class DefaultNamespaceValidatorTest
         assertFalse(this.validator.isAllowed(Arrays.asList("namespace"), "wrong"));
         assertFalse(this.validator.isAllowed(Arrays.asList("{root}"), "wrong"));
         assertFalse(this.validator.isAllowed(Arrays.asList("[\\d*]"), "namespace"));
+        assertFalse(this.validator.isAllowed(Arrays.asList((String) null), "namespace"));
     }
 
     @Test
-    public void checlAllowed() throws NamespaceNotAllowedException
+    public void checkAllowed() throws NamespaceNotAllowedException
     {
         this.validator.checkAllowed(Arrays.asList("namespace"), "namespace");
     }
 
     @Test(expected = NamespaceNotAllowedException.class)
-    public void checlNoAllowed() throws NamespaceNotAllowedException
+    public void checkNoAllowed() throws NamespaceNotAllowedException
     {
         this.validator.checkAllowed(Arrays.asList("namespace"), "wrong");
     }
