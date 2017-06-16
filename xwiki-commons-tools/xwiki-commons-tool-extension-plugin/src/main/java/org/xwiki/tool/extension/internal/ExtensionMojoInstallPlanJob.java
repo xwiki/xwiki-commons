@@ -34,9 +34,26 @@ import org.xwiki.extension.job.internal.InstallPlanJob;
 @Named(InstallPlanJob.JOBTYPE)
 public class ExtensionMojoInstallPlanJob extends InstallPlanJob
 {
+    private boolean checkNamespace = true;
+
     @Override
     protected void checkTypeInstall(Extension extension, String namespace) throws InstallException
     {
         // Always allowed
+    }
+
+    @Override
+    protected boolean isNamespaceAllowed(Extension extension, String namespace)
+    {
+        if (this.checkNamespace) {
+            return super.isNamespaceAllowed(extension, namespace);
+        }
+
+        return true;
+    }
+
+    public void disableNamespaceCheck()
+    {
+        this.checkNamespace = false;
     }
 }

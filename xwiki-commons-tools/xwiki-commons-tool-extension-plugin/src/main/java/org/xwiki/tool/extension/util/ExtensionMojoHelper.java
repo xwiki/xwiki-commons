@@ -63,6 +63,7 @@ import org.xwiki.job.Job;
 import org.xwiki.properties.converter.Converter;
 import org.xwiki.tool.extension.ExtensionOverride;
 import org.xwiki.tool.extension.internal.ExtensionMojoCoreExtensionRepository;
+import org.xwiki.tool.extension.internal.ExtensionMojoInstallPlanJob;
 import org.xwiki.tool.extension.internal.MavenBuildConfigurationSource;
 import org.xwiki.tool.extension.internal.MavenBuildExtensionRepository;
 
@@ -348,6 +349,9 @@ public class ExtensionMojoHelper implements AutoCloseable
 
         // Minimum job log
         installRequest.setVerbose(false);
+
+        // Disable namespace check
+        ((ExtensionMojoInstallPlanJob) this.installPlanJobProvider).disableNamespaceCheck();
 
         Job installPlanJob = this.installPlanJobProvider.get();
         installPlanJob.initialize(installRequest);
