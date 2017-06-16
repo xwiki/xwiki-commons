@@ -39,11 +39,4 @@ public class ExtensionMojoInstallPlanJob extends InstallPlanJob
     {
         // Always allowed
     }
-
-    @Override
-    protected boolean isNamespaceAllowed(Extension extension, String namespace)
-    {
-        // Always allowed
-        return true;
-    }
 }
