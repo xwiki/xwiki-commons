@@ -48,7 +48,6 @@ import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.internal.DependenciesJob;
 import org.xwiki.extension.job.internal.InstallJob;
-import org.xwiki.extension.job.internal.InstallPlanJob;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
@@ -87,10 +86,6 @@ public class ExtensionMojoHelper implements AutoCloseable
 
     @Inject
     private Converter<Model> converter;
-
-    @Inject
-    @Named(InstallPlanJob.JOBTYPE)
-    private Provider<Job> installPlanJobProvider;
 
     @Inject
     @Named(DependenciesJob.JOBTYPE)
