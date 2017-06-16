@@ -42,17 +42,17 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
     /**
      * The name of the property containing the source Model if any.
      */
-    public static final String PKEY_MAVEN_MODEL = PKEY_MAVENPRFIX + ".Model";
+    public static final String PKEY_MAVEN_MODEL = PKEY_MAVENPRFIX + "Model";
 
     /**
      * The name of the property containing the artifact id.
      */
-    public static final String PKEY_MAVEN_ARTIFACTID = PKEY_MAVENPRFIX + ".artifactid";
+    public static final String PKEY_MAVEN_ARTIFACTID = PKEY_MAVENPRFIX + "artifactid";
 
     /**
      * The name of the property containing the group id.
      */
-    public static final String PKEY_MAVEN_GROUPID = PKEY_MAVENPRFIX + ".groupid";
+    public static final String PKEY_MAVEN_GROUPID = PKEY_MAVENPRFIX + "groupid";
 
     /**
      * @param repository the repository where this extension comes from
