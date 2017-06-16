@@ -14,6 +14,7 @@ org.xwiki.extension.job.history.internal.DefaultExtensionJobHistoryConfiguration
 org.xwiki.extension.job.history.internal.DefaultExtensionJobHistorySerializer
 org.xwiki.extension.job.history.internal.ExtensionJobHistoryRecorder
 org.xwiki.extension.job.history.internal.ReplayJob
+org.xwiki.extension.job.internal.DependenciesJob
 org.xwiki.extension.job.internal.InstallJob
 org.xwiki.extension.job.internal.InstallPlanJob
 org.xwiki.extension.job.internal.UninstallJob

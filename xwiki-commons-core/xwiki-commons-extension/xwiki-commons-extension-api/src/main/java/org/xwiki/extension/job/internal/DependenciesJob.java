@@ -17,34 +17,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.tool.extension.internal;
+package org.xwiki.extension.job.internal;
 
 import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.InstallException;
-import org.xwiki.extension.job.internal.InstallPlanJob;
 
 /**
  * @version $Id$
  * @since 9.4RC1
  */
 @Component
-@Named(InstallPlanJob.JOBTYPE)
-public class ExtensionMojoInstallPlanJob extends InstallPlanJob
+@Named(DependenciesJob.JOBTYPE)
+public class DependenciesJob extends InstallPlanJob
 {
     /**
-     * {@inheritDoc}
-     * <p>
-     * Disable extension type related handling since we don't care in this context.
-     * 
-     * @see org.xwiki.extension.job.internal.AbstractInstallPlanJob#checkTypeInstall(org.xwiki.extension.Extension,
-     *      java.lang.String)
+     * The id of the job.
      */
+    public static final String JOBTYPE = "dependencies";
+
     @Override
     protected void checkTypeInstall(Extension extension, String namespace) throws InstallException
     {
         // Always allowed
+    }
+
+    @Override
+    protected boolean isNamespaceAllowed(Extension extension, String namespace)
+    {
+        // Always allowed
+        return true;
     }
 }

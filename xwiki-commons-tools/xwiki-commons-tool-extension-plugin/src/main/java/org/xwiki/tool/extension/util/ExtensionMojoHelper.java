@@ -46,6 +46,7 @@ import org.xwiki.extension.MutableExtension;
 import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
 import org.xwiki.extension.job.InstallRequest;
+import org.xwiki.extension.job.internal.DependenciesJob;
 import org.xwiki.extension.job.internal.InstallJob;
 import org.xwiki.extension.job.internal.InstallPlanJob;
 import org.xwiki.extension.job.plan.ExtensionPlan;
@@ -63,7 +64,6 @@ import org.xwiki.job.Job;
 import org.xwiki.properties.converter.Converter;
 import org.xwiki.tool.extension.ExtensionOverride;
 import org.xwiki.tool.extension.internal.ExtensionMojoCoreExtensionRepository;
-import org.xwiki.tool.extension.internal.ExtensionMojoInstallPlanJob;
 import org.xwiki.tool.extension.internal.MavenBuildConfigurationSource;
 import org.xwiki.tool.extension.internal.MavenBuildExtensionRepository;
 
@@ -91,6 +91,10 @@ public class ExtensionMojoHelper implements AutoCloseable
     @Inject
     @Named(InstallPlanJob.JOBTYPE)
     private Provider<Job> installPlanJobProvider;
+
+    @Inject
+    @Named(DependenciesJob.JOBTYPE)
+    private Provider<Job> dependeciesJobProvider;
 
     @Inject
     @Named(InstallJob.JOBTYPE)
@@ -350,10 +354,7 @@ public class ExtensionMojoHelper implements AutoCloseable
         // Minimum job log
         installRequest.setVerbose(false);
 
-        Job installPlanJob = this.installPlanJobProvider.get();
-
-        // Disable namespace check
-        ((ExtensionMojoInstallPlanJob) installPlanJob).disableNamespaceCheck();
+        Job installPlanJob = this.dependeciesJobProvider.get();
 
         installPlanJob.initialize(installRequest);
         installPlanJob.run();
