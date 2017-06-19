@@ -55,5 +55,10 @@ public class SafeXStream extends XStream
 
         // Protect reflection based marshalling/unmarshalling
         setMarshallingStrategy(new SafeTreeMarshallingStrategy());
+
+        // TODO: see what to do about new XStream security rules, the default setup is to use a white list which is
+        // totally unusable for job serialization use case where we don't know the types in advance (we don't even know
+        // the ClassLoader in advance...).
+        // setupDefaultSecurity(this);
     }
 }
