@@ -34,13 +34,27 @@ public class FilterStreamType implements Comparable<FilterStreamType>
 {
     /**
      * Data format identifier for XML.
+     * <p>
+     * Main content is based on XML.
      */
     public static final String DATA_XML = "xml";
 
     /**
      * Data format identifier for XAR.
+     * <p>
+     * Main content is based on XAR format.
      */
+
     public static final String DATA_XAR = "xar";
+
+    /**
+     * Data format identifier for TEXT.
+     * <p>
+     * Main content is textual content which does not belong to another well know and more specific textual content.
+     * 
+     * @since 9.5RC1
+     */
+    public static final String DATA_TEXT = "text";
 
     /**
      * Generic WIKI XML Syntax.
@@ -84,6 +98,18 @@ public class FilterStreamType implements Comparable<FilterStreamType>
      * The Confluence XML format.
      */
     public static final FilterStreamType CONFLUENCE_XML = new FilterStreamType(SystemType.CONFLUENCE, DATA_XML);
+
+    /**
+     * The MediaWiki XML format.
+     */
+    public static final FilterStreamType MEDIAWIKI_XML = new FilterStreamType(SystemType.MEDIAWIKI, DATA_XML);
+
+    /**
+     * The DokuWiki data format.
+     * 
+     * @since 9.5RC1
+     */
+    public static final FilterStreamType DOKUWIKI_TEXT = new FilterStreamType(SystemType.DOKUWIKI, DATA_TEXT);
 
     /**
      * Wiki type.

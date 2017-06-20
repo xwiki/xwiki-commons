@@ -30,9 +30,16 @@ import java.util.Objects;
 public class SystemType
 {
     /**
-     * Mediawiki wiki type.
+     * MediaWiki wiki type.
      */
     public static final SystemType MEDIAWIKI = new SystemType("mediawiki");
+
+    /**
+     * DokuWiki wiki type.
+     * 
+     * @since 9.5RC1
+     */
+    public static final SystemType DOKUWIKI = new SystemType("dokuwiki");
 
     /**
      * Confluence wiki type.
