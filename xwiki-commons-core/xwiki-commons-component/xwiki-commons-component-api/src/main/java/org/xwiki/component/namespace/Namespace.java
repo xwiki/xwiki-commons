@@ -35,6 +35,11 @@ public class Namespace
     private String value;
 
     /**
+     * Cached String version of this namespace.
+     */
+    private transient String serialized;
+
+    /**
      * @param type the optional type
      * @param value the value
      */
@@ -79,27 +84,40 @@ public class Namespace
     public int hashCode()
     {
         HashCodeBuilder builder = new HashCodeBuilder();
-        
+
         builder.append(this.type);
         builder.append(this.value);
 
         return builder.toHashCode();
     }
 
+    /**
+     * @return String version of the namespace
+     * @since 9.5
+     */
+    public String serialize()
+    {
+        if (this.serialized == null) {
+            StringBuilder builder = new StringBuilder();
+
+            // Type
+            if (this.type != null) {
+                builder.append(this.type.replace("\\", "\\\\").replace(":", "\\:"));
+                builder.append(':');
+            }
+
+            // Value
+            builder.append(this.value);
+
+            this.serialized = builder.toString();
+        }
+
+        return this.serialized;
+    }
+
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-
-        // Type
-        if (this.type != null) {
-            builder.append(this.type.replace("\\", "\\\\").replace(":", "\\:"));
-            builder.append(':');
-        }
-
-        // Value
-        builder.append(this.value);
-
-        return builder.toString();
+        return serialize();
     }
 }
