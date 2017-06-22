@@ -10,5 +10,6 @@ org.xwiki.properties.internal.converter.InputStreamConverter
 org.xwiki.properties.internal.converter.LinkedHashSetConverter
 org.xwiki.properties.internal.converter.ListConverter
 org.xwiki.properties.internal.converter.LocaleConverter
+org.xwiki.properties.internal.converter.NamespaceConverter
 org.xwiki.properties.internal.converter.SetConverter
 org.xwiki.properties.internal.converter.TypeConverter
