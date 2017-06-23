@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -143,13 +144,20 @@ public class FilterTest
                     StringUtils.substringBeforeLast(testConfiguration.resourceName, "/") + '/' + sourceString;
             }
 
-            URL url = getClass().getResource(sourceString);
+            URL resource = getClass().getResource(sourceString);
 
-            if (url == null) {
+            if (resource == null) {
                 throw new FilterException("Resource [" + sourceString + "] does not exist");
             }
 
-            source = new DefaultURLInputSource(url);
+            if (resource.getProtocol().equals("file")) {
+                // If the resource is a local file let's return it as such
+                file = FileUtils.toFile(resource);
+                source = new DefaultFileInputSource(file);
+            } else {
+                // Otherwise keep it as URL
+                source = new DefaultURLInputSource(resource);
+            }
         }
 
         return source;
