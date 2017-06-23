@@ -20,9 +20,10 @@
 package org.xwiki.extension.repository.result;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.collections4.iterators.IteratorChain;
 
 /**
  * Make several iterable results look like one.
@@ -36,7 +37,7 @@ public class AggregatedIterableResult<T> implements IterableResult<T>
     /**
      * The aggregated iterable results.
      */
-    private List<IterableResult<T>> results = new ArrayList<IterableResult<T>>();
+    private List<IterableResult<T>> results = new ArrayList<>();
 
     /**
      * @see #getOffset()
@@ -76,12 +77,13 @@ public class AggregatedIterableResult<T> implements IterableResult<T>
     @Override
     public Iterator<T> iterator()
     {
-        Collection<Iterator<T>> resultIterators = new ArrayList<Iterator<T>>();
+        IteratorChain<T> iterator = new IteratorChain<>();
+
         for (IterableResult<T> result : this.results) {
-            resultIterators.add(result.iterator());
+            iterator.addIterator(result.iterator());
         }
 
-        return new AggregatedIterator<T>(resultIterators.iterator());
+        return iterator;
     }
 
     @Override
