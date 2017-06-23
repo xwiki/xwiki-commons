@@ -27,7 +27,9 @@ import java.util.Iterator;
  * @param <T> the type of the iterated values
  * @version $Id$
  * @since 4.0M1
+ * @deprecated since 8.4.6, 9.5, use {@link org.apache.commons.collections4.iterators.IteratorChain} instead
  */
+@Deprecated
 public class AggregatedIterator<T> implements Iterator<T>
 {
     /**
@@ -55,8 +57,10 @@ public class AggregatedIterator<T> implements Iterator<T>
         boolean hasNext = this.currentIterator.hasNext();
 
         if (!hasNext && this.iterators.hasNext()) {
-            this.currentIterator = this.iterators.next();
-            hasNext = this.currentIterator.hasNext();
+            do {
+                this.currentIterator = this.iterators.next();
+                hasNext = this.currentIterator.hasNext();
+            } while (!hasNext);
         }
 
         return hasNext;
