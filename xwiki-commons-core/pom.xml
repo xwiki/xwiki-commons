@@ -155,26 +155,6 @@
               "revapi": {
                 "ignore" : [
                   // Add more ignores below...
-                  {
-                    "code": "java.field.serialVersionUIDUnchanged",
-                    "old": "field org.xwiki.extension.job.InstallRequest.serialVersionUID",
-                    "new": "field org.xwiki.extension.job.InstallRequest.serialVersionUID",
-                    "package": "org.xwiki.extension.job",
-                    "classSimpleName": "InstallRequest",
-                    "fieldName": "serialVersionUID",
-                    "elementKind": "field",
-                    "justification": "No real breackage here. Only adds a new method"
-                   },
-                   {
-                    "code": "java.field.serialVersionUIDUnchanged",
-                    "old": "field org.xwiki.extension.ExtensionId.serialVersionUID",
-                    "new": "field org.xwiki.extension.ExtensionId.serialVersionUID",
-                    "package": "org.xwiki.extension",
-                    "classSimpleName": "ExtensionId",
-                    "fieldName": "serialVersionUID",
-                    "elementKind": "field",
-                    "justification": "No real breackage here. Only adds a new method"
-                   }
                 ]
               }
             }
