@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-core</artifactId>
-    <version>9.5-SNAPSHOT</version>
+    <version>9.5.1</version>
   </parent>
   <artifactId>xwiki-commons-configuration</artifactId>
   <name>XWiki Commons - Configuration - Parent POM</name>
