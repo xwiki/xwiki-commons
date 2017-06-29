@@ -84,7 +84,7 @@ public class XStreamParameterManager implements ParameterManager, Initializable
     public void initialize() throws InitializationException
     {
         this.staxDriver = new StaxDriver();
-        this.xstream = new XStream(this.staxDriver);
+        this.xstream = new NoWarningXStream(this.staxDriver);
 
         this.xstream.setMarshallingStrategy(new XMLTreeMarshallingStrategy());
 

@@ -17,60 +17,39 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.job.internal.xstream;
+package org.xwiki.filter.xml.internal.parameter;
 
 import com.thoughtworks.xstream.MarshallingStrategy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.DataHolder;
+import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
+import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 
 /**
- * A {@link XStream} that never fail whatever value is provided.
+ * FIXME: Workaround for XStream security rules warning.
  *
  * @version $Id$
- * @since 5.4M1
+ * @since 9.5.2
+ * @since 9.6RC1
  */
-public class SafeXStream extends XStream
+public class NoWarningXStream extends XStream
 {
-    // FIXME: Workaround for XStream security rules warning
     private MarshallingStrategy marshallingStrategy;
 
     /**
-     * Default constructor.
+     * Constructs an XStream with a special {@link HierarchicalStreamDriver}.
+     * <p>
+     * The instance will tries to determine the best match for the {@link ReflectionProvider} on its own.
+     * </p>
+     *
+     * @param hierarchicalStreamDriver the driver instance
      */
-    public SafeXStream()
+    public NoWarningXStream(HierarchicalStreamDriver hierarchicalStreamDriver)
     {
-        // Overwrite default reflection converter to skip unserializable types
-        registerConverter(new SafeReflectionConverter(this), PRIORITY_VERY_LOW);
-
-        // Cleaner array serialization
-        registerConverter(new SafeArrayConverter(this));
-
-        // Cleaner messages
-        registerConverter(new SafeMessageConverter(this));
-
-        // Cleaner log
-        registerConverter(new SafeLogEventConverter(this));
-
-        // cleaner exceptions
-        registerConverter(
-            new SafeThrowableConverter(getMapper(), getConverterLookup().lookupConverterForType(Object.class)));
-
-        // We don't care if some field from the XML does not exist anymore
-        ignoreUnknownElements();
-
-        // Protect reflection based marshalling/unmarshalling
-        setMarshallingStrategy(new SafeTreeMarshallingStrategy());
-
-        // TODO: see what to do about new XStream security rules, the default setup is to use a white list which is
-        // totally unusable for job serialization use case where we don't know the types in advance (we don't even know
-        // the ClassLoader in advance...).
-        // setupDefaultSecurity(this);
+        super(hierarchicalStreamDriver);
     }
-
-    ////////////////////////////////////////////////////////////////////
-    // FIXME: Workaround for XStream security rules warning
 
     @Override
     public void setMarshallingStrategy(MarshallingStrategy marshallingStrategy)
@@ -84,7 +63,7 @@ public class SafeXStream extends XStream
     public Object unmarshal(HierarchicalStreamReader reader, Object root, DataHolder dataHolder)
     {
         try {
-            return marshallingStrategy.unmarshal(root, reader, dataHolder, getConverterLookup(), getMapper());
+            return this.marshallingStrategy.unmarshal(root, reader, dataHolder, getConverterLookup(), getMapper());
 
         } catch (ConversionException e) {
             Package pkg = getClass().getPackage();
