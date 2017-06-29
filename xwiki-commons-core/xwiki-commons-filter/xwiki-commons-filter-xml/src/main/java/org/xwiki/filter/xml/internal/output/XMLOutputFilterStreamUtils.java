@@ -41,21 +41,20 @@ import javanet.staxutils.IndentingXMLStreamWriter;
  */
 public final class XMLOutputFilterStreamUtils
 {
-    public static XMLStreamWriter createXMLStreamWriter(XMLOutputProperties properties) throws XMLStreamException,
-        IOException, FilterException
+    private static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+
+    public static XMLStreamWriter createXMLStreamWriter(XMLOutputProperties properties)
+        throws XMLStreamException, IOException, FilterException
     {
         XMLStreamWriter xmlStreamWriter;
 
         OutputTarget target = properties.getTarget();
 
-        XMLOutputFactory factory = XMLOutputFactory.newInstance();
-
         if (target instanceof WriterOutputTarget) {
-            xmlStreamWriter = factory.createXMLStreamWriter(((WriterOutputTarget) target).getWriter());
+            xmlStreamWriter = XML_OUTPUT_FACTORY.createXMLStreamWriter(((WriterOutputTarget) target).getWriter());
         } else if (target instanceof OutputStreamOutputTarget) {
-            xmlStreamWriter =
-                factory.createXMLStreamWriter(((OutputStreamOutputTarget) target).getOutputStream(),
-                    properties.getEncoding());
+            xmlStreamWriter = XML_OUTPUT_FACTORY
+                .createXMLStreamWriter(((OutputStreamOutputTarget) target).getOutputStream(), properties.getEncoding());
         } else if (target instanceof ResultOutputTarget) {
             xmlStreamWriter = StAXUtils.getXMLStreamWriter(((ResultOutputTarget) target).getResult());
         } else {

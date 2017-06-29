@@ -20,6 +20,8 @@
 package org.xwiki.filter.xml;
 
 import java.awt.Color;
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collections;
@@ -73,6 +75,10 @@ public class XMLFilterTest
         XMLParserFactory parserFactory = this.componentManager.getInstance(XMLParserFactory.class);
         parserFactory.parse(new StreamSource(new StringReader(input)), testFilter, null);
 
+        if (testFilter instanceof Closeable) {
+            ((Closeable) testFilter).close();
+        }
+
         assertSerialized(expect);
     }
 
@@ -93,6 +99,10 @@ public class XMLFilterTest
         xmlReader.setContentHandler(parser);
         xmlReader.parse(new InputSource(new StringReader(input)));
 
+        if (testFilter instanceof Closeable) {
+            ((Closeable) testFilter).close();
+        }
+
         assertSerialized(expect);
     }
 
@@ -106,31 +116,32 @@ public class XMLFilterTest
     @Test
     public void testContainer() throws Exception
     {
-        assertParseAndSerialize("<container></container>");
+        assertParseAndSerialize("<container/>");
     }
 
     @Test
     public void testContainerAndChild() throws Exception
     {
-        assertParseAndSerialize("<container><child></child></container>");
+        assertParseAndSerialize("<container><child/></container>");
     }
 
     @Test
     public void testContainerWithParameters() throws Exception
     {
-        assertParseAndSerialize("<containerWithParameters param0=\"value0\" param1=\"1\"></containerWithParameters>");
+        assertParseAndSerialize("<containerWithParameters param0=\"value0\" param1=\"1\"/>");
     }
 
     @Test
     public void testContainerWithNamedParameters() throws Exception
     {
-        assertParseAndSerialize("<containerWithNamedParameters namedParam=\"value0\" param1=\"1\"></containerWithNamedParameters>");
+        assertParseAndSerialize("<containerWithNamedParameters namedParam=\"value0\" param1=\"1\"/>");
     }
 
     @Test
     public void testContainerWithMap() throws Exception
     {
-        assertParseAndSerialize("<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>");
+        assertParseAndSerialize(
+            "<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>");
         assertParseAndSerialize(
             "<containerWithMap><p><map><entry><string>key</string><int>1</int></entry></map></p></containerWithMap>",
             "<containerWithMap><p><_0><entry><string>key</string><int>1</int></entry></_0></p></containerWithMap>");
@@ -140,20 +151,20 @@ public class XMLFilterTest
     public void testCustomData() throws Exception
     {
         assertParseAndSerializeFromSAX("<customData><p><custom><field1>5</field1></custom></p></customData>");
-        assertParseAndSerializeFromSAX("<customData></customData>");
+        assertParseAndSerializeFromSAX("<customData/>");
     }
 
     @Test
     public void testFromSAX() throws Exception
     {
-        assertParseAndSerializeFromSAX("<containerWithNamedParameters namedParam=\"value0\" param1=\"1\"></containerWithNamedParameters>");
+        assertParseAndSerializeFromSAX("<containerWithNamedParameters namedParam=\"value0\" param1=\"1\"/>");
     }
 
     // Serialize
 
     @Test
-    public void testSerializeExtendedTestData() throws ComponentLookupException, XMLStreamException,
-        FactoryConfigurationError
+    public void testSerializeExtendedTestData()
+        throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
     {
         TestFilter testFilter = createFilter();
 
@@ -162,28 +173,34 @@ public class XMLFilterTest
         testFilter.beginCustomData(extendedTestData);
         testFilter.endCustomData(extendedTestData);
 
+        ((Closeable) testFilter).close();
+
         assertSerialized("<customData><p><custom><field1>1</field1></custom></p></customData>");
     }
 
     @Test
-    public void testSerializeWithDefaultValue() throws ComponentLookupException, XMLStreamException,
-        FactoryConfigurationError
+    public void testSerializeWithDefaultValue()
+        throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
     {
         TestFilter testFilter = createFilter();
 
         testFilter.onChildWithDefaultValue(42, "default value", Color.WHITE, Collections.EMPTY_MAP);
 
-        assertSerialized("<childWithDefaultValue></childWithDefaultValue>");
+        ((Closeable) testFilter).close();
+
+        assertSerialized("<childWithDefaultValue/>");
     }
 
     @Test
-    public void testSerializeWithNamedChild() throws ComponentLookupException, XMLStreamException,
-        FactoryConfigurationError
+    public void testSerializeWithNamedChild()
+        throws ComponentLookupException, XMLStreamException, FactoryConfigurationError, IOException
     {
         TestFilter testFilter = createFilter();
 
         testFilter.onNamedChild();
 
-        assertSerialized("<childwithname></childwithname>");
+        ((Closeable) testFilter).close();
+
+        assertSerialized("<childwithname/>");
     }
 }

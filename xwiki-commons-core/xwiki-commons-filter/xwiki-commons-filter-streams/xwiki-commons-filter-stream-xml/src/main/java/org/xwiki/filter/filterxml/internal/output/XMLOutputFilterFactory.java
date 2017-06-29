@@ -55,8 +55,7 @@ import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
 @Component
 @Named("filter+xml")
 @Singleton
-public class XMLOutputFilterFactory extends
-    AbstractXMLBeanOutputFilterStreamFactory<FilterXMLOutputProperties, Object>
+public class XMLOutputFilterFactory extends AbstractXMLBeanOutputFilterStreamFactory<FilterXMLOutputProperties, Object>
 {
     @Inject
     private XMLSerializerFactory serializerFactory;
@@ -85,7 +84,7 @@ public class XMLOutputFilterFactory extends
             throw new FilterException("Failed to lookup InputFilterFactory components instances", e);
         }
 
-        Set<Class<?>> filters = new HashSet<Class<?>>();
+        Set<Class<?>> filters = new HashSet<>();
 
         filters.add(UnknownFilter.class);
 
@@ -99,10 +98,9 @@ public class XMLOutputFilterFactory extends
     }
 
     @Override
-    protected Object createListener(Result result, FilterXMLOutputProperties properties) throws XMLStreamException,
-        FactoryConfigurationError, FilterException
+    protected Object createListener(Result result, FilterXMLOutputProperties properties)
+        throws XMLStreamException, FactoryConfigurationError, FilterException
     {
-
         return this.serializerFactory.createSerializer(getFilterInterfaces().toArray(ArrayUtils.EMPTY_CLASS_ARRAY),
             result, null);
     }

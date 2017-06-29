@@ -48,7 +48,7 @@ public abstract class AbstractXMLBeanOutputFilterStreamFactory<P extends XMLOutp
     public BeanOutputFilterStream<P> createOutputFilterStream(P properties) throws FilterException
     {
         try {
-            return new DefaultXMLOutputFilterStream<P, F>(this, properties);
+            return new DefaultXMLOutputFilterStream<>(this, properties);
         } catch (Exception e) {
             throw new FilterException("Failed to create output filter stream", e);
         }

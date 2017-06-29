@@ -52,8 +52,7 @@ import org.xwiki.filter.xml.parser.XMLParserFactory;
 @Component
 @Named("filter+xml")
 @Singleton
-public class XMLInputFilterFactory extends
-    AbstractXMLBeanInputFilterStreamFactory<FilterXMLInputProperties, Object>
+public class XMLInputFilterFactory extends AbstractXMLBeanInputFilterStreamFactory<FilterXMLInputProperties, Object>
 {
     @Inject
     private XMLParserFactory parserFactory;
@@ -82,7 +81,7 @@ public class XMLInputFilterFactory extends
             throw new FilterException("Failed to lookup OutputFilterFactory components instances", e);
         }
 
-        Set<Class<?>> filters = new HashSet<Class<?>>();
+        Set<Class<?>> filters = new HashSet<>();
 
         filters.add(UnknownFilter.class);
 
@@ -96,7 +95,7 @@ public class XMLInputFilterFactory extends
     }
 
     @Override
-    protected XMLEventWriter createXMLEventWriter(Object filter, FilterXMLInputProperties parameters)
+    protected XMLEventWriter createXMLEventWriter(Object filter, FilterXMLInputProperties properties)
     {
         return this.parserFactory.createXMLEventWriter(filter, null);
     }

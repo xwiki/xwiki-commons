@@ -36,6 +36,8 @@ import javanet.staxutils.IndentingXMLStreamWriter;
  */
 public class FilterStreamXMLStreamWriter
 {
+    private static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+
     private final XMLStreamWriter writer;
 
     private final boolean printNullValue;
@@ -50,7 +52,7 @@ public class FilterStreamXMLStreamWriter
         boolean printNullValue) throws FilterException
     {
         try {
-            XMLStreamWriter streamWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream, encoding);
+            XMLStreamWriter streamWriter = XML_OUTPUT_FACTORY.createXMLStreamWriter(outputStream, encoding);
 
             if (format) {
                 this.writer = new IndentingXMLStreamWriter(streamWriter);

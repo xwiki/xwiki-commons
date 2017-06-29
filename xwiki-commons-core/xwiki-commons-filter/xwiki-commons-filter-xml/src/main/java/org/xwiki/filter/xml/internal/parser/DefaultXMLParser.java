@@ -24,8 +24,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import java.util.regex.Matcher;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -76,7 +77,7 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
 
     private Object filter;
 
-    private Stack<Block> blockStack = new Stack<Block>();
+    private Deque<Block> blockStack = new LinkedList<>();
 
     private int elementDepth = 0;
 
@@ -312,16 +313,17 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
                 block.setParameter(name, value);
             }
         } else if (!attribute || !isReservedBlockAttribute(name)) {
-            FilterElementParameterDescriptor<?> filterParameter =
-                block.filterElement != null ? block.filterElement.getParameter(name) : null;
+            if (block.filterElement != null) {
+                FilterElementParameterDescriptor<?> filterParameter = block.filterElement.getParameter(name);
 
-            if (filterParameter != null) {
-                setParameter(block, filterParameter, value);
-            } else {
-                LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are {})", name,
-                    value, block.name, Arrays.asList(block.filterElement.getParameters()));
+                if (filterParameter != null) {
+                    setParameter(block, filterParameter, value);
+                } else {
+                    LOGGER.warn("Unknown element parameter [{}] (=[{}]) in block [{}] (available parameters are {})",
+                        name, value, block.name, Arrays.asList(block.filterElement.getParameters()));
 
-                block.setParameter(name, value);
+                    block.setParameter(name, value);
+                }
             }
         }
     }
@@ -423,9 +425,9 @@ public class DefaultXMLParser extends DefaultHandler implements ContentHandler
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException
     {
-        Block currentBlock = this.blockStack.isEmpty() ? null : this.blockStack.peek();
-
         --this.elementDepth;
+
+        Block currentBlock = this.blockStack.isEmpty() ? null : this.blockStack.peek();
 
         if (onBlockElement(qName)) {
             Block block = this.blockStack.pop();

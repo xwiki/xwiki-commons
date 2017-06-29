@@ -29,5 +29,4 @@ import org.xwiki.filter.xml.input.XMLInputProperties;
  */
 public class FilterXMLInputProperties extends XMLInputProperties
 {
-
 }

@@ -67,23 +67,7 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
         if (target instanceof ResultOutputTarget) {
             result = ((ResultOutputTarget) target).getResult();
         } else {
-            XMLOutputFactory factory = XMLOutputFactory.newInstance();
-
-            XMLStreamWriter xmlStreamWriter;
-
-            if (target instanceof WriterOutputTarget) {
-                xmlStreamWriter = factory.createXMLStreamWriter(((WriterOutputTarget) target).getWriter());
-            } else if (target instanceof OutputStreamOutputTarget) {
-                xmlStreamWriter =
-                    factory.createXMLStreamWriter(((OutputStreamOutputTarget) target).getOutputStream(),
-                        properties.getEncoding());
-            } else {
-                throw new FilterException("Unknown target type [" + target.getClass() + "]");
-            }
-
-            if (properties.isFormat()) {
-                xmlStreamWriter = new IndentingXMLStreamWriter(xmlStreamWriter);
-            }
+            XMLStreamWriter xmlStreamWriter = XMLOutputFilterStreamUtils.createXMLStreamWriter(properties);
 
             result = new StAXResult(xmlStreamWriter);
         }

@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
@@ -45,6 +46,8 @@ import org.xwiki.filter.xml.internal.parameter.ParameterManager;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.xml.stax.StAXUtils;
 
+import com.ctc.wstx.api.WstxOutputProperties;
+
 /**
  * Proxy called as an event filter to produce SAX events.
  *
@@ -53,6 +56,14 @@ import org.xwiki.xml.stax.StAXUtils;
  */
 public class DefaultXMLSerializer implements InvocationHandler, Closeable
 {
+    private static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+
+    static {
+        // Allow producing XML with several root elements (there is no constraint on events to have a single root
+        // begin/end event)
+        XML_OUTPUT_FACTORY.setProperty(WstxOutputProperties.P_OUTPUT_VALIDATE_STRUCTURE, false);
+    }
+
     private static final Pattern VALID_ELEMENTNAME = Pattern.compile("[A-Za-z][A-Za-z0-9:_.-]*");
 
     private final XMLStreamWriter xmlStreamWriter;
@@ -73,7 +84,7 @@ public class DefaultXMLSerializer implements InvocationHandler, Closeable
         this.converter = converter;
         this.configuration = configuration != null ? configuration : new XMLConfiguration();
 
-        this.xmlStreamWriter = StAXUtils.getXMLStreamWriter(result);
+        this.xmlStreamWriter = StAXUtils.getXMLStreamWriter(XML_OUTPUT_FACTORY, result);
     }
 
     private boolean isValidBlockElementName(String blockName)

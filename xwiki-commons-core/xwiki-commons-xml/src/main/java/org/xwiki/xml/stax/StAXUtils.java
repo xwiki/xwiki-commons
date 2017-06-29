@@ -115,6 +115,21 @@ public final class StAXUtils
      */
     public static XMLStreamWriter getXMLStreamWriter(Result result) throws XMLStreamException
     {
+        return getXMLStreamWriter(XML_OUTPUT_FACTORY, result);
+    }
+
+    /**
+     * Extract or create an instance of {@link XMLStreamWriter} from the provided {@link Result}.
+     *
+     * @param factory the {@link XMLOutputFactory} to use (if needed)
+     * @param result the result
+     * @return the {@link XMLStreamWriter}
+     * @throws XMLStreamException when failing to extract xml stream writer
+     * @since 9.5.2
+     * @since 9.6RC1
+     */
+    public static XMLStreamWriter getXMLStreamWriter(XMLOutputFactory factory, Result result) throws XMLStreamException
+    {
         XMLStreamWriter xmlStreamWriter;
 
         if (result instanceof SAXResult) {
