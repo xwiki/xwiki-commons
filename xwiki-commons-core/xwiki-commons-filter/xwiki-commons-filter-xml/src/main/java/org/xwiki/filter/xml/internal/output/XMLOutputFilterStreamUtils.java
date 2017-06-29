@@ -46,14 +46,21 @@ public final class XMLOutputFilterStreamUtils
     public static XMLStreamWriter createXMLStreamWriter(XMLOutputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
+        return createXMLStreamWriter(XML_OUTPUT_FACTORY, properties);
+    }
+
+    public static XMLStreamWriter createXMLStreamWriter(XMLOutputFactory factory, XMLOutputProperties properties)
+        throws XMLStreamException, IOException, FilterException
+    {
         XMLStreamWriter xmlStreamWriter;
 
         OutputTarget target = properties.getTarget();
 
         if (target instanceof WriterOutputTarget) {
-            xmlStreamWriter = XML_OUTPUT_FACTORY.createXMLStreamWriter(((WriterOutputTarget) target).getWriter());
+            xmlStreamWriter =
+                getXMLOutputFactory(factory).createXMLStreamWriter(((WriterOutputTarget) target).getWriter());
         } else if (target instanceof OutputStreamOutputTarget) {
-            xmlStreamWriter = XML_OUTPUT_FACTORY
+            xmlStreamWriter = getXMLOutputFactory(factory)
                 .createXMLStreamWriter(((OutputStreamOutputTarget) target).getOutputStream(), properties.getEncoding());
         } else if (target instanceof ResultOutputTarget) {
             xmlStreamWriter = StAXUtils.getXMLStreamWriter(((ResultOutputTarget) target).getResult());
@@ -66,5 +73,10 @@ public final class XMLOutputFilterStreamUtils
         }
 
         return xmlStreamWriter;
+    }
+
+    private static XMLOutputFactory getXMLOutputFactory(XMLOutputFactory factory)
+    {
+        return factory != null ? factory : XML_OUTPUT_FACTORY;
     }
 }

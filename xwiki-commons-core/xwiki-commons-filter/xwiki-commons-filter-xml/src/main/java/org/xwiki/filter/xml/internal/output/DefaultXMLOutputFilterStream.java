@@ -22,6 +22,7 @@ package org.xwiki.filter.xml.internal.output;
 import java.io.IOException;
 
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.xwiki.filter.FilterException;
@@ -38,17 +39,16 @@ public class DefaultXMLOutputFilterStream<P extends XMLOutputProperties, F> exte
 {
     private final AbstractXMLBeanOutputFilterStreamFactory<P, F> factory;
 
-    public DefaultXMLOutputFilterStream(AbstractXMLBeanOutputFilterStreamFactory<P, F> factory, P properties)
-        throws FilterException, XMLStreamException, IOException
+    public DefaultXMLOutputFilterStream(AbstractXMLBeanOutputFilterStreamFactory<P, F> factory, P properties,
+        XMLOutputFactory xmlFactory) throws FilterException, XMLStreamException, IOException
     {
-        super(properties);
+        super(properties, xmlFactory);
 
         this.factory = factory;
     }
 
     @Override
-    protected Object createFilter(P properties) throws XMLStreamException, FactoryConfigurationError,
-        FilterException
+    protected Object createFilter(P properties) throws XMLStreamException, FactoryConfigurationError, FilterException
     {
         return this.factory.createListener(this.result, properties);
     }

@@ -29,6 +29,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Result;
 
@@ -44,6 +45,8 @@ import org.xwiki.filter.input.InputFilterStreamFactory;
 import org.xwiki.filter.type.FilterStreamType;
 import org.xwiki.filter.xml.internal.output.AbstractXMLBeanOutputFilterStreamFactory;
 import org.xwiki.filter.xml.serializer.XMLSerializerFactory;
+
+import com.ctc.wstx.api.WstxOutputProperties;
 
 /**
  * A generic xml output filter implementation. This class can be used as a test bench to validate various XMLInputStream
@@ -72,6 +75,11 @@ public class XMLOutputFilterFactory extends AbstractXMLBeanOutputFilterStreamFac
 
         setName("Generic XML output stream");
         setDescription("Write generic XML from wiki events.");
+
+        this.xmlFactory = XMLOutputFactory.newInstance();
+        // Allow producing XML with several root elements (there is no constraint on events to have a single root
+        // begin/end event)
+        this.xmlFactory.setProperty(WstxOutputProperties.P_OUTPUT_VALIDATE_STRUCTURE, false);
     }
 
     @Override

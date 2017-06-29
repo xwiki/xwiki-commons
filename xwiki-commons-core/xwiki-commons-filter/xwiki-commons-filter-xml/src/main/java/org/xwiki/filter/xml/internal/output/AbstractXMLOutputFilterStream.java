@@ -31,13 +31,9 @@ import javax.xml.transform.stax.StAXResult;
 
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.output.OutputFilterStream;
-import org.xwiki.filter.output.OutputStreamOutputTarget;
 import org.xwiki.filter.output.OutputTarget;
-import org.xwiki.filter.output.WriterOutputTarget;
 import org.xwiki.filter.xml.output.ResultOutputTarget;
 import org.xwiki.filter.xml.output.XMLOutputProperties;
-
-import javanet.staxutils.IndentingXMLStreamWriter;
 
 /**
  * @param <P>
@@ -52,13 +48,15 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
 
     protected Object filter;
 
-    public AbstractXMLOutputFilterStream(P properties) throws FilterException, XMLStreamException, IOException
+    public AbstractXMLOutputFilterStream(P properties, XMLOutputFactory xmlFactory)
+        throws FilterException, XMLStreamException, IOException
     {
         this.properties = properties;
-        this.result = createResult(this.properties);
+        this.result = createResult(this.properties, xmlFactory);
     }
 
-    protected Result createResult(P properties) throws FilterException, XMLStreamException, IOException
+    protected Result createResult(P properties, XMLOutputFactory xmlfactory)
+        throws FilterException, XMLStreamException, IOException
     {
         OutputTarget target = properties.getTarget();
 
@@ -67,7 +65,7 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
         if (target instanceof ResultOutputTarget) {
             result = ((ResultOutputTarget) target).getResult();
         } else {
-            XMLStreamWriter xmlStreamWriter = XMLOutputFilterStreamUtils.createXMLStreamWriter(properties);
+            XMLStreamWriter xmlStreamWriter = XMLOutputFilterStreamUtils.createXMLStreamWriter(xmlfactory, properties);
 
             result = new StAXResult(xmlStreamWriter);
         }
@@ -89,8 +87,8 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
         return this.filter;
     }
 
-    protected abstract Object createFilter(P parameters) throws XMLStreamException, FactoryConfigurationError,
-        FilterException;
+    protected abstract Object createFilter(P parameters)
+        throws XMLStreamException, FactoryConfigurationError, FilterException;
 
     @Override
     public void close() throws IOException

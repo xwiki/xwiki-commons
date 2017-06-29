@@ -20,6 +20,7 @@
 package org.xwiki.filter.xml.internal.output;
 
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Result;
 
@@ -36,9 +37,11 @@ import org.xwiki.filter.xml.output.XMLOutputProperties;
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractXMLBeanOutputFilterStreamFactory<P extends XMLOutputProperties, F> extends
-    AbstractBeanOutputFilterStreamFactory<P, F>
+public abstract class AbstractXMLBeanOutputFilterStreamFactory<P extends XMLOutputProperties, F>
+    extends AbstractBeanOutputFilterStreamFactory<P, F>
 {
+    protected XMLOutputFactory xmlFactory;
+
     public AbstractXMLBeanOutputFilterStreamFactory(FilterStreamType type)
     {
         super(type);
@@ -48,12 +51,17 @@ public abstract class AbstractXMLBeanOutputFilterStreamFactory<P extends XMLOutp
     public BeanOutputFilterStream<P> createOutputFilterStream(P properties) throws FilterException
     {
         try {
-            return new DefaultXMLOutputFilterStream<>(this, properties);
+            return new DefaultXMLOutputFilterStream<>(this, properties, this.xmlFactory);
         } catch (Exception e) {
             throw new FilterException("Failed to create output filter stream", e);
         }
     }
 
-    protected abstract Object createListener(Result result, P parameters) throws XMLStreamException,
-        FactoryConfigurationError, FilterException;
+    protected abstract Object createListener(Result result, P parameters)
+        throws XMLStreamException, FactoryConfigurationError, FilterException;
+
+    public XMLOutputFactory getXMLOutputFactory(Result result, P properties)
+    {
+        return null;
+    }
 }
