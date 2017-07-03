@@ -39,7 +39,7 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  * Verify that all classes annotated with {@code org.xwiki.component.annotation.Component} are in sync with the
  * {@code META-INF/components.txt} file.
  *
- * @version $Id$
+ * @version $Id: 153f021f41284671b8a54e39c6134e1cdd8a6907 $
  * @since 8.1M1
  */
 public class ComponentAnnotationCheck extends AbstractCheck
@@ -73,6 +73,16 @@ public class ComponentAnnotationCheck extends AbstractCheck
         return new int[]{
             TokenTypes.PACKAGE_DEF, TokenTypes.CLASS_DEF
         };
+    }
+
+    @Override
+    public int[] getAcceptableTokens() {
+        return getDefaultTokens();
+    }
+
+    @Override
+    public int[] getRequiredTokens() {
+        return getDefaultTokens();
     }
 
     @Override

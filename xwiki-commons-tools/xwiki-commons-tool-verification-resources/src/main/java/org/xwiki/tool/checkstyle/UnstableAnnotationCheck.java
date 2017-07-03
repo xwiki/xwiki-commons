@@ -58,6 +58,16 @@ public class UnstableAnnotationCheck extends AbstractCheck
         };
     }
 
+    @Override
+    public int[] getAcceptableTokens() {
+        return getDefaultTokens();
+    }
+
+    @Override
+    public int[] getRequiredTokens() {
+        return getDefaultTokens();
+    }
+
     public void setCurrentVersion(String currentVersion) throws CheckstyleException
     {
         if (currentVersion != null && !currentVersion.isEmpty()) {
