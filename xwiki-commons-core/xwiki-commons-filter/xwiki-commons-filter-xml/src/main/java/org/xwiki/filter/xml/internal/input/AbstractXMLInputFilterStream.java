@@ -27,9 +27,6 @@ import javax.xml.stream.XMLInputFactory;
 
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.input.InputFilterStream;
-import org.xwiki.filter.input.InputSource;
-import org.xwiki.filter.input.InputStreamInputSource;
-import org.xwiki.filter.input.ReaderInputSource;
 import org.xwiki.filter.xml.input.XMLInputProperties;
 
 import javanet.staxutils.XMLStreamUtils;
@@ -41,30 +38,26 @@ import javanet.staxutils.XMLStreamUtils;
  */
 public abstract class AbstractXMLInputFilterStream<P extends XMLInputProperties> implements InputFilterStream
 {
-    private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory.newInstance();
-
     protected P parameters;
 
-    public AbstractXMLInputFilterStream(P parameters)
+    protected XMLInputFactory xmlFactory;
+
+    /**
+     * @since 9.5
+     * @since 9.6RC1
+     */
+    public AbstractXMLInputFilterStream(P parameters, XMLInputFactory xmlFactory)
     {
         this.parameters = parameters;
+        this.xmlFactory = xmlFactory;
     }
 
     @Override
     public void read(Object listener) throws FilterException
     {
         try {
-            InputSource source = this.parameters.getSource();
-
-            XMLEventReader xmlEventReader;
-
-            if (source instanceof ReaderInputSource) {
-                xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(((ReaderInputSource) source).getReader());
-            } else if (source instanceof InputStreamInputSource) {
-                xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(((InputStreamInputSource) source).getInputStream());
-            } else {
-                throw new FilterException("Unknown source type [" + source.getClass() + "]");
-            }
+            XMLEventReader xmlEventReader =
+                XMLInputFilterStreamUtils.createXMLEventReader(this.xmlFactory, this.parameters);
 
             XMLStreamUtils.copy(xmlEventReader, createXMLEventWriter(listener, this.parameters));
         } catch (Exception e) {

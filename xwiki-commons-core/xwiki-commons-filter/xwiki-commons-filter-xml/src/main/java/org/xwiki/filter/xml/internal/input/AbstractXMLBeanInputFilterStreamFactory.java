@@ -20,6 +20,7 @@
 package org.xwiki.filter.xml.internal.input;
 
 import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
 
 import org.xwiki.filter.FilterException;
 import org.xwiki.filter.input.AbstractBeanInputFilterStreamFactory;
@@ -32,9 +33,11 @@ import org.xwiki.filter.xml.input.XMLInputProperties;
  * @version $Id$
  * @since 6.2M1
  */
-public abstract class AbstractXMLBeanInputFilterStreamFactory<P extends XMLInputProperties, F> extends
-    AbstractBeanInputFilterStreamFactory<P, F>
+public abstract class AbstractXMLBeanInputFilterStreamFactory<P extends XMLInputProperties, F>
+    extends AbstractBeanInputFilterStreamFactory<P, F>
 {
+    protected XMLInputFactory xmlFactory;
+
     public AbstractXMLBeanInputFilterStreamFactory(FilterStreamType type)
     {
         super(type);
@@ -43,7 +46,7 @@ public abstract class AbstractXMLBeanInputFilterStreamFactory<P extends XMLInput
     @Override
     public BeanInputFilterStream<P> createInputFilterStream(P properties) throws FilterException
     {
-        return new DefaultXMLInputFilterStream<P, F>(this, properties);
+        return new DefaultXMLInputFilterStream<P, F>(this, properties, this.xmlFactory);
     }
 
     protected abstract XMLEventWriter createXMLEventWriter(Object filter, P parameters);

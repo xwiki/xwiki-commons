@@ -55,6 +55,10 @@ public abstract class AbstractXMLOutputFilterStream<P extends XMLOutputPropertie
         this.result = createResult(this.properties, xmlFactory);
     }
 
+    /**
+     * @since 9.5.2
+     * @since 9.6RC1
+     */
     protected Result createResult(P properties, XMLOutputFactory xmlfactory)
         throws FilterException, XMLStreamException, IOException
     {

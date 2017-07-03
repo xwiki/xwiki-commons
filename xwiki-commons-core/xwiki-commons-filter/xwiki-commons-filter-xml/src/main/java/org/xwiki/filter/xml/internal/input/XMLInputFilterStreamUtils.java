@@ -42,7 +42,17 @@ public final class XMLInputFilterStreamUtils
 {
     private static final XMLInputFactory XML_INPUT_FACTORY = XMLInputFactory.newInstance();
 
+    /**
+     * @since 9.5.2
+     * @since 9.6RC1
+     */
     public static XMLEventReader createXMLEventReader(XMLInputProperties properties)
+        throws XMLStreamException, IOException, FilterException
+    {
+        return createXMLEventReader(XML_INPUT_FACTORY, properties);
+    }
+
+    public static XMLEventReader createXMLEventReader(XMLInputFactory factory, XMLInputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
         XMLEventReader xmlEventReader;
@@ -50,9 +60,10 @@ public final class XMLInputFilterStreamUtils
         InputSource source = properties.getSource();
 
         if (source instanceof ReaderInputSource) {
-            xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(((ReaderInputSource) source).getReader());
+            xmlEventReader = getXMLInputFactory(factory).createXMLEventReader(((ReaderInputSource) source).getReader());
         } else if (source instanceof InputStreamInputSource) {
-            xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(((InputStreamInputSource) source).getInputStream());
+            xmlEventReader =
+                getXMLInputFactory(factory).createXMLEventReader(((InputStreamInputSource) source).getInputStream());
         } else if (source instanceof SourceInputSource) {
             xmlEventReader = StAXUtils.getXMLEventReader(((SourceInputSource) source).getSource());
         } else {
@@ -72,7 +83,8 @@ public final class XMLInputFilterStreamUtils
         if (source instanceof ReaderInputSource) {
             xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(((ReaderInputSource) source).getReader());
         } else if (source instanceof InputStreamInputSource) {
-            xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(((InputStreamInputSource) source).getInputStream());
+            xmlStreamReader =
+                XML_INPUT_FACTORY.createXMLStreamReader(((InputStreamInputSource) source).getInputStream());
         } else if (source instanceof SourceInputSource) {
             xmlStreamReader = StAXUtils.getXMLStreamReader(((SourceInputSource) source).getSource());
         } else {
@@ -80,5 +92,10 @@ public final class XMLInputFilterStreamUtils
         }
 
         return xmlStreamReader;
+    }
+
+    private static XMLInputFactory getXMLInputFactory(XMLInputFactory factory)
+    {
+        return factory != null ? factory : XML_INPUT_FACTORY;
     }
 }

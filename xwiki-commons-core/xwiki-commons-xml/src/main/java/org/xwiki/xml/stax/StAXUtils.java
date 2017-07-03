@@ -62,6 +62,21 @@ public final class StAXUtils
      */
     public static XMLStreamReader getXMLStreamReader(Source source) throws XMLStreamException
     {
+        return getXMLStreamReader(XML_INPUT_FACTORY, source);
+    }
+
+    /**
+     * Extract or create an instance of {@link XMLStreamReader} from the provided {@link Source}.
+     *
+     * @param factory the {@link XMLStreamReader} to use (if needed)
+     * @param source the source
+     * @return the {@link XMLStreamReader}
+     * @throws XMLStreamException when failing to extract xml stream reader
+     * @since 9.5
+     * @since 9.6RC1
+     */
+    public static XMLStreamReader getXMLStreamReader(XMLInputFactory factory, Source source) throws XMLStreamException
+    {
         XMLStreamReader xmlStreamReader;
 
         if (source instanceof StAXSource) {
@@ -74,7 +89,7 @@ public final class StAXUtils
                 throw new XMLStreamException("XMLEventReader is not supported as source");
             }
         } else {
-            xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(source);
+            xmlStreamReader = factory.createXMLStreamReader(source);
         }
 
         return xmlStreamReader;

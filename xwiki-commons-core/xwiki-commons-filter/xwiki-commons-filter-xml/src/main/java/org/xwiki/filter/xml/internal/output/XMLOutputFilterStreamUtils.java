@@ -43,6 +43,10 @@ public final class XMLOutputFilterStreamUtils
 {
     private static final XMLOutputFactory XML_OUTPUT_FACTORY = XMLOutputFactory.newInstance();
 
+    /**
+     * @since 9.5.2
+     * @since 9.6RC1
+     */
     public static XMLStreamWriter createXMLStreamWriter(XMLOutputProperties properties)
         throws XMLStreamException, IOException, FilterException
     {
