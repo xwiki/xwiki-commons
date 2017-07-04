@@ -20,7 +20,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
@@ -48,10 +49,10 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
-	<!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
+	    <!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
         <exclusion>
-	  <groupId>com.google.guava</groupId>
-	  <artifactId>guava</artifactId>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
         </exclusion>
       </exclusions>
       <scope>provided</scope>
@@ -63,12 +64,17 @@
       <type>test-jar</type>
       <version>${checkstyle.version}</version>
       <exclusions>
-	<!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
-        <exclusion>          
-	  <groupId>com.google.guava</groupId>
-	  <artifactId>guava</artifactId>
+	    <!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
