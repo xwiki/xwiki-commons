@@ -49,8 +49,8 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
         <exclusion>          
-	      <groupId>com.google.guava</groupId>
-	      <artifactId>guava</artifactId>
+	  <groupId>com.google.guava</groupId>
+	  <artifactId>guava</artifactId>
         </exclusion>
       </exclusions>
       <scope>provided</scope>
@@ -63,8 +63,8 @@
       <version>${checkstyle.version}</version>
       <exclusions>
         <exclusion>          
-	      <groupId>com.google.guava</groupId>
-	      <artifactId>guava</artifactId>
+	  <groupId>com.google.guava</groupId>
+	  <artifactId>guava</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
