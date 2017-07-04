@@ -48,7 +48,8 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
-        <exclusion>          
+	<!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
+        <exclusion>
 	  <groupId>com.google.guava</groupId>
 	  <artifactId>guava</artifactId>
         </exclusion>
@@ -62,6 +63,7 @@
       <type>test-jar</type>
       <version>${checkstyle.version}</version>
       <exclusions>
+	<!-- FIXME: the Guava version required by Checkstyle 8+ is too recent, see https://jira.xwiki.org/browse/XCOMMONS-1155 -->
         <exclusion>          
 	  <groupId>com.google.guava</groupId>
 	  <artifactId>guava</artifactId>
