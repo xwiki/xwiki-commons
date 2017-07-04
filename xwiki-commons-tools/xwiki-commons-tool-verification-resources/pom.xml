@@ -48,6 +48,10 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
+        <exclusion>          
+	      <groupId>com.google.guava</groupId>
+	      <artifactId>guava</artifactId>
+        </exclusion>
       </exclusions>
       <scope>provided</scope>
     </dependency>
@@ -57,6 +61,12 @@
       <artifactId>checkstyle</artifactId>
       <type>test-jar</type>
       <version>${checkstyle.version}</version>
+      <exclusions>
+        <exclusion>          
+	      <groupId>com.google.guava</groupId>
+	      <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
