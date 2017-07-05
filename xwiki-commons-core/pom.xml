@@ -155,6 +155,17 @@
               "revapi": {
                 "ignore" : [
                   // Add more ignores below...
+                  {
+                    "code": "java.annotation.attributeValueChanged",
+                    "old": "class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency",
+                    "new": "class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency",
+                    "attribute": "propOrder",
+                    "oldValue": "{\"id\", \"constraint\", \"repositories\"}",
+                    "newValue": "{\"id\", \"constraint\", \"optional\", \"repositories\"}",
+                    "annotationType": "javax.xml.bind.annotation.XmlType",
+                    "elementKind": "annotation",
+                    "justification": "Not a breackage in the context of REST"
+                  }
                 ]
               }
             }
