@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>rwithmissingoptionaldependency</id>
+  <version>version</version>
+  <type>test</type>
+  <dependencies>
+    <dependency>
+      <id>doesnotexist</id>
+      <version>version</version>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+</extension>

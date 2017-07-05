@@ -84,6 +84,10 @@ public abstract class AbstractExtensionHandlerTest
 
         installJob.join();
 
+        if (installJob.getStatus().getError() != null) {
+            throw installJob.getStatus().getError();
+        }
+
         List<LogEvent> errors = installJob.getStatus().getLog().getLogsFrom(failFrom);
         if (!errors.isEmpty()) {
             throw errors.get(0).getThrowable() != null ? errors.get(0).getThrowable()
@@ -240,6 +244,7 @@ public abstract class AbstractExtensionHandlerTest
             }
         }
         installRequest.setRootModificationsAllowed(rootModifications);
+        installRequest.setVerbose(false);
 
         return installRequest;
     }

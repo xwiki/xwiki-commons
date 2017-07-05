@@ -109,4 +109,14 @@ public interface ExtensionDependency
     {
         return getId().equals(extensionId.getId()) && getVersionConstraint().isCompatible(extensionId.getVersion());
     }
+
+    /**
+     * @return true if the dependency is not mandatory, usually meaning it will be installed (if valid) by default but
+     *         can be uninstalled without uninstalling backward dependency
+     * @since 9.6RC1
+     */
+    default boolean isOptional()
+    {
+        return false;
+    }
 }

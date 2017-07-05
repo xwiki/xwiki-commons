@@ -231,7 +231,7 @@ public abstract class AbstractExtensionPlanJob<R extends ExtensionRequest>
             }
         }
 
-        List<ExtensionPlanNode> children = new ArrayList<ExtensionPlanNode>();
+        List<ExtensionPlanNode> children = new ArrayList<>();
 
         // Uninstall backward dependencies
         if (withBackWard) {

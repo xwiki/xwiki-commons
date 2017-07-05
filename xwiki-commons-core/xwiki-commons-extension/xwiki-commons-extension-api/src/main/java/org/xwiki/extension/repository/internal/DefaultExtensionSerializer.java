@@ -124,6 +124,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
     private static final String ELEMENT_DDEPENDENCY = "dependency";
 
+    private static final String ELEMENT_DDOPTIONAL = "optional";
+
     private static final String ELEMENT_EXTENSIONFEATURES = "extensionfeatures";
 
     private static final String ELEMENT_EFFEATURE = "feature";
@@ -452,10 +454,13 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                 if (dependency.getNodeName().equals(ELEMENT_DDEPENDENCY)) {
                     Node dependencyIdNode = getNode(dependency, ELEMENT_ID);
                     Node dependencyVersionNode = getNode(dependency, ELEMENT_VERSION);
+                    Node dependencyOptionalNode = getNode(dependency, ELEMENT_DDOPTIONAL);
 
                     dependencies.add(this.factory.getExtensionDependency(dependencyIdNode.getTextContent(),
                         dependencyVersionNode != null
                             ? this.factory.getVersionConstraint(dependencyVersionNode.getTextContent()) : null,
+                        dependencyOptionalNode != null ? Boolean.valueOf(dependencyOptionalNode.getTextContent())
+                            : false,
                         parseProperties((Element) dependency)));
                 }
             }
@@ -776,6 +781,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
                 addElement(document, dependencyElement, ELEMENT_ID, dependency.getId());
                 addElement(document, dependencyElement, ELEMENT_VERSION, dependency.getVersionConstraint().getValue());
+                addElement(document, dependencyElement, ELEMENT_DDOPTIONAL, dependency.isOptional());
                 addProperties(document, dependencyElement, dependency.getProperties());
             }
         }

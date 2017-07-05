@@ -372,9 +372,11 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
 
                 validateDependency(dependency, namespace, ExtensionUtils.append(managedDependencies, localExtension));
             } catch (InvalidExtensionException e) {
-                // Continue to make sure all extension are validated in the right order
-                if (dependencyException == null) {
-                    dependencyException = e;
+                if (!dependency.isOptional()) {
+                    // Continue to make sure all extensions are validated in the right order
+                    if (dependencyException == null) {
+                        dependencyException = e;
+                    }
                 }
             }
         }
@@ -594,7 +596,7 @@ public class DefaultInstalledExtensionRepository extends AbstractInstalledExtens
     {
         // Add the extension as backward dependency
         for (ExtensionDependency dependency : installedExtension.getDependencies()) {
-            if (!this.coreExtensionRepository.exists(dependency.getId())) {
+            if (!dependency.isOptional() && !this.coreExtensionRepository.exists(dependency.getId())) {
                 // Get the extension for the dependency feature for the provided namespace
                 DefaultInstalledExtension dependencyLocalExtension =
                     (DefaultInstalledExtension) getInstalledExtension(dependency.getId(), namespace);

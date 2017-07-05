@@ -78,13 +78,15 @@ public class ExtensionFactory
      * 
      * @param id the id of the extension dependency
      * @param versionConstraint the version constraint of the extension dependency
+     * @param optional true if the dependency is optional
      * @param properties the custom properties of the extension dependency
      * @return unique instance of {@link ExtensionDependency} equals to the passed one
+     * @since 9.6RC1
      */
-    public ExtensionDependency getExtensionDependency(String id, VersionConstraint versionConstraint,
+    public ExtensionDependency getExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional,
         Map<String, Object> properties)
     {
-        return getExtensionDependency(new DefaultExtensionDependency(id, versionConstraint, properties));
+        return getExtensionDependency(new DefaultExtensionDependency(id, versionConstraint, optional, properties));
     }
 
     /**

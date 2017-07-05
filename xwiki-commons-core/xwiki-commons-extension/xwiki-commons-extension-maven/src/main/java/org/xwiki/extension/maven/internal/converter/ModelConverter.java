@@ -191,8 +191,8 @@ public class ModelConverter extends AbstractConverter<Model>
 
         // dependencies
         for (Dependency mavenDependency : model.getDependencies()) {
-            if (!mavenDependency.isOptional() && (mavenDependency.getScope() == null
-                || mavenDependency.getScope().equals("compile") || mavenDependency.getScope().equals("runtime"))) {
+            if (mavenDependency.getScope() == null || mavenDependency.getScope().equals("compile")
+                || mavenDependency.getScope().equals("runtime")) {
                 ExtensionDependency extensionDependency = toExtensionDependency(mavenDependency, model, repositories);
 
                 extension.addDependency(extensionDependency);

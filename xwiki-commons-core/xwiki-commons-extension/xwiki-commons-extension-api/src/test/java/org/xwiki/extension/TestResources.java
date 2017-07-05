@@ -73,6 +73,9 @@ public class TestResources
     public static final ExtensionId REMOTE_WITHRMISSINGDEPENDENCY_ID =
         new ExtensionId("rwithmissingdependency", "version");
 
+    public static final ExtensionId REMOTE_WITHRMISSINGOPTIONALDEPENDENCY_ID =
+        new ExtensionId("rwithmissingoptionaldependency", "version");
+
     public static final ExtensionId REMOTE_MISSINGDEPENDENCY_ID = new ExtensionId("missingdependency", "version");
 
     public static final ExtensionId REMOTE_UPGRADE10_ID = new ExtensionId("upgrade", "1.0");

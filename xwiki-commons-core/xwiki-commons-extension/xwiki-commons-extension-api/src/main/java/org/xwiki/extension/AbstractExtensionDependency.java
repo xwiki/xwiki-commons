@@ -55,9 +55,14 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     protected List<ExtensionRepositoryDescriptor> repositories;
 
     /**
+     * @see #isOptional()
+     */
+    protected boolean optional;
+
+    /**
      * @see #getProperties()
      */
-    protected Map<String, Object> properties = new HashMap<String, Object>();
+    protected Map<String, Object> properties = new HashMap<>();
 
     /**
      * Create new instance by cloning the provided one.
@@ -79,7 +84,7 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     public AbstractExtensionDependency(ExtensionDependency dependency, VersionConstraint versionConstraint)
     {
         this(dependency.getId(), versionConstraint != null ? versionConstraint : dependency.getVersionConstraint(),
-            dependency.getProperties());
+            dependency.isOptional(), dependency.getProperties());
     }
 
     /**
@@ -88,7 +93,18 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      */
     public AbstractExtensionDependency(String id, VersionConstraint versionConstraint)
     {
-        this(id, versionConstraint, null);
+        this(id, versionConstraint, false);
+    }
+
+    /**
+     * @param id the id (or feature) of the extension dependency
+     * @param versionConstraint the version constraint of the extension dependency
+     * @param optional true if the dependency is optional
+     * @since 9.6RC1
+     */
+    public AbstractExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional)
+    {
+        this(id, versionConstraint, optional, null);
     }
 
     /**
@@ -100,6 +116,23 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     {
         this.id = id;
         this.versionConstraint = versionConstraint;
+        if (properties != null) {
+            this.properties.putAll(properties);
+        }
+    }
+
+    /**
+     * @param id the id (or feature) of the extension dependency
+     * @param versionConstraint the version constraint of the extension dependency
+     * @param optional true if the dependency is optional
+     * @param properties the custom properties of the extension dependency
+     */
+    public AbstractExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional,
+        Map<String, Object> properties)
+    {
+        this.id = id;
+        this.versionConstraint = versionConstraint;
+        this.optional = optional;
         if (properties != null) {
             this.properties.putAll(properties);
         }
@@ -157,11 +190,16 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
      */
     public void addRepository(ExtensionRepositoryDescriptor repository)
     {
-        List<ExtensionRepositoryDescriptor> newrepositories =
-            new ArrayList<ExtensionRepositoryDescriptor>(getRepositories());
+        List<ExtensionRepositoryDescriptor> newrepositories = new ArrayList<>(getRepositories());
         newrepositories.add(repository);
 
         this.repositories = Collections.unmodifiableList(newrepositories);
+    }
+
+    @Override
+    public boolean isOptional()
+    {
+        return this.optional;
     }
 
     @Override
@@ -252,6 +290,8 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
         builder.append(getId());
         builder.append(getVersionConstraint());
+        builder.append(isOptional());
+        builder.append(getRepositories());
         builder.append(getProperties());
 
         return builder.toHashCode();
@@ -273,7 +313,9 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
 
             builder.append(getId(), otherDependency.getId());
             builder.append(getVersionConstraint(), otherDependency.getVersionConstraint());
+            builder.append(isOptional(), otherDependency.isOptional());
             builder.append(getRepositories(), otherDependency.getRepositories());
+            builder.append(getProperties(), otherDependency.getProperties());
 
             equals = builder.isEquals();
         } else {

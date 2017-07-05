@@ -68,15 +68,12 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
      */
     public DefaultMavenExtensionDependency(String extensionId, VersionConstraint constraint, Dependency mavenDependency)
     {
-        super(extensionId, constraint);
+        super(extensionId, constraint, mavenDependency.isOptional());
 
-        if (mavenDependency != null) {
-            // custom properties lost when saving
-            putProperty(PKEY_MAVEN_DEPENDENCY, mavenDependency);
-            // custom properties to remember
-            putProperty(PKEY_MAVEN_DEPENDENCY_SCOPE, mavenDependency.getScope());
-            putProperty(PKEY_MAVEN_DEPENDENCY_OPTIONAL, mavenDependency.isOptional());
-        }
+        // custom properties lost when saving
+        putProperty(PKEY_MAVEN_DEPENDENCY, mavenDependency);
+        // custom properties to remember
+        putProperty(PKEY_MAVEN_DEPENDENCY_SCOPE, mavenDependency.getScope());
     }
 
     /**

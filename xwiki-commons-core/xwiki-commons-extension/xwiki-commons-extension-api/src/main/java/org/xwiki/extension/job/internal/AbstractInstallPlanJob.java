@@ -32,6 +32,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.namespace.NamespaceNotAllowedException;
 import org.xwiki.component.namespace.NamespaceValidator;
@@ -76,7 +77,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
         public VersionConstraint versionConstraint;
 
-        public final List<ModifableExtensionPlanNode> duplicates = new ArrayList<ModifableExtensionPlanNode>();
+        public final List<ModifableExtensionPlanNode> duplicates = new ArrayList<>();
 
         // helpers
 
@@ -265,11 +266,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
     protected void installExtension(ExtensionId extensionId, String namespace, DefaultExtensionPlanTree parentBranch)
         throws InstallException
     {
-        try {
-            installExtension(extensionId, false, namespace, parentBranch);
-        } catch (ResolveException e) {
-            throw new InstallException("An unexpected exception has been raised", e);
-        }
+        installExtension(extensionId, false, namespace, parentBranch);
     }
 
     /**
@@ -280,10 +277,9 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @param namespace the namespace where to install the extension
      * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
      * @throws InstallException error when trying to install provided extension
-     * @throws ResolveException unexpected exception has been raised
      */
     protected void installExtension(ExtensionId extensionId, boolean dependency, String namespace,
-        DefaultExtensionPlanTree parentBranch) throws InstallException, ResolveException
+        DefaultExtensionPlanTree parentBranch) throws InstallException
     {
         if (getRequest().isVerbose()) {
             if (namespace != null) {
@@ -498,8 +494,60 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         List<ModifableExtensionPlanNode> parentBranch, Map<String, ExtensionDependency> managedDependencies)
         throws InstallException, IncompatibleVersionConstraintException, ResolveException
     {
-        // Make sure the version have a version constraint
+        if (extensionDependency.isOptional()) {
+            installOptionalExtensionDependency(extensionDependency, namespace, parentBranch, managedDependencies);
+        } else {
+            installMandatoryExtensionDependency(extensionDependency, namespace, parentBranch, managedDependencies);
+        }
+    }
+
+    /**
+     * Install provided extension dependency.
+     *
+     * @param extensionDependency the extension dependency to install
+     * @param namespace the namespace where to install the extension
+     * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
+     * @param managedDependencies the managed dependencies
+     * @throws InstallException error when trying to install provided extension
+     * @throws ResolveException
+     * @throws IncompatibleVersionConstraintException
+     */
+    private void installOptionalExtensionDependency(ExtensionDependency extensionDependency, String namespace,
+        List<ModifableExtensionPlanNode> parentBranch, Map<String, ExtensionDependency> managedDependencies)
+    {
+        // Save current plan
+        List<ModifableExtensionPlanNode> dependencyBranch = new ArrayList<>(parentBranch);
+
+        try {
+            installMandatoryExtensionDependency(extensionDependency, namespace, dependencyBranch, managedDependencies);
+
+            parentBranch.addAll(dependencyBranch);
+        } catch (Exception e) {
+            if (getRequest().isVerbose()) {
+                this.logger.warn("Failed to install optional dependency [{}]", extensionDependency,
+                    ExceptionUtils.getRootCauseMessage(e));
+            }
+        }
+    }
+
+    /**
+     * Install provided extension dependency.
+     *
+     * @param extensionDependency the extension dependency to install
+     * @param namespace the namespace where to install the extension
+     * @param parentBranch the children of the parent {@link DefaultExtensionPlanNode}
+     * @param managedDependencies the managed dependencies
+     * @throws InstallException error when trying to install provided extension
+     * @throws ResolveException
+     * @throws IncompatibleVersionConstraintException
+     */
+    private void installMandatoryExtensionDependency(ExtensionDependency extensionDependency, String namespace,
+        List<ModifableExtensionPlanNode> parentBranch, Map<String, ExtensionDependency> managedDependencies)
+        throws InstallException, IncompatibleVersionConstraintException, ResolveException
+    {
+        // Make sure the dependency have a version constraint
         if (extensionDependency.getVersionConstraint() == null) {
+            // TODO: install the last version instead of failing ?
             throw new InstallException("Dependency [" + extensionDependency + "] does not have any version constraint");
         }
 
@@ -525,7 +573,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         // upgrade/downgrade/replace it)
         if (namespace != null && getRequest().isRootModificationsAllowed()
             && hasIncompatileRootDependency(extensionDependency)) {
-            installExtensionDependency(extensionDependency, null, parentBranch, managedDependencies);
+            installMandatoryExtensionDependency(extensionDependency, null, parentBranch, managedDependencies);
 
             return;
         }
@@ -896,7 +944,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
                 try {
                     children = new ArrayList<>();
-                    for (ExtensionDependency extensionDependency : rewrittenExtension.getDependencies()) {
+                    for (ExtensionDependency extensionDependency : dependencies) {
                         this.progressManager.startStep(this);
 
                         // Replace with managed dependency if any

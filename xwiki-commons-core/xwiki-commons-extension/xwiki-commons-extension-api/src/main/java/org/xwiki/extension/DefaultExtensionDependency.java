@@ -43,11 +43,35 @@ public class DefaultExtensionDependency extends AbstractExtensionDependency
     /**
      * @param id the id of the extension dependency
      * @param versionConstraint the version constraint of the extension dependency
+     * @param optional true if the dependency is optional
+     * @since 9.6RC1
+     */
+    public DefaultExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional)
+    {
+        super(id, versionConstraint, optional);
+    }
+
+    /**
+     * @param id the id of the extension dependency
+     * @param versionConstraint the version constraint of the extension dependency
      * @param properties the custom properties of the extension dependency
      */
     public DefaultExtensionDependency(String id, VersionConstraint versionConstraint, Map<String, Object> properties)
     {
         super(id, versionConstraint, properties);
+    }
+
+    /**
+     * @param id the id of the extension dependency
+     * @param versionConstraint the version constraint of the extension dependency
+     * @param optional true if the dependency is optional
+     * @param properties the custom properties of the extension dependency
+     * @since 9.6RC1
+     */
+    public DefaultExtensionDependency(String id, VersionConstraint versionConstraint, boolean optional,
+        Map<String, Object> properties)
+    {
+        super(id, versionConstraint, optional, properties);
     }
 
     /**

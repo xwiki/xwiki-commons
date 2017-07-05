@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -178,15 +179,21 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
                         this.installedExtensionRepository.getInstalledExtension(dependency.getId(), namespace);
 
                     if (dependencyExtension == installedExtension) {
-                        throw new ExtensionException(String.format("Extension [] has itself as dependency ([])."
-                            + " It usually mean an extension is installed along with one of it's features.",
+                        throw new ExtensionException(String.format(
+                            "Extension [] has itself as dependency ([])."
+                                + " It usually mean an extension is installed along with one of it's features.",
                             installedExtension, dependency));
                     }
 
                     try {
                         initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
                     } catch (Exception e) {
-                        throw new ExtensionException("Failed to initialize dependency [" + dependency + "]", e);
+                        if (dependency.isOptional()) {
+                            this.logger.warn("Failed to initialize dependency [{}]: ", dependency,
+                                ExceptionUtils.getRootCauseMessage(e));
+                        } else {
+                            throw new ExtensionException("Failed to initialize dependency [" + dependency + "]", e);
+                        }
                     }
                 }
             }
