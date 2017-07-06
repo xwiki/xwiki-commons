@@ -60,10 +60,10 @@ public class ExecutionContextRunnable implements Runnable
         ExecutionContext context = new ExecutionContext();
 
         try {
-            this.componentManager.<ExecutionContextManager>getInstance(ExecutionContextManager.class).initialize(
-                context);
+            this.componentManager.<ExecutionContextManager>getInstance(ExecutionContextManager.class)
+                .initialize(context);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize Runnable [" + this + "] execution context", e);
+            throw new RuntimeException("Failed to initialize Runnable [" + this.runnable + "] execution context", e);
         }
 
         try {
