@@ -24,6 +24,7 @@ import java.util.Arrays;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtension;
 import org.xwiki.extension.repository.internal.core.DefaultCoreExtensionRepository;
@@ -33,6 +34,32 @@ import org.xwiki.extension.version.Version;
 @Singleton
 public class ConfigurableDefaultCoreExtensionRepository extends DefaultCoreExtensionRepository
 {
+    public class ConfigurableEnvironmentExtension extends DefaultCoreExtension
+    {
+        public ConfigurableEnvironmentExtension(DefaultCoreExtensionRepository repository)
+        {
+            super(repository, null, new ExtensionId("environment", "version"), "type");
+        }
+    }
+
+    private ConfigurableEnvironmentExtension environmentExtension;
+
+    public ConfigurableDefaultCoreExtensionRepository()
+    {
+        this.environmentExtension = new ConfigurableEnvironmentExtension(this);
+    }
+
+    @Override
+    public CoreExtension getEnvironmentExtension()
+    {
+        return getConfigurableEnvironmentExtension();
+    }
+
+    public ConfigurableEnvironmentExtension getConfigurableEnvironmentExtension()
+    {
+        return this.environmentExtension;
+    }
+
     @Override
     public void addExtension(DefaultCoreExtension extension)
     {

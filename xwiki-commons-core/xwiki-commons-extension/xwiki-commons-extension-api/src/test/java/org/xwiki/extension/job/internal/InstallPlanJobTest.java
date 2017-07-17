@@ -644,6 +644,66 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     }
 
     @Test
+    public void testInstallWithRecommendedManagedDependency() throws Throwable
+    {
+        // Change the version of the dependency trough recommended version
+        this.coreRepository.getConfigurableEnvironmentExtension().putProperty("xwiki.extension.recommendedVersion",
+            "upgrade/2.0");
+
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, "namespace");
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE20_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
+    public void testInstallWithInvalidRecommendedManagedDependency() throws Throwable
+    {
+        // Change the version of the dependency trough recommended version
+        this.coreRepository.getConfigurableEnvironmentExtension().putProperty("xwiki.extension.recommendedVersion",
+            "upgrade/10.0");
+
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, "namespace");
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        node = node.getChildren().iterator().next();
+        action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_UPGRADE10_ID, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, action.getAction());
+        Assert.assertEquals(0, action.getPreviousExtensions().size());
+        Assert.assertEquals("namespace", action.getNamespace());
+        Assert.assertEquals(0, node.getChildren().size());
+    }
+
+    @Test
     public void testInstallWithInvalidOptionalDependency() throws Throwable
     {
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITHRMISSINGOPTIONALDEPENDENCY_ID, "namespace");

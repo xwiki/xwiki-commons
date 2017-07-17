@@ -33,11 +33,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
+import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
 import org.xwiki.extension.MutableExtension;
 import org.xwiki.extension.RemoteExtension;
 import org.xwiki.extension.rating.RatingExtension;
+import org.xwiki.extension.version.IncompatibleVersionConstraintException;
+import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.wrap.WrappingCoreExtension;
 import org.xwiki.extension.wrap.WrappingExtension;
 import org.xwiki.extension.wrap.WrappingInstalledExtension;
@@ -57,6 +60,33 @@ public final class ExtensionUtils
     private ExtensionUtils()
     {
         // Utility class
+    }
+
+    /**
+     * @param dependency the initial dependency
+     * @param configuration the configuration
+     * @param factory the factory
+     * @return the modified {@link ExtensionDependency} or null if it does not match any recommended dependency
+     * @since 9.6
+     */
+    public static ExtensionDependency getRecommendedDependency(ExtensionDependency dependency,
+        ExtensionManagerConfiguration configuration, ExtensionFactory factory)
+    {
+        VersionConstraint recommendedVersionConstraint =
+            configuration.getRecomendedVersionConstraint(dependency.getId(), dependency.getVersionConstraint());
+
+        if (recommendedVersionConstraint != null) {
+            try {
+                recommendedVersionConstraint = dependency.getVersionConstraint().merge(recommendedVersionConstraint);
+
+                return factory.getExtensionDependency(dependency.getId(), recommendedVersionConstraint,
+                    dependency.isOptional(), dependency.getProperties());
+            } catch (IncompatibleVersionConstraintException e) {
+                // Not compatible, don't use the recommended version
+            }
+        }
+
+        return null;
     }
 
     /**

@@ -41,10 +41,16 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.environment.Environment;
+import org.xwiki.extension.CoreExtension;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionManagerConfiguration;
+import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.VersionConstraint;
+import org.xwiki.properties.ConverterManager;
 
 /**
  * Default implementation of {@link ExtensionManagerConfiguration}.
@@ -102,12 +108,43 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     @Inject
     private ExtensionFactory extensionFactory;
 
+    @Inject
+    private Provider<CoreExtensionRepository> coreExtensionRepository;
+
+    @Inject
+    private ConverterManager converter;
+
     // Cache
 
     /**
      * @see DefaultExtensionManagerConfiguration#getLocalRepository()
      */
     private File localRepository;
+
+    private List<RecommendedVersion> recommendedVersions;
+
+    private static class RecommendedVersion
+    {
+        private Pattern idPattern;
+
+        private VersionConstraint versionConstraint;
+
+        RecommendedVersion(Pattern idPattern, VersionConstraint version)
+        {
+            this.idPattern = idPattern;
+            this.versionConstraint = version;
+        }
+
+        boolean matches(String id)
+        {
+            return this.idPattern.matcher(id).matches();
+        }
+
+        public VersionConstraint getVersionConstraint()
+        {
+            return this.versionConstraint;
+        }
+    }
 
     /**
      * @return extension manage home folder
@@ -144,8 +181,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         if (repositoryStrings.isEmpty()) {
             repositories = null;
         } else {
-            Map<String, ExtensionRepositoryDescriptor> repositoriesMap =
-                new LinkedHashMap<>();
+            Map<String, ExtensionRepositoryDescriptor> repositoriesMap = new LinkedHashMap<>();
             for (String repositoryString : repositoryStrings) {
                 if (StringUtils.isNotBlank(repositoryString)) {
                     try {
@@ -242,5 +278,45 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
     public boolean resolveCoreExtensions()
     {
         return this.configuration.get().getProperty(CK_CORE_PREFIX + "resolve", true);
+    }
+
+    @Override
+    public VersionConstraint getRecomendedVersionConstraint(String id, VersionConstraint defaultVersion)
+    {
+        if (this.recommendedVersions == null) {
+            CoreExtensionRepository repository = this.coreExtensionRepository.get();
+
+            CoreExtension environmentExtension = repository.getEnvironmentExtension();
+
+            if (environmentExtension != null) {
+                String listString = environmentExtension.getProperty("xwiki.extension.recommendedVersion");
+                List<String> list = ExtensionUtils.importPropertyStringList(listString, true);
+                List<ExtensionId> extensions = this.converter.convert(ExtensionId.TYPE_LIST, list);
+
+                List<RecommendedVersion> versions = new ArrayList<>(extensions.size());
+                for (ExtensionId extensionId : extensions) {
+                    versions.add(new RecommendedVersion(Pattern.compile(extensionId.getId()),
+                        this.extensionFactory.getVersionConstraint(extensionId.getVersion().getValue())));
+                }
+
+                this.recommendedVersions = versions;
+            } else {
+                this.recommendedVersions = Collections.emptyList();
+            }
+
+        }
+
+        // Searching matching recommended version
+        for (RecommendedVersion version : this.recommendedVersions) {
+            if (version.matches(id)) {
+                if (!version.getVersionConstraint().equals(defaultVersion)) {
+                    return version.getVersionConstraint();
+                }
+
+                break;
+            }
+        }
+
+        return null;
     }
 }

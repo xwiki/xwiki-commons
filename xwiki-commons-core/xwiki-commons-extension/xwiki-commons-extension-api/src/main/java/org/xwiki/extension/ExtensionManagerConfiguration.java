@@ -25,6 +25,7 @@ import java.util.Collection;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
+import org.xwiki.extension.version.VersionConstraint;
 
 /**
  * Provide some general extension manager configuration.
@@ -66,5 +67,16 @@ public interface ExtensionManagerConfiguration
     default boolean resolveCoreExtensions()
     {
         return true;
+    }
+
+    /**
+     * @param id the identifier of the extension
+     * @param defaultVersion the version of the extension
+     * @return the recommended version or null if there is no specifically recommended version
+     * @since 9.6
+     */
+    default VersionConstraint getRecomendedVersionConstraint(String id, VersionConstraint defaultVersion)
+    {
+        return null;
     }
 }

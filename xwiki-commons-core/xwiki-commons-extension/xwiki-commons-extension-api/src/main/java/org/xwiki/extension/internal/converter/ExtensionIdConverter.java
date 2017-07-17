@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersion;
 import org.xwiki.properties.converter.AbstractConverter;
@@ -43,6 +45,9 @@ import org.xwiki.properties.converter.AbstractConverter;
 @Singleton
 public class ExtensionIdConverter extends AbstractConverter<ExtensionId>
 {
+    @Inject
+    private ExtensionFactory factory;
+
     private static int countBackslashes(String str, int index)
     {
         for (int i = index - 1; i >= 0; --i) {
@@ -62,10 +67,24 @@ public class ExtensionIdConverter extends AbstractConverter<ExtensionId>
      */
     public static List<ExtensionId> toExtensionIdList(Collection<?> values, Version defaultVersion)
     {
+        return toExtensionIdList(values, defaultVersion, null);
+    }
+
+    /**
+     * @param values the values to convert
+     * @param defaultVersion the default version to set in the {@link ExtensionId} if none can be extracted from the
+     *            passed <code>value</code>
+     * @param factory the factory used to create the {@link Version} instance
+     * @return the list of {@link ExtensionId}s created from the passed value
+     * @since 9.6
+     */
+    public static List<ExtensionId> toExtensionIdList(Collection<?> values, Version defaultVersion,
+        ExtensionFactory factory)
+    {
         List<ExtensionId> list = new ArrayList<>(values.size());
 
         for (Object value : values) {
-            list.add(toExtensionId(value, defaultVersion));
+            list.add(toExtensionId(value, defaultVersion, factory));
         }
 
         return list;
@@ -79,20 +98,33 @@ public class ExtensionIdConverter extends AbstractConverter<ExtensionId>
      */
     public static ExtensionId toExtensionId(Object value, Version defaultVersion)
     {
+        return toExtensionId(value, defaultVersion, null);
+    }
+
+    /**
+     * @param value the value to convert
+     * @param defaultVersion the default version to set in the {@link ExtensionId} if none can be extracted from the
+     *            passed <code>value</code>
+     * @param factory the factory used to create the {@link Version} instance
+     * @return the {@link ExtensionId} created from the passed value
+     * @since 9.6
+     */
+    public static ExtensionId toExtensionId(Object value, Version defaultVersion, ExtensionFactory factory)
+    {
         if (value != null) {
             String valueString = value.toString();
-            return toExtensionId(valueString, valueString.length() - 1, defaultVersion);
+            return toExtensionId(valueString, valueString.length() - 1, defaultVersion, factory);
         }
 
         return null;
     }
 
-    private static ExtensionId toExtensionId(String value, int end, Version defaultVersion)
+    private static ExtensionId toExtensionId(String value, int end, Version defaultVersion, ExtensionFactory factory)
     {
         String valueString = value;
 
         int index = valueString.lastIndexOf('/');
-        String id = valueString;
+        String id;
         Version version;
         if (index > 0 && index < end) {
             int backslashes = countBackslashes(valueString, index);
@@ -106,12 +138,13 @@ public class ExtensionIdConverter extends AbstractConverter<ExtensionId>
                 index -= backslashes - (backslashes / 2);
 
                 if (backslashes % 2 == 1) {
-                    return toExtensionId(valueString, index - backslashes - 1, defaultVersion);
+                    return toExtensionId(valueString, index - backslashes - 1, defaultVersion, factory);
                 }
             }
 
             id = valueString.substring(0, index);
-            version = new DefaultVersion(valueString.substring(index + 1));
+            String versionString = valueString.substring(index + 1);
+            version = factory != null ? factory.getVersion(versionString) : new DefaultVersion(versionString);
         } else {
             id = valueString;
             version = defaultVersion;
@@ -156,7 +189,7 @@ public class ExtensionIdConverter extends AbstractConverter<ExtensionId>
     @Override
     protected ExtensionId convertToType(Type targetType, Object value)
     {
-        return toExtensionId(value, null);
+        return toExtensionId(value, null, this.factory);
     }
 
     @Override

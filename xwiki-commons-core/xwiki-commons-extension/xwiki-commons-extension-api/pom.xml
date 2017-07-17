@@ -154,7 +154,9 @@
                 **/DefaultVersion.java,
                 **/AbstractInstallPlanJob.java,
                 **/UnmodifiableUtils.java,
-                **/AbstractExtension.java
+                **/AbstractExtension.java,
+                **/DefaultExtensionManagerConfiguration.java,
+                **/ExtensionUtils.java
               </excludes>
             </configuration>
           </execution>
