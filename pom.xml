@@ -146,7 +146,7 @@
     <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
 
     <!-- The recommended version of known extensions to use -->
-    <xwiki.extension.recommendedVersion.commons>org.xwiki.commons:.*/${commons.version}</xwiki.extension.recommendedVersion.commons>
+    <xwiki.extension.recommendedVersion.commons>org.xwiki.commons:.*/[${commons.version}]</xwiki.extension.recommendedVersion.commons>
     <xwiki.extension.recommendedVersion>${xwiki.extension.recommendedVersion.commons}</xwiki.extension.recommendedVersion>
   </properties>
   <prerequisites>
