@@ -144,6 +144,10 @@
     <maven-enforcer.version>1.4.1</maven-enforcer.version>
     <!-- The version of Maven used by enforcer plugin -->
     <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
+
+    <!-- The recommended version of known extensions to use -->
+    <xwiki.extension.recommendedVersion.commons>org.xwiki.commons:.*/${commons.version}</xwiki.extension.recommendedVersion.commons>
+    <xwiki.extension.recommendedVersion>${xwiki.extension.recommendedVersion.commons}</xwiki.extension.recommendedVersion>
   </properties>
   <prerequisites>
     <!-- Custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->

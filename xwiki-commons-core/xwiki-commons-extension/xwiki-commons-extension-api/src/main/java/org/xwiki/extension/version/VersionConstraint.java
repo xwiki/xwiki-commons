@@ -61,7 +61,7 @@ public interface VersionConstraint extends Serializable
     boolean containsVersion(Version version);
 
     /**
-     * Indicate of the provided {@link Version} is compatible with this version.
+     * Indicate if the provided {@link Version} is compatible with this version.
      * <p>
      * The difference with {@link #containsVersion(Version)} is that this method is trying to determine if this version
      * should work with this constraint while {@link #containsVersion(Version)} indicate if that's the ideal version for

@@ -29,35 +29,30 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
-import org.xwiki.environment.Environment;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.test.LogRule;
+import org.xwiki.test.AllLogRule;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentManagerRule;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 /**
  * Unit test for {@link DefaultExtensionManagerConfiguration}.
  *
  * @version $Id$
  */
-@ComponentList({ DefaultExtensionManagerConfiguration.class, ExtensionFactory.class })
+@ComponentList({ ExtensionFactory.class })
 public class DefaultExtensionManagerConfigurationTest
 {
     @Rule
-    public final MockitoComponentManagerRule componentManager = new MockitoComponentManagerRule();
+    public final MockitoComponentMockingRule<ExtensionManagerConfiguration> componentManager =
+        new MockitoComponentMockingRule<>(DefaultExtensionManagerConfiguration.class, Arrays.asList(Logger.class));
 
     @Rule
-    public final LogRule logCapture = new LogRule()
-    {
-        {
-            record(LogLevel.WARN);
-            recordLoggingForType(DefaultExtensionManagerConfiguration.class);
-        }
-    };
+    public AllLogRule log = new AllLogRule();
 
     private ExtensionManagerConfiguration configuration;
 
@@ -66,9 +61,6 @@ public class DefaultExtensionManagerConfigurationTest
     @BeforeComponent
     public void registerComponents() throws Exception
     {
-        // Register a Mocked Environment since we need to provide one.
-        this.componentManager.registerMockComponent(Environment.class);
-
         // Register some in-memory Configuration Source for the test
         this.source = this.componentManager.registerMemoryConfigurationSource();
     }
@@ -76,7 +68,7 @@ public class DefaultExtensionManagerConfigurationTest
     @Before
     public void setUp() throws Exception
     {
-        this.configuration = this.componentManager.getInstance(ExtensionManagerConfiguration.class);
+        this.configuration = this.componentManager.getComponentUnderTest();
     }
 
     @Test
@@ -89,17 +81,17 @@ public class DefaultExtensionManagerConfigurationTest
         Assert.assertEquals(
             Arrays.asList(new DefaultExtensionRepositoryDescriptor("id", "type", new URI("http://url"))),
             new ArrayList<ExtensionRepositoryDescriptor>(this.configuration.getExtensionRepositoryDescriptors()));
-        Assert.assertEquals(1, this.logCapture.size());
+        Assert.assertEquals(1, this.log.size());
         Assert.assertEquals("Ignoring invalid repository configuration [invalid]. Root cause "
             + "[ExtensionManagerConfigurationException: Invalid repository configuration format for [invalid]. Should "
-            + "have been matching [([^:]+):([^:]+):(.+)].]", this.logCapture.getMessage(0));
+            + "have been matching [([^:]+):([^:]+):(.+)].]", this.log.getMessage(0));
     }
 
     @Test
     public void testGetExtensionRepositoryDescriptorsEmpty()
     {
         Assert.assertNull(this.configuration.getExtensionRepositoryDescriptors());
-        Assert.assertEquals(0, this.logCapture.size());
+        Assert.assertEquals(0, this.log.size());
     }
 
     @Test
@@ -120,6 +112,6 @@ public class DefaultExtensionManagerConfigurationTest
         Assert.assertEquals(new URI("http://url"), descriptor.getURI());
         Assert.assertEquals("value", descriptor.getProperty("property"));
         Assert.assertEquals("other value", descriptor.getProperty("property.with.dots"));
-        Assert.assertEquals(0, this.logCapture.size());
+        Assert.assertEquals(0, this.log.size());
     }
 }

@@ -41,11 +41,13 @@ import org.xwiki.extension.DefaultExtensionDependency;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.ExtensionId;
+import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.InstallException;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
 import org.xwiki.extension.handler.ExtensionHandler;
+import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.internal.ExtensionUtils;
 import org.xwiki.extension.job.ExtensionRequest;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
@@ -136,6 +138,12 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
 
     @Inject
     protected NamespaceValidator namespaceResolver;
+
+    @Inject
+    protected ExtensionManagerConfiguration configuration;
+
+    @Inject
+    protected ExtensionFactory factory;
 
     /**
      * Used to make sure dependencies are compatible between each other in the whole plan.
@@ -512,7 +520,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @throws ResolveException
      * @throws IncompatibleVersionConstraintException
      */
-    private void installOptionalExtensionDependency(ExtensionDependency extensionDependency, String namespace,
+    private boolean installOptionalExtensionDependency(ExtensionDependency extensionDependency, String namespace,
         List<ModifableExtensionPlanNode> parentBranch, Map<String, ExtensionDependency> managedDependencies)
     {
         // Save current plan
@@ -522,12 +530,16 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             installMandatoryExtensionDependency(extensionDependency, namespace, dependencyBranch, managedDependencies);
 
             parentBranch.addAll(dependencyBranch);
+
+            return true;
         } catch (Exception e) {
             if (getRequest().isVerbose()) {
                 this.logger.warn("Failed to install optional dependency [{}]", extensionDependency,
                     ExceptionUtils.getRootCauseMessage(e));
             }
         }
+
+        return false;
     }
 
     /**
@@ -951,8 +963,20 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
                         extensionDependency =
                             ExtensionUtils.getDependency(extensionDependency, managedDependencies, rewrittenExtension);
 
-                        installExtensionDependency(extensionDependency, namespace, children,
-                            ExtensionUtils.append(managedDependencies, rewrittenExtension));
+                        // Try installing recommended version (if any)
+                        boolean valid = false;
+                        ExtensionDependency recommendedDependency = ExtensionUtils
+                            .getRecommendedDependency(extensionDependency, this.configuration, this.factory);
+                        if (recommendedDependency != null) {
+                            valid = installOptionalExtensionDependency(recommendedDependency, namespace, children,
+                                ExtensionUtils.append(managedDependencies, rewrittenExtension));
+                        }
+
+                        // If recommended version is invalid, try the one provided by the extension
+                        if (!valid) {
+                            installExtensionDependency(extensionDependency, namespace, children,
+                                ExtensionUtils.append(managedDependencies, rewrittenExtension));
+                        }
 
                         this.progressManager.endStep(this);
                     }

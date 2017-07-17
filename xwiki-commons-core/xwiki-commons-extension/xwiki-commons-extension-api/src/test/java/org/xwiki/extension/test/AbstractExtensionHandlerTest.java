@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.xwiki.cache.CacheManager;
+import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.LocalExtension;
@@ -57,6 +58,8 @@ public abstract class AbstractExtensionHandlerTest
 
     protected JobExecutor jobExecutor;
 
+    protected MemoryConfigurationSource memoryConfigurationSource;
+
     @Before
     public void setUp() throws Exception
     {
@@ -65,6 +68,8 @@ public abstract class AbstractExtensionHandlerTest
         this.installedExtensionRepository = this.mocker.getInstance(InstalledExtensionRepository.class);
 
         this.mocker.registerMockComponent(CacheManager.class);
+
+        this.memoryConfigurationSource = this.mocker.registerMemoryConfigurationSource();
     }
 
     protected ExtensionPlanNode getNode(ExtensionId id, Collection<ExtensionPlanNode> nodes)
