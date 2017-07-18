@@ -48,7 +48,6 @@ import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
-import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.properties.ConverterManager;
 
@@ -280,17 +279,37 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         return this.configuration.get().getProperty(CK_CORE_PREFIX + "resolve", true);
     }
 
+    protected List<String> getRecommendedVersions()
+    {
+        // Try configuration
+        Object configurationValue = this.configuration.get().getProperty(CK_PREFIX + "recommendedVersions");
+        if (configurationValue != null) {
+            if (configurationValue instanceof List) {
+                return (List) configurationValue;
+            } else {
+                return ExtensionUtils.importPropertyStringList(configurationValue.toString(), true);
+            }
+        }
+
+        // Try environment extension
+        CoreExtensionRepository repository = this.coreExtensionRepository.get();
+
+        CoreExtension environmentExtension = repository.getEnvironmentExtension();
+
+        if (environmentExtension != null) {
+            String listString = environmentExtension.getProperty("xwiki.extension.recommendedVersions");
+            return ExtensionUtils.importPropertyStringList(listString, true);
+        }
+
+        return null;
+    }
+
     @Override
     public VersionConstraint getRecomendedVersionConstraint(String id, VersionConstraint defaultVersion)
     {
         if (this.recommendedVersions == null) {
-            CoreExtensionRepository repository = this.coreExtensionRepository.get();
-
-            CoreExtension environmentExtension = repository.getEnvironmentExtension();
-
-            if (environmentExtension != null) {
-                String listString = environmentExtension.getProperty("xwiki.extension.recommendedVersion");
-                List<String> list = ExtensionUtils.importPropertyStringList(listString, true);
+            List<String> list = getRecommendedVersions();
+            if (list != null) {
                 List<ExtensionId> extensions = this.converter.convert(ExtensionId.TYPE_LIST, list);
 
                 List<RecommendedVersion> versions = new ArrayList<>(extensions.size());

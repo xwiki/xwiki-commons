@@ -110,6 +110,9 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Parameter(defaultValue = "${project.build.directory}/data/")
     protected File permanentDirectory;
 
+    @Parameter(defaultValue = "${xwiki.extension.recommendedVersions}")
+    protected String recommendedVersions;
+
     protected ExtensionMojoHelper extensionHelper;
 
     @Override
@@ -142,6 +145,10 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
         // We need to know which JAR extension we don't want to install (usually those that are already part of the
         // WAR)
         registerCoreExtensions();
+
+        // Set recommended versions
+        this.extensionHelper.getMavenBuildConfigurationSource().setProperty("extension.recommendedVersions",
+            this.recommendedVersions);
     }
 
     protected void after() throws MojoExecutionException

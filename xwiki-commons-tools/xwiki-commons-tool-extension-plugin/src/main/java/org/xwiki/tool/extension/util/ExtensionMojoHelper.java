@@ -98,6 +98,9 @@ public class ExtensionMojoHelper implements AutoCloseable
     @Inject
     private Execution execution;
 
+    @Inject
+    private ConfigurationSource configurationSource;
+
     // Not injected so that it's not initialized if not needed
     private InstalledExtensionRepository installedExtensionRepository;
 
@@ -498,5 +501,10 @@ public class ExtensionMojoHelper implements AutoCloseable
                 }
             }
         }
+    }
+
+    public MavenBuildConfigurationSource getMavenBuildConfigurationSource()
+    {
+        return (MavenBuildConfigurationSource) this.configurationSource;
     }
 }
