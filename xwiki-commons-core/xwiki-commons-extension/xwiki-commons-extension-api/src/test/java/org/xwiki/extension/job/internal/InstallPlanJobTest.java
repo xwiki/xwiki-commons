@@ -647,7 +647,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     public void testInstallWithRecommendedManagedDependency() throws Throwable
     {
         // Change the version of the dependency trough recommended version
-        this.coreRepository.getConfigurableEnvironmentExtension().putProperty("xwiki.extension.recommendedVersion",
+        this.coreRepository.getConfigurableEnvironmentExtension().putProperty("xwiki.extension.recommendedVersions",
             "upgrade/2.0");
 
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, "namespace");
@@ -677,7 +677,7 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
     public void testInstallWithInvalidRecommendedManagedDependency() throws Throwable
     {
         // Change the version of the dependency trough recommended version
-        this.coreRepository.getConfigurableEnvironmentExtension().putProperty("xwiki.extension.recommendedVersion",
+        this.coreRepository.getConfigurableEnvironmentExtension().putProperty("xwiki.extension.recommendedVersions",
             "upgrade/10.0");
 
         ExtensionPlan plan = installPlan(TestResources.REMOTE_WITH_MANAGED_DEPENDENY_ID, "namespace");

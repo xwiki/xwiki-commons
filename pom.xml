@@ -146,8 +146,8 @@
     <maven.maven-enforcer.version>2.2.1</maven.maven-enforcer.version>
 
     <!-- The recommended version of known extensions to use -->
-    <xwiki.extension.recommendedVersion.commons>org.xwiki.commons:.*/[${commons.version}]</xwiki.extension.recommendedVersion.commons>
-    <xwiki.extension.recommendedVersion>${xwiki.extension.recommendedVersion.commons}</xwiki.extension.recommendedVersion>
+    <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]</xwiki.extension.recommendedVersions.commons>
+    <xwiki.extension.recommendedVersions>${xwiki.extension.recommendedVersion.commons}</xwiki.extension.recommendedVersions>
   </properties>
   <prerequisites>
     <!-- Custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
