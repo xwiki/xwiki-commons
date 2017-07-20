@@ -66,7 +66,8 @@ public final class ExtensionUtils
      * @param dependency the initial dependency
      * @param configuration the configuration
      * @param factory the factory
-     * @return the modified {@link ExtensionDependency} or null if it does not match any recommended dependency
+     * @return the modified {@link ExtensionDependency} or null if it does not match any recommended dependency or the
+     *         found recommendation is already equals to the passed one
      * @since 9.6
      */
     public static ExtensionDependency getRecommendedDependency(ExtensionDependency dependency,
