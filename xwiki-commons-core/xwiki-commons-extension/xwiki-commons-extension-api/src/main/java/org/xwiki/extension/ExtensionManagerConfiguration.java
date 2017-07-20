@@ -72,7 +72,8 @@ public interface ExtensionManagerConfiguration
     /**
      * @param id the identifier of the extension
      * @param defaultVersion the version of the extension
-     * @return the recommended version or null if there is no specifically recommended version
+     * @return the recommended version or null if there is no specifically recommended version (including a recommended
+     *         verison equals to the default one)
      * @since 9.6
      */
     default VersionConstraint getRecomendedVersionConstraint(String id, VersionConstraint defaultVersion)
