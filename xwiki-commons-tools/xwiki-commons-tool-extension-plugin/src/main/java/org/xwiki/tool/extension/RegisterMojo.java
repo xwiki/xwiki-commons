@@ -25,7 +25,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.xwiki.tool.extension.util.AbstractExtensionMojo;
 
 /**
@@ -34,7 +33,7 @@ import org.xwiki.tool.extension.util.AbstractExtensionMojo;
  * @version $Id$
  * @since 8.4
  */
-@Mojo(name = "register", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, requiresDependencyResolution = ResolutionScope.RUNTIME, requiresProject = true, threadSafe = true)
+@Mojo(name = "register", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, requiresProject = true, threadSafe = true)
 public class RegisterMojo extends AbstractExtensionMojo
 {
     /**
