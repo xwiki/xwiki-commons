@@ -524,7 +524,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
         List<ModifableExtensionPlanNode> parentBranch, Map<String, ExtensionDependency> managedDependencies)
     {
         // Save current plan
-        List<ModifableExtensionPlanNode> dependencyBranch = new ArrayList<>(parentBranch);
+        List<ModifableExtensionPlanNode> dependencyBranch = new ArrayList<>();
 
         try {
             installMandatoryExtensionDependency(extensionDependency, namespace, dependencyBranch, managedDependencies);
