@@ -28,7 +28,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -43,7 +42,6 @@ import org.dom4j.io.XMLWriter;
  */
 @Mojo(
     name = "format",
-    requiresDependencyResolution = ResolutionScope.COMPILE,
     threadSafe = true
 )
 public class FormatMojo extends AbstractVerifyMojo

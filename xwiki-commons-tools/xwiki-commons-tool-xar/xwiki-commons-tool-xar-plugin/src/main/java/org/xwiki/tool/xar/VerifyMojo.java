@@ -30,7 +30,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
@@ -53,7 +52,6 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
 @Mojo(
     name = "verify",
     defaultPhase = LifecyclePhase.VERIFY,
-    requiresDependencyResolution = ResolutionScope.COMPILE,
     threadSafe = true
 )
 public class VerifyMojo extends AbstractVerifyMojo
