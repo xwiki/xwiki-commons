@@ -19,13 +19,10 @@
  */
 package org.xwiki.tool.checkstyle;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import com.puppycrawl.tools.checkstyle.BaseCheckTestSupport;
+import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 
 /**
@@ -34,7 +31,7 @@ import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
  * @version $Id$
  * @since 8.3
  */
-public class SinceFormatCheckTest extends BaseCheckTestSupport
+public class SinceFormatCheckTest extends AbstractModuleTestSupport
 {
     private DefaultConfiguration checkConfig;
 
@@ -67,8 +64,7 @@ public class SinceFormatCheckTest extends BaseCheckTestSupport
     }
 
     @Override
-    protected String getPath(String filename) throws IOException
-    {
-        return (new File("src/test/resources/org/xwiki/tool/checkstyle/test/since/" + filename)).getCanonicalPath();
+    protected String getPackageLocation() {
+        return "org/xwiki/tool/checkstyle/test/since";
     }
 }
