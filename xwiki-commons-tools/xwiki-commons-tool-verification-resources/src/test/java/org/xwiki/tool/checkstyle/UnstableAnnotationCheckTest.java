@@ -19,13 +19,10 @@
  */
 package org.xwiki.tool.checkstyle;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import com.puppycrawl.tools.checkstyle.BaseCheckTestSupport;
+import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
 
@@ -35,7 +32,7 @@ import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
  * @version $Id$
  * @since 8.1M1
  */
-public class UnstableAnnotationCheckTest extends BaseCheckTestSupport
+public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
 {
     private DefaultConfiguration checkConfig;
 
@@ -148,8 +145,7 @@ public class UnstableAnnotationCheckTest extends BaseCheckTestSupport
     }
 
     @Override
-    protected String getPath(String filename) throws IOException
-    {
-        return (new File("src/test/resources/org/xwiki/tool/checkstyle/test/unstable/" + filename)).getCanonicalPath();
+    protected String getPackageLocation() {
+        return "org/xwiki/tool/checkstyle/test/unstable";
     }
 }
