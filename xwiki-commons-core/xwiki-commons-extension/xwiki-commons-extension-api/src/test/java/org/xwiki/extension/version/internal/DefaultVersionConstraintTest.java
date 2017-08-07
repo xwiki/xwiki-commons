@@ -31,12 +31,14 @@ public class DefaultVersionConstraintTest
     @Test
     public void testMerge() throws IncompatibleVersionConstraintException
     {
-        Assert.assertEquals("2.0", new DefaultVersionConstraint("1.0").merge(new DefaultVersionConstraint("2.0"))
-            .getValue());
+        Assert.assertEquals("2.0",
+            new DefaultVersionConstraint("1.0").merge(new DefaultVersionConstraint("2.0")).getValue());
         Assert.assertEquals("{[1.0,2.0]},{[2.0]}",
             new DefaultVersionConstraint("[1.0,2.0]").merge(new DefaultVersionConstraint("[2.0]")).getValue());
-        Assert.assertEquals("2.0", new DefaultVersionConstraint("[1.0,2.0]").merge(new DefaultVersionConstraint("2.0"))
-            .getValue());
+        Assert.assertEquals("{[1.0,2.0]},{[2.0,]}",
+            new DefaultVersionConstraint("[1.0,2.0]").merge(new DefaultVersionConstraint("2.0")).getValue());
+        Assert.assertEquals("{[1.0,]},{[2.0]}",
+            new DefaultVersionConstraint("1.0").merge(new DefaultVersionConstraint("[2.0]")).getValue());
 
         // Invalid
 
@@ -48,7 +50,7 @@ public class DefaultVersionConstraintTest
         }
 
         try {
-            new DefaultVersionConstraint("1.0").merge(new DefaultVersionConstraint("[2.0]")).getValue();
+            new DefaultVersionConstraint("[1.0]").merge(new DefaultVersionConstraint("2.0")).getValue();
             Assert.fail("Should have failed");
         } catch (IncompatibleVersionConstraintException expected) {
             // expected
@@ -59,13 +61,14 @@ public class DefaultVersionConstraintTest
     public void testParse() throws InvalidVersionRangeException
     {
         Assert.assertEquals("1.0", new DefaultVersionConstraint("1.0").getVersion().getValue());
-        Assert.assertEquals(Arrays.asList(new DefaultVersionRangeCollection("[1.0]")), new DefaultVersionConstraint(
-            "[1.0]").getRanges());
-        Assert.assertEquals(Arrays.asList(new DefaultVersionRangeCollection("[1.0]")), new DefaultVersionConstraint(
-            "{[1.0]}").getRanges());
-        Assert.assertEquals(Arrays.asList(new DefaultVersionRangeCollection("[1.0]"),
-            new DefaultVersionRangeCollection("[1.0,2.0],[1.0]")), new DefaultVersionConstraint(
-            "{[1.0]},{[1.0,2.0],[1.0]}").getRanges());
+        Assert.assertEquals(Arrays.asList(new DefaultVersionRangeCollection("[1.0]")),
+            new DefaultVersionConstraint("[1.0]").getRanges());
+        Assert.assertEquals(Arrays.asList(new DefaultVersionRangeCollection("[1.0]")),
+            new DefaultVersionConstraint("{[1.0]}").getRanges());
+        Assert.assertEquals(
+            Arrays.asList(new DefaultVersionRangeCollection("[1.0]"),
+                new DefaultVersionRangeCollection("[1.0,2.0],[1.0]")),
+            new DefaultVersionConstraint("{[1.0]},{[1.0,2.0],[1.0]}").getRanges());
 
         // Invalid goes to version
 
