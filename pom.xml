@@ -59,7 +59,7 @@
     <restlet.version>2.0.14</restlet.version>
 
     <!-- Jackson -->
-    <jackson.version>2.8.9</jackson.version>
+    <jackson.version>2.9.0</jackson.version>
 
     <!-- ASM -->
     <asm.version>5.2</asm.version>
@@ -531,6 +531,11 @@
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-avro</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-ion</artifactId>
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
