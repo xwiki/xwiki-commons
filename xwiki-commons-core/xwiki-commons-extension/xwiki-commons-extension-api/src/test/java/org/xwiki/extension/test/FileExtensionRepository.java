@@ -29,6 +29,7 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
@@ -45,6 +46,7 @@ import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.internal.DefaultVersion;
 
 public class FileExtensionRepository extends AbstractExtensionRepository implements ExtensionRepository
@@ -119,8 +121,27 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        return resolve(new ExtensionId(extensionDependency.getId(),
-            new DefaultVersion(extensionDependency.getVersionConstraint().getValue())));
+        VersionConstraint versionConstraint = extensionDependency.getVersionConstraint();
+
+        if (versionConstraint.getVersion() != null) {
+            return resolve(new ExtensionId(extensionDependency.getId(),
+                new DefaultVersion(extensionDependency.getVersionConstraint().getValue())));
+        }
+
+        List<Version> versions = getVersions(extensionDependency.getId());
+
+        if (!versions.isEmpty()) {
+            for (ListIterator<Version> it = versions.listIterator(versions.size()); it.hasPrevious(); it
+                .previous()) {
+                Version version = it.previous();
+
+                if (versionConstraint.isCompatible(version)) {
+                    return resolve(new ExtensionId(extensionDependency.getId(), version));
+                }
+            }
+        }
+
+        throw new ExtensionNotFoundException("Extension dependency [" + extensionDependency + "] not found");
     }
 
     @Override
@@ -133,9 +154,9 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
         }
     }
 
-    @Override
-    public IterableResult<Version> resolveVersions(final String id, int offset, int nb) throws ResolveException
+    private List<Version> getVersions(String id) throws ResolveException
     {
+
         List<Version> versions = new LinkedList<Version>();
 
         try {
@@ -154,23 +175,32 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
                     DefaultLocalExtension localExtension =
                         this.extensionSerializer.loadLocalExtensionDescriptor(null, fis);
 
-                    versions.add(localExtension.getId().getVersion());
+                    if (localExtension.getId().getId().equals(id)) {
+                        versions.add(localExtension.getId().getVersion());
+                    }
                 } finally {
                     if (fis != null) {
                         fis.close();
                     }
                 }
-
             }
         } catch (Exception e) {
             throw new ResolveException("Failed to resolve versions for extenion [" + id + "]", e);
         }
 
+        Collections.sort(versions);
+
+        return versions;
+    }
+
+    @Override
+    public IterableResult<Version> resolveVersions(final String id, int offset, int nb) throws ResolveException
+    {
+        List<Version> versions = getVersions(id);
+
         if (versions.isEmpty()) {
             throw new ExtensionNotFoundException("Extension [" + id + "] not found");
         }
-
-        Collections.sort(versions);
 
         return new CollectionIterableResult<Version>(0, offset, versions);
     }
