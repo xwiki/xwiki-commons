@@ -71,14 +71,39 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
         return installRequest;
     }
 
+    private boolean isSkipped(InstalledExtension extension, String namespace)
+    {
+        // Explicitly skipped extensions
+
+        if (getRequest().getExcludedExtensions().contains(extension.getId())) {
+            return true;
+        }
+
+        // Extensions with no backward dependencies
+
+        Collection<ExtensionId> requestExtensions = getRequest().getExtensions();
+        boolean filterDependencies = requestExtensions == null || requestExtensions.isEmpty();
+
+        if (filterDependencies) {
+            try {
+                return extension.isDependency(namespace) && !this.installedExtensionRepository
+                    .getBackwardDependencies(extension.getId().getId(), namespace).isEmpty();
+            } catch (ResolveException e) {
+                // Should never happen
+                this.logger.error("Failed to gather backward dependencies for extension [{}]", extension.getId(), e);
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @param extension the extension currently installed
      * @param namespace the namespace where the extension is installed
      */
-    protected void upgradeExtension(InstalledExtension extension, String namespace, boolean filterDependencies)
+    protected void upgradeExtension(InstalledExtension extension, String namespace)
     {
-        if (!getRequest().getExcludedExtensions().contains(extension.getId())
-            && (!filterDependencies || !extension.isDependency(namespace))) {
+        if (!isSkipped(extension, namespace)) {
             NavigableSet<Version> versions = getVersions(extension, namespace);
 
             // Useless to continue if the extension does not have any available version
@@ -165,8 +190,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
         return false;
     }
 
-    protected void upgrade(String namespace, Collection<InstalledExtension> installedExtensions,
-        boolean filterDependencies)
+    protected void upgrade(String namespace, Collection<InstalledExtension> installedExtensions)
     {
         this.progressManager.pushLevelProgress(installedExtensions.size(), this);
 
@@ -175,7 +199,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                 this.progressManager.startStep(this);
 
                 if (namespace == null || !installedExtension.isInstalled(null)) {
-                    upgradeExtension(installedExtension, namespace, filterDependencies);
+                    upgradeExtension(installedExtension, namespace);
                 }
 
                 this.progressManager.endStep(this);
@@ -185,7 +209,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
         }
     }
 
-    protected void upgrade(Collection<InstalledExtension> installedExtensions, boolean filterDependencies)
+    protected void upgrade(Collection<InstalledExtension> installedExtensions)
     {
         this.progressManager.pushLevelProgress(installedExtensions.size(), this);
 
@@ -194,7 +218,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                 this.progressManager.startStep(this);
 
                 if (installedExtension.getNamespaces() == null) {
-                    upgradeExtension(installedExtension, null, filterDependencies);
+                    upgradeExtension(installedExtension, null);
                 } else {
                     this.progressManager.pushLevelProgress(installedExtension.getNamespaces().size(), this);
 
@@ -202,7 +226,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                         for (String namespace : installedExtension.getNamespaces()) {
                             this.progressManager.startStep(this);
 
-                            upgradeExtension(installedExtension, namespace, filterDependencies);
+                            upgradeExtension(installedExtension, namespace);
 
                             this.progressManager.endStep(this);
                         }
@@ -266,13 +290,11 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
     protected void runInternal() throws Exception
     {
         Collection<String> namespaces = getRequest().getNamespaces();
-        Collection<ExtensionId> requestExtensions = getRequest().getExtensions();
-        boolean filterDependencies = requestExtensions == null || requestExtensions.isEmpty();
 
         if (namespaces == null) {
             Collection<InstalledExtension> installedExtensions = getInstalledExtensions();
 
-            upgrade(installedExtensions, filterDependencies);
+            upgrade(installedExtensions);
         } else {
             this.progressManager.pushLevelProgress(namespaces.size(), this);
 
@@ -280,7 +302,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                 for (String namespace : namespaces) {
                     this.progressManager.startStep(this);
 
-                    upgrade(namespace, getInstalledExtensions(namespace), filterDependencies);
+                    upgrade(namespace, getInstalledExtensions(namespace));
 
                     this.progressManager.endStep(this);
                 }

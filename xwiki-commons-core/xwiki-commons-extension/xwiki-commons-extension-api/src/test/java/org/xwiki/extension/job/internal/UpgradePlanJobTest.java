@@ -24,12 +24,14 @@ import java.util.Iterator;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.TestResources;
 import org.xwiki.extension.job.InstallRequest;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
 import org.xwiki.extension.job.plan.ExtensionPlanNode;
+import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.test.AbstractExtensionHandlerTest;
 
 public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
@@ -37,8 +39,10 @@ public class UpgradePlanJobTest extends AbstractExtensionHandlerTest
     @Test
     public void testUpgradePlanOnRoot() throws Throwable
     {
-        // install first version
-        install(TestResources.REMOTE_UPGRADE10_ID);
+        // Install first version
+        InstalledExtension extension = (DefaultInstalledExtension) install(TestResources.REMOTE_UPGRADE10_ID);
+        // Tag it as dependency
+        this.installedExtensionRepository.installExtension(extension, null, true);
 
         // check upgrade
 
