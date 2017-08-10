@@ -52,6 +52,8 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
      */
     public static final String JOBTYPE = "upgradeplan";
 
+    private static final String FAILED_INSTALL_MESSAGE = "Can't install extension [{}] on namespace [{}].";
+
     @Override
     public String getType()
     {
@@ -184,7 +186,11 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
 
             return true;
         } catch (InstallException e) {
-            this.logger.debug("Can't install extension [{}] on namespace [{}].", extensionId, namespace, e);
+            if (getRequest().isVerbose()) {
+                this.logger.info(FAILED_INSTALL_MESSAGE, extensionId, namespace, e);
+            } else {
+                this.logger.debug(FAILED_INSTALL_MESSAGE, extensionId, namespace, e);
+            }
         }
 
         return false;
