@@ -30,6 +30,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 public class Namespace
 {
+    /**
+     * Root namespace.
+     * 
+     * @since 9.7RC1
+     */
+    public static final Namespace ROOT = new Namespace(null, null);
+
     private String type;
 
     private String value;
@@ -97,6 +104,12 @@ public class Namespace
      */
     public String serialize()
     {
+        // Null value means root namespace
+        if (this.value == null) {
+            return null;
+        }
+
+        // Serialize non null value with its optional type
         if (this.serialized == null) {
             StringBuilder builder = new StringBuilder();
 
