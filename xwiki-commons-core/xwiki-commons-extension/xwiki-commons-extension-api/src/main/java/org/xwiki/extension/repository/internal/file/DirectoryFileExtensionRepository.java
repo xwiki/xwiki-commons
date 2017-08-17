@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.test;
+package org.xwiki.extension.repository.internal.file;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,8 +39,7 @@ import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionNotFoundException;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.repository.AbstractExtensionRepository;
-import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
-import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.internal.ExtensionSerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
@@ -49,15 +48,20 @@ import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.internal.DefaultVersion;
 
-public class FileExtensionRepository extends AbstractExtensionRepository implements ExtensionRepository
+/**
+ * @version $Id$
+ * @since 9.7RC1
+ */
+public class DirectoryFileExtensionRepository extends AbstractExtensionRepository
 {
     private ExtensionSerializer extensionSerializer;
 
     private File directory;
 
-    public FileExtensionRepository(File directory, ComponentManager componentManager) throws ComponentLookupException
+    public DirectoryFileExtensionRepository(ExtensionRepositoryDescriptor descriptor, File directory,
+        ComponentManager componentManager) throws ComponentLookupException
     {
-        super(new DefaultExtensionRepositoryDescriptor("test-file", "file", null));
+        super(descriptor);
 
         this.extensionSerializer = componentManager.getInstance(ExtensionSerializer.class);
 
@@ -131,8 +135,7 @@ public class FileExtensionRepository extends AbstractExtensionRepository impleme
         List<Version> versions = getVersions(extensionDependency.getId());
 
         if (!versions.isEmpty()) {
-            for (ListIterator<Version> it = versions.listIterator(versions.size()); it.hasPrevious(); it
-                .previous()) {
+            for (ListIterator<Version> it = versions.listIterator(versions.size()); it.hasPrevious(); it.previous()) {
                 Version version = it.previous();
 
                 if (versionConstraint.isCompatible(version)) {

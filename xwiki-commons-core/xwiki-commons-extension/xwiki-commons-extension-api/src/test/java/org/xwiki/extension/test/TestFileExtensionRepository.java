@@ -19,23 +19,17 @@
  */
 package org.xwiki.extension.test;
 
-import java.io.UnsupportedEncodingException;
+import java.io.File;
 
-import org.xwiki.extension.AbstractExtension;
-import org.xwiki.extension.Extension;
-import org.xwiki.extension.repository.internal.local.DefaultLocalExtensionFile;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
+import org.xwiki.extension.repository.internal.file.DirectoryFileExtensionRepository;
 
-public class FileExtension extends AbstractExtension
+public class TestFileExtensionRepository extends DirectoryFileExtensionRepository
 {
-    FileExtension(FileExtensionRepository repository, Extension extension) throws UnsupportedEncodingException
+    public TestFileExtensionRepository(File directory, ComponentManager componentManager) throws ComponentLookupException
     {
-        super(repository, extension);
-
-        setFile(new DefaultLocalExtensionFile(getFileExtensionRepository().getFile(getId(), getType())));
-    }
-
-    private FileExtensionRepository getFileExtensionRepository()
-    {
-        return (FileExtensionRepository) getRepository();
+        super(new DefaultExtensionRepositoryDescriptor("test-file", "file", null), directory, componentManager);
     }
 }

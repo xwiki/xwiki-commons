@@ -156,7 +156,8 @@
                 **/UnmodifiableUtils.java,
                 **/AbstractExtension.java,
                 **/DefaultExtensionManagerConfiguration.java,
-                **/ExtensionUtils.java
+                **/ExtensionUtils.java,
+                **/DirectoryFileExtensionRepository.java
               </excludes>
             </configuration>
           </execution>

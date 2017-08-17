@@ -41,7 +41,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
 {
     protected final MockitoComponentManagerRule componentManager;
 
-    private FileExtensionRepository remoteRepository;
+    private TestFileExtensionRepository remoteRepository;
 
     private ComponentAnnotationLoader componentLoader;
 
@@ -80,7 +80,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         // light remote repository
 
         if (copyResourceFolder(getRemoteRepository(), "repository.remote") > 0) {
-            this.remoteRepository = new FileExtensionRepository(getRemoteRepository(), this.componentManager);
+            this.remoteRepository = new TestFileExtensionRepository(getRemoteRepository(), this.componentManager);
             repositoryManager.addRepository(this.remoteRepository);
         }
 
