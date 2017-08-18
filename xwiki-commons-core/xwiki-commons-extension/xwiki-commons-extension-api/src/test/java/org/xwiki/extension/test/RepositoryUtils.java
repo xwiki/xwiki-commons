@@ -78,6 +78,7 @@ public class RepositoryUtils
         Map<String, RepositorySerializer> repositories = new HashMap<String, RepositorySerializer>();
         repositories.put(null, new DefaultRepositorySerializer(getRemoteRepository()));
         repositories.put("remote", repositories.get(null));
+        repositories.put("local", new DefaultRepositorySerializer(getLocalRepository()));
         repositories.put("maven", new MavenRepositorySerializer(getMavenRepository()));
         repositories.put("maven2", new MavenRepositorySerializer(getMaven2Repository()));
 
