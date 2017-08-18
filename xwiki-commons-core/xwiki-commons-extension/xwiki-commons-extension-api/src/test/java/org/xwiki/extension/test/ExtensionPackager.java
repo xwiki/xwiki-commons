@@ -62,16 +62,17 @@ public class ExtensionPackager
 
     private File workingDirectory;
 
-    private Map<String, File> repositories;
+    private Map<String, RepositorySerializer> repositories;
 
     private Map<ExtensionId, File> extensionsFiles = new HashMap<ExtensionId, File>();
 
     public ExtensionPackager(File workingDirectory, File repository)
     {
-        this(workingDirectory, Collections.<String, File>singletonMap(null, repository));
+        this(workingDirectory,
+            Collections.<String, RepositorySerializer>singletonMap(null, new DefaultRepositorySerializer(repository)));
     }
 
-    public ExtensionPackager(File workingDirectory, Map<String, File> repositories)
+    public ExtensionPackager(File workingDirectory, Map<String, RepositorySerializer> repositories)
     {
         this.workingDirectory = workingDirectory;
         this.repositories = repositories;
@@ -87,9 +88,8 @@ public class ExtensionPackager
         Collection<URL> urls = ClasspathHelper.forPackage(PACKAGEFILE_PACKAGE);
 
         if (!urls.isEmpty()) {
-            Reflections reflections =
-                new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner()).setUrls(urls)
-                    .filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(PACKAGEFILE_PACKAGE))));
+            Reflections reflections = new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner())
+                .setUrls(urls).filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(PACKAGEFILE_PACKAGE))));
 
             Set<String> descriptors = reflections.getResources(Predicates.equalTo(PACKAGEFILE_DESCRIPTOR));
 
@@ -128,17 +128,22 @@ public class ExtensionPackager
         if (version == null) {
             version = "1.0";
         }
+
+        String repositoryName = descriptorProperties.getProperty("repository");
+        RepositorySerializer repositorySerializer = this.repositories.get(repositoryName);
+        if (repositorySerializer == null) {
+            throw new IOException("Unknown repository [" + repositoryName + "]");
+        }
+        id = repositorySerializer.resolveId(id);
+
         File packageFile;
         String directory = descriptorProperties.getProperty("directory");
         String fileName = descriptorProperties.getProperty("fileName");
-        String repositoryName = descriptorProperties.getProperty("repository");
         if (directory == null) {
             if (fileName == null) {
-                packageFile =
-                    new File(this.repositories.get(repositoryName), URLEncoder.encode(id + '-' + version + '.' + type,
-                        "UTF-8"));
+                packageFile = repositorySerializer.getFile(id, version, type);
             } else {
-                packageFile = new File(this.repositories.get(repositoryName), fileName);
+                packageFile = new File(repositorySerializer.getRoot(), fileName);
             }
         } else {
             if (fileName == null) {

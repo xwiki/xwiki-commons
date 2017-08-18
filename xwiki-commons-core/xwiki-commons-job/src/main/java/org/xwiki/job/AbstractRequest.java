@@ -47,7 +47,7 @@ public abstract class AbstractRequest implements Request
     /**
      * The properties.
      */
-    private Map<String, Object> properties = new HashMap<String, Object>();
+    private Map<String, Object> properties = new HashMap<>();
 
     /**
      * @see #isVerbose()
@@ -86,7 +86,7 @@ public abstract class AbstractRequest implements Request
      */
     public void setId(List<String> id)
     {
-        this.id = id != null ? new ArrayList<String>(id) : null;
+        this.id = id != null ? new ArrayList<>(id) : null;
     }
 
     /**

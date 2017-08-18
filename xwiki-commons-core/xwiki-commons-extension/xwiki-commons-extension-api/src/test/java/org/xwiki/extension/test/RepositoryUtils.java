@@ -63,7 +63,7 @@ public class RepositoryUtils
 
     public RepositoryUtils()
     {
-        File testDirectory = new File("target/test-" + new Date().getTime());
+        File testDirectory = new File("target/test-" + new Date().getTime()).getAbsoluteFile();
 
         this.temporaryDirectory = new File(testDirectory, "temporary-dir");
 
@@ -75,17 +75,18 @@ public class RepositoryUtils
         this.maven2RepositoryRoot = new File(testDirectory, "maven2/");
         this.remoteRepositoryRoot = new File(testDirectory, "remote/");
 
-        Map<String, File> repositories = new HashMap<String, File>();
-        repositories.put(null, getRemoteRepository());
-        repositories.put("remote", getRemoteRepository());
-        repositories.put("local", getLocalRepository());
+        Map<String, RepositorySerializer> repositories = new HashMap<String, RepositorySerializer>();
+        repositories.put(null, new DefaultRepositorySerializer(getRemoteRepository()));
+        repositories.put("remote", repositories.get(null));
+        repositories.put("maven", new MavenRepositorySerializer(getMavenRepository()));
+        repositories.put("maven2", new MavenRepositorySerializer(getMaven2Repository()));
 
         this.extensionPackager = new ExtensionPackager(this.permanentDirectory, repositories);
 
-        System.setProperty("extension.repository.local", this.localRepositoryRoot.getAbsolutePath());
-        System.setProperty("extension.repository.maven", this.mavenRepositoryRoot.getAbsolutePath());
-        System.setProperty("extension.repository.maven2", this.maven2RepositoryRoot.getAbsolutePath());
-        System.setProperty("extension.repository.remote", this.remoteRepositoryRoot.getAbsolutePath());
+        System.setProperty("extension.repository.local", getLocalRepository().getAbsolutePath());
+        System.setProperty("extension.repository.maven", getMavenRepository().getAbsolutePath());
+        System.setProperty("extension.repository.maven2", getMaven2Repository().getAbsolutePath());
+        System.setProperty("extension.repository.remote", getRemoteRepository().getAbsolutePath());
     }
 
     public File getPermanentDirectory()
@@ -163,9 +164,8 @@ public class RepositoryUtils
                 prefix = prefix + '.';
             }
 
-            Reflections reflections =
-                new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner()).setUrls(urls)
-                    .filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(prefix))));
+            Reflections reflections = new Reflections(new ConfigurationBuilder().setScanners(new ResourcesScanner())
+                .setUrls(urls).filterInputsBy(new FilterBuilder.Include(FilterBuilder.prefix(prefix))));
 
             for (String resource : reflections.getResources(Pattern.compile(".*"))) {
                 targetFolder.mkdirs();
