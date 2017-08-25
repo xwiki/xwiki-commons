@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension;
 
+import java.io.Serializable;
+
 import org.xwiki.stability.Unstable;
 
 /**
@@ -30,7 +32,7 @@ import org.xwiki.stability.Unstable;
  * @since 9.0RC1
  */
 @Unstable
-public interface ExtensionRewriter
+public interface ExtensionRewriter extends Serializable
 {
     /**
      * @param extension the extension to filter
