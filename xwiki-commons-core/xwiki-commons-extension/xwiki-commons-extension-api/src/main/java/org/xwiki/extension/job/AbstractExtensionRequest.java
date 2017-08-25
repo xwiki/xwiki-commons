@@ -65,11 +65,14 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     public static final String PROPERTY_UNINSTALLALLOWED = "uninstallAllowed";
 
     /**
+     * @see #getRewriter()
+     */
+    public static final String PROPERTY_REWRITER = "rewriter";
+
+    /**
      * Serialization identifier.
      */
     private static final long serialVersionUID = 1L;
-
-    private transient ExtensionRewriter rewriter;
 
     /**
      * Default constructor.
@@ -90,10 +93,6 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
         Collection<ExtensionId> extensions = getExtensions();
         if (extensions == null) {
             setProperty(PROPERTY_EXTENSIONS, new ArrayList<ExtensionId>());
-        }
-
-        if (request instanceof ExtensionRequest) {
-            this.rewriter = ((ExtensionRequest) request).getRewriter();
         }
     }
 
@@ -182,14 +181,14 @@ public abstract class AbstractExtensionRequest extends AbstractRequest implement
     @Unstable
     public void setRewriter(ExtensionRewriter rewriter)
     {
-        this.rewriter = rewriter;
+        setProperty(PROPERTY_REWRITER, rewriter);
     }
 
     @Override
     @Transient
     public ExtensionRewriter getRewriter()
     {
-        return this.rewriter;
+        return getProperty(PROPERTY_REWRITER);
     }
 
     @Override

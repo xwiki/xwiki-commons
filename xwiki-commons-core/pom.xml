@@ -165,6 +165,16 @@
                     "annotationType": "javax.xml.bind.annotation.XmlType",
                     "elementKind": "annotation",
                     "justification": "Not a breackage in the context of REST"
+                  },
+                  {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.extension.job.AbstractExtensionRequest.serialVersionUID",
+                    "new": "field org.xwiki.extension.job.AbstractExtensionRequest.serialVersionUID",
+                    "package": "org.xwiki.extension.job",
+                    "classSimpleName": "AbstractExtensionRequest",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "Young API. Anything important for the job request should be Serializable"
                   }
                 ]
               }
