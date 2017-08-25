@@ -62,7 +62,7 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
      */
     private final Version version;
 
-    private transient int hashCode = -1;
+    private transient int hashCode;
 
     /**
      * @param id the extension identifier
@@ -124,7 +124,7 @@ public class ExtensionId implements Serializable, Comparable<ExtensionId>
     @Override
     public int hashCode()
     {
-        if (this.hashCode == -1) {
+        if (this.hashCode == 0) {
             HashCodeBuilder builder = new HashCodeBuilder();
 
             builder.append(getId());
