@@ -77,7 +77,7 @@ public class DefaultVersionConstraint implements VersionConstraint
      */
     private String value;
 
-    private int hashCode = -1;
+    private transient int hashCode;
 
     /**
      * @param rawConstraint the version range to parse
@@ -388,7 +388,7 @@ public class DefaultVersionConstraint implements VersionConstraint
     @Override
     public int hashCode()
     {
-        if (this.hashCode == -1) {
+        if (this.hashCode == 0) {
             HashCodeBuilder builder = new HashCodeBuilder(17, 31);
             builder.append(getRangesInternal());
             builder.append(getVersion());
