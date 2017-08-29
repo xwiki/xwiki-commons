@@ -80,4 +80,14 @@ public interface ExtensionManagerConfiguration
     {
         return null;
     }
+
+    /**
+     * @param id the identifier of the extension
+     * @return the recommended version or null if none could be found
+     * @since 9.8RC1
+     */
+    default VersionConstraint getRecomendedVersionConstraint(String id)
+    {
+        return null;
+    }
 }

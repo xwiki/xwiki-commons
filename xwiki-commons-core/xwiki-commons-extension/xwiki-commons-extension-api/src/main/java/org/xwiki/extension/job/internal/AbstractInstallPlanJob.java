@@ -553,7 +553,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
      * @throws ResolveException
      * @throws IncompatibleVersionConstraintException
      */
-    private void installMandatoryExtensionDependency(ExtensionDependency extensionDependency, String namespace,
+    protected void installMandatoryExtensionDependency(ExtensionDependency extensionDependency, String namespace,
         List<ModifableExtensionPlanNode> parentBranch, Map<String, ExtensionDependency> managedDependencies)
         throws InstallException, IncompatibleVersionConstraintException, ResolveException
     {

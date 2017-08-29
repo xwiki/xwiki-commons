@@ -304,8 +304,7 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         return null;
     }
 
-    @Override
-    public VersionConstraint getRecomendedVersionConstraint(String id, VersionConstraint defaultVersion)
+    private RecommendedVersion getRecomendedVersion(String id)
     {
         if (this.recommendedVersions == null) {
             List<String> list = getRecommendedVersions();
@@ -328,12 +327,33 @@ public class DefaultExtensionManagerConfiguration implements ExtensionManagerCon
         // Searching matching recommended version
         for (RecommendedVersion version : this.recommendedVersions) {
             if (version.matches(id)) {
-                if (!version.getVersionConstraint().equals(defaultVersion)) {
-                    return version.getVersionConstraint();
-                }
-
-                break;
+                return version;
             }
+        }
+
+        return null;
+
+    }
+
+    @Override
+    public VersionConstraint getRecomendedVersionConstraint(String id)
+    {
+        RecommendedVersion recommendedVersion = getRecomendedVersion(id);
+
+        if (recommendedVersion != null) {
+            return recommendedVersion.getVersionConstraint();
+        }
+
+        return null;
+    }
+
+    @Override
+    public VersionConstraint getRecomendedVersionConstraint(String id, VersionConstraint defaultVersion)
+    {
+        VersionConstraint constraint = getRecomendedVersionConstraint(id);
+
+        if (constraint != null && !constraint.equals(defaultVersion)) {
+            return constraint;
         }
 
         return null;
