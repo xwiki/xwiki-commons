@@ -364,6 +364,13 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-configuration2</artifactId>
         <version>2.1.1</version>
+         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+         <exclusions>
+           <exclusion>
+             <groupId>commons-logging</groupId>
+             <artifactId>commons-logging</artifactId>
+           </exclusion>
+         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
