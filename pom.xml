@@ -100,6 +100,7 @@
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
+    <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
@@ -346,17 +347,23 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- Old version of Commons Configuration, just making sure we end up with the last one -->
       <dependency>
-        <groupId>commons-configuration</groupId>
-        <artifactId>commons-configuration</artifactId>
-        <version>1.10</version>
-        <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
+       <groupId>commons-configuration</groupId>
+         <artifactId>commons-configuration</artifactId>
+         <version>1.10</version>
+         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
+         <exclusions>
+           <exclusion>
+             <groupId>commons-logging</groupId>
+             <artifactId>commons-logging</artifactId>
+           </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-configuration2</artifactId>
+        <version>2.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -1140,6 +1147,27 @@
                   </message>
                   <excludes>
                     <exclude>commons-lang:commons-lang</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using commons-configuration3 and not commons-configuration -->
+          <execution>
+            <id>enforce-commons-configuration2</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-commons-configuration2.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+                    Best practice is to use Commons Configuration 2.x
+                  </message>
+                  <excludes>
+                    <exclude>commons-configuration:commons-configuration</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>

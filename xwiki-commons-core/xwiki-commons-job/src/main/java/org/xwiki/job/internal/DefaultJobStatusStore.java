@@ -32,8 +32,9 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -140,14 +141,15 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             this.serializer = new JobStatusSerializer();
 
             // Check if the store need to be upgraded
-            PropertiesConfiguration properties = getStoreProperties();
+            FileBasedConfigurationBuilder<PropertiesConfiguration> builder = getStoreProperties();
+            PropertiesConfiguration properties = builder.getConfiguration();
             int version = properties.getInt(INDEX_FILE_VERSION, 0);
             if (VERSION > version) {
                 repair();
 
                 // Update version
                 properties.setProperty(INDEX_FILE_VERSION, VERSION);
-                properties.save();
+                builder.save();
             }
         } catch (Exception e) {
             this.logger.error("Failed to load jobs", e);
@@ -292,11 +294,12 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         return folder;
     }
 
-    private PropertiesConfiguration getStoreProperties() throws ConfigurationException
+    private FileBasedConfigurationBuilder<PropertiesConfiguration> getStoreProperties()
     {
         File folder = this.configuration.getStorage();
 
-        return new PropertiesConfiguration(new File(folder, INDEX_FILE));
+        return new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
+            .configure(new Parameters().properties().setFile(new File(folder, INDEX_FILE)));
     }
 
     /**
