@@ -103,12 +103,9 @@ public class DefaultVersionConstraint implements VersionConstraint
      */
     public DefaultVersionConstraint(Collection<? extends VersionRangeCollection> ranges, Version version)
     {
-        if (ranges != null && !ranges.isEmpty()) {
-            this.ranges = new ArrayList<>(ranges);
-        } else {
-            this.ranges = Collections.emptyList();
-        }
         this.version = version;
+
+        setRanges(ranges);
     }
 
     /**
@@ -116,8 +113,41 @@ public class DefaultVersionConstraint implements VersionConstraint
      */
     public DefaultVersionConstraint(Version version)
     {
-        this.ranges = Collections.emptyList();
         this.version = version;
+
+        this.ranges = Collections.emptyList();
+    }
+
+    private VersionRangeCollection getStrictVersion(Collection<? extends VersionRangeCollection> ranges)
+    {
+        for (VersionRangeCollection collection : ranges) {
+            if (collection.getRanges().size() == 1) {
+                VersionRange range = collection.getRanges().iterator().next();
+                if (range instanceof DefaultVersionRange && ((DefaultVersionRange) range).getLowerBound() != null
+                    && ((DefaultVersionRange) range).getLowerBound()
+                        .equals(((DefaultVersionRange) range).getUpperBound())) {
+                    return collection;
+                }
+
+            }
+        }
+
+        return null;
+    }
+
+    private void setRanges(Collection<? extends VersionRangeCollection> ranges)
+    {
+        if (ranges != null && !ranges.isEmpty()) {
+            // Optimize ranges in case there is range collection with a strict version
+            VersionRangeCollection strictVersion = getStrictVersion(ranges);
+            if (strictVersion != null) {
+                this.ranges = Collections.singletonList(strictVersion);
+            } else {
+                this.ranges = new ArrayList<>(ranges);
+            }
+        } else {
+            this.ranges = Collections.emptyList();
+        }
     }
 
     private void init()
@@ -138,7 +168,7 @@ public class DefaultVersionConstraint implements VersionConstraint
                 this.version = new DefaultVersion(this.value);
                 this.ranges = Collections.emptyList();
             } else {
-                this.ranges = newRanges;
+                setRanges(newRanges);
             }
         }
     }

@@ -107,6 +107,24 @@ public class DefaultVersionRange implements VersionRange
     }
 
     /**
+     * @return the minimum version
+     * @since 9.8RC1
+     */
+    public Version getLowerBound()
+    {
+        return this.lowerBound;
+    }
+
+    /**
+     * @return the maximum version
+     * @since 9.8RC1
+     */
+    public Version getUpperBound()
+    {
+        return this.upperBound;
+    }
+
+    /**
      * @param rawRange the version range to parse
      * @throws InvalidVersionRangeException error when parsing version range
      */
@@ -127,8 +145,8 @@ public class DefaultVersionRange implements VersionRange
 
         if (index < 0) {
             if (!this.lowerBoundInclusive || !this.upperBoundInclusive) {
-                throw new InvalidVersionRangeException(MessageFormat.format(
-                    "Invalid version range [{0}], single version must be surrounded by []", rawRange));
+                throw new InvalidVersionRangeException(MessageFormat
+                    .format("Invalid version range [{0}], single version must be surrounded by []", rawRange));
             }
 
             this.upperBound = new DefaultVersion(range.trim());
@@ -139,8 +157,8 @@ public class DefaultVersionRange implements VersionRange
 
             // more than two bounds, e.g. (1,2,3)
             if (StringUtils.contains(parsedUpperBound, RANGE_SEPARATOR)) {
-                throw new InvalidVersionRangeException(MessageFormat.format(
-                    "Invalid version range [{0}], bounds may not contain additional ','", rawRange));
+                throw new InvalidVersionRangeException(MessageFormat
+                    .format("Invalid version range [{0}], bounds may not contain additional ','", rawRange));
             }
 
             this.lowerBound = parsedLowerBound.length() > 0 ? new DefaultVersion(parsedLowerBound) : null;
@@ -167,8 +185,8 @@ public class DefaultVersionRange implements VersionRange
         } else if (VersionUtils.startsWith(range, '(')) {
             return false;
         } else {
-            throw new InvalidVersionRangeException(MessageFormat.format(
-                "Invalid version range [{0}], a range must start with either [ or (", range));
+            throw new InvalidVersionRangeException(
+                MessageFormat.format("Invalid version range [{0}], a range must start with either [ or (", range));
         }
     }
 
@@ -184,8 +202,8 @@ public class DefaultVersionRange implements VersionRange
         } else if (VersionUtils.endsWith(range, ')')) {
             return false;
         } else {
-            throw new InvalidVersionRangeException(MessageFormat.format(
-                "Invalid version range [{0}], a range must end with either [ or (", range));
+            throw new InvalidVersionRangeException(
+                MessageFormat.format("Invalid version range [{0}], a range must end with either [ or (", range));
         }
     }
 
@@ -282,12 +300,10 @@ public class DefaultVersionRange implements VersionRange
      */
     public boolean isCompatible(DefaultVersionRange otherRange)
     {
-        int lowerCompare =
-            compareTo(this.lowerBound, this.lowerBoundInclusive, otherRange.lowerBound, otherRange.lowerBoundInclusive,
-                false);
-        int upperCompare =
-            compareTo(this.upperBound, this.upperBoundInclusive, otherRange.upperBound, otherRange.upperBoundInclusive,
-                true);
+        int lowerCompare = compareTo(this.lowerBound, this.lowerBoundInclusive, otherRange.lowerBound,
+            otherRange.lowerBoundInclusive, false);
+        int upperCompare = compareTo(this.upperBound, this.upperBoundInclusive, otherRange.upperBound,
+            otherRange.upperBoundInclusive, true);
 
         // Both ranges have one bound in common
         if (lowerCompare == 0 || upperCompare == 0) {
@@ -305,9 +321,11 @@ public class DefaultVersionRange implements VersionRange
         }
 
         // Validate intersections
-        return lowerCompare < 0 ? isCompatible(this.upperBound, this.upperBoundInclusive, otherRange.lowerBound,
-            otherRange.lowerBoundInclusive) : isCompatible(otherRange.upperBound, otherRange.upperBoundInclusive,
-                this.lowerBound, this.lowerBoundInclusive);
+        return lowerCompare < 0
+            ? isCompatible(this.upperBound, this.upperBoundInclusive, otherRange.lowerBound,
+                otherRange.lowerBoundInclusive)
+            : isCompatible(otherRange.upperBound, otherRange.upperBoundInclusive, this.lowerBound,
+                this.lowerBoundInclusive);
     }
 
     /**
@@ -460,8 +478,8 @@ public class DefaultVersionRange implements VersionRange
      * @throws ClassNotFoundException error when unserializing the version
      * @throws InvalidVersionRangeException error when unserializing the version
      */
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException,
-        InvalidVersionRangeException
+    private void readObject(ObjectInputStream in)
+        throws IOException, ClassNotFoundException, InvalidVersionRangeException
     {
         setRange((String) in.readObject());
     }
