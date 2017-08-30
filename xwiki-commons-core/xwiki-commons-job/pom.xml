@@ -116,7 +116,7 @@
             <configuration>
               <excludes>
                 org/xwiki/job/AbstractJob.java,
-                org/xwiki/job/internal/xstream/DefaultJobStatusStore.java,
+                org/xwiki/job/internal/DefaultJobStatusStore.java,
                 org/xwiki/job/internal/xstream/SafeReflectionConverter.java,
                 org/xwiki/job/internal/xstream/XStreamUtils.java
               </excludes>
