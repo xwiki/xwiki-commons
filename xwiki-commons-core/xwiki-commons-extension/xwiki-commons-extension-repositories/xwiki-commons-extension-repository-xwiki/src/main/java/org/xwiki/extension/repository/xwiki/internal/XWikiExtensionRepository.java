@@ -75,6 +75,7 @@ import org.xwiki.extension.repository.xwiki.model.jaxb.SortClause;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.internal.DefaultVersion;
+import org.xwiki.extension.version.internal.VersionUtils;
 import org.xwiki.repository.Resources;
 import org.xwiki.repository.UriBuilder;
 
@@ -336,8 +337,7 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
     public Extension resolve(ExtensionId extensionId) throws ResolveException
     {
         try {
-            return new XWikiExtension(this, (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider,
-                extensionId.getId(), extensionId.getVersion().getValue()), this.licenseManager, this.factory);
+            return resolve(extensionId.getId(), extensionId.getVersion());
         } catch (ResourceNotFoundException e) {
             throw new ExtensionNotFoundException("Could not find extension [" + extensionId + "]", e);
         } catch (Exception e) {
@@ -345,31 +345,20 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
         }
     }
 
+    private Extension resolve(String id, Version version) throws IllegalStateException, IOException, JAXBException
+    {
+        return new XWikiExtension(this, (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider, id, version),
+            this.licenseManager, this.factory);
+    }
+
     @Override
     public Extension resolve(ExtensionDependency extensionDependency) throws ResolveException
     {
-        VersionConstraint constraint = extensionDependency.getVersionConstraint();
-
         try {
-            Version version;
-            if (!constraint.getRanges().isEmpty()) {
-                ExtensionVersions versions =
-                    resolveExtensionVersions(extensionDependency.getId(), constraint, 0, -1, false);
-                if (versions.getExtensionVersionSummaries().isEmpty()) {
-                    throw new ExtensionNotFoundException(
-                        "Can't find any version with id [" + extensionDependency.getId()
-                            + "] matching version constraint [" + extensionDependency.getVersionConstraint() + "]");
-                }
+            Version version =
+                resolveVersionConstraint(extensionDependency.getId(), extensionDependency.getVersionConstraint());
 
-                version = new DefaultVersion(versions.getExtensionVersionSummaries()
-                    .get(versions.getExtensionVersionSummaries().size() - 1).getVersion());
-            } else {
-                version = constraint.getVersion();
-            }
-
-            return new XWikiExtension(this,
-                (ExtensionVersion) getRESTObject(this.extensionVersionUriBuider, extensionDependency.getId(), version),
-                this.licenseManager, this.factory);
+            return resolve(extensionDependency.getId(), version);
         } catch (ResourceNotFoundException e) {
             throw new ExtensionNotFoundException(
                 "Could not find any extension to match dependency [" + extensionDependency + "]", e);
@@ -377,6 +366,30 @@ public class XWikiExtensionRepository extends AbstractExtensionRepository
             throw new ResolveException(
                 "Failed to create extension object for extension dependency [" + extensionDependency + "]", e);
         }
+    }
+
+    private Version resolveVersionConstraint(String id, VersionConstraint versionConstraint) throws ResolveException
+    {
+        // Single version
+        if (versionConstraint.getVersion() != null) {
+            return versionConstraint.getVersion();
+        }
+
+        // Strict version
+        Version strictVersion = VersionUtils.getStrictVersion(versionConstraint.getRanges());
+        if (strictVersion != null) {
+            return strictVersion;
+        }
+
+        // Ranges
+        ExtensionVersions versions = resolveExtensionVersions(id, versionConstraint, 0, -1, false);
+        if (versions.getExtensionVersionSummaries().isEmpty()) {
+            throw new ExtensionNotFoundException(
+                "Can't find any version with id [" + id + "] matching version constraint [" + versionConstraint + "]");
+        }
+
+        return new DefaultVersion(versions.getExtensionVersionSummaries()
+            .get(versions.getExtensionVersionSummaries().size() - 1).getVersion());
     }
 
     private ExtensionVersions resolveExtensionVersions(String id, VersionConstraint constraint, int offset, int nb,

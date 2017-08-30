@@ -19,6 +19,12 @@
  */
 package org.xwiki.extension.version.internal;
 
+import java.util.Collection;
+
+import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.VersionRange;
+import org.xwiki.extension.version.VersionRangeCollection;
+
 /**
  * Contain some Version related toolkit methods.
  *
@@ -53,5 +59,30 @@ public final class VersionUtils
     public static boolean endsWith(String str, char c)
     {
         return str.length() > 0 && str.charAt(str.length() - 1) == c;
+    }
+
+    /**
+     * Check if passed range collection is a strict version.
+     * 
+     * @param ranges the ranges to search into
+     * @return the strict version constraint found or null if none could be found
+     * @since 9.8RC1
+     */
+    public static Version getStrictVersion(Collection<? extends VersionRangeCollection> ranges)
+    {
+        for (VersionRangeCollection collection : ranges) {
+            if (collection.getRanges().size() == 1) {
+                VersionRange range = collection.getRanges().iterator().next();
+                if (range instanceof DefaultVersionRange) {
+                    DefaultVersionRange defaultRange = (DefaultVersionRange) range;
+                    Version lowerBound = defaultRange.getLowerBound();
+                    if (lowerBound != null && (lowerBound.equals(defaultRange.getUpperBound()))) {
+                        return lowerBound;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }

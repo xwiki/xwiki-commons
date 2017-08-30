@@ -87,6 +87,7 @@ import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.VersionConstraint;
 import org.xwiki.extension.version.VersionRange;
 import org.xwiki.extension.version.internal.DefaultVersion;
+import org.xwiki.extension.version.internal.VersionUtils;
 import org.xwiki.properties.converter.Converter;
 
 /**
@@ -249,6 +250,7 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     private org.eclipse.aether.version.Version resolveVersionConstraint(String id, VersionConstraint versionConstraint,
         RepositorySystemSession session) throws ResolveException
     {
+        // Single version
         if (versionConstraint.getVersion() != null) {
             try {
                 return AETHERVERSIONSCHEME.parseVersion(versionConstraint.getVersion().getValue());
@@ -257,14 +259,24 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
         }
 
+        // Strict version
+        Version strictVersion = VersionUtils.getStrictVersion(versionConstraint.getRanges());
+        if (strictVersion != null) {
+            try {
+                return AETHERVERSIONSCHEME.parseVersion(strictVersion.getValue());
+            } catch (InvalidVersionSpecificationException e) {
+                throw new ResolveException("Invalid version [" + versionConstraint.getVersion() + "]", e);
+            }
+        }
+
+        // Ranges
         List<org.eclipse.aether.version.Version> commonVersions = null;
 
         for (VersionRange range : versionConstraint.getRanges()) {
             List<org.eclipse.aether.version.Version> versions = resolveVersionRange(id, range, session);
 
             if (commonVersions == null) {
-                commonVersions = versionConstraint.getRanges().size() > 1
-                    ? new ArrayList<org.eclipse.aether.version.Version>(versions) : versions;
+                commonVersions = versionConstraint.getRanges().size() > 1 ? new ArrayList<>(versions) : versions;
             } else {
                 // Find commons versions between all the ranges of the constraint
                 for (Iterator<org.eclipse.aether.version.Version> it = commonVersions.iterator(); it.hasNext();) {
