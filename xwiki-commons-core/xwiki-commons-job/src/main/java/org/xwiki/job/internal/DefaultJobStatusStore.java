@@ -35,6 +35,7 @@ import javax.inject.Singleton;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParameters;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
@@ -141,7 +142,17 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             this.serializer = new JobStatusSerializer();
 
             // Check if the store need to be upgraded
-            FileBasedConfigurationBuilder<PropertiesConfiguration> builder = getStoreProperties();
+            File folder = this.configuration.getStorage();
+            File file = new File(folder, INDEX_FILE);
+
+            PropertiesBuilderParameters parameters = new Parameters().properties();
+            if (file.exists()) {
+                new Parameters().properties().setFile(file);
+            }
+
+            FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
+                new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
+                    .configure(parameters);
             PropertiesConfiguration properties = builder.getConfiguration();
             int version = properties.getInt(INDEX_FILE_VERSION, 0);
             if (VERSION > version) {
@@ -149,7 +160,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
 
                 // Update version
                 properties.setProperty(INDEX_FILE_VERSION, VERSION);
-                builder.save();
+                builder.getFileHandler().save(file);
             }
         } catch (Exception e) {
             this.logger.error("Failed to load jobs", e);
@@ -292,14 +303,6 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
         }
 
         return folder;
-    }
-
-    private FileBasedConfigurationBuilder<PropertiesConfiguration> getStoreProperties()
-    {
-        File folder = this.configuration.getStorage();
-
-        return new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
-            .configure(new Parameters().properties().setFile(new File(folder, INDEX_FILE)));
     }
 
     /**
