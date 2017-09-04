@@ -802,6 +802,13 @@
         <artifactId>antlr</artifactId>
         <version>2.7.7</version>
       </dependency>
+
+      <!-- OSGI -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>6.0.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
