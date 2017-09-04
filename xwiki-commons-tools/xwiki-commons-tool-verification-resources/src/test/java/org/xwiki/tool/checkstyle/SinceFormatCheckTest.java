@@ -38,7 +38,7 @@ public class SinceFormatCheckTest extends AbstractModuleTestSupport
     @Before
     public void setUp()
     {
-        this.checkConfig = createCheckConfig(SinceFormatCheck.class);
+        this.checkConfig = createModuleConfig(SinceFormatCheck.class);
     }
 
     @Test
