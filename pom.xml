@@ -56,7 +56,7 @@
     <java.version>1.8</java.version>
 
     <!-- REST -->
-    <restlet.version>2.0.14</restlet.version>
+    <restlet.version>2.3.10</restlet.version>
 
     <!-- Jackson -->
     <jackson.version>2.9.0</jackson.version>
@@ -593,6 +593,11 @@
         <artifactId>jackson-core-asl</artifactId>
         <version>1.9.13</version>
       </dependency>
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>1.18</version>
+      </dependency>
 
       <!-- JAX-RS -->
       <dependency>
@@ -606,10 +611,11 @@
         <artifactId>org.restlet.ext.jaxrs</artifactId>
         <version>${restlet.version}</version>
         <exclusions>
-          <!-- Exclude Servlet API 2.5 which is not declared as provided. And we use a newer version too. -->
+          <!-- Version too recent.
+               TODO: remove when upgrading to Servlet 3.1+ -->
           <exclusion>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
           </exclusion>
           <!-- Already part of Java SE 6 -->
           <exclusion>
@@ -641,6 +647,11 @@
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
           </exclusion>
+          <exclusion>
+            <!-- Restlet does not declare the right version of JAX-RS API... -->
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -650,6 +661,13 @@
         <artifactId>org.restlet.ext.jackson</artifactId>
         <version>${restlet.version}</version>
         <scope>runtime</scope>
+        <exclusions>
+          <!-- Wrong version of Woodstox -->
+          <exclusion>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <!-- We need a JAXB converter for XML representation because we model our REST resources using JAXB. Jackson (see
@@ -991,7 +1009,7 @@
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
+        <version>1.1.0.Final</version>
       </dependency>
       <!-- Mail -->
       <dependency>
