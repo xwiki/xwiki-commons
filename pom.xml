@@ -101,6 +101,7 @@
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
+    <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
@@ -474,6 +475,23 @@
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
         <version>5.0.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.simpleframework</groupId>
+        <artifactId>simple-xml</artifactId>
+        <version>2.7.1</version>
+        <exclusions>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
+            <groupId>stax</groupId>
+            <artifactId>stax</artifactId>
+          </exclusion>
+          <!-- Already part of Java SE 6 -->
+          <exclusion>
+            <groupId>javax.xml.stream</groupId>
+            <artifactId>stax-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Json -->
@@ -1200,6 +1218,31 @@
                   </message>
                   <excludes>
                     <exclude>commons-configuration:commons-configuration</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we don't trigger a dependency containing stuff already included the minimum Java SE version supported by XWiki -->
+          <execution>
+            <id>enforce-javase-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-javase-dependencies.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Found a dependency already included in in the minimum Java SE ${java.version}
+                  </message>
+                  <excludes>
+                    <exclude>stax:stax</exclude>
+                    <exclude>javax.xml.stream:stax-api</exclude>
+                    <exclude>com.sun.xml.bind:jaxb-impl</exclude>
+                    <exclude>javax.xml.bind:jaxb-api</exclude>
+                    <exclude>javax.activation:activation</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
