@@ -488,7 +488,7 @@
           </exclusion>
           <!-- Already part of Java SE 6 -->
           <exclusion>
-            <groupId>javax.xml.stream</groupId>
+            <groupId>stax</groupId>
             <artifactId>stax-api</artifactId>
           </exclusion>
         </exclusions>
@@ -1240,6 +1240,7 @@
                   <excludes>
                     <exclude>stax:stax</exclude>
                     <exclude>javax.xml.stream:stax-api</exclude>
+                    <exclude>stax:stax-api</exclude>
                     <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                     <exclude>javax.xml.bind:jaxb-api</exclude>
                     <exclude>javax.activation:activation</exclude>
