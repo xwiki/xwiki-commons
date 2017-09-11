@@ -46,9 +46,7 @@ public class ComponentDescriptorRemovedEvent extends AbstractComponentDescriptor
 
     /**
      * @param role the component role to watch (all components matching this role will trigger this event)
-     * @deprecated since 4.4RC1 use {@link #ComponentDescriptorRemovedEvent(Type)} instead
      */
-    @Deprecated
     public ComponentDescriptorRemovedEvent(Class<?> role)
     {
         super(role);
@@ -66,9 +64,7 @@ public class ComponentDescriptorRemovedEvent extends AbstractComponentDescriptor
     /**
      * @param role the component role to watch
      * @param roleHint the component role hint to watch
-     * @deprecated since 4.4RC1 use {@link #ComponentDescriptorRemovedEvent(Type, String)} instead
      */
-    @Deprecated
     public ComponentDescriptorRemovedEvent(Class<?> role, String roleHint)
     {
         super(role, roleHint);
