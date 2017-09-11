@@ -72,6 +72,7 @@
 
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
+    <junit5.version>5.0.0</junit5.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
@@ -835,6 +836,11 @@
         <version>${junit.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit5.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>${jmock.version}</version>
@@ -1257,7 +1263,9 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.20</version>
+          <!-- TODO: We need to use 2.19.1 currently and not move to 2.20 since that one is incompatible with
+               JUnit5 (causing OOMs). This is fixed in Surefire 2.20.1. Upgrade and remove this todo once it's out -->
+          <version>2.19.1</version>
           <!-- XWiki rule is to put test in *Test classes -->
           <configuration>
             <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
@@ -1272,6 +1280,24 @@
               </property>
             </systemProperties>
           </configuration>
+          <dependencies>
+            <!-- Allow running both JUnit4 and JUnit5 tests -->
+            <dependency>
+              <groupId>org.junit.platform</groupId>
+              <artifactId>junit-platform-surefire-provider</artifactId>
+              <version>1.0.0</version>
+            </dependency>
+            <dependency>
+              <groupId>org.junit.jupiter</groupId>
+              <artifactId>junit-jupiter-engine</artifactId>
+              <version>${junit5.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.junit.vintage</groupId>
+              <artifactId>junit-vintage-engine</artifactId>
+              <version>4.12.0</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
