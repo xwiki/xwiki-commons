@@ -110,20 +110,24 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
         if (installedExtension.isValid(namespace)) {
             NamespaceURLClassLoader classLoader = this.jarExtensionClassLoader.getURLClassLoader(namespace, false);
 
-            if (namespace == null || classLoader.getNamespace().equals(namespace)) {
-                // unregister components
-                try {
-                    unloadComponents(installedExtension.getFile(), classLoader, namespace);
-                } catch (Throwable e) {
-                    // We failed to unregister some components, we probably failed to register them in the first
-                    // place too so let's just ignore it. Better than making impossible to uninstall the extension.
-                    // We catch Throwable because most of the time we end up with a LinkageError
-                    this.logger.warn("Failed to unregister some components of the JAR extension [{}]",
-                        installedExtension.getId(), e);
-                }
+            // The classloader can be null when JAR extension is not initialized (invalid extension or in the middle of
+            // upgrade process)
+            if (classLoader != null) {
+                if (namespace == null || classLoader.getNamespace().equals(namespace)) {
+                    // unregister components
+                    try {
+                        unloadComponents(installedExtension.getFile(), classLoader, namespace);
+                    } catch (Throwable e) {
+                        // We failed to unregister some components, we probably failed to register them in the first
+                        // place too so let's just ignore it. Better than making impossible to uninstall the extension.
+                        // We catch Throwable because most of the time we end up with a LinkageError
+                        this.logger.warn("Failed to unregister some components of the JAR extension [{}]",
+                            installedExtension.getId(), e);
+                    }
 
-                // The ClassLoader(s) will be replaced and reloaded at the end of the job
-                // @see org.xwiki.extension.jar.internal.handler.JarExtensionJobFinishedListener
+                    // The ClassLoader(s) will be replaced and reloaded at the end of the job
+                    // @see org.xwiki.extension.jar.internal.handler.JarExtensionJobFinishedListener
+                }
             }
         }
     }
