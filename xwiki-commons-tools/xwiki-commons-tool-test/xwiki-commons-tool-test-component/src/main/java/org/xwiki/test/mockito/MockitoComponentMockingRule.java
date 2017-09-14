@@ -19,9 +19,6 @@
  */
 package org.xwiki.test.mockito;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +41,9 @@ import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.util.ReflectionUtils;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for Components should extend this class instead of using {@link MockitoComponentManagerRule} or
  * {@link org.xwiki.test.ComponentManagerRule} which should only be used for integration tests.
@@ -53,7 +53,9 @@ import org.xwiki.component.util.ReflectionUtils;
  * which has all its injected dependencies mocked automatically.
  * <p>
  * For example:
- * <pre>{@code
+ * 
+ * <pre>
+ * {@code
  * public class MyComponentTest
  * {
  *     &#64;Rule
@@ -68,16 +70,17 @@ import org.xwiki.component.util.ReflectionUtils;
  *     }
  * ...
  * }
- * }</pre>
+ * }
+ * </pre>
  *
  * Note that by default there are no component registered against the component manager except those mocked
  * automatically by the Rule (except for the MockitoComponentMockingRule itself, which means that if your component
  * under test is injected a default ComponentManager, it'll be the MockitoComponentMockingRule which will get injected.
  * See more below). This has 2 advantages:
  * <ul>
- *   <li>This is the spirit of this Rule since it's for unit testing and this testing your component in isolation from
- *       the rest</li>
- *   <li>It makes the tests up to 10 times faster</li>
+ * <li>This is the spirit of this Rule since it's for unit testing and this testing your component in isolation from the
+ * rest</li>
+ * <li>It makes the tests up to 10 times faster</li>
  * </ul>
  * If you really need to register some components, use the {@link org.xwiki.test.annotation.ComponentList} annotation
  * and if you really really need to register all components (it takes time) then use
@@ -90,7 +93,9 @@ import org.xwiki.component.util.ReflectionUtils;
  * <p>
  * This can be useful (for example) in the case you wish to register a mock ComponentManager in your component under
  * test. You would write:
- * <pre>{@code
+ * 
+ * <pre>
+ * {@code
  * &#64;Rule
  * public final MockitoComponentManagerRule mocker = new MockitoComponentManagerRule();
  * 
@@ -99,7 +104,8 @@ import org.xwiki.component.util.ReflectionUtils;
  * {
  *     this.mocker.registerMockComponent(ComponentManager.class);
  * }
- * }</pre>
+ * }
+ * </pre>
  *
  * @param <T> the component role type, used to provide a typed instance when calling {@link #getComponentUnderTest()}
  * @version $Id$
@@ -257,8 +263,8 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     private void mockComponent(final Object testInstance) throws Exception
     {
         // Handle component fields
-        for (ComponentDescriptor<T> descriptor : this.factory.createComponentDescriptors(
-            this.componentImplementationClass, findComponentRoleType())) {
+        for (ComponentDescriptor<T> descriptor : this.factory
+            .createComponentDescriptors(this.componentImplementationClass, findComponentRoleType())) {
             // Only use the descriptor for the specified hint
             if ((this.componentRoleHint != null && this.componentRoleHint.equals(descriptor.getRoleHint()))
                 || this.componentRoleHint == null) {
@@ -321,7 +327,7 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
 
                 cd.setRoleType(dependencyDescriptor.getRoleType());
                 cd.setRoleHint(dependencyDescriptor.getRoleHint());
-                
+
                 Object dependencyMock = mock(roleTypeClass, dependencyDescriptor.getName());
 
                 if (Provider.class == roleTypeClass) {
@@ -361,14 +367,15 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
         Set<Type> componentRoleTypes = this.loader.findComponentRoleTypes(this.componentImplementationClass);
         if (this.componentRoleType != null) {
             if (!componentRoleTypes.contains(this.componentRoleType)) {
-                throw new RuntimeException("Specified Component Role not found in component");
+                throw new RuntimeException(
+                    "Specified Component Role ([" + this.componentRoleType + "]) not found in component");
             } else {
                 type = this.componentRoleType;
             }
         } else {
             if (componentRoleTypes.isEmpty()) {
-                throw new RuntimeException(String.format("Couldn't find roles for component [%s]",
-                    this.componentRoleType));
+                throw new RuntimeException(
+                    String.format("Couldn't find roles for component [%s]", this.componentRoleType));
             } else if (componentRoleTypes.size() > 1) {
                 throw new RuntimeException("Components with several roles must explicitly specify which role to use.");
             } else {
