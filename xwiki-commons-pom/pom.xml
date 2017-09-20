@@ -152,6 +152,7 @@
         </configuration>
       </plugin>
       <!-- Execute Spoon plugin -->
+      <!-- TODO: Enable back when fixed
       <plugin>
         <groupId>fr.inria.gforge.spoon</groupId>
         <artifactId>spoon-maven-plugin</artifactId>
@@ -171,7 +172,7 @@
           </processors>
         </configuration>
         <dependencies>
-          <!-- Contains custom Spoon processors -->
+          < ! - - Contains custom Spoon processors - - >
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-spoon</artifactId>
@@ -179,6 +180,7 @@
           </dependency>
         </dependencies>
       </plugin>
+       -->
     </plugins>
     <pluginManagement>
       <plugins>
