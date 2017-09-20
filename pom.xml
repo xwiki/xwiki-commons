@@ -98,7 +98,6 @@
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
-    <xwiki.spoon.skip>true</xwiki.spoon.skip>
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
@@ -1163,11 +1162,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Execute Spoon plugin -->
-      <plugin>
-        <groupId>fr.inria.gforge.spoon</groupId>
-        <artifactId>spoon-maven-plugin</artifactId>
-      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -1194,13 +1188,11 @@
             </dependency>
           </dependencies>
         </plugin>
+        <!-- The version of Spoon and Spoon Maven plugin to use -->
         <plugin>
           <groupId>fr.inria.gforge.spoon</groupId>
           <artifactId>spoon-maven-plugin</artifactId>
           <version>2.5</version>
-          <configuration>
-            <skip>${xwiki.checkstyle.skip}</skip>
-          </configuration>
           <dependencies>
             <dependency>
               <groupId>fr.inria.gforge.spoon</groupId>
