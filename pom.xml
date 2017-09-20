@@ -91,6 +91,9 @@
     <!-- Checkstyle -->
     <checkstyle.version>8.2</checkstyle.version>
 
+    <!-- Spoon -->
+    <spoon.version>5.9.0</spoon.version>
+
     <!-- By default Checkstyle, Backward compatibility check, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
@@ -1159,6 +1162,11 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Execute Spoon plugin -->
+      <plugin>
+        <groupId>fr.inria.gforge.spoon</groupId>
+        <artifactId>spoon-maven-plugin</artifactId>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
@@ -1182,6 +1190,18 @@
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
               <version>${checkstyle.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>fr.inria.gforge.spoon</groupId>
+          <artifactId>spoon-maven-plugin</artifactId>
+          <version>2.5</version>
+          <dependencies>
+            <dependency>
+              <groupId>fr.inria.gforge.spoon</groupId>
+              <artifactId>spoon-core</artifactId>
+              <version>${spoon.version}</version>
             </dependency>
           </dependencies>
         </plugin>
