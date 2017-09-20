@@ -249,6 +249,31 @@
           </executions>
         </plugin>
         <plugin>
+          <groupId>fr.inria.gforge.spoon</groupId>
+          <artifactId>spoon-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>generate</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <processors>
+              <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
+            </processors>
+          </configuration>
+            <dependencies>
+              <!-- Contains custom Spoon processors -->
+              <dependency>
+                <groupId>org.xwiki.commons</groupId>
+                <artifactId>xwiki-commons-tool-spoon</artifactId>
+                <version>9.9-SNAPSHOT</version>
+              </dependency>
+            </dependencies>
+        </plugin>
+        <plugin>
           <groupId>org.xwiki.commons</groupId>
           <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
           <version>9.9-SNAPSHOT</version>
