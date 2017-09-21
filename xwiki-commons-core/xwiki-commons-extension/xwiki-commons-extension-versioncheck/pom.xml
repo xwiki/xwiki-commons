@@ -21,31 +21,27 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
-    <version>9.9-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-extension</artifactId>
-  <name>XWiki Commons - Extension - Parent POM</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Extension - Parent POM</description>
-  <dependencies>
-    <!-- Test dependencies -->
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-component</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <modules>
-    <module>xwiki-commons-extension-api</module>
-    <module>xwiki-commons-extension-maven</module>
-    <module>xwiki-commons-extension-handlers</module>
-    <module>xwiki-commons-extension-repositories</module>
-    <module>xwiki-commons-extension-versioncheck</module>
-  </modules>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-extension</artifactId>
+        <version>9.9-SNAPSHOT</version>
+    </parent>
+    <artifactId>xwiki-commons-extension-versioncheck</artifactId>
+    <name>XWiki Commons - Extension - Version Check</name>
+    <packaging>jar</packaging>
+    <description>XWiki Commons - Extension - Version Check</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-component-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xwiki.commons</groupId>
+            <artifactId>xwiki-commons-extension-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
 
