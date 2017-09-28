@@ -100,6 +100,7 @@
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
+    <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
@@ -496,13 +497,18 @@
       </dependency>
       <!-- JAXB -->
       <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
         <version>2.3.0</version>
       </dependency>
       <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>2.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-core</artifactId>
         <version>2.3.0</version>
       </dependency>
 
@@ -1082,6 +1088,26 @@
                     <exclude>commons-logging:commons-logging</exclude>
                     <exclude>commons-logging:commons-logging-api</exclude>
                     <exclude>log4j:log4j</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using the right JAXB implementation artifacts -->
+          <execution>
+            <id>enforce-glasshfish-jaxb</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-glasshfish-jaxb.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>XWiki uses "org.glassfish.jaxb" version of the JAXB implementation. Don't use the "com.sun.xml.bind" one</message>
+                  <excludes>
+                    <exclude>com.sun.xml.bind:jaxb-impl</exclude>
+                    <exclude>com.sun.xml.bind:jaxb-core</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
