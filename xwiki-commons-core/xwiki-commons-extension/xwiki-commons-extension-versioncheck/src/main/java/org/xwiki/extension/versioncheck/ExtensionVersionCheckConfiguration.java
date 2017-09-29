@@ -20,26 +20,23 @@
 package org.xwiki.extension.versioncheck;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.extension.ExtensionId;
-import org.xwiki.stability.Unstable;
 
 /**
- * Define a component used to retrieve the last available version of a given extension
- * and compare it to the installed version.
+ * Provide configuration options for the extension version checker.
  *
- * @since 9.9-RC1
  * @version $Id$
+ * @since 9.9RC1
  */
 @Role
-@Unstable
-public interface ExtensionVersionChecker
+public interface ExtensionVersionCheckConfiguration
 {
     /**
-     * Ensure that the given extension is in its last available version.
-     *
-     * @param extensionId the ID of the extension to check
-     * @return true if the extension is up to date
-     * @throws ExtensionVersionCheckException if an error happened
+     * @return true if updates of the environment extension should be checked
      */
-    boolean isUpToDate(ExtensionId extensionId) throws ExtensionVersionCheckException;
+    boolean isEnvironmentCheckEnabled();
+
+    /**
+     * @return the number of seconds between each check for a new environment version
+     */
+    long environmentCheckInterval();
 }
