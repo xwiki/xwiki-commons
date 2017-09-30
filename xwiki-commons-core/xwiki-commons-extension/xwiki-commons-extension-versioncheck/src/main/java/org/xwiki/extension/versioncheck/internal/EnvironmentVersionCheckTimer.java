@@ -53,9 +53,9 @@ public class EnvironmentVersionCheckTimer implements Initializable
     {
         /**
          * Store the last resolved version by the task.
-         * This is useful in order to trigger only one event per new version.
+         * This allows to trigger only one event per new version.
          */
-        private Version lastVersion;
+        private Version latestVersion;
 
         private ExtensionId environmentExtensionId;
 
@@ -65,7 +65,7 @@ public class EnvironmentVersionCheckTimer implements Initializable
         EnvironmentVersionCheckTask()
         {
             environmentExtensionId = coreExtensionRepository.getEnvironmentExtension().getId();
-            lastVersion = environmentExtensionId.getVersion();
+            latestVersion = environmentExtensionId.getVersion();
         }
 
         /**
@@ -80,9 +80,9 @@ public class EnvironmentVersionCheckTimer implements Initializable
                 for (Version version : extensionRepositoryManager.resolveVersions(
                         environmentExtensionId.getId(), 0, -1)) {
 
-                    if (version.compareTo(environmentExtensionId.getVersion()) > 0) {
+                    if (version.compareTo(latestVersion) > 0) {
                         newVersionAvailable = true;
-                        lastVersion = version;
+                        latestVersion = version;
                     }
                 }
             } catch (ResolveException e) {
@@ -92,7 +92,7 @@ public class EnvironmentVersionCheckTimer implements Initializable
 
             if (newVersionAvailable) {
                 observationManager.notify(
-                        new NewExtensionVersionAvailableEvent(environmentExtensionId, lastVersion), null, null);
+                        new NewExtensionVersionAvailableEvent(environmentExtensionId, latestVersion), null, null);
             }
         }
 
@@ -127,6 +127,6 @@ public class EnvironmentVersionCheckTimer implements Initializable
 
         EnvironmentVersionCheckTask versionCheckTask = new EnvironmentVersionCheckTask();
 
-        timer.schedule(versionCheckTask, 0, extensionVersionCheckConfiguration.environmentCheckInterval());
+        timer.schedule(versionCheckTask,  1000 * extensionVersionCheckConfiguration.environmentCheckInterval());
     }
 }
