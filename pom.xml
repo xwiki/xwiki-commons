@@ -85,9 +85,6 @@
     <clover.version>4.1.2</clover.version>
     <jacoco.version>0.7.9</jacoco.version>
 
-    <!-- IzPack -->
-    <izpack.version>5.0.6</izpack.version>
-
     <!-- Checkstyle -->
     <checkstyle.version>8.2</checkstyle.version>
 
@@ -1442,12 +1439,6 @@
           <artifactId>xml-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>1.0.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.izpack</groupId>
-          <artifactId>izpack-maven-plugin</artifactId>
-          <!-- Lock down plugin version for build reproducibility -->
-          <version>${izpack.version}</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
