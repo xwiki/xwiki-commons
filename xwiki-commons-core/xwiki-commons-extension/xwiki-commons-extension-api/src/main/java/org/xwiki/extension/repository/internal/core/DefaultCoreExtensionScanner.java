@@ -241,7 +241,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
     private DefaultCoreExtension loadCoreExtensionFromXED(URL jarURL, DefaultCoreExtensionRepository repository)
     {
-        this.logger.debug("  Loading XED [{}]...", jarURL);
+        this.logger.debug("  Loading XED associated to JAR [{}]...", jarURL);
 
         try {
             String jarString = jarURL.toExternalForm();
@@ -284,7 +284,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
                 }
             }
         } finally {
-            this.logger.debug("  Done loading XED [{}]...", jarURL);
+            this.logger.debug("  Done loading XED associated to JAR [{}]...", jarURL);
         }
 
         return null;
