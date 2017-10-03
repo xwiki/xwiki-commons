@@ -51,6 +51,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -179,6 +180,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     @Inject
     private ExtensionFactory factory;
 
+    @Inject
+    private Logger logger;
+
     /**
      * Used to parse XML descriptor file.
      */
@@ -230,7 +234,11 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     public DefaultCoreExtension loadCoreExtensionDescriptor(DefaultCoreExtensionRepository repository, URL url,
         InputStream descriptor) throws InvalidExtensionException
     {
+        this.logger.debug("      Parsing as XML...");
+
         Element extensionElement = getExtensionElement(descriptor);
+
+        this.logger.debug("      Converting XML to Extension...");
 
         DefaultCoreExtension coreExtension = new DefaultCoreExtension(repository, url, getExtensionId(extensionElement),
             getExtensionType(extensionElement));
@@ -238,6 +246,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         loadExtensionDescriptor(coreExtension, extensionElement);
 
         coreExtension.setComplete(true);
+
+        this.logger.debug("      Done converting XML to Extension");
 
         return coreExtension;
     }

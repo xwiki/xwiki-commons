@@ -241,40 +241,50 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
     private DefaultCoreExtension loadCoreExtensionFromXED(URL jarURL, DefaultCoreExtensionRepository repository)
     {
-        String jarString = jarURL.toExternalForm();
+        this.logger.debug("  Loading XED [{}]...", jarURL);
 
-        int extIndex = jarString.lastIndexOf('.');
-        if (extIndex > 0) {
-            // Find XED file URL
-            URL xedURL;
-            try {
-                xedURL = new URL(jarString.substring(0, extIndex) + ".xed");
-            } catch (MalformedURLException e) {
-                // Cannot really happen
-                return null;
-            }
+        try {
+            String jarString = jarURL.toExternalForm();
 
-            // Load XED stream
-            InputStream xedStream;
-            try {
-                xedStream = xedURL.openStream();
-            } catch (IOException e) {
-                // We assume it means the xed does not exist so we just ignore it
-                this.logger.debug("Failed to load [{}]", xedURL, e);
-                return null;
-            }
+            int extIndex = jarString.lastIndexOf('.');
+            if (extIndex > 0) {
+                // Find XED file URL
+                URL xedURL;
+                try {
+                    xedURL = new URL(jarString.substring(0, extIndex) + ".xed");
+                } catch (MalformedURLException e) {
+                    // Cannot really happen
+                    return null;
+                }
 
-            // Load XED file
-            try {
-                DefaultCoreExtension coreExtension =
-                    this.parser.loadCoreExtensionDescriptor(repository, jarURL, xedStream);
-                coreExtension.setDescriptorURL(xedURL);
-                return coreExtension;
-            } catch (Exception e) {
-                this.logger.error("Failed to load [{}]", xedURL, e);
-            } finally {
-                IOUtils.closeQuietly(xedStream);
+                // Load XED stream
+                InputStream xedStream;
+                try {
+                    xedStream = xedURL.openStream();
+                } catch (IOException e) {
+                    // We assume it means the xed does not exist so we just ignore it
+                    this.logger.debug("Failed to load [{}]", xedURL, e);
+                    return null;
+                }
+
+                // Load XED file
+                try {
+                    this.logger.debug("    Parsing XED [{}]...", xedURL);
+
+                    DefaultCoreExtension coreExtension =
+                        this.parser.loadCoreExtensionDescriptor(repository, jarURL, xedStream);
+                    coreExtension.setDescriptorURL(xedURL);
+                    return coreExtension;
+                } catch (Exception e) {
+                    this.logger.error("Failed to load [{}]", xedURL, e);
+                } finally {
+                    IOUtils.closeQuietly(xedStream);
+
+                    this.logger.debug("    Done parsing XED [{}]...", xedURL);
+                }
             }
+        } finally {
+            this.logger.debug("  Done loading XED [{}]...", jarURL);
         }
 
         return null;
@@ -286,26 +296,42 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         ////////////////////
         // Get all jar files
 
+        this.logger.debug("Searching for JARs...");
+
         Collection<URL> jars = getJARs();
+
+        this.logger.debug("Found the following JARs: ", jars);
 
         ////////////////////
         // Try to find associated xed files
 
+        this.logger.debug("Loading JARs with associated XED files...");
+
         fromXED(extensions, jars, repository);
+
+        this.logger.debug("Done loading JARs with associated XED files");
 
         ////////////////////
         // Try with other scanners (for example find associated Maven files)
+
+        this.logger.debug("Loading remaining JARs with registered scanners...");
 
         for (ExtensionScanner scanner : this.scanners) {
             scanner.scanJARs(extensions, jars, repository);
         }
 
+        this.logger.debug("Done loading JARs with registered scanners");
+
         ////////////////////
         // Work some magic to guess the rest of the jar files
+
+        this.logger.debug("Try to guess the id of some remaning JARs which don't have any know descriptor...");
 
         for (ExtensionScanner scanner : this.scanners) {
             scanner.guess(extensions, jars, repository);
         }
+
+        this.logger.debug("Done guessing the id of remaning JARs which don't have any know descriptor");
     }
 
     private void fromXED(Map<String, DefaultCoreExtension> extensions, Collection<URL> jars,
