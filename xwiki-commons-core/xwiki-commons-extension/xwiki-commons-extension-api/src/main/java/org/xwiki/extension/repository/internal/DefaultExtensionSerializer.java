@@ -303,6 +303,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private void loadExtensionDescriptor(MutableExtension extension, Element extensionElement)
         throws InvalidExtensionException
     {
+        this.logger.debug("        Converting [{}] ...", ELEMENT_NAME);
+
         Node nameNode = getNode(extensionElement, ELEMENT_NAME);
         if (nameNode != null) {
             extension.setName(nameNode.getTextContent());
@@ -323,6 +325,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         if (websiteNode != null) {
             extension.setWebsite(websiteNode.getTextContent());
         }
+
+        this.logger.debug("        Converting [{}] ...", ELEMENT_LICENSES);
 
         // Licenses
         Node licensesNode = getNode(extensionElement, ELEMENT_LICENSES);
@@ -351,6 +355,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                 }
             }
         }
+
+        this.logger.debug("        Converting [{}] ...", ELEMENT_AUTHORS);
 
         // Authors
         Node authorsNode = getNode(extensionElement, ELEMENT_AUTHORS);
@@ -382,6 +388,8 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             }
         }
 
+        this.logger.debug("        Converting [{}] ...", ELEMENT_EXTENSIONFEATURES);
+
         // Extension features
         Node featuresNode = getNode(extensionElement, ELEMENT_EXTENSIONFEATURES);
         if (featuresNode != null) {
@@ -412,23 +420,35 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             }
         }
 
+        this.logger.debug("        Converting [{}] ...", ELEMENT_ALLOWEDNAMESPACES);
+
         // Allowed namespaces
         List<String> allowedNamespaces = parseList(extensionElement, ELEMENT_ALLOWEDNAMESPACES, ELEMENT_ANNAMESPACE);
         if (allowedNamespaces != null) {
             extension.setAllowedNamespaces(allowedNamespaces);
         }
 
+        this.logger.debug("        Converting [{}] ...", "scm");
+
         // Scm
         extension.setScm(loadlScm(extensionElement));
+
+        this.logger.debug("        Converting [{}] ...", "issue management");
 
         // Issue Management
         extension.setIssueManagement(loadIssueManagement(extensionElement));
 
+        this.logger.debug("        Converting [{}] ...", ELEMENT_DEPENDENCIES);
+
         // Dependencies
         extension.setDependencies(loadDependencies(extensionElement, ELEMENT_DEPENDENCIES));
 
+        this.logger.debug("        Converting [{}] ...", ELEMENT_MANAGEDDEPENDENCIES);
+
         // Managed dependencies
         extension.setManagedDependencies(loadDependencies(extensionElement, ELEMENT_MANAGEDDEPENDENCIES));
+
+        this.logger.debug("        Converting [{}] ...", ELEMENT_PROPERTIES);
 
         // Properties
         Map<String, Object> properties = parseProperties(extensionElement);
@@ -438,10 +458,14 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         // @Deprecated Install fields
 
+        this.logger.debug("        Converting [{}] ...", ELEMENT_INSTALLED);
+
         Node enabledNode = getNode(extensionElement, ELEMENT_INSTALLED);
         if (enabledNode != null) {
             extension.putProperty(InstalledExtension.PKEY_INSTALLED, Boolean.valueOf(enabledNode.getTextContent()));
         }
+
+        this.logger.debug("        Converting [{}] ...", ELEMENT_NAMESPACES);
 
         // @Deprecated Namespaces
         List<String> namespaces = parseList(extensionElement, ELEMENT_NAMESPACES, ELEMENT_NNAMESPACE);
