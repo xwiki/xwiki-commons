@@ -21,10 +21,8 @@ package org.xwiki.extension.maven.internal.converter;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -111,13 +109,9 @@ public class ModelConverter extends AbstractConverter<Model>
 
         // authors
         for (Developer developer : model.getDevelopers()) {
-            URL authorURL = null;
+            String authorURL = null;
             if (developer.getUrl() != null) {
-                try {
-                    authorURL = new URL(developer.getUrl());
-                } catch (MalformedURLException e) {
-                    // TODO: log ?
-                }
+                authorURL = developer.getUrl();
             }
 
             extension.addAuthor(this.factory

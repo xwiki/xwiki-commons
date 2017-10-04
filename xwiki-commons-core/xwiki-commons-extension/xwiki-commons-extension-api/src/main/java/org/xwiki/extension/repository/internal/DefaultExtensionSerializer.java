@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -354,15 +353,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     Node authorURLNode = getNode(authorNode, ELEMENT_AAURL);
 
                     String authorName = authorNameNode != null ? authorNameNode.getTextContent() : null;
-                    URL authorURL;
+                    String authorURL;
                     if (authorURLNode != null) {
-                        try {
-                            authorURL = new URL(authorURLNode.getTextContent());
-                        } catch (MalformedURLException e) {
-                            // That should never happen
-                            throw new InvalidExtensionException(
-                                "Malformed URL [" + authorURLNode.getTextContent() + "]", e);
-                        }
+                        authorURL = authorURLNode.getTextContent();
                     } else {
                         authorURL = null;
                     }
@@ -711,7 +704,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
                 addElement(document, authorElement, ELEMENT_AANAME, author.getName());
 
-                URL authorURL = author.getURL();
+                String authorURL = author.getURLString();
                 if (authorURL != null) {
                     addElement(document, authorElement, ELEMENT_AAURL, authorURL.toString());
                 }

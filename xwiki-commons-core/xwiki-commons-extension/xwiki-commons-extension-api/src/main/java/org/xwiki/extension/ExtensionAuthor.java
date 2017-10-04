@@ -38,4 +38,16 @@ public interface ExtensionAuthor
      * @return the URL of the author public profile
      */
     URL getURL();
+
+    /**
+     * @return the url of the author public profile a a String
+     * @since 8.5.6
+     * @since 9.8.1
+     */
+    default String getURLString()
+    {
+        URL url = getURL();
+
+        return url != null ? url.toExternalForm() : null;
+    }
 }

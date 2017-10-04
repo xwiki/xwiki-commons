@@ -21,10 +21,8 @@ package org.xwiki.extension.repository.xwiki.internal;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -89,14 +87,7 @@ public class XWikiExtension extends AbstractRatingExtension
 
         // Authors
         for (ExtensionAuthor restAuthor : restExtension.getAuthors()) {
-            URL url;
-            try {
-                url = new URL(restAuthor.getUrl());
-            } catch (MalformedURLException e) {
-                url = null;
-            }
-
-            addAuthor(factory.getExtensionAuthor(restAuthor.getName(), url));
+            addAuthor(factory.getExtensionAuthor(restAuthor.getName(), restAuthor.getUrl()));
         }
 
         // License

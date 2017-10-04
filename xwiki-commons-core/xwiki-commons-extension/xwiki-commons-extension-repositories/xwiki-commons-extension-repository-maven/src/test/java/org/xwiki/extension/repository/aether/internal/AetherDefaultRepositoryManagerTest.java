@@ -130,7 +130,7 @@ public class AetherDefaultRepositoryManagerTest
         Assert.assertEquals("summary", extension.getSummary());
         Assert.assertEquals("http://website", extension.getWebSite());
         Assert.assertEquals("category", extension.getCategory());
-        Assert.assertEquals(Arrays.asList(new DefaultExtensionAuthor("Full Name", new URL("http://profile"))),
+        Assert.assertEquals(Arrays.asList(new DefaultExtensionAuthor("Full Name", "http://profile")),
             new ArrayList<ExtensionAuthor>(extension.getAuthors()));
         Assert.assertEquals(new HashSet<String>(Arrays.asList("groupid1:feature1", "groupid2:feature2")),
             new HashSet<String>(extension.getFeatures()));

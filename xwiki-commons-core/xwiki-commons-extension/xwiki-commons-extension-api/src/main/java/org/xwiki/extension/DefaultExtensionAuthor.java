@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 
@@ -39,15 +40,30 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
     private String name;
 
     /**
-     * @see #getURL()
+     * @see #getURLString()
      */
-    private URL url;
+    private String url;
+
+    private transient URL urlCache;
 
     /**
      * @param name the name of the author
      * @param url the URL of the author public profile
      */
     public DefaultExtensionAuthor(String name, URL url)
+    {
+        this.name = name;
+        this.url = url.toExternalForm();
+        this.urlCache = url;
+    }
+
+    /**
+     * @param name the name of the author
+     * @param url the URL of the author public profile
+     * @since 8.5.6
+     * @since 9.8.1
+     */
+    public DefaultExtensionAuthor(String name, String url)
     {
         this.name = name;
         this.url = url;
@@ -62,6 +78,20 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
     @Override
     public URL getURL()
     {
+        if (this.urlCache == null && this.url != null) {
+            try {
+                this.urlCache = new URL(this.url);
+            } catch (MalformedURLException e) {
+                // TODO: Should probably log something
+            }
+        }
+
+        return this.urlCache;
+    }
+
+    @Override
+    public String getURLString()
+    {
         return this.url;
     }
 
@@ -75,8 +105,10 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
         }
 
         if (obj instanceof ExtensionAuthor) {
-            ExtensionAuthor author = (ExtensionAuthor) obj;
-            return StringUtils.equals(this.name, author.getName()) && Objects.equals(this.url, author.getURL());
+            ExtensionAuthor otherAuthor = (ExtensionAuthor) obj;
+
+            return StringUtils.equals(this.name, otherAuthor.getName())
+                && Objects.equals(getURLString(), otherAuthor.getURLString());
         } else {
             return false;
         }
