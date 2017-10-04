@@ -43,6 +43,8 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
      */
     private URL url;
 
+    private transient String urlStringCache;
+
     /**
      * @param name the name of the author
      * @param url the URL of the author public profile
@@ -65,6 +67,20 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
         return this.url;
     }
 
+    private String getURLString()
+    {
+        if (this.urlStringCache == null && this.url != null) {
+            this.urlStringCache = this.url.toExternalForm();
+        }
+
+        return this.urlStringCache;
+    }
+
+    private static String toString(URL url)
+    {
+        return url != null ? url.toExternalForm() : null;
+    }
+
     // Object
 
     @Override
@@ -75,8 +91,10 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
         }
 
         if (obj instanceof ExtensionAuthor) {
-            ExtensionAuthor author = (ExtensionAuthor) obj;
-            return StringUtils.equals(this.name, author.getName()) && Objects.equals(this.url, author.getURL());
+            ExtensionAuthor otherAuthor = (ExtensionAuthor) obj;
+
+            return StringUtils.equals(this.name, otherAuthor.getName())
+                && Objects.equals(getURLString(), toString(otherAuthor.getURL()));
         } else {
             return false;
         }
@@ -87,7 +105,7 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
     {
         HashCodeBuilder builder = new HashCodeBuilder();
 
-        builder.append(this.url);
+        builder.append(getURLString());
         builder.append(this.name);
 
         return builder.toHashCode();
