@@ -40,8 +40,7 @@ public interface ExtensionAuthor
     URL getURL();
 
     /**
-     * @return the url of the author public profile a a String
-     * @since 8.5.6
+     * @return the url of the author public profile as a String
      * @since 9.8.1
      */
     default String getURLString()

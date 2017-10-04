@@ -60,7 +60,6 @@ public class DefaultExtensionAuthor implements ExtensionAuthor
     /**
      * @param name the name of the author
      * @param url the URL of the author public profile
-     * @since 8.5.6
      * @since 9.8.1
      */
     public DefaultExtensionAuthor(String name, String url)
