@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +50,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -180,9 +178,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     @Inject
     private ExtensionFactory factory;
 
-    @Inject
-    private Logger logger;
-
     /**
      * Used to parse XML descriptor file.
      */
@@ -234,11 +229,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     public DefaultCoreExtension loadCoreExtensionDescriptor(DefaultCoreExtensionRepository repository, URL url,
         InputStream descriptor) throws InvalidExtensionException
     {
-        this.logger.debug("      Parsing as XML...");
-
         Element extensionElement = getExtensionElement(descriptor);
-
-        this.logger.debug("      Converting XML to Extension...");
 
         DefaultCoreExtension coreExtension = new DefaultCoreExtension(repository, url, getExtensionId(extensionElement),
             getExtensionType(extensionElement));
@@ -246,8 +237,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         loadExtensionDescriptor(coreExtension, extensionElement);
 
         coreExtension.setComplete(true);
-
-        this.logger.debug("      Done converting XML to Extension");
 
         return coreExtension;
     }
@@ -303,8 +292,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
     private void loadExtensionDescriptor(MutableExtension extension, Element extensionElement)
         throws InvalidExtensionException
     {
-        this.logger.debug("        Converting [{}] ...", ELEMENT_NAME);
-
         Node nameNode = getNode(extensionElement, ELEMENT_NAME);
         if (nameNode != null) {
             extension.setName(nameNode.getTextContent());
@@ -325,8 +312,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
         if (websiteNode != null) {
             extension.setWebsite(websiteNode.getTextContent());
         }
-
-        this.logger.debug("        Converting [{}] ...", ELEMENT_LICENSES);
 
         // Licenses
         Node licensesNode = getNode(extensionElement, ELEMENT_LICENSES);
@@ -356,8 +341,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             }
         }
 
-        this.logger.debug("        Converting [{}] ...", ELEMENT_AUTHORS);
-
         // Authors
         Node authorsNode = getNode(extensionElement, ELEMENT_AUTHORS);
         if (authorsNode != null) {
@@ -370,15 +353,9 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                     Node authorURLNode = getNode(authorNode, ELEMENT_AAURL);
 
                     String authorName = authorNameNode != null ? authorNameNode.getTextContent() : null;
-                    URL authorURL;
+                    String authorURL;
                     if (authorURLNode != null) {
-                        try {
-                            authorURL = new URL(authorURLNode.getTextContent());
-                        } catch (MalformedURLException e) {
-                            // That should never happen
-                            throw new InvalidExtensionException(
-                                "Malformed URL [" + authorURLNode.getTextContent() + "]", e);
-                        }
+                        authorURL = authorURLNode.getTextContent();
                     } else {
                         authorURL = null;
                     }
@@ -387,8 +364,6 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
                 }
             }
         }
-
-        this.logger.debug("        Converting [{}] ...", ELEMENT_EXTENSIONFEATURES);
 
         // Extension features
         Node featuresNode = getNode(extensionElement, ELEMENT_EXTENSIONFEATURES);
@@ -420,35 +395,23 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
             }
         }
 
-        this.logger.debug("        Converting [{}] ...", ELEMENT_ALLOWEDNAMESPACES);
-
         // Allowed namespaces
         List<String> allowedNamespaces = parseList(extensionElement, ELEMENT_ALLOWEDNAMESPACES, ELEMENT_ANNAMESPACE);
         if (allowedNamespaces != null) {
             extension.setAllowedNamespaces(allowedNamespaces);
         }
 
-        this.logger.debug("        Converting [{}] ...", "scm");
-
         // Scm
         extension.setScm(loadlScm(extensionElement));
-
-        this.logger.debug("        Converting [{}] ...", "issue management");
 
         // Issue Management
         extension.setIssueManagement(loadIssueManagement(extensionElement));
 
-        this.logger.debug("        Converting [{}] ...", ELEMENT_DEPENDENCIES);
-
         // Dependencies
         extension.setDependencies(loadDependencies(extensionElement, ELEMENT_DEPENDENCIES));
 
-        this.logger.debug("        Converting [{}] ...", ELEMENT_MANAGEDDEPENDENCIES);
-
         // Managed dependencies
         extension.setManagedDependencies(loadDependencies(extensionElement, ELEMENT_MANAGEDDEPENDENCIES));
-
-        this.logger.debug("        Converting [{}] ...", ELEMENT_PROPERTIES);
 
         // Properties
         Map<String, Object> properties = parseProperties(extensionElement);
@@ -458,14 +421,10 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
         // @Deprecated Install fields
 
-        this.logger.debug("        Converting [{}] ...", ELEMENT_INSTALLED);
-
         Node enabledNode = getNode(extensionElement, ELEMENT_INSTALLED);
         if (enabledNode != null) {
             extension.putProperty(InstalledExtension.PKEY_INSTALLED, Boolean.valueOf(enabledNode.getTextContent()));
         }
-
-        this.logger.debug("        Converting [{}] ...", ELEMENT_NAMESPACES);
 
         // @Deprecated Namespaces
         List<String> namespaces = parseList(extensionElement, ELEMENT_NAMESPACES, ELEMENT_NNAMESPACE);
@@ -745,7 +704,7 @@ public class DefaultExtensionSerializer implements ExtensionSerializer
 
                 addElement(document, authorElement, ELEMENT_AANAME, author.getName());
 
-                URL authorURL = author.getURL();
+                String authorURL = author.getURLString();
                 if (authorURL != null) {
                     addElement(document, authorElement, ELEMENT_AAURL, authorURL.toString());
                 }

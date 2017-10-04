@@ -20,7 +20,6 @@
 package org.xwiki.extension.internal;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -104,10 +103,10 @@ public class ExtensionFactory
      * Store and return a weak reference equals to the passed {@link ExtensionAuthor}.
      * 
      * @param name the name of the author
-     * @param url the URL of the author public profile
+     * @param url the url of the author public profile
      * @return unique instance of {@link ExtensionAuthor} equals to the passed one
      */
-    public ExtensionAuthor getExtensionAuthor(String name, URL url)
+    public ExtensionAuthor getExtensionAuthor(String name, String url)
     {
         return getExtensionAuthor(new DefaultExtensionAuthor(name, url));
     }

@@ -140,7 +140,7 @@ public class DefaultExtensionSerializerTest
         extension.putProperty("key7", Collections.<String, Object>singletonMap("key",
             Collections.<String, Object>singletonMap("subkey", "subvalue")));
 
-        extension.addAuthor(new DefaultExtensionAuthor("authorname", new URL("http://authorurl")));
+        extension.addAuthor(new DefaultExtensionAuthor("authorname", "http://authorurl"));
         extension.addFeature("feature1");
         extension.addExtensionFeature(new ExtensionId("feature2", "version"));
         extension.addAllowedNamespace("namespae1");
