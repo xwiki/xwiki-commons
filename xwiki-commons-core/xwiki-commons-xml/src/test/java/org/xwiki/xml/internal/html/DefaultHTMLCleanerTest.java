@@ -399,6 +399,12 @@ public class DefaultHTMLCleanerTest
                 "<a href=\"http://xwiki.org\" target=\"_blank\" rel=\"hello\">label</a>");
     }
 
+    @Test
+    public void verifyEntitiesAreNotBroken() throws Exception
+    {
+        assertHTML("<p>&Eacute;</p>", "&Eacute;");
+    }
+
     private void assertHTML(String expected, String actual) throws ComponentLookupException
     {
         Assert.assertEquals(HEADER_FULL + expected + FOOTER,
