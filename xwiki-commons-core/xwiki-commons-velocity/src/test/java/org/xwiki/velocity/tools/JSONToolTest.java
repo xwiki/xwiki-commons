@@ -35,6 +35,9 @@ import net.sf.json.JSON;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 /**
  * Unit tests for {@link JSONTool}.
  *
@@ -213,6 +216,55 @@ public class JSONToolTest
         Assert.assertNull(this.tool.parse("This is not the JSON you are looking for..."));
     }
 
+    ////
+
+    @Test
+    public void testFromStringArray()
+    {
+        assertEquals(Arrays.asList(1, 2, 3), this.tool.fromString("[1,2,3]"));
+    }
+
+    @Test
+    public void testFromStringEmptyArray()
+    {
+        assertEquals(new ArrayList<>(), this.tool.fromString("[]"));
+    }
+
+    @Test
+    public void testFromStringMap()
+    {
+        Map<?, ?> map = (Map) this.tool.fromString("{\"a\" : 1, \"b\": [1], \"c\": true}");
+
+        assertEquals(3, map.size());
+        assertEquals(1, map.get("a"));
+        assertEquals(Arrays.asList(1), map.get("b"));
+        assertEquals(true, map.get("c"));
+    }
+
+    @Test
+    public void testFromStringEmptyMap()
+    {
+        assertEquals(new HashMap(), this.tool.fromString("{}"));
+    }
+
+    @Test
+    public void testFromStringNull()
+    {
+        assertNull(this.tool.fromString(null));
+    }
+
+    @Test
+    public void testFromStringEmptyString()
+    {
+        assertNull(this.tool.fromString(""));
+    }
+
+    @Test
+    public void testFromStringInvalidJSON()
+    {
+        assertNull(this.tool.fromString("This is not the JSON you are looking for..."));
+    }
+
     @Test
     public void serializeOrgJsonObjectWorks()
     {
@@ -264,6 +316,7 @@ public class JSONToolTest
         map.put("before", Collections.singletonList("nothing"));
         map.put("json", array);
         map.put("after", 42);
-        Assert.assertEquals("{\"before\":[\"nothing\"],\"json\":[\"a\",42,true],\"after\":42}", this.tool.serialize(map));
+        Assert.assertEquals("{\"before\":[\"nothing\"],\"json\":[\"a\",42,true],\"after\":42}",
+            this.tool.serialize(map));
     }
 }
