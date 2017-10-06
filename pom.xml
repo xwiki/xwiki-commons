@@ -134,6 +134,7 @@
     <!-- Version of Maven used at runtime (by Extension Manager mostly) -->
     <maven.runtime.version>3.3.9</maven.runtime.version>
     <!-- Minimum version of Maven supported at build time  -->
+    <!-- Custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
     <maven.buid.version>3.3.9</maven.buid.version>
     <!--
       The version of Maven used when declaring dependencies.
@@ -149,9 +150,15 @@
     <!-- The recommended version of known extensions to use -->
     <xwiki.extension.recommendedVersions.commons>org.xwiki.commons:.*/[${commons.version}]</xwiki.extension.recommendedVersions.commons>
     <xwiki.extension.recommendedVersions>${xwiki.extension.recommendedVersion.commons}</xwiki.extension.recommendedVersions>
+
+    <!-- Control Nexus staging (release on Maven Central for xwiki-commons and xwiki-rendering) -->
+    <xwiki.nexus.serverId>ossrh</xwiki.nexus.serverId>
+    <xwiki.nexus.nexusUrl>https://oss.sonatype.org/</xwiki.nexus.nexusUrl>
+    <xwiki.nexus.autoReleaseAfterClose>true</xwiki.nexus.autoReleaseAfterClose>
+    <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
+    <xwiki.nexus.skipStaging>false</xwiki.nexus.skipStaging>
   </properties>
   <prerequisites>
-    <!-- Custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
     <maven>${maven.buid.version}</maven>
   </prerequisites>
   <licenses>
@@ -1807,6 +1814,20 @@ mm
               </execution>
             </executions>
           </plugin>
+          <!-- Automatically close and release project on Nexus -->
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.8</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>${xwiki.nexus.serverId}</serverId>
+              <nexusUrl>${xwiki.nexus.nexusUrl}</nexusUrl>
+              <autoReleaseAfterClose>${xwiki.nexus.autoReleaseAfterClose}</autoReleaseAfterClose>
+              <skipLocalStaging>${xwiki.nexus.skipLocalStaging}</skipLocalStaging>
+              <skipStaging>${xwiki.nexus.skipStaging}</skipStaging>
+            </configuration>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -1926,11 +1947,6 @@ mm
       <id>nexus.xwiki.org</id>
       <url>dav:http://nexus.xwiki.org/nexus/content/sites/site/</url>
     </site>
-    <repository>
-      <id>nexus.xwiki.org</id>
-      <name>XWiki Maven Remote Repository for Releases</name>
-      <url>http://nexus.xwiki.org/nexus/content/repositories/releases/</url>
-    </repository>
     <snapshotRepository>
       <id>nexus.xwiki.org</id>
       <name>XWiki Maven Development Repository for Snapshots</name>
