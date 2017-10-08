@@ -20,6 +20,7 @@
 package org.xwiki.extension.versioncheck;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.extension.version.Version;
 
 /**
  * Provide configuration options for the extension version checker.
@@ -39,4 +40,25 @@ public interface ExtensionVersionCheckConfiguration
      * @return the number of seconds between each check for a new environment version
      */
     long environmentCheckInterval();
+
+    /**
+     * Determine if new environment versions should match the {@link Version.Type} of the currently installed
+     * environment extension.
+     * If false is returned, {@link #environmentVersionType()} should be used to get the {@link Version.Type} to use.
+     *
+     * @return true if the new environment version type should be the same as the currently installed environment
+     */
+    boolean useInstalledEnvironmentVersionType();
+
+    /**
+     * @return true if more stable environment versions should be checked. This should only used if
+     * {@link #useInstalledEnvironmentVersionType()} returns false.
+     */
+    boolean checkMoreStableEnvironments();
+
+    /**
+     * @return the {@link Version.Type} to use while checking for new environment extensions. This should only be
+     * used if {@link #useInstalledEnvironmentVersionType()} returns false.
+     */
+    Version.Type environmentVersionType();
 }

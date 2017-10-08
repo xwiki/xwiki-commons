@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.extension.version.Version;
 import org.xwiki.extension.versioncheck.ExtensionVersionCheckConfiguration;
 
 /**
@@ -56,5 +57,30 @@ public class DefaultVersionCheckConfiguration implements ExtensionVersionCheckCo
     public long environmentCheckInterval()
     {
         return configurationSource.getProperty(ENVIRONMENT_CONFIGURATION_PREFIX + "interval", 3600);
+    }
+
+    @Override
+    public boolean useInstalledEnvironmentVersionType()
+    {
+        return configurationSource.getProperty(ENVIRONMENT_CONFIGURATION_PREFIX + "useInstalledVersionType", true);
+    }
+
+    @Override
+    public boolean checkMoreStableEnvironments()
+    {
+        return configurationSource.getProperty(ENVIRONMENT_CONFIGURATION_PREFIX + "checkMoreStableEnvironments", false);
+    }
+
+    @Override
+    public Version.Type environmentVersionType()
+    {
+        String property = configurationSource.getProperty(
+                ENVIRONMENT_CONFIGURATION_PREFIX + "environmentVersionType", "stable").trim().toUpperCase();
+
+        try {
+            return Version.Type.valueOf(property);
+        } catch (IllegalArgumentException e) {
+            return Version.Type.STABLE;
+        }
     }
 }

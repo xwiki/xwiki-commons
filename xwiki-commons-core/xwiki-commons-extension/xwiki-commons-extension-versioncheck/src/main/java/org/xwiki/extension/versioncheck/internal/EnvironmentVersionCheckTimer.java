@@ -80,8 +80,7 @@ public class EnvironmentVersionCheckTimer implements Initializable
                 for (Version version : extensionRepositoryManager.resolveVersions(
                         environmentExtensionId.getId(), 0, -1)) {
 
-                    if (version.compareTo(latestVersion) > 0
-                            && version.getType().compareTo(latestVersion.getType()) >= 0) {
+                    if (isCompatibleVersion(latestVersion, version)) {
                         newVersionAvailable = true;
                         latestVersion = version;
                     }
@@ -94,6 +93,31 @@ public class EnvironmentVersionCheckTimer implements Initializable
             if (newVersionAvailable) {
                 observationManager.notify(
                         new NewExtensionVersionAvailableEvent(environmentExtensionId, latestVersion), null, null);
+            }
+        }
+
+        /**
+         * Using the configuration variables given by {@link ExtensionVersionCheckConfiguration}, determine if the
+         * given version should be considered as a "new available version" and therefore trigger a
+         * {@link NewExtensionVersionAvailableEvent}.
+         *
+         * @param latestKnownVersion the latest known version
+         * @param proposedVersion the version that should be checked for compatibility
+         * @return true if the given version is compatible
+         */
+        private boolean isCompatibleVersion(Version latestKnownVersion, Version proposedVersion) {
+
+            if (proposedVersion.compareTo(latestKnownVersion) <= 0) {
+                return false;
+            }
+
+            if (extensionVersionCheckConfiguration.useInstalledEnvironmentVersionType()) {
+                return proposedVersion.getType().compareTo(latestKnownVersion.getType()) >= 0;
+            } else {
+                Version.Type environmentVersionType = extensionVersionCheckConfiguration.environmentVersionType();
+                return (extensionVersionCheckConfiguration.checkMoreStableEnvironments())
+                        ? proposedVersion.getType().compareTo(environmentVersionType) >= 0
+                        : proposedVersion.getType().compareTo(environmentVersionType) == 0;
             }
         }
 
