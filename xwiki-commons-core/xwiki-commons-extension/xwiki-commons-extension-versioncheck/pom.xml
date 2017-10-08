@@ -32,7 +32,7 @@
     <packaging>jar</packaging>
     <description>XWiki Commons - Extension - Version Check</description>
     <properties>
-        <xwiki.jacoco.instructionRatio>0.13</xwiki.jacoco.instructionRatio>
+        <xwiki.jacoco.instructionRatio>0.11</xwiki.jacoco.instructionRatio>
     </properties>
     <dependencies>
         <dependency>

@@ -80,7 +80,8 @@ public class EnvironmentVersionCheckTimer implements Initializable
                 for (Version version : extensionRepositoryManager.resolveVersions(
                         environmentExtensionId.getId(), 0, -1)) {
 
-                    if (version.compareTo(latestVersion) > 0) {
+                    if (version.compareTo(latestVersion) > 0
+                            && version.getType().compareTo(latestVersion.getType()) >= 0) {
                         newVersionAvailable = true;
                         latestVersion = version;
                     }
