@@ -21,6 +21,7 @@ package org.xwiki.extension.versioncheck.internal;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -107,18 +108,22 @@ public class EnvironmentVersionCheckTimer implements Initializable
          */
         private boolean isCompatibleVersion(Version latestKnownVersion, Version proposedVersion) {
 
+            // Ensure that the given version is newer than our last known version
             if (proposedVersion.compareTo(latestKnownVersion) <= 0) {
                 return false;
             }
 
-            if (extensionVersionCheckConfiguration.useInstalledEnvironmentVersionType()) {
-                return proposedVersion.getType().compareTo(latestKnownVersion.getType()) >= 0;
-            } else {
-                Version.Type environmentVersionType = extensionVersionCheckConfiguration.environmentVersionType();
-                return (extensionVersionCheckConfiguration.checkMoreStableEnvironments())
-                        ? proposedVersion.getType().compareTo(environmentVersionType) >= 0
-                        : proposedVersion.getType().compareTo(environmentVersionType) == 0;
+            // If an allowed version preference is defined, try to apply it to the proposed version
+            if (!extensionVersionCheckConfiguration.allowedEnvironmentVersions().isEmpty()) {
+                Pattern versionPattern = Pattern.compile(
+                        extensionVersionCheckConfiguration.allowedEnvironmentVersions());
+                if (!versionPattern.matcher(proposedVersion.getValue()).matches()) {
+                    return false;
+                }
+
             }
+
+            return proposedVersion.getType().compareTo(latestKnownVersion.getType()) >= 0;
         }
 
         @Override
