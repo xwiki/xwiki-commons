@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.versioncheck.internal;
 
+import java.util.regex.Pattern;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -60,9 +62,9 @@ public class DefaultVersionCheckConfiguration implements ExtensionVersionCheckCo
     }
 
     @Override
-    public String allowedEnvironmentVersions()
+    public Pattern allowedEnvironmentVersions()
     {
-        return configurationSource.getProperty(ENVIRONMENT_CONFIGURATION_PREFIX + "allowedVersions",
-                StringUtils.EMPTY);
+        return Pattern.compile(configurationSource.getProperty(ENVIRONMENT_CONFIGURATION_PREFIX + "allowedVersions",
+                StringUtils.EMPTY));
     }
 }

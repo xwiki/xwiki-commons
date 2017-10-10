@@ -19,6 +19,8 @@
  */
 package org.xwiki.extension.versioncheck;
 
+import java.util.regex.Pattern;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.extension.version.Version;
 
@@ -42,8 +44,8 @@ public interface ExtensionVersionCheckConfiguration
     long environmentCheckInterval();
 
     /**
-     * @return A pattern used on {@link Version#getValue()} to determine if a given {@link Version} should be
+     * @return A {@link Pattern} used on {@link Version#getValue()} to determine if a given {@link Version} should be
      * considered as a new compatible version. If an empty string is returned, the pattern shouldn't be applied.
      */
-    String allowedEnvironmentVersions();
+    Pattern allowedEnvironmentVersions();
 }

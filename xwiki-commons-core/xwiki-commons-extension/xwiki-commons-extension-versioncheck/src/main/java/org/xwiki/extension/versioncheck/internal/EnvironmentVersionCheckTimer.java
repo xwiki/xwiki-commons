@@ -114,13 +114,9 @@ public class EnvironmentVersionCheckTimer implements Initializable
             }
 
             // If an allowed version preference is defined, try to apply it to the proposed version
-            if (!extensionVersionCheckConfiguration.allowedEnvironmentVersions().isEmpty()) {
-                Pattern versionPattern = Pattern.compile(
-                        extensionVersionCheckConfiguration.allowedEnvironmentVersions());
-                if (!versionPattern.matcher(proposedVersion.getValue()).matches()) {
-                    return false;
-                }
-
+            Pattern versionPattern = extensionVersionCheckConfiguration.allowedEnvironmentVersions();
+            if (!versionPattern.pattern().isEmpty() && !versionPattern.matcher(proposedVersion.getValue()).matches()) {
+                return false;
             }
 
             return proposedVersion.getType().compareTo(latestKnownVersion.getType()) >= 0;
