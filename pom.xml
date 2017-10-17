@@ -155,6 +155,7 @@
     <xwiki.nexus.serverId>ossrh</xwiki.nexus.serverId>
     <xwiki.nexus.nexusUrl>https://oss.sonatype.org/</xwiki.nexus.nexusUrl>
     <xwiki.nexus.autoReleaseAfterClose>true</xwiki.nexus.autoReleaseAfterClose>
+    <xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>true</xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>
     <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
     <xwiki.nexus.skipStaging>false</xwiki.nexus.skipStaging>
   </properties>
@@ -1824,6 +1825,7 @@ mm
               <serverId>${xwiki.nexus.serverId}</serverId>
               <nexusUrl>${xwiki.nexus.nexusUrl}</nexusUrl>
               <autoReleaseAfterClose>${xwiki.nexus.autoReleaseAfterClose}</autoReleaseAfterClose>
+              <keepStagingRepositoryOnCloseRuleFailure>${xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure}</keepStagingRepositoryOnCloseRuleFailure>
               <skipLocalStaging>${xwiki.nexus.skipLocalStaging}</skipLocalStaging>
               <skipStaging>${xwiki.nexus.skipStaging}</skipStaging>
             </configuration>
