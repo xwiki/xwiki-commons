@@ -72,7 +72,7 @@
 
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
-    <junit5.version>5.0.0</junit5.version>
+    <junit5.version>5.0.1</junit5.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
