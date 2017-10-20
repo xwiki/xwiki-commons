@@ -73,6 +73,8 @@
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
     <junit5.version>5.0.1</junit5.version>
+    <junit.platform.version>1.0.1</junit.platform.version>
+    <junit.vintage.version>4.12.1</junit.vintage.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
@@ -866,6 +868,21 @@
         <version>${junit5.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-launcher</artifactId>
+        <version>${junit.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-engine</artifactId>
+        <version>${junit.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${junit.vintage.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>${jmock.version}</version>
@@ -1337,7 +1354,7 @@
             <dependency>
               <groupId>org.junit.platform</groupId>
               <artifactId>junit-platform-surefire-provider</artifactId>
-              <version>1.0.0</version>
+              <version>${junit.platform.version}</version>
             </dependency>
             <dependency>
               <groupId>org.junit.jupiter</groupId>
@@ -1347,7 +1364,7 @@
             <dependency>
               <groupId>org.junit.vintage</groupId>
               <artifactId>junit-vintage-engine</artifactId>
-              <version>4.12.0</version>
+              <version>${junit.vintage.version}</version>
             </dependency>
           </dependencies>
         </plugin>
