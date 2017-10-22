@@ -128,6 +128,7 @@ public class ServletEnvironmentTest
     {
         File permanentDirectory = new File("/permanent");
         this.environment.setPermanentDirectory(permanentDirectory);
+
         assertEquals(permanentDirectory.getCanonicalFile(),
             this.environment.getPermanentDirectory().getCanonicalFile());
     }
@@ -135,6 +136,9 @@ public class ServletEnvironmentTest
     @Test
     public void getPermanentDirectoryWhenSetWithSystemProperty() throws Exception
     {
+        Logger logger = mock(Logger.class);
+        ReflectionUtils.setFieldValue(this.environment, "logger", logger);
+
         File expectedPermanentDirectory = new File(System.getProperty("java.io.tmpdir"), "permanent");
         System.setProperty("xwiki.data.dir", expectedPermanentDirectory.toString());
 
@@ -146,6 +150,8 @@ public class ServletEnvironmentTest
         } finally {
             System.clearProperty("xwiki.data.dir");
         }
+
+        verify(logger).info("Using permanent directory [{}]", expectedPermanentDirectory);
     }
 
     @Test
@@ -162,8 +168,9 @@ public class ServletEnvironmentTest
             this.environment.getPermanentDirectory().getCanonicalFile());
 
         // Also verify that we log a warning!
-        verify(logger).warn("No permanent directory configured. Using temporary directory [{}].",
-            this.servletTmpDir.getCanonicalFile());
+        verify(logger).warn("No permanent directory configured, fallbacking to temporary directory. You should set "
+            + "the \"environment.permanentDirectory\" configuration property in the xwiki.properties file.");
+        verify(logger).info("Using permanent directory [{}]", this.servletTmpDir.getCanonicalFile());
     }
 
     @Test

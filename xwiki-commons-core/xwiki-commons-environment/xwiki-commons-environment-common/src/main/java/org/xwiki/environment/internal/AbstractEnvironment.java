@@ -115,9 +115,11 @@ public abstract class AbstractEnvironment implements Environment
 
             if (systemProperty == null && classSpecified == null && configured == null) {
                 // There's no defined permanent directory, fall back to the temporary directory but issue a warning
-                this.logger.warn("No permanent directory configured. Using temporary directory [{}].",
-                    this.permanentDirectory);
+                this.logger.warn("No permanent directory configured, fallbacking to temporary directory. "
+                    + "You should set the \"environment.permanentDirectory\" configuration property in the "
+                    + "xwiki.properties file.");
             }
+            this.logger.info("Using permanent directory [{}]", this.permanentDirectory);
         }
 
         return this.permanentDirectory;

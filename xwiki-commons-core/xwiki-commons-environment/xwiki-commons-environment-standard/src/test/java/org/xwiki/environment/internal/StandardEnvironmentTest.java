@@ -131,9 +131,15 @@ public class StandardEnvironmentTest
     @Test
     public void testGetConfiguredPermanentDirectory()
     {
-        final File persistentDir =
-            new File(System.getProperty("java.io.tmpdir"), "xwiki-test-persistentDir");
+        final File persistentDir = new File(System.getProperty("java.io.tmpdir"), "xwiki-test-persistentDir");
         this.setPersistentDir(persistentDir.getAbsolutePath());
+
+        final Logger logger = this.mockery.mock(Logger.class);
+        this.mockery.checking(new Expectations() {{
+            oneOf(logger).info("Using permanent directory [{}]", persistentDir);
+        }});
+        ReflectionUtils.setFieldValue(this.environment, "logger", logger);
+
         Assert.assertEquals(persistentDir, this.environment.getPermanentDirectory());
     }
 
@@ -143,8 +149,10 @@ public class StandardEnvironmentTest
         // Also verify that we log a warning!
         final Logger logger = this.mockery.mock(Logger.class);
         this.mockery.checking(new Expectations() {{
-        oneOf(logger).warn("No permanent directory configured. Using temporary directory [{}].",
-            new File(System.getProperty("java.io.tmpdir")));
+            oneOf(logger).warn("No permanent directory configured, fallbacking to temporary directory. "
+                + "You should set the \"environment.permanentDirectory\" configuration property in the "
+                + "xwiki.properties file.");
+            oneOf(logger).info("Using permanent directory [{}]", new File(System.getProperty("java.io.tmpdir")));
         }});
 
         ReflectionUtils.setFieldValue(this.environment, "logger", logger);
