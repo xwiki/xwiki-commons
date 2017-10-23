@@ -534,7 +534,7 @@ public abstract class AbstractInstallPlanJob<R extends ExtensionRequest> extends
             return true;
         } catch (Exception e) {
             if (getRequest().isVerbose()) {
-                this.logger.warn("Failed to install optional dependency [{}]", extensionDependency,
+                this.logger.warn("Failed to install optional dependency [{}] with error: {}", extensionDependency,
                     ExceptionUtils.getRootCauseMessage(e));
             }
         }
