@@ -99,7 +99,7 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
                     hasBackwardDependencies =
                         !this.installedExtensionRepository.getBackwardDependencies(extension.getId()).isEmpty();
                 } else {
-                    hasBackwardDependencies = !extension.isDependency(namespace) && !this.installedExtensionRepository
+                    hasBackwardDependencies = !this.installedExtensionRepository
                         .getBackwardDependencies(extension.getId().getId(), namespace).isEmpty();
                 }
 
