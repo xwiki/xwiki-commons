@@ -102,6 +102,7 @@
     <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
+    <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
@@ -1177,6 +1178,56 @@
                   </message>
                   <excludes>
                     <exclude>commons-configuration:commons-configuration</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using right Bouncy Castle ids -->
+          <execution>
+            <id>enforce-commons-configuration2</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-bouncycastle-ids.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>false</searchTransitive>
+                  <message>
+                    Wrong Bouncy Castle dependency used
+                  </message>
+                  <excludes>
+                    <exclude>bouncycastle:bcprov-jdk16</exclude>
+                    <exclude>bouncycastle:bcprov-jdk15</exclude>
+                    <exclude>bouncycastle:bcprov-jdk14</exclude>
+                    <exclude>bouncycastle:bcprov-jdk13</exclude>
+                    <exclude>bouncycastle:bcprov-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk16</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk15</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk14</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk13</exclude>
+                    <exclude>org.bouncycastle:bcprov-jdk12</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk16</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk15</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk14</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk13</exclude>
+                    <exclude>bouncycastle:bcpkix-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk16</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk15</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk14</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk13</exclude>
+                    <exclude>org.bouncycastle:bcpkix-jdk12</exclude>
+                    <exclude>bouncycastle:bcmail-jdk16</exclude>
+                    <exclude>bouncycastle:bcmail-jdk15</exclude>
+                    <exclude>bouncycastle:bcmail-jdk14</exclude>
+                    <exclude>bouncycastle:bcmail-jdk13</exclude>
+                    <exclude>bouncycastle:bcmail-jdk12</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk16</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk15</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk14</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk13</exclude>
+                    <exclude>org.bouncycastle:bcmail-jdk12</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
