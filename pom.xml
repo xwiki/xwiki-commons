@@ -1185,7 +1185,7 @@
           </execution>
           <!-- Check that we're using right Bouncy Castle ids -->
           <execution>
-            <id>enforce-commons-configuration2</id>
+            <id>enforce-bouncycastle-ids</id>
             <goals>
               <goal>enforce</goal>
             </goals>
