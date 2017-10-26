@@ -87,9 +87,23 @@ public class UpgradePlanJob extends AbstractInstallPlanJob<InstallRequest>
         boolean filterDependencies = requestExtensions == null || requestExtensions.isEmpty();
 
         if (filterDependencies) {
+            // Don't skip if the extension has not been installed as dependency
+            if (!extension.isDependency(namespace)) {
+                return false;
+            }
+
+            // Don't skip if the extension "lost" its backward dependencies
             try {
-                return extension.isDependency(namespace) && !this.installedExtensionRepository
-                    .getBackwardDependencies(extension.getId().getId(), namespace).isEmpty();
+                boolean hasBackwardDependencies;
+                if (extension.getNamespaces() == null) {
+                    hasBackwardDependencies =
+                        !this.installedExtensionRepository.getBackwardDependencies(extension.getId()).isEmpty();
+                } else {
+                    hasBackwardDependencies = !extension.isDependency(namespace) && !this.installedExtensionRepository
+                        .getBackwardDependencies(extension.getId().getId(), namespace).isEmpty();
+                }
+
+                return hasBackwardDependencies;
             } catch (ResolveException e) {
                 // Should never happen
                 this.logger.error("Failed to gather backward dependencies for extension [{}]", extension.getId(), e);
