@@ -33,6 +33,11 @@ import org.xwiki.component.util.ReflectionUtils;
 public class RoleHint<T>
 {
     /**
+     * The default hint of a component.
+     */
+    public static final String DEFAULT_HINT = "default";
+
+    /**
      * @see #getRoleType()
      */
     private Type role;
@@ -61,7 +66,7 @@ public class RoleHint<T>
         this.role = role;
         this.hint = hint;
         if (this.hint == null) {
-            this.hint = "default";
+            this.hint = DEFAULT_HINT;
         }
     }
 

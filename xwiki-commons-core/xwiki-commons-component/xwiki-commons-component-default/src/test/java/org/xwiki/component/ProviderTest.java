@@ -174,11 +174,11 @@ public class ProviderTest
         } catch (ComponentLookupException expected) {
             Assert.assertEquals("Failed to lookup component "
                 + "[org.xwiki.component.ProviderTest$TestComponentWithProviderInException] identified by "
-                + "[role = [interface org.xwiki.component.ProviderTest$TestComponentRole] hint = [exception]]",
+                + "type [interface org.xwiki.component.ProviderTest$TestComponentRole] and hint [exception]",
                 expected.getMessage());
             Assert.assertEquals("Failed to lookup component "
                 + "[org.xwiki.component.ProviderTest$TestProviderWithExceptionInInitialize] identified by "
-                + "[role = [javax.inject.Provider<java.lang.String>] hint = [exception]]",
+                + "type [javax.inject.Provider<java.lang.String>] and hint [exception]",
                 expected.getCause().getMessage());
             Assert.assertEquals("Some error in init", expected.getCause().getCause().getMessage());
         }
