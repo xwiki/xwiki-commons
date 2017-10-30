@@ -418,6 +418,15 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         return LoggerFactory.getLogger(instanceClass);
     }
 
+    /**
+     * @deprecated use {@link #getInstance(Type, String)} instead
+     */
+    @Deprecated
+    protected <T> T getComponentInstance(RoleHint<T> roleHint) throws ComponentLookupException
+    {
+        return getInstance(roleHint.getRoleType(), roleHint.getHint());
+    }
+
     private <T> T getComponentInstance(ComponentEntry<T> componentEntry) throws Exception
     {
         T instance;
