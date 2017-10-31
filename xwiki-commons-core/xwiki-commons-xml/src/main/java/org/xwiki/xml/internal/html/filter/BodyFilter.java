@@ -78,21 +78,11 @@ public class BodyFilter extends AbstractHTMLFilter
                     // Ensure that we don't wrap elements that contain only spaces or newlines.
                     containsOnlySpaces = containsOnlySpaces(currentNode);
 
-                    if (markerNode == null) {
+                    if (markerNode == null && !containsOnlySpaces) {
                         markerNode = currentNode;
-                    } else {
-                        // If we find some text with only spaces we wrap the previous marker node.
-                        if (containsOnlySpaces) {
-                            surroundWithParagraph(document, body, markerNode, currentNode);
-                            markerNode = null;
-                        }
                     }
                 } else if (markerNode != null) {
-                    // surround all the nodes starting with the marker node with a paragraph unless there are only
-                    // whitespaces or newlines.
-                    if (!containsOnlySpaces) {
-                        surroundWithParagraph(document, body, markerNode, currentNode);
-                    }
+                    surroundWithParagraph(document, body, markerNode, currentNode);
                     markerNode = null;
                 }
             }
@@ -101,7 +91,7 @@ public class BodyFilter extends AbstractHTMLFilter
 
         // If the marker is still set it means we need to wrap all elements between the marker till
         // the end of the body siblings with a paragraph.
-        if (markerNode != null && !containsOnlySpaces) {
+        if (markerNode != null) {
             surroundWithParagraph(document, body, markerNode, null);
         }
     }

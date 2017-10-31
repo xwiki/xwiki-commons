@@ -416,7 +416,7 @@ public class DefaultHTMLCleanerTest
         //          assertHTML("<iframe src=\"whatever\"></iframe>", "<iframe src=\"whatever\"/>");
         //          assertHTML("<iframe src=\"whatever\"></iframe>", "<iframe src=\"whatever\"/>\r\n");
         assertHTML("<p><iframe src=\"whatever\"></iframe></p>", "<iframe src=\"whatever\"/>");
-        assertHTML("<p><iframe src=\"whatever\"></iframe></p>\r\n", "<iframe src=\"whatever\"/>\r\n");
+        assertHTML("<p><iframe src=\"whatever\"></iframe>\r\n</p>", "<iframe src=\"whatever\"/>\r\n");
     }
 
     private void assertHTML(String expected, String actual) throws ComponentLookupException
