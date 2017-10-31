@@ -81,7 +81,11 @@ public class BodyFilter extends AbstractHTMLFilter
                     if (markerNode == null) {
                         markerNode = currentNode;
                     } else {
-                        // Do nothing, just go to the next node.
+                        // If we find some text with only spaces we wrap the previous marker node.
+                        if (containsOnlySpaces) {
+                            surroundWithParagraph(document, body, markerNode, currentNode);
+                            markerNode = null;
+                        }
                     }
                 } else if (markerNode != null) {
                     // surround all the nodes starting with the marker node with a paragraph unless there are only

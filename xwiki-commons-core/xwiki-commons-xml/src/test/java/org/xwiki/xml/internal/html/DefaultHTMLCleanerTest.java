@@ -299,9 +299,9 @@ public class DefaultHTMLCleanerTest
     public void cleanSVGTags() throws Exception
     {
         String input =
-            "<p>before</p>\n" + "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
+            "<p>before</p>\n" + "<p><svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
                 + "<circle cx=\"100\" cy=\"50\" fill=\"red\" r=\"40\" stroke=\"black\" stroke-width=\"2\"></circle>\n"
-                + "</svg>\n" + "<p>after</p>\n";
+                + "</svg></p>\n" + "<p>after</p>\n";
         assertHTML(input, HEADER_FULL + input + FOOTER);
     }
 
@@ -403,6 +403,20 @@ public class DefaultHTMLCleanerTest
     public void verifyEntitiesAreNotBroken() throws Exception
     {
         assertHTML("<p>&Eacute;</p>", "&Eacute;");
+    }
+
+    /**
+     * @see <a href="https://jira.xwiki.org/browse/XCOMMONS-1293">XCOMMONS-1293</a>
+     */
+    @Test
+    public void verifyIFRAMECleaning() throws Exception
+    {
+        // TODO: these 2 lines need to be changed to the following when https://jira.xwiki.org/browse/XCOMMONS-1292 is
+        // fixed:
+        //          assertHTML("<iframe src=\"whatever\"></iframe>", "<iframe src=\"whatever\"/>");
+        //          assertHTML("<iframe src=\"whatever\"></iframe>", "<iframe src=\"whatever\"/>\r\n");
+        assertHTML("<p><iframe src=\"whatever\"></iframe></p>", "<iframe src=\"whatever\"/>");
+        assertHTML("<p><iframe src=\"whatever\"></iframe></p>\r\n", "<iframe src=\"whatever\"/>\r\n");
     }
 
     private void assertHTML(String expected, String actual) throws ComponentLookupException
