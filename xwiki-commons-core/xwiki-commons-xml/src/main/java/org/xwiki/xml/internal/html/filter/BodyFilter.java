@@ -47,7 +47,14 @@ import org.xwiki.xml.html.filter.AbstractHTMLFilter;
 public class BodyFilter extends AbstractHTMLFilter
 {
     /**
-     * List of valid children elements of the BODY element in XHTML.
+     * List of valid children elements of the BODY element in HTML4 (https://www.w3.org/TR/html4/sgml/dtd.html):
+     * <pre>{@code
+     * <!ELEMENT BODY O O (%block;|SCRIPT)+ +(INS|DEL) -- document body -->
+     * ...
+     * <!ENTITY % block
+     * "P | %heading; | %list; | %preformatted; | DL | DIV | NOSCRIPT |
+     * BLOCKQUOTE | FORM | HR | TABLE | FIELDSET | ADDRESS">
+     * }</pre>
      */
     private static final List<String> ALLOWED_BODY_TAGS = Arrays.asList(HTMLConstants.TAG_ADDRESS,
         HTMLConstants.TAG_BLOCKQUOTE, HTMLConstants.TAG_DEL, HTMLConstants.TAG_DIV, HTMLConstants.TAG_FIELDSET,
