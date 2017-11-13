@@ -76,12 +76,7 @@ public class BodyFilter extends AbstractHTMLFilter
                 if (!ALLOWED_BODY_TAGS.contains(currentNode.getNodeName())) {
 
                     // Ensure that we don't wrap elements that contain only spaces or newlines.
-                    boolean containsOnlySpaces = containsOnlySpaces(currentNode);
-                    if (markerNode == null && !containsOnlySpacesSoFar && containsOnlySpaces) {
-                        containsOnlySpacesSoFar = true;
-                    } else if (containsOnlySpacesSoFar && !containsOnlySpaces) {
-                        containsOnlySpacesSoFar = false;
-                    }
+                    containsOnlySpacesSoFar = containsOnlySpacesSoFar(currentNode, markerNode, containsOnlySpacesSoFar);
 
                     if (markerNode == null) {
                         markerNode = currentNode;
@@ -101,6 +96,18 @@ public class BodyFilter extends AbstractHTMLFilter
         if (markerNode != null && !containsOnlySpacesSoFar) {
             surroundWithParagraph(document, body, markerNode, null);
         }
+    }
+
+    private boolean containsOnlySpacesSoFar(Node currentNode, Node markerNode, boolean containsOnlySpacesSoFar)
+    {
+        boolean result = containsOnlySpacesSoFar;
+        boolean containsOnlySpaces = containsOnlySpaces(currentNode);
+        if (markerNode == null && !containsOnlySpacesSoFar && containsOnlySpaces) {
+            result = true;
+        } else if (containsOnlySpacesSoFar && !containsOnlySpaces) {
+            result = false;
+        }
+        return result;
     }
 
     /**
