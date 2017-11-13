@@ -69,20 +69,27 @@ public class BodyFilter extends AbstractHTMLFilter
         Node body = document.getElementsByTagName(HTMLConstants.TAG_BODY).item(0);
         Node currentNode = body.getFirstChild();
         Node markerNode = null;
-        boolean containsOnlySpaces = true;
+        boolean containsOnlySpacesSoFar = false;
         while (currentNode != null) {
             // Note: We ignore comment nodes since there's no need to wrap them.
             if (currentNode.getNodeType() != Node.COMMENT_NODE) {
                 if (!ALLOWED_BODY_TAGS.contains(currentNode.getNodeName())) {
 
                     // Ensure that we don't wrap elements that contain only spaces or newlines.
-                    containsOnlySpaces = containsOnlySpaces(currentNode);
+                    boolean containsOnlySpaces = containsOnlySpaces(currentNode);
+                    if (markerNode == null && !containsOnlySpacesSoFar && containsOnlySpaces) {
+                        containsOnlySpacesSoFar = true;
+                    } else if (containsOnlySpacesSoFar && !containsOnlySpaces) {
+                        containsOnlySpacesSoFar = false;
+                    }
 
-                    if (markerNode == null && !containsOnlySpaces) {
+                    if (markerNode == null) {
                         markerNode = currentNode;
                     }
                 } else if (markerNode != null) {
-                    surroundWithParagraph(document, body, markerNode, currentNode);
+                    if (!containsOnlySpacesSoFar) {
+                        surroundWithParagraph(document, body, markerNode, currentNode);
+                    }
                     markerNode = null;
                 }
             }
@@ -91,7 +98,7 @@ public class BodyFilter extends AbstractHTMLFilter
 
         // If the marker is still set it means we need to wrap all elements between the marker till
         // the end of the body siblings with a paragraph.
-        if (markerNode != null) {
+        if (markerNode != null && !containsOnlySpacesSoFar) {
             surroundWithParagraph(document, body, markerNode, null);
         }
     }
