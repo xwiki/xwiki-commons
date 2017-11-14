@@ -46,11 +46,11 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>9.10-rc-1</commons.version>
+    <commons.version>9.11-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>9.9</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>9.10-rc-1</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <java.version>1.8</java.version>
