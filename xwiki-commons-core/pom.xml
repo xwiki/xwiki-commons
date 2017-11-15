@@ -155,20 +155,6 @@
               "revapi": {
                 "ignore" : [
                   // Add more ignores below...
-                  {
-                    "code": "java.annotation.attributeValueChanged",
-                    "old": "class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency",
-                    "new": "class org.xwiki.extension.repository.xwiki.model.jaxb.ExtensionDependency",
-                    "annotationType": "javax.xml.bind.annotation.XmlType",
-                    "annotation": "@javax.xml.bind.annotation.XmlType(name = \"ExtensionDependency\", propOrder = {\"id\", \"constraint\", \"optional\", \"repositories\"})",
-                    "attribute": "propOrder",
-                    "oldValue": "{\"id\", \"constraint\", \"repositories\"}",
-                    "newValue": "{\"id\", \"constraint\", \"optional\", \"repositories\"}",
-                    "package": "org.xwiki.extension.repository.xwiki.model.jaxb",
-                    "classSimpleName": "ExtensionDependency",
-                    "elementKind": "class",
-                    "justification": "Revapi error apparently, see https://github.com/revapi/revapi/issues/106"
-                  }
                 ]
               }
             }
