@@ -87,4 +87,17 @@ public class VelocityParserTest
         Assert.assertFalse(context.isInVelocityBlock());
         Assert.assertEquals(VelocityType.MACRO, context.getType());
     }
+
+    @Test
+    public void getDirective() throws InvalidVelocityException
+    {
+        VelocityParserContext context = new VelocityParserContext();
+        StringBuffer buffer = new StringBuffer();
+
+        int index = this.parser.getDirective("#if($a==1)true enough#elseno way!#end".toCharArray(), 0, buffer, context);
+
+        Assert.assertEquals("#if($a==1)".length(), index);
+        Assert.assertEquals("#if($a==1)", buffer.toString());
+        Assert.assertTrue(context.isInVelocityBlock());
+    }
 }
