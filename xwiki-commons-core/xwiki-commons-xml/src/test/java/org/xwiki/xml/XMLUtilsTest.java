@@ -88,13 +88,14 @@ public class XMLUtilsTest
     public void testEscapeAttributeValue()
     {
 
-        String escapedText = XMLUtils.escapeAttributeValue("a < a' && a' < a\" => a < a\"");
+        String escapedText = XMLUtils.escapeAttributeValue("a < a' && a' < a\" => a < a\" {");
 
         Assert.assertFalse("Failed to escape <", escapedText.contains("<"));
         Assert.assertFalse("Failed to escape >", escapedText.contains(">"));
         Assert.assertFalse("Failed to escape '", escapedText.contains("'"));
         Assert.assertFalse("Failed to escape \"", escapedText.contains("\""));
         Assert.assertFalse("Failed to escape &", escapedText.contains("&&"));
+        Assert.assertFalse("Failed to escape {", escapedText.contains("{"));
     }
 
     @Test
