@@ -33,7 +33,7 @@
   <properties>
     <!-- By default legacy dependencies are forbidden -->
     <xwiki.enforcer.no-legacy-dependencies.skip>false</xwiki.enforcer.no-legacy-dependencies.skip>
-    <xwiki.spoon.skip>true</xwiki.spoon.skip>
+    <xwiki.spoon.skip>false</xwiki.spoon.skip>
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
@@ -152,7 +152,6 @@
         </configuration>
       </plugin>
       <!-- Execute Spoon plugin -->
-      <!-- TODO: Enable back when fixed
       <plugin>
         <groupId>fr.inria.gforge.spoon</groupId>
         <artifactId>spoon-maven-plugin</artifactId>
@@ -165,22 +164,21 @@
           </execution>
         </executions>
         <configuration>
-          <skip>${xwiki.checkstyle.skip}</skip>
-        
+          <skip>${xwiki.spoon.skip}</skip>
+
           <processors>
             <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
           </processors>
         </configuration>
         <dependencies>
-          < ! - - Contains custom Spoon processors - - >
+          <!-- Contains custom Spoon processors -->
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-spoon</artifactId>
-            <version>9.9-SNAPSHOT</version>
+            <version>9.11-SNAPSHOT</version>
           </dependency>
         </dependencies>
       </plugin>
-       -->
     </plugins>
     <pluginManagement>
       <plugins>
