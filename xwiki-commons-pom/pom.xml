@@ -169,6 +169,17 @@
           <processors>
             <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
           </processors>
+          <processorProperties>
+            <processorProperty>
+              <name>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</name>
+              <properties>
+                <property>
+                  <name>invocations</name>
+                  <value>java.io.File#deleteOnExit</value>
+                </property>
+              </properties>
+            </processorProperty>
+          </processorProperties>
 
           <!-- We don't use Spoon to modify -->
           <compileOriginalSources>true</compileOriginalSources>
