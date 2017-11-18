@@ -104,8 +104,6 @@ public abstract class AbstractCacheConfigurationLoader
                 file.mkdirs();
             }
 
-            file.deleteOnExit();
-
             path = file.getAbsolutePath();
         }
 
