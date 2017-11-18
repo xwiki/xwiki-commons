@@ -169,6 +169,10 @@
           <processors>
             <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
           </processors>
+
+          <!-- We don't use Spoon to modify -->
+          <compileOriginalSources>true</compileOriginalSources>
+          <noCopyResources>true</noCopyResources>
         </configuration>
         <dependencies>
           <!-- Contains custom Spoon processors -->
