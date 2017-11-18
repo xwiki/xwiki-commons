@@ -173,6 +173,7 @@
           <!-- We don't use Spoon to modify -->
           <compileOriginalSources>true</compileOriginalSources>
           <noCopyResources>true</noCopyResources>
+          <noClasspath>true</noClasspath>
         </configuration>
         <dependencies>
           <!-- Contains custom Spoon processors -->
