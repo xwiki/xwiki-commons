@@ -50,7 +50,7 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
         String property = properties.get(String.class, "invocations");
 
         if (property != null) {
-            String[] propertyList = property.split("[, |\n]+");
+            String[] propertyList = property.split("[, |\n]");
 
             for (String invocation : propertyList) {
                 String cleanInvocation = invocation.trim();
