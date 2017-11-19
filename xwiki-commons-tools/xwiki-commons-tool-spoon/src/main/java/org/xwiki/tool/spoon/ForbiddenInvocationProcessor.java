@@ -19,16 +19,14 @@
  */
 package org.xwiki.tool.spoon;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Level;
 
-import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
-import spoon.processing.ProcessorProperties;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 
@@ -40,43 +38,12 @@ import spoon.reflect.code.CtInvocation;
  */
 public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation<?>>
 {
-    private Map<String, Set<String>> invocations = new HashMap<>();
+    // FIXME: replace this by proper configuration when supported by the Spoon Maven plugin, see
+    // https://github.com/INRIA/spoon/issues/1537
+    private static final Map<String, Set<String>> METHODS = new HashMap<>();
 
-    @Override
-    public void initProperties(ProcessorProperties properties)
-    {
-        super.initProperties(properties);
-
-        String property = properties.get(String.class, "invocations");
-
-        if (property != null) {
-            String[] propertyList = property.split("[, |\n]");
-
-            for (String invocation : propertyList) {
-                String cleanInvocation = invocation.trim();
-
-                int index = cleanInvocation.indexOf('#');
-
-                if (index == -1) {
-                    addInvocation(cleanInvocation, null);
-                } else {
-                    addInvocation(cleanInvocation.substring(0, index),
-                        cleanInvocation.substring(index + 1, cleanInvocation.length()));
-                }
-            }
-        }
-    }
-
-    private void addInvocation(String className, String methodName)
-    {
-        Set<String> methods = this.invocations.get(className);
-
-        if (methods == null) {
-            methods = new HashSet<>();
-            this.invocations.put(className, methods);
-        }
-
-        methods.add(methodName);
+    static {
+        METHODS.put("java.io.File", Collections.singleton("deleteOnExit"));
     }
 
     @Override
@@ -86,16 +53,16 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
 
         if (target != null && target.getType() != null) {
             String type = target.getType().getQualifiedName();
-            Set<String> methods = this.invocations.get(type);
+            Set<String> methods = METHODS.get(type);
             if (methods != null) {
                 String method = element.getExecutable().getSimpleName();
                 if (methods.contains(method)) {
-                    String message = "Forbidden invocation of " + type + "#" + method;
+                    getFactory().getEnvironment().report(this, Level.ERROR, element,
+                        "Forbidden call to " + type + "#" + method);
 
-                    getFactory().getEnvironment().report(this, Level.ERROR, element, message);
-
-                    // Really bad but that's how the Spoon plugin deal with that...
-                    throw new SpoonException(message);
+                    // Forcing the build to stop
+                    // FIXME: Remove that when https://github.com/INRIA/spoon/issues/1534 is implemented
+                    throw new RuntimeException("Forbidden call to " + type + "#" + method);
                 }
             }
         }
