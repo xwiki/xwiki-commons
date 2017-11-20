@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-crypto</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>9.10-SNAPSHOT</version>
+    <version>9.10</version>
   </parent>
   <artifactId>xwiki-commons-crypto-signer</artifactId>
   <packaging>jar</packaging>
