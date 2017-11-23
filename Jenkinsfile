@@ -26,7 +26,8 @@
 def globalMavenOpts = '-Xmx1536m -XX:MaxPermSize=512m -Xms256m'
 
 // Allow 2 commons builds at the same time to leave some agent space for other jobs
-stage (name: 'Commons Builds', concurrency: 2) {
+stage (name: 'Commons Builds', concurrency: 2)
+
   parallel(
     "main": {
       node {
@@ -77,4 +78,4 @@ stage (name: 'Commons Builds', concurrency: 2) {
       }
     }
   )
-}
+
