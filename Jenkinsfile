@@ -25,11 +25,9 @@
 
 def globalMavenOpts = '-Xmx1536m -XX:MaxPermSize=512m -Xms256m'
 
-// Allow 2 commons builds at the same time to leave some agent space for other jobs
-stage (name: 'Commons Builds', concurrency: 2)
-
+stage ('Commons Builds') {
   parallel(
-    "main": {
+    'main': {
       node {
         // Build, skipping checkstyle & revapi so that the result of the build can be sent as fast as possible
         // to the dev. However note that in // we start a build with the quality profile that checks checkstyle
@@ -44,7 +42,7 @@ stage (name: 'Commons Builds', concurrency: 2)
         }
       }
     },
-    "testrelease": {
+    'testrelease': {
       node {
         // Simulate a release and verify all is fine.
         xwikiBuild {
@@ -55,7 +53,7 @@ stage (name: 'Commons Builds', concurrency: 2)
         }
       }
     },
-    "quality": {
+    'quality': {
       node {
         // Run the quality checks
         xwikiBuild {
@@ -65,7 +63,7 @@ stage (name: 'Commons Builds', concurrency: 2)
         }
       }
     },
-    "checkstyle": {
+    'checkstyle': {
       node {
         // Build with checkstyle. Make sure "mvn checkstyle:check" passes so that we don't cause false positive on
         // Checkstyle style. This is for the Checkstyle project itself so that they can verify that when they bring
@@ -78,4 +76,8 @@ stage (name: 'Commons Builds', concurrency: 2)
       }
     }
   )
+}
+
+
+
 
