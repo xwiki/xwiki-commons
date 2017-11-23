@@ -66,7 +66,7 @@ stage ('Commons Builds') {
     'checkstyle': {
       node {
         // Build with checkstyle. Make sure "mvn checkstyle:check" passes so that we don't cause false positive on
-        // Checkstyle style. This is for the Checkstyle project itself so that they can verify that when they bring
+        // Checkstyle side. This is for the Checkstyle project itself so that they can verify that when they bring
         // changes to Checkstyle, there's no regression to the XWiki build.
         xwikiBuild {
           mavenOpts = globalMavenOpts
