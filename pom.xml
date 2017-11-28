@@ -640,7 +640,7 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.18</version>
+        <version>1.19</version>
       </dependency>
 
       <!-- JAX-RS -->
