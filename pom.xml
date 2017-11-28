@@ -74,7 +74,7 @@
     <junit.version>4.12</junit.version>
     <junit5.version>5.0.2</junit5.version>
     <junit.platform.version>1.0.1</junit.platform.version>
-    <junit.vintage.version>4.12.1</junit.vintage.version>
+    <junit.vintage.version>4.12.2</junit.vintage.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
