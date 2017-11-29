@@ -34,7 +34,7 @@ stage ('Commons Builds') {
         // revapi and more.
         // Configures the snapshot extension repository in XWiki in the generated distributions to make it easy for
         // developers to install snapshot extensions when they do manual tests.
-        xwikiBuild {
+        xwikiBuild('Main') {
           mavenOpts = globalMavenOpts
           goals = 'clean deploy'
           profiles = 'legacy,integration-tests'
@@ -45,7 +45,7 @@ stage ('Commons Builds') {
     'testrelease': {
       node {
         // Simulate a release and verify all is fine.
-        xwikiBuild {
+        xwikiBuild('TestRelease') {
           mavenOpts = globalMavenOpts
           goals = 'clean install'
           profiles = 'legacy,integration-tests'
@@ -56,7 +56,7 @@ stage ('Commons Builds') {
     'quality': {
       node {
         // Run the quality checks
-        xwikiBuild {
+        xwikiBuild('Quality') {
           mavenOpts = globalMavenOpts
           goals = 'clean install jacoco:report'
           profiles = 'quality,legacy'
@@ -68,7 +68,7 @@ stage ('Commons Builds') {
         // Build with checkstyle. Make sure "mvn checkstyle:check" passes so that we don't cause false positive on
         // Checkstyle side. This is for the Checkstyle project itself so that they can verify that when they bring
         // changes to Checkstyle, there's no regression to the XWiki build.
-        xwikiBuild {
+        xwikiBuild('Checkstyle') {
           mavenOpts = globalMavenOpts
           goals = 'clean test-compile checkstyle:check'
           profiles = 'legacy'
