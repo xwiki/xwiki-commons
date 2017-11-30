@@ -33,7 +33,7 @@
   <properties>
     <!-- By default legacy dependencies are forbidden -->
     <xwiki.enforcer.no-legacy-dependencies.skip>false</xwiki.enforcer.no-legacy-dependencies.skip>
-    <xwiki.spoon.skip>false</xwiki.spoon.skip>
+    <xwiki.spoon.skip>true</xwiki.spoon.skip>
   </properties>
   <build>
     <defaultGoal>install</defaultGoal>
