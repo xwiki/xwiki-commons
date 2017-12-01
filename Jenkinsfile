@@ -30,7 +30,7 @@ stage ('Commons Builds') {
     'main': {
       node {
         // Build, skipping checkstyle & revapi so that the result of the build can be sent as fast as possible
-        // to the dev. However note that in // we start a build with the quality profile that checks checkstyle
+        // to the devs. However note that in // we start a build with the quality profile that checks checkstyle
         // revapi and more.
         // Configures the snapshot extension repository in XWiki in the generated distributions to make it easy for
         // developers to install snapshot extensions when they do manual tests.
