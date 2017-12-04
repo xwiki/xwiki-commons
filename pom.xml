@@ -29,7 +29,7 @@
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
        added to better support javadoc links.
-       It allows to have a single URL definition in this top level POM and still get valid website URLs for all
+       It allows to have a single URL definition in this top-level POM and still get valid website URLs for all
        modules.
        Note that we're ending the URL with ":::" for the following reasons:
        - Since we don't overwrite the <url> element in children POM, Maven automatically appends the relative path
