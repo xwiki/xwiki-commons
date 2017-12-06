@@ -130,7 +130,7 @@ public final class System
     {
         // Step 1: Initialize Component system
         EmbeddableComponentManager ecm = new EmbeddableComponentManager();
-        ecm.initialize(classLoader == null ? System.class.getClassLoader() : classLoader);
+        ecm.initialize(classLoader == null ? Thread.currentThread().getContextClassLoader() : classLoader);
 
         // Step 2: Initialize Environment
         StandardEnvironment environment;
