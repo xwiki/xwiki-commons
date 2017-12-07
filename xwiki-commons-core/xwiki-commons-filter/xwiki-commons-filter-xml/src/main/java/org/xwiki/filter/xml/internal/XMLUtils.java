@@ -20,6 +20,8 @@
 package org.xwiki.filter.xml.internal;
 
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,6 +30,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -48,7 +51,7 @@ public final class XMLUtils
     /**
      * The default mapping between interface and instance.
      */
-    private static final Map<Class<?>, Object> DEFAULTS = new HashMap<Class<?>, Object>();
+    private static final Map<Class<?>, Object> DEFAULTS = new HashMap<>();
 
     static {
         DEFAULTS.put(boolean.class, false);
@@ -63,13 +66,16 @@ public final class XMLUtils
         DEFAULTS.put(Set.class, new LinkedHashSet<Object>());
         DEFAULTS.put(List.class, new ArrayList<Object>());
         DEFAULTS.put(Collection.class, new ArrayList<Object>());
+        DEFAULTS.put(Locale.class, Locale.ROOT);
+        DEFAULTS.put(URI.class, null);
+        DEFAULTS.put(URL.class, null);
     }
 
     /**
      * The classes of object that can easily be converted to simple String.
      */
-    private static final Set<Class<?>> SIMPLECLASSES = new HashSet<Class<?>>(Arrays.<Class<?>>asList(
-        String.class, Character.class, Boolean.class, byte[].class));
+    private static final Set<Class<?>> SIMPLECLASSES = new HashSet<>(Arrays.<Class<?>>asList(String.class,
+        Character.class, Boolean.class, byte[].class, Locale.class, URL.class, URI.class));
 
     /**
      * Utility class.
@@ -89,9 +95,8 @@ public final class XMLUtils
         if (type instanceof Class) {
             Class<?> typeClass = (Class<?>) type;
 
-            simpleType =
-                SIMPLECLASSES.contains(typeClass) || Number.class.isAssignableFrom(typeClass)
-                    || typeClass.isPrimitive() || typeClass.isEnum();
+            simpleType = SIMPLECLASSES.contains(typeClass) || Number.class.isAssignableFrom(typeClass)
+                || typeClass.isPrimitive() || typeClass.isEnum();
         }
 
         return simpleType;
