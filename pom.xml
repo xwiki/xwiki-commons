@@ -110,6 +110,8 @@
 
     <!-- Enable by default auto release on Jira -->
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
+    <xwiki.release.jira.settingsKey>jira.xwiki.org</xwiki.release.jira.settingsKey>
+    <xwiki.release.jira.scope>session</xwiki.release.jira.scope>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -1875,9 +1877,9 @@ mm
             <artifactId>jira-maven-plugin</artifactId>
             <version>0.5</version>
             <configuration>
-              <skip>${xwiki.release.jira.skip}</skip>
-              <settingsKey>jira.xwiki.org</settingsKey>
-              <scope>session</scope>
+            <skip>${xwiki.release.jira.skip}</skip>
+            <settingsKey>${xwiki.release.jira.settingsKey}</settingsKey>
+            <scope>${xwiki.release.jira.scope}</scope>
             </configuration>
             <executions>
               <execution>
