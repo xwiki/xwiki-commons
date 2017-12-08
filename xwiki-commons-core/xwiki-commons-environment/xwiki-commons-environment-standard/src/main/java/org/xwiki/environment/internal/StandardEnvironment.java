@@ -47,7 +47,7 @@ public class StandardEnvironment extends AbstractEnvironment
     /**
      * @see #setResourceClassLoader(ClassLoader)
      */
-    private ClassLoader resourceClassLoader = StandardEnvironment.class.getClassLoader();
+    private ClassLoader resourceClassLoader = Thread.currentThread().getContextClassLoader();
 
     /**
      * @param resourceDirectory the directory where resources such as configuration files (actually any content that
