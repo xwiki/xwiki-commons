@@ -141,6 +141,9 @@ public abstract class AbstractCache<T> implements Cache<T>
             try {
                 ((DisposableCacheValue) value).dispose();
             } catch (Throwable e) {
+                // We catch Throwable because this method is usually automatically called by an event send by the cache
+                // implementation and there is no reason to crash the whole cache because of some badly implemented
+                // dispose() we don't control.
                 LOGGER.warn("Error when trying to dispose a cache object of cache [{}]",
                     this.configuration != null ? this.configuration.getConfigurationId() : null, e);
             }
