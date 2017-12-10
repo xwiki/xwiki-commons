@@ -47,7 +47,7 @@ public class StandardEnvironment extends AbstractEnvironment
     /**
      * @see #setResourceClassLoader(ClassLoader)
      */
-    private ClassLoader resourceClassLoader = StandardEnvironment.class.getClassLoader();
+    private ClassLoader resourceClassLoader;
 
     /**
      * @param resourceDirectory the directory where resources such as configuration files (actually any content that
@@ -105,7 +105,8 @@ public class StandardEnvironment extends AbstractEnvironment
 
         // If not found, try in the Resource Class Loader
         if (resourceURL == null) {
-            resourceURL = this.resourceClassLoader.getResource(resourceName);
+            resourceURL = (this.resourceClassLoader == null ? Thread.currentThread().getContextClassLoader()
+                : this.resourceClassLoader).getResource(resourceName);
         }
 
         return resourceURL;
