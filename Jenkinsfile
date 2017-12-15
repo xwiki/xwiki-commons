@@ -29,11 +29,10 @@ stage ('Commons Builds') {
   parallel(
     'main': {
       node {
-        // Build, skipping checkstyle & revapi so that the result of the build can be sent as fast as possible
-        // to the devs. However note that in // we start a build with the quality profile that checks checkstyle,
-        // revapi and more.
-        // Configures the snapshot extension repository in XWiki in the generated distributions to make it easy for
-        // developers to install snapshot extensions when they do manual tests.
+        // Build, skipping quality checks so that the result of the build can be sent as fast as possible to the devs.
+        // In addition, we want the generated artifacts to be deployed to our remote Maven repository so that developers
+        // can benefit from them even though some quality checks have not yet passed. In // we start a build with the
+        // quality profile that executes various quality checks.
         xwikiBuild('Main') {
           mavenOpts = globalMavenOpts
           goals = 'clean deploy'
@@ -44,7 +43,7 @@ stage ('Commons Builds') {
     },
     'testrelease': {
       node {
-        // Simulate a release and verify all is fine.
+        // Simulate a release and verify all is fine, in preparation for the release day.
         xwikiBuild('TestRelease') {
           mavenOpts = globalMavenOpts
           goals = 'clean install'
@@ -55,7 +54,7 @@ stage ('Commons Builds') {
     },
     'quality': {
       node {
-        // Run the quality checks
+        // Run the quality checks.
         xwikiBuild('Quality') {
           mavenOpts = globalMavenOpts
           goals = 'clean install jacoco:report'
