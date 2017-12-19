@@ -19,8 +19,15 @@
  */
 package org.xwiki.extension;
 
+import java.util.Collections;
+
 import org.xwiki.component.annotation.Role;
+import org.xwiki.component.namespace.Namespace;
 import org.xwiki.extension.repository.ExtensionRepository;
+import org.xwiki.extension.repository.result.CollectionIterableResult;
+import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.ExtensionQuery;
+import org.xwiki.extension.repository.search.SearchException;
 
 /**
  * Main entry point for some extensions management tasks.
@@ -99,4 +106,34 @@ public interface ExtensionManager
      * @since 4.0M2
      */
     ExtensionRepository getRepository(String repositoryId);
+
+    /**
+     * Get the accessible (i.e. core or installed) extension instance from the passed namespace and matching the passed
+     * feature/id.
+     * 
+     * @param feature the extension id or provided feature (virtual extension)
+     * @param namespace the namespace from where the extension is usable
+     * @return the {@link Extension} instance
+     * @since 9.12RC1
+     */
+    default Extension getAccessibleExtension(String feature, Namespace namespace)
+    {
+        return null;
+    }
+
+    /**
+     * Search accessible (i.e. core or installed) extensions based of the provided query and only in the passed
+     * namespace.
+     *
+     * @param namespace the namespace where to search
+     * @param query the extension query used to filter and order the result
+     * @return the found extensions descriptors, empty list if nothing could be found
+     * @throws SearchException error when trying to search provided pattern
+     * @since 9.12RC1
+     */
+    default IterableResult<Extension> searchAccessibleExtensions(Namespace namespace, ExtensionQuery query)
+        throws SearchException
+    {
+        return new CollectionIterableResult<>(0, query.getOffset(), Collections.emptyList());
+    }
 }

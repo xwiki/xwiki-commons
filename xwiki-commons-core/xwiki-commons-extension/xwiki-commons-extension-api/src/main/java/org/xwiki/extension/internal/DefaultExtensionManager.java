@@ -19,6 +19,7 @@
  */
 package org.xwiki.extension.internal;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.namespace.Namespace;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.extension.Extension;
@@ -44,6 +46,12 @@ import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
 import org.xwiki.extension.repository.LocalExtensionRepository;
+import org.xwiki.extension.repository.internal.RepositoryUtils;
+import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
+import org.xwiki.extension.repository.search.ExtensionQuery;
+import org.xwiki.extension.repository.search.SearchException;
+import org.xwiki.extension.wrap.WrappingExtensionRepository;
 
 /**
  * Default implementation of {@link ExtensionManager}.
@@ -189,5 +197,74 @@ public class DefaultExtensionManager implements ExtensionManager, Initializable
         }
 
         return repository;
+    }
+
+    @Override
+    public Extension getAccessibleExtension(String feature, Namespace namespace)
+    {
+        // Try installed extension
+        Extension extension = this.installedExtensionRepository.getInstalledExtension(feature, namespace.serialize());
+
+        if (extension == null) {
+            // Try core extension
+            extension = this.coreExtensionRepository.getCoreExtension(feature);
+        }
+
+        return extension;
+    }
+
+    @Override
+    public IterableResult<Extension> searchAccessibleExtensions(Namespace namespace, ExtensionQuery query)
+        throws SearchException
+    {
+        return RepositoryUtils.search(query,
+            Arrays.asList(new SearchableInstalledExtensionRepository(this.installedExtensionRepository, namespace),
+                this.coreExtensionRepository));
+    }
+
+    private static class SearchableInstalledExtensionRepository
+        extends WrappingExtensionRepository<InstalledExtensionRepository> implements AdvancedSearchable
+    {
+        private final Namespace namespace;
+
+        private final String serializedNamespace;
+
+        SearchableInstalledExtensionRepository(InstalledExtensionRepository repository, Namespace namespace)
+        {
+            super(repository);
+
+            this.namespace = namespace;
+            this.serializedNamespace = this.namespace != null ? this.namespace.serialize() : null;
+        }
+
+        @Override
+        public IterableResult<Extension> search(String pattern, int offset, int nb) throws SearchException
+        {
+            ExtensionQuery query = new ExtensionQuery(pattern);
+            query.setOffset(offset);
+            query.setLimit(nb);
+
+            return search(query);
+        }
+
+        @Override
+        public boolean isFilterable()
+        {
+            return getWrapped().isFilterable();
+        }
+
+        @Override
+        public boolean isSortable()
+        {
+            return getWrapped().isSortable();
+        }
+
+        @Override
+        public IterableResult<Extension> search(ExtensionQuery query) throws SearchException
+        {
+            return (IterableResult) (this.namespace != null
+                ? getWrapped().searchInstalledExtensions(this.serializedNamespace, query)
+                : getWrapped().searchInstalledExtensions(query));
+        }
     }
 }

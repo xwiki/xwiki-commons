@@ -57,12 +57,10 @@ import org.xwiki.extension.repository.ExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepositoryId;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.ExtensionRepositorySource;
-import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
 import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.SearchException;
-import org.xwiki.extension.repository.search.Searchable;
 import org.xwiki.extension.version.Version;
 
 /**
@@ -421,83 +419,7 @@ public class DefaultExtensionRepositoryManager extends AbstractAdvancedSearchabl
     @Override
     public IterableResult<Extension> search(ExtensionQuery query) throws SearchException
     {
-        IterableResult<Extension> searchResult = null;
-
-        int currentOffset = query.getOffset() > 0 ? query.getOffset() : 0;
-        int currentNb = query.getLimit();
-
-        // A local index would avoid things like this...
-        for (ExtensionRepository repository : this.repositories) {
-            try {
-                ExtensionQuery customQuery = query;
-                if (currentOffset != customQuery.getOffset() && currentNb != customQuery.getLimit()) {
-                    customQuery = new ExtensionQuery(query);
-                    customQuery.setOffset(currentOffset);
-                    customQuery.setLimit(currentNb);
-                }
-
-                searchResult = search(repository, customQuery, searchResult);
-
-                if (searchResult != null) {
-                    if (currentOffset > 0) {
-                        currentOffset = query.getOffset() - searchResult.getTotalHits();
-                        if (currentOffset < 0) {
-                            currentOffset = 0;
-                        }
-                    }
-
-                    if (currentNb > 0) {
-                        currentNb = query.getLimit() - searchResult.getSize();
-                        if (currentNb < 0) {
-                            currentNb = 0;
-                        }
-                    }
-                }
-            } catch (SearchException e) {
-                this.logger.error(
-                    "Failed to search on repository [{}] with query [{}]. " + "Ignore and go to next repository.",
-                    repository.getDescriptor().toString(), query, e);
-            }
-        }
-
-        return searchResult != null ? (IterableResult) searchResult
-            : new CollectionIterableResult<Extension>(0, query.getOffset(), Collections.<Extension>emptyList());
-
-    }
-
-    /**
-     * Search one repository.
-     *
-     * @param repository the repository to search
-     * @param query the search query
-     * @param previousSearchResult the current search result merged from all previous repositories
-     * @return the updated maximum number of search results to return
-     * @throws SearchException error while searching on provided repository
-     */
-    private IterableResult<Extension> search(ExtensionRepository repository, ExtensionQuery query,
-        IterableResult<Extension> previousSearchResult) throws SearchException
-    {
-        IterableResult<Extension> result;
-
-        if (repository instanceof Searchable) {
-            if (repository instanceof AdvancedSearchable) {
-                AdvancedSearchable searchableRepository = (AdvancedSearchable) repository;
-
-                result = searchableRepository.search(query);
-            } else {
-                Searchable searchableRepository = (Searchable) repository;
-
-                result = searchableRepository.search(query.getQuery(), query.getOffset(), query.getLimit());
-            }
-
-            if (previousSearchResult != null) {
-                result = RepositoryUtils.appendSearchResults(previousSearchResult, result);
-            }
-        } else {
-            result = previousSearchResult;
-        }
-
-        return result;
+        return RepositoryUtils.search(query, this.repositories);
     }
 
     @Override

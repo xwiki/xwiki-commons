@@ -27,15 +27,21 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.internal.converter.ExtensionIdConverter;
+import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.repository.result.AggregatedIterableResult;
 import org.xwiki.extension.repository.result.CollectionIterableResult;
 import org.xwiki.extension.repository.result.IterableResult;
+import org.xwiki.extension.repository.search.AdvancedSearchable;
 import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
 import org.xwiki.extension.repository.search.ExtensionQuery.Filter;
 import org.xwiki.extension.repository.search.ExtensionQuery.SortClause;
+import org.xwiki.extension.repository.search.SearchException;
+import org.xwiki.extension.repository.search.Searchable;
 
 /**
  * A set of Repository related tools.
@@ -49,6 +55,8 @@ public final class RepositoryUtils
      * The suffix and prefix to add to the regex when searching for a core extension.
      */
     public static final String SEARCH_PATTERN_SUFFIXNPREFIX = ".*";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryUtils.class);
 
     /**
      * Utility class.
@@ -107,7 +115,7 @@ public final class RepositoryUtils
 
         // Filter
         if (StringUtils.isEmpty(query.getQuery())) {
-            result = extensions instanceof List ? (List<E>) extensions : new ArrayList<E>(extensions);
+            result = extensions instanceof List ? (List<E>) extensions : new ArrayList<>(extensions);
         } else {
             result = filter(query.getQuery(), query.getFilters(), extensions, forceUnique);
         }
@@ -129,14 +137,14 @@ public final class RepositoryUtils
     public static <E> CollectionIterableResult<E> getIterableResult(int offset, int nb, Collection<E> elements)
     {
         if (nb == 0 || offset >= elements.size()) {
-            return new CollectionIterableResult<E>(elements.size(), offset, Collections.<E>emptyList());
+            return new CollectionIterableResult<>(elements.size(), offset, Collections.<E>emptyList());
         }
 
         List<E> list;
         if (elements instanceof List) {
             list = (List<E>) elements;
         } else {
-            list = new ArrayList<E>(elements);
+            list = new ArrayList<>(elements);
         }
 
         return getIterableResultFromList(offset, nb, list);
@@ -166,7 +174,7 @@ public final class RepositoryUtils
             toIndex = elements.size();
         }
 
-        return new CollectionIterableResult<E>(elements.size(), offset, elements.subList(fromIndex, toIndex));
+        return new CollectionIterableResult<>(elements.size(), offset, elements.subList(fromIndex, toIndex));
     }
 
     /**
@@ -181,7 +189,7 @@ public final class RepositoryUtils
     private static <E extends Extension> List<E> filter(String pattern, Collection<Filter> filters,
         Collection<E> extensions, boolean forceUnique)
     {
-        List<E> result = new ArrayList<E>(extensions.size());
+        List<E> result = new ArrayList<>(extensions.size());
 
         Pattern patternMatcher =
             Pattern.compile(SEARCH_PATTERN_SUFFIXNPREFIX + pattern.toLowerCase() + SEARCH_PATTERN_SUFFIXNPREFIX);
@@ -367,7 +375,7 @@ public final class RepositoryUtils
         if (previousSearchResult instanceof AggregatedIterableResult) {
             newResult = ((AggregatedIterableResult<E>) previousSearchResult);
         } else if (previousSearchResult != null) {
-            newResult = new AggregatedIterableResult<E>(previousSearchResult.getOffset());
+            newResult = new AggregatedIterableResult<>(previousSearchResult.getOffset());
             newResult.addSearchResult(previousSearchResult);
         } else {
             return result;
@@ -376,5 +384,101 @@ public final class RepositoryUtils
         newResult.addSearchResult(result);
 
         return newResult;
+    }
+
+    /**
+     * Search passed repositories based of the provided query.
+     * 
+     * @param query the query
+     * @param repositories the repositories
+     * @return the found extensions descriptors, empty list if nothing could be found
+     * @throws SearchException error when trying to search provided query
+     * @since 9.12RC1
+     */
+    public static IterableResult<Extension> search(ExtensionQuery query, Iterable<ExtensionRepository> repositories)
+        throws SearchException
+    {
+        IterableResult<Extension> searchResult = null;
+
+        int currentOffset = query.getOffset() > 0 ? query.getOffset() : 0;
+        int currentNb = query.getLimit();
+
+        // A local index would avoid things like this...
+        for (ExtensionRepository repository : repositories) {
+            try {
+                searchResult = search(repository, query, currentOffset, currentNb, searchResult);
+
+                if (searchResult != null) {
+                    if (currentOffset > 0) {
+                        currentOffset = query.getOffset() - searchResult.getTotalHits();
+                        if (currentOffset < 0) {
+                            currentOffset = 0;
+                        }
+                    }
+
+                    if (currentNb > 0) {
+                        currentNb = query.getLimit() - searchResult.getSize();
+                        if (currentNb < 0) {
+                            currentNb = 0;
+                        }
+                    }
+                }
+            } catch (SearchException e) {
+                LOGGER.error(
+                    "Failed to search on repository [{}] with query [{}]. " + "Ignore and go to next repository.",
+                    repository.getDescriptor().toString(), query, e);
+            }
+        }
+
+        return searchResult != null ? searchResult
+            : new CollectionIterableResult<>(0, query.getOffset(), Collections.<Extension>emptyList());
+    }
+
+    private static IterableResult<Extension> search(ExtensionRepository repository, ExtensionQuery query,
+        int currentOffset, int currentNb, IterableResult<Extension> previousSearchResult) throws SearchException
+    {
+        ExtensionQuery customQuery = query;
+        if (currentOffset != customQuery.getOffset() && currentNb != customQuery.getLimit()) {
+            customQuery = new ExtensionQuery(query);
+            customQuery.setOffset(currentOffset);
+            customQuery.setLimit(currentNb);
+        }
+
+        return search(repository, customQuery, previousSearchResult);
+    }
+
+    /**
+     * Search one repository.
+     *
+     * @param repository the repository to search
+     * @param query the search query
+     * @param previousSearchResult the current search result merged from all previous repositories
+     * @return the updated maximum number of search results to return
+     * @throws SearchException error while searching on provided repository
+     */
+    public static IterableResult<Extension> search(ExtensionRepository repository, ExtensionQuery query,
+        IterableResult<Extension> previousSearchResult) throws SearchException
+    {
+        IterableResult<Extension> result;
+
+        if (repository instanceof Searchable) {
+            if (repository instanceof AdvancedSearchable) {
+                AdvancedSearchable searchableRepository = (AdvancedSearchable) repository;
+
+                result = searchableRepository.search(query);
+            } else {
+                Searchable searchableRepository = (Searchable) repository;
+
+                result = searchableRepository.search(query.getQuery(), query.getOffset(), query.getLimit());
+            }
+
+            if (previousSearchResult != null) {
+                result = RepositoryUtils.appendSearchResults(previousSearchResult, result);
+            }
+        } else {
+            result = previousSearchResult;
+        }
+
+        return result;
     }
 }
