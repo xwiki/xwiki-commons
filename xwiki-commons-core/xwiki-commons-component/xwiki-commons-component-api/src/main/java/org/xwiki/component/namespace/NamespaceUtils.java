@@ -19,6 +19,9 @@
  */
 package org.xwiki.component.namespace;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Various namespaces utilities.
  *
@@ -27,6 +30,14 @@ package org.xwiki.component.namespace;
  */
 public final class NamespaceUtils
 {
+    private static final Set<String> ROOT_NAMESPACES = new HashSet<>();
+
+    static {
+        ROOT_NAMESPACES.add("{root}");
+        ROOT_NAMESPACES.add("{}");
+        ROOT_NAMESPACES.add("");
+    };
+
     /**
      * Utility class.
      */
@@ -57,6 +68,10 @@ public final class NamespaceUtils
     {
         if (namespace == null) {
             return null;
+        }
+
+        if (ROOT_NAMESPACES.contains(namespace)) {
+            return Namespace.ROOT;
         }
 
         boolean escaped = false;

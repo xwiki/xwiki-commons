@@ -51,5 +51,6 @@ public class NamespaceUtilsTest
         assertEquals(new Namespace("type", "value"), NamespaceUtils.toNamespace("type:value"));
         assertEquals(new Namespace("t:pe", "val\\ue"), NamespaceUtils.toNamespace("t\\:pe:val\\ue"));
         assertEquals(new Namespace("", "value"), NamespaceUtils.toNamespace(":value"));
+        assertEquals(Namespace.ROOT, NamespaceUtils.toNamespace("{}"));
     }
 }
