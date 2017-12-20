@@ -42,11 +42,12 @@ public interface ScriptContextManager
 
     /**
      * @return the current {@link ScriptContext} instance without any modification. This is mostly used when the only
-     *         need to to set values in the script context. In doubt always use {@link #getScriptContext()}.
+     *         need is to modify the script context. In doubt always use {@link #getScriptContext()}.
      * @see #getScriptContext()
      * @since 8.3M1
      */
-    default ScriptContext getCurrentScriptContext() {
+    default ScriptContext getCurrentScriptContext()
+    {
         return getScriptContext();
     }
 }
