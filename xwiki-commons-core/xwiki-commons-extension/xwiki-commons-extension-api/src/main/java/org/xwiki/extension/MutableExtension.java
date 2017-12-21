@@ -31,7 +31,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 8.4RC1
  */
-@Unstable
 public interface MutableExtension extends Extension
 {
     /**

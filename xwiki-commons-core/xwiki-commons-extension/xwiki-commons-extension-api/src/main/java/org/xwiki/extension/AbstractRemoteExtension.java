@@ -29,7 +29,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 8.3RC1
  */
-@Unstable
 public abstract class AbstractRemoteExtension extends AbstractExtension implements RemoteExtension
 {
     /**

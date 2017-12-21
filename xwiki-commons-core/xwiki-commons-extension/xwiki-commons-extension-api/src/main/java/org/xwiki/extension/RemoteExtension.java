@@ -32,7 +32,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 8.3RC1
  */
-@Unstable
 public interface RemoteExtension extends Extension
 {
     /**
