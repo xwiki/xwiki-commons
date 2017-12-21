@@ -19,8 +19,6 @@
  */
 package org.xwiki.cache.event;
 
-import org.xwiki.stability.Unstable;
-
 /**
  * Empty implementations of the {@link CacheEntryListener} interface to make it easy for code wanting to listen to
  * events to only override the method(s) corresponding to the event(s) listened to.
@@ -29,7 +27,6 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 8.1M1
  */
-@Unstable
 public abstract class AbstractCacheEntryListener<T> implements CacheEntryListener<T>
 {
     @Override
