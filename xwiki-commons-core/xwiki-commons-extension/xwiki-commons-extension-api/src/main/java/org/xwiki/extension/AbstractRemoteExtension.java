@@ -21,7 +21,6 @@ package org.xwiki.extension;
 
 import org.xwiki.extension.rating.RatingExtension;
 import org.xwiki.extension.repository.ExtensionRepository;
-import org.xwiki.stability.Unstable;
 
 /**
  * Base class for {@link RatingExtension} implementations.

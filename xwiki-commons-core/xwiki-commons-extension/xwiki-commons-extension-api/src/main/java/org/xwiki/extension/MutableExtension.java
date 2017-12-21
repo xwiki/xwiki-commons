@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.xwiki.extension.repository.ExtensionRepositoryDescriptor;
-import org.xwiki.stability.Unstable;
 
 /**
  * Mutable version of {@link Extension}.
