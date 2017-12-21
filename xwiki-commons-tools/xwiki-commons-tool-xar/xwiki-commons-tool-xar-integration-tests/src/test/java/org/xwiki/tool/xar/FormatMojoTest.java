@@ -83,7 +83,7 @@ public class FormatMojoTest extends AbstractMojoTest
     {
         Verifier verifier = createVerifier("/format");
         verifier.addCliOption("-Dincludes=**/Pretty/*.xml");
-
+        verifier.addCliOption("-DformatLicense=true");
         verifier.executeGoal("xar:format");
         verifier.verifyErrorFreeLog();
 
