@@ -57,6 +57,13 @@ public class FormatMojo extends AbstractVerifyMojo
     {
         // Only format XAR modules or when forced
         if (getProject().getPackaging().equals("xar") || this.force) {
+            // Note: it's important that we run the license addition before we formatting below since the pretty print
+            // would add a new line between the XML declaration and the license for example. Otherwise we'd get the
+            // new line added only on the second run of this mojo!
+            if (this.formatLicense) {
+                getLog().info("Adding missing XAR XML license headers...");
+                executeLicenseGoal("format");
+            }
             getLog().info("Formatting XAR XML files...");
             initializePatterns();
             Collection<File> xmlFiles = getXARXMLFiles();
@@ -66,10 +73,6 @@ public class FormatMojo extends AbstractVerifyMojo
                 } catch (Exception e) {
                     throw new MojoExecutionException(String.format("Failed to format file [%s]", file), e);
                 }
-            }
-            if (this.formatLicense) {
-                getLog().info("Adding missing XAR XML license headers...");
-                executeLicenseGoal("format");
             }
         } else {
             getLog().info("Not a XAR module, skipping reformatting...");
