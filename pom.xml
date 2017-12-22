@@ -84,7 +84,7 @@
     <aspectj.version>1.8.13</aspectj.version>
 
     <!-- Clover & Jacoco -->
-    <clover.version>4.1.2</clover.version>
+    <clover.version>4.2.1</clover.version>
     <jacoco.version>0.7.9</jacoco.version>
 
     <!-- Checkstyle -->
@@ -1591,18 +1591,10 @@
           <version>2.5.3</version>
         </plugin>
         <plugin>
-          <groupId>com.atlassian.maven.plugins</groupId>
+          <groupId>org.openclover</groupId>
           <artifactId>clover-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
-          <configuration>
-            <license><![CDATA[nrqrUjrDHDhJUHFmcbwQoxwhnrpAvvxtfireXcjcnFLfnhs
-mj2KyGJY<oOR4f95>VRjHIO22L01PV<1<v2Q64gRLmTAFh1
-mnOmtsRNMRMORpMpnpmsSmNRqOqrNoqnqMVxvvVXvssmpRq
-RnmqmUUnrmoptpsmmmmmUUnrmoptpsmmmmmUUONfhfUUnmm
-mm
-]]></license>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1929,7 +1921,7 @@ mm
         <dependencies>
           <!-- Needed when using Clover for runtime execution of integration tests -->
           <dependency>
-            <groupId>com.atlassian.clover</groupId>
+            <groupId>org.openclover</groupId>
             <artifactId>clover</artifactId>
             <version>${clover.version}</version>
           </dependency>

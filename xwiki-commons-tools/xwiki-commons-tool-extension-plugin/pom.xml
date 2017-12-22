@@ -144,7 +144,7 @@
           <!-- Override the skip done at the level of commons-tools since that's need when running with the clover
                profile -->
           <plugin>
-            <groupId>com.atlassian.maven.plugins</groupId>
+            <groupId>org.openclover</groupId>
             <artifactId>clover-maven-plugin</artifactId>
             <configuration>
               <skip>false</skip>
