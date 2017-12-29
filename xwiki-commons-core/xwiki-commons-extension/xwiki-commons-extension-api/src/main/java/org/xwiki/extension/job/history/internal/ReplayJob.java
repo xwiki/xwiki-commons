@@ -118,7 +118,7 @@ public class ReplayJob extends AbstractJob<ReplayRequest, ReplayJobStatus> imple
     {
         Job job = this.componentManager.getInstance(Job.class, record.getJobType());
         job.initialize(record.getRequest());
-        job.run();
+        job.start(request);
     }
 
     private String getTargetNamespace()
