@@ -21,6 +21,7 @@ package org.xwiki.tool.xar;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,19 +34,21 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
+import org.eclipse.aether.util.version.GenericVersionScheme;
+import org.eclipse.aether.version.InvalidVersionSpecificationException;
+import org.eclipse.aether.version.Version;
+import org.eclipse.aether.version.VersionScheme;
 
 /**
  * Pretty prints and set valid authors and version to XAR XML files.
  *
  * @version $Id$
  */
-@Mojo(
-    name = "format",
-    threadSafe = true
-)
+@Mojo(name = "format", threadSafe = true)
 public class FormatMojo extends AbstractVerifyMojo
 {
+    private static final VersionScheme VERSIONSCHEME = new GenericVersionScheme();
+
     /**
      * If false then don't pretty print the XML.
      */
@@ -85,19 +88,39 @@ public class FormatMojo extends AbstractVerifyMojo
         Document domdoc = reader.read(file);
         format(file.getName(), domdoc, defaultLanguage);
 
-        XMLWriter writer;
+        OutputFormat format;
         if (this.pretty) {
-            OutputFormat format = new OutputFormat("  ", true, "UTF-8");
+            format = new OutputFormat("  ", true, "UTF-8");
             format.setExpandEmptyElements(false);
-            writer = new XWikiXMLWriter(new FileOutputStream(file), format);
         } else {
-            writer = new XWikiXMLWriter(new FileOutputStream(file));
+            format = new OutputFormat(null, false, "UTF-8");
         }
+
+        format.setSuppressDeclaration(true);
+
+        XWikiXMLWriter writer = new XWikiXMLWriter(new FileOutputStream(file), format);
+        writeDeclaration(domdoc, writer);
         writer.write(domdoc);
         writer.close();
 
         String parentName = file.getParentFile().getName();
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
+    }
+
+    private void writeDeclaration(Document domdoc, XWikiXMLWriter writer)
+        throws IOException, InvalidVersionSpecificationException
+    {
+        String versionString = domdoc.getRootElement().attributeValue("version");
+        if (versionString != null) {
+            Version version13 = VERSIONSCHEME.parseVersion("1.3");
+            Version version = VERSIONSCHEME.parseVersion(versionString);
+
+            if (version.compareTo(version13) >= 0) {
+                writer.writeDeclaration("1.1");
+            }
+        }
+
+        writer.writeDeclaration("1.0");
     }
 
     private void format(String fileName, Document domdoc, String defaultLanguage) throws Exception
