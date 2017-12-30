@@ -60,6 +60,42 @@ public class XWikiXMLWriter extends XMLWriter
         this.useFormat = true;
     }
 
+    /**
+     * Write the document declaration with the passed XML version.
+     * 
+     * @param version the XML version to write in the declaration
+     * @throws IOException when failing to write
+     * @since 9.11.1
+     * @since 10.0RC1
+     */
+    public void writeDeclaration(String version) throws IOException
+    {
+        String encoding = getOutputFormat().getEncoding();
+
+        // Assume 1.0 version
+        if (encoding.equals("UTF8")) {
+            writer.write("<?xml version=\"" + version + "\"");
+
+            if (!getOutputFormat().isOmitEncoding()) {
+                writer.write(" encoding=\"UTF-8\"");
+            }
+
+            writer.write("?>");
+        } else {
+            writer.write("<?xml version=\"" + version + "\"");
+
+            if (!getOutputFormat().isOmitEncoding()) {
+                writer.write(" encoding=\"" + encoding + "\"");
+            }
+
+            writer.write("?>");
+        }
+
+        if (getOutputFormat().isNewLineAfterDeclaration()) {
+            println();
+        }
+    }
+
     @Override
     protected void writeComment(String text) throws IOException
     {
@@ -75,7 +111,7 @@ public class XWikiXMLWriter extends XMLWriter
     protected void writeNodeText(Node node) throws IOException
     {
         if (this.useFormat && node.getText().trim().length() == 0) {
-          // Check if parent node contains non text nodes
+            // Check if parent node contains non text nodes
             boolean containsNonTextNode = false;
             for (Object object : node.getParent().content()) {
                 Node objectNode = (Node) object;
@@ -99,11 +135,11 @@ public class XWikiXMLWriter extends XMLWriter
     {
         // We need to reimplement this method because of a bug (bad logic) in the original writePrintln() which checks
         // the last output char to decide whether to print a NL or not:
-        //  ...3</a></b> --> ...3</a>\n</b>
+        // ...3</a></b> --> ...3</a>\n</b>
         // but
-        //  ...3\n</a></b> --> ...3\n</a></b>
+        // ...3\n</a></b> --> ...3\n</a></b>
         // and
-        //  ...3\n</a>\n</b> --> ...3\n</a></b>
+        // ...3\n</a>\n</b> --> ...3\n</a></b>
         if (this.useFormat) {
             this.writer.write(getOutputFormat().getLineSeparator());
         }
