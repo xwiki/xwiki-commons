@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
+import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -72,24 +75,13 @@ public class XWikiXMLWriter extends XMLWriter
     {
         String encoding = getOutputFormat().getEncoding();
 
-        // Assume 1.0 version
-        if (encoding.equals("UTF8")) {
-            writer.write("<?xml version=\"" + version + "\"");
+        this.writer.write("<?xml version=\"" + version + "\"");
 
-            if (!getOutputFormat().isOmitEncoding()) {
-                writer.write(" encoding=\"UTF-8\"");
-            }
-
-            writer.write("?>");
-        } else {
-            writer.write("<?xml version=\"" + version + "\"");
-
-            if (!getOutputFormat().isOmitEncoding()) {
-                writer.write(" encoding=\"" + encoding + "\"");
-            }
-
-            writer.write("?>");
+        if (!getOutputFormat().isOmitEncoding()) {
+            this.writer.write(" encoding=\"" + encoding + "\"");
         }
+
+        this.writer.write("?>");
 
         if (getOutputFormat().isNewLineAfterDeclaration()) {
             println();
