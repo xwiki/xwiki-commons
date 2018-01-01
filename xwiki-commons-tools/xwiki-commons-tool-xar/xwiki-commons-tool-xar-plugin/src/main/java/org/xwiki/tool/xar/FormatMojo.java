@@ -30,6 +30,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
@@ -82,23 +83,22 @@ public class FormatMojo extends AbstractVerifyMojo
         }
     }
 
-    private void format(File file, String defaultLanguage) throws Exception
+    private void format(File file, String defaultLanguage)
+        throws InvalidVersionSpecificationException, IOException, DocumentException
     {
         SAXReader reader = new SAXReader();
         Document domdoc = reader.read(file);
         format(file.getName(), domdoc, defaultLanguage);
 
-        OutputFormat format;
+        XWikiXMLWriter writer;
         if (this.pretty) {
-            format = new OutputFormat("  ", true, "UTF-8");
+            OutputFormat format = new OutputFormat("  ", true, "UTF-8");
+            format.setExpandEmptyElements(false);
+            writer = new XWikiXMLWriter(new FileOutputStream(file), format);
         } else {
-            format = new OutputFormat(null, false, "UTF-8");
+            writer = new XWikiXMLWriter(new FileOutputStream(file));
         }
-
-        format.setSuppressDeclaration(true);
-
-        XWikiXMLWriter writer = new XWikiXMLWriter(new FileOutputStream(file), format);
-        writeDeclaration(domdoc, writer);
+        writer.setVersion(getXMLVersion(domdoc));
         writer.write(domdoc);
         writer.close();
 
@@ -106,8 +106,7 @@ public class FormatMojo extends AbstractVerifyMojo
         getLog().info(String.format("  Formatting [%s/%s]... ok", parentName, file.getName()));
     }
 
-    private void writeDeclaration(Document domdoc, XWikiXMLWriter writer)
-        throws IOException, InvalidVersionSpecificationException
+    private String getXMLVersion(Document domdoc) throws InvalidVersionSpecificationException
     {
         String versionString = domdoc.getRootElement().attributeValue("version");
         if (versionString != null) {
@@ -115,16 +114,14 @@ public class FormatMojo extends AbstractVerifyMojo
             Version version = VERSIONSCHEME.parseVersion(versionString);
 
             if (version.compareTo(version13) >= 0) {
-                writer.writeDeclaration("1.1");
-
-                return ;
+                return "1.1";
             }
         }
 
-        writer.writeDeclaration("1.0");
+        return "1.0";
     }
 
-    private void format(String fileName, Document domdoc, String defaultLanguage) throws Exception
+    private void format(String fileName, Document domdoc, String defaultLanguage)
     {
         Node node = domdoc.selectSingleNode("xwikidoc/author");
         if (node != null) {
@@ -178,7 +175,7 @@ public class FormatMojo extends AbstractVerifyMojo
     private void removeContent(Element element)
     {
         if (element.hasContent()) {
-            ((Node) element.content().get(0)).detach();
+            element.content().get(0).detach();
         }
     }
 }
