@@ -91,7 +91,6 @@ public class FormatMojo extends AbstractVerifyMojo
         OutputFormat format;
         if (this.pretty) {
             format = new OutputFormat("  ", true, "UTF-8");
-            format.setExpandEmptyElements(false);
         } else {
             format = new OutputFormat(null, false, "UTF-8");
         }
@@ -117,6 +116,8 @@ public class FormatMojo extends AbstractVerifyMojo
 
             if (version.compareTo(version13) >= 0) {
                 writer.writeDeclaration("1.1");
+
+                return ;
             }
         }
 
