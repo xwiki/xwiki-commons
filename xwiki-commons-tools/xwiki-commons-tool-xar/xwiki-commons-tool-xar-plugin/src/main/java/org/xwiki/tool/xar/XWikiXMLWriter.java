@@ -23,9 +23,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import javax.swing.plaf.synth.SynthSeparatorUI;
-
-import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -42,6 +39,8 @@ public class XWikiXMLWriter extends XMLWriter
      * True if we use an output format.
      */
     private boolean useFormat;
+
+    private String version;
 
     /**
      * @param output the stream where to write the XML
@@ -64,28 +63,13 @@ public class XWikiXMLWriter extends XMLWriter
     }
 
     /**
-     * Write the document declaration with the passed XML version.
-     * 
-     * @param version the XML version to write in the declaration
-     * @throws IOException when failing to write
+     * @param xmlVersion the XML version to set in the declaration
      * @since 9.11.1
      * @since 10.0RC1
      */
-    public void writeDeclaration(String version) throws IOException
+    public void setVersion(String xmlVersion)
     {
-        String encoding = getOutputFormat().getEncoding();
-
-        this.writer.write("<?xml version=\"" + version + "\"");
-
-        if (!getOutputFormat().isOmitEncoding()) {
-            this.writer.write(" encoding=\"" + encoding + "\"");
-        }
-
-        this.writer.write("?>");
-
-        if (getOutputFormat().isNewLineAfterDeclaration()) {
-            println();
-        }
+        this.version = xmlVersion;
     }
 
     @Override
@@ -134,6 +118,27 @@ public class XWikiXMLWriter extends XMLWriter
         // ...3\n</a>\n</b> --> ...3\n</a></b>
         if (this.useFormat) {
             this.writer.write(getOutputFormat().getLineSeparator());
+        }
+    }
+
+    @Override
+    protected void writeDeclaration() throws IOException
+    {
+        String encoding = getOutputFormat().getEncoding();
+
+        // Only print of declaration is not suppressed
+        if (!getOutputFormat().isSuppressDeclaration()) {
+            this.writer.write("<?xml version=\"" + this.version + "\"");
+
+            if (!getOutputFormat().isOmitEncoding()) {
+                this.writer.write(" encoding=\"" + encoding + "\"");
+            }
+
+            this.writer.write("?>");
+
+            if (getOutputFormat().isNewLineAfterDeclaration()) {
+                println();
+            }
         }
     }
 }

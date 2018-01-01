@@ -24,7 +24,8 @@ import org.apache.maven.it.Verifier;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Integration tests for the Verify Mojo.

@@ -76,6 +76,11 @@ public class FormatMojoTest extends AbstractMojoTest
         } catch (VerificationException expectedException) {
             // Passed!
         }
+
+        // Verify the right version of XML is set for XAR 1.3
+        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Translations.xml"));
+        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStyleTranslations.xml"));
+        assertEquals(expected, content);
     }
 
     @Test
