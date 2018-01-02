@@ -152,7 +152,7 @@
         </configuration>
       </plugin>
       <!-- Execute Spoon plugin -->
-      <plugin>
+      <!-- <plugin>
         <groupId>fr.inria.gforge.spoon</groupId>
         <artifactId>spoon-maven-plugin</artifactId>
         <executions>
@@ -170,20 +170,20 @@
             <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
           </processors>
 
-          <!-- We don't use Spoon to modify -->
+          < ! - - We don't use Spoon to modify - - >
           <compileOriginalSources>true</compileOriginalSources>
           <noCopyResources>true</noCopyResources>
           <noClasspath>true</noClasspath>
         </configuration>
         <dependencies>
-          <!-- Contains custom Spoon processors -->
+          < ! - - Contains custom Spoon processors - - >
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-spoon</artifactId>
             <version>9.11.3-SNAPSHOT</version>
           </dependency>
         </dependencies>
-      </plugin>
+      </plugin> -->
     </plugins>
     <pluginManagement>
       <plugins>
