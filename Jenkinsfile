@@ -35,7 +35,6 @@ stage ('Commons Builds') {
         // quality profile that executes various quality checks.
         xwikiBuild('Main') {
           mavenOpts = globalMavenOpts
-          goals = 'clean deploy'
           profiles = 'legacy,integration-tests'
           properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
         }
