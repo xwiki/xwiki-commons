@@ -28,7 +28,7 @@ import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.BCodec;
 import org.apache.commons.codec.net.QCodec;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
-import org.apache.commons.text.StringEscapeUtils
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.xml.XMLUtils;
