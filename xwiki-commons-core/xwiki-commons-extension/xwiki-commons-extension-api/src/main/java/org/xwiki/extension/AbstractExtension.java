@@ -349,13 +349,6 @@ public abstract class AbstractExtension implements MutableExtension
     private void setFeatureMap(Map<String, ExtensionId> map)
     {
         this.featuresMap = Collections.unmodifiableMap(map);
-
-        // Retro compatibility
-        Set<String> list = new LinkedHashSet<String>(this.featuresMap.size());
-        for (ExtensionId extensionId : this.featuresMap.values()) {
-            list.add(extensionId.getId());
-        }
-        this.features = Collections.unmodifiableSet(list);
     }
 
     @Override
