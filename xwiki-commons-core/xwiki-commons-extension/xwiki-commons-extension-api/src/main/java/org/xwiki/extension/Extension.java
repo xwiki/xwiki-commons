@@ -260,7 +260,7 @@ public interface Extension extends Comparable<Extension>
      */
     default ExtensionId getExtensionFeature(String featureId)
     {
-        return getFeatures().contains(featureId) ? new ExtensionId(featureId, getId().getVersion()) : null;
+        return getExtensionFeatures().contains(featureId) ? new ExtensionId(featureId, getId().getVersion()) : null;
     }
 
     /**
