@@ -84,7 +84,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
     @Override
     public String[] getHints()
     {
-        return this.hints;
+        return this.hints.clone();
     }
 
     /**
@@ -102,7 +102,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
      */
     public void setHints(String[] hints)
     {
-        this.hints = hints;
+        this.hints = hints.clone();
     }
 
     /**
