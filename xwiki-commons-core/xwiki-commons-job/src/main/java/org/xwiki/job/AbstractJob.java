@@ -204,7 +204,7 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
             jobStarting();
 
             runInternal();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             this.logger.error(LOG_EXCEPTION, "Exception thrown during job execution", t);
             error = t;
         } finally {
@@ -288,7 +288,7 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
                 if (this.request.getId() != null) {
                     this.store.storeAsync(this.status);
                 }
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 this.logger.warn(LOG_STATUS_STORE_FAILED, "Failed to store job status [{}]", this.status, t);
             }
         } finally {
