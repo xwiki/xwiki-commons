@@ -96,7 +96,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
     public URIClassLoader(URI[] uris, URLStreamHandlerFactory handlerFactory)
     {
         super(new URL[0]);
-        this.finder = new URIResourceFinder(uris, handlerFactory);
+        this.finder = new URIResourceFinder(uris.clone(), handlerFactory);
         this.acc = AccessController.getContext();
     }
 
@@ -121,7 +121,7 @@ public class URIClassLoader extends ExtendedURLClassLoader
     public URIClassLoader(URI[] uris, ClassLoader parent, URLStreamHandlerFactory handlerFactory)
     {
         super(new URL[0], parent);
-        this.finder = new URIResourceFinder(uris, handlerFactory);
+        this.finder = new URIResourceFinder(uris.clone(), handlerFactory);
         this.acc = AccessController.getContext();
     }
 
