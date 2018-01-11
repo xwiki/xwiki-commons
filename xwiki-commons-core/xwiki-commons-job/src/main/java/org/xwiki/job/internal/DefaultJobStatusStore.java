@@ -309,7 +309,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             File statusFile = getJobFolder(status.getRequest().getId());
             statusFile = new File(statusFile, FILENAME_STATUS);
 
-            this.logger.debug("Serializing status [{id}] in [{}]", status.getRequest().getId(), statusFile);
+            this.logger.debug("Serializing status [{}] in [{}]", status.getRequest().getId(), statusFile);
 
             this.serializer.write(status, statusFile);
         } catch (Exception e) {
@@ -368,7 +368,7 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             synchronized (this.cache) {
                 String id = toUniqueString(status.getRequest().getId());
 
-                this.logger.debug("Store status [{id}] in cache", id);
+                this.logger.debug("Store status [{}] in cache", id);
 
                 this.cache.set(id, status);
             }
