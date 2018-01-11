@@ -309,6 +309,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             File statusFile = getJobFolder(status.getRequest().getId());
             statusFile = new File(statusFile, FILENAME_STATUS);
 
+            this.logger.debug("Serializing status [{id}] in [{}]", status.getRequest().getId(), statusFile);
+
             this.serializer.write(status, statusFile);
         } catch (Exception e) {
             this.logger.warn("Failed to save job status [{}]", status, e);
@@ -364,7 +366,11 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
     {
         if (status != null && status.getRequest() != null && status.getRequest().getId() != null) {
             synchronized (this.cache) {
-                this.cache.set(toUniqueString(status.getRequest().getId()), status);
+                String id = toUniqueString(status.getRequest().getId());
+
+                this.logger.debug("Store status [{id}] in cache", id);
+
+                this.cache.set(id, status);
             }
 
             // Only store Serializable job status on file system
