@@ -22,6 +22,7 @@ package org.xwiki.extension.jar.internal.handler;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -149,7 +150,7 @@ public class JarExtensionJobFinishingListener implements EventListener
         ExecutionContext context = this.execution.getContext();
 
         if (context != null) {
-            Stack<UninstalledExtensionCollection> extensions = getUninstalledExtensionCollectionStack(false);
+            Deque<UninstalledExtensionCollection> extensions = (Deque<UninstalledExtensionCollection>) getUninstalledExtensionCollectionStack(false);
 
             if (extensions != null) {
                 extensions.pop();
