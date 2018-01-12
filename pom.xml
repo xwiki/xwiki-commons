@@ -1433,6 +1433,12 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
+          <version>2.20.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>3.0.2</version>
