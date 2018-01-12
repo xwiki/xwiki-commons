@@ -318,7 +318,9 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
                 if (coreExtension == null) {
                     String dependencyFileName = dependency.getArtifactId() + '-' + dependency.getVersion();
                     if (dependency.getClassifier() != null) {
-                        dependencyFileName += '-' + dependency.getClassifier();
+                        StringBuilder stringBuilder = new StringBuilder(dependency.getClassifier());
+                        dependencyFileName = stringBuilder.insert(0, '-').toString();
+                        //dependencyFileName += '-' + dependency.getClassifier();
                         dependencyId += ':' + dependency.getClassifier();
                     }
 
