@@ -218,7 +218,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
 
             setRoleType(new DefaultParameterizedType(ownerType, rawType, role));
         } else {
-            super.setRole(role);
+            super.setRoleType(role);
         }
     }
 }
