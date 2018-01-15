@@ -313,6 +313,8 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
     }
 
     /**
+     * Create a new standard {@link JobStatus}. Jobs requiring a custom {@link JobStatus} should overwrite this method.
+     * 
      * @param request contains information related to the job to execute
      * @return the status of the job
      */
