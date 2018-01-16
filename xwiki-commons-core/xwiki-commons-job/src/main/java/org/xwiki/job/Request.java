@@ -91,4 +91,16 @@ public interface Request extends Serializable
      * @since 5.4RC1
      */
     boolean isVerbose();
+
+    /**
+     * @return true if the job status should be serialized
+     * @since 10.0RC1
+     */
+    Boolean isStatusSerialized();
+
+    /**
+     * @return true if the log should be isolated from standard output
+     * @since 10.0RC1
+     */
+    Boolean isStatusLogIsolated();
 }

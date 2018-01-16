@@ -372,7 +372,9 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      */
     public boolean isIsolated()
     {
-        return this.isolated;
+        Boolean isolatedRequest = getRequest().isStatusLogIsolated();
+
+        return isolatedRequest != null ? isolatedRequest : this.isolated;
     }
 
     /**
