@@ -1508,7 +1508,7 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.10</version>
+          <version>1.11</version>
           <configuration>
             <complianceLevel>${java.version}</complianceLevel>
             <source>${java.version}</source>
