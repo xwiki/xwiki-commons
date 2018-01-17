@@ -121,4 +121,16 @@ public class SafeJobStatus<J extends JobStatus> extends AbstractSafeObject<J> im
     {
         return getWrapped().getEndDate();
     }
+
+    @Override
+    public boolean isIsolated()
+    {
+        return getWrapped().isIsolated();
+    }
+
+    @Override
+    public boolean isSerialized()
+    {
+        return getWrapped().isSerialized();
+    }
 }
