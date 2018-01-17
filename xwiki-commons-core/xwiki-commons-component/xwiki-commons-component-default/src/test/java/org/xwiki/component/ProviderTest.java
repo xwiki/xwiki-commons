@@ -136,12 +136,12 @@ public class ProviderTest
 
         // Register components for the list and map
         DefaultComponentDescriptor<Role> cd1 = new DefaultComponentDescriptor<Role>();
-        cd1.setRole(Role.class);
+        cd1.setRoleType(Role.class);
         cd1.setRoleHint("hint1");
         cd1.setImplementation(RoleImpl.class);
         cm.registerComponent(cd1);
         DefaultComponentDescriptor<Role> cd2 = new DefaultComponentDescriptor<Role>();
-        cd2.setRole(Role.class);
+        cd2.setRoleType(Role.class);
         cd2.setRoleHint("hint2");
         cd2.setImplementation(RoleImpl.class);
         cm.registerComponent(cd2);

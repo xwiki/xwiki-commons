@@ -72,9 +72,9 @@
 
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
-    <junit5.version>5.0.2</junit5.version>
-    <junit.platform.version>1.0.2</junit.platform.version>
-    <junit.vintage.version>4.12.2</junit.vintage.version>
+    <junit5.version>5.0.3</junit5.version>
+    <junit.platform.version>1.0.3</junit.platform.version>
+    <junit.vintage.version>4.12.3</junit.vintage.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
@@ -115,8 +115,17 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Functional UI tests should not check if an XWiki instance is already running before starting XWiki since
-         performing this check would delay the build and there should be no running instance when the build executes -->
+    <!-- When this property is set to true then functional tests will check if an XWiki instance is already running
+         before trying to start XWiki and if so, reuse it and don't start XWiki. This is useful for example when you
+         wish to manually execute functional tests on your machine and start XWiki manually rather than XWiki being
+         started by the tests.
+
+         When this property is set to false, then verify if some XWiki instance is already running by verifying if the
+         port is free and fail if so. Otherwise start XWiki.
+
+         By default it's set to false since functional UI tests should not check if an XWiki instance is already
+         running before starting XWiki since performing this check would delay the build and there should be no running
+         instance when the build executes. -->
     <xwiki.test.verifyRunningXWikiAtStart>false</xwiki.test.verifyRunningXWikiAtStart>
 
     <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
@@ -301,12 +310,12 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.4.8</version>
+        <version>4.4.9</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
-        <version>4.4.8</version>
+        <version>4.4.9</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -1407,6 +1416,7 @@
             </includes>
             <systemProperties>
               <property>
+                <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
                 <name>xwiki.test.verifyRunningXWikiAtStart</name>
                 <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
               </property>
@@ -1498,7 +1508,7 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>aspectj-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.10</version>
+          <version>1.11</version>
           <configuration>
             <complianceLevel>${java.version}</complianceLevel>
             <source>${java.version}</source>
