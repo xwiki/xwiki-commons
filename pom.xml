@@ -115,8 +115,17 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Functional UI tests should not check if an XWiki instance is already running before starting XWiki since
-         performing this check would delay the build and there should be no running instance when the build executes -->
+    <!-- When this property is set to true then functional tests will check if an XWiki instance is already running
+         before trying to start XWiki and if so, reuse it and don't start XWiki. This is useful for example when you
+         wish to manually execute functional tests on your machine and start XWiki manually rather than XWiki being
+         started by the tests.
+
+         When this property is set to false, then verify if some XWiki instance is already running by verifying if the
+         port is free and fail if so. Otherwise start XWiki.
+
+         By default it's set to false since functional UI tests should not check if an XWiki instance is already
+         running before starting XWiki since performing this check would delay the build and there should be no running
+         instance when the build executes. -->
     <xwiki.test.verifyRunningXWikiAtStart>false</xwiki.test.verifyRunningXWikiAtStart>
 
     <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
@@ -1407,6 +1416,7 @@
             </includes>
             <systemProperties>
               <property>
+                <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
                 <name>xwiki.test.verifyRunningXWikiAtStart</name>
                 <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
               </property>
