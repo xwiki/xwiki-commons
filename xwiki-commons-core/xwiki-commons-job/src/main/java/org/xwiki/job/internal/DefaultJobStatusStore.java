@@ -374,7 +374,8 @@ public class DefaultJobStatusStore implements JobStatusStore, Initializable
             }
 
             // Only store Serializable job status on file system
-            if (status.getClass().isAnnotationPresent(Serializable.class) || status instanceof java.io.Serializable) {
+            if (status.isSerialized() && status.getClass().isAnnotationPresent(Serializable.class)
+                || status instanceof java.io.Serializable) {
                 if (async) {
                     this.executorService.execute(new JobStatusSerializerRunnable(status));
                 } else {

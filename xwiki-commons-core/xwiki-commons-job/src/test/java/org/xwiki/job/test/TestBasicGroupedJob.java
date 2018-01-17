@@ -189,6 +189,20 @@ public class TestBasicGroupedJob implements GroupedJob, JobStatus
     }
 
     @Override
+    public boolean isIsolated()
+    {
+        // Not implemented
+        return true;
+    }
+
+    @Override
+    public boolean isSerialized()
+    {
+        // Not implemented
+        return true;
+    }
+
+    @Override
     @Deprecated
     public List<LogEvent> getLog(LogLevel level)
     {

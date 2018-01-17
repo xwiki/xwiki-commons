@@ -155,6 +155,28 @@
               "revapi": {
                 "ignore" : [
                   // Add more ignores below...
+                  {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.job.AbstractRequest.serialVersionUID",
+                    "new": "field org.xwiki.job.AbstractRequest.serialVersionUID",
+                    "serialVersionUID": "1",
+                    "package": "org.xwiki.job",
+                    "classSimpleName": "AbstractRequest",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "Not a breackage in this context"
+                  },
+                  {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.job.DefaultRequest.serialVersionUID",
+                    "new": "field org.xwiki.job.DefaultRequest.serialVersionUID",
+                    "serialVersionUID": "1",
+                    "package": "org.xwiki.job",
+                    "classSimpleName": "DefaultRequest",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "Not a breackage in this context"
+                  }
                 ]
               }
             }
