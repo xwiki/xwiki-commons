@@ -176,6 +176,50 @@
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
                     "justification": "Not a breackage in this context"
+                  },
+                  {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.extension.job.AbstractExtensionRequest.serialVersionUID",
+                    "new": "field org.xwiki.extension.job.AbstractExtensionRequest.serialVersionUID",
+                    "serialVersionUID": "1",
+                    "package": "org.xwiki.extension.job",
+                    "classSimpleName": "AbstractExtensionRequest",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "Not a breackage in this context"
+                  },
+                  {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.extension.job.InstallRequest.serialVersionUID",
+                    "new": "field org.xwiki.extension.job.InstallRequest.serialVersionUID",
+                    "serialVersionUID": "1",
+                    "package": "org.xwiki.extension.job",
+                    "classSimpleName": "InstallRequest",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "Not a breackage in this context"
+                  },
+                  {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.extension.job.UninstallRequest.serialVersionUID",
+                    "new": "field org.xwiki.extension.job.UninstallRequest.serialVersionUID",
+                    "serialVersionUID": "1",
+                    "package": "org.xwiki.extension.job",
+                    "classSimpleName": "UninstallRequest",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "Not a breackage in this context"
+                  },
+                  {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.extension.job.history.ReplayRequest.serialVersionUID",
+                    "new": "field org.xwiki.extension.job.history.ReplayRequest.serialVersionUID",
+                    "serialVersionUID": "1",
+                    "package": "org.xwiki.extension.job.history",
+                    "classSimpleName": "ReplayRequest",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "Not a breackage in this context"
                   }
                 ]
               }
