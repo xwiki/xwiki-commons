@@ -220,6 +220,17 @@
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
                     "justification": "Not a breackage in this context"
+                  },
+                  {
+                    "code": "java.field.serialVersionUIDUnchanged",
+                    "old": "field org.xwiki.filter.job.FilterStreamConverterJobRequest.serialVersionUID",
+                    "new": "field org.xwiki.filter.job.FilterStreamConverterJobRequest.serialVersionUID",
+                    "serialVersionUID": "1",
+                    "package": "org.xwiki.filter.job",
+                    "classSimpleName": "FilterStreamConverterJobRequest",
+                    "fieldName": "serialVersionUID",
+                    "elementKind": "field",
+                    "justification": "Not a breackage in this context"
                   }
                 ]
               }
