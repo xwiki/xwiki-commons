@@ -127,6 +127,19 @@ public class DefaultDiffManager implements DiffManager
 
             if (patchCurrent.isEmpty()) {
                 mergeResult.setMerged(next);
+<<<<<<< HEAD
+=======
+            } else if (isFullyModified(commonAncestor, patchCurrent)) {
+                // If current is completely modified compared to the common ancestor we assume any change in next is
+                // a conflict
+                // ... except if the current content is similar to the next one!
+                if (!current.equals(next)) {
+                    Delta<E> deltaNext = nextElement(patchNext);
+                    Delta<E> deltaCurrent = nextElement(patchCurrent);
+                    logConflict(mergeResult, deltaCurrent, deltaNext);
+                }
+                mergeResult.setMerged(fallback(commonAncestor, next, current, configuration));
+>>>>>>> 75dab6de6... XCOMMONS-1342: Bad merge when all previous content is replaced in the current version.
             } else {
                 merge(mergeResult, commonAncestor, patchNext, patchCurrent, configuration);
             }
