@@ -185,6 +185,17 @@ public class DefaultDiffManager implements DiffManager
 
         mergeResult.setMerged(merged);
 
+        // It does not make sense to merge if the user has manually removed all the content that was previously there.
+        // It means she has probably customized the elements, and a merge would be a pain to her.
+        if (userHasRemovedAllPreviousContent(commonAncestor, patchCurrent)) {
+            Delta<E> deltaNext = nextElement(patchNext);
+            Delta<E> deltaCurrent = nextElement(patchCurrent);
+
+            logConflict(mergeResult, deltaCurrent, deltaNext);
+            fallback(commonAncestor, deltaNext, deltaCurrent, merged, 0, configuration);
+            return;
+        }
+
         Delta<E> deltaNext = nextElement(patchNext);
         Delta<E> deltaCurrent = nextElement(patchCurrent);
 
@@ -356,5 +367,17 @@ public class DefaultDiffManager implements DiffManager
     private <E> boolean isPreviousIndex(Delta<E> delta, int index)
     {
         return delta != null && delta.getPrevious().getIndex() == index;
+    }
+
+    /**
+     * Check if users has already replaced all the content of the previous version with its own content.
+     *
+     * @param <E> the type of compared elements
+     * @param commonAncestor previous version
+     * @param patchCurrent patch to the current version
+     * @return either or not the user has changed everything
+     */
+    private <E> boolean userHasRemovedAllPreviousContent(List commonAncestor, Patch<E> patchCurrent) {
+        return patchCurrent.size() == 1 && commonAncestor.size() == patchCurrent.get(0).getPrevious().size();
     }
 }
