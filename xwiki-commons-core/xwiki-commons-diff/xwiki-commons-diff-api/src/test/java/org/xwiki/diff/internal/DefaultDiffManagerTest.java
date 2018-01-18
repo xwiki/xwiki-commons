@@ -264,28 +264,28 @@ public class DefaultDiffManagerTest
         Assert.assertEquals(toCharacters("aijb"), result.getMerged());
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters(""), toCharacters("ab"), toCharacters("abc"), null);
+            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("ab d"), toCharacters("abc d"), null);
 
         Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        Assert.assertEquals(toCharacters("abc d"), result.getMerged());
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters(""), toCharacters("abc"), toCharacters("ab"), null);
+            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("abc d"), toCharacters("ab d"), null);
 
         Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        Assert.assertEquals(toCharacters("abc d"), result.getMerged());
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters(""), toCharacters("bc"), toCharacters("abc"), null);
+            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("bcd"), toCharacters("abcd"), null);
 
         Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        Assert.assertEquals(toCharacters("abcd"), result.getMerged());
 
         result =
-            this.mocker.getComponentUnderTest().merge(toCharacters(""), toCharacters("abc"), toCharacters("bc"), null);
+            this.mocker.getComponentUnderTest().merge(toCharacters("d"), toCharacters("abcd"), toCharacters("bcd"), null);
 
         Assert.assertEquals(0, result.getLog().getLogs(LogLevel.ERROR).size());
-        Assert.assertEquals(toCharacters("abc"), result.getMerged());
+        Assert.assertEquals(toCharacters("abcd"), result.getMerged());
 
         // Misc
 
@@ -353,5 +353,25 @@ public class DefaultDiffManagerTest
 
         Assert.assertEquals(1, result.getLog().getLogs(LogLevel.ERROR).size());
         Assert.assertEquals(toCharacters("b"), result.getMerged());
+    }
+
+    @Test
+    public void testMergeWhenUserHasChangedAllContent() throws Exception
+    {
+        MergeResult<String> result;
+
+        // Test 1: All content has changed between previous and current
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+                Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+                Arrays.asList("New content", "That is completely different"), null);
+
+        Assert.assertEquals(Arrays.asList("New content", "That is completely different"), result.getMerged());
+
+        // Test 2: All content has been deleted between previous and current
+        result = mocker.getComponentUnderTest().merge(Arrays.asList("Line 1", "Line 2", "Line 3"),
+                Arrays.asList("Line 1", "Line 2 modified", "Line 3", "Line 4 Added"),
+                Collections.emptyList(), null);
+
+        Assert.assertEquals(Collections.emptyList(), result.getMerged());
     }
 }
