@@ -76,6 +76,13 @@
     <junit.platform.version>1.0.3</junit.platform.version>
     <junit.vintage.version>4.12.3</junit.vintage.version>
 
+    <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
+         are executed with surefire or failsafe) -->
+    <!-- TODO: We need to use 2.19.1 currently and not move to 2.20 since that one is incompatible with
+     JUnit5 (causing OOMs). Note that 2.20.1 isn't working either. Upgrade and remove this todo once
+     a new version of Surefire is released and works for us -->
+    <surefire.version>2.19.1</surefire.version>
+
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
     <mockito.version>2.13.0</mockito.version>
@@ -1404,10 +1411,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <!-- TODO: We need to use 2.19.1 currently and not move to 2.20 since that one is incompatible with
-               JUnit5 (causing OOMs). Note that 2.20.1 isn't working either. Upgrade and remove this todo once
-               a new version of Surefire is released and works for us -->
-          <version>2.19.1</version>
+          <version>${surefire.version}</version>
           <!-- XWiki rule is to put test in *Test classes -->
           <configuration>
             <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
@@ -1415,6 +1419,7 @@
             <includes>
               <include>**/*Test.class</include>
             </includes>
+            <!-- TODO: Remove this property once all functional tests have been moved to use the failsafe plugin -->
             <systemProperties>
               <property>
                 <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
@@ -1446,7 +1451,50 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.20.1</version>
+          <version>${surefire.version}</version>
+          <configuration>
+            <!-- By default we want to make sure we only run AllITs since that runs all the tests, and
+                 starting/stopping XWiki only once for the whole suite -->
+            <includes>
+              <include>**/AllITs.java</include>
+            </includes>
+            <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
+            <trimStackTrace>false</trimStackTrace>
+            <systemProperties>
+              <property>
+                <!-- See description of the "xwiki.test.verifyRunningXWikiAtStart" property above. -->
+                <name>xwiki.test.verifyRunningXWikiAtStart</name>
+                <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
+              </property>
+            </systemProperties>
+          </configuration>
+          <dependencies>
+            <!-- Allow running both JUnit4 and JUnit5 tests -->
+            <dependency>
+              <groupId>org.junit.platform</groupId>
+              <artifactId>junit-platform-surefire-provider</artifactId>
+              <version>${junit.platform.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.junit.jupiter</groupId>
+              <artifactId>junit-jupiter-engine</artifactId>
+              <version>${junit5.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.junit.vintage</groupId>
+              <artifactId>junit-vintage-engine</artifactId>
+              <version>${junit.vintage.version}</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>functional-tests</id>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
