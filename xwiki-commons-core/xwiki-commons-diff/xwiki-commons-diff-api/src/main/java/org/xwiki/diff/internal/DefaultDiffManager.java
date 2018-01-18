@@ -195,17 +195,6 @@ public class DefaultDiffManager implements DiffManager
 
         mergeResult.setMerged(merged);
 
-        // It does not make sense to merge if the user has manually removed all the content that was previously there.
-        // It means she has probably customized the elements, and a merge would be a pain to her.
-        if (userHasRemovedAllPreviousContent(commonAncestor, patchCurrent)) {
-            Delta<E> deltaNext = nextElement(patchNext);
-            Delta<E> deltaCurrent = nextElement(patchCurrent);
-
-            logConflict(mergeResult, deltaCurrent, deltaNext);
-            fallback(commonAncestor, deltaNext, deltaCurrent, merged, 0, configuration);
-            return;
-        }
-
         Delta<E> deltaNext = nextElement(patchNext);
         Delta<E> deltaCurrent = nextElement(patchCurrent);
 
