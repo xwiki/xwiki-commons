@@ -127,6 +127,16 @@ public class DefaultDiffManager implements DiffManager
 
             if (patchCurrent.isEmpty()) {
                 mergeResult.setMerged(next);
+            } else if (isFullyModified(commonAncestor, patchCurrent)) {
+                // If current is completely modified compared to the common ancestor we assume any change in next is
+                // a conflict
+                // ... except if the current content is identical to the next one!
+                if (!current.equals(next)) {
+                    Delta<E> deltaNext = nextElement(patchNext);
+                    Delta<E> deltaCurrent = nextElement(patchCurrent);
+                    logConflict(mergeResult, deltaCurrent, deltaNext);
+                }
+                mergeResult.setMerged(fallback(commonAncestor, next, current, configuration));
             } else {
                 merge(mergeResult, commonAncestor, patchNext, patchCurrent, configuration);
             }
@@ -135,8 +145,28 @@ public class DefaultDiffManager implements DiffManager
         return mergeResult;
     }
 
+    private <E> List<E> fallback(List<E> commonAncestor, List<E> next, List<E> current,
+            MergeConfiguration<E> configuration)
+    {
+        Version fallbackVersion;
+        if (configuration != null) {
+            fallbackVersion = configuration.getFallbackOnConflict();
+        } else {
+            fallbackVersion = Version.CURRENT;
+        }
+
+        switch (fallbackVersion) {
+            case NEXT:
+                return next;
+            case PREVIOUS:
+                return commonAncestor;
+            default:
+                return current;
+        }
+    }
+
     private <E> int fallback(List<E> commonAncestor, Delta<E> deltaNext, Delta<E> deltaCurrent, List<E> merged,
-        int currentIndex, MergeConfiguration<E> configuration)
+            int currentIndex, MergeConfiguration<E> configuration)
     {
         int newIndex = currentIndex;
 
@@ -356,5 +386,17 @@ public class DefaultDiffManager implements DiffManager
     private <E> boolean isPreviousIndex(Delta<E> delta, int index)
     {
         return delta != null && delta.getPrevious().getIndex() == index;
+    }
+
+    /**
+     * Check if the content is completely different between the ancestor and the current version
+     *
+     * @param <E> the type of compared elements
+     * @param commonAncestor previous version
+     * @param patchCurrent patch to the current version
+     * @return either or not the user has changed everything
+     */
+    private <E> boolean isFullyModified(List commonAncestor, Patch<E> patchCurrent) {
+        return patchCurrent.size() == 1 && commonAncestor.size() == patchCurrent.get(0).getPrevious().size();
     }
 }
