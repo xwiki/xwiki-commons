@@ -130,9 +130,12 @@ public class DefaultDiffManager implements DiffManager
             } else if (isFullyModified(commonAncestor, patchCurrent)) {
                 // If current is completely modified compared to the common ancestor we assume any change in next is
                 // a conflict
-                Delta<E> deltaNext = nextElement(patchNext);
-                Delta<E> deltaCurrent = nextElement(patchCurrent);
-                logConflict(mergeResult, deltaCurrent, deltaNext);
+                // ... except if the current content is similar to the next one!
+                if (!current.equals(next)) {
+                    Delta<E> deltaNext = nextElement(patchNext);
+                    Delta<E> deltaCurrent = nextElement(patchCurrent);
+                    logConflict(mergeResult, deltaCurrent, deltaNext);
+                }
                 mergeResult.setMerged(fallback(commonAncestor, next, current, configuration));
             } else {
                 merge(mergeResult, commonAncestor, patchNext, patchCurrent, configuration);
