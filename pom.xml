@@ -1404,7 +1404,9 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.20.1</version>
+          <!-- TODO: We need to use 2.19.1 currently and not move to 2.20 since that one is incompatible with
+               JUnit5 (causing OOMs). This is fixed in Surefire 2.20.1. Upgrade and remove this todo once it's out -->
+          <version>2.19.1</version>
           <!-- XWiki rule is to put test in *Test classes -->
           <configuration>
             <!-- We want to show nested stack traces to see what is the real problem when a test fails! -->
