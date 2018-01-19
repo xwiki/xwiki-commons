@@ -36,7 +36,8 @@ stage ('Commons Builds') {
         xwikiBuild('Main') {
           mavenOpts = globalMavenOpts
           profiles = 'legacy,integration-tests'
-          properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
+          systemProperties =
+            '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
         }
       }
     },
@@ -47,7 +48,7 @@ stage ('Commons Builds') {
           mavenOpts = globalMavenOpts
           goals = 'clean install'
           profiles = 'legacy,integration-tests'
-          properties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true'
+          systemProperties = '-DskipTests -DperformRelease=true -Dgpg.skip=true -Dxwiki.checkstyle.skip=true'
         }
       }
     },
