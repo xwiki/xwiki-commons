@@ -209,7 +209,7 @@ public abstract class AbstractRequest implements Request
     }
 
     /**
-     * @param statusLogIsolated true if the log should be isolated from standard output, null to fallbacl on
+     * @param statusLogIsolated true if the log should be isolated from standard output, null to fallback on
      *            {@link JobStatus#isIsolated()}
      * @since 10.0RC1
      */
