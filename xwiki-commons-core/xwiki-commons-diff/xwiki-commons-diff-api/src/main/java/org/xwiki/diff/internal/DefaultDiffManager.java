@@ -145,8 +145,28 @@ public class DefaultDiffManager implements DiffManager
         return mergeResult;
     }
 
+    private <E> List<E> fallback(List<E> commonAncestor, List<E> next, List<E> current,
+            MergeConfiguration<E> configuration)
+    {
+        Version fallbackVersion;
+        if (configuration != null) {
+            fallbackVersion = configuration.getFallbackOnConflict();
+        } else {
+            fallbackVersion = Version.CURRENT;
+        }
+
+        switch (fallbackVersion) {
+            case NEXT:
+                return next;
+            case PREVIOUS:
+                return commonAncestor;
+            default:
+                return current;
+        }
+    }
+
     private <E> int fallback(List<E> commonAncestor, Delta<E> deltaNext, Delta<E> deltaCurrent, List<E> merged,
-        int currentIndex, MergeConfiguration<E> configuration)
+            int currentIndex, MergeConfiguration<E> configuration)
     {
         int newIndex = currentIndex;
 
@@ -369,14 +389,14 @@ public class DefaultDiffManager implements DiffManager
     }
 
     /**
-     * Check if users has already replaced all the content of the previous version with its own content.
+     * Check if the content is completely different between the ancestor and the current version
      *
      * @param <E> the type of compared elements
      * @param commonAncestor previous version
      * @param patchCurrent patch to the current version
      * @return either or not the user has changed everything
      */
-    private <E> boolean userHasRemovedAllPreviousContent(List commonAncestor, Patch<E> patchCurrent) {
+    private <E> boolean isFullyModified(List commonAncestor, Patch<E> patchCurrent) {
         return patchCurrent.size() == 1 && commonAncestor.size() == patchCurrent.get(0).getPrevious().size();
     }
 }
