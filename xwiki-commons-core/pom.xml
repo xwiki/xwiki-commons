@@ -164,7 +164,7 @@
                     "classSimpleName": "AbstractRequest",
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
-                    "justification": "Not a breackage in this context"
+                    "justification": "Not a breakage in this context"
                   },
                   {
                     "code": "java.field.serialVersionUIDUnchanged",
@@ -175,7 +175,7 @@
                     "classSimpleName": "DefaultRequest",
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
-                    "justification": "Not a breackage in this context"
+                    "justification": "Not a breakage in this context"
                   },
                   {
                     "code": "java.field.serialVersionUIDUnchanged",
@@ -186,7 +186,7 @@
                     "classSimpleName": "AbstractExtensionRequest",
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
-                    "justification": "Not a breackage in this context"
+                    "justification": "Not a breakage in this context"
                   },
                   {
                     "code": "java.field.serialVersionUIDUnchanged",
@@ -197,7 +197,7 @@
                     "classSimpleName": "InstallRequest",
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
-                    "justification": "Not a breackage in this context"
+                    "justification": "Not a breakage in this context"
                   },
                   {
                     "code": "java.field.serialVersionUIDUnchanged",
@@ -208,7 +208,7 @@
                     "classSimpleName": "UninstallRequest",
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
-                    "justification": "Not a breackage in this context"
+                    "justification": "Not a breakage in this context"
                   },
                   {
                     "code": "java.field.serialVersionUIDUnchanged",
@@ -219,7 +219,7 @@
                     "classSimpleName": "ReplayRequest",
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
-                    "justification": "Not a breackage in this context"
+                    "justification": "Not a breakage in this context"
                   },
                   {
                     "code": "java.field.serialVersionUIDUnchanged",
@@ -230,7 +230,7 @@
                     "classSimpleName": "FilterStreamConverterJobRequest",
                     "fieldName": "serialVersionUID",
                     "elementKind": "field",
-                    "justification": "Not a breackage in this context"
+                    "justification": "Not a breakage in this context"
                   }
                 ]
               }
