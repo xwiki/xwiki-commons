@@ -39,6 +39,9 @@ stage ('Commons Builds') {
           properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
         }
       }
+
+      // If the "main" build has succeeded then trigger the rendering pipeline
+      build job: "../xwiki-rendering/${env.BRANCH_NAME}", wait: false
     },
     'testrelease': {
       node {
@@ -74,6 +77,11 @@ stage ('Commons Builds') {
       }
     }
   )
+
+  // If the job is successful, trigger the rendering job
+  if (currentBuild.result == 'SUCCESS') {
+    build job: "../xwiki-rendering/${env.BRANCH_NAME}", wait: false
+  }
 }
 
 
