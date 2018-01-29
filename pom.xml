@@ -1625,12 +1625,12 @@
           <!-- There seems to be a regression in revapi plugin 0.10.0.
                See https://github.com/revapi/revapi/issues/114#issuecomment-359722131.
           -->
-          <version>0.9.5</version>
+          <version>0.10.0</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.14.4</version>
+              <version>0.15.1</version>
             </dependency>
           </dependencies>
           <executions>
