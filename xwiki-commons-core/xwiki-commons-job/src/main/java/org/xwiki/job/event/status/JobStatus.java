@@ -151,7 +151,7 @@ public interface JobStatus
 
     /**
      * @return true if the job status should be serialized
-     * @since 10.0RC1
+     * @since 10.0
      */
     default boolean isSerialized()
     {
@@ -160,7 +160,7 @@ public interface JobStatus
 
     /**
      * @return true if the log should be isolated from standard output
-     * @since 10.0RC1
+     * @since 10.0
      */
     default boolean isIsolated()
     {

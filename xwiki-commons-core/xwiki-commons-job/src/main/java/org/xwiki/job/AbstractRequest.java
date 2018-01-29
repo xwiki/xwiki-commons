@@ -211,7 +211,7 @@ public abstract class AbstractRequest implements Request
     /**
      * @param statusLogIsolated true if the log should be isolated from standard output, null to fallback on
      *            {@link JobStatus#isIsolated()}
-     * @since 10.0RC1
+     * @since 10.0
      */
     public void setStatusLogIsolated(Boolean statusLogIsolated)
     {
@@ -227,7 +227,7 @@ public abstract class AbstractRequest implements Request
     /**
      * @param statusSerialized true if the job status should be serialized, null to fallback on
      *            {@link JobStatus#isSerialized()}
-     * @since 10.0RC1
+     * @since 10.0
      */
     public void setStatusSerialized(Boolean statusSerialized)
     {

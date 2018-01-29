@@ -96,7 +96,7 @@ public interface Request extends Serializable
 
     /**
      * @return true if the job status should be serialized, null to fallback on {@link JobStatus#isSerialized()}
-     * @since 10.0RC1
+     * @since 10.0
      */
     default Boolean isStatusSerialized()
     {
@@ -106,7 +106,7 @@ public interface Request extends Serializable
     /**
      * @return true if the log should be isolated from standard output, null to fallbacl on
      *         {@link JobStatus#isIsolated()}
-     * @since 10.0RC1
+     * @since 10.0
      */
     default Boolean isStatusLogIsolated()
     {

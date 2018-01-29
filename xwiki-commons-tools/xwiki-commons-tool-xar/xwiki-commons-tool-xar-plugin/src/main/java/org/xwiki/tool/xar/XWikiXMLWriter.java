@@ -65,7 +65,7 @@ public class XWikiXMLWriter extends XMLWriter
     /**
      * @param xmlVersion the XML version to set in the declaration
      * @since 9.11.1
-     * @since 10.0RC1
+     * @since 10.0
      */
     public void setVersion(String xmlVersion)
     {
