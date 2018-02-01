@@ -45,6 +45,8 @@ public class RepositoryUtils
 
     protected static final String MAVEN2REPOSITORY_ID = "test-maven2";
 
+    protected static final String MAVENUNKNWONREPOSITORY_ID = "test-mavenunknown";
+
     protected final File permanentDirectory;
 
     protected final File temporaryDirectory;
@@ -56,6 +58,8 @@ public class RepositoryUtils
     protected final File mavenRepositoryRoot;
 
     protected final File maven2RepositoryRoot;
+
+    protected final File mavenUnknownRepositoryRoot;
 
     protected final File remoteRepositoryRoot;
 
@@ -73,6 +77,7 @@ public class RepositoryUtils
 
         this.mavenRepositoryRoot = new File(testDirectory, "maven/");
         this.maven2RepositoryRoot = new File(testDirectory, "maven2/");
+        this.mavenUnknownRepositoryRoot = new File(testDirectory, "mavenunknown/");
         this.remoteRepositoryRoot = new File(testDirectory, "remote/");
 
         Map<String, RepositorySerializer> repositories = new HashMap<String, RepositorySerializer>();
@@ -125,12 +130,22 @@ public class RepositoryUtils
         return this.maven2RepositoryRoot;
     }
 
+    public File getMavenUnknownRepository()
+    {
+        return this.mavenUnknownRepositoryRoot;
+    }
+
     public String getMavenRepositoryId()
     {
         return MAVENREPOSITORY_ID;
     }
 
     public String getMaven2RepositoryId()
+    {
+        return MAVEN2REPOSITORY_ID;
+    }
+
+    public String getMavenUnknown()
     {
         return MAVEN2REPOSITORY_ID;
     }
@@ -147,6 +162,7 @@ public class RepositoryUtils
         copyResourceFolder(getLocalRepository(), "repository.local");
         copyResourceFolder(getMavenRepository(), "repository.maven");
         copyResourceFolder(getMaven2Repository(), "repository.maven2");
+        copyResourceFolder(getMaven2Repository(), "repository.mavenunknown");
 
         // generated extensions
 
