@@ -1656,7 +1656,7 @@
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.5.3</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <groupId>org.openclover</groupId>
