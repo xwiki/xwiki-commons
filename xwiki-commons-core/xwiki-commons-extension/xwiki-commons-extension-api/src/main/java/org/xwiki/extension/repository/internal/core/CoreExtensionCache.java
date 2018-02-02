@@ -121,12 +121,9 @@ public class CoreExtensionCache implements Initializable
 
         if (file.exists()) {
             try (FileInputStream stream = new FileInputStream(file)) {
-                DefaultCoreExtension coreExtension =
-                    this.serializer.loadCoreExtensionDescriptor(repository, descriptorURL, stream);
-
-                return coreExtension;
+                return this.serializer.loadCoreExtensionDescriptor(repository, descriptorURL, stream);
             } catch (Exception e) {
-                this.logger.warn("Failed to parse cached core extension", e);
+                this.logger.warn("Failed to parse cached core extension descriptor [{}]", descriptorURL, e);
             }
         }
 
