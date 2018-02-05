@@ -24,13 +24,14 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.Extension;
-import org.xwiki.extension.maven.internal.converter.ModelConverter;
+import org.xwiki.extension.ExtensionDependency;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.internal.DefaultConverterManager;
@@ -39,6 +40,7 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Validate {@link ModelConverter} component.
@@ -67,6 +69,12 @@ public class ModelConverterTest
         repository.setId("repository-id");
         repository.setUrl("http://url");
         model.addRepository(repository);
+        Dependency dependency = new Dependency();
+        dependency.setGroupId("dgroupid");
+        dependency.setArtifactId("dartifactId");
+        dependency.setVersion("1.0");
+        dependency.setOptional(true);
+        model.addDependency(dependency);
 
         Extension extension = this.mocker.getComponentUnderTest().convert(Extension.class, model);
 
@@ -80,6 +88,9 @@ public class ModelConverterTest
         assertEquals(
             Arrays.asList(new DefaultExtensionRepositoryDescriptor("repository-id", "maven", new URI("http://url"))),
             extension.getRepositories());
+        assertEquals(1, extension.getDependencies().size());
+        ExtensionDependency extensionDependency = extension.getDependencies().iterator().next();
+        assertTrue(extensionDependency.isOptional());
     }
 
     @Test

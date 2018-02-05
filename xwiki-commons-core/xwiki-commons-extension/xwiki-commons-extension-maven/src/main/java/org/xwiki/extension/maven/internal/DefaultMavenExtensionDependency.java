@@ -45,13 +45,6 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
     public static final String PKEY_MAVEN_DEPENDENCY_SCOPE = "maven.dependency.scope";
 
     /**
-     * The key associated to the Maven dependency object.
-     * 
-     * @since 8.1M1
-     */
-    public static final String PKEY_MAVEN_DEPENDENCY_OPTIONAL = "maven.dependency.optional";
-
-    /**
      * Create new instance by cloning the provided one.
      *
      * @param dependency the extension dependency to copy
@@ -86,16 +79,6 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
         return (String) dependency.getProperty(PKEY_MAVEN_DEPENDENCY_SCOPE);
     }
 
-    /**
-     * @param dependency the generic dependency
-     * @return true is the dependency is optional
-     * @since 8.1M1
-     */
-    public static boolean isOptional(ExtensionDependency dependency)
-    {
-        return dependency.getProperty(PKEY_MAVEN_DEPENDENCY_OPTIONAL, false);
-    }
-
     @Override
     public Dependency getMavenDependency()
     {
@@ -106,11 +89,5 @@ public class DefaultMavenExtensionDependency extends DefaultExtensionDependency 
     public String getScope()
     {
         return getScope(this);
-    }
-
-    @Override
-    public boolean isOptional()
-    {
-        return isOptional(this);
     }
 }
