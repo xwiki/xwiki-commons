@@ -40,10 +40,4 @@ public interface MavenExtensionDependency extends ExtensionDependency
      * @since 8.1M1
      */
     String getScope();
-
-    /**
-     * @return true is the dependency is optional
-     * @since 8.1M1
-     */
-    boolean isOptional();
 }
