@@ -1000,6 +1000,11 @@
         <artifactId>hibernate-validator</artifactId>
         <version>6.0.7.Final</version>
       </dependency>
+      <dependency>
+        <groupId>javax.el</groupId>
+        <artifactId>javax.el-api</artifactId>
+        <version>3.0.0</version>
+      </dependency>
       <!-- Mail -->
       <dependency>
         <groupId>com.sun.mail</groupId>
