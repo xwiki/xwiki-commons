@@ -109,6 +109,7 @@
     <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
+    <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
@@ -1173,6 +1174,27 @@
                   <excludes>
                     <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                     <exclude>com.sun.xml.bind:jaxb-core</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using Open JSON and not JSON-Java -->
+          <execution>
+            <id>enforce-open-json</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-open-json.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Use Open JSON which has a less fuzzy license
+                  </message>
+                  <excludes>
+                    <exclude>org.json:json</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
