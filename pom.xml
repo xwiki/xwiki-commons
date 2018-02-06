@@ -107,9 +107,10 @@
     <xwiki.enforcer.enforce-plugins.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-plugins.skip>
     <xwiki.enforcer.enforce-jcl-log4j-isolation.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-jcl-log4j-isolation.skip>
     <xwiki.enforcer.enforce-glasshfish-jaxb.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glasshfish-jaxb.skip>
+    <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
+    <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
-    <xwiki.enforcer.enforce-open-json.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-open-json.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
@@ -1195,6 +1196,27 @@
                   </message>
                   <excludes>
                     <exclude>org.json:json</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Embbed javax.el:javax.el-api -->
+          <execution>
+            <id>enforce-glassfish-el</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-glassfish-el.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Glasshfish EL embbed javax.el:javax.el-api
+                  </message>
+                  <excludes>
+                    <exclude>javax.el:javax.el-api</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
