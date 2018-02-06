@@ -557,10 +557,11 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- Replace org.json:json for license reasons -->
       <dependency>
-        <groupId>org.json</groupId>
+        <groupId>com.tdunning</groupId>
         <artifactId>json</artifactId>
-        <version>20180130</version>
+        <version>1.8</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>

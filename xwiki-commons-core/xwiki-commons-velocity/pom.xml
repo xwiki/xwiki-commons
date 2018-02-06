@@ -124,7 +124,7 @@
     </dependency>
     <dependency>
       <!-- Used by JSONTool -->
-      <groupId>org.json</groupId>
+      <groupId>com.tdunning</groupId>
       <artifactId>json</artifactId>
     </dependency>
     <!-- Used by URLTool -->
