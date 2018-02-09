@@ -27,6 +27,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 /**
@@ -122,6 +123,11 @@ public class XWikiDocument
     private boolean containsTranslations;
 
     /**
+     * @see #getTranslationVisibilities()
+     */
+    private List<String> translationVisibilities = new ArrayList<>();
+
+    /**
      * Parse XML file to extract document information.
      *
      * @param file the xml file
@@ -195,6 +201,12 @@ public class XWikiDocument
         // Does this document contain a XWiki.TranslationDocumentClass xobject?
         if (rootElement.selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']").size() > 0) {
             this.containsTranslations = true;
+            // Record the visibility
+            for (Node node : rootElement.selectNodes(
+                "//object/className[text() = 'XWiki.TranslationDocumentClass']/../property/scope"))
+            {
+                this.translationVisibilities.add(node.getStringValue());
+            }
         }
     }
 
@@ -373,6 +385,16 @@ public class XWikiDocument
     public boolean containsTranslations()
     {
         return this.containsTranslations;
+    }
+
+    /**
+     * @return the list of Translation xobject visibilities (WIKI, USER, GLOBAL, etc) and an empty list if no
+     *         translation exist on this page
+     * @since 10.1RC1
+     */
+    public List<String> getTranslationVisibilities()
+    {
+        return this.translationVisibilities;
     }
 
     /**
