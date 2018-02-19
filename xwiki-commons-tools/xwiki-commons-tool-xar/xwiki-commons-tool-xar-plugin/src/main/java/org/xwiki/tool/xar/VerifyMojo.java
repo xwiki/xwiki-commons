@@ -68,6 +68,14 @@ public class VerifyMojo extends AbstractVerifyMojo
     @Parameter(property = "xar.verify.skip", defaultValue = "false")
     private boolean skip;
 
+    /**
+     * Disables the plugin execution.
+     *
+     * @since 4.3M1
+     */
+    @Parameter(property = "xar.verify.translationVisibility.skip", defaultValue = "false")
+    private boolean translationVisibilitySkip;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
     {
@@ -152,7 +160,7 @@ public class VerifyMojo extends AbstractVerifyMojo
             }
 
             // Verification 11: Verify that Translations documents don't use GLOBAL or USER visibility
-            if (xdoc.containsTranslations()) {
+            if (!translationVisibilitySkip && xdoc.containsTranslations()) {
                 for (String visibility : xdoc.getTranslationVisibilities()) {
                     if (visibility.equals("USER") || visibility.equals("GLOBAL")) {
                         errors.add(String.format("[%s] ([%s]) page contains a translation using a wrong visibility "
