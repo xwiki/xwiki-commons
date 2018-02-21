@@ -40,21 +40,32 @@ public final class FileAssert
     private final static DefaultFileAssertComparator DEFAULT_COMPARATOR = new DefaultFileAssertComparator();
 
     static {
-        StringFileAssertComparator stringFileAssertComparator = new StringFileAssertComparator();
+        setStringComparator("txt");
+        setStringComparator("xml");
+        setStringComparator("properties");
 
-        COMPARATORS.put("txt", stringFileAssertComparator);
-        COMPARATORS.put("xml", stringFileAssertComparator);
-        COMPARATORS.put("properties", stringFileAssertComparator);
-
-        ZIPFileAssertComparator zipFileAssertComparator = new ZIPFileAssertComparator();
-
-        COMPARATORS.put("xar", zipFileAssertComparator);
-        COMPARATORS.put("jar", zipFileAssertComparator);
-        COMPARATORS.put("zip", zipFileAssertComparator);
+        setZIPComparator("xar");
+        setZIPComparator("jar");
+        setZIPComparator("zip");
     }
 
     private FileAssert()
     {
+    }
+
+    public static void setComparator(String extension, FileAssertComparator comparator)
+    {
+        COMPARATORS.put(extension, comparator);
+    }
+
+    public static void setStringComparator(String extension)
+    {
+        setComparator(extension, new StringFileAssertComparator());
+    }
+
+    public static void setZIPComparator(String extension)
+    {
+        setComparator(extension, new ZIPFileAssertComparator());
     }
 
     public static FileAssertComparator getComparator(String filename)
