@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * @version $Id$
@@ -37,12 +37,12 @@ public class DefaultFileAssertComparator implements FileAssertComparator
         byte[] expectedBytes = FileUtils.readFileToByteArray(expected);
         byte[] actualBytes = FileUtils.readFileToByteArray(actual);
 
-        Assert.assertArrayEquals(message, expectedBytes, actualBytes);
+        Assertions.assertArrayEquals(expectedBytes, actualBytes, message);
     }
 
     @Override
     public void assertEquals(String message, byte[] expected, byte[] actual)
     {
-        Assert.assertArrayEquals(message, expected, actual);
+        Assertions.assertArrayEquals(expected, actual, message);
     }
 }

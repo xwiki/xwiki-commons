@@ -29,8 +29,8 @@ import java.util.TimeZone;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.filter.FilterException;
@@ -190,7 +190,7 @@ public class FilterTest
     }
 
     private Map<String, Object> toOutputConfiguration(TestConfiguration testConfiguration,
-        ExpectTestConfiguration expectTestConfiguration, InputSource expect) throws FilterException
+        ExpectTestConfiguration expectTestConfiguration, InputSource expect)
     {
         Map<String, Object> outputConfiguration = new HashMap<>();
         for (Map.Entry<String, String> entry : expectTestConfiguration.entrySet()) {
@@ -267,7 +267,7 @@ public class FilterTest
     private void assertExpectedResult(String typeId, InputSource expected, OutputTarget actual) throws IOException
     {
         if (actual instanceof StringWriterOutputTarget) {
-            Assert.assertEquals(expected.toString(), actual.toString());
+            Assertions.assertEquals(expected.toString(), actual.toString());
         } else if (actual instanceof ByteArrayOutputTarget) {
             byte[] actualBytes = ((ByteArrayOutputTarget) actual).toByteArray();
 
@@ -277,11 +277,11 @@ public class FilterTest
                 byte[] expectedBytes = IOUtils.toByteArray(((InputStreamInputSource) expected).getInputStream());
                 expected.close();
 
-                Assert.assertArrayEquals(expectedBytes, actualBytes);
+                Assertions.assertArrayEquals(expectedBytes, actualBytes);
             }
         } else {
             // No idea how to compare that
-            Assert.fail("Output target type [" + actual.getClass() + "] is not supported");
+            Assertions.fail("Output target type [" + actual.getClass() + "] is not supported");
         }
     }
 
