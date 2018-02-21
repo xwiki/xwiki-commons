@@ -33,19 +33,19 @@ import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.version.internal.DefaultVersion;
-import org.xwiki.test.mockito.MockitoComponentManagerRule;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.mockito.ArgumentMatchers.any;
 
 public class MockitoRepositoryUtils extends RepositoryUtils
 {
-    protected final MockitoComponentManagerRule componentManager;
+    protected final MockitoComponentManager componentManager;
 
     private FileExtensionRepository remoteRepository;
 
     private ComponentAnnotationLoader componentLoader;
 
-    public MockitoRepositoryUtils(MockitoComponentManagerRule componentManager)
+    public MockitoRepositoryUtils(MockitoComponentManager componentManager)
     {
         this.componentManager = componentManager;
     }
@@ -101,7 +101,7 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         this.componentManager.<ExtensionInitializer>getInstance(ExtensionInitializer.class);
     }
 
-    public MockitoComponentManagerRule getComponentManager()
+    public MockitoComponentManager getComponentManager()
     {
         return this.componentManager;
     }

@@ -19,15 +19,19 @@
  */
 package org.xwiki.filter.test.integration;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
@@ -41,7 +45,6 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
 /**
- * 
  * @version $Id$
  * @since 6.2M1
  */
@@ -80,7 +83,7 @@ public class FilterTestSuite extends Suite
 
         private final TestConfiguration configuration;
 
-        TestClassRunnerForParameters(Class< ? > type, TestConfiguration configuration) throws InitializationError
+        TestClassRunnerForParameters(Class<?> type, TestConfiguration configuration) throws InitializationError
         {
             super(type);
 
@@ -90,8 +93,8 @@ public class FilterTestSuite extends Suite
         @Override
         public Object createTest() throws Exception
         {
-            return getTestClass().getOnlyConstructor().newInstance(
-                new Object[] {this.configuration, getComponentManager()});
+            return getTestClass().getOnlyConstructor()
+                .newInstance(new Object[] { this.configuration, getComponentManager() });
         }
 
         @Override
@@ -128,36 +131,60 @@ public class FilterTestSuite extends Suite
             initializeComponentManager(notifier);
 
             // Check all methods for a ComponentManager annotation and call the found ones.
-            try {
-                for (Method klassMethod : klassInstance.getClass().getMethods()) {
-                    Initialized componentManagerAnnotation = klassMethod.getAnnotation(Initialized.class);
-                    if (componentManagerAnnotation != null) {
-                        // Call it!
-                        klassMethod.invoke(klassInstance, getComponentManager());
-                    }
-                }
-            } catch (Exception e) {
-                notifier.fireTestFailure(new Failure(getDescription(), new RuntimeException(
-                    "Failed to call Component Manager initialization method", e)));
-            }
+            callMethodWithAnnotation(Initialized.class, notifier, getComponentManager());
+
+            // Run @Before
+            callMethodWithAnnotation(Before.class, notifier);
 
             try {
                 super.runChild(method, notifier);
             } finally {
+                // Run @After
+                callMethodWithAnnotation(After.class, notifier);
+
                 shutdownComponentManager(notifier);
+            }
+        }
+
+        private void callMethodWithAnnotation(Class<? extends Annotation> annotation, RunNotifier notifier,
+            Object... args)
+        {
+            try {
+                for (Method klassMethod : klassInstance.getClass().getMethods()) {
+                    Annotation componentManagerAnnotation = klassMethod.getAnnotation((Class<Annotation>) annotation);
+                    if (componentManagerAnnotation != null) {
+                        // Call it!
+                        klassMethod.invoke(klassInstance, args);
+                    }
+                }
+            } catch (Exception e) {
+                notifier.fireTestFailure(new Failure(getDescription(),
+                    new RuntimeException("Failed to call method with annotation [" + annotation + "]", e)));
             }
         }
 
         private void initializeComponentManager(RunNotifier notifier)
         {
+            // Initialize component manager
             try {
                 this.mockitoComponentManager.initializeTest(klassInstance);
                 this.mockitoComponentManager.registerMemoryConfigurationSource();
             } catch (Exception e) {
-                notifier.fireTestFailure(new Failure(getDescription(), new RuntimeException(
-                    "Failed to initialize Component Manager", e)));
+                notifier.fireTestFailure(
+                    new Failure(getDescription(), new RuntimeException("Failed to initialize Component Manager", e)));
             }
 
+            // Inject component manager
+            for (Field field : klassInstance.getClass().getFields()) {
+                if (field.getType() == MockitoComponentManager.class && field.isAccessible()) {
+                    try {
+                        field.set(klassInstance, this.mockitoComponentManager);
+                    } catch (Exception e) {
+                        notifier.fireTestFailure(new Failure(getDescription(),
+                            new RuntimeException("Failed to inject Component Manager", e)));
+                    }
+                }
+            }
         }
 
         private void shutdownComponentManager(RunNotifier notifier)
@@ -165,12 +192,12 @@ public class FilterTestSuite extends Suite
             try {
                 this.mockitoComponentManager.shutdownTest();
             } catch (Exception e) {
-                notifier.fireTestFailure(new Failure(getDescription(), new RuntimeException(
-                    "Failed to shutdown Component Manager", e)));
+                notifier.fireTestFailure(
+                    new Failure(getDescription(), new RuntimeException("Failed to shutdown Component Manager", e)));
             }
         }
 
-        private ComponentManager getComponentManager() throws Exception
+        private ComponentManager getComponentManager()
         {
             return this.mockitoComponentManager;
         }
@@ -181,9 +208,9 @@ public class FilterTestSuite extends Suite
     /**
      * Only called reflectively. Do not use programmatically.
      */
-    public FilterTestSuite(Class< ? > klass) throws Throwable
+    public FilterTestSuite(Class<?> klass) throws Throwable
     {
-        super(klass, Collections.<Runner> emptyList());
+        super(klass, Collections.<Runner>emptyList());
 
         try {
             this.klassInstance = klass.newInstance();
@@ -214,8 +241,8 @@ public class FilterTestSuite extends Suite
     /**
      * {@inheritDoc}
      * <p>
-     * We override this method so that the JUnit results are not displayed in a test hierarchy with a
-     * single test result for each node (as it would be otherwise since RenderingTest has a single test method).
+     * We override this method so that the JUnit results are not displayed in a test hierarchy with a single test result
+     * for each node (as it would be otherwise since RenderingTest has a single test method).
      * </p>
      */
     @Override
