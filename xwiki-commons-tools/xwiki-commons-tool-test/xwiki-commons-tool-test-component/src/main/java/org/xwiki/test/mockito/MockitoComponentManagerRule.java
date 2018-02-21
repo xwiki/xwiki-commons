@@ -19,13 +19,9 @@
  */
 package org.xwiki.test.mockito;
 
-import java.lang.reflect.Type;
-
-import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.test.ComponentManagerRule;
-
-import static org.mockito.Mockito.mock;
+import org.junit.rules.MethodRule;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
 
 /**
  * JUnit {@link org.junit.rules.MethodRule} to make it extra simple to register Mock Components using Mockito.
@@ -33,79 +29,51 @@ import static org.mockito.Mockito.mock;
  * @version $Id$
  * @since 4.3.1
  */
-public class MockitoComponentManagerRule extends ComponentManagerRule
+public class MockitoComponentManagerRule extends MockitoComponentManager implements MethodRule
 {
-    /**
-     * Registers a Mock component.
-     *
-     * @param roleType the type of the component role to register
-     * @param roleHint the role hint of the component to register
-     * @param <T> the mock
-     * @return the mock
-     * @throws Exception in case of an error during registration
-     */
-    public <T> T registerMockComponent(Type roleType, String roleHint) throws Exception
+    @Override
+    public Statement apply(final Statement base, final FrameworkMethod method, final Object target)
     {
-        return registerMockComponent(roleType, roleHint, true);
-    }
-
-    /**
-     * Registers a Mock component.
-     * <p>
-     * If <code>force</code> is false the method will do nothing if there is already a mock and will return it.
-     *
-     * @param roleType the type of the component role to register
-     * @param roleHint the role hint of the component to register
-     * @param force force registering a new mock even if there is already one
-     * @param <T> the mock
-     * @return the mock
-     * @throws Exception in case of an error during registration
-     * @since 7.2RC1
-     */
-    public <T> T registerMockComponent(Type roleType, String roleHint, boolean force) throws Exception
-    {
-        // Check if the component is already mocked
-        if (!force) {
-            ComponentDescriptor<?> descriptor = getComponentDescriptor(roleType, roleHint);
-
-            if (descriptor != null && descriptor.getImplementation() == null) {
-                return getInstance(roleType, roleHint);
+        return new Statement()
+        {
+            @Override
+            public void evaluate() throws Throwable
+            {
+                before(base, method, target);
+                try {
+                    base.evaluate();
+                } finally {
+                    after(base, method, target);
+                }
             }
-        }
-
-        // Mock the component and register it
-        @SuppressWarnings("unchecked")
-        T mock = (T) mock(ReflectionUtils.getTypeClass(roleType));
-        registerComponent(roleType, roleHint, mock);
-        return mock;
+        };
     }
 
     /**
-     * Registers a Mock component (using the default role hint).
+     * Called before the test.
      *
-     * @param roleType the type of the component role to register
-     * @param <T> the mock
-     * @return the mock
-     * @throws Exception in case of an error during registration
+     * @param base The {@link Statement} to be modified
+     * @param method The method to be run
+     * @param target The object on with the method will be run.
+     * @throws Throwable if anything goes wrong
+     * @since 5.1M1
      */
-    public <T> T registerMockComponent(Type roleType) throws Exception
+    protected void before(final Statement base, final FrameworkMethod method, final Object target) throws Throwable
     {
-        return registerMockComponent(roleType, null);
+        initializeTest(target);
     }
 
     /**
-     * Registers a Mock component (using the default role hint).
-     * <p>
-     * If <code>force</code> is false the method will do nothing if there is already a mock and will return it.
+     * Called after the test.
      *
-     * @param roleType the type of the component role to register
-     * @param force force registering a new mock even if there is already one
-     * @param <T> the mock
-     * @return the mock
-     * @throws Exception in case of an error during registration
+     * @param base The {@link Statement} to be modified
+     * @param method The method to be run
+     * @param target The object on with the method will be run.
+     * @throws Throwable if anything goes wrong
+     * @since 5.1M1
      */
-    public <T> T registerMockComponent(Type roleType, boolean force) throws Exception
+    protected void after(final Statement base, final FrameworkMethod method, final Object target) throws Throwable
     {
-        return registerMockComponent(roleType, null, force);
+        shutdownTest();
     }
 }

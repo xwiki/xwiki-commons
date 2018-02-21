@@ -22,6 +22,7 @@ package org.xwiki.extension.test;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
 
 public class MockitoRepositoryUtilsRule extends MockitoRepositoryUtils implements MethodRule
@@ -38,7 +39,10 @@ public class MockitoRepositoryUtilsRule extends MockitoRepositoryUtils implement
         this(componentManager, componentManager);
     }
 
-    public MockitoRepositoryUtilsRule(MockitoComponentManagerRule componentManager, MethodRule parent)
+    /**
+     * @since 10.2RC1
+     */
+    public MockitoRepositoryUtilsRule(MockitoComponentManager componentManager, MethodRule parent)
     {
         super(componentManager);
 
