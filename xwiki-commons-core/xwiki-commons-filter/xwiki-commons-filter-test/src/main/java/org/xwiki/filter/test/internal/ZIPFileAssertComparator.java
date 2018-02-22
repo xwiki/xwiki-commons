@@ -99,18 +99,16 @@ public class ZIPFileAssertComparator implements FileAssertComparator
             Map<String, byte[]> expectedMap = unzip(expected);
             Map<String, byte[]> actualMap = unzip(actual);
 
+            Assertions.assertEquals(expectedMap.keySet(), actualMap.keySet(), "ZIP entries names not matching");
+
             for (Map.Entry<String, byte[]> expectedEntry : expectedMap.entrySet()) {
                 byte[] actualContent = actualMap.get(expectedEntry.getKey());
-
-                Assertions.assertNotNull(actualContent, "Entry [" + expectedEntry.getKey() + "] not present");
 
                 FileAssertComparator fileAssertComparator = FileAssert.getComparator(expectedEntry.getKey());
 
                 fileAssertComparator.assertEquals("Entry [" + expectedEntry.getKey() + "] has different content",
                     expectedEntry.getValue(), actualContent);
             }
-
-            Assertions.assertEquals(expectedMap.size(), actualMap.size(), "Too many entries");
         } catch (IOException e) {
             throw new AssertionFailedError(e.toString());
         }
