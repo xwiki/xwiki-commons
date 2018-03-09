@@ -37,6 +37,9 @@
 
     <!-- Only contain generated sources for which we don't control the code style -->
     <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+
+    <!-- FIXME: remove when https://github.com/INRIA/spoon/issues/1901 is fixed -->
+    <xwiki.spoon.skip>true</xwiki.spoon.skip>
   </properties>
   <build>
     <plugins>
