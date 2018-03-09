@@ -30,6 +30,10 @@
   <artifactId>xwiki-commons-component-archetype</artifactId>
   <name>XWiki Commons - Component - Component Archetype</name>
   <packaging>maven-archetype</packaging>
+  <properties>
+    <!-- FIXME: remove when https://github.com/INRIA/spoon/issues/1901 is fixed -->
+    <xwiki.spoon.skip>true</xwiki.spoon.skip>
+  </properties>
   <description>
     Make it easy to create a maven project for creating XWiki Components.
   </description>
