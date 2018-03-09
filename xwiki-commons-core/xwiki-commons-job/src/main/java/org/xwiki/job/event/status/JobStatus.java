@@ -149,6 +149,24 @@ public interface JobStatus
      */
     Date getEndDate();
 
+    /**
+     * @return true if the job status should be serialized
+     * @since 10.0
+     */
+    default boolean isSerialized()
+    {
+        return true;
+    }
+
+    /**
+     * @return true if the log should be isolated from standard output
+     * @since 10.0
+     */
+    default boolean isIsolated()
+    {
+        return true;
+    }
+
     // Deprecated
 
     /**

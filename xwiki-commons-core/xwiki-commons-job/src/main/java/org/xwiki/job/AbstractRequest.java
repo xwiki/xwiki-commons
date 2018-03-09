@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.xwiki.job.event.status.JobStatus;
+
 /**
  * Base class for {@link Request} implementations.
  *
@@ -53,6 +55,10 @@ public abstract class AbstractRequest implements Request
      * @see #isVerbose()
      */
     private boolean verbose = true;
+
+    private Boolean statusLogIsolated;
+
+    private Boolean statusSerialized;
 
     /**
      * Default constructor.
@@ -194,5 +200,37 @@ public abstract class AbstractRequest implements Request
     public void setVerbose(boolean verbose)
     {
         this.verbose = verbose;
+    }
+
+    @Override
+    public Boolean isStatusLogIsolated()
+    {
+        return this.statusLogIsolated;
+    }
+
+    /**
+     * @param statusLogIsolated true if the log should be isolated from standard output, null to fallback on
+     *            {@link JobStatus#isIsolated()}
+     * @since 10.0
+     */
+    public void setStatusLogIsolated(Boolean statusLogIsolated)
+    {
+        this.statusLogIsolated = statusLogIsolated;
+    }
+
+    @Override
+    public Boolean isStatusSerialized()
+    {
+        return this.statusSerialized;
+    }
+
+    /**
+     * @param statusSerialized true if the job status should be serialized, null to fallback on
+     *            {@link JobStatus#isSerialized()}
+     * @since 10.0
+     */
+    public void setStatusSerialized(Boolean statusSerialized)
+    {
+        this.statusSerialized = statusSerialized;
     }
 }

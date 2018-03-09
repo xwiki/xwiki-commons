@@ -169,13 +169,17 @@ public class ModelConverter extends AbstractConverter<Model>
             repositories = new ArrayList<>(mavenRepositories.size());
 
             for (Repository mavenRepository : mavenRepositories) {
-                try {
-                    ExtensionRepositoryDescriptor repositoryDescriptor = this.factory.getExtensionRepositoryDescriptor(
-                        mavenRepository.getId(), "maven", new URI(mavenRepository.getUrl()));
+                // There is no point in remembering Maven central repository since all extension will have it
+                if (!StringUtils.equals(mavenRepository.getId(), "central")) {
+                    try {
+                        ExtensionRepositoryDescriptor repositoryDescriptor =
+                            this.factory.getExtensionRepositoryDescriptor(mavenRepository.getId(), "maven",
+                                new URI(mavenRepository.getUrl()));
 
-                    repositories.add(repositoryDescriptor);
-                } catch (URISyntaxException e) {
-                    // TODO: log ?
+                        repositories.add(repositoryDescriptor);
+                    } catch (URISyntaxException e) {
+                        // TODO: log ?
+                    }
                 }
             }
         } else {

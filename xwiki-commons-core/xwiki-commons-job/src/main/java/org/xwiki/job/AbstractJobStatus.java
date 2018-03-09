@@ -135,6 +135,8 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      */
     private boolean canceled;
 
+    private boolean serialized = true;
+
     /**
      * @param request the request provided when started the job
      * @param parentJobStatus the status of the parent job (i.e. the status of the job that started this one); pass
@@ -367,12 +369,12 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         return getParentJobStatus() != null;
     }
 
-    /**
-     * @return true if the job log should be grabbed
-     */
+    @Override
     public boolean isIsolated()
     {
-        return this.isolated;
+        Boolean isolatedRequest = getRequest().isStatusLogIsolated();
+
+        return isolatedRequest != null ? isolatedRequest : this.isolated;
     }
 
     /**
@@ -392,15 +394,6 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         return this.parentJobStatus;
     }
 
-    // Deprecated
-
-    @Override
-    @Deprecated
-    public List<LogEvent> getLog(LogLevel level)
-    {
-        return getLog().getLogs(level);
-    }
-
     /**
      * Cancel the job.
      *
@@ -418,5 +411,22 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
     public boolean isCanceled()
     {
         return this.canceled;
+    }
+
+    @Override
+    public boolean isSerialized()
+    {
+        Boolean serializdRequest = getRequest().isStatusSerialized();
+
+        return serializdRequest != null ? serializdRequest : this.serialized;
+    }
+
+    // Deprecated
+
+    @Override
+    @Deprecated
+    public List<LogEvent> getLog(LogLevel level)
+    {
+        return getLog().getLogs(level);
     }
 }

@@ -194,6 +194,8 @@ public abstract class AbstractExtension implements MutableExtension
         setDependencies(extension.getDependencies());
         setManagedDependencies(extension.getManagedDependencies());
 
+        setRepositories(extension.getRepositories());
+
         setProperties(extension.getProperties());
     }
 

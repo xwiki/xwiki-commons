@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * @version $Id$
@@ -38,7 +38,7 @@ public class StringFileAssertComparator implements FileAssertComparator
         String expectedString = FileUtils.readFileToString(expected, "UTF8");
         String actualString = FileUtils.readFileToString(actual, "UTF8");
 
-        Assert.assertEquals(message, expectedString, actualString);
+        Assertions.assertEquals(expectedString, actualString, message);
     }
 
     @Override
@@ -47,6 +47,6 @@ public class StringFileAssertComparator implements FileAssertComparator
         String expectedString = IOUtils.toString(expected, "UTF8");
         String actualString = IOUtils.toString(actual, "UTF8");
 
-        Assert.assertEquals(message, expectedString, actualString);
+        Assertions.assertEquals(expectedString, actualString, message);
     }
 }

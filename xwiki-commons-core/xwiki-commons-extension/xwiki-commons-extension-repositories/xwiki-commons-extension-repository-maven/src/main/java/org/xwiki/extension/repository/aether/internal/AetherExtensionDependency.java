@@ -47,8 +47,8 @@ public class AetherExtensionDependency extends DefaultMavenExtensionDependency
         if (extensionRepository != null) {
             List<ExtensionRepositoryDescriptor> newRepositories = new ArrayList<>(getRepositories().size() + 1);
 
-            newRepositories.add(extensionRepository);
             newRepositories.addAll(getRepositories());
+            newRepositories.add(extensionRepository);
 
             setRepositories(newRepositories);
         }

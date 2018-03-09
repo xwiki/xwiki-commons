@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import org.xwiki.job.event.status.JobStatus;
+
 /**
  * A {@link Job} request.
  *
@@ -91,4 +93,23 @@ public interface Request extends Serializable
      * @since 5.4RC1
      */
     boolean isVerbose();
+
+    /**
+     * @return true if the job status should be serialized, null to fallback on {@link JobStatus#isSerialized()}
+     * @since 10.0
+     */
+    default Boolean isStatusSerialized()
+    {
+        return null;
+    }
+
+    /**
+     * @return true if the log should be isolated from standard output, null to fallbacl on
+     *         {@link JobStatus#isIsolated()}
+     * @since 10.0
+     */
+    default Boolean isStatusLogIsolated()
+    {
+        return null;
+    }
 }

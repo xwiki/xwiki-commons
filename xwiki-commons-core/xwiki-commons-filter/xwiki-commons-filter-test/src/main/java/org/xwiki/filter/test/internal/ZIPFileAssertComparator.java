@@ -34,7 +34,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * @version $Id$
@@ -83,33 +83,32 @@ public class ZIPFileAssertComparator implements FileAssertComparator
     /**
      * Asserts that two ZIP files are equal. If they are not, an {@link AssertionError} without a message is thrown.
      */
+    @Override
     public void assertEquals(String message, File expected, File actual)
     {
-        Assert.assertNotNull(expected);
-        Assert.assertNotNull(actual);
+        Assertions.assertNotNull(expected);
+        Assertions.assertNotNull(actual);
 
-        Assert.assertTrue("Expected file does not exist [" + expected.getAbsolutePath() + "]", expected.exists());
-        Assert.assertTrue("Actual file does not exist [" + actual.getAbsolutePath() + "]", actual.exists());
+        Assertions.assertTrue(expected.exists(), "Expected file does not exist [" + expected.getAbsolutePath() + "]");
+        Assertions.assertTrue(actual.exists(), "Actual file does not exist [" + actual.getAbsolutePath() + "]");
 
-        Assert.assertTrue("Expected file not readable", expected.canRead());
-        Assert.assertTrue("Actual file not readable", actual.canRead());
+        Assertions.assertTrue(expected.canRead(), "Expected file not readable");
+        Assertions.assertTrue(actual.canRead(), "Actual file not readable");
 
         try {
             Map<String, byte[]> expectedMap = unzip(expected);
             Map<String, byte[]> actualMap = unzip(actual);
 
+            Assertions.assertEquals(expectedMap.keySet(), actualMap.keySet(), "ZIP entries names not matching");
+
             for (Map.Entry<String, byte[]> expectedEntry : expectedMap.entrySet()) {
                 byte[] actualContent = actualMap.get(expectedEntry.getKey());
-
-                Assert.assertNotNull("Entry [" + expectedEntry.getKey() + "] not present", actualContent);
 
                 FileAssertComparator fileAssertComparator = FileAssert.getComparator(expectedEntry.getKey());
 
                 fileAssertComparator.assertEquals("Entry [" + expectedEntry.getKey() + "] has different content",
                     expectedEntry.getValue(), actualContent);
             }
-
-            Assert.assertEquals("Too much entries", expectedMap.size(), actualMap.size());
         } catch (IOException e) {
             throw new AssertionFailedError(e.toString());
         }

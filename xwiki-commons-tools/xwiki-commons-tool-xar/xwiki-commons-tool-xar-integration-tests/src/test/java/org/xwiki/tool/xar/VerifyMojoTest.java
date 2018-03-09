@@ -159,6 +159,18 @@ public class VerifyMojoTest extends AbstractMojoTest
             "There are errors in the XAR XML files!");
     }
 
+    @Test
+    public void executeWithWrongVisibilityForTranslations() throws Exception
+    {
+        verifyExecution("/wrongVisibilityForTranslations", "Verifying [Space/UserTranslations.xml]... errors",
+            "- [UserTranslations.xml] ([Space.UserTranslations]) page contains a translation using a wrong "
+                + "visibility [USER]. Consider using a [WIKI] visibility.",
+            "Verifying [Space/GlobalTranslations.xml]... errors",
+            "- [GlobalTranslations.xml] ([Space.GlobalTranslations]) page contains a translation using a wrong "
+                + "visibility [GLOBAL]. Consider using a [WIKI] visibility.",
+            "There are errors in the XAR XML files!");
+    }
+
     private void verifyExecution(Verifier verifier, String... messages) throws Exception
     {
         try {

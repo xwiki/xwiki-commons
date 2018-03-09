@@ -85,6 +85,8 @@ public abstract class AbstractExtensionDependency implements ExtensionDependency
     {
         this(dependency.getId(), versionConstraint != null ? versionConstraint : dependency.getVersionConstraint(),
             dependency.isOptional(), dependency.getProperties());
+
+        setRepositories(dependency.getRepositories());
     }
 
     /**

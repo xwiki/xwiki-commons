@@ -22,7 +22,7 @@ package org.xwiki.extension.repository.aether.internal;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -54,6 +54,8 @@ import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
 import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @AllComponents
 public class AetherDefaultRepositoryManagerTest
@@ -402,6 +404,25 @@ public class AetherDefaultRepositoryManagerTest
 
         Assert.assertNull(extension.getIssueManagement());
         Assert.assertNull(extension.getScm());
+    }
+
+    @Test
+    public void testResolveDependencyFromUnknownRepository() throws ResolveException, IOException
+    {
+        // Make sure to put a proper repository in the pom
+        File pomFile =
+            new File(this.repositoryUtil.getMavenRepository(), "eugroupid/euartifactid/version/euartifactid-version.pom");
+        String pom = FileUtils.readFileToString(pomFile, StandardCharsets.UTF_8);
+        pom.replace("${{repository.mavenunknown}}", this.repositoryUtil.getMavenUnknownRepository().toURI().toString());
+        FileUtils.write(pomFile, pom, StandardCharsets.UTF_8);
+
+        Extension extension = this.repositoryManager.resolve(new ExtensionId("eugroupid:euartifactid", "version"));
+
+        ExtensionDependency extensionDependency = extension.getDependencies().iterator().next();
+
+        Extension dependency = this.repositoryManager.resolve(extensionDependency);
+
+        assertEquals(extensionDependency.getId(), dependency.getId().getId());
     }
 
     // Failures

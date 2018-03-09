@@ -45,6 +45,8 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  *   <li>ensure that the default language is set properly</li>
  *   <li>ensure titles follow any defined rules (when defined by the user)</li>
  *   <li>ensure that Translations pages are using the plain/1.0 syntax</li>
+ *   <li>ensure that Translations pages don't have a GLOBAL or USER visibility (USER makes no sense and GLOBAL would
+ *       require Programming Rights, which is an issue in farm-based use cases)</li>
  * </ul>
  *
  * @version $Id$
@@ -65,6 +67,14 @@ public class VerifyMojo extends AbstractVerifyMojo
      */
     @Parameter(property = "xar.verify.skip", defaultValue = "false")
     private boolean skip;
+
+    /**
+     * Disables the plugin execution.
+     *
+     * @since 4.3M1
+     */
+    @Parameter(property = "xar.verify.translationVisibility.skip", defaultValue = "false")
+    private boolean translationVisibilitySkip;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -147,6 +157,17 @@ public class VerifyMojo extends AbstractVerifyMojo
             if (xdoc.containsTranslations() && !xdoc.getSyntaxId().equals(SYNTAX_PLAIN)) {
                 errors.add(String.format("[%s] ([%s]) page must use a [%s] syntax", file.getName(),
                     xdoc.getReference(), SYNTAX_PLAIN));
+            }
+
+            // Verification 11: Verify that Translations documents don't use GLOBAL or USER visibility
+            if (!translationVisibilitySkip && xdoc.containsTranslations()) {
+                for (String visibility : xdoc.getTranslationVisibilities()) {
+                    if (visibility.equals("USER") || visibility.equals("GLOBAL")) {
+                        errors.add(String.format("[%s] ([%s]) page contains a translation using a wrong visibility "
+                            + "[%s]. Consider using a [WIKI] visibility.", file.getName(), xdoc.getReference(),
+                            visibility));
+                    }
+                }
             }
 
             // Display errors
