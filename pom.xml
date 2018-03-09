@@ -91,7 +91,7 @@
     <checkstyle.version>8.7</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>6.1.0</spoon.version>
+    <spoon.version>6.2.0</spoon.version>
 
     <!-- By default Checkstyle, Backward compatibility check, Enforcer and License plugins are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
