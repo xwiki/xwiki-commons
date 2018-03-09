@@ -19,14 +19,13 @@
  */
 package org.xwiki.tool.spoon;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Level;
 
 import spoon.processing.AbstractProcessor;
+import spoon.processing.Property;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 
@@ -38,13 +37,8 @@ import spoon.reflect.code.CtInvocation;
  */
 public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation<?>>
 {
-    // FIXME: replace this by proper configuration when supported by the Spoon Maven plugin, see
-    // https://github.com/INRIA/spoon/issues/1537
-    private static final Map<String, Set<String>> METHODS = new HashMap<>();
-
-    static {
-        METHODS.put("java.io.File", Collections.singleton("deleteOnExit"));
-    }
+    @Property
+    private Map<String, Set<String>> methods;
 
     @Override
     public void process(CtInvocation<?> element)
@@ -53,10 +47,10 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
 
         if (target != null && target.getType() != null) {
             String type = target.getType().getQualifiedName();
-            Set<String> methods = METHODS.get(type);
-            if (methods != null) {
+            Set<String> methodSet = methods.get(type);
+            if (methodSet != null) {
                 String method = element.getExecutable().getSimpleName();
-                if (methods.contains(method)) {
+                if (methodSet.contains(method)) {
                     getFactory().getEnvironment().report(this, Level.ERROR, element,
                         "Forbidden call to " + type + "#" + method);
 
