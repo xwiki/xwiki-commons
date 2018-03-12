@@ -119,7 +119,7 @@ public class JarExtensionHandler extends AbstractExtensionHandler implements Ini
         // But it's not the case for:
 
         // ** webjar.org releases (i.e. most of the webjars). We assume "org.webjars:*" id means it's a webjar
-        if (extension.getId().getId().startsWith("org.webjars:")) {
+        if (StringUtils.startsWithAny(extension.getId().getId(), "org.webjars:", "org.webjars.")) {
             return true;
         }
         // ** contrib extensions which support version of XWiki older than 9.0RC1. We support a custom property which
