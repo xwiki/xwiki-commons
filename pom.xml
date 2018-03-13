@@ -59,7 +59,7 @@
     <jackson.version>2.9.4</jackson.version>
 
     <!-- ASM -->
-    <asm.version>6.0</asm.version>
+    <asm.version>6.1</asm.version>
 
     <!-- Selenium -->
     <selenium.version>2.44.0</selenium.version>
