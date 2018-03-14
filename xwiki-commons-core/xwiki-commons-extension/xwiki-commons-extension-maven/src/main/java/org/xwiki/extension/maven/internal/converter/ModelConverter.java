@@ -45,8 +45,6 @@ import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
-import org.xwiki.extension.ExtensionFeaturesInjector;
-import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.ExtensionLicenseManager;
 import org.xwiki.extension.ExtensionScmConnection;
@@ -84,9 +82,6 @@ public class ModelConverter extends AbstractConverter<Model>
 
     @Inject
     private ExtensionFactory factory;
-
-    @Inject
-    private List<ExtensionFeaturesInjector> featureInjectors;
 
     @Override
     public <G> G convert(Type targetType, Object sourceValue)
@@ -147,24 +142,12 @@ public class ModelConverter extends AbstractConverter<Model>
         }
 
         // features
-        List<ExtensionId> extensionFeatures = new ArrayList<>();
         String featuresString = getProperty(properties, Extension.FIELD_FEATURES, true);
         if (StringUtils.isNotBlank(featuresString)) {
             Collection<String> features = ExtensionUtils.importPropertyStringList(featuresString, true);
-            extensionFeatures.addAll(ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
+            extension
+                .setExtensionFeatures(ExtensionIdConverter.toExtensionIdList(features, extension.getId().getVersion()));
         }
-        // add injected features
-        for (ExtensionFeaturesInjector injector : this.featureInjectors) {
-            Collection<ExtensionId> injectedFeatures = injector.getFeatures(extension);
-            if (injectedFeatures != null) {
-                for (ExtensionId injectedFeature : injectedFeatures) {
-                    if (!extensionFeatures.contains(injectedFeature)) {
-                        extensionFeatures.add(injectedFeature);
-                    }
-                }
-            }
-        }
-        extension.setExtensionFeatures(extensionFeatures);
 
         // category
         String categoryString = getProperty(properties, Extension.FIELD_CATEGORY, true);

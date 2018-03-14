@@ -23,9 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import org.apache.commons.collections4.ListUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Repository;
@@ -34,20 +32,15 @@ import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionDependency;
-import org.xwiki.extension.ExtensionFeaturesInjector;
-import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.DefaultExtensionRepositoryDescriptor;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.internal.DefaultConverterManager;
 import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 /**
  * Validate {@link ModelConverter} component.
@@ -57,22 +50,9 @@ import static org.mockito.Mockito.when;
 @AllComponents
 public class ModelConverterTest
 {
-    private static final List<ExtensionId> INJECTED_FEATURES =
-        Arrays.asList(new ExtensionId("injectedfeature1", "injectedversion1"),
-            new ExtensionId("injectedfeature2", "injectedversion2"));
-
     @Rule
     public MockitoComponentMockingRule<ConverterManager> mocker =
         new MockitoComponentMockingRule<ConverterManager>(DefaultConverterManager.class);
-
-    @BeforeComponent
-    public void beforeComponent() throws Exception
-    {
-        ExtensionFeaturesInjector featureProvider =
-            this.mocker.registerMockComponent(ExtensionFeaturesInjector.class, "test");
-
-        when(featureProvider.getFeatures(any(Extension.class))).thenReturn(INJECTED_FEATURES);
-    }
 
     @Test
     public void testConvertFromExtension() throws SecurityException, ComponentLookupException, URISyntaxException
@@ -85,7 +65,6 @@ public class ModelConverterTest
         model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_CATEGORY, "category");
         model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_NAMESPACES,
             "namespace1, namespace2,\r\n\t {root}, \"namespace3\", 'namespace4'");
-        model.addProperty(Extension.IKEYPREFIX + Extension.FIELD_FEATURES, "feature1/1.0");
         Repository repository = new Repository();
         repository.setId("repository-id");
         repository.setUrl("http://url");
@@ -101,8 +80,6 @@ public class ModelConverterTest
 
         assertEquals(model.getGroupId() + ':' + model.getArtifactId(), extension.getId().getId());
         assertEquals(model.getVersion(), extension.getId().getVersion().getValue());
-        assertEquals(ListUtils.union(Arrays.asList(new ExtensionId("feature1", "1.0")), INJECTED_FEATURES),
-            new ArrayList<>(extension.getExtensionFeatures()));
         assertEquals("category", extension.getCategory());
         assertNull(extension.getProperty(Extension.IKEYPREFIX + Extension.FIELD_CATEGORY));
         assertEquals(Arrays.asList("namespace1", "namespace2", "{root}", "namespace3", "namespace4"),
