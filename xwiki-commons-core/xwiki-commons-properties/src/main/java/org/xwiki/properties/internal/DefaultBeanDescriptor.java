@@ -25,6 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -138,7 +139,13 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 desc.setId(propertyId != null ? propertyId.value() : propertyDescriptor.getName());
 
                 // set parameter type
-                desc.setPropertyType(readMethod.getGenericReturnType());
+                Type propertyType;
+                if (readMethod != null) {
+                    propertyType = readMethod.getGenericReturnType();
+                } else {
+                    propertyType = writeMethod.getGenericParameterTypes()[0];
+                }
+                desc.setPropertyType(propertyType);
 
                 // get parameter display name
                 PropertyName parameterName = extractPropertyAnnotation(writeMethod, readMethod, PropertyName.class);
@@ -158,7 +165,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
                 desc.setMandatory(parameterMandatory != null);
 
-                if (defaultInstance != null) {
+                if (defaultInstance != null && readMethod != null) {
                     // get default value
                     try {
                         desc.setDefaultValue(readMethod.invoke(defaultInstance));
