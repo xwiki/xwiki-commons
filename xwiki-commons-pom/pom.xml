@@ -166,6 +166,9 @@
         <configuration>
           <skip>${xwiki.spoon.skip}</skip>
 
+          <!-- Don't fail in case of missing sources -->
+          <skipSpoonErrors>true</skipSpoonErrors>
+
           <processors>
             <processor>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</processor>
           </processors>
@@ -177,6 +180,7 @@
                   <name>methods</name>
                   <value>
                     {
+                      <!-- Does not make any sense in the context of an application server and it can cause memory leaks -->
                       "java.io.File": ["deleteOnExit"]
                     }
                   </value>
