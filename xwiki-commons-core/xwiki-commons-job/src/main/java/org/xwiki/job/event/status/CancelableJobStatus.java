@@ -17,40 +17,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.job.internal.script.safe;
+package org.xwiki.job.event.status;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
-import org.xwiki.job.event.status.CancelableJobStatus;
-import org.xwiki.job.event.status.JobStatus;
-import org.xwiki.script.internal.safe.ScriptSafeProvider;
+import org.xwiki.stability.Unstable;
 
 /**
- * Provide safe Extension.
+ * The status of a job that can be canceled.
  * 
  * @version $Id$
- * @since 4.0M2
+ * @since 10.2
  */
-@Component
-@Singleton
-public class JobStatusScriptSafeProvider implements ScriptSafeProvider<JobStatus>
+@Unstable
+public interface CancelableJobStatus extends JobStatus
 {
     /**
-     * The provider of instances safe for public scripts.
+     * @return {@code true} if the job support being canceled
      */
-    @Inject
-    @SuppressWarnings("rawtypes")
-    private ScriptSafeProvider defaultSafeProvider;
+    boolean isCancelable();
 
-    @Override
-    public <S> S get(JobStatus unsafe)
-    {
-        if (unsafe instanceof CancelableJobStatus) {
-            return (S) new SafeCancelableJobStatus((CancelableJobStatus) unsafe, this.defaultSafeProvider);
-        }
+    /**
+     * Cancel the job.
+     */
+    void cancel();
 
-        return (S) new SafeJobStatus(unsafe, this.defaultSafeProvider);
-    }
+    /**
+     * @return {@code true} if the job was canceled, {@code false} otherwise
+     */
+    boolean isCanceled();
 }

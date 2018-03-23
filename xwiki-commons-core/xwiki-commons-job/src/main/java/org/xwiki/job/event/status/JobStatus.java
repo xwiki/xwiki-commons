@@ -127,6 +127,16 @@ public interface JobStatus
     }
 
     /**
+     * @param unit the time unit of the returned value
+     * @return the time left before the question timeout
+     * @since 10.2
+     */
+    default long getQuestionTimeLeft(TimeUnit unit)
+    {
+        return -1;
+    }
+
+    /**
      * @return the question
      * @since 4.0M2
      */

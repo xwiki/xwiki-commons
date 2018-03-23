@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.xwiki.job.event.status.CancelableJobStatus;
 import org.xwiki.job.event.status.JobProgress;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.event.status.QuestionAnsweredEvent;
@@ -45,7 +46,7 @@ import org.xwiki.observation.WrappedThreadEventListener;
  * @version $Id$
  * @since 7.4M1
  */
-public abstract class AbstractJobStatus<R extends Request> implements JobStatus
+public abstract class AbstractJobStatus<R extends Request> implements JobStatus, CancelableJobStatus
 {
     /**
      * Used register itself to receive logging and progress related events.
@@ -135,7 +136,14 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
      */
     private boolean canceled;
 
+    /**
+     * Flag indicating if the job can be canceled.
+     */
+    private boolean cancelable;
+
     private boolean serialized = true;
+
+    private long quesionEnd = -1;
 
     /**
      * @param request the request provided when started the job
@@ -293,6 +301,7 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
                     answered();
                 } else {
                     if (unit != null) {
+                        this.quesionEnd = System.nanoTime() + unit.toNanos(time);
                         notTimeout = this.answered.await(time, unit);
                     } else {
                         this.answered.await();
@@ -305,6 +314,12 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         }
 
         return notTimeout;
+    }
+
+    @Override
+    public long getQuestionTimeLeft(TimeUnit unit)
+    {
+        return quesionEnd > -1 ? this.quesionEnd - System.nanoTime() : -1;
     }
 
     @Override
@@ -394,20 +409,39 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus
         return this.parentJobStatus;
     }
 
+    @Override
+    public boolean isCancelable()
+    {
+        return this.cancelable;
+    }
+
     /**
-     * Cancel the job.
-     *
+     * @param cancelable true if the job can be canceled
+     */
+    public void setCancelable(boolean cancelable)
+    {
+        this.cancelable = cancelable;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.job.event.status.CancelableJobStatus#cancel()
      * @since 9.4RC1
      */
+    @Override
     public void cancel()
     {
         this.canceled = true;
     }
 
     /**
-     * @return {@code true} if the job was canceled, {@code false} otherwise
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.job.event.status.CancelableJobStatus#isCanceled()
      * @since 9.4RC1
      */
+    @Override
     public boolean isCanceled()
     {
         return this.canceled;

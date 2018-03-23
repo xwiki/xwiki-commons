@@ -19,38 +19,43 @@
  */
 package org.xwiki.job.internal.script.safe;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
 import org.xwiki.job.event.status.CancelableJobStatus;
-import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.script.internal.safe.ScriptSafeProvider;
 
 /**
- * Provide safe Extension.
+ * Provide a public script access to a cancelable job status.
  * 
+ * @param <J>
  * @version $Id$
- * @since 4.0M2
+ * @since 10.2
  */
-@Component
-@Singleton
-public class JobStatusScriptSafeProvider implements ScriptSafeProvider<JobStatus>
+public class SafeCancelableJobStatus<J extends CancelableJobStatus> extends SafeJobStatus<J>
+    implements CancelableJobStatus
 {
     /**
-     * The provider of instances safe for public scripts.
+     * @param status the wrapped job status
+     * @param safeProvider the provider of instances safe for public scripts
      */
-    @Inject
-    @SuppressWarnings("rawtypes")
-    private ScriptSafeProvider defaultSafeProvider;
+    public SafeCancelableJobStatus(J status, ScriptSafeProvider<?> safeProvider)
+    {
+        super(status, safeProvider);
+    }
 
     @Override
-    public <S> S get(JobStatus unsafe)
+    public boolean isCancelable()
     {
-        if (unsafe instanceof CancelableJobStatus) {
-            return (S) new SafeCancelableJobStatus((CancelableJobStatus) unsafe, this.defaultSafeProvider);
-        }
+        return getWrapped().isCancelable();
+    }
 
-        return (S) new SafeJobStatus(unsafe, this.defaultSafeProvider);
+    @Override
+    public void cancel()
+    {
+        // Don't allow anyone to cancel a job
+    }
+
+    @Override
+    public boolean isCanceled()
+    {
+        return getWrapped().isCanceled();
     }
 }
