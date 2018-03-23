@@ -101,6 +101,11 @@
       <artifactId>mojo-executor</artifactId>
       <version>2.2.0</version>
     </dependency>
+    <!-- Ensure that the Xerces version from the JDK is not used (since it's older and buggy). -->
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>

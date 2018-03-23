@@ -19,11 +19,17 @@
  */
 package org.xwiki.tool.xar;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+import org.dom4j.Document;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
 import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
@@ -72,5 +78,30 @@ public class FormatMojoTest
         List<File> files = Arrays.asList(new File("Other.xml"));
 
         assertEquals("", mojo.guessDefaultLanguage(file, files));
+    }
+
+    /**
+     * Reproduces issue raised in <a href="https://jira.xwiki.org/browse/XCOMMONS-1373">XCOMMONS-1373</a>.
+     */
+    @Test
+    public void formatSpecialContentFailingWithXercesFromJDK8() throws Exception
+    {
+        SAXReader reader = new SAXReader();
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("XWikiSyntaxLinks.it.xml");
+        String expectedContent = IOUtils.toString(is, "UTF-8");
+
+        is = Thread.currentThread().getContextClassLoader().getResourceAsStream("XWikiSyntaxLinks.it.xml");
+        Document domdoc = reader.read(is);
+
+        XWikiXMLWriter writer;
+        OutputFormat format = new OutputFormat("  ", true, "UTF-8");
+        format.setExpandEmptyElements(false);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        writer = new XWikiXMLWriter(baos, format);
+        writer.setVersion("1.1");
+        writer.write(domdoc);
+        writer.close();
+
+        assertEquals(expectedContent, baos.toString());
     }
 }
