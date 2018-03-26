@@ -194,7 +194,7 @@
           <dependency>
             <groupId>org.xwiki.commons</groupId>
             <artifactId>xwiki-commons-tool-spoon</artifactId>
-            <version>10.1-SNAPSHOT</version>
+            <version>10.3-SNAPSHOT</version>
           </dependency>
         </dependencies>
       </plugin>
