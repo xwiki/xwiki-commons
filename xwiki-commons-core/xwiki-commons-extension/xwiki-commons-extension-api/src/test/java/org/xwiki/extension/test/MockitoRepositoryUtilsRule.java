@@ -40,7 +40,7 @@ public class MockitoRepositoryUtilsRule extends MockitoRepositoryUtils implement
     }
 
     /**
-     * @since 10.2RC1
+     * @since 10.2
      */
     public MockitoRepositoryUtilsRule(MockitoComponentManager componentManager, MethodRule parent)
     {

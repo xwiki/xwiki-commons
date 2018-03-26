@@ -27,7 +27,7 @@ import java.util.Collection;
  * webjar extensions which are the same thing from XWiki point of view.
  * 
  * @version $Id$
- * @since 10.2RC1
+ * @since 10.2
  */
 public interface ExtensionFeaturesInjector
 {

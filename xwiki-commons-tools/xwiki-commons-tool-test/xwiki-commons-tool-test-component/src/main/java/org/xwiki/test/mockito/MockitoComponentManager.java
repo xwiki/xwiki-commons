@@ -60,7 +60,7 @@ public class MockitoComponentManager extends TestComponentManager
      * @param <T> the mock
      * @return the mock
      * @throws Exception in case of an error during registration
-     * @since 10.2RC1
+     * @since 10.2
      */
     public <T> T registerMockComponent(Type roleType, String roleHint, boolean force) throws Exception
     {
