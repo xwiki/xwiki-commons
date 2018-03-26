@@ -301,8 +301,13 @@ public abstract class AbstractJobStatus<R extends Request> implements JobStatus,
                     answered();
                 } else {
                     if (unit != null) {
+                        // Remember timeout
                         this.quesionEnd = System.nanoTime() + unit.toNanos(time);
+
                         notTimeout = this.answered.await(time, unit);
+
+                        // Reset time left
+                        this.quesionEnd = -1;
                     } else {
                         this.answered.await();
                     }
