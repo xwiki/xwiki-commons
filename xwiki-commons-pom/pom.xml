@@ -174,7 +174,7 @@
           </processors>
           <processorProperties>
             <processorProperty>
-              <name>my.app.pkg.ProcessorWithProperty</name>
+              <name>org.xwiki.tool.spoon.ForbiddenInvocationProcessor</name>
               <properties>
                 <property>
                   <name>methods</name>
