@@ -19,6 +19,7 @@
  */
 package org.xwiki.tool.spoon;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,7 +39,7 @@ import spoon.reflect.code.CtInvocation;
 public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation<?>>
 {
     @Property
-    private Map<String, Set<String>> methods;
+    private Map<String, List<String>> methods;
 
     @Override
     public void process(CtInvocation<?> element)
@@ -47,10 +48,10 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
 
         if (target != null && target.getType() != null) {
             String type = target.getType().getQualifiedName();
-            Set<String> methodSet = methods.get(type);
-            if (methodSet != null) {
+            List<String> methodList = this.methods.get(type);
+            if (methodList != null) {
                 String method = element.getExecutable().getSimpleName();
-                if (methodSet.contains(method)) {
+                if (methodList.contains(method)) {
                     getFactory().getEnvironment().report(this, Level.ERROR, element,
                         "Forbidden call to " + type + "#" + method);
 
