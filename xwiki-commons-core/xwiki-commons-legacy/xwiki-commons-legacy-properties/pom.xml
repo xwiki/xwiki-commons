@@ -28,9 +28,9 @@
     <version>10.3-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-legacy-properties</artifactId>
-  <name>XWiki Commons - Properties</name>
+  <name>XWiki Commons - Legacy - Properties</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Properties</description>
+  <description>XWiki Commons - Legacy - Properties</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.55</xwiki.jacoco.instructionRatio>
   </properties>
@@ -52,7 +52,6 @@
       <artifactId>xwiki-commons-legacy-component-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <!-- Tests dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
