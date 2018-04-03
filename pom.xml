@@ -157,8 +157,8 @@
     <!-- Version of Maven used at runtime (by Extension Manager mostly) -->
     <maven.runtime.version>3.3.9</maven.runtime.version>
     <!-- Minimum version of Maven supported at build time  -->
-    <!-- Custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
-    <maven.buid.version>3.3.9</maven.buid.version>
+    <!-- Some custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
+    <maven.build.version>3.3.9</maven.build.version>
     <!--
       The version of Maven used when declaring dependencies.
       Use runtime version by default, overwrite it to change to build version (usually for Maven plugins)
@@ -183,7 +183,7 @@
     <xwiki.nexus.skipStaging>false</xwiki.nexus.skipStaging>
   </properties>
   <prerequisites>
-    <maven>${maven.buid.version}</maven>
+    <maven>${maven.build.version}</maven>
   </prerequisites>
   <licenses>
     <license>
