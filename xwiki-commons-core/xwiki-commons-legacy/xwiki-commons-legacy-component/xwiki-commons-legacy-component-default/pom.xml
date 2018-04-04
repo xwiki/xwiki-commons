@@ -33,6 +33,7 @@
   <description>Legacy module for xwiki-commons-component-default</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.22</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>7</xwiki.pitest.mutationThreshold>
     <!-- The features provided by this module so that it's found when resolving extension -->
     <xwiki.extension.features>org.xwiki.commons:xwiki-commons-component-default</xwiki.extension.features>
   </properties>

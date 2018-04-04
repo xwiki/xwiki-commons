@@ -33,6 +33,7 @@
   <description>Allows accessing extensions located in a Maven repository</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.68</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>51</xwiki.pitest.mutationThreshold>
     <aether.version>1.1.0</aether.version>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-aether,org.xwiki.commons:xwiki-commons-extension-repository-maven</xwiki.extension.features>

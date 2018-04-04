@@ -33,6 +33,7 @@
   <description>XWiki Commons - Extension - Maven</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>28</xwiki.pitest.mutationThreshold>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-api</xwiki.extension.features>
     <!-- TODO: Remove once the tests have been fixed to not output anything to the console! -->

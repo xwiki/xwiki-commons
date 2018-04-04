@@ -33,6 +33,7 @@
   <description>XWiki Commons - Tools - XAR Tools - XAR Plugin</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.01</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>21</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>

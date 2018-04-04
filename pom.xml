@@ -100,7 +100,7 @@
     <!-- Spoon -->
     <spoon.version>6.2.0</spoon.version>
 
-    <!-- By default Checkstyle, Backward compatibility check, Enforcer and License plugins are on -->
+    <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
     <xwiki.enforcer.skip>false</xwiki.enforcer.skip>
@@ -116,6 +116,11 @@
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
     <xwiki.enforcer.enforce-java.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-java.skip>
     <xwiki.license.skip>false</xwiki.license.skip>
+
+    <!-- By default we don't run pitest/descartes since it's taking too long to execute to be executed after all
+         commits. Thus the idea is that the CI will set this as a system property to run it using a scheduler. It can
+         also be execute locally by running "mvn install -Pquality -Dxwiki.pitest.skip=false" -->
+    <xwiki.pitest.skip>true</xwiki.pitest.skip>
 
     <!-- Enable by default auto release on Jira -->
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
@@ -2069,6 +2074,8 @@
         <!-- Default Jacoco Instruction Ratio. We use 100% to force each module to define its
              own ratio. Note that good values are above 70%. -->
         <xwiki.jacoco.instructionRatio>1.00</xwiki.jacoco.instructionRatio>
+        <!-- Default Pitest Instruction Ratio. We use 100% to force each module to define its own ratio. -->
+        <xwiki.pitest.mutationThreshold>100</xwiki.pitest.mutationThreshold>
       </properties>
       <build>
         <plugins>
@@ -2102,6 +2109,57 @@
                 </rule>
               </rules>
             </configuration>
+          </plugin>
+          <!-- Fail the build of the test quality is below a given value -->
+          <plugin>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <version>1.2.0</version>
+            <executions>
+              <execution>
+                <id>pitest-check</id>
+                <goals>
+                  <goal>mutationCoverage</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <skip>${xwiki.pitest.skip}</skip>
+              <mutationThreshold>${xwiki.pitest.mutationThreshold}</mutationThreshold>
+              <mutationEngine>descartes</mutationEngine>
+              <threads>4</threads>
+              <!-- List of mutations we want to run for each test -->
+              <mutators>
+                <mutator>void</mutator>
+                <mutator>null</mutator>
+                <mutator>true</mutator>
+                <mutator>false</mutator>
+                <mutator>empty</mutator>
+                <mutator>0</mutator>
+                <mutator>1</mutator>
+                <mutator>(byte)0</mutator>
+                <mutator>(byte)1</mutator>
+                <mutator>(short)1</mutator>
+                <mutator>(short)2</mutator>
+                <mutator>0L</mutator>
+                <mutator>1L</mutator>
+                <mutator>0.0</mutator>
+                <mutator>1.0</mutator>
+                <mutator>0.0f</mutator>
+                <mutator>1.0f</mutator>
+                <mutator>'\40'</mutator>
+                <mutator>'A'</mutator>
+                <mutator>""</mutator>
+                <mutator>"A"</mutator>
+              </mutators>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>eu.stamp-project</groupId>
+                <artifactId>descartes</artifactId>
+                <version>1.1</version>
+              </dependency>
+            </dependencies>
           </plugin>
         </plugins>
       </build>

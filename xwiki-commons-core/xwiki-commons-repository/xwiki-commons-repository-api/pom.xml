@@ -33,6 +33,7 @@
   <description>Contains commons stuff to use in a a client or a server implementation</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.76</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>76</xwiki.pitest.mutationThreshold>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-extension-repository-xwiki-api,org.xwiki.commons:xwiki-commons-extension-repository-xwiki-api</xwiki.extension.features>
   </properties>
