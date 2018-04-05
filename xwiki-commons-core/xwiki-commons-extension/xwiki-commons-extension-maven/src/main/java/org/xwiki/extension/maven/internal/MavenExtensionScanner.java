@@ -193,7 +193,7 @@ public class MavenExtensionScanner extends AbstractExtensionScanner
     {
         DefaultCoreExtension coreExtension = this.cache.getExtension(repository, descriptorURL);
 
-        if (coreExtension != null && coreExtension.getDescriptorURL().equals(descriptorURL)) {
+        if (coreExtension != null && coreExtension.getDescriptorURL().toString().equals(descriptorURL.toString())) {
             return coreExtension;
         }
 
