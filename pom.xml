@@ -95,7 +95,7 @@
     <jacoco.version>0.8.1</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.8</checkstyle.version>
+    <checkstyle.version>8.9</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>6.2.0</spoon.version>
