@@ -1364,6 +1364,9 @@
                  conflict between checkstyle and clover. Namely the clovered code doesn't pass our
                  checkstyle rules -->
             <skip>${xwiki.checkstyle.skip}</skip>
+
+            <!-- Workaround for https://github.com/m2e-code-quality/m2e-code-quality/issues/117 -->
+            <sourceDirectories>${project.compileSourceRoots}</sourceDirectories>
           </configuration>
           <!-- We redeclare the version of checkstyle to control which version we use. We do that since we also write
                custom checkstyle checks and we need to keep in sync the checkstyle version used to compile those
