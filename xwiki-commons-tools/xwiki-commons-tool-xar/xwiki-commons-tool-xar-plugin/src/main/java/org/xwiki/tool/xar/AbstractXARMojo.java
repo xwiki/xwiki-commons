@@ -20,7 +20,9 @@
 package org.xwiki.tool.xar;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
@@ -151,6 +153,14 @@ abstract class AbstractXARMojo extends AbstractMojo
     private ArtifactRepository local;
 
     /**
+     * @since 10.3RC1
+     */
+    @Parameter(property = "entries", readonly = true, required = false)
+    private List<XAREntry> entries;
+
+    private Map<String, XAREntry> entryMap;
+
+    /**
      * @return the includes
      */
     protected String[] getIncludes()
@@ -172,6 +182,22 @@ abstract class AbstractXARMojo extends AbstractMojo
         }
 
         return DEFAULT_EXCLUDES;
+    }
+
+    /**
+     * @return the map containing all the XAR entries
+     */
+    protected Map<String, XAREntry> getEntryMap()
+    {
+        if (this.entryMap == null) {
+            this.entryMap = new HashMap<>();
+
+            for (XAREntry entry : this.entries) {
+                this.entryMap.put(entry.getDocument(), entry);
+            }
+        }
+
+        return this.entryMap;
     }
 
     /**

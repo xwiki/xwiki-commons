@@ -26,8 +26,10 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -244,7 +246,7 @@ public class XARMojo extends AbstractXARMojo
                         if ("xar".equals(artifact.getType())) {
                             String id = String.format("%s:%s", artifact.getGroupId(), artifact.getArtifactId());
                             if (id.equals(transformation.getArtifact())) {
-                                unpackXARToOutputDirectory(artifact, new String[] {transformation.getFile()},
+                                unpackXARToOutputDirectory(artifact, new String[] { transformation.getFile() },
                                     new String[] {});
                             }
                         }
@@ -376,26 +378,45 @@ public class XARMojo extends AbstractXARMojo
                 element.setText(reference);
                 element.addAttribute("language", xdoc.getLocale());
                 element.addAttribute("defaultAction", "0");
+
+                // Add configured properties
+                XAREntry cfgEntry = getEntryMap().get(reference);
+                if (cfgEntry != null) {
+                    // Entry type
+                    if (cfgEntry.getType() != null) {
+                        element.addAttribute("type", cfgEntry.getType());
+                    }
+                }
+
                 filesElement.add(element);
             }
         }
     }
 
     /**
-     * Gets the list of document names from a 'package.xml'-like document.
+     * Gets the list of entry from a 'package.xml'-like document.
      * 
      * @param file the XML document to parse
-     * @return the list of document names contained in the XML document
+     * @return the Map of entries contained in the XML document (ordered in the same order as the file)
      * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
+     * @since 10.3RC1
      */
-    protected static Collection<String> getDocumentNamesFromXML(File file) throws Exception
+    protected static Map<String, XAREntry> getXarEntriesFromXML(File file) throws Exception
     {
         try (FileInputStream stream = new FileInputStream(file)) {
-            return getDocumentNamesFromXML(stream);
+            return getXarEntriesFromXML(stream);
         }
     }
 
-    public static Collection<String> getDocumentNamesFromXML(InputStream stream) throws Exception
+    /**
+     * Gets the list of entry from a 'package.xml'-like document.
+     * 
+     * @param stream the XML document to parse
+     * @return the Map of entries contained in the XML document (ordered in the same order as the file)
+     * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
+     * @since 10.3RC1
+     */
+    public static Map<String, XAREntry> getXarEntriesFromXML(InputStream stream) throws Exception
     {
         SAXReader reader = new SAXReader();
         Document domdoc;
@@ -407,17 +428,38 @@ public class XARMojo extends AbstractXARMojo
             throw new Exception("The supplied document contains no document list ");
         }
 
-        Collection<String> result = new LinkedList<>();
+        Map<String, XAREntry> result = new LinkedHashMap<>();
         Collection elements = filesElement.elements(FILE_TAG);
         for (Object item : elements) {
             if (item instanceof Element) {
                 Element currentElement = (Element) item;
-                String documentName = currentElement.getText();
-                result.add(documentName);
+
+                XAREntry entry = new XAREntry();
+                entry.setDocument(currentElement.getText());
+                entry.setType(currentElement.attributeValue("type"));
+
+                result.put(entry.getDocument(), entry);
             }
         }
 
         return result;
+    }
+
+    /**
+     * Gets the list of document names from a 'package.xml'-like document.
+     * 
+     * @param file the XML document to parse
+     * @return the list of document names contained in the XML document
+     * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
+     */
+    protected static Collection<String> getDocumentNamesFromXML(File file) throws Exception
+    {
+        return getXarEntriesFromXML(file).keySet();
+    }
+
+    public static Collection<String> getDocumentNamesFromXML(InputStream stream) throws Exception
+    {
+        return getXarEntriesFromXML(stream).keySet();
     }
 
     /**

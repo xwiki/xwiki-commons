@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Map;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
@@ -187,6 +188,33 @@ public class XARMojoTest extends AbstractMojoTest
         Verifier verifier = createVerifier("/transformedXml");
         verifier.executeGoals(Arrays.asList("clean", "package"));
         verifier.verifyErrorFreeLog();
+    }
+
+    @Test
+    public void entities() throws Exception
+    {
+        Verifier verifier = createVerifier("/entries");
+        verifier.executeGoals(Arrays.asList("clean", "package"));
+        verifier.verifyErrorFreeLog();
+
+        File tempDir = new File(verifier.getBasedir(), "target/temp");
+        tempDir.mkdirs();
+
+        // Extract the generated XAR so that we verify its content easily
+        File xarFile = new File(verifier.getBasedir(), "target/xwiki-commons-tool-xar-plugin-test-1.0.xar");
+        ZipUnArchiver unarchiver = new ZipUnArchiver(xarFile);
+        unarchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "xar"));
+        unarchiver.setDestDirectory(tempDir);
+        unarchiver.extract();
+
+        File classesDir = new File(verifier.getBasedir(), "target/classes");
+        Map<String, XAREntry> entries = XARMojo.getXarEntriesFromXML(new File(classesDir, "package.xml"));
+
+        assertEquals("The newly created xar archive doesn't contain the required documents", 3, entries.size());
+
+        assertEquals("Not the right type", "home", entries.get("Type.home").getType());
+        assertEquals("Not the right type", "configuration", entries.get("Type.configuration").getType());
+        assertEquals("Not the right type", "custom", entries.get("Type.custom").getType());
     }
 
     @Test
