@@ -19,9 +19,9 @@
  */
 package org.xwiki.xml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link org.xwiki.xml.XMLUtils}.
@@ -54,35 +54,35 @@ public class XMLUtilsTest
     {
         String escapedText = XMLUtils.escape("a < a' && a' < a\" => a < a\"");
 
-        assertFalse("Failed to escape <", escapedText.contains("<"));
-        assertFalse("Failed to escape >", escapedText.contains(">"));
-        assertFalse("Failed to escape '", escapedText.contains("'"));
-        assertFalse("Failed to escape \"", escapedText.contains("\""));
-        assertFalse("Failed to escape &", escapedText.contains("&&"));
+        assertFalse(escapedText.contains("<"), "Failed to escape <");
+        assertFalse(escapedText.contains(">"), "Failed to escape >");
+        assertFalse(escapedText.contains("'"), "Failed to escape '");
+        assertFalse(escapedText.contains("\""), "Failed to escape \"");
+        assertFalse(escapedText.contains("&&"), "Failed to escape &");
     }
 
     @Test
     public void escapeApos()
     {
-        assertFalse("' wrongly escaped to non-HTML &apos;", XMLUtils.escape("'").equals("&apos;"));
+        assertFalse(XMLUtils.escape("'").equals("&apos;"), "' wrongly escaped to non-HTML &apos;");
     }
 
     @Test
     public void escapeEmptyString()
     {
-        assertEquals("\"\" should be \"\"", "", XMLUtils.escape(""));
+        assertEquals("", XMLUtils.escape(""), "\"\" should be \"\"");
     }
 
     @Test
     public void escapeWithNull()
     {
-        assertNull("null should be null", XMLUtils.escape(null));
+        assertNull(XMLUtils.escape(null), "null should be null");
     }
 
     @Test
     public void escapeNonAscii()
     {
-        assertEquals("Non-ASCII characters were escaped", "\u0123", XMLUtils.escape("\u0123"));
+        assertEquals("\u0123", XMLUtils.escape("\u0123"), "Non-ASCII characters were escaped");
     }
 
     @Test
@@ -91,37 +91,36 @@ public class XMLUtilsTest
 
         String escapedText = XMLUtils.escapeAttributeValue("a < a' && a' < a\" => a < a\" {");
 
-        assertFalse("Failed to escape <", escapedText.contains("<"));
-        assertFalse("Failed to escape >", escapedText.contains(">"));
-        assertFalse("Failed to escape '", escapedText.contains("'"));
-        assertFalse("Failed to escape \"", escapedText.contains("\""));
-        assertFalse("Failed to escape &", escapedText.contains("&&"));
-        assertFalse("Failed to escape {", escapedText.contains("{"));
+        assertFalse(escapedText.contains("<"), "Failed to escape <");
+        assertFalse(escapedText.contains(">"), "Failed to escape >");
+        assertFalse(escapedText.contains("'"), "Failed to escape '");
+        assertFalse(escapedText.contains("\""), "Failed to escape \"");
+        assertFalse(escapedText.contains("&&"), "Failed to escape &");
+        assertFalse(escapedText.contains("{"), "Failed to escape {");
     }
 
     @Test
     public void escapeAttributeValueApos()
     {
-        assertFalse("' wrongly escaped to non-HTML &apos;", XMLUtils.escapeAttributeValue("'")
-            .equals("&apos;"));
+        assertFalse(XMLUtils.escapeAttributeValue("'").equals("&apos;"), "' wrongly escaped to non-HTML &apos;");
     }
 
     @Test
     public void escapeFAttributeValueEmptyString()
     {
-        assertEquals("\"\" should be \"\"", "", XMLUtils.escapeAttributeValue(""));
+        assertEquals("", XMLUtils.escapeAttributeValue(""), "\"\" should be \"\"");
     }
 
     @Test
     public void escapeFAttributeValueWithNull()
     {
-        assertNull("null should be null", XMLUtils.escapeAttributeValue(null));
+        assertNull(XMLUtils.escapeAttributeValue(null), "null should be null");
     }
 
     @Test
     public void escapeAttributeValueNonAscii()
     {
-        assertEquals("Non-ASCII characters were escaped", "\u0123", XMLUtils.escapeAttributeValue("\u0123"));
+        assertEquals("\u0123", XMLUtils.escapeAttributeValue("\u0123"), "Non-ASCII characters were escaped");
     }
 
     @Test
@@ -130,64 +129,62 @@ public class XMLUtilsTest
 
         String escapedText = XMLUtils.escapeElementContent("a < a' && a' < a\" => a < a\"");
 
-        assertFalse("Failed to escape <", escapedText.contains("<"));
-        assertFalse("Failed to escape >", escapedText.contains(">"));
-        assertTrue("Wrongfully escaped '", escapedText.contains("'"));
-        assertTrue("Wrongfully escaped \"", escapedText.contains("\""));
-        assertFalse("Failed to escape &", escapedText.contains("&&"));
+        assertFalse(escapedText.contains("<"), "Failed to escape <");
+        assertFalse(escapedText.contains(">"), "Failed to escape >");
+        assertTrue(escapedText.contains("'"), "Wrongfully escaped '");
+        assertTrue(escapedText.contains("\""), "Wrongfully escaped \"");
+        assertFalse(escapedText.contains("&&"), "Failed to escape &");
     }
 
     @Test
     public void escapeElementContentEmptyString()
     {
-        assertEquals("\"\" should be \"\"", "", XMLUtils.escapeElementContent(""));
+        assertEquals("", XMLUtils.escapeElementContent(""), "\"\" should be \"\"");
     }
 
     @Test
     public void escapeElementContentWithNull()
     {
-        assertNull("null should be null", XMLUtils.escapeElementContent(null));
+        assertNull(XMLUtils.escapeElementContent(null), "null should be null");
     }
 
     @Test
     public void escapeElementContentNonAscii()
     {
-        assertEquals("Non-ASCII characters were escaped", "\u0123", XMLUtils.escapeElementContent("\u0123"));
+        assertEquals("\u0123", XMLUtils.escapeElementContent("\u0123"), "Non-ASCII characters were escaped");
     }
 
     @Test
     public void unescape()
     {
-        assertEquals("Failed to unescaped named entities", "&'\"<>",
-            XMLUtils.unescape("&amp;&apos;&quot;&lt;&gt;"));
-        assertEquals("Failed to unescaped decimal entities", "&'\"<>",
-            XMLUtils.unescape("&#38;&#39;&#34;&#60;&#62;"));
-        assertEquals("Failed to unescaped decimal entities with leading zeros", "&'\"<>",
-            XMLUtils.unescape("&#038;&#0039;&#00034;&#000060;&#0000062;"));
-        assertEquals("Failed to unescaped hexadecimal entities", "&'\"<<>>",
-            XMLUtils.unescape("&#x26;&#x27;&#x22;&#x3c;&#x3C;&#x3e;&#x3E;"));
-        assertEquals("Failed to unescaped hexadecimal entities with leading zeros", "&'\"<<>>",
-            XMLUtils.unescape("&#x026;&#x0027;&#x00022;&#x00003c;&#x0003C;&#x003e;&#x03E;"));
+        assertEquals("&'\"<>", XMLUtils.unescape("&amp;&apos;&quot;&lt;&gt;"), "Failed to unescaped named entities");
+        assertEquals("&'\"<>", XMLUtils.unescape("&#38;&#39;&#34;&#60;&#62;"), "Failed to unescaped decimal entities");
+        assertEquals("&'\"<>", XMLUtils.unescape("&#038;&#0039;&#00034;&#000060;&#0000062;"),
+            "Failed to unescaped decimal entities with leading zeros");
+        assertEquals("&'\"<<>>", XMLUtils.unescape("&#x26;&#x27;&#x22;&#x3c;&#x3C;&#x3e;&#x3E;"),
+            "Failed to unescaped hexadecimal entities");
+        assertEquals("&'\"<<>>", XMLUtils.unescape("&#x026;&#x0027;&#x00022;&#x00003c;&#x0003C;&#x003e;&#x03E;"),
+            "Failed to unescaped hexadecimal entities with leading zeros");
     }
 
     @Test
     public void unescapeEmptyString()
     {
-        assertEquals("\"\" should be \"\"", "", XMLUtils.unescape(""));
+        assertEquals("", XMLUtils.unescape(""), "\"\" should be \"\"");
     }
 
     @Test
     public void unescapeWithNull()
     {
-        assertNull("null should be null", XMLUtils.unescape(null));
+        assertNull(XMLUtils.unescape(null), "null should be null");
     }
 
     @Test
     public void unescapeOtherEscapes()
     {
-        assertEquals("Extra named entities were unescaped", "&deg;", XMLUtils.unescape("&deg;"));
-        assertEquals("Extra decimal entities were unescaped", "&#65;", XMLUtils.unescape("&#65;"));
-        assertEquals("Extra hexadecimal entities were unescaped", "&#x5;", XMLUtils.unescape("&#x5;"));
+        assertEquals("&deg;", XMLUtils.unescape("&deg;"), "Extra named entities were unescaped");
+        assertEquals("&#65;", XMLUtils.unescape("&#65;"), "Extra decimal entities were unescaped");
+        assertEquals("&#x5;", XMLUtils.unescape("&#x5;"), "Extra hexadecimal entities were unescaped");
     }
 
     @Test

@@ -40,9 +40,11 @@ import javax.xml.transform.stax.StAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Unit tests for {@link org.xwiki.xml.stax.StAXUtils}.
@@ -56,25 +58,25 @@ public class StAXUtilsTest
     public void getXMLStreamReader() throws XMLStreamException
     {
         // TODO: add support for XMLEventReader
-        // Assert.assertNotNull(StAXUtils.getXMLStreamReader(new StAXSource(mockXMLEventReader())));
-        Assert.assertNotNull(StAXUtils.getXMLStreamReader(new StAXSource(mockXMLStreamReader())));
-        Assert.assertNotNull(StAXUtils.getXMLStreamReader(new StreamSource(new StringReader("<element/>"))));
+        // assertNotNull(StAXUtils.getXMLStreamReader(new StAXSource(mockXMLEventReader())));
+        assertNotNull(StAXUtils.getXMLStreamReader(new StAXSource(mockXMLStreamReader())));
+        assertNotNull(StAXUtils.getXMLStreamReader(new StreamSource(new StringReader("<element/>"))));
     }
 
     @Test
     public void getXMLEventReader() throws XMLStreamException
     {
-        Assert.assertNotNull(StAXUtils.getXMLEventReader(new StAXSource(mockXMLEventReader())));
-        Assert.assertNotNull(StAXUtils.getXMLEventReader(new StAXSource(mockXMLStreamReader())));
-        Assert.assertNotNull(StAXUtils.getXMLEventReader(new StreamSource(new StringReader("<element/>"))));
+        assertNotNull(StAXUtils.getXMLEventReader(new StAXSource(mockXMLEventReader())));
+        assertNotNull(StAXUtils.getXMLEventReader(new StAXSource(mockXMLStreamReader())));
+        assertNotNull(StAXUtils.getXMLEventReader(new StreamSource(new StringReader("<element/>"))));
     }
 
     @Test
     public void getXMLStreamWriter() throws XMLStreamException
     {
-        Assert.assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLEventWriter.class))));
-        Assert.assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLStreamWriter.class))));
-        Assert.assertNotNull(StAXUtils.getXMLStreamWriter(new StreamResult(new StringWriter())));
+        assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLEventWriter.class))));
+        assertNotNull(StAXUtils.getXMLStreamWriter(new StAXResult(Mockito.mock(XMLStreamWriter.class))));
+        assertNotNull(StAXUtils.getXMLStreamWriter(new StreamResult(new StringWriter())));
     }
 
     @Test
@@ -99,7 +101,7 @@ public class StAXUtilsTest
         writer.writeCData("cdata");
         writer.writeEndElement();
 
-        Assert.assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<element attribute=\"value\">"
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + "<element attribute=\"value\">"
             + "characters" + "<![CDATA[cdata]]>" + "</element>", output.getBuffer().toString());
     }
 
