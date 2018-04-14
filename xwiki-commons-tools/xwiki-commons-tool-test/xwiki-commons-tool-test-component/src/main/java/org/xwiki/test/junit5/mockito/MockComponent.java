@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,17 +16,28 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.test.junit5.mockito;
 
-<!DOCTYPE suppressions PUBLIC
-     "-//Puppy Crawl//DTD Suppressions 1.0//EN"
-     "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-<suppressions>
-  <!-- Checkstyle reports a "Throwing 'Throwable' is not allowed" error but we cannot do otherwise since throwing
-       Throwable is part of the JUnit method signature that we implement! -->
-  <suppress checks="IllegalThrows" files="ComponentManagerRule.java" />
-  <suppress checks="IllegalThrows" files="MockitoComponentMockingRule.java" />
-  <suppress checks="BooleanExpressionComplexity" files="MockitoComponentMocker.java" />
-  <suppress checks="CyclomaticComplexity" files="MockitoComponentMocker.java" />
-</suppressions>
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+/**
+ * Marks a field as being a Mock component.
+ *
+ * @version $Id$
+ * @since 10.3RC1
+ */
+@Documented
+@Retention(RUNTIME)
+@Target({ FIELD, ANNOTATION_TYPE })
+@Inherited
+public @interface MockComponent
+{
+}

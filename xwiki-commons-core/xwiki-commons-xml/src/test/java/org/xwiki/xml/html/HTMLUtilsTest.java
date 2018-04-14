@@ -21,14 +21,13 @@ package org.xwiki.xml.html;
 
 import java.io.StringReader;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.internal.DefaultExecution;
-import org.xwiki.test.ComponentManagerRule;
 import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.xml.internal.html.DefaultHTMLCleaner;
 import org.xwiki.xml.internal.html.DefaultHTMLCleanerTest;
 import org.xwiki.xml.internal.html.filter.AttributeFilter;
@@ -38,12 +37,15 @@ import org.xwiki.xml.internal.html.filter.LinkFilter;
 import org.xwiki.xml.internal.html.filter.ListFilter;
 import org.xwiki.xml.internal.html.filter.ListItemFilter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Unit tests for {@link org.xwiki.xml.html.HTMLUtils}.
  * 
  * @version $Id$
  * @since 1.8.3
  */
+@ComponentTest
 @ComponentList({
     LinkFilter.class,
     ListFilter.class,
@@ -58,31 +60,28 @@ public class HTMLUtilsTest
 {
     private HTMLCleaner cleaner;
 
-    @Rule
-    public final ComponentManagerRule componentManager = new ComponentManagerRule();
-
-    @Before
-    public void setUp() throws Exception
+    @BeforeEach
+    public void setUp(ComponentManager componentManager) throws Exception
     {
-        this.cleaner = this.componentManager.getInstance(HTMLCleaner.class);
+        this.cleaner = componentManager.getInstance(HTMLCleaner.class);
     }
 
     @Test
-    public void testStripHTMLEnvelope() throws Exception
+    public void stripHTMLEnvelope() throws Exception
     {
         Document document =
             this.cleaner.clean(new StringReader("<html><head><body><p>test1</p><p>test2</p></body></html>"));
         HTMLUtils.stripHTMLEnvelope(document);
-        Assert.assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><p>test1</p><p>test2</p></html>\n",
+        assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><p>test1</p><p>test2</p></html>\n",
             HTMLUtils.toString(document));
     }
 
     @Test
-    public void testStripTopLevelParagraph() throws Exception
+    public void stripTopLevelParagraph() throws Exception
     {
         Document document = this.cleaner.clean(new StringReader("<html><head /><body><p>test</p></body></html>"));
         HTMLUtils.stripFirstElementInside(document, "body", "p");
-        Assert.assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body>test</body></html>\n",
+        assertEquals(DefaultHTMLCleanerTest.HEADER + "<html><head></head><body>test</body></html>\n",
             HTMLUtils.toString(document));
     }
 }

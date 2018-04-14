@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,17 +16,13 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.test.junit5.mockito;
 
-<!DOCTYPE suppressions PUBLIC
-     "-//Puppy Crawl//DTD Suppressions 1.0//EN"
-     "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
+import org.xwiki.component.annotation.Role;
 
-<suppressions>
-  <!-- Checkstyle reports a "Throwing 'Throwable' is not allowed" error but we cannot do otherwise since throwing
-       Throwable is part of the JUnit method signature that we implement! -->
-  <suppress checks="IllegalThrows" files="ComponentManagerRule.java" />
-  <suppress checks="IllegalThrows" files="MockitoComponentMockingRule.java" />
-  <suppress checks="BooleanExpressionComplexity" files="MockitoComponentMocker.java" />
-  <suppress checks="CyclomaticComplexity" files="MockitoComponentMocker.java" />
-</suppressions>
+@Role
+public interface Component3Role
+{
+    void whatever3();
+}

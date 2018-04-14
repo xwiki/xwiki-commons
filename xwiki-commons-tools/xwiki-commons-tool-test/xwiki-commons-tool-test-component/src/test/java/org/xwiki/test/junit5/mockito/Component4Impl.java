@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,17 +16,46 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.test.junit5.mockito;
 
-<!DOCTYPE suppressions PUBLIC
-     "-//Puppy Crawl//DTD Suppressions 1.0//EN"
-     "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
+import java.util.List;
 
-<suppressions>
-  <!-- Checkstyle reports a "Throwing 'Throwable' is not allowed" error but we cannot do otherwise since throwing
-       Throwable is part of the JUnit method signature that we implement! -->
-  <suppress checks="IllegalThrows" files="ComponentManagerRule.java" />
-  <suppress checks="IllegalThrows" files="MockitoComponentMockingRule.java" />
-  <suppress checks="BooleanExpressionComplexity" files="MockitoComponentMocker.java" />
-  <suppress checks="CyclomaticComplexity" files="MockitoComponentMocker.java" />
-</suppressions>
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+
+@Component
+@Singleton
+public class Component4Impl implements Component4Role
+{
+    private List<String> list;
+
+    @Inject
+    private Component1Role component1;
+
+    @Inject
+    private Component2Role component2;
+
+    @Inject
+    private Component3Role component3;
+
+    @Override
+    public int size()
+    {
+        return this.component1.size(this.list);
+    }
+
+    @Override
+    public Component2Role getRole2()
+    {
+        return this.component2;
+    }
+
+    @Override
+    public Component3Role getRole3()
+    {
+        return this.component3;
+    }
+}

@@ -20,29 +20,15 @@
 package org.xwiki.test.mockito;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Provider;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
-import org.xwiki.component.annotation.ComponentAnnotationLoader;
-import org.xwiki.component.annotation.ComponentDescriptorFactory;
-import org.xwiki.component.annotation.Role;
-import org.xwiki.component.descriptor.ComponentDependency;
-import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.util.ReflectionUtils;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for Components should extend this class instead of using {@link MockitoComponentManagerRule} or
@@ -114,16 +100,6 @@ import static org.mockito.Mockito.when;
 public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
 {
     /**
-     * Used to discover and register components using annotations.
-     */
-    private ComponentAnnotationLoader loader = new ComponentAnnotationLoader();
-
-    /**
-     * Used to create Component Descriptors based on annotations.
-     */
-    private ComponentDescriptorFactory factory = new ComponentDescriptorFactory();
-
-    /**
      * The mocked logger if any.
      */
     private Logger mockLogger;
@@ -133,32 +109,14 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
      */
     private RoleHint<T> mockedComponentHint;
 
-    /**
-     * The class of the component implementation to mock.
-     */
-    private Class<?> componentImplementationClass;
-
-    /**
-     * The list of component Roles that shouldn't be mocked.
-     */
-    private List<Class<?>> excludedComponentRoleDependencies = new ArrayList<Class<?>>();
-
-    /**
-     * The role Type if the component implementation implements several roles.
-     */
-    private Type componentRoleType;
-
-    /**
-     * The role Hint if the component implementation implements several roles.
-     */
-    private String componentRoleHint;
+    private MockitoComponentMocker<T> mocker;
 
     /**
      * @param componentImplementationClass the component implementation for which we wish to have its injection mocked
      */
     public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass)
     {
-        this.componentImplementationClass = componentImplementationClass;
+        this.mocker = new MockitoComponentMocker<T>(this, componentImplementationClass);
     }
 
     /**
@@ -168,8 +126,8 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass,
         List<? extends Class<?>> excludedComponentRoleDependencies)
     {
-        this(componentImplementationClass);
-        this.excludedComponentRoleDependencies.addAll(excludedComponentRoleDependencies);
+        this.mocker =
+            new MockitoComponentMocker<T>(this, componentImplementationClass, excludedComponentRoleDependencies);
     }
 
     /**
@@ -181,9 +139,8 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass, Type componentRoleType,
         String componentRoleHint, List<? extends Class<?>> excludedComponentRoleDependencies)
     {
-        this(componentImplementationClass, excludedComponentRoleDependencies);
-        this.componentRoleType = componentRoleType;
-        this.componentRoleHint = componentRoleHint;
+        this.mocker = new MockitoComponentMocker<T>(this, componentImplementationClass, componentRoleType,
+            componentRoleHint, excludedComponentRoleDependencies);
     }
 
     /**
@@ -205,9 +162,8 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     public MockitoComponentMockingRule(Class<? extends T> componentImplementationClass, Type componentRoleType,
         String componentRoleHint)
     {
-        this(componentImplementationClass);
-        this.componentRoleType = componentRoleType;
-        this.componentRoleHint = componentRoleHint;
+        this.mocker = new MockitoComponentMocker<T>(this, componentImplementationClass, componentRoleType,
+            componentRoleHint);
     }
 
     /**
@@ -251,32 +207,9 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     {
         super.before(base, method, target);
 
-        mockComponent(target);
-    }
-
-    /**
-     * Mock the injected components for the specified component implementation.
-     *
-     * @param testInstance the test instance
-     * @throws Exception in case of an error while mocking
-     */
-    private void mockComponent(final Object testInstance) throws Exception
-    {
-        // Handle component fields
-        for (ComponentDescriptor<T> descriptor : this.factory
-            .createComponentDescriptors(this.componentImplementationClass, findComponentRoleType())) {
-            // Only use the descriptor for the specified hint
-            if ((this.componentRoleHint != null && this.componentRoleHint.equals(descriptor.getRoleHint()))
-                || this.componentRoleHint == null) {
-                registerMockDependencies(descriptor);
-                registerComponent(descriptor);
-
-                // Save the mocked component information so that the test can get an instance of this component
-                // easily by calling getComponentUnderTest(...)
-                this.mockedComponentHint = new RoleHint<T>(descriptor.getRoleType(), descriptor.getRoleHint());
-                break;
-            }
-        }
+        // Save the mocked component information so that the test can get an instance of this component
+        // easily by calling getComponentUnderTest(...)
+        this.mockedComponentHint = this.mocker.mockComponent(target);
     }
 
     /**
@@ -291,98 +224,14 @@ public class MockitoComponentMockingRule<T> extends MockitoComponentManagerRule
     {
         Object logger;
 
-        if (!this.excludedComponentRoleDependencies.contains(Logger.class)
-            && this.componentImplementationClass == instanceClass) {
+        if (!this.mocker.getExcludedComponentRoleDependencies().contains(Logger.class)
+            && this.mocker.getComponentImplementationClass() == instanceClass) {
             logger = mock(Logger.class, instanceClass.getName());
             this.mockLogger = (Logger) logger;
         } else {
             logger = super.createLogger(instanceClass);
         }
         return logger;
-    }
-
-    /**
-     * Create mocks of injected dependencies and registers them against the Component Manager.
-     *
-     * @param descriptor the descriptor of the component under test
-     * @throws Exception if an error happened during registration
-     */
-    private void registerMockDependencies(ComponentDescriptor<T> descriptor) throws Exception
-    {
-        Collection<ComponentDependency<?>> dependencyDescriptors = descriptor.getComponentDependencies();
-        for (ComponentDependency<?> dependencyDescriptor : dependencyDescriptors) {
-            Class<?> roleTypeClass = ReflectionUtils.getTypeClass(dependencyDescriptor.getRoleType());
-            // Only register a mock if it isn't:
-            // - Already registered
-            // - An explicit exception specified by the user
-            // - A logger
-            // - A collection of components, we want to keep them as Java collections. Those collections are later
-            // filled by the component manager with available components. Developers can register mocked components
-            // in an override of #setupDependencies().
-            // TODO: Handle multiple roles/hints.
-            if (!this.excludedComponentRoleDependencies.contains(roleTypeClass) && Logger.class != roleTypeClass
-                && !roleTypeClass.isAssignableFrom(List.class) && !roleTypeClass.isAssignableFrom(Map.class)
-                && !hasComponent(dependencyDescriptor.getRoleType(), dependencyDescriptor.getRoleHint())) {
-                DefaultComponentDescriptor cd = new DefaultComponentDescriptor<>();
-
-                cd.setRoleType(dependencyDescriptor.getRoleType());
-                cd.setRoleHint(dependencyDescriptor.getRoleHint());
-
-                Object dependencyMock = mock(roleTypeClass, dependencyDescriptor.getName());
-
-                if (Provider.class == roleTypeClass) {
-                    Type providedType = ReflectionUtils.getLastTypeGenericArgument(dependencyDescriptor.getRoleType());
-                    Class providedClass = ReflectionUtils.getTypeClass(providedType);
-
-                    // If the target is registered or if a list or a map are asked don't mock anything
-                    if (hasComponent(providedType, dependencyDescriptor.getRoleHint())
-                        || providedClass.isAssignableFrom(List.class) || providedClass.isAssignableFrom(Map.class)) {
-                        continue;
-                    }
-
-                    if (providedClass.getAnnotation(Role.class) != null) {
-                        // If the dependency is a Provider for a @Role mock the @Role instead of the Provider
-                        cd.setRoleType(providedType);
-                        dependencyMock = mock(providedClass, dependencyDescriptor.getName());
-                    } else {
-                        // If the dependency is a Provider not targeting a @Role register a mock Provider which provide
-                        // a mock
-                        Provider provider = (Provider) dependencyMock;
-                        when(provider.get()).thenReturn(mock(providedClass, providedType.toString()));
-                    }
-                }
-
-                registerComponent(cd, dependencyMock);
-            }
-        }
-    }
-
-    /**
-     * @return the Component role type extracted from the the component implementation class
-     */
-    private Type findComponentRoleType()
-    {
-        Type type;
-
-        Set<Type> componentRoleTypes = this.loader.findComponentRoleTypes(this.componentImplementationClass);
-        if (this.componentRoleType != null) {
-            if (!componentRoleTypes.contains(this.componentRoleType)) {
-                throw new RuntimeException(
-                    "Specified Component Role ([" + this.componentRoleType + "]) not found in component");
-            } else {
-                type = this.componentRoleType;
-            }
-        } else {
-            if (componentRoleTypes.isEmpty()) {
-                throw new RuntimeException(
-                    String.format("Couldn't find roles for component [%s]", this.componentRoleType));
-            } else if (componentRoleTypes.size() > 1) {
-                throw new RuntimeException("Components with several roles must explicitly specify which role to use.");
-            } else {
-                type = componentRoleTypes.iterator().next();
-            }
-        }
-        return type;
     }
 
     /**
