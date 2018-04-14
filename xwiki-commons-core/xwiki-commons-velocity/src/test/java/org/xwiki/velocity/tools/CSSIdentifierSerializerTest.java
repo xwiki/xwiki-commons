@@ -19,9 +19,12 @@
  */
 package org.xwiki.velocity.tools;
 
-import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit tests for {@link CSSIdentifierSerializer}.
@@ -35,11 +38,14 @@ public class CSSIdentifierSerializerTest
     /**
      * NOTE: This test was adapted from Mathias Bynens' tests for CSS.escape polyfill, available under the MIT license.
      * 
-     * @see https://drafts.csswg.org/cssom/#serialize-an-identifier
-     * @see https://github.com/mathiasbynens/CSS.escape/blob/master/tests/tests.js
+     * @see <a href="https://drafts.csswg.org/cssom/#serialize-an-identifier">
+     *       https://drafts.csswg.org/cssom/#serialize-an-identifier</a>
+     * @see <a href="https://github.com/mathiasbynens/CSS.escape/blob/master/tests/tests.js">
+     *       https://github.com/mathiasbynens/CSS.escape/blob/master/tests/tests.js</a>
      */
     @Test
-    public void css()
+    @DisplayName("Various CSS serialization tests")
+    public void serialize()
     {
         assertCssThrowsException("\u0000");
         assertCssThrowsException("a\u0000");
@@ -119,11 +125,9 @@ public class CSSIdentifierSerializerTest
 
     private void assertCssThrowsException(String input)
     {
-        try {
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
             this.cssIdentifierSerializer.serialize(input);
-            fail("Should have thrown IllegalArgumentException!");
-        } catch (IllegalArgumentException e) {
-            assertEquals("Invalid character: the input contains U+0000.", e.getMessage());
-        }
+        });
+        assertEquals("Invalid character: the input contains U+0000.", exception.getMessage());
     }
 }
