@@ -35,7 +35,7 @@
     <xwiki.jacoco.instructionRatio>0.60</xwiki.jacoco.instructionRatio>
     <!-- TODO: Raise threshold when pitest/descartes supports JUnit5. ATM JUnit5 tests are ignored.
          See https://github.com/STAMP-project/pitest-descartes/issues/45 -->
-    <xwiki.pitest.mutationThreshold>36</xwiki.pitest.mutationThreshold>
+    <xwiki.pitest.mutationThreshold>0</xwiki.pitest.mutationThreshold>
     <!-- There's a utility class with lots of features, allow it to have many dependencies;
          There's a SAX event listener, which requires complex code -->
     <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
