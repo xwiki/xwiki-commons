@@ -23,17 +23,17 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.tools.generic.ListTool;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
-import org.xwiki.velocity.VelocityConfiguration;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.MethodArgumentsUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 /**
@@ -42,16 +42,16 @@ import static org.mockito.Mockito.when;
  * @version $Id$
  * @since 2.4RC1
  */
+@ComponentTest
 public class DefaultVelocityConfigurationTest
 {
-    @Rule
-    public MockitoComponentMockingRule<VelocityConfiguration> mocker =
-        new MockitoComponentMockingRule<VelocityConfiguration>(DefaultVelocityConfiguration.class);
+    @InjectMockComponents
+    private DefaultVelocityConfiguration configuration;
 
-    @Before
-    public void configure() throws Exception
+    @BeforeEach
+    public void configure(ComponentManager componentManager) throws Exception
     {
-        ConfigurationSource source = this.mocker.getInstance(ConfigurationSource.class);
+        ConfigurationSource source = componentManager.getInstance(ConfigurationSource.class);
         when(source.getProperty("velocity.tools", Properties.class)).thenReturn(new Properties());
         when(source.getProperty("velocity.properties", Properties.class)).thenReturn(new Properties());
     }
@@ -60,24 +60,23 @@ public class DefaultVelocityConfigurationTest
     public void testDefaultToolsPresent() throws Exception
     {
         // Verify for example that the List tool is present.
-        assertEquals(ListTool.class.getName(), this.mocker.getComponentUnderTest().getTools().get("listtool"));
+        assertEquals(ListTool.class.getName(), this.configuration.getTools().get("listtool"));
     }
 
     @Test
     public void testDefaultPropertiesPresent() throws Exception
     {
         // Verify that the secure uberspector is set by default
-        assertEquals(
-            StringUtils.join(new String[] { SecureUberspector.class.getName(),
-                DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
-            this.mocker.getComponentUnderTest().getProperties().getProperty("runtime.introspector.uberspect"));
+        assertEquals(StringUtils.join(new String[] { SecureUberspector.class.getName(),
+            DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
+            this.configuration.getProperties().getProperty("runtime.introspector.uberspect"));
 
         // Verify that null values are allowed by default
         assertEquals(Boolean.TRUE.toString(),
-            this.mocker.getComponentUnderTest().getProperties().getProperty("directive.set.null.allowed"));
+            this.configuration.getProperties().getProperty("directive.set.null.allowed"));
 
         // Verify that Macros are isolated by default
-        assertEquals(Boolean.TRUE.toString(), this.mocker.getComponentUnderTest().getProperties()
-            .getProperty("velocimacro.permissions.allow.inline.local.scope"));
+        assertEquals(Boolean.TRUE.toString(),
+            this.configuration.getProperties().getProperty("velocimacro.permissions.allow.inline.local.scope"));
     }
 }

@@ -24,17 +24,19 @@ import java.util.Properties;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.ListTool;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.test.annotation.AfterComponent;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.annotation.BeforeComponent;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.velocity.VelocityConfiguration;
-import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityContextInitializer;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -46,29 +48,24 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
+@ComponentTest
 public class DefaultVelocityContextFactoryTest
 {
-    @Rule
-    public MockitoComponentMockingRule<DefaultVelocityContextFactory> mocker =
-        new MockitoComponentMockingRule(DefaultVelocityContextFactory.class);
+    @MockComponent
+    private VelocityConfiguration configuration;
 
-    private VelocityContextFactory factory;
+    @MockComponent
+    private ComponentManager componentManager;
 
-    @Before
+    @InjectMockComponents
+    private DefaultVelocityContextFactory factory;
+
+    @BeforeComponent
     public void configure() throws Exception
     {
-        VelocityConfiguration configuration = this.mocker.getInstance(VelocityConfiguration.class);
         Properties properties = new Properties();
         properties.put("listtool", ListTool.class.getName());
-        when(configuration.getTools()).thenReturn(properties);
-
-        this.factory = this.mocker.getInstance(VelocityContextFactory.class);
-    }
-
-    @AfterComponent
-    public void overrideComponents() throws Exception
-    {
-        this.mocker.registerMockComponent(ComponentManager.class);
+        when(this.configuration.getTools()).thenReturn(properties);
     }
 
     /**
@@ -81,20 +78,19 @@ public class DefaultVelocityContextFactoryTest
     {
         // We also verify that the VelocityContextInitializers are called.
         VelocityContextInitializer mockInitializer = mock(VelocityContextInitializer.class);
-        ComponentManager mockComponentManager = this.mocker.getInstance(ComponentManager.class);
-        when(mockComponentManager.getInstanceList(VelocityContextInitializer.class)).thenReturn(
-            Arrays.<Object>asList(mockInitializer));
+        when(this.componentManager.getInstanceList(VelocityContextInitializer.class)).thenReturn(
+            Arrays.asList(mockInitializer));
 
         VelocityContext context1 = this.factory.createContext();
         context1.put("param", "value");
         VelocityContext context2 = this.factory.createContext();
 
         verify(mockInitializer, times(2)).initialize(any(VelocityContext.class));
-        verify(mockComponentManager, times(2)).getInstanceList(VelocityContextInitializer.class);
+        verify(this.componentManager, times(2)).getInstanceList(VelocityContextInitializer.class);
 
-        Assert.assertNotSame(context1, context2);
-        Assert.assertNotNull(context1.get("listtool"));
-        Assert.assertSame(context2.get("listtool"), context1.get("listtool"));
-        Assert.assertNull(context2.get("param"));
+        assertNotSame(context1, context2);
+        assertNotNull(context1.get("listtool"));
+        assertSame(context2.get("listtool"), context1.get("listtool"));
+        assertNull(context2.get("param"));
     }
 }
