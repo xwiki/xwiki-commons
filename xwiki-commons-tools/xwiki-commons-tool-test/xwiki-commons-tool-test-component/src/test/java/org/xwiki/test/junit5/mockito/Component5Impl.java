@@ -19,29 +19,23 @@
  */
 package org.xwiki.test.junit5.mockito;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.inject.Singleton;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.xwiki.component.annotation.Component;
 
-/**
- * Marks a field as needed to be injected with components and mock components.
- *
- * @version $Id$
- * @since 10.3RC1
- */
-@Documented
-@Retention(RUNTIME)
-@Target({ FIELD })
-@Inherited
-public @interface InjectMockComponents
+@Component
+@Singleton
+public class Component5Impl implements Component2Role, Component3Role
 {
-    /**
-     * @return the role to use for disambiguation when the component implementations implements several roles
-     */
-    // Note: Java doesn't accept null as default value so we have to use a specific class and filter it in the code.
-    Class<?> role() default InjectMockComponents.class;
+    @Override
+    public void whatever2()
+    {
+        // Empty
+    }
+
+    @Override
+    public void whatever3()
+    {
+        // Empty
+    }
 }

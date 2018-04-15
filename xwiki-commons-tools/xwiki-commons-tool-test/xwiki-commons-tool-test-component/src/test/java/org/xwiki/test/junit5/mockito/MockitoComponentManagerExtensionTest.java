@@ -59,6 +59,12 @@ public class MockitoComponentManagerExtensionTest
     @InjectMockComponents
     private Component4Impl component4;
 
+    @InjectMockComponents(role = Component2Role.class)
+    private Component5Impl component5Role1;
+
+    @InjectMockComponents(role = Component3Role.class)
+    private Component5Impl component5Role2;
+
     @BeforeEach
     public void before(MockitoComponentManager componentManager)
     {
@@ -103,5 +109,9 @@ public class MockitoComponentManagerExtensionTest
         assertNotNull(this.component4.getRole3());
         MockingDetails details = Mockito.mockingDetails(this.component4.getRole3());
         assertFalse(details.isMock());
+
+        // Verify that we also support components that implement several roles
+        assertNotNull(this.component5Role1);
+        assertNotNull(this.component5Role2);
     }
 }

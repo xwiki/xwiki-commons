@@ -131,11 +131,11 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
             // @Inject-annotated fields injected with mocks or real implementations.
             for (Field field : testInstance.getClass().getDeclaredFields()) {
-                if (field.isAnnotationPresent(InjectMockComponents.class)) {
+                InjectMockComponents annotation = field.getAnnotation(InjectMockComponents.class);
+                if (annotation != null) {
                     // Find Component descriptors
                     List<ComponentDescriptor> descriptors = LOADER.getComponentsDescriptors(field.getType());
-                    // TODO: Add ways to identify which one to use. FTM use the first one.
-                    ComponentDescriptor<?> descriptor = descriptors.get(0);
+                    ComponentDescriptor<?> descriptor = getDescriptor(annotation.role(), descriptors, field);
                     MockitoComponentMocker<?> mocker = new MockitoComponentMocker<>(mcm, field.getType(),
                         descriptor.getRoleType(), descriptor.getRoleHint());
                     mocker.mockComponent(testInstance);
@@ -171,6 +171,30 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         throws ParameterResolutionException
     {
         return loadComponentManager(extensionContext);
+    }
+
+    private ComponentDescriptor<?> getDescriptor(Class<?> role, List<ComponentDescriptor> descriptors, Field field)
+        throws Exception
+    {
+        if (role.equals(InjectMockComponents.class)) {
+            if (descriptors.size() > 1) {
+                // Force user to specify a role in case of several
+                throw new Exception(String.format("The component under field [%s] is implementing several roles. "
+                    + "Please disambiguate by using the \"role\" parameter of the @%s annotation.",
+                    field.getName(), InjectMockComponents.class.getSimpleName()));
+            } else {
+                return descriptors.get(0);
+            }
+        } else {
+            for (ComponentDescriptor<?> descriptor : descriptors) {
+                Class<?> roleClass = ReflectionUtils.getTypeClass(descriptor.getRoleType());
+                if (roleClass.equals(role)) {
+                    return descriptor;
+                }
+            }
+            throw new Exception(String.format("The role type specified in the @%s annotation for field [%s] isn't "
+                + "implemented by the component.", field.getName(), InjectMockComponents.class.getSimpleName()));
+        }
     }
 
     private boolean shouldInitializeComponentManager(Object testInstance)
