@@ -36,8 +36,6 @@ import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
-import org.xwiki.test.annotation.AllComponents;
-import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentManager;
 import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.xwiki.test.mockito.MockitoComponentMocker;
@@ -100,50 +98,54 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
     @Override
     public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception
     {
-        // We initialize the Mockito Component Manager if one of the following annotations are found:
-        // - @AllComponents (class level)
-        // - @ComponentList (class level)
-        // - @MockComponent (field level)
-        // - @InjectComponentMocks (field level)
-        if (shouldInitializeComponentManager(testInstance)) {
-            MockitoComponentManager mcm = loadComponentManager(context);
-            if (mcm == null) {
-                mcm = new MockitoComponentManager();
-                mcm.initializeTest(testInstance);
-                saveComponentManager(context, mcm);
-            }
+        // We initialize the CM in 3 steps:
+        // - First we create an instance of it
+        // - Then we create mocks for all @MockComponent annotations
+        // - Then we initialize the CM.
+        // This allows the test to have methods annotated with @BeforeComponent which can configure mocks defined
+        // with @MockComponent annotations, so that when @InjectMockComponents component are injected, if they
+        // implement Initializable, the test can have prepared any component setup so that the call to initialize()
+        // will work fine.
+        MockitoComponentManager mcm = loadComponentManager(context);
+        boolean initializeCM = mcm == null;
+        if (initializeCM) {
+            mcm = new MockitoComponentManager();
+            saveComponentManager(context, mcm);
+        }
 
-            // Register a mock component for all fields annotated with @MockComponent
-            for (Field field : testInstance.getClass().getDeclaredFields()) {
-                if (field.isAnnotationPresent(MockComponent.class)) {
-                    // Get the hint from the @Named annotation (if any)
-                    Named namedAnnotation = field.getAnnotation(Named.class);
-                    Object mockComponent;
-                    if (namedAnnotation != null) {
-                        mockComponent = mcm.registerMockComponent(field.getType(), namedAnnotation.value());
-                    } else {
-                        mockComponent = mcm.registerMockComponent(field.getType());
-                    }
-                    ReflectionUtils.setFieldValue(testInstance, field.getName(), mockComponent);
+        // Register a mock component for all fields annotated with @MockComponent
+        for (Field field : testInstance.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(MockComponent.class)) {
+                // Get the hint from the @Named annotation (if any)
+                Named namedAnnotation = field.getAnnotation(Named.class);
+                Object mockComponent;
+                if (namedAnnotation != null) {
+                    mockComponent = mcm.registerMockComponent(field.getType(), namedAnnotation.value());
+                } else {
+                    mockComponent = mcm.registerMockComponent(field.getType());
                 }
+                ReflectionUtils.setFieldValue(testInstance, field.getName(), mockComponent);
             }
+        }
 
-            // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
-            // @Inject-annotated fields injected with mocks or real implementations.
-            for (Field field : testInstance.getClass().getDeclaredFields()) {
-                InjectMockComponents annotation = field.getAnnotation(InjectMockComponents.class);
-                if (annotation != null) {
-                    // Find Component descriptors
-                    List<ComponentDescriptor> descriptors = LOADER.getComponentsDescriptors(field.getType());
-                    ComponentDescriptor<?> descriptor = getDescriptor(annotation.role(), descriptors, field);
-                    MockitoComponentMocker<?> mocker = new MockitoComponentMocker<>(mcm, field.getType(),
-                        descriptor.getRoleType(), descriptor.getRoleHint());
-                    mocker.mockComponent(testInstance);
-                    Object component = mcm.getInstance(descriptor.getRoleType(), descriptor.getRoleHint());
-                    ReflectionUtils.setFieldValue(testInstance, field.getName(), component);
-                }
+        if (initializeCM) {
+            mcm.initializeTest(testInstance);
+        }
+
+        // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
+        // @Inject-annotated fields injected with mocks or real implementations.
+        for (Field field : testInstance.getClass().getDeclaredFields()) {
+            InjectMockComponents annotation = field.getAnnotation(InjectMockComponents.class);
+            if (annotation != null) {
+                // Find Component descriptors
+                List<ComponentDescriptor> descriptors = LOADER.getComponentsDescriptors(field.getType());
+                ComponentDescriptor<?> descriptor = getDescriptor(annotation.role(), descriptors, field);
+                MockitoComponentMocker<?> mocker = new MockitoComponentMocker<>(mcm, field.getType(),
+                    descriptor.getRoleType(), descriptor.getRoleHint());
+                mocker.mockComponent(testInstance);
+                Object component = mcm.getInstance(descriptor.getRoleType(), descriptor.getRoleHint());
+                ReflectionUtils.setFieldValue(testInstance, field.getName(), component);
             }
-
         }
 
         MockitoAnnotations.initMocks(testInstance);
@@ -195,28 +197,6 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             throw new Exception(String.format("The role type specified in the @%s annotation for field [%s] isn't "
                 + "implemented by the component.", field.getName(), InjectMockComponents.class.getSimpleName()));
         }
-    }
-
-    private boolean shouldInitializeComponentManager(Object testInstance)
-    {
-        boolean result = false;
-        if (testInstance.getClass().getAnnotation(AllComponents.class) != null
-            || testInstance.getClass().getAnnotation(ComponentList.class) != null)
-        {
-            result = true;
-        } else {
-            // If one field is annotated with @MockComponent or @InjectMockComponents then it's enough to require
-            // initializing the Mockito Component Manager.
-            for (Field field : testInstance.getClass().getDeclaredFields()) {
-                if (field.isAnnotationPresent(MockComponent.class)
-                    || field.isAnnotationPresent(InjectMockComponents.class))
-                {
-                    result = true;
-                    break;
-                }
-            }
-        }
-        return result;
     }
 
     private MockitoComponentManager loadComponentManager(ExtensionContext context)
