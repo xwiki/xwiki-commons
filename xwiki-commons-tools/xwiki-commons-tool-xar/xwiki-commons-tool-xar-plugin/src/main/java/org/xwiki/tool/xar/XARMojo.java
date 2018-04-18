@@ -401,10 +401,10 @@ public class XARMojo extends AbstractXARMojo
      * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
      * @since 10.3RC1
      */
-    protected static Map<String, XAREntry> getXarEntriesFromXML(File file) throws Exception
+    protected static Map<String, XAREntry> getXarEntriesMapFromXML(File file) throws Exception
     {
         try (FileInputStream stream = new FileInputStream(file)) {
-            return getXarEntriesFromXML(stream);
+            return getXarEntriesMapFromXML(stream);
         }
     }
 
@@ -416,7 +416,7 @@ public class XARMojo extends AbstractXARMojo
      * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
      * @since 10.3RC1
      */
-    public static Map<String, XAREntry> getXarEntriesFromXML(InputStream stream) throws Exception
+    public static Map<String, XAREntry> getXarEntriesMapFromXML(InputStream stream) throws Exception
     {
         SAXReader reader = new SAXReader();
         Document domdoc;
@@ -454,12 +454,12 @@ public class XARMojo extends AbstractXARMojo
      */
     protected static Collection<String> getDocumentNamesFromXML(File file) throws Exception
     {
-        return getXarEntriesFromXML(file).keySet();
+        return getXarEntriesMapFromXML(file).keySet();
     }
 
     public static Collection<String> getDocumentNamesFromXML(InputStream stream) throws Exception
     {
-        return getXarEntriesFromXML(stream).keySet();
+        return getXarEntriesMapFromXML(stream).keySet();
     }
 
     /**

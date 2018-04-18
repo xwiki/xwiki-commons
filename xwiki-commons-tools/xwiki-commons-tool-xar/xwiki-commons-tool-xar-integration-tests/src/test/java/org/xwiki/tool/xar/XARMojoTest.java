@@ -208,7 +208,7 @@ public class XARMojoTest extends AbstractMojoTest
         unarchiver.extract();
 
         File classesDir = new File(verifier.getBasedir(), "target/classes");
-        Map<String, XAREntry> entries = XARMojo.getXarEntriesFromXML(new File(classesDir, "package.xml"));
+        Map<String, XAREntry> entries = XARMojo.getXarEntriesMapFromXML(new File(classesDir, "package.xml"));
 
         assertEquals("The newly created xar archive doesn't contain the required documents", 3, entries.size());
 
