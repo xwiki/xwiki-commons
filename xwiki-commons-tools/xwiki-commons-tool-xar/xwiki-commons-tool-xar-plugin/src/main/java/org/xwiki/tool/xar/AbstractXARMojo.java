@@ -153,7 +153,7 @@ abstract class AbstractXARMojo extends AbstractMojo
     private ArtifactRepository local;
 
     /**
-     * @since 10.3RC1
+     * @since 10.3
      */
     @Parameter(property = "entries", readonly = true, required = false)
     private List<XAREntry> entries;

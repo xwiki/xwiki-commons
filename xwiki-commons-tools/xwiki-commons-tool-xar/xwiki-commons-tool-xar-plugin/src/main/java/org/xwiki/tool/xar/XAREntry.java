@@ -23,7 +23,7 @@ package org.xwiki.tool.xar;
  * Properties to apply to a XAR entry.
  * 
  * @version $Id$
- * @since 10.3RC1
+ * @since 10.3
  */
 public class XAREntry
 {

@@ -399,7 +399,7 @@ public class XARMojo extends AbstractXARMojo
      * @param file the XML document to parse
      * @return the Map of entries contained in the XML document (ordered in the same order as the file)
      * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
-     * @since 10.3RC1
+     * @since 10.3
      */
     protected static Map<String, XAREntry> getXarEntriesMapFromXML(File file) throws Exception
     {
@@ -414,7 +414,7 @@ public class XARMojo extends AbstractXARMojo
      * @param stream the XML document to parse
      * @return the Map of entries contained in the XML document (ordered in the same order as the file)
      * @throws Exception if the XML document is invalid or it contains no document list or it doesn't exist
-     * @since 10.3RC1
+     * @since 10.3
      */
     public static Map<String, XAREntry> getXarEntriesMapFromXML(InputStream stream) throws Exception
     {
