@@ -57,14 +57,14 @@ public class DefaultVelocityConfigurationTest
     }
 
     @Test
-    public void testDefaultToolsPresent() throws Exception
+    public void getToolsReturnsDefaultTools()
     {
         // Verify for example that the List tool is present.
         assertEquals(ListTool.class.getName(), this.configuration.getTools().get("listtool"));
     }
 
     @Test
-    public void testDefaultPropertiesPresent() throws Exception
+    public void getPropertiesReturnsDefaultProperties() throws Exception
     {
         // Verify that the secure uberspector is set by default
         assertEquals(StringUtils.join(new String[] { SecureUberspector.class.getName(),
