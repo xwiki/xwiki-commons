@@ -147,7 +147,13 @@ public class AllLogRule implements TestRule
         return new LogStatement(statement);
     }
 
-    private ILoggingEvent getLogEvent(int position)
+    /**
+     * @param position the message number in the list of captured logs
+     * @return the logging event corresponding to the message, allowing to get information such as the level, the
+     *         marker, the formatted string, etc
+     * @since 10.4RC1
+     */
+    public ILoggingEvent getLogEvent(int position)
     {
         List<ILoggingEvent> list = this.listAppender.list;
         if (list.size() <= position) {
@@ -186,6 +192,29 @@ public class AllLogRule implements TestRule
         return listAppender.list.size();
     }
 
+    /**
+     * Voluntarily ignore all messages to signify they should not need to be asserted.
+     *
+     * @since 10.4RC1
+     */
+    public void ignoreAllMessages()
+    {
+        for (int i = 0; i < size(); i++) {
+            getLogEvent(i);
+        }
+    }
+
+    /**
+     * Voluntarily ignore a message to signify it should not need to be asserted.
+     *
+     * @param position the message number in the list of captured logs
+     * @since 10.4RC1
+     */
+    public void ignoreMessage(int position)
+    {
+        getLogEvent(position);
+    }
+
     private void initializeLoggers()
     {
         // Reinitialize completely Logback
@@ -207,8 +236,15 @@ public class AllLogRule implements TestRule
         initializer.autoConfig();
 
         // Verify that all appender list messages have been asserted.
-        if (verify && this.listAppender.list.size() != this.assertedMessages.size()) {
-            throw new AssertionError("All messages must be asserted!");
+        if (this.listAppender.list.size() != this.assertedMessages.size()) {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < this.listAppender.list.size(); i++) {
+                // Has the message been asserted already?
+                if (!this.assertedMessages.contains(i)) {
+                    builder.append(getMessage(i)).append('\n');
+                }
+            }
+            throw new AssertionError(String.format("Following messages must be asserted: [%s]", builder.toString()));
         }
     }
 }

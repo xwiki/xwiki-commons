@@ -100,7 +100,12 @@ public class LogCaptureExtension implements BeforeEachCallback, AfterEachCallbac
         uninitializeLogger();
     }
 
-    private ILoggingEvent getLogEvent(int position)
+    /**
+     * @param position the message number in the list of captured logs
+     * @return the logging event corresponding to the message, allowing to get information such as the level, the
+     *         marker, the formatted string, etc
+     */
+    public ILoggingEvent getLogEvent(int position)
     {
         List<ILoggingEvent> list = this.listAppender.list;
         if (list.size() <= position) {
@@ -138,6 +143,25 @@ public class LogCaptureExtension implements BeforeEachCallback, AfterEachCallbac
         return listAppender.list.size();
     }
 
+    /**
+     * Voluntarily ignore all messages to signify they should not need to be asserted.
+     */
+    public void ignoreAllMessages()
+    {
+        for (int i = 0; i < size(); i++) {
+            getLogEvent(i);
+        }
+    }
+
+    /**
+     * Voluntarily ignore a message to signify it should not need to be asserted.
+     *
+     * @param position the message number in the list of captured logs
+     */
+    public void ignoreMessage(int position)
+    {
+        getLogEvent(position);
+    }
     private void initializeLoggers()
     {
         // Reinitialize completely Logback
