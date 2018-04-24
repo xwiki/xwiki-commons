@@ -88,7 +88,6 @@ public class XMLUtilsTest
     @Test
     public void escapeAttributeValue()
     {
-
         String escapedText = XMLUtils.escapeAttributeValue("a < a' && a' < a\" => a < a\" {");
 
         assertFalse(escapedText.contains("<"), "Failed to escape <");
@@ -126,7 +125,6 @@ public class XMLUtilsTest
     @Test
     public void escapeElementContent()
     {
-
         String escapedText = XMLUtils.escapeElementContent("a < a' && a' < a\" => a < a\"");
 
         assertFalse(escapedText.contains("<"), "Failed to escape <");
