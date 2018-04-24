@@ -25,14 +25,19 @@ import java.net.MalformedURLException;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.Logger;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.environment.Environment;
-import org.xwiki.test.AllLogRule;
+import org.xwiki.test.junit5.LogCaptureExtension;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 /**
@@ -49,13 +54,10 @@ public class ServletEnvironmentTest
 
     private ServletEnvironment environment;
 
-    /**
-     * Capture logs.
-     */
-    @Rule
-    public AllLogRule logRule = new AllLogRule();
+    @RegisterExtension
+    static LogCaptureExtension logCapture = new LogCaptureExtension();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         this.servletTmpDir = new File(System.getProperty("java.io.tmpdir"), "ServletEnvironmentTest-tmpDir");
@@ -66,7 +68,7 @@ public class ServletEnvironmentTest
         this.environment = ecm.getInstance(Environment.class);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception
     {
         FileUtils.deleteQuietly(this.servletTmpDir);
@@ -75,13 +77,11 @@ public class ServletEnvironmentTest
     @Test
     public void getResourceWhenServletContextNotSet()
     {
-        try {
+        Throwable exception = assertThrows(RuntimeException.class, () -> {
             this.environment.getResource("/whatever");
-            fail();
-        } catch (RuntimeException expected) {
-            assertEquals("The Servlet Environment has not been properly initialized "
-                + "(The Servlet Context is not set)", expected.getMessage());
-        }
+        });
+        assertEquals("The Servlet Environment has not been properly initialized (The Servlet Context is not set)",
+            exception.getMessage());
     }
 
     @Test
@@ -120,7 +120,7 @@ public class ServletEnvironmentTest
         this.environment.setServletContext(servletContext);
         assertNull(this.environment.getResource("bad resource"));
         assertEquals("Error getting resource [bad resource] because of invalid path format. Reason: [invalid url]",
-            this.logRule.getMessage(0));
+            logCapture.getMessage(0));
     }
 
     @Test
