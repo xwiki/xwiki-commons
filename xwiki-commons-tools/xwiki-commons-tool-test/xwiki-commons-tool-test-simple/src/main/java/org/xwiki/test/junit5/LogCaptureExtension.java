@@ -39,7 +39,7 @@ import ch.qos.logback.core.read.ListAppender;
 /**
  * Captures any logging done by code being tested in order for the logging to not leak in the console and to be able
  * to assert the content of the logging statements.
- * <p/>
+ * <p>
  * Usage:
  * <ul>
  *   <li>Must be used with {@code @RegisterExtension} and ujsing a {@code static} variable</li>
