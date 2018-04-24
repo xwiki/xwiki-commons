@@ -205,5 +205,10 @@ public class AllLogRule implements TestRule
         context.reset();
         ContextInitializer initializer = new ContextInitializer(context);
         initializer.autoConfig();
+
+        // Verify that all appender list messages have been asserted.
+        if (verify && this.listAppender.list.size() != this.assertedMessages.size()) {
+            throw new AssertionError("All messages must be asserted!");
+        }
     }
 }
