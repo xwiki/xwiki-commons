@@ -69,7 +69,7 @@ public class LogCaptureExtension implements BeforeEachCallback, AfterEachCallbac
     private LogLevel level;
 
     /**
-     * @param level the logging level from which to start capturing logs (for example if {@link LogLevel#INFO then
+     * @param level the logging level from which to start capturing logs (for example if {@link LogLevel#INFO} then
      *              INFO, WARN, ERROR, etc are captured too).
      */
     public LogCaptureExtension(LogLevel level)
