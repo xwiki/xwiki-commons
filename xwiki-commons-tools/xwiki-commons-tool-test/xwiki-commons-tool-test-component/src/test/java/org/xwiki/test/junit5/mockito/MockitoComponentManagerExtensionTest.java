@@ -28,13 +28,16 @@ import org.mockito.Mock;
 import org.mockito.MockingDetails;
 import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentManager;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -64,6 +67,12 @@ public class MockitoComponentManagerExtensionTest
 
     @InjectMockComponents(role = Component3Role.class)
     private Component5Impl component5Role2;
+
+    @BeforeComponent
+    public void beforeComponent(MockitoComponentManager componentManager) throws Exception
+    {
+        componentManager.registerComponent(Component2Role.class, mock(Component2Role.class, "beforeComponent"));
+    }
 
     @BeforeEach
     public void before(MockitoComponentManager componentManager)
@@ -104,14 +113,34 @@ public class MockitoComponentManagerExtensionTest
         assertEquals(3, this.component4.size());
         assertNotNull(this.component4.getRole2());
 
+        // Verify that component2 inside component4 is the mock we defined in the @BeforeComponent above (this verifies
+        // that @BeforeComponent are executed before @InjectMockComponents)
+        MockingDetails details = Mockito.mockingDetails(this.component4.getRole2());
+        assertEquals("beforeComponent", details.getMockCreationSettings().getMockName().toString());
+
         // Verify that component3 is not a mock (i.e. it's the real component impl since it's listed in the
         // @ComponentList annotation.
         assertNotNull(this.component4.getRole3());
-        MockingDetails details = Mockito.mockingDetails(this.component4.getRole3());
+        details = Mockito.mockingDetails(this.component4.getRole3());
         assertFalse(details.isMock());
 
         // Verify that we also support components that implement several roles
         assertNotNull(this.component5Role1);
         assertNotNull(this.component5Role2);
+    }
+
+    @Test
+    public void testCMDoesntLeak1(MockitoComponentManager componentManager) throws Exception
+    {
+        // Note: the name of the test is set so that testCMDoesntLeak1() executes before testCMDoesntLeak2(), thus
+        // ensuring that the CM defined in testCMDoesntLeak1() doesn't leak on testCMDoesntLeak2().
+        componentManager.registerMockComponent(Component1Role.class, "testCMDoesntLeak");
+    }
+
+    @Test
+    public void testCMDoesntLeak2(MockitoComponentManager componentManager) throws Exception
+    {
+        // See comment in testCMDoesntLeak1()
+        assertNull(componentManager.getInstanceMap(Component1Role.class).get("testCMDoesntLeak"));
     }
 }

@@ -98,6 +98,9 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
     @Override
     public void postProcessTestInstance(Object testInstance, ExtensionContext context) throws Exception
     {
+        // Make sure tests don't leak one on another
+        removeComponentManager(context);
+
         // We initialize the CM in 3 steps:
         // - First we create an instance of it
         // - Then we create mocks for all @MockComponent annotations
@@ -204,6 +207,13 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         ExtensionContext.Store store = getStore(context);
         Class<?> testClass = context.getRequiredTestClass();
         return store.get(testClass, MockitoComponentManager.class);
+    }
+
+    private void removeComponentManager(ExtensionContext context)
+    {
+        ExtensionContext.Store store = getStore(context);
+        Class<?> testClass = context.getRequiredTestClass();
+        store.remove(testClass);
     }
 
     private void saveComponentManager(ExtensionContext context,

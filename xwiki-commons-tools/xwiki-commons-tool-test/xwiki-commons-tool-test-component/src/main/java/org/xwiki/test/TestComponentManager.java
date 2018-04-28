@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.test.annotation.AfterComponent;
@@ -123,7 +124,7 @@ public class TestComponentManager extends EmbeddableComponentManager
         // opportunity for the test to register some components *before* we register the other components below.
         for (Method declaredMethod : testClass.getMethods()) {
             if (declaredMethod.isAnnotationPresent(BeforeComponent.class)) {
-                declaredMethod.invoke(testClassInstance);
+                invokeMethod(declaredMethod, testClassInstance);
             }
         }
 
@@ -133,8 +134,20 @@ public class TestComponentManager extends EmbeddableComponentManager
         // opportunity to override or modify some components *after* they are actually used.
         for (Method declaredMethod : testClass.getMethods()) {
             if (declaredMethod.isAnnotationPresent(AfterComponent.class)) {
-                declaredMethod.invoke(testClassInstance);
+                invokeMethod(declaredMethod, testClassInstance);
             }
+        }
+    }
+
+    private void invokeMethod(Method declaredMethod, Object testClassInstance) throws Exception
+    {
+        // If a parameter of type ComponentManager exists, then honor it
+        if (declaredMethod.getParameterCount() == 1
+            && ComponentManager.class.isAssignableFrom(declaredMethod.getParameters()[0].getType()))
+        {
+            declaredMethod.invoke(testClassInstance, this);
+        } else {
+            declaredMethod.invoke(testClassInstance);
         }
     }
 
