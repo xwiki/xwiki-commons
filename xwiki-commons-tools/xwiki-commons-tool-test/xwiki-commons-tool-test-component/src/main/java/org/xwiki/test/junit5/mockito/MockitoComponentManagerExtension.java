@@ -151,6 +151,13 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             }
         }
 
+        // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
+        for (Field field : testInstance.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(InjectComponentManager.class)) {
+                ReflectionUtils.setFieldValue(testInstance, field.getName(), mcm);
+            }
+        }
+
         MockitoAnnotations.initMocks(testInstance);
     }
 

@@ -68,6 +68,9 @@ public class MockitoComponentManagerExtensionTest
     @InjectMockComponents(role = Component3Role.class)
     private Component5Impl component5Role2;
 
+    @InjectComponentManager
+    private MockitoComponentManager componentManager;
+
     @BeforeComponent
     public void beforeComponent(MockitoComponentManager componentManager) throws Exception
     {
@@ -82,7 +85,7 @@ public class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    public void test1(MockitoComponentManager componentManager)
+    public void testMockitoCMAsParameter(MockitoComponentManager componentManager)
     {
         // Verify that we can get a Mockito CM injected
         assertNotNull(componentManager);
@@ -90,7 +93,7 @@ public class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    public void test2(ComponentManager componentManager)
+    public void testComponentMangerAsParameter(ComponentManager componentManager)
     {
         // Verify that we can get a Mockito CM injected when the type is ComponentManager
         assertNotNull(componentManager);
@@ -98,7 +101,7 @@ public class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    public void test3()
+    public void testVariousScenarios()
     {
         // Verify that a standard mock has been created for the list by Mockito (i.e. for a non-component class)
         assertNotNull(this.list);
@@ -127,6 +130,12 @@ public class MockitoComponentManagerExtensionTest
         // Verify that we also support components that implement several roles
         assertNotNull(this.component5Role1);
         assertNotNull(this.component5Role2);
+    }
+
+    @Test
+    public void testInjectCM()
+    {
+        assertNotNull(this.componentManager);
     }
 
     @Test
