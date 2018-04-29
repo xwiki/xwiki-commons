@@ -132,7 +132,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         }
 
         if (initializeCM) {
-            mcm.initializeTest(testInstance);
+            initializeMockitoComponentManager(testInstance, mcm, context);
         }
 
         // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
@@ -154,8 +154,22 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         MockitoAnnotations.initMocks(testInstance);
     }
 
+    /**
+     * To be overridden by extensions if they need to perform additional initializations.
+     *
+     * @param testInstance the test instance object
+     * @param mcm the already created (but not initialized) Mockito Component Manager
+     * @param context the extension context
+     * @throws Exception if the intialization fails
+     */
+    protected void initializeMockitoComponentManager(Object testInstance, MockitoComponentManager mcm,
+        ExtensionContext context) throws Exception
+    {
+        mcm.initializeTest(testInstance, mcm);
+    }
+
     @Override
-    public void afterAll(ExtensionContext extensionContext)
+    public void afterAll(ExtensionContext extensionContext) throws Exception
     {
         MockitoComponentManager mcm = loadComponentManager(extensionContext);
         if (mcm != null) {
@@ -202,7 +216,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         }
     }
 
-    private MockitoComponentManager loadComponentManager(ExtensionContext context)
+    protected MockitoComponentManager loadComponentManager(ExtensionContext context)
     {
         ExtensionContext.Store store = getStore(context);
         Class<?> testClass = context.getRequiredTestClass();

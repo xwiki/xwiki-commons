@@ -20,12 +20,14 @@
 package org.xwiki.test;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.xwiki.component.embed.EmbeddableComponentManager;
 import org.xwiki.component.internal.StackingComponentEventManager;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.observation.ObservationManager;
 import org.xwiki.test.annotation.AfterComponent;
@@ -114,9 +116,11 @@ public class TestComponentManager extends EmbeddableComponentManager
      * Also calls methods annotated with {@link BeforeComponent} and {@link AfterComponent}.
      *
      * @param testClassInstance the test instance on which the annotations are present
+     * @param parameterInstances the instances that will be passed as parameters to methods annotated with
+     *        {@code @BeforeComponent} and {@code @AfterComponent}
      * @throws Exception if an error happens during initialization
      */
-    public void initializeTest(Object testClassInstance) throws Exception
+    public void initializeTest(Object testClassInstance, Object... parameterInstances) throws Exception
     {
         Class<?> testClass = testClassInstance.getClass();
 
@@ -124,7 +128,7 @@ public class TestComponentManager extends EmbeddableComponentManager
         // opportunity for the test to register some components *before* we register the other components below.
         for (Method declaredMethod : testClass.getMethods()) {
             if (declaredMethod.isAnnotationPresent(BeforeComponent.class)) {
-                invokeMethod(declaredMethod, testClassInstance);
+                invokeMethod(declaredMethod, testClassInstance, parameterInstances);
             }
         }
 
@@ -134,20 +138,35 @@ public class TestComponentManager extends EmbeddableComponentManager
         // opportunity to override or modify some components *after* they are actually used.
         for (Method declaredMethod : testClass.getMethods()) {
             if (declaredMethod.isAnnotationPresent(AfterComponent.class)) {
-                invokeMethod(declaredMethod, testClassInstance);
+                invokeMethod(declaredMethod, testClassInstance, parameterInstances);
             }
         }
     }
 
-    private void invokeMethod(Method declaredMethod, Object testClassInstance) throws Exception
+    private void invokeMethod(Method declaredMethod, Object testClassInstance, Object... parameterInstances)
+        throws Exception
     {
-        // If a parameter of type ComponentManager exists, then honor it
-        if (declaredMethod.getParameterCount() == 1
-            && ComponentManager.class.isAssignableFrom(declaredMethod.getParameters()[0].getType()))
-        {
-            declaredMethod.invoke(testClassInstance, this);
-        } else {
-            declaredMethod.invoke(testClassInstance);
+        // If parameters are of a type fund in parameterInstances, then call the method.
+        List<Object> validatedParameterInstances = new ArrayList<>();
+        boolean isSupported = true;
+        for (Parameter parameter : declaredMethod.getParameters()) {
+            // Is there a matching parameter instance for the parameter?
+            boolean hasMatchingParameterInstance = false;
+            for (Object object : parameterInstances) {
+                if (object.getClass().isAssignableFrom(parameter.getType())) {
+                    hasMatchingParameterInstance = true;
+                    validatedParameterInstances.add(object);
+                    break;
+                }
+            }
+            if (!hasMatchingParameterInstance) {
+                isSupported = false;
+                break;
+            }
+        }
+
+        if (isSupported) {
+            declaredMethod.invoke(testClassInstance, validatedParameterInstances.toArray());
         }
     }
 
