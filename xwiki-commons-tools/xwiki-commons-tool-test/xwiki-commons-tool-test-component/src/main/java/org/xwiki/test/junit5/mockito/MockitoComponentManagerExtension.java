@@ -63,6 +63,9 @@ import org.xwiki.test.mockito.MockitoComponentMocker;
  *     &#64;InjectMockComponents
  *     private Component4Impl component4;
  *
+ *     &#64;InjectComponentManager
+ *     private MockitoComponentManager componentManager;
+ *
  *     &#64;BeforeEach
  *     public void before(MockitoComponentManager componentManager)
  *     {
