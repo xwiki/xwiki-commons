@@ -126,9 +126,9 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
                 Named namedAnnotation = field.getAnnotation(Named.class);
                 Object mockComponent;
                 if (namedAnnotation != null) {
-                    mockComponent = mcm.registerMockComponent(field.getType(), namedAnnotation.value());
+                    mockComponent = mcm.registerMockComponent(field.getGenericType(), namedAnnotation.value());
                 } else {
-                    mockComponent = mcm.registerMockComponent(field.getType());
+                    mockComponent = mcm.registerMockComponent(field.getGenericType());
                 }
                 ReflectionUtils.setFieldValue(testInstance, field.getName(), mockComponent);
             }
