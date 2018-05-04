@@ -78,7 +78,10 @@
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
-    <surefire.version>2.21.0</surefire.version>
+    <!-- TODO: We need to use 2.19.1 currently and not move to 2.20 since that one is incompatible with
+     JUnit5 (causing OOMs). Note that 2.20.1 isn't working either. Upgrade and remove this todo once
+     a new version of Surefire is released and works for us -->
+    <surefire.version>2.19.1</surefire.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
