@@ -103,4 +103,19 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>clover</id>
+      <dependencies>
+        <!-- Needed to execute the unit test in this module because MockitoComponentManagerExtension uses
+             ComponentAnnotationLoader which has been clovered and thus the clover jar needs to be in the test
+             classpath -->
+        <dependency>
+          <groupId>org.openclover</groupId>
+          <artifactId>clover</artifactId>
+          <version>${clover.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>

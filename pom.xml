@@ -1722,6 +1722,10 @@
           <artifactId>clover-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
+          <configuration>
+            <skip>${xwiki.clover.skip}</skip>
+            <includesTestSourceRoots>false</includesTestSourceRoots>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -2036,6 +2040,8 @@
     <profile>
       <id>clover</id>
       <properties>
+        <!-- By default don't skip Clover plugin execution when in the Clover profile! -->
+        <xwiki.clover.skip>false</xwiki.clover.skip>
         <!-- We need to skip checkstyle execution since otherwise it conflicts with Clover -->
         <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
         <!-- Skip backward-compatiblity checks since we don't need it when computing test coverage and it speeds up
