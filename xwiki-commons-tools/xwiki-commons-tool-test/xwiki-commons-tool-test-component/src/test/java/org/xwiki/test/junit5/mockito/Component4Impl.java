@@ -33,7 +33,7 @@ public class Component4Impl implements Component4Role
     private List<String> list;
 
     @Inject
-    private Component1Role component1;
+    private Component1Role<String> component1;
 
     @Inject
     private Component2Role component2;
@@ -45,6 +45,12 @@ public class Component4Impl implements Component4Role
     public int size()
     {
         return this.component1.size(this.list);
+    }
+
+    @Override
+    public Component1Role<String> getRole1()
+    {
+        return this.component1;
     }
 
     @Override

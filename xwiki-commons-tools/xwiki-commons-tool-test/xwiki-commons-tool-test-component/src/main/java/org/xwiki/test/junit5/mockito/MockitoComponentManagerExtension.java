@@ -161,6 +161,10 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             }
         }
 
+        // Make sure this is executed last since if we want to combine it with @InjectMockComponents annotation, we
+        // need the field to be non-null when this line executes or otherwise Mockito will not inject anything...
+        // Also note that all fields annotated with @InjectMocks will have their fields replaced by all mocks found
+        // in the test class.
         MockitoAnnotations.initMocks(testInstance);
     }
 

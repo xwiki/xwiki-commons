@@ -26,6 +26,8 @@ public interface Component4Role
 {
     int size();
 
+    Component1Role<String> getRole1();
+
     Component2Role getRole2();
 
     Component3Role getRole3();

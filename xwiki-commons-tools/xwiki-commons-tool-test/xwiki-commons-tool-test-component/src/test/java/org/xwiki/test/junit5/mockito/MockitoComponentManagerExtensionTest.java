@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.MockingDetails;
 import org.mockito.Mockito;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentManager;
@@ -36,6 +37,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,7 +58,7 @@ public class MockitoComponentManagerExtensionTest
     private List<String> list;
 
     @MockComponent
-    private Component1Role component1;
+    private Component1Role<String> component1;
 
     @InjectMocks
     @InjectMockComponents
@@ -101,7 +103,7 @@ public class MockitoComponentManagerExtensionTest
     }
 
     @Test
-    public void testVariousScenarios()
+    public void testVariousScenarios() throws Exception
     {
         // Verify that a standard mock has been created for the list by Mockito (i.e. for a non-component class)
         assertNotNull(this.list);
@@ -111,10 +113,11 @@ public class MockitoComponentManagerExtensionTest
         assertNotNull(this.component1);
         when(this.component1.size(this.list)).thenReturn(3);
 
-        // Verify that component2 has been injected mocks for all its @Inject-annotated fields.
-        // Also verify that the Mock list has been injected in component2 thanks to Mockito's @InjectMock annotation
-        assertEquals(3, this.component4.size());
+        // Verify that component4 has been injected mocks for its @Inject-annotated fields.
         assertNotNull(this.component4.getRole2());
+
+        // Verify that the list field has been mocked in component4 thanks to Mockito's @InjectMock annotation
+        assertEquals(3, this.component4.size());
 
         // Verify that component2 inside component4 is the mock we defined in the @BeforeComponent above (this verifies
         // that @BeforeComponent are executed before @InjectMockComponents)
@@ -130,6 +133,15 @@ public class MockitoComponentManagerExtensionTest
         // Verify that we also support components that implement several roles
         assertNotNull(this.component5Role1);
         assertNotNull(this.component5Role2);
+
+        // Verify that the mock created for:
+        //   @MockComponent
+        //   private Component1Role<String> component1;
+        // Is of the correct generic type. This verifies generics are taken into account.
+        assertEquals(0, this.componentManager.getInstanceList(Component1Role.class).size());
+        assertEquals(1, this.componentManager.getInstanceList(
+            new DefaultParameterizedType(null, Component1Role.class, String.class)).size());
+        assertSame(this.component1, this.component4.getRole1());
     }
 
     @Test

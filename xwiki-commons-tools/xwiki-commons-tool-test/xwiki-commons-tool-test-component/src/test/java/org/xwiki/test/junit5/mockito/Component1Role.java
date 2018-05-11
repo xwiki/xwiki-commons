@@ -24,7 +24,7 @@ import java.util.List;
 import org.xwiki.component.annotation.Role;
 
 @Role
-public interface Component1Role
+public interface Component1Role<T>
 {
-    int size(List<String> list);
+    int size(List<T> list);
 }
