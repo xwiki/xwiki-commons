@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-blame</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>10.4-SNAPSHOT</version>
+    <version>10.4-rc-1</version>
   </parent>
   <artifactId>xwiki-commons-blame-script</artifactId>
   <name>XWiki Commons - Blame - Script Service</name>
