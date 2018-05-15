@@ -24,7 +24,7 @@ import org.xwiki.cache.infinispan.internal.InfinispanCacheFactory;
 import org.xwiki.cache.internal.DefaultCacheFactory;
 import org.xwiki.cache.internal.DefaultCacheManager;
 import org.xwiki.cache.internal.DefaultCacheManagerConfiguration;
-import org.xwiki.cache.tests.AbstractTestCache;
+import org.xwiki.cache.test.AbstractTestCache;
 import org.xwiki.environment.Environment;
 import org.xwiki.test.annotation.ComponentList;
 

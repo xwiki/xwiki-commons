@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.cache.tests;
+package org.xwiki.cache.test;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +27,7 @@ import org.xwiki.cache.config.CacheConfiguration;
 import org.xwiki.cache.config.LRUCacheConfiguration;
 import org.xwiki.cache.eviction.EntryEvictionConfiguration;
 import org.xwiki.cache.eviction.LRUEvictionConfiguration;
-import org.xwiki.cache.tests.CacheEntryListenerTest.EventType;
+import org.xwiki.cache.test.CacheEntryListenerTest.EventType;
 
 /**
  * Base class for testing cache component implementation. Also test eviction.
