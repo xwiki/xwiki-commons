@@ -35,6 +35,7 @@ import org.reflections.scanners.ResourcesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
+import org.xwiki.environment.Environment;
 
 /**
  * @version $Id$
@@ -47,31 +48,46 @@ public class RepositoryUtils
 
     protected static final String MAVENUNKNWONREPOSITORY_ID = "test-mavenunknown";
 
-    protected final File permanentDirectory;
+    protected File permanentDirectory;
 
-    protected final File temporaryDirectory;
+    protected File temporaryDirectory;
 
-    protected final File extensionDirectory;
+    protected File extensionDirectory;
 
-    protected final File localRepositoryRoot;
+    protected File localRepositoryRoot;
 
-    protected final File mavenRepositoryRoot;
+    protected File mavenRepositoryRoot;
 
-    protected final File maven2RepositoryRoot;
+    protected File maven2RepositoryRoot;
 
-    protected final File mavenUnknownRepositoryRoot;
+    protected File mavenUnknownRepositoryRoot;
 
-    protected final File remoteRepositoryRoot;
+    protected File remoteRepositoryRoot;
 
-    protected final ExtensionPackager extensionPackager;
+    protected ExtensionPackager extensionPackager;
 
     public RepositoryUtils()
     {
+        initializeDirectories();
+    }
+
+    protected void initializeDirectories(Environment environment)
+    {
+        this.temporaryDirectory = environment.getTemporaryDirectory();
+        this.permanentDirectory = environment.getPermanentDirectory();
+
+        initializeDirectories();
+    }
+
+    protected void initializeDirectories()
+    {
         File testDirectory = new File("target/test-" + new Date().getTime()).getAbsoluteFile();
 
-        this.temporaryDirectory = new File(testDirectory, "temporary-dir");
+        if (this.temporaryDirectory == null) {
+            this.temporaryDirectory = new File(testDirectory, "temporary-dir");
+            this.permanentDirectory = new File(testDirectory, "permanent-dir");
+        }
 
-        this.permanentDirectory = new File(testDirectory, "permanent-dir");
         this.extensionDirectory = new File(this.permanentDirectory, "extension/");
         this.localRepositoryRoot = new File(this.extensionDirectory, "repository/");
 

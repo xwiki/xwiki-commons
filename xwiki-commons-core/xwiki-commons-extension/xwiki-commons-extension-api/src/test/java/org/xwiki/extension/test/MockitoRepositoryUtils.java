@@ -25,7 +25,7 @@ import java.util.List;
 import org.mockito.Mockito;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.component.descriptor.DefaultComponentDescriptor;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.configuration.internal.MemoryConfigurationSource;
 import org.xwiki.environment.Environment;
 import org.xwiki.extension.handler.ExtensionInitializer;
@@ -53,20 +53,29 @@ public class MockitoRepositoryUtils extends RepositoryUtils
     @Override
     public void setup() throws Exception
     {
+        if (this.componentManager.hasComponent(Environment.class)) {
+            // Reconfigure repository directories based on existing environment
+            final Environment environment = this.componentManager.getInstance(Environment.class);
+            initializeDirectories(environment);
+        } else {
+            final Environment environment = this.componentManager.registerMockComponent(Environment.class);
+            Mockito.when(environment.getPermanentDirectory()).thenReturn(getPermanentDirectory());
+            Mockito.when(environment.getTemporaryDirectory()).thenReturn(getTemporaryDirectory());
+            Mockito.when(environment.getResourceAsStream(any())).thenReturn(null);
+        }
+
         super.setup();
 
-        // Disable default repositories
-        MemoryConfigurationSource memoryConfigurationSource = this.componentManager.registerMemoryConfigurationSource();
-        memoryConfigurationSource.setProperty("extension.repositories", Arrays.asList(""));
-
-        final Environment environment = this.componentManager.registerMockComponent(Environment.class);
-        Mockito.when(environment.getPermanentDirectory()).thenReturn(getPermanentDirectory());
-        Mockito.when(environment.getTemporaryDirectory()).thenReturn(getTemporaryDirectory());
-        Mockito.when(environment.getResourceAsStream(any())).thenReturn(null);
-
-        DefaultComponentDescriptor<Environment> dcd = new DefaultComponentDescriptor<Environment>();
-        dcd.setRoleType(Environment.class);
-        this.componentManager.registerComponent(dcd, environment);
+        ConfigurationSource configurationSource;
+        if (!this.componentManager.hasComponent(ConfigurationSource.class)) {
+            configurationSource = this.componentManager.registerMemoryConfigurationSource();
+        } else {
+            configurationSource = this.componentManager.getInstance(ConfigurationSource.class);
+        }
+        if (configurationSource instanceof MemoryConfigurationSource) {
+            // Disable default repositories
+            ((MemoryConfigurationSource) configurationSource).setProperty("extension.repositories", Arrays.asList(""));
+        }
 
         // add default test core extension
         registerComponent(ConfigurableDefaultCoreExtensionRepository.class);
@@ -87,13 +96,13 @@ public class MockitoRepositoryUtils extends RepositoryUtils
         // maven repositories
 
         if (getMavenRepository().exists()) {
-            repositoryManager.addRepository(new DefaultExtensionRepositoryDescriptor(MAVENREPOSITORY_ID, "maven",
-                getMavenRepository().toURI()));
+            repositoryManager.addRepository(
+                new DefaultExtensionRepositoryDescriptor(MAVENREPOSITORY_ID, "maven", getMavenRepository().toURI()));
         }
 
         if (getMaven2Repository().exists()) {
-            repositoryManager.addRepository(new DefaultExtensionRepositoryDescriptor(MAVEN2REPOSITORY_ID, "maven",
-                getMaven2Repository().toURI()));
+            repositoryManager.addRepository(
+                new DefaultExtensionRepositoryDescriptor(MAVEN2REPOSITORY_ID, "maven", getMaven2Repository().toURI()));
         }
 
         // init
