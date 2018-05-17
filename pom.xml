@@ -1681,10 +1681,7 @@
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <!-- There seems to be a regression in revapi plugin 0.10.0.
-               See https://github.com/revapi/revapi/issues/114#issuecomment-359722131.
-          -->
-          <version>0.10.1</version>
+          <version>0.10.2</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
