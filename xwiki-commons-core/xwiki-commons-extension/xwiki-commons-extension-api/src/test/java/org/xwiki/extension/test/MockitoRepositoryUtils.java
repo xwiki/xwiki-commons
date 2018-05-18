@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mockito.Mockito;
+import org.mockito.internal.util.MockUtil;
 import org.xwiki.component.annotation.ComponentAnnotationLoader;
 import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.configuration.ConfigurationSource;
@@ -53,12 +54,20 @@ public class MockitoRepositoryUtils extends RepositoryUtils
     @Override
     public void setup() throws Exception
     {
+        Environment environment = null;
         if (this.componentManager.hasComponent(Environment.class)) {
-            // Reconfigure repository directories based on existing environment
-            final Environment environment = this.componentManager.getInstance(Environment.class);
-            initializeDirectories(environment);
-        } else {
-            final Environment environment = this.componentManager.registerMockComponent(Environment.class);
+            // Reconfigure repository directories based on existing mocked environment
+            environment = this.componentManager.getInstance(Environment.class);
+            if (MockUtil.isMock(environment)) {
+                initializeDirectories(environment);
+            } else {
+                // Force mocking environment
+                environment = null;
+            }
+        }
+
+        if (environment == null) {
+            environment = this.componentManager.registerMockComponent(Environment.class);
             Mockito.when(environment.getPermanentDirectory()).thenReturn(getPermanentDirectory());
             Mockito.when(environment.getTemporaryDirectory()).thenReturn(getTemporaryDirectory());
             Mockito.when(environment.getResourceAsStream(any())).thenReturn(null);
