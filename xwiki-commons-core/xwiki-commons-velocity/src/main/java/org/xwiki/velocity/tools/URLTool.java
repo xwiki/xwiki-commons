@@ -19,12 +19,15 @@
  */
 package org.xwiki.velocity.tools;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
@@ -57,5 +60,56 @@ public class URLTool
             }
         }
         return queryParams;
+    }
+
+    /**
+     * Convert a map into a query string.
+     * 
+     * @param map the map to be converted
+     * @return the converted query string
+     * @since 10.4
+     */
+
+    public String getQueryString(Map<String, String> map)
+    {
+        String queryString = new String();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            queryString = add(queryString, entry.getKey(), entry.getValue());
+        }
+
+        return queryString;
+    }
+
+    /**
+     * Add a parameter to a query string.
+     * 
+     * @param queryString the initial query string
+     * @param name the name of the parameter
+     * @param value the value of the parameter
+     * @return the new query string
+     * @since 10.4
+     */
+    public String add(String queryString, String name, String value)
+    {
+        StringBuilder stringBuilder = new StringBuilder(queryString);
+        if (stringBuilder.length() > 0) {
+            stringBuilder.append("&");
+        }
+        stringBuilder.append(name).append("=");
+        if (!StringUtils.isEmpty(value)) {
+            stringBuilder.append(encodeURLParameter(value));
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private String encodeURLParameter(String value)
+    {
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // Shouldn't happen.
+            return null;
+        }
     }
 }

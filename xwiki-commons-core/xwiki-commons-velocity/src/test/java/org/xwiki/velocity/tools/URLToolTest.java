@@ -22,6 +22,7 @@ package org.xwiki.velocity.tools;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -80,5 +81,33 @@ public class URLToolTest
         EscapeTool escapeTool = new EscapeTool();
         String queryString = "x=5&x=4&r=3&a=2";
         assertEquals(queryString, escapeTool.url(tool.parseQuery(queryString)));
+    }
+    
+    @Test
+    public void addParameterToEmptyQueryString() {
+        assertEquals("a=b", tool.add("", "a", "b"));
+    }
+    
+    @Test
+    public void addParameterToQueryString() {
+        assertEquals("a=b&c=d", tool.add("a=b", "c", "d"));
+    }
+    
+    @Test
+    public void addNullValueToQueryString() {
+        assertEquals("a=b&c=", tool.add("a=b", "c", null));
+    }
+    
+    @Test
+    public void encodeParameter() {
+        assertEquals("a=b&c=%25d", tool.add("a=b", "c", "%d"));
+    }
+    
+    @Test
+    public void convertMapToQueryString() {
+        Map<String, String> params = new HashMap<>();
+        params.put("a", "b");
+        params.put("c", "%d");
+        assertEquals("a=b&c=%25d", tool.getQueryString(params));
     }
 }
