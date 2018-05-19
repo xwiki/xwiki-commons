@@ -21,7 +21,8 @@
 // WARNING: NOT WORKING, WORK IN PROGRESS. USE THE MAVEN BUILD WHICH IS THE XWIKI OFFICIAL BUILD TOOL.
 
 dependencies {
-    compile project(':xwiki-stability')
-    compile project(':xwiki-text')
-    compile 'javax.inject:javax.inject:1'
+    api project(':xwiki-stability')
+    api 'javax.inject:javax.inject:1'
+    implementation project(':xwiki-text')
+    implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
 }

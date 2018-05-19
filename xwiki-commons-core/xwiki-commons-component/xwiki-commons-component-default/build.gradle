@@ -21,9 +21,10 @@
 // WARNING: NOT WORKING, WORK IN PROGRESS. USE THE MAVEN BUILD WHICH IS THE XWIKI OFFICIAL BUILD TOOL.
 
 dependencies {
-    compile project(':xwiki-component-api')
-    compile project(':xwiki-component-observation')
-    compile "org.slf4j:slf4j-api:${slf4jVersion}"
-    testCompile project(':xwiki-test-simple')
-    testCompile 'com.google.inject:guice:3.0'
+    api project(':xwiki-component-api')
+    implementation project(':xwiki-component-observation')
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
+    testImplementation project(':xwiki-test-simple')
+    testImplementation 'com.google.inject:guice:3.0'
 }
