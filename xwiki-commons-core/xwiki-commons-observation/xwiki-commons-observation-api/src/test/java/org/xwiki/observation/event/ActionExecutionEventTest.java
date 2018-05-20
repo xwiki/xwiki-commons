@@ -19,40 +19,46 @@
  */
 package org.xwiki.observation.event;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Unit tests for {@link ActionExecutionEvent}.
+ *
+ * @version $Id$
+ */
 public class ActionExecutionEventTest
 {
-    // Tests
-
     @Test
     public void testActionExecutionEventString()
     {
         ActionExecutionEvent event = new ActionExecutionEvent("action");
 
-        Assert.assertEquals("action", event.getActionName());
+        assertEquals("action", event.getActionName());
 
         // matches
 
-        Assert.assertTrue(event.matches(event));
-        Assert.assertTrue(event.matches(new ActionExecutionEvent("action")));
+        assertTrue(event.matches(event));
+        assertTrue(event.matches(new ActionExecutionEvent("action")));
 
-        Assert.assertFalse(event.matches(new ActionExecutionEvent("action2")));
-        Assert.assertFalse(event.matches(AllEvent.ALLEVENT));
+        assertFalse(event.matches(new ActionExecutionEvent("action2")));
+        assertFalse(event.matches(AllEvent.ALLEVENT));
 
         // equals
 
-        Assert.assertEquals(event, event);
-        Assert.assertEquals(event, new ActionExecutionEvent("action"));
+        assertEquals(event, event);
+        assertEquals(event, new ActionExecutionEvent("action"));
 
-        Assert.assertFalse(event.equals(new ActionExecutionEvent("action2")));
-        Assert.assertFalse(event.equals(AllEvent.ALLEVENT));
+        assertFalse(event.equals(new ActionExecutionEvent("action2")));
+        assertFalse(event.equals(AllEvent.ALLEVENT));
 
         // hashcode
 
-        Assert.assertEquals(event.hashCode(), new ActionExecutionEvent("action").hashCode());
-
-        Assert.assertNotEquals(event.hashCode(), new ActionExecutionEvent("action2").hashCode());
+        assertEquals(event.hashCode(), new ActionExecutionEvent("action").hashCode());
+        assertNotEquals(event.hashCode(), new ActionExecutionEvent("action2").hashCode());
     }
 }
