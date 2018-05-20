@@ -19,9 +19,7 @@
  */
 package org.xwiki.observation;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.observation.event.BeginEvent;
@@ -30,8 +28,12 @@ import org.xwiki.observation.event.Event;
 import org.xwiki.observation.internal.DefaultObservationContext;
 import org.xwiki.observation.internal.DefaultObservationManager;
 import org.xwiki.observation.internal.ObservationContextListener;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.mockito.MockitoComponentManager;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,27 +43,27 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
+@ComponentTest
 public class ObservationContextTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<ObservationContext> mocker =
-        new MockitoComponentMockingRule<ObservationContext>(DefaultObservationContext.class);
+    @InjectMockComponents
+    private DefaultObservationContext observationContext;
 
     @Test
-    public void test() throws Exception
+    public void test(MockitoComponentManager componentManager) throws Exception
     {
-        this.mocker.registerComponent(ObservationContextListener.class);
-        this.mocker.registerComponent(DefaultObservationManager.class);
+        componentManager.registerComponent(ObservationContextListener.class);
+        componentManager.registerComponent(DefaultObservationManager.class);
 
-        ObservationManager manager = this.mocker.getInstance(ObservationManager.class);
-        Execution execution = this.mocker.getInstance(Execution.class);
+        ObservationManager manager = componentManager.getInstance(ObservationManager.class);
+        Execution execution = componentManager.getInstance(Execution.class);
 
         when(execution.getContext()).thenReturn(new ExecutionContext());
 
-        final BeginEvent beginEvent1 = mock(BeginEvent.class, "begin1");
-        final BeginEvent beginEvent2 = mock(BeginEvent.class, "begin2");
-        final EndEvent endEvent1 = mock(EndEvent.class, "end1");
-        final EndEvent endEvent2 = mock(EndEvent.class, "end2");
+        BeginEvent beginEvent1 = mock(BeginEvent.class, "begin1");
+        BeginEvent beginEvent2 = mock(BeginEvent.class, "begin2");
+        EndEvent endEvent1 = mock(EndEvent.class, "end1");
+        EndEvent endEvent2 = mock(EndEvent.class, "end2");
 
         when(beginEvent1.matches(any(Event.class))).thenReturn(false);
         when(beginEvent1.matches(beginEvent1)).thenReturn(true);
@@ -75,26 +77,26 @@ public class ObservationContextTest
         when(endEvent2.matches(any(Event.class))).thenReturn(false);
         when(endEvent2.matches(endEvent2)).thenReturn(true);
 
-        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent1));
-        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent2));
+        assertFalse(this.observationContext.isIn(beginEvent1));
+        assertFalse(this.observationContext.isIn(beginEvent2));
 
         manager.notify(beginEvent1, null);
 
-        Assert.assertTrue(this.mocker.getComponentUnderTest().isIn(beginEvent1));
+        assertTrue(this.observationContext.isIn(beginEvent1));
 
         manager.notify(beginEvent2, null);
 
-        Assert.assertTrue(this.mocker.getComponentUnderTest().isIn(beginEvent1));
-        Assert.assertTrue(this.mocker.getComponentUnderTest().isIn(beginEvent2));
+        assertTrue(this.observationContext.isIn(beginEvent1));
+        assertTrue(this.observationContext.isIn(beginEvent2));
 
         manager.notify(endEvent2, null);
 
-        Assert.assertTrue(this.mocker.getComponentUnderTest().isIn(beginEvent1));
-        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent2));
+        assertTrue(this.observationContext.isIn(beginEvent1));
+        assertFalse(this.observationContext.isIn(beginEvent2));
 
         manager.notify(endEvent1, null);
 
-        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent1));
-        Assert.assertFalse(this.mocker.getComponentUnderTest().isIn(beginEvent2));
+        assertFalse(this.observationContext.isIn(beginEvent1));
+        assertFalse(this.observationContext.isIn(beginEvent2));
     }
 }
