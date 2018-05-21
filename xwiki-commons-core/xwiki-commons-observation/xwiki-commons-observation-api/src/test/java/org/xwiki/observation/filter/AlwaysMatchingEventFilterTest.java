@@ -19,11 +19,19 @@
  */
 package org.xwiki.observation.filter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.observation.event.filter.AlwaysMatchingEventFilter;
 import org.xwiki.observation.event.filter.FixedNameEventFilter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Unit tests for {@link AlwaysMatchingEventFilter}.
+ *
+ * @version $Id$
+ */
 public class AlwaysMatchingEventFilterTest
 {
     AlwaysMatchingEventFilter filter = AlwaysMatchingEventFilter.INSTANCE;
@@ -31,29 +39,29 @@ public class AlwaysMatchingEventFilterTest
     @Test
     public void testGetFilter()
     {
-        Assert.assertEquals(".*", this.filter.getFilter());
+        assertEquals(".*", this.filter.getFilter());
     }
 
     @Test
     public void testEquals()
     {
-        Assert.assertFalse(this.filter.equals(null));
-        Assert.assertFalse(this.filter.equals(new FixedNameEventFilter("filter")));
+        assertFalse(this.filter.equals(null));
+        assertFalse(this.filter.equals(new FixedNameEventFilter("filter")));
 
-        Assert.assertEquals(this.filter, this.filter);
+        assertEquals(this.filter, this.filter);
     }
 
     @Test
     public void testMatches()
     {
-        Assert.assertTrue(this.filter.matches(null));
-        Assert.assertTrue(this.filter.matches(new FixedNameEventFilter("filter")));
-        Assert.assertTrue(this.filter.matches(this.filter));
+        assertTrue(this.filter.matches(null));
+        assertTrue(this.filter.matches(new FixedNameEventFilter("filter")));
+        assertTrue(this.filter.matches(this.filter));
     }
 
     @Test
     public void testHashcode()
     {
-        Assert.assertEquals(0, this.filter.hashCode());
+        assertEquals(0, this.filter.hashCode());
     }
 }

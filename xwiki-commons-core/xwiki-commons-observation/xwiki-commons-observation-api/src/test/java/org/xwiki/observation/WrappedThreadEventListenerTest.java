@@ -19,15 +19,18 @@
  */
 package org.xwiki.observation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.xwiki.observation.event.AllEvent;
 
+/**
+ * Unit tests for {@link WrappedThreadEventListener}.
+ *
+ * @version $Id$
+ */
 public class WrappedThreadEventListenerTest
 {
     private EventListener listenermock = Mockito.mock(EventListener.class);
-
-    // Tests
 
     @Test
     public void testWrapp()

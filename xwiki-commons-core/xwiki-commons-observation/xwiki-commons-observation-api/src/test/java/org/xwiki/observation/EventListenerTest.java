@@ -22,11 +22,17 @@ package org.xwiki.observation;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.observation.event.ActionExecutionEvent;
 import org.xwiki.observation.event.Event;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * Unit tests for {@link AbstractEventListener}.
+ *
+ * @version $Id$
+ */
 public class EventListenerTest
 {
     static class TestEventListener extends AbstractEventListener
@@ -47,28 +53,26 @@ public class EventListenerTest
         }
     }
 
-    // Tests
-
     @Test
-    public void testAbstractEventListenerArray()
+    public void constructorWithTwoEvents()
     {
         TestEventListener listener =
             new TestEventListener("name", new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2"));
 
-        Assert.assertEquals("name", listener.getName());
-        Assert.assertEquals(Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2")),
+        assertEquals("name", listener.getName());
+        assertEquals(Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2")),
             listener.getEvents());
     }
 
     @Test
-    public void testAbstractEventListenerList()
+    public void constructorWithList()
     {
         TestEventListener listener =
             new TestEventListener("name", Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent(
                 "action2")));
 
-        Assert.assertEquals("name", listener.getName());
-        Assert.assertEquals(Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2")),
+        assertEquals("name", listener.getName());
+        assertEquals(Arrays.asList(new ActionExecutionEvent("action1"), new ActionExecutionEvent("action2")),
             listener.getEvents());
     }
 }
