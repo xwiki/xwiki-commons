@@ -21,6 +21,7 @@
 // WARNING: NOT WORKING, WORK IN PROGRESS. USE THE MAVEN BUILD WHICH IS THE XWIKI OFFICIAL BUILD TOOL.
 
 dependencies {
-    compile project(':xwiki-component-api')
-    testCompile project(':xwiki-test-simple')
+    api project(':xwiki-component-api')
+    implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
+    testImplementation project(':xwiki-test-simple')
 }

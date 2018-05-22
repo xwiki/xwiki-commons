@@ -21,7 +21,8 @@
 // WARNING: NOT WORKING, WORK IN PROGRESS. USE THE MAVEN BUILD WHICH IS THE XWIKI OFFICIAL BUILD TOOL.
 
 dependencies {
-    compile "junit:junit:${junitVersion}"
+    compile "junit:junit:${junit4Version}"
+    compile "org.junit.jupiter:junit-jupiter-api:${junit5Version}"
     compile "org.slf4j:slf4j-api:${slf4jVersion}"
     compile 'ch.qos.logback:logback-classic:1.2.3'
     compile 'commons-io:commons-io:2.5'

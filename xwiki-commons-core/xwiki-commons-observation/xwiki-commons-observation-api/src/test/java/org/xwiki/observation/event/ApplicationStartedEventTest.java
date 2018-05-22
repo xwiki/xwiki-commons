@@ -19,18 +19,24 @@
  */
 package org.xwiki.observation.event;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Unit tests for {@link ApplicationStartedEvent}.
+ *
+ * @version $Id$
+ */
 public class ApplicationStartedEventTest
 {
     @Test
-    public void testApplicationStartedEvent()
+    public void applicationStartedEventMatching()
     {
         ApplicationStartedEvent event = new ApplicationStartedEvent();
 
-        Assert.assertTrue(event.matches(event));
-
-        Assert.assertFalse(event.matches(AllEvent.ALLEVENT));
+        assertTrue(event.matches(event));
+        assertFalse(event.matches(AllEvent.ALLEVENT));
     }
 }

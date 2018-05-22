@@ -21,7 +21,7 @@
 // WARNING: NOT WORKING, WORK IN PROGRESS. USE THE MAVEN BUILD WHICH IS THE XWIKI OFFICIAL BUILD TOOL.
 
 dependencies {
-    compile project(':xwiki-component-api')
-    compile "org.slf4j:slf4j-api:${slf4jVersion}"
-    testCompile project(':xwiki-test-simple')
+    api project(':xwiki-component-api')
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    testImplementation project(':xwiki-test-simple')
 }

@@ -19,18 +19,27 @@
  */
 package org.xwiki.observation.event;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.observation.event.filter.EventFilter;
 import org.xwiki.observation.event.filter.FixedNameEventFilter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Unit tests for {@link AbstractCancelableEvent}.
+ *
+ * @version $Id$
+ */
 public class CancelableEventTest
 {
     static class TestCancelableEvent extends AbstractCancelableEvent
     {
         public TestCancelableEvent()
         {
-
         }
 
         public TestCancelableEvent(String name)
@@ -46,132 +55,129 @@ public class CancelableEventTest
 
     static class TestCancelableEvent2 extends AbstractCancelableEvent
     {
-
     }
 
-    // Tests
-
     @Test
-    public void testAbstractCancelableEvent()
+    public void matchesEqualsHashcodeWhenDefaultConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent();
 
         // matches
 
-        Assert.assertTrue(event.matches(event));
-        Assert.assertTrue(event.matches(new TestCancelableEvent("name")));
-        Assert.assertTrue(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
+        assertTrue(event.matches(event));
+        assertTrue(event.matches(new TestCancelableEvent("name")));
+        assertTrue(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
 
-        Assert.assertFalse(event.matches(new TestCancelableEvent2()));
+        assertFalse(event.matches(new TestCancelableEvent2()));
 
         // equals
 
-        Assert.assertEquals(event, event);
-        Assert.assertEquals(event, new TestCancelableEvent());
+        assertEquals(event, event);
+        assertEquals(event, new TestCancelableEvent());
 
-        Assert.assertFalse(event.equals(new TestCancelableEvent("name")));
-        Assert.assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
-        Assert.assertFalse(event.equals(new TestCancelableEvent2()));
+        assertFalse(event.equals(new TestCancelableEvent("name")));
+        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
         // hashcode
 
-        Assert.assertEquals(event.hashCode(), new TestCancelableEvent().hashCode());
-        Assert.assertFalse(event.equals(new TestCancelableEvent2()));
+        assertEquals(event.hashCode(), new TestCancelableEvent().hashCode());
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
-        Assert.assertNotEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
-        Assert.assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
+        assertNotEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
+        assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
     }
 
     @Test
-    public void testAbstractCancelableEventEventFilter()
+    public void matchesEqualsHashcodeWhenFixedNameEvenFilterConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent(new FixedNameEventFilter("name"));
 
         // matches
 
-        Assert.assertTrue(event.matches(event));
-        Assert.assertTrue(event.matches(new TestCancelableEvent("name")));
-        Assert.assertTrue(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+        assertTrue(event.matches(event));
+        assertTrue(event.matches(new TestCancelableEvent("name")));
+        assertTrue(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name"))));
 
-        Assert.assertFalse(event.matches(new TestCancelableEvent("name2")));
-        Assert.assertFalse(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
-        Assert.assertFalse(event.matches(new TestCancelableEvent2()));
+        assertFalse(event.matches(new TestCancelableEvent("name2")));
+        assertFalse(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
+        assertFalse(event.matches(new TestCancelableEvent2()));
 
         // equals
 
-        Assert.assertEquals(event, event);
-        Assert.assertEquals(event, new TestCancelableEvent("name"));
-        Assert.assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
+        assertEquals(event, event);
+        assertEquals(event, new TestCancelableEvent("name"));
+        assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
 
-        Assert.assertFalse(event.equals(null));
-        Assert.assertFalse(event.equals(new TestCancelableEvent("name2")));
-        Assert.assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
-        Assert.assertFalse(event.equals(new TestCancelableEvent2()));
+        assertFalse(event.equals(null));
+        assertFalse(event.equals(new TestCancelableEvent("name2")));
+        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
         // hashcode
 
-        Assert.assertEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
-        Assert.assertEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
+        assertEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
+        assertEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
 
-        Assert.assertNotEquals(event.hashCode(), new TestCancelableEvent("name2").hashCode());
-        Assert.assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name2")).hashCode());
+        assertNotEquals(event.hashCode(), new TestCancelableEvent("name2").hashCode());
+        assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name2")).hashCode());
     }
 
     @Test
-    public void testAbstractCancelableEventString()
+    public void matchesEqualsHashcodeWhenStringConstructor()
     {
         TestCancelableEvent event = new TestCancelableEvent("name");
 
         // matches
 
-        Assert.assertTrue(event.matches(event));
-        Assert.assertTrue(event.matches(new TestCancelableEvent("name")));
-        Assert.assertTrue(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+        assertTrue(event.matches(event));
+        assertTrue(event.matches(new TestCancelableEvent("name")));
+        assertTrue(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name"))));
 
-        Assert.assertFalse(event.matches(new TestCancelableEvent("name2")));
-        Assert.assertFalse(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
-        Assert.assertFalse(event.matches(new TestCancelableEvent2()));
+        assertFalse(event.matches(new TestCancelableEvent("name2")));
+        assertFalse(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
+        assertFalse(event.matches(new TestCancelableEvent2()));
 
         // equals
 
-        Assert.assertEquals(event, event);
-        Assert.assertEquals(event, new TestCancelableEvent("name"));
-        Assert.assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
+        assertEquals(event, event);
+        assertEquals(event, new TestCancelableEvent("name"));
+        assertEquals(event, new TestCancelableEvent(new FixedNameEventFilter("name")));
 
-        Assert.assertFalse(event.equals(null));
-        Assert.assertFalse(event.equals(new TestCancelableEvent("name2")));
-        Assert.assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
-        Assert.assertFalse(event.equals(new TestCancelableEvent2()));
+        assertFalse(event.equals(null));
+        assertFalse(event.equals(new TestCancelableEvent("name2")));
+        assertFalse(event.equals(new TestCancelableEvent(new FixedNameEventFilter("name2"))));
+        assertFalse(event.equals(new TestCancelableEvent2()));
 
         // hashcode
 
-        Assert.assertEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
-        Assert.assertEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
+        assertEquals(event.hashCode(), new TestCancelableEvent("name").hashCode());
+        assertEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name")).hashCode());
 
-        Assert.assertNotEquals(event.hashCode(), new TestCancelableEvent("name2").hashCode());
-        Assert.assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name2")).hashCode());
+        assertNotEquals(event.hashCode(), new TestCancelableEvent("name2").hashCode());
+        assertNotEquals(event.hashCode(), new TestCancelableEvent(new FixedNameEventFilter("name2")).hashCode());
     }
 
     @Test
-    public void testCancel()
+    public void cancel()
     {
         CancelableEvent event = new TestCancelableEvent();
-        Assert.assertFalse(event.isCanceled());
-        Assert.assertNull(event.getReason());
+        assertFalse(event.isCanceled());
+        assertNull(event.getReason());
         event.cancel();
-        Assert.assertTrue(event.isCanceled());
-        Assert.assertNull(event.getReason());
+        assertTrue(event.isCanceled());
+        assertNull(event.getReason());
     }
 
     @Test
-    public void testCancelWithReason()
+    public void cancelWithReason()
     {
         String reason = "Tralala";
         CancelableEvent event = new TestCancelableEvent();
-        Assert.assertFalse(event.isCanceled());
-        Assert.assertNull(event.getReason());
+        assertFalse(event.isCanceled());
+        assertNull(event.getReason());
         event.cancel(reason);
-        Assert.assertTrue(event.isCanceled());
-        Assert.assertEquals(reason, event.getReason());
+        assertTrue(event.isCanceled());
+        assertEquals(reason, event.getReason());
     }
 }

@@ -19,11 +19,19 @@
  */
 package org.xwiki.observation.filter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.observation.event.filter.FixedNameEventFilter;
 import org.xwiki.observation.event.filter.RegexEventFilter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Unit tests for {@link RegexEventFilter}.
+ *
+ * @version $Id$
+ */
 public class RegexEventFilterTest
 {
     @Test
@@ -31,9 +39,9 @@ public class RegexEventFilterTest
     {
         RegexEventFilter regex = new RegexEventFilter("a.*");
 
-        Assert.assertEquals("a.*", regex.getFilter());
+        assertEquals("a.*", regex.getFilter());
 
-        Assert.assertTrue(regex.matches(new FixedNameEventFilter("aa")));
-        Assert.assertFalse(regex.matches(new FixedNameEventFilter("bb")));
+        assertTrue(regex.matches(new FixedNameEventFilter("aa")));
+        assertFalse(regex.matches(new FixedNameEventFilter("bb")));
     }
 }

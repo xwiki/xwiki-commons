@@ -21,7 +21,7 @@
 // WARNING: NOT WORKING, WORK IN PROGRESS. USE THE MAVEN BUILD WHICH IS THE XWIKI OFFICIAL BUILD TOOL.
 
 dependencies {
-    compile project(':xwiki-component-api')
-    compile project(':xwiki-observation-api')
-    compile "org.apache.commons:commons-lang3:${commonsLang3Version}"
+    api project(':xwiki-component-api')
+    api project(':xwiki-observation-api')
+    implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
 }

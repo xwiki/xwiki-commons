@@ -19,11 +19,18 @@
  */
 package org.xwiki.observation.filter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.observation.event.filter.AlwaysMatchingEventFilter;
 import org.xwiki.observation.event.filter.FixedNameEventFilter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+/**
+ * Unit tests for {@link FixedNameEventFilter}.
+ *
+ * @version $Id$
+ */
 public class FixedNameEventFilterTest
 {
     @Test
@@ -31,11 +38,11 @@ public class FixedNameEventFilterTest
     {
         FixedNameEventFilter filter = new FixedNameEventFilter("filter");
 
-        Assert.assertFalse(filter.equals(null));
-        Assert.assertFalse(filter.equals(AlwaysMatchingEventFilter.INSTANCE));
-        Assert.assertFalse(filter.equals(new FixedNameEventFilter("filter2")));
+        assertFalse(filter.equals(null));
+        assertFalse(filter.equals(AlwaysMatchingEventFilter.INSTANCE));
+        assertFalse(filter.equals(new FixedNameEventFilter("filter2")));
 
-        Assert.assertEquals(filter, filter);
-        Assert.assertEquals(filter, new FixedNameEventFilter("filter"));
+        assertEquals(filter, filter);
+        assertEquals(filter, new FixedNameEventFilter("filter"));
     }
 }
