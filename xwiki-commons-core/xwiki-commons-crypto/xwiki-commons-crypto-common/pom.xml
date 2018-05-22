@@ -32,7 +32,7 @@
   <description>API common to all crypto modules</description>
   <properties>
     <xwiki.jacoco.instructionRatio>0.62</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>40</xwiki.pitest.mutationThreshold>
+    <xwiki.pitest.mutationThreshold>39</xwiki.pitest.mutationThreshold>
     <!-- Name to display by the Extension Manager -->
     <xwiki.extension.name>Cryptographic Services Common API</xwiki.extension.name>
     <!-- Cryptography requires complex expressions, allow a few such expressions -->
