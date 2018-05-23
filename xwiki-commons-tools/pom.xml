@@ -53,6 +53,7 @@
     <module>xwiki-commons-tool-verification-resources</module>
     <module>xwiki-commons-tool-xar</module>
     <module>xwiki-commons-tool-webjar-handlers</module>
+    <module>xwiki-commons-tool-remote-resource-plugin</module>
   </modules>
   <build>
     <pluginManagement>
