@@ -31,11 +31,8 @@
   <name>XWiki Commons - Tools - Remote Resource Plugin</name>
   <packaging>maven-plugin</packaging>
   <description>
-    A more memory frindly alternative to standard Maven Remote Resource Plugin
+    A more memory friendly alternative to standard Maven Remote Resource Plugin
   </description>
-  <properties>
-    <xwiki.jacoco.instructionRatio>0.01</xwiki.jacoco.instructionRatio>
-  </properties>
   <dependencies>
     <!-- Extend Maven Remove Resource Plugin -->
     <dependency>
