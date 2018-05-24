@@ -37,16 +37,16 @@ import org.apache.maven.model.Model;
  * ensure that it uses a variable (such as {@code ${commons.version}}) and not {@code ${project.version}}. To achieve
  * this you would use:
  *
- * <pre>{@code
- *   <rules>
- *     <validateDependencyVersion implementation="org.xwiki.tool.enforcer.ValidateDependencyVersion">
- *       <versionCheck>
- *         <groupIdPrefix>org.xwiki.commons</groupIdPrefix>
- *         <allowedVersionRegex>\$\{project.version\}|[^$].*</allowedVersionRegex>
- *       </versionCheck>
- *     </validateDependencyVersion>
- *   </rules>
- * }</pre>
+ * <pre><code>
+ *   &lt;rules&gt;
+ *     &lt;validateDependencyVersion implementation="org.xwiki.tool.enforcer.ValidateDependencyVersion"&gt;
+ *       &lt;versionCheck&gt;
+ *         &lt;groupIdPrefix&gt;org.xwiki.commons&lt;/groupIdPrefix&gt;
+ *         &lt;allowedVersionRegex&gt;\$\{project.version\}|[^$].*&lt;/allowedVersionRege&gt;
+ *       &lt;/versionCheck&gt;
+ *     &lt;/validateDependencyVersion&gt;
+ *   &lt;/rules&gt;
+ * </code></pre>
  *
  * @version $Id$
  * @since 4.5RC1
@@ -62,12 +62,12 @@ public class ValidateDependencyVersion extends AbstractPomCheck
      * Add a new dependency version check. Called automatically by the Maven framework when the following construct
      * is defined in a pom.xml file:
      *
-     * <pre>{@code
-     *   <versionCheck>
-     *     <groupIdPrefix>org.xwiki.commons</groupIdPrefix>
-     *     <allowedVersionRegex>.*</allowedVersionRegex>
-     *   </versionCheck>
-     * }</pre>
+     * <pre><code>
+     *   &lt;versionCheck&gt;
+     *     &lt;groupIdPrefix&gt;org.xwiki.commons&lt;/groupIdPrefix&gt;
+     *     &lt;allowedVersionRegex&gt;.*&lt;/allowedVersionRegex&gt;
+     *   &lt;/versionCheck&gt;
+     * </code></pre>
      *
      * @param versionCheck the check to add
      */

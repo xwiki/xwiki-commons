@@ -41,7 +41,16 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 
-@Mojo(name = "process", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true, requiresProject = true, requiresDependencyResolution = ResolutionScope.RUNTIME)
+/**
+ * Extends the Maven Remote Resources plugin to fix memory issue found in it,
+ * see <a href="https://jira.xwiki.org/browse/XCOMMONS-1421">XCOMMONS-1421</a>.
+ *
+ * @version $Id$
+ * @since 9.11.5
+ * @since 10.5RC1
+ */
+@Mojo(name = "process", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, threadSafe = true, requiresProject = true,
+    requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
 {
     /**
@@ -52,20 +61,23 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
     public enum ProjectData
     {
         /**
-         * "projects" is empty
+         * "projects" is empty.
          */
         NONE,
 
         /**
-         * "projects" only contains licenses
+         * "projects" only contains licenses.
          */
         LICENSES,
 
         /**
-         * "projects" contains full MavenProject metadata (very expensive but standard Maven Resource plugin behavior)
+         * "projects" contains full MavenProject metadata (very expensive but standard Maven Resource plugin behavior).
          */
         FULL
     }
+
+    @Parameter(defaultValue = "NONE")
+    protected ProjectData projectsData;
 
     @Component
     private MavenProject projectThis;
@@ -75,9 +87,6 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
 
     @Component(role = MavenProjectBuilder.class)
     private MavenProjectBuilder mavenProjectBuilderThis;
-
-    @Parameter(defaultValue = "NONE")
-    protected ProjectData projectsData;
 
     @Override
     protected List<MavenProject> getProjects() throws MojoExecutionException
@@ -104,16 +113,16 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
 
         for (Artifact artifact : artifacts) {
             try {
-                getLog().debug("Building project for " + artifact);
+                getLog().debug(String.format("Building project for [%s]", artifact));
 
                 MavenProject dependencyProject = null;
                 try {
                     dependencyProject = this.mavenProjectBuilderThis.buildFromRepository(artifact,
                         Collections.emptyList(), this.localRepositoryThis);
                 } catch (InvalidProjectModelException e) {
-                    getLog().warn(
-                        "Invalid project model for artifact [" + artifact.getArtifactId() + ":" + artifact.getGroupId()
-                            + ":" + artifact.getVersion() + "]. " + "It will be ignored by the remote resources Mojo.");
+                    getLog().warn(String.format("Invalid project model for artifact [%s:%s:%s]. It will be ignored by "
+                        + "the remote resources Mojo.", artifact.getGroupId(), artifact.getArtifactId(),
+                        artifact.getVersion()));
                     continue;
                 }
 
@@ -141,7 +150,7 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
         return licenses;
     }
 
-    public static License cloneLicense(License src)
+    private static License cloneLicense(License src)
     {
         if (src == null) {
             return null;
@@ -157,7 +166,7 @@ public class XWikiProcessRemoteResourcesMojo extends ProcessRemoteResourcesMojo
         return result;
     }
 
-    public static Organization cloneOrganization(Organization src)
+    private static Organization cloneOrganization(Organization src)
     {
         if (src == null) {
             return null;

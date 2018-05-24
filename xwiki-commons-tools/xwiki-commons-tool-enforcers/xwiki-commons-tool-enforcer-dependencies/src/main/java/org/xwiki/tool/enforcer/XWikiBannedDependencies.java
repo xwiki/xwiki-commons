@@ -35,6 +35,8 @@ import org.apache.maven.plugins.enforcer.BannedDependencies;
  */
 public class XWikiBannedDependencies extends BannedDependencies
 {
+    private static final String STAR = "*";
+
     @Override
     protected boolean compareDependency(String pattern, Artifact artifact) throws EnforcerRuleException
     {
@@ -54,36 +56,58 @@ public class XWikiBannedDependencies extends BannedDependencies
             result = artifact.getArtifactId().matches(pattern[1]);
         }
 
+        result = handleTwoPartsOrMore(result, pattern, artifact);
+
+        result = handleThreePartsOrMore(result, pattern, artifact);
+
+        result = handleFourPartsOrMore(result, pattern, artifact);
+
+        return result;
+    }
+
+    private boolean handleTwoPartsOrMore(boolean result, String[] pattern, Artifact artifact)
+        throws EnforcerRuleException
+    {
+        boolean newresult = result;
         if (result && pattern.length > 2) {
             // short circuit if the versions are exactly the same
-            if (pattern[2].equals("*") || artifact.getVersion().equals(pattern[2])) {
-                result = true;
+            if (STAR.equals(pattern[2]) || artifact.getVersion().equals(pattern[2])) {
+                newresult = true;
             } else {
                 try {
-                    result = AbstractVersionEnforcer.containsVersion(VersionRange.createFromVersionSpec(pattern[2]),
+                    newresult = AbstractVersionEnforcer.containsVersion(VersionRange.createFromVersionSpec(pattern[2]),
                         new DefaultArtifactVersion(artifact.getBaseVersion()));
                 } catch (InvalidVersionSpecificationException e) {
                     throw new EnforcerRuleException("Invalid Version Range: ", e);
                 }
             }
         }
+        return newresult;
+    }
 
+    private boolean handleThreePartsOrMore(boolean result, String[] pattern, Artifact artifact)
+    {
+        boolean newresult = result;
         if (result && pattern.length > 3) {
             String type = artifact.getType();
             if (type == null || type.equals("")) {
                 type = "jar";
             }
-            result = pattern[3].equals("*") || type.equals(pattern[3]);
+            newresult = STAR.equals(pattern[3]) || type.equals(pattern[3]);
         }
+        return newresult;
+    }
 
+    private boolean handleFourPartsOrMore(boolean result, String[] pattern, Artifact artifact)
+    {
+        boolean newresult = result;
         if (result && pattern.length > 4) {
             String scope = artifact.getScope();
             if (scope == null || scope.equals("")) {
                 scope = "compile";
             }
-            result = pattern[4].equals("*") || scope.equals(pattern[4]);
+            newresult = STAR.equals(pattern[4]) || scope.equals(pattern[4]);
         }
-
-        return result;
+        return newresult;
     }
 }

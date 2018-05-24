@@ -32,6 +32,7 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Tools - Verification Resources (Checkstyle files, etc)</description>
   <properties>
+    <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
     <xwiki.jacoco.instructionRatio>0.33</xwiki.jacoco.instructionRatio>
     <xwiki.pitest.mutationThreshold>39</xwiki.pitest.mutationThreshold>
   </properties>

@@ -47,7 +47,7 @@ public abstract class AbstractPomCheck implements EnforcerRule
     {
         MavenProject project;
         try {
-            project = (MavenProject) helper.evaluate( "${project}" );
+            project = (MavenProject) helper.evaluate("${project}");
         } catch (ExpressionEvaluationException e) {
             throw new EnforcerRuleException("Failed to get Maven project", e);
         }

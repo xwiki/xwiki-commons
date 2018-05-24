@@ -128,10 +128,10 @@ public class XWikiXMLWriter extends XMLWriter
 
         // Only print of declaration is not suppressed
         if (!getOutputFormat().isSuppressDeclaration()) {
-            this.writer.write("<?xml version=\"" + this.version + "\"");
+            this.writer.write(String.format("<?xml version=\"%s\"", this.version));
 
             if (!getOutputFormat().isOmitEncoding()) {
-                this.writer.write(" encoding=\"" + encoding + "\"");
+                this.writer.write(String.format(" encoding=\"%s\"", encoding));
             }
 
             this.writer.write("?>");
