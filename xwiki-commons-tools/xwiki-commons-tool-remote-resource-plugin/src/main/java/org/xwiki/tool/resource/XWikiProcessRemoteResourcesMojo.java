@@ -44,6 +44,9 @@ import org.apache.maven.project.ProjectBuildingException;
 /**
  * Extends the Maven Remote Resources plugin to fix memory issue found in it,
  * see <a href="https://jira.xwiki.org/browse/XCOMMONS-1421">XCOMMONS-1421</a>.
+ * <p>
+ * To be removed when <a href="https://issues.apache.org/jira/browse/MRRESOURCES-106">MRRESOURCES-106</a> is fixed
+ * on the Maven side.
  *
  * @version $Id$
  * @since 9.11.5
