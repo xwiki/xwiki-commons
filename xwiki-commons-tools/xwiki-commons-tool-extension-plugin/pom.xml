@@ -100,6 +100,26 @@
           <goalPrefix>extension</goalPrefix>
         </configuration>
       </plugin>
+      <plugin>
+        <!-- See commons-tools parent pom for why we need to explicitly configure checkstyle -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- Specify the "default" execution id so that the "blocker" one is always executed -->
+            <id>default</id>
+            <configuration>
+              <excludes>
+                **/ExtensionMojoHelper.java,
+                **/MavenBuildExtensionRepositor.java,
+                **/ExtensionMojoCoreExtensionRepository.java,
+                **/ExtensionArtifact.java,
+                **/MavenBuildExtensionRepository.java
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>

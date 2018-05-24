@@ -33,7 +33,8 @@ import org.xwiki.tool.extension.util.AbstractExtensionMojo;
  * @version $Id$
  * @since 9.4RC1
  */
-@Mojo(name = "xip", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
+@Mojo(name = "xip", defaultPhase = LifecyclePhase.GENERATE_RESOURCES,
+    requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
 public class XIPMojo extends AbstractExtensionMojo
 {
     @Override
@@ -62,7 +63,8 @@ public class XIPMojo extends AbstractExtensionMojo
         archiver.setIncludeEmptyDirs(false);
         archiver.setCompress(true);
 
-        archiver.addFileSet(new DefaultFileSet(new File(this.extensionHelper.getPermanentDirectory(), "extension/repository")));
+        archiver.addFileSet(
+            new DefaultFileSet(new File(this.extensionHelper.getPermanentDirectory(), "extension/repository")));
 
         try {
             archiver.createArchive();

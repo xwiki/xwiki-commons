@@ -34,7 +34,8 @@ import org.xwiki.tool.extension.util.AbstractExtensionMojo;
  * @version $Id$
  * @since 8.4RC1
  */
-@Mojo(name = "war", defaultPhase = LifecyclePhase.GENERATE_RESOURCES, requiresDependencyResolution = ResolutionScope.RUNTIME, requiresProject = true, threadSafe = true)
+@Mojo(name = "war", defaultPhase = LifecyclePhase.GENERATE_RESOURCES,
+    requiresDependencyResolution = ResolutionScope.RUNTIME, requiresProject = true, threadSafe = true)
 public class WarMojo extends AbstractExtensionMojo
 {
     /**

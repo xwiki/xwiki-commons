@@ -55,12 +55,6 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Component
     protected PlexusContainer container;
 
-    @Component
-    private RepositorySystem repositorySystem;
-
-    @Component
-    private ArtifactHandlerManager artifactHandlers;
-
     /**
      * The current Maven session being executed.
      */
@@ -85,6 +79,28 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Parameter
     protected boolean skip;
 
+    @Parameter(defaultValue = "${project}", required = true, readonly = true)
+    protected MavenProject project;
+
+    /**
+     * The permanent directory.
+     *
+     * @since 9.5RC1
+     */
+    @Parameter(defaultValue = "${project.build.directory}/data/")
+    protected File permanentDirectory;
+
+    @Parameter(defaultValue = "${xwiki.extension.recommendedVersions}")
+    protected String recommendedVersions;
+
+    protected ExtensionMojoHelper extensionHelper;
+
+    @Component
+    private RepositorySystem repositorySystem;
+
+    @Component
+    private ArtifactHandlerManager artifactHandlers;
+
     /**
      * The extensions (and their dependencies) to resolve as core extensions.
      * 
@@ -99,21 +115,6 @@ public abstract class AbstractExtensionMojo extends AbstractMojo
     @Parameter(property = "project.remoteArtifactRepositories")
     private List<ArtifactRepository> remoteRepositories;
 
-    @Parameter(defaultValue = "${project}", required = true, readonly = true)
-    protected MavenProject project;
-
-    /**
-     * The permanent directory.
-     * 
-     * @since 9.5RC1
-     */
-    @Parameter(defaultValue = "${project.build.directory}/data/")
-    protected File permanentDirectory;
-
-    @Parameter(defaultValue = "${xwiki.extension.recommendedVersions}")
-    protected String recommendedVersions;
-
-    protected ExtensionMojoHelper extensionHelper;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
