@@ -67,8 +67,9 @@
       </plugin>
       <!-- We want to force packaging the license resources in the produced XWiki artifacts -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-remote-resources-plugin</artifactId>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-tool-remote-resource-plugin</artifactId>
+        <version>10.5-SNAPSHOT</version>
         <dependencies>
           <dependency>
             <groupId>org.xwiki.commons</groupId>
@@ -83,6 +84,7 @@
               <goal>process</goal>
             </goals>
             <configuration>
+              <projectsData>LICENSES</projectsData>
               <resourceBundles>
                 <resourceBundle>org.xwiki.commons:xwiki-commons-tool-license-resources:${commons.version}</resourceBundle>
               </resourceBundles>

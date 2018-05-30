@@ -32,11 +32,6 @@
   <packaging>pom</packaging>
   <description>XWiki Commons - Tools - Parent POM</description>
   <properties>
-    <!-- Skip checkstyle by default since it needs the right configuration which is in the
-         xwiki-commons-tool-verification-resources module (i.e. a children).
-         Note that we don't run the checkstyle plugin by default in the tools but we still need to disable it in case
-         someone runs "mvn checkstyle:check" from the command line. -->
-    <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
     <!-- Don't run backward-compatibility checks in tools modules since we don't consider them public API -->
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
     <!-- Don't cloverify tools since we don't want our global TPC to include tools TPC. We want to include only
@@ -55,5 +50,55 @@
     <module>xwiki-commons-tool-verification-resources</module>
     <module>xwiki-commons-tool-xar</module>
     <module>xwiki-commons-tool-webjar-handlers</module>
+    <module>xwiki-commons-tool-remote-resource-plugin</module>
   </modules>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- Note: We duplicate the configuration located in xwiki-commons-pom since commons tools use xwiki-commons
+             as their parent pom and not xwiki-commons-pom. This is to avoid a circular dependency since
+             xwiki-commons-pom uses the xwiki-commons-tool-validation-resources artifact.
+
+             It also means each tool module wanting to execute checkstyle will need to explicitly add it.
+        -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-tool-verification-resources</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <propertyExpansion>
+              currentVersion=${project.version}
+            </propertyExpansion>
+            <!-- Used by the "blocker" execution id and the "default-cli" one
+                (i.e. when executing "mvn checkstyle:check") -->
+            <configLocation>checkstyle-blocker.xml</configLocation>
+          </configuration>
+          <executions>
+            <execution>
+              <id>default</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <configLocation>checkstyle.xml</configLocation>
+              </configuration>
+            </execution>
+            <execution>
+              <!-- Checks that should never be excluded from executing in maven projects -->
+              <id>blocker</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>

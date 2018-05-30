@@ -51,12 +51,12 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
             if (methodList != null) {
                 String method = element.getExecutable().getSimpleName();
                 if (methodList.contains(method)) {
-                    getFactory().getEnvironment().report(this, Level.ERROR, element,
-                        "Forbidden call to " + type + "#" + method);
+                    String message = String.format("Forbidden call to [%s#%s]", type, method);
+                    getFactory().getEnvironment().report(this, Level.ERROR, element, message);
 
                     // Forcing the build to stop
                     // FIXME: Remove that when https://github.com/INRIA/spoon/issues/1534 is implemented
-                    throw new RuntimeException("Forbidden call to " + type + "#" + method);
+                    throw new RuntimeException(message);
                 }
             }
         }

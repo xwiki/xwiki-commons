@@ -147,6 +147,9 @@ public class ExternalExtensionCheck extends AbstractPomCheck
             case ENTERPRISE_GROUP_ID:
                 checkArtifactId(groupId, artifactId, ENTERPRISE_ARTIFACT_ID_PREFIX);
                 break;
+            default:
+                // Unhandled groupId, don't do anything
+                break;
         }
     }
 

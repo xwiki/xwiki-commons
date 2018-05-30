@@ -31,4 +31,13 @@
   <name>XWiki Commons - Tools - Banned Dependencies Enforcer</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Tools - Banned Dependencies Enforcer</description>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- See commons-tools parent pom for why we need to explicitly configure checkstyle -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

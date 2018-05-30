@@ -24,30 +24,34 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-tools</artifactId>
     <version>10.5-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-text</artifactId>
-  <name>XWiki Commons - Text</name>
-  <packaging>jar</packaging>
-  <description>Offers text-related APIs</description>
-  <properties>
-    <xwiki.jacoco.instructionRatio>0.94</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>100</xwiki.pitest.mutationThreshold>
-    <!-- Name to display by the Extension Manager -->
-    <xwiki.extension.name>Text API</xwiki.extension.name>
-  </properties>
+  <artifactId>xwiki-commons-tool-remote-resource-plugin</artifactId>
+  <name>XWiki Commons - Tools - Remote Resource Plugin</name>
+  <packaging>maven-plugin</packaging>
+  <description>
+    A more memory friendly alternative to standard Maven Remote Resource Plugin
+  </description>
   <dependencies>
+    <!-- Extend Maven Remove Resource Plugin -->
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-remote-resources-plugin</artifactId>
+      <version>1.5</version>
     </dependency>
-    <!-- Testing dependencies -->
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-simple</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- See commons-tools parent pom for why we need to explicitly configure checkstyle -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

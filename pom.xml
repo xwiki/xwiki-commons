@@ -573,7 +573,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.8.4</version>
+        <version>2.8.5</version>
       </dependency>
 
       <!-- Jackson -->
@@ -1681,12 +1681,12 @@
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.10.2</version>
+          <version>0.10.3</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.17.0</version>
+              <version>0.17.1</version>
             </dependency>
           </dependencies>
           <executions>
@@ -2160,6 +2160,11 @@
               </mutators>
             </configuration>
             <dependencies>
+              <dependency>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-junit5-plugin</artifactId>
+                <version>0.5</version>
+              </dependency>
               <dependency>
                 <groupId>eu.stamp-project</groupId>
                 <artifactId>descartes</artifactId>

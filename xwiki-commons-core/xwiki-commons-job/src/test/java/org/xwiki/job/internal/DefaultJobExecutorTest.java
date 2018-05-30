@@ -21,48 +21,33 @@ package org.xwiki.job.internal;
 
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.job.DefaultRequest;
-import org.xwiki.job.JobExecutor;
 import org.xwiki.job.JobGroupPath;
 import org.xwiki.job.event.status.JobStatus.State;
 import org.xwiki.job.test.TestBasicGroupedJob;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Validate {@link DefaultJobExecutor};
  * 
  * @version $Id$
  */
+@ComponentTest
 @ComponentList(ContextComponentManagerProvider.class)
 public class DefaultJobExecutorTest
 {
-    @Rule
-    public MockitoComponentMockingRule<JobExecutor> mocker =
-        new MockitoComponentMockingRule<JobExecutor>(DefaultJobExecutor.class);
-
-    @Before
-    public void before() throws Exception
-    {
-    }
-
-    private TestBasicGroupedJob groupedJob(String... path)
-    {
-        return new TestBasicGroupedJob("type", new JobGroupPath(Arrays.asList(path)), new DefaultRequest());
-    }
-
-    // Tests
+    @InjectMockComponents
+    private DefaultJobExecutor executor;
 
     @Test
-    public void testMatchingGroupPathAreBlocked() throws ComponentLookupException, InterruptedException
+    public void matchingGroupPathAreBlocked() throws InterruptedException
     {
         TestBasicGroupedJob jobA = groupedJob("A");
         TestBasicGroupedJob jobAB = groupedJob("A", "B");
@@ -77,19 +62,19 @@ public class DefaultJobExecutorTest
         job1.lock();
 
         // Give all jobs to JobExecutor
-        this.mocker.getComponentUnderTest().execute(jobA);
+        this.executor.execute(jobA);
         // Give enough time for the job to be fully taken into account
         Thread.sleep(10);
 
-        this.mocker.getComponentUnderTest().execute(jobAB);
+        this.executor.execute(jobAB);
         // Give enough time for the job to be fully taken into account
         Thread.sleep(10);
 
-        this.mocker.getComponentUnderTest().execute(job12);
+        this.executor.execute(job12);
         // Give enough time for the job to be fully taken into account
         Thread.sleep(10);
 
-        this.mocker.getComponentUnderTest().execute(job1);
+        this.executor.execute(job1);
         // Give enough time for the job to be fully taken into account
         Thread.sleep(10);
 
@@ -132,5 +117,10 @@ public class DefaultJobExecutorTest
 
         assertSame(State.FINISHED, job1.getStatus().getState());
         assertSame(State.FINISHED, job1.getStatus().getState());
+    }
+
+    private TestBasicGroupedJob groupedJob(String... path)
+    {
+        return new TestBasicGroupedJob("type", new JobGroupPath(Arrays.asList(path)), new DefaultRequest());
     }
 }
