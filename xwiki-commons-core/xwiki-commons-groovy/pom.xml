@@ -48,10 +48,30 @@
     <!-- Groovy engine -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
+      <artifactId>groovy</artifactId>
     </dependency>
-    <!-- Adding a dependency on Ivy since groovy-all only has an optional dependency on it and since we want to bundle
-         it so that XWiki users scripting in Groovy can use Grapes out of the box. -->
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-datetime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-jmx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-jsr223</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-macro</artifactId>
+    </dependency>
+    <!-- Adding a dependency on Ivy since the main groovy artifact POM only has an optional dependency on it and since
+         we want to bundle it so that XWiki users scripting in Groovy can use Grapes out of the box. -->
     <dependency>
       <groupId>org.apache.ivy</groupId>
       <artifactId>ivy</artifactId>
