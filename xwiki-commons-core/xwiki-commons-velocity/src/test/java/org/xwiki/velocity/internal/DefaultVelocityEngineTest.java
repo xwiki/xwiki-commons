@@ -19,9 +19,6 @@
  */
 package org.xwiki.velocity.internal;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -34,42 +31,51 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.velocity.context.Context;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.XWikiVelocityException;
-import org.xwiki.velocity.introspection.ChainingUberspector;
-import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link DefaultVelocityEngine}.
  */
+@ComponentTest
 public class DefaultVelocityEngineTest
 {
-    @Rule
-    public MockitoComponentMockingRule<DefaultVelocityEngine> mocker =
-        new MockitoComponentMockingRule<DefaultVelocityEngine>(DefaultVelocityEngine.class);
+    @RegisterExtension
+    static LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
+    @MockComponent
+    private ComponentManager componentManager;
+
+    @MockComponent
+    private VelocityConfiguration configuration;
+
+    @InjectMockComponents
     private DefaultVelocityEngine engine;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         Properties properties = new Properties();
-        properties.put("runtime.introspector.uberspect", ChainingUberspector.class.getName());
-        properties.put("runtime.introspector.uberspect.chainClasses", SecureUberspector.class.getName() + ","
-            + DeprecatedCheckUberspector.class.getName());
+        properties.put("runtime.introspector.uberspect",
+            SecureUberspector.class.getName() + "," + DeprecatedCheckUberspector.class.getName());
         properties.put("directive.set.null.allowed", Boolean.TRUE.toString());
         properties.put("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
 
-        VelocityConfiguration configuration = this.mocker.getInstance(VelocityConfiguration.class);
         when(configuration.getProperties()).thenReturn(properties);
-
-        this.engine = this.mocker.getComponentUnderTest();
     }
 
     private void assertEvaluate(String expected, String content, String template) throws XWikiVelocityException
@@ -82,7 +88,7 @@ public class DefaultVelocityEngineTest
     {
         StringWriter writer = new StringWriter();
         this.engine.evaluate(context, writer, template, content);
-        Assert.assertEquals(expected, writer.toString());
+        assertEquals(expected, writer.toString());
     }
 
     @Test
@@ -90,9 +96,9 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo='hello')$foo World"));
-        Assert.assertEquals("hello World", writer.toString());
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo='hello')$foo World"));
+        assertEquals("hello World", writer.toString());
     }
 
     @Test
@@ -111,14 +117,14 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
 
-        String content =
-            "#set($foo = 'test')#set($object = $foo.class.forName('java.util.ArrayList')"
-                + ".newInstance())$object.size()";
+        String content = "#set($foo = 'test')#set($object = $foo.class.forName('java.util.ArrayList')"
+            + ".newInstance())$object.size()";
         assertEvaluate("$object.size()", content, "mytemplate");
 
         // Verify that we log a warning and verify the message.
-        verify(this.mocker.getMockedLogger()).warn(
-            "Cannot retrieve method forName from object of class " + "java.lang.Class due to security restrictions.");
+        assertEquals(
+            "Cannot retrieve method forName from object of class java.lang.Class due to security restrictions.",
+            logCapture.getMessage(0));
     }
 
     /**
@@ -136,9 +142,9 @@ public class DefaultVelocityEngineTest
         list.add(null);
         list.add("3");
         context.put("list", list);
-        this.engine.evaluate(context, writer, "mytemplate", "#set($foo = true)${foo}#set($foo = $null)${foo}\n"
-            + "#foreach($i in $list)${velocityCount}=$!{i} #end");
-        Assert.assertEquals("true${foo}\n1=1 2= 3=3 ", writer.toString());
+        this.engine.evaluate(context, writer, "mytemplate",
+            "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${velocityCount}=$!{i} #end");
+        assertEquals("true${foo}\n1=1 2= 3=3 ", writer.toString());
 
         String content =
             "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${velocityCount}=$!{i} #end";
@@ -151,14 +157,14 @@ public class DefaultVelocityEngineTest
     {
         // For example try setting a non secure Uberspector.
         Properties properties = new Properties();
-        properties
-            .setProperty("runtime.introspector.uberspect", "org.apache.velocity.util.introspection.UberspectImpl");
+        properties.setProperty("runtime.introspector.uberspect",
+            "org.apache.velocity.util.introspection.UberspectImpl");
         this.engine.initialize(properties);
         StringWriter writer = new StringWriter();
         this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
             "#set($foo = 'test')#set($object = $foo.class.forName('java.util.ArrayList')"
                 + ".newInstance())$object.size()");
-        Assert.assertEquals("0", writer.toString());
+        assertEquals("0", writer.toString());
     }
 
     @Test

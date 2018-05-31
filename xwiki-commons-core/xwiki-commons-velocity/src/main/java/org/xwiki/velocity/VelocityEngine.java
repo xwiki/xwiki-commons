@@ -73,10 +73,13 @@ public interface VelocityEngine
     /**
      * Clear the internal Velocity Macro cache for the passed namespace.
      *
-     * @param templateName the namespace for which to remove all cached Velocity macros
+     * @param namespace the namespace for which to remove all cached Velocity macros
      * @since 2.4M2
+     * @deprecated since 10.5RC1, the macros are now stored in the execution context so this method does not make much
+     *             sense anymore
      */
-    void clearMacroNamespace(String templateName);
+    @Deprecated
+    void clearMacroNamespace(String namespace);
 
     /**
      * Notify that a rendering action is starting in the given namespace.

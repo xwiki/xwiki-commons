@@ -22,7 +22,6 @@ package org.xwiki.velocity.introspection;
 import java.util.Iterator;
 
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.util.RuntimeServicesAware;
 import org.apache.velocity.util.introspection.Info;
 import org.apache.velocity.util.introspection.SecureIntrospectorControl;
@@ -37,16 +36,14 @@ import org.apache.velocity.util.introspection.UberspectImpl;
  */
 public class SecureUberspector extends UberspectImpl implements RuntimeServicesAware
 {
-    private RuntimeServices runtimeServices;
-
     @Override
     public void init()
     {
         String[] badPackages =
-            this.runtimeServices.getConfiguration().getStringArray(RuntimeConstants.INTROSPECTOR_RESTRICT_PACKAGES);
+            this.rsvc.getConfiguration().getStringArray(RuntimeConstants.INTROSPECTOR_RESTRICT_PACKAGES);
 
         String[] badClasses =
-            this.runtimeServices.getConfiguration().getStringArray(RuntimeConstants.INTROSPECTOR_RESTRICT_CLASSES);
+            this.rsvc.getConfiguration().getStringArray(RuntimeConstants.INTROSPECTOR_RESTRICT_CLASSES);
 
         this.introspector = new SecureIntrospector(badClasses, badPackages, this.log);
     }
@@ -58,25 +55,19 @@ public class SecureUberspector extends UberspectImpl implements RuntimeServicesA
      * @param obj object to iterate over
      * @param i line, column, template info
      * @return Iterator for object
-     * @throws Exception when failing to get iterator
      */
     @Override
-    public Iterator getIterator(Object obj, Info i) throws Exception
+    public Iterator getIterator(Object obj, Info i)
     {
         if (obj != null) {
             SecureIntrospectorControl sic = (SecureIntrospectorControl) this.introspector;
             if (sic.checkObjectExecutePermission(obj.getClass(), null)) {
                 return super.getIterator(obj, i);
             } else {
-                this.log.warn("Cannot retrieve iterator from " + obj.getClass() + " due to security restrictions.");
+                this.log.warn("Cannot retrieve iterator from [{}] due to security restrictions.", obj.getClass());
             }
         }
-        return null;
-    }
 
-    @Override
-    public void setRuntimeServices(RuntimeServices rs)
-    {
-        this.runtimeServices = rs;
+        return null;
     }
 }

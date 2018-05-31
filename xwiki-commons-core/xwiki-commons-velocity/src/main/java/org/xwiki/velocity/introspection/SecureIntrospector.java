@@ -22,8 +22,8 @@ package org.xwiki.velocity.introspection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.velocity.runtime.log.Log;
 import org.apache.velocity.util.introspection.SecureIntrospectorImpl;
+import org.slf4j.Logger;
 
 /**
  * {@link SecureIntrospectorImpl} is way too restrictive with allowed {@link Class} methods.
@@ -33,14 +33,14 @@ import org.apache.velocity.util.introspection.SecureIntrospectorImpl;
  */
 public class SecureIntrospector extends SecureIntrospectorImpl
 {
-    private final Set<String> secureClassMethods = new HashSet<String>();
+    private final Set<String> secureClassMethods = new HashSet<>();
 
     /**
      * @param badClasses forbidden classes
      * @param badPackages forbidden packages
      * @param log the log
      */
-    public SecureIntrospector(String[] badClasses, String[] badPackages, Log log)
+    public SecureIntrospector(String[] badClasses, String[] badPackages, Logger log)
     {
         super(badClasses, badPackages, log);
 

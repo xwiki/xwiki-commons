@@ -29,12 +29,9 @@ import javax.inject.Singleton;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.management.JMXBeanRegistration;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.VelocityFactory;
 import org.xwiki.velocity.XWikiVelocityException;
-import org.xwiki.velocity.internal.jmx.JMXVelocityEngine;
-import org.xwiki.velocity.internal.jmx.JMXVelocityEngineMBean;
 
 /**
  * Default implementation for {@link VelocityFactory}.
@@ -46,8 +43,6 @@ import org.xwiki.velocity.internal.jmx.JMXVelocityEngineMBean;
 @Singleton
 public class DefaultVelocityFactory implements VelocityFactory
 {
-    private static final String MBEANNAME_PREFIX = "type=Velocity,domain=Engines,name=";
-
     /**
      * The Component manager we use to lookup (and thus create since it's a singleton) the VelocityEngine component.
      */
@@ -55,16 +50,10 @@ public class DefaultVelocityFactory implements VelocityFactory
     private ComponentManager componentManager;
 
     /**
-     * In order to register the Velocity MBean for management.
-     */
-    @Inject
-    private JMXBeanRegistration jmxRegistration;
-
-    /**
      * A cache of Velocity Engines. See {@link org.xwiki.velocity.VelocityFactory} for more details as to why we need
      * this cache.
      */
-    private Map<String, VelocityEngine> velocityEngines = new ConcurrentHashMap<String, VelocityEngine>();
+    private Map<String, VelocityEngine> velocityEngines = new ConcurrentHashMap<>();
 
     @Override
     public boolean hasVelocityEngine(String key)
@@ -90,19 +79,12 @@ public class DefaultVelocityFactory implements VelocityFactory
         engine.initialize(properties);
         this.velocityEngines.put(key, engine);
 
-        // Register a JMX MBean for providing information about the created Velocity Engine (template namespaces,
-        // macros, etc).
-        JMXVelocityEngineMBean mbean = new JMXVelocityEngine(engine);
-        this.jmxRegistration.registerMBean(mbean, MBEANNAME_PREFIX + key);
-
         return engine;
     }
 
     @Override
     public VelocityEngine removeVelocityEngine(String key)
     {
-        this.jmxRegistration.unregisterMBean(MBEANNAME_PREFIX + key);
-
         return this.velocityEngines.remove(key);
     }
 }

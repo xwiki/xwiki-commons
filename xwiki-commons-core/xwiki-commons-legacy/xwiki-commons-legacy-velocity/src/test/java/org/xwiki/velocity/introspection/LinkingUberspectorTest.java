@@ -58,8 +58,8 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
         TestingUberspector.methodCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         Assert.assertEquals("$bar", writer.toString());
         Assert.assertEquals(1, TestingUberspector.methodCalls);
     }
@@ -73,15 +73,15 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
-        prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, TestingUberspector.class.getCanonicalName()
-            + "," + TestingUberspector.class.getCanonicalName() + "," + UberspectImpl.class.getCanonicalName() + ","
-            + TestingUberspector.class.getCanonicalName());
+        prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES,
+            TestingUberspector.class.getCanonicalName() + "," + TestingUberspector.class.getCanonicalName() + ","
+                + UberspectImpl.class.getCanonicalName() + "," + TestingUberspector.class.getCanonicalName());
         TestingUberspector.methodCalls = 0;
         TestingUberspector.getterCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         Assert.assertEquals("hello", writer.toString());
         Assert.assertEquals(2, TestingUberspector.methodCalls);
         Assert.assertEquals(0, TestingUberspector.getterCalls);
@@ -95,15 +95,16 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
-        prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, Date.class.getCanonicalName() + ","
-            + AbstractChainableUberspector.class.getCanonicalName() + "," + InvalidUberspector.class.getCanonicalName()
-            + "," + TestingUberspector.class.getCanonicalName() + "," + UberspectImpl.class.getCanonicalName());
+        prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES,
+            Date.class.getCanonicalName() + "," + AbstractChainableUberspector.class.getCanonicalName() + ","
+                + InvalidUberspector.class.getCanonicalName() + "," + TestingUberspector.class.getCanonicalName() + ","
+                + UberspectImpl.class.getCanonicalName());
         TestingUberspector.methodCalls = 0;
         InvalidUberspector.methodCalls = 0;
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')#set($bar = $foo.toString())$bar"));
         Assert.assertEquals("hello", writer.toString());
         Assert.assertEquals(1, TestingUberspector.methodCalls);
         Assert.assertEquals(0, InvalidUberspector.methodCalls);
@@ -120,8 +121,8 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
         prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, UberspectImpl.class.getCanonicalName());
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$bar"));
         Assert.assertTrue(writer.toString().startsWith("[Ljava.lang.reflect.Constructor"));
     }
 
@@ -136,8 +137,8 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
         prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, SecureUberspector.class.getCanonicalName());
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
         Assert.assertEquals("hello$bar", writer.toString());
     }
 
@@ -152,8 +153,8 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
         prop.setProperty(LinkingUberspector.UBERSPECT_ARRAY_CLASSNAMES, "");
         this.engine.initialize(prop);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate", new StringReader(
-            "#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
+        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+            new StringReader("#set($foo = 'hello')" + "#set($bar = $foo.getClass().getConstructors())$foo$bar"));
         Assert.assertEquals("hello$bar", writer.toString());
     }
 }

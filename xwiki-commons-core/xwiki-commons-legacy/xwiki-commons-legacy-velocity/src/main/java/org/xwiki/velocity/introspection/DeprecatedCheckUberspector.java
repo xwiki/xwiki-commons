@@ -17,23 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.velocity.internal.jmx;
-
-import javax.management.openmbean.TabularData;
+package org.xwiki.velocity.introspection;
 
 /**
- * MBean API related to Velocity Engines. Supports the following features:
- * <ul>
- *   <li>Retrieve list of template namespaces along with the name of macros registered in each template namespace</li>
- * </ul>
+ * Chainable Velocity Uberspector that checks for deprecated method calls. It does that by checking if the returned
+ * method has a Deprecated annotation. Because this is a chainable uberspector, it has to re-get the method using a
+ * default introspector, which is not safe; future uberspectors might not be able to return a precise method name, or a
+ * method of the original target object.
  *
+ * @since 1.5M1
  * @version $Id$
- * @since 2.4M2
+ * @see ChainableUberspector
+ * @deprecated since 10.5RC1, use {@link org.apache.velocity.util.introspection.DeprecatedCheckUberspector} instead
  */
-public interface JMXVelocityEngineMBean
+@Deprecated
+public class DeprecatedCheckUberspector extends org.apache.velocity.util.introspection.DeprecatedCheckUberspector
 {
-    /**
-     * @return the list of template namespaces along with the name of macros registered in each template namespace
-     */
-    TabularData getTemplates();
 }

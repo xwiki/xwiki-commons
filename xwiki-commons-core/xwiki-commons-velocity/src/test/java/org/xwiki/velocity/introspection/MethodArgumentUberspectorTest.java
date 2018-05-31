@@ -33,6 +33,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.test.annotation.BeforeComponent;
 import org.xwiki.test.annotation.ComponentList;
@@ -72,6 +74,10 @@ public class MethodArgumentUberspectorTest
     {
         this.componentManager.registerMemoryConfigurationSource();
         this.converterManager = this.componentManager.registerMockComponent(ConverterManager.class);
+
+        ExecutionContext executionContext = new ExecutionContext();
+        Execution execution = this.componentManager.registerMockComponent(Execution.class);
+        when(execution.getContext()).thenReturn(executionContext);
     }
 
     public class InnerClass
@@ -223,24 +229,12 @@ public class MethodArgumentUberspectorTest
     }
 
     @Test
-    public void getMethodWhenExistingMethodNameButInvalidSignature() throws Exception
-    {
-        try {
-            this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.method('a', 'b')"));
-            fail("Should have raised an exception");
-        } catch (XWikiVelocityException expected) {
-            assertEquals("Failed to evaluate content with id [template]", expected.getMessage());
-            assertEquals("IllegalArgumentException: wrong number of arguments",
-                ExceptionUtils.getRootCauseMessage(expected));
-        }
-    }
-
-    @Test
     public void getMethodWithGeneric() throws Exception
     {
         when(this.converterManager.convert(new DefaultParameterizedType(null, List.class, Locale.class), "en, fr"))
             .thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
-        this.engine.evaluate(this.context, this.writer, "template", new StringReader("$var.methodWithGeneric('en, fr')"));
+        this.engine.evaluate(this.context, this.writer, "template",
+            new StringReader("$var.methodWithGeneric('en, fr')"));
         assertEquals("success", this.writer.toString());
     }
 }

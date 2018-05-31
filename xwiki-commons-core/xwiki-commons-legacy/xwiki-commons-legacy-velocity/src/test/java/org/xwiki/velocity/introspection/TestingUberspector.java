@@ -30,14 +30,14 @@ public class TestingUberspector extends AbstractChainableUberspector
     public static int getterCalls = 0;
 
     @Override
-    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i) throws Exception
+    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i)
     {
         ++methodCalls;
         return super.getMethod(obj, methodName, args, i);
     }
 
     @Override
-    public VelPropertyGet getPropertyGet(Object obj, String identifier, Info i) throws Exception
+    public VelPropertyGet getPropertyGet(Object obj, String identifier, Info i)
     {
         ++getterCalls;
         return super.getPropertyGet(obj, identifier, i);

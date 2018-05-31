@@ -1028,8 +1028,8 @@
       <!-- Apache Velocity -->
       <dependency>
         <groupId>org.apache.velocity</groupId>
-        <artifactId>velocity</artifactId>
-        <version>1.7</version>
+        <artifactId>velocity-engine-core</artifactId>
+        <version>2.0</version>
       </dependency>
       <!-- Apache Velocity Tools -->
       <dependency>
@@ -1049,6 +1049,11 @@
           <exclusion>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
+          </exclusion>
+          <!-- The artifact id changed in Velocity 2 -->
+          <exclusion>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

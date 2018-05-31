@@ -261,7 +261,7 @@ public class ChainingUberspectorTest
             + ","
             + TestingUberspector.class.getCanonicalName()
             + ","
-            + DeprecatedCheckUberspector.class.getCanonicalName());
+            + org.apache.velocity.util.introspection.DeprecatedCheckUberspector.class.getCanonicalName());
         TestingUberspector.methodCalls = 0;
         TestingUberspector.getterCalls = 0;
         this.engine.initialize(prop);

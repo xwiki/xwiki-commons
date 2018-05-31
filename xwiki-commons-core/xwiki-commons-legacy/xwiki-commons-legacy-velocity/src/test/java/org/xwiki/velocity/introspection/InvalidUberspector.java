@@ -32,7 +32,7 @@ public class InvalidUberspector extends AbstractChainableUberspector
     }
 
     @Override
-    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i) throws Exception
+    public VelMethod getMethod(Object obj, String methodName, Object[] args, Info i)
     {
         ++methodCalls;
         return super.getMethod(obj, methodName, args, i);
