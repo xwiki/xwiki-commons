@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import com.puppycrawl.tools.checkstyle.AbstractModuleTestSupport;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
-import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+import com.puppycrawl.tools.checkstyle.utils.CommonUtil;
 
 /**
  * Unit tests for {@link UnstableAnnotationCheck}.
@@ -69,7 +69,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     @Test
     public void checkWithUnstableOkAtClassLevel() throws Exception
     {
-        final String[] expected = CommonUtils.EMPTY_STRING_ARRAY;
+        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
         verify(this.checkConfig, getPath("TestClassWithUnstableOkAtClassLevel.java"), expected);
     }
@@ -77,7 +77,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     @Test
     public void checkWithUnstableOkAtMethodLevel() throws Exception
     {
-        final String[] expected = CommonUtils.EMPTY_STRING_ARRAY;
+        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
         verify(this.checkConfig, getPath("TestClassWithUnstableOkAtMethodLevel.java"), expected);
     }
@@ -109,7 +109,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     @Test
     public void checkWithUnstableAnnotationShouldNotBeRemovedMultipleSince() throws Exception
     {
-        final String[] expected = CommonUtils.EMPTY_STRING_ARRAY;
+        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
         verify(this.checkConfig, getPath("TestClassWithUnstableAnnotationShouldNotBeRemovedMultipleSince.java"),
             expected);
@@ -131,7 +131,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     @Test
     public void checkPackageWithUnstable() throws Exception
     {
-        final String[] expected = CommonUtils.EMPTY_STRING_ARRAY;
+        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
         verify(this.checkConfig, getPath("TestPackageWithUnstable.java"), expected);
     }
@@ -139,7 +139,7 @@ public class UnstableAnnotationCheckTest extends AbstractModuleTestSupport
     @Test
     public void checkPackageWithOtherAnnotation() throws Exception
     {
-        final String[] expected = CommonUtils.EMPTY_STRING_ARRAY;
+        final String[] expected = CommonUtil.EMPTY_STRING_ARRAY;
 
         verify(this.checkConfig, getPath("TestPackageWithOtherAnnotation.java"), expected);
     }

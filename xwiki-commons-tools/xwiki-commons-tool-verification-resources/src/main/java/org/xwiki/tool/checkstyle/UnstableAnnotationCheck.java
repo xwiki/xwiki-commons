@@ -32,7 +32,7 @@ import com.puppycrawl.tools.checkstyle.api.FileContents;
 import com.puppycrawl.tools.checkstyle.api.FullIdent;
 import com.puppycrawl.tools.checkstyle.api.TextBlock;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
-import com.puppycrawl.tools.checkstyle.utils.AnnotationUtility;
+import com.puppycrawl.tools.checkstyle.utils.AnnotationUtil;
 
 /**
  * Verify if Unstable annotations should be removed.
@@ -101,8 +101,8 @@ public class UnstableAnnotationCheck extends AbstractCheck
                 break;
         }
 
-        if (AnnotationUtility.containsAnnotation(ast)) {
-            DetailAST holder = AnnotationUtility.getAnnotationHolder(ast);
+        if (AnnotationUtil.containsAnnotation(ast)) {
+            DetailAST holder = AnnotationUtil.getAnnotationHolder(ast);
             for (DetailAST annotation : findAllTokens(holder, TokenTypes.ANNOTATION)) {
                 String annotationName = annotation.findFirstToken(TokenTypes.IDENT).getText();
                 if (annotationName.equals("Unstable")) {
