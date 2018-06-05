@@ -120,7 +120,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         }
 
         // Register a mock component for all fields annotated with @MockComponent
-        for (Field field : testInstance.getClass().getDeclaredFields()) {
+        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
             if (field.isAnnotationPresent(MockComponent.class)) {
                 // Get the hint from the @Named annotation (if any)
                 Named namedAnnotation = field.getAnnotation(Named.class);
@@ -140,7 +140,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
 
         // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
         // @Inject-annotated fields injected with mocks or real implementations.
-        for (Field field : testInstance.getClass().getDeclaredFields()) {
+        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
             InjectMockComponents annotation = field.getAnnotation(InjectMockComponents.class);
             if (annotation != null) {
                 // Find Component descriptors
@@ -155,7 +155,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         }
 
         // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
-        for (Field field : testInstance.getClass().getDeclaredFields()) {
+        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
             if (field.isAnnotationPresent(InjectComponentManager.class)) {
                 ReflectionUtils.setFieldValue(testInstance, field.getName(), mcm);
             }
