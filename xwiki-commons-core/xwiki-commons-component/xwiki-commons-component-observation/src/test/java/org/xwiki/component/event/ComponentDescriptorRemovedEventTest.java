@@ -21,9 +21,11 @@ package org.xwiki.component.event;
 
 import java.lang.reflect.Type;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.observation.event.Event;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link ComponentDescriptorRemovedEvent}.
@@ -40,35 +42,28 @@ public class ComponentDescriptorRemovedEventTest
     }
 
     @Test
-    public void testMatchesAllComponentRoles()
+    public void matchesAllComponentRoles()
     {
         ComponentDescriptorRemovedEvent event = new ComponentDescriptorRemovedEvent();
         // Note: We use any class for the test but it's supposed to be a component role class.
-        Assert.assertTrue(event.matches(new ComponentDescriptorRemovedEvent((Type) Dummy.class, "rolehint")));
+        assertTrue(event.matches(new ComponentDescriptorRemovedEvent((Type) Dummy.class, "rolehint")));
     }
 
     @Test
-    public void testMatchesWhenDifferentEvent()
+    public void matchesWhenDifferentEvent()
     {
         ComponentDescriptorRemovedEvent event = new ComponentDescriptorRemovedEvent();
-        Assert.assertFalse(event.matches(new Event()
-        {
-            @Override
-            public boolean matches(Object otherEvent)
-            {
-                return false;
-            }
-        }));
+        assertFalse(event.matches((Event) e -> false));
     }
 
     @Test
-    public void testMatchesWhenSpecificRoleSpecified()
+    public void matchesWhenSpecificRoleSpecified()
     {
         // Note: We use any class for the test but it's supposed to be a component role class.
         ComponentDescriptorRemovedEvent event = new ComponentDescriptorRemovedEvent((Type) Dummy.class);
-        Assert.assertTrue(event.matches(new ComponentDescriptorRemovedEvent((Type) Dummy.class, "rolehint")));
+        assertTrue(event.matches(new ComponentDescriptorRemovedEvent((Type) Dummy.class, "rolehint")));
         // Use a different class so that it doesn't match
-        Assert.assertFalse(event.matches(new ComponentDescriptorRemovedEvent((Type) ComponentDescriptorRemovedEvent.class,
+        assertFalse(event.matches(new ComponentDescriptorRemovedEvent((Type) ComponentDescriptorRemovedEvent.class,
             "rolehint")));
     }
 }
