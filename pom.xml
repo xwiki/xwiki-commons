@@ -498,11 +498,13 @@
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
         <version>2.7.2</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>serializer</artifactId>
         <version>2.7.2</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
@@ -518,6 +520,7 @@
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
         <version>1.1.6</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.simpleframework</groupId>
@@ -1945,6 +1948,33 @@
           <groupId>net.alchim31.maven</groupId>
           <artifactId>yuicompressor-maven-plugin</artifactId>
           <version>1.5.1</version>
+        </plugin>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.xwiki.commons</groupId>
+                    <artifactId>
+                      xwiki-commons-tool-remote-resource-plugin
+                    </artifactId>
+                    <versionRange>[10.5-SNAPSHOT,)</versionRange>
+                    <goals>
+                      <goal>process</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
