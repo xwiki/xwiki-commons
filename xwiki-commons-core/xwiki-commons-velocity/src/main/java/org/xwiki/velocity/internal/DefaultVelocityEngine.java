@@ -32,10 +32,11 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeInstance;
 import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.directive.StopCommand;
-import org.apache.velocity.runtime.parser.node.SimpleNode;
+import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
@@ -47,7 +48,7 @@ import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityEngine;
 import org.xwiki.velocity.XWikiVelocityException;
-import org.xwiki.velocity.introspection.TryCatchDirective;
+import org.xwiki.velocity.internal.directive.TryCatchDirective;
 
 /**
  * Default implementation of the Velocity service which initializes the Velocity system using configuration values
@@ -65,7 +66,23 @@ public class DefaultVelocityEngine implements VelocityEngine
 {
     private static final String ECONTEXT_TEMPLATES = "velocity.templates";
 
-    private static class TemplateEntry
+    private static class SingletonResourceReader extends StringResourceLoader
+    {
+        private final Reader reader;
+
+        SingletonResourceReader(Reader r)
+        {
+            this.reader = r;
+        }
+
+        @Override
+        public Reader getResourceReader(String source, String encoding)
+        {
+            return this.reader;
+        }
+    }
+
+    private class TemplateEntry
     {
         private Template template;
 
@@ -81,8 +98,14 @@ public class DefaultVelocityEngine implements VelocityEngine
             this.namespace = namespace;
             this.template = new Template();
             this.template.setName(namespace);
+            this.template.setRuntimeServices(runtimeInstance);
 
             this.counter = 1;
+
+            if (globalEntry != null) {
+                // Inject global macros
+                this.template.getMacros().putAll(globalEntry.getTemplate().getMacros());
+            }
         }
 
         Template getTemplate()
@@ -149,6 +172,8 @@ public class DefaultVelocityEngine implements VelocityEngine
      */
     private RuntimeInstance runtimeInstance;
 
+    private TemplateEntry globalEntry;
+
     @Override
     public void initialize(Properties overridingProperties) throws XWikiVelocityException
     {
@@ -170,6 +195,8 @@ public class DefaultVelocityEngine implements VelocityEngine
         }
 
         this.runtimeInstance = runtime;
+
+        this.globalEntry = new TemplateEntry("");
     }
 
     /**
@@ -183,7 +210,7 @@ public class DefaultVelocityEngine implements VelocityEngine
     {
         // Avoid "unable to find resource 'VM_global_library.vm' in any resource loader." if no
         // Velocimacro library is defined. This value is overriden below.
-        runtime.setProperty("velocimacro.library", "");
+        runtime.setProperty(RuntimeConstants.VM_LIBRARY, "");
 
         // Configure Velocity by passing the properties defined in this component's configuration
         if (configurationProperties != null) {
@@ -231,15 +258,20 @@ public class DefaultVelocityEngine implements VelocityEngine
             if (StringUtils.isNotEmpty(namespace)) {
                 templateEntry = startedUsingMacroNamespaceInternal(namespace);
             } else {
-                templateEntry = new TemplateEntry("");
+                templateEntry = this.globalEntry;
             }
 
-            // "Compile" the velocity script
-            SimpleNode nodeTree = this.runtimeInstance.parse(source, templateEntry.getTemplate());
+            // Set source
+            templateEntry.getTemplate().setResourceLoader(new SingletonResourceReader(source));
+
+            // Compile the template
+            templateEntry.getTemplate().process();
 
             // Execute the velocity script
-            return this.runtimeInstance.render(context != null ? context : this.velocityContextFactory.createContext(),
-                out, templateEntry.getTemplate().getName(), nodeTree);
+            templateEntry.getTemplate().merge(context != null ? context : this.velocityContextFactory.createContext(),
+                out);
+
+            return true;
         } catch (StopCommand s) {
             // Someone explicitly stopped the script with something like #stop. No reason to make a scene.
             return true;
@@ -299,7 +331,7 @@ public class DefaultVelocityEngine implements VelocityEngine
                 templates.push(templateEntry);
             }
         } else {
-            // If now execution context can be found create a new template entry
+            // If no execution context can be found create a new template entry
             templateEntry = new TemplateEntry(namespace);
         }
 

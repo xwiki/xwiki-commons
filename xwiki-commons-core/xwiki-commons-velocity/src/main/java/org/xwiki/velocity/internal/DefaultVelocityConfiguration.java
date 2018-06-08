@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.tools.generic.ListTool;
 import org.apache.velocity.tools.generic.MathTool;
 import org.apache.velocity.tools.generic.NumberTool;
@@ -98,20 +99,27 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
 
         // Default Velocity properties
         this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());
-        this.defaultProperties.setProperty("velocimacro.messages.on", Boolean.FALSE.toString());
-        this.defaultProperties.setProperty("velocimacro.max.depth", "100");
-        this.defaultProperties.setProperty("resource.manager.logwhenfound", Boolean.FALSE.toString());
-        this.defaultProperties.setProperty("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
-        // Prevents users from calling #parse on files outside the /templates/ directory
-        this.defaultProperties.setProperty("eventhandler.include.class",
-            RestrictParseLocationEventHandler.class.getName());
-        // Prevents users from writing dangerous Velocity code like using Class.forName or Java threading APIs.
-        this.defaultProperties.setProperty("runtime.introspector.uberspect", StringUtils.join(
-            new String[] { SecureUberspector.class.getName(), DeprecatedCheckUberspector.class.getName(),
-                MethodArgumentsUberspector.class.getName() }, ','));
+        this.defaultProperties.setProperty(RuntimeConstants.VM_MESSAGES_ON, Boolean.FALSE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.VM_MAX_DEPTH, "100");
+        this.defaultProperties.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, Boolean.FALSE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL, Boolean.TRUE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_ALLOW_INLINE_REPLACE_GLOBAL,
+            Boolean.TRUE.toString());
         // Enable the extra scope variables $template and $macro, similar to $foreach
         this.defaultProperties.setProperty("template.provide.scope.control", Boolean.TRUE.toString());
         this.defaultProperties.setProperty("macro.provide.scope.control", Boolean.TRUE.toString());
+        // [Retro compatibility] Make empty string #if evaluate to true
+        this.defaultProperties.setProperty(RuntimeConstants.CHECK_EMPTY_OBJECTS, Boolean.FALSE.toString());
+        // [Retro compatibility] Use Velocity 1.x Space Gobbling
+        this.defaultProperties.setProperty(RuntimeConstants.SPACE_GOBBLING, "bc");
+
+        // Prevents users from calling #parse on files outside the /templates/ directory
+        this.defaultProperties.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE,
+            RestrictParseLocationEventHandler.class.getName());
+        // Prevents users from writing dangerous Velocity code like using Class.forName or Java threading APIs.
+        this.defaultProperties.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME,
+            StringUtils.join(new String[] { SecureUberspector.class.getName(),
+                DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','));
     }
 
     @Override

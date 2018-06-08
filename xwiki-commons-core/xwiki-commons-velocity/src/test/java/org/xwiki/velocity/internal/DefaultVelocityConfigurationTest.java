@@ -67,8 +67,9 @@ public class DefaultVelocityConfigurationTest
     public void getPropertiesReturnsDefaultProperties() throws Exception
     {
         // Verify that the secure uberspector is set by default
-        assertEquals(StringUtils.join(new String[] { SecureUberspector.class.getName(),
-            DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
+        assertEquals(
+            StringUtils.join(new String[] { SecureUberspector.class.getName(),
+                DeprecatedCheckUberspector.class.getName(), MethodArgumentsUberspector.class.getName() }, ','),
             this.configuration.getProperties().getProperty("runtime.introspector.uberspect"));
 
         // Verify that null values are allowed by default
@@ -78,5 +79,12 @@ public class DefaultVelocityConfigurationTest
         // Verify that Macros are isolated by default
         assertEquals(Boolean.TRUE.toString(),
             this.configuration.getProperties().getProperty("velocimacro.permissions.allow.inline.local.scope"));
+
+        // Verify that we use Velocity 1.x Space Gobbling
+        assertEquals("bc", this.configuration.getProperties().getProperty("space.gobbling"));
+
+        // Verify that empty string #if evaluate to true
+        assertEquals(Boolean.FALSE.toString(),
+            this.configuration.getProperties().getProperty("directive.if.emptycheck"));
     }
 }

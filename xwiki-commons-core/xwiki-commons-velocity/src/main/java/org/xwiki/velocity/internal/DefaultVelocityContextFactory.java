@@ -75,7 +75,7 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
     @Override
     public void initialize() throws InitializationException
     {
-        this.toolsContext = new VelocityContext();
+        this.toolsContext = new RetroVelocityContext();
 
         // Instantiate Velocity tools
         Properties properties = this.velocityConfiguration.getTools();

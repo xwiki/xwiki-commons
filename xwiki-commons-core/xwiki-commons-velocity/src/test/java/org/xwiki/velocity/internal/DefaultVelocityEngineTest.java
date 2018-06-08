@@ -24,11 +24,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.apache.velocity.context.Context;
 import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
@@ -36,6 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.test.LogLevel;
 import org.xwiki.test.junit5.LogCaptureExtension;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -66,6 +63,9 @@ public class DefaultVelocityEngineTest
     @InjectMockComponents
     private DefaultVelocityEngine engine;
 
+    @MockComponent
+    private Execution execution;
+
     @BeforeEach
     public void setUp() throws Exception
     {
@@ -76,11 +76,13 @@ public class DefaultVelocityEngineTest
         properties.put("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
 
         when(configuration.getProperties()).thenReturn(properties);
+
+        when(execution.getContext()).thenReturn(new ExecutionContext());
     }
 
     private void assertEvaluate(String expected, String content, String template) throws XWikiVelocityException
     {
-        assertEvaluate(expected, content, template, new org.apache.velocity.VelocityContext());
+        assertEvaluate(expected, content, template, new RetroVelocityContext());
     }
 
     private void assertEvaluate(String expected, String content, String template, Context context)
@@ -96,7 +98,7 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new RetroVelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo='hello')$foo World"));
         assertEquals("hello World", writer.toString());
     }
@@ -135,7 +137,7 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
-        Context context = new org.apache.velocity.VelocityContext();
+        Context context = new RetroVelocityContext();
         context.put("null", null);
         List<String> list = new ArrayList<String>();
         list.add("1");
@@ -143,11 +145,11 @@ public class DefaultVelocityEngineTest
         list.add("3");
         context.put("list", list);
         this.engine.evaluate(context, writer, "mytemplate",
-            "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${velocityCount}=$!{i} #end");
+            "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${foreach.count}=$!{i} #end");
         assertEquals("true${foo}\n1=1 2= 3=3 ", writer.toString());
 
         String content =
-            "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${velocityCount}=$!{i} #end";
+            "#set($foo = true)${foo}#set($foo = $null)${foo}\n" + "#foreach($i in $list)${foreach.count}=$!{i} #end";
 
         assertEvaluate("true${foo}\n1=1 2= 3=3 ", content, "mytemplate", context);
     }
@@ -161,7 +163,7 @@ public class DefaultVelocityEngineTest
             "org.apache.velocity.util.introspection.UberspectImpl");
         this.engine.initialize(properties);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new RetroVelocityContext(), writer, "mytemplate",
             "#set($foo = 'test')#set($object = $foo.class.forName('java.util.ArrayList')"
                 + ".newInstance())$object.size()");
         assertEquals("0", writer.toString());
@@ -171,7 +173,7 @@ public class DefaultVelocityEngineTest
     public void testMacroIsolation() throws Exception
     {
         this.engine.initialize(new Properties());
-        Context context = new org.apache.velocity.VelocityContext();
+        Context context = new RetroVelocityContext();
         this.engine.evaluate(context, new StringWriter(), "template1", "#macro(mymacro)test#end");
         assertEvaluate("#mymacro", "#mymacro", "template2");
     }
@@ -183,7 +185,7 @@ public class DefaultVelocityEngineTest
         // Force macros to be global
         properties.put("velocimacro.permissions.allow.inline.local.scope", "false");
         this.engine.initialize(properties);
-        Context context = new org.apache.velocity.VelocityContext();
+        Context context = new RetroVelocityContext();
         this.engine.evaluate(context, new StringWriter(), "template1", "#macro(mymacro)test#end");
         assertEvaluate("test", "#mymacro", "template2");
     }
@@ -200,8 +202,7 @@ public class DefaultVelocityEngineTest
 
         assertEvaluate("#mymacro", "#mymacro", "namespace");
 
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), new StringWriter(), "namespace",
-            "#macro(mymacro)test#end");
+        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test#end");
 
         assertEvaluate("#mymacro", "#mymacro", "namespace");
 
@@ -211,8 +212,7 @@ public class DefaultVelocityEngineTest
         this.engine.startedUsingMacroNamespace("namespace");
 
         // Register macro
-        this.engine.evaluate(new org.apache.velocity.VelocityContext(), new StringWriter(), "namespace",
-            "#macro(mymacro)test#end");
+        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test#end");
 
         assertEvaluate("test", "#mymacro", "namespace");
 
@@ -222,50 +222,60 @@ public class DefaultVelocityEngineTest
         assertEvaluate("#mymacro", "#mymacro", "namespace");
     }
 
-    /**
-     * Make sure several thread that supposedly use the same namespace string don't collide.
-     * 
-     * @throws XWikiVelocityException
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
-    @Test
-    public void testThreadsafeNamespaces() throws XWikiVelocityException, InterruptedException, ExecutionException
-    {
-        this.engine.initialize(new Properties());
-
-        // Start using namespace "namespace"
-        this.engine.startedUsingMacroNamespace("namespace");
-
-        // Register macro
-        Context context = new org.apache.velocity.VelocityContext();
-        this.engine.evaluate(context, new StringWriter(), "namespace", "#macro(mymacro)test#end");
-
-        assertEvaluate("test", "#mymacro", "namespace");
-
-        ExecutorService pool = Executors.newSingleThreadExecutor();
-        Future<Void> future = pool.submit(new Callable<Void>()
-        {
-            @Override
-            public Void call() throws Exception
-            {
-                // the macro should not be available in a different thread than the one which registered it
-                assertEvaluate("#mymacro", "#mymacro", "namespace");
-
-                return null;
-            }
-        });
-        future.get();
-
-        // Mark namespace "namespace" as not used anymore
-        this.engine.stoppedUsingMacroNamespace("namespace");
-    }
-
     @Test
     public void testEvaluateWithStopCommand() throws Exception
     {
         this.engine.initialize(new Properties());
 
         assertEvaluate("hello world", "hello world#stop", "mytemplate");
+    }
+
+    @Test
+    public void testVelocityCount() throws XWikiVelocityException
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("1true2true3true4true5false", "#foreach($nb in [1,2,3,4,5])$velocityCount$velocityHasNext#end",
+            "mytemplate");
+    }
+
+    @Test
+    public void testEmptyNamespaceInheritance() throws Exception
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("#mymacro", "#mymacro", "namespace");
+
+        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "", "#macro(mymacro)test#end");
+
+        assertEvaluate("test", "#mymacro", "namespace");
+    }
+
+    @Test
+    public void testOverrideMacros() throws Exception
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("#mymacro", "#mymacro", "namespace");
+
+        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "", "#macro(mymacro)global#end");
+
+        assertEvaluate("global", "#mymacro", "namespace");
+
+        // Start using namespace "namespace"
+        this.engine.startedUsingMacroNamespace("namespace");
+
+        // Register macro
+        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test1#end");
+
+        assertEvaluate("test1", "#mymacro", "namespace");
+
+        // Override macro
+        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test2#end");
+
+        assertEvaluate("test2", "#mymacro", "namespace");
+
+        // Mark namespace "namespace" as not used anymore
+        this.engine.stoppedUsingMacroNamespace("namespace");
     }
 }

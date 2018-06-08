@@ -49,26 +49,26 @@ public interface VelocityEngine
      *
      * @param context the Velocity context to use in rendering the input string
      * @param out the writer in which to render the output
-     * @param templateName the string to be used as the template name for log messages in case of error. Also used
-     *            internally by Velocity as a cache index key for caching macros.
+     * @param namespace the string to be used as the template name for log messages in case of error. Also used as
+     *            namespace for the macros. Empty string means global namespace.
      * @param source the input string containing the VTL to be rendered
      * @return true if successful, false otherwise. If false, see the Velocity runtime log
      * @throws XWikiVelocityException in case of error
      */
-    boolean evaluate(Context context, Writer out, String templateName, String source) throws XWikiVelocityException;
+    boolean evaluate(Context context, Writer out, String namespace, String source) throws XWikiVelocityException;
 
     /**
      * Renders the input string using the context into the output writer.
      *
      * @param context the Velocity context to use in rendering the input string
      * @param out the writer in which to render the output
-     * @param templateName the string to be used as the template name for log messages in case of error. Also used
-     *            internally by Velocity as a cache index key for caching macros.
+     * @param namespace the string to be used as the template name for log messages in case of error. Also used as
+     *            namespace for the macros. Empty string means global namespace.
      * @param source the input containing the VTL to be rendered, as a Reader
      * @return false if empty, true otherwise
      * @throws XWikiVelocityException in case of error
      */
-    boolean evaluate(Context context, Writer out, String templateName, Reader source) throws XWikiVelocityException;
+    boolean evaluate(Context context, Writer out, String namespace, Reader source) throws XWikiVelocityException;
 
     /**
      * Clear the internal Velocity Macro cache for the passed namespace.
