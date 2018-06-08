@@ -67,7 +67,7 @@ public class TimedInterruptGroovyCompilationCustomizerTest extends AbstractCompo
             engine.eval("while (true) {}");
             Assert.fail("Should have thrown an exception here");
         } catch (ScriptException e) {
-            Assert.assertTrue(e.getMessage().contains("Execution timed out after 1 units."));
+            Assert.assertTrue(e.getMessage().contains("Execution timed out after 1 seconds."));
         }
     }
 }
