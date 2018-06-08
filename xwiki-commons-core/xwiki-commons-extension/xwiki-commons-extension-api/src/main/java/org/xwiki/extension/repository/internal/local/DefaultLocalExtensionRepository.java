@@ -173,11 +173,7 @@ public class DefaultLocalExtensionRepository extends AbstractCachedExtensionRepo
                 localExtension = createExtension(extension);
 
                 InputStream is = extension.getFile().openStream();
-                try {
-                    FileUtils.copyInputStreamToFile(is, localExtension.getFile().getFile());
-                } finally {
-                    is.close();
-                }
+                FileUtils.copyInputStreamToFile(is, localExtension.getFile().getFile());
                 this.storage.saveDescriptor(localExtension);
 
                 // Cache extension
