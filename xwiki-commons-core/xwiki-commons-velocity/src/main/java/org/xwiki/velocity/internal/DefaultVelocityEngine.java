@@ -309,6 +309,9 @@ public class DefaultVelocityEngine implements VelocityEngine
 
         if (templates == null && create) {
             templates = new LinkedList<>();
+            if (!executionContext.hasProperty(ECONTEXT_TEMPLATES)) {
+                executionContext.newProperty(ECONTEXT_TEMPLATES).inherited().declare();
+            }
             executionContext.setProperty(ECONTEXT_TEMPLATES, templates);
         }
 
