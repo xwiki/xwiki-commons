@@ -69,15 +69,15 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
     protected Properties defaultTools = new Properties();
 
     /**
+     * Default properties.
+     */
+    protected Properties defaultProperties = new Properties();
+
+    /**
      * Defines from where to read the rendering configuration data.
      */
     @Inject
     private ConfigurationSource configuration;
-
-    /**
-     * Default properties.
-     */
-    private Properties defaultProperties = new Properties();
 
     @Override
     public void initialize() throws InitializationException

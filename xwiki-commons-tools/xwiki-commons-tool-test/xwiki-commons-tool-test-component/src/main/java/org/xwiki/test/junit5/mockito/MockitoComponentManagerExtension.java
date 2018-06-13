@@ -20,6 +20,8 @@
 package org.xwiki.test.junit5.mockito;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.List;
 
@@ -27,6 +29,7 @@ import javax.inject.Named;
 
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -37,7 +40,6 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.mockito.MockitoComponentManager;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.xwiki.test.mockito.MockitoComponentMocker;
 
 /**
@@ -119,7 +121,20 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             saveComponentManager(context, mcm);
         }
 
+        if (initializeCM) {
+            initializeMockitoComponentManager(testInstance, mcm, context);
+        }
+
+        // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
+        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
+            if (field.isAnnotationPresent(InjectComponentManager.class)) {
+                ReflectionUtils.setFieldValue(testInstance, field.getName(), mcm);
+            }
+        }
+
         // Register a mock component for all fields annotated with @MockComponent
+        // We register them after the initialization of the ComponentManager to allow overwriting components coming from
+        // @AllCmponent or @ComponentList
         for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
             if (field.isAnnotationPresent(MockComponent.class)) {
                 // Get the hint from the @Named annotation (if any)
@@ -134,9 +149,9 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             }
         }
 
-        if (initializeCM) {
-            initializeMockitoComponentManager(testInstance, mcm, context);
-        }
+        // If there are methods annotated with the AfterMockComponent annotation then call them. This gives an
+        // opportunity to setup registered mocks before being actually used.
+        callAfterMockComponent(testInstance);
 
         // Create & register a component instance of all fields annotated with @InjectMockComponents with all its
         // @Inject-annotated fields injected with mocks or real implementations.
@@ -154,18 +169,21 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             }
         }
 
-        // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
-        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
-            if (field.isAnnotationPresent(InjectComponentManager.class)) {
-                ReflectionUtils.setFieldValue(testInstance, field.getName(), mcm);
-            }
-        }
-
         // Make sure this is executed last since if we want to combine it with @InjectMockComponents annotation, we
         // need the field to be non-null when this line executes or otherwise Mockito will not inject anything...
         // Also note that all fields annotated with @InjectMocks will have their fields replaced by all mocks found
         // in the test class.
         MockitoAnnotations.initMocks(testInstance);
+    }
+
+    private void callAfterMockComponent(Object testInstance)
+        throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+    {
+        for (Method declaredMethod : testInstance.getClass().getMethods()) {
+            if (declaredMethod.isAnnotationPresent(AfterMockComponent.class)) {
+                declaredMethod.invoke(testInstance);
+            }
+        }
     }
 
     /**

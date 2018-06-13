@@ -217,7 +217,7 @@ public class DefaultVelocityEngine implements VelocityEngine
             for (Enumeration<?> e = configurationProperties.propertyNames(); e.hasMoreElements();) {
                 String key = e.nextElement().toString();
                 // Only set a property if it's not overridden by one of the passed properties
-                if (!overridingProperties.containsKey(key)) {
+                if (overridingProperties == null || !overridingProperties.containsKey(key)) {
                     String value = configurationProperties.getProperty(key);
                     runtime.setProperty(key, value);
                     this.logger.debug("Setting property [{}] = [{}]", key, value);

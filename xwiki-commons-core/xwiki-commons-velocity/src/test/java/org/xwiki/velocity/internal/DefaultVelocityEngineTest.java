@@ -28,6 +28,7 @@ import java.util.Properties;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.component.manager.ComponentManager;
@@ -277,5 +278,23 @@ public class DefaultVelocityEngineTest
 
         // Mark namespace "namespace" as not used anymore
         this.engine.stoppedUsingMacroNamespace("namespace");
+    }
+
+    @Test
+    @Disabled
+    public void testSetSharpString() throws Exception
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("", "#set($var = \"#\")", "mytemplate");
+    }
+
+    @Test
+    @Disabled
+    public void testMisc() throws Exception
+    {
+        this.engine.initialize(new Properties());
+
+        assertEvaluate("", "#set($var = \"$\")", "mytemplate");
     }
 }

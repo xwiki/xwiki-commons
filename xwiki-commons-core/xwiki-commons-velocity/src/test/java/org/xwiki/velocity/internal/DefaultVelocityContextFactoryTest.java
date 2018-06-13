@@ -26,7 +26,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.tools.generic.ListTool;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.test.annotation.BeforeComponent;
+import org.xwiki.test.junit5.mockito.AfterMockComponent;
 import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
@@ -60,14 +60,14 @@ public class DefaultVelocityContextFactoryTest
     @InjectMockComponents
     private DefaultVelocityContextFactory factory;
 
-    @BeforeComponent
-    public void configure() throws Exception
+    @AfterMockComponent
+    public void afterMockComponent()
     {
         Properties properties = new Properties();
         properties.put("listtool", ListTool.class.getName());
         when(this.configuration.getTools()).thenReturn(properties);
     }
-
+    
     /**
      * Verify that we get different contexts when we call the createContext method but that they contain the same
      * references to the Velocity tools. Also tests that objects we put in one context are not shared with other

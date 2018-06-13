@@ -85,6 +85,11 @@
           <groupId>dom4j</groupId>
           <artifactId>dom4j</artifactId>
         </exclusion>
+        <!-- Velocity id changed -->
+        <exclusion>
+          <groupId>org.apache.velocity</groupId>
+          <artifactId>velocity</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <!-- Needed by velocity-tools, now that we excluded commons-logging that was bringing it. -->
