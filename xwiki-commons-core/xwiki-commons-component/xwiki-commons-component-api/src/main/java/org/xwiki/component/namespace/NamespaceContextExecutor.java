@@ -28,6 +28,8 @@ import org.xwiki.component.annotation.Role;
  *
  * @version $Id$
  * @since 10.6RC1
+ * @since 10.5
+ * @since 9.11.6
  */
 @Role
 public interface NamespaceContextExecutor
