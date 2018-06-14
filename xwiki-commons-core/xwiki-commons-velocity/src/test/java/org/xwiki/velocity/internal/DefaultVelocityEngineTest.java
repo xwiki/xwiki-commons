@@ -40,6 +40,7 @@ import org.xwiki.test.junit5.mockito.ComponentTest;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 import org.xwiki.velocity.VelocityConfiguration;
+import org.xwiki.velocity.XWikiVelocityContext;
 import org.xwiki.velocity.XWikiVelocityException;
 import org.xwiki.velocity.introspection.SecureUberspector;
 
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.when;
 public class DefaultVelocityEngineTest
 {
     @RegisterExtension
-    static LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     @MockComponent
     private ComponentManager componentManager;
@@ -68,7 +69,7 @@ public class DefaultVelocityEngineTest
     private Execution execution;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         Properties properties = new Properties();
         properties.put("runtime.introspector.uberspect",
@@ -83,7 +84,7 @@ public class DefaultVelocityEngineTest
 
     private void assertEvaluate(String expected, String content, String template) throws XWikiVelocityException
     {
-        assertEvaluate(expected, content, template, new RetroVelocityContext());
+        assertEvaluate(expected, content, template, new XWikiVelocityContext());
     }
 
     private void assertEvaluate(String expected, String content, String template, Context context)
@@ -99,7 +100,7 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new RetroVelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new XWikiVelocityContext(), writer, "mytemplate",
             new StringReader("#set($foo='hello')$foo World"));
         assertEquals("hello World", writer.toString());
     }
@@ -138,7 +139,7 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
         StringWriter writer = new StringWriter();
-        Context context = new RetroVelocityContext();
+        Context context = new XWikiVelocityContext();
         context.put("null", null);
         List<String> list = new ArrayList<String>();
         list.add("1");
@@ -164,7 +165,7 @@ public class DefaultVelocityEngineTest
             "org.apache.velocity.util.introspection.UberspectImpl");
         this.engine.initialize(properties);
         StringWriter writer = new StringWriter();
-        this.engine.evaluate(new RetroVelocityContext(), writer, "mytemplate",
+        this.engine.evaluate(new XWikiVelocityContext(), writer, "mytemplate",
             "#set($foo = 'test')#set($object = $foo.class.forName('java.util.ArrayList')"
                 + ".newInstance())$object.size()");
         assertEquals("0", writer.toString());
@@ -174,7 +175,7 @@ public class DefaultVelocityEngineTest
     public void testMacroIsolation() throws Exception
     {
         this.engine.initialize(new Properties());
-        Context context = new RetroVelocityContext();
+        Context context = new XWikiVelocityContext();
         this.engine.evaluate(context, new StringWriter(), "template1", "#macro(mymacro)test#end");
         assertEvaluate("#mymacro", "#mymacro", "template2");
     }
@@ -186,7 +187,7 @@ public class DefaultVelocityEngineTest
         // Force macros to be global
         properties.put("velocimacro.permissions.allow.inline.local.scope", "false");
         this.engine.initialize(properties);
-        Context context = new RetroVelocityContext();
+        Context context = new XWikiVelocityContext();
         this.engine.evaluate(context, new StringWriter(), "template1", "#macro(mymacro)test#end");
         assertEvaluate("test", "#mymacro", "template2");
     }
@@ -203,7 +204,7 @@ public class DefaultVelocityEngineTest
 
         assertEvaluate("#mymacro", "#mymacro", "namespace");
 
-        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test#end");
+        this.engine.evaluate(new XWikiVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test#end");
 
         assertEvaluate("#mymacro", "#mymacro", "namespace");
 
@@ -213,7 +214,7 @@ public class DefaultVelocityEngineTest
         this.engine.startedUsingMacroNamespace("namespace");
 
         // Register macro
-        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test#end");
+        this.engine.evaluate(new XWikiVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test#end");
 
         assertEvaluate("test", "#mymacro", "namespace");
 
@@ -238,6 +239,17 @@ public class DefaultVelocityEngineTest
 
         assertEvaluate("1true2true3true4true5false", "#foreach($nb in [1,2,3,4,5])$velocityCount$velocityHasNext#end",
             "mytemplate");
+
+        assertEquals("Deprecated binding [$velocityCount] used in [mytemplate]", logCapture.getMessage(0));
+        assertEquals("Deprecated binding [$velocityHasNext] used in [mytemplate]", logCapture.getMessage(1));
+        assertEquals("Deprecated binding [$velocityCount] used in [mytemplate]", logCapture.getMessage(2));
+        assertEquals("Deprecated binding [$velocityHasNext] used in [mytemplate]", logCapture.getMessage(3));
+        assertEquals("Deprecated binding [$velocityCount] used in [mytemplate]", logCapture.getMessage(4));
+        assertEquals("Deprecated binding [$velocityHasNext] used in [mytemplate]", logCapture.getMessage(5));
+        assertEquals("Deprecated binding [$velocityCount] used in [mytemplate]", logCapture.getMessage(6));
+        assertEquals("Deprecated binding [$velocityHasNext] used in [mytemplate]", logCapture.getMessage(7));
+        assertEquals("Deprecated binding [$velocityCount] used in [mytemplate]", logCapture.getMessage(8));
+        assertEquals("Deprecated binding [$velocityHasNext] used in [mytemplate]", logCapture.getMessage(9));
     }
 
     @Test
@@ -247,7 +259,7 @@ public class DefaultVelocityEngineTest
 
         assertEvaluate("#mymacro", "#mymacro", "namespace");
 
-        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "", "#macro(mymacro)test#end");
+        this.engine.evaluate(new XWikiVelocityContext(), new StringWriter(), "", "#macro(mymacro)test#end");
 
         assertEvaluate("test", "#mymacro", "namespace");
     }
@@ -259,7 +271,7 @@ public class DefaultVelocityEngineTest
 
         assertEvaluate("#mymacro", "#mymacro", "namespace");
 
-        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "", "#macro(mymacro)global#end");
+        this.engine.evaluate(new XWikiVelocityContext(), new StringWriter(), "", "#macro(mymacro)global#end");
 
         assertEvaluate("global", "#mymacro", "namespace");
 
@@ -267,12 +279,12 @@ public class DefaultVelocityEngineTest
         this.engine.startedUsingMacroNamespace("namespace");
 
         // Register macro
-        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test1#end");
+        this.engine.evaluate(new XWikiVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test1#end");
 
         assertEvaluate("test1", "#mymacro", "namespace");
 
         // Override macro
-        this.engine.evaluate(new RetroVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test2#end");
+        this.engine.evaluate(new XWikiVelocityContext(), new StringWriter(), "namespace", "#macro(mymacro)test2#end");
 
         assertEvaluate("test2", "#mymacro", "namespace");
 
@@ -281,20 +293,48 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
+    public void testMacroReturn() throws Exception
+    {
+        this.engine.initialize(new Properties());
+
+        /*assertEvaluate("42$return", "#macro (testMacro $toto $return $titi)#setVariable('$return' 42)#end"
+            + "#testMacro($aa, $returned, 'jj')$returned$return", "mytemplate");
+
+        assertEvaluate("42$return", "#macro (testMacro $return $titi)#setVariable('$return' 42)#end"
+            + "#testMacro($returned, 'jj')$returned$return", "mytemplate");
+
+        assertEvaluate("42$return",
+            "#macro (testMacro $return)#setVariable('$return' 42)#end" + "#testMacro($returned)$returned$return",
+            "mytemplate");
+
+        assertEvaluate("42$return",
+            "#macro (testMacro $return)#setVariable('return' 42)#end" + "#testMacro($returned)$returned$return",
+            "mytemplate");*/
+
+        assertEvaluate("42",
+            "#macro (testTopMacro $topreturn)#testSubMacro($subreturned)#setVariable('$topreturn' $subreturned)#end"
+                + "#macro (testSubMacro $subreturn)#setVariable('$subreturn' 42)#end"
+                + "#testTopMacro($topreturned)$topreturned",
+            "mytemplate");
+    }
+
+    @Test
     @Disabled
     public void testSetSharpString() throws Exception
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("", "#set($var = \"#\")", "mytemplate");
+        assertEvaluate("#", "#set($var = \"#\")", "mytemplate");
+        assertEvaluate("test#", "#set($var = \"test#\")", "mytemplate");
     }
 
     @Test
     @Disabled
-    public void testMisc() throws Exception
+    public void testSetDollarString() throws Exception
     {
         this.engine.initialize(new Properties());
 
-        assertEvaluate("", "#set($var = \"$\")", "mytemplate");
+        assertEvaluate("$", "#set($var = \"$\")", "mytemplate");
+        assertEvaluate("test$", "#set($var = \"test$\")", "mytemplate");
     }
 }

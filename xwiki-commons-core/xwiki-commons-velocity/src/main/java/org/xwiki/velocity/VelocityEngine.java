@@ -47,7 +47,8 @@ public interface VelocityEngine
     /**
      * Renders the input string using the context into the output writer.
      *
-     * @param context the Velocity context to use in rendering the input string
+     * @param context the Velocity context to use in rendering the input string, it's recommended to pass a
+     *            {@link XWikiVelocityContext} to have retro compatibility support (like old $velocitycount binding)
      * @param out the writer in which to render the output
      * @param namespace the string to be used as the template name for log messages in case of error. Also used as
      *            namespace for the macros. Empty string means global namespace.

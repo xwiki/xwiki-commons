@@ -17,10 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.velocity.internal;
+package org.xwiki.velocity;
 
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.directive.ForeachScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Extends the standard {@link VelocityContext} to add some retro compatibility (for example support for $velocityCount
@@ -29,8 +32,32 @@ import org.apache.velocity.runtime.directive.ForeachScope;
  * @version $Id$
  * @since 10.6RC1
  */
-public class RetroVelocityContext extends VelocityContext
+public class XWikiVelocityContext extends VelocityContext
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(XWikiVelocityContext.class);
+
+    private static final String VELOCITYCOUNT = "velocityCount";
+
+    private static final String VELOCITYHASNEXT = "velocityHasNext";
+
+    /**
+     * Creates a new instance (with no inner context).
+     */
+    public XWikiVelocityContext()
+    {
+    }
+
+    /**
+     * Chaining constructor, used when you want to wrap a context in another. The inner context will be 'read only' -
+     * put() calls to the wrapping context will only effect the outermost context
+     *
+     * @param innerContext The <code>Context</code> implementation to wrap.
+     */
+    public XWikiVelocityContext(Context innerContext)
+    {
+        super(innerContext);
+    }
+
     private ForeachScope getForeachScope()
     {
         return (ForeachScope) get("foreach");
@@ -40,6 +67,10 @@ public class RetroVelocityContext extends VelocityContext
     {
         ForeachScope foreachScope = getForeachScope();
 
+        if (foreachScope != null) {
+            warnDeprecatedBinding(VELOCITYCOUNT, foreachScope);
+        }
+
         return foreachScope != null ? foreachScope.getCount() : null;
     }
 
@@ -47,7 +78,16 @@ public class RetroVelocityContext extends VelocityContext
     {
         ForeachScope foreachScope = getForeachScope();
 
+        if (foreachScope != null) {
+            warnDeprecatedBinding(VELOCITYHASNEXT, foreachScope);
+        }
+
         return foreachScope != null ? foreachScope.hasNext() : null;
+    }
+
+    private void warnDeprecatedBinding(String binding, ForeachScope foreachScope)
+    {
+        LOGGER.warn("Deprecated binding [${}] used in [{}]", binding, foreachScope.getInfo().getTemplate());
     }
 
     @Override
@@ -59,7 +99,7 @@ public class RetroVelocityContext extends VelocityContext
             // Retro compatibility
             switch (key) {
                 // Replaced by $foreach.count
-                case "velocityCount":
+                case VELOCITYCOUNT:
                     value = getVelocityCount();
                     if (value != null) {
                         return value;
@@ -68,7 +108,7 @@ public class RetroVelocityContext extends VelocityContext
                     break;
 
                 // Replaced by $foreach.hasNext
-                case "velocityHasNext":
+                case VELOCITYHASNEXT:
                     value = getVelocityHasNext();
                     if (value != null) {
                         return value;

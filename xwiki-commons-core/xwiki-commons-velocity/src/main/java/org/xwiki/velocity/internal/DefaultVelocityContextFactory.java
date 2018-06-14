@@ -33,6 +33,7 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.velocity.XWikiVelocityContext;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.VelocityContextFactory;
 import org.xwiki.velocity.VelocityContextInitializer;
@@ -75,7 +76,7 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
     @Override
     public void initialize() throws InitializationException
     {
-        this.toolsContext = new RetroVelocityContext();
+        this.toolsContext = new VelocityContext();
 
         // Instantiate Velocity tools
         Properties properties = this.velocityConfiguration.getTools();
@@ -103,7 +104,7 @@ public class DefaultVelocityContextFactory implements VelocityContextFactory, In
     public VelocityContext createContext() throws XWikiVelocityException
     {
         // Note: This constructor uses the passed context as an internal read-only context.
-        VelocityContext context = new VelocityContext(this.toolsContext);
+        VelocityContext context = new XWikiVelocityContext(this.toolsContext);
 
         // Call all components implementing the VelocityContextInitializer's role.
         try {
