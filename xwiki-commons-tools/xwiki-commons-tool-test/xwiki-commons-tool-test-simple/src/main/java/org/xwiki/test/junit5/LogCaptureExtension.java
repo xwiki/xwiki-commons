@@ -42,15 +42,13 @@ import ch.qos.logback.core.read.ListAppender;
  * <p>
  * Usage:
  * <ul>
- *   <li>Must be used with {@code @RegisterExtension} and ujsing a {@code static} variable</li>
- *   <li>If you want to remove the {@code static} keyword, you'll need to annotate the test class with
- *       {@code @TestInstance(TestInstance.Lifecycle.PER_CLASS)}</li>
+ *   <li>Must be used with {@code @RegisterExtension} and using a non private variable</li>
  * </ul>
  * Example:
  * <pre>
  * {@code
  * &#64;RegisterExtension
- * static LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
+ * LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.INFO);
  * }
  * </pre>
  *
