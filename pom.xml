@@ -56,7 +56,7 @@
     <java.version>1.8</java.version>
 
     <!-- Jackson -->
-    <jackson.version>2.9.5</jackson.version>
+    <jackson.version>2.9.6</jackson.version>
 
     <!-- ASM -->
     <asm.version>6.2</asm.version>
