@@ -297,7 +297,7 @@ public class DefaultVelocityEngineTest
     {
         this.engine.initialize(new Properties());
 
-        /*assertEvaluate("42$return", "#macro (testMacro $toto $return $titi)#setVariable('$return' 42)#end"
+        assertEvaluate("42$return", "#macro (testMacro $toto $return $titi)#setVariable('$return' 42)#end"
             + "#testMacro($aa, $returned, 'jj')$returned$return", "mytemplate");
 
         assertEvaluate("42$return", "#macro (testMacro $return $titi)#setVariable('$return' 42)#end"
@@ -309,7 +309,7 @@ public class DefaultVelocityEngineTest
 
         assertEvaluate("42$return",
             "#macro (testMacro $return)#setVariable('return' 42)#end" + "#testMacro($returned)$returned$return",
-            "mytemplate");*/
+            "mytemplate");
 
         assertEvaluate("42",
             "#macro (testTopMacro $topreturn)#testSubMacro($subreturned)#setVariable('$topreturn' $subreturned)#end"
