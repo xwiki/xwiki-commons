@@ -432,6 +432,13 @@ public class DefaultHTMLCleanerTest
             "\r\n<iframe src=\"whatever\"/>\r\n<iframe src=\"whatever\"/>\r\n");
     }
 
+    @Test
+    public void escapeHTMLCharsInAttributes() throws Exception
+    {
+        assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee\">content</div>",
+            "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee\">content</div>");
+    }
+
     private void assertHTML(String expected, String actual) throws ComponentLookupException
     {
         assertEquals(HEADER_FULL + expected + FOOTER,
