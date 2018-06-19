@@ -70,6 +70,26 @@
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-macro</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-nio</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-sql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-templates</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-xml</artifactId>
+    </dependency>
     <!-- Adding a dependency on Ivy since the main groovy artifact POM only has an optional dependency on it and since
          we want to bundle it so that XWiki users scripting in Groovy can use Grapes out of the box. -->
     <dependency>
