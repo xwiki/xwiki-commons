@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -77,7 +76,7 @@ public class DefaultHTMLCleanerTest
     private DefaultHTMLCleaner cleaner;
 
     @Test
-    public void elementExpansion() throws ComponentLookupException
+    public void elementExpansion()
     {
         assertHTML("<p><textarea></textarea></p>", "<textarea/>");
 
@@ -87,7 +86,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void specialCharacters() throws ComponentLookupException
+    public void specialCharacters()
     {
         // TODO: We still have a problem I think in that if there are characters such as "&" or quote in the source
         // text they are not escaped. This is because we have use "false" in DefaultHTMLCleaner here:
@@ -105,13 +104,13 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void closeUnbalancedTags() throws ComponentLookupException
+    public void closeUnbalancedTags()
     {
         assertHTML("<hr /><p>hello</p>", "<hr><p>hello");
     }
 
     @Test
-    public void conversionsFromHTML() throws ComponentLookupException
+    public void conversionsFromHTML()
     {
         assertHTML("<p>this <strong>is</strong> bold</p>", "this <b>is</b> bold");
         assertHTML("<p><em>italic</em></p>", "<i>italic</i>");
@@ -128,7 +127,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void convertImageAlignment() throws ComponentLookupException
+    public void convertImageAlignment()
     {
         assertHTML("<p><img style=\"float:left\" /></p>", "<img align=\"left\"/>");
         assertHTML("<p><img style=\"float:right\" /></p>", "<img align=\"right\"/>");
@@ -138,7 +137,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void convertImplicitParagraphs() throws ComponentLookupException
+    public void convertImplicitParagraphs()
     {
         assertHTML("<p>word1</p><p>word2</p><p>word3</p><hr /><p>word4</p>", "word1<p>word2</p>word3<hr />word4");
 
@@ -158,7 +157,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void cleanNonXHTMLLists() throws ComponentLookupException
+    public void cleanNonXHTMLLists()
     {
         // Fixing invalid list item.
         assertHTML("<ul><li>item</li></ul>", "<li>item</li>");
@@ -188,7 +187,7 @@ public class DefaultHTMLCleanerTest
      * Verify that scripts are not cleaned and that we can have a CDATA section inside. Also verify CDATA behaviors.
      */
     @Test
-    public void scriptAndCData() throws ComponentLookupException
+    public void scriptAndCData()
     {
         assertHTML("<script type=\"text/javascript\">//<![CDATA[\n\nalert(\"Hello World\")\n\n//]]></script>",
             "<script type=\"text/javascript\"><![CDATA[\nalert(\"Hello World\")\n]]></script>");
@@ -221,7 +220,7 @@ public class DefaultHTMLCleanerTest
      * Verify that inline style elements are not cleaned and that we can have a CDATA section inside.
      */
     @Test
-    public void styleAndCData() throws ComponentLookupException
+    public void styleAndCData()
     {
         assertHTMLWithHeadContent("<style type=\"text/css\">/*<![CDATA[*/\na { color: red; }\n/*]]>*/</style>",
             "<style type=\"text/css\"><![CDATA[\na { color: red; }\n]]></style>");
@@ -240,7 +239,7 @@ public class DefaultHTMLCleanerTest
      * Verify that we can control what filters are used for cleaning.
      */
     @Test
-    public void explicitFilterList() throws ComponentLookupException
+    public void explicitFilterList()
     {
         HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
         configuration.setFilters(Collections.emptyList());
@@ -254,7 +253,7 @@ public class DefaultHTMLCleanerTest
      * Verify that the restricted parameter works.
      */
     @Test
-    public void restrictedHtml() throws ComponentLookupException
+    public void restrictedHtml()
     {
         HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
         Map<String, String> parameters = new HashMap<String, String>();
@@ -275,7 +274,7 @@ public class DefaultHTMLCleanerTest
      * Verify that passing a fully-formed XHTML header works fine.
      */
     @Test
-    public void fullXHTMLHeader() throws ComponentLookupException
+    public void fullXHTMLHeader()
     {
         assertHTML("<p>test</p>", HEADER_FULL + "<p>test</p>" + FOOTER);
     }
@@ -317,7 +316,7 @@ public class DefaultHTMLCleanerTest
      */
     @Test
     @Disabled("See https://jira.xwiki.org/browse/XWIKI-9753")
-    public void cleanTitleWithNamespace() throws Exception
+    public void cleanTitleWithNamespace()
     {
         // Test with TITLE in HEAD
         String input =
@@ -342,7 +341,7 @@ public class DefaultHTMLCleanerTest
      */
     @Test
     @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/168/")
-    public void cleanHTMLTagWithNamespace() throws Exception
+    public void cleanHTMLTagWithNamespace()
     {
         String input = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>";
 
@@ -362,27 +361,27 @@ public class DefaultHTMLCleanerTest
      * href="https://jira.xwiki.org/browse/XWIKI-4007">XWIKI-4007</a>).
      */
     @Test
-    public void cleanEmptyDIV() throws Exception
+    public void cleanEmptyDIV()
     {
         String input = "<div id=\"y\"></div><div id=\"z\">something</div>";
         assertHTML(input, HEADER_FULL + input + FOOTER);
     }
 
     @Test
-    public void verifyLegendTagNotStripped() throws Exception
+    public void verifyLegendTagNotStripped()
     {
         String input = "<fieldset><legend>test</legend><div>content</div></fieldset>";
         assertHTML(input, HEADER_FULL + input + FOOTER);
     }
 
     @Test
-    public void verifySpanIsExpanded() throws Exception
+    public void verifySpanIsExpanded()
     {
         assertHTML("<p><span class=\"fa fa-icon\"></span></p>", "<span class=\"fa fa-icon\" />");
     }
 
     @Test
-    public void verifyExternalLinksAreSecure() throws Exception
+    public void verifyExternalLinksAreSecure()
     {
         assertHTML("<p><a href=\"relativeLink\" target=\"_blank\">label</a></p>",
                 "<a href=\"relativeLink\" target=\"_blank\">label</a>");
@@ -405,7 +404,7 @@ public class DefaultHTMLCleanerTest
     }
 
     @Test
-    public void verifyEntitiesAreNotBroken() throws Exception
+    public void verifyEntitiesAreNotBroken()
     {
         assertHTML("<p>&Eacute;</p>", "&Eacute;");
     }
@@ -439,13 +438,13 @@ public class DefaultHTMLCleanerTest
             "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee\">content</div>");
     }
 
-    private void assertHTML(String expected, String actual) throws ComponentLookupException
+    private void assertHTML(String expected, String actual)
     {
         assertEquals(HEADER_FULL + expected + FOOTER,
             HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
     }
 
-    private void assertHTMLWithHeadContent(String expected, String actual) throws ComponentLookupException
+    private void assertHTMLWithHeadContent(String expected, String actual)
     {
         assertEquals(HEADER + "<html><head>" + expected + "</head><body>" + FOOTER,
             HTMLUtils.toString(this.cleaner.clean(new StringReader(actual))));
