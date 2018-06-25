@@ -155,6 +155,23 @@
               "revapi": {
                 "ignore" : [
                   // Add more ignores below...
+                  {
+                    "code": "java.annotation.attributeValueChanged",
+                    "old": "@interface org.xwiki.stability.Unstable",
+                    "new": "@interface org.xwiki.stability.Unstable",
+                    "annotationType": "java.lang.annotation.Target",
+                    "annotation": "@java.lang.annotation.Target({java.lang.annotation.ElementType.TYPE, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.FIELD})",
+                    "attribute": "value",
+                    "oldValue": "{java.lang.annotation.ElementType.TYPE, java.lang.annotation.ElementType.METHOD}",
+                    "newValue": "{java.lang.annotation.ElementType.TYPE, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.FIELD}",
+                    "package": "org.xwiki.stability",
+                    "classQualifiedName": "org.xwiki.stability.Unstable",
+                    "classSimpleName": "Unstable",
+                    "oldArchive": "org.xwiki.commons:xwiki-commons-stability:jar:10.5",
+                    "newArchive": "org.xwiki.commons:xwiki-commons-stability:jar:10.6-SNAPSHOT",
+                    "elementKind": "@interface",
+                    "justification": "Not a breakage."
+                  }
                 ]
               }
             }
