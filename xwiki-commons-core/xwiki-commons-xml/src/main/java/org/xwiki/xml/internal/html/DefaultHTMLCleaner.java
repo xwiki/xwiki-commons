@@ -175,7 +175,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             cleanedNode.setDocType(new DoctypeToken("html", "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
                 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
             result =
-                new XWikiDOMSerializer(cleanerProperties, false).createDOM(getAvailableDocumentBuilder(), cleanedNode);
+                new XWikiDOMSerializer(cleanerProperties, true).createDOM(getAvailableDocumentBuilder(), cleanedNode);
         } catch (ParserConfigurationException ex) {
             throw new RuntimeException("Error while serializing TagNode into w3c dom.", ex);
         }
@@ -232,7 +232,10 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
 
         // Set Cleaner transformations
         defaultProperties.setCleanerTransformations(getDefaultCleanerTransformations(configuration));
-        
+
+        // Don't convert special HTML entities (i.e. &ocirc;, &permil;, &times;) with unicode characters they represent.
+        defaultProperties.setTranslateSpecialEntities(false);
+
         // By default, we are cleaning XHTML 1.0 code, not HTML 5.
         // Note: Tests are broken if we don't set the version 4, meaning that supporting HTML5 requires some work.
         // TODO: handle HTML5 correctly (see: https://jira.xwiki.org/browse/XCOMMONS-901)

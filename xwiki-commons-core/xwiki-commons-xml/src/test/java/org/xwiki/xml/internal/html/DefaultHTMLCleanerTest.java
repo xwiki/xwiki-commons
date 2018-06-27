@@ -88,16 +88,12 @@ public class DefaultHTMLCleanerTest
     @Test
     public void specialCharacters()
     {
-        // TODO: We still have a problem I think in that if there are characters such as "&" or quote in the source
-        // text they are not escaped. This is because we have use "false" in DefaultHTMLCleaner here:
-        // Document document = new JDomSerializer(this.cleanerProperties, false).createJDom(cleanedNode);
-        // See the problem described here: http://sourceforge.net/forum/forum.php?thread_id=2243880&forum_id=637246
         assertHTML("<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>",
             "<p>&quot;&amp;**notbold**&lt;notag&gt;&nbsp;</p>");
-        assertHTML("<p>\"&amp;</p>", "<p>\"&</p>");
+        assertHTML("<p>&quot;&amp;</p>", "<p>\"&</p>");
         assertHTML("<p><img src=\"http://host.com/a.gif?a=foo&amp;b=bar\" /></p>",
             "<img src=\"http://host.com/a.gif?a=foo&b=bar\" />");
-        assertHTML("<p>&#xA;</p>", "<p>&#xA;</p>");
+        assertHTML("<p>\n</p>", "<p>&#xA;</p>");
 
         // Verify that double quotes are escaped in attribute values
         assertHTML("<p value=\"script:&quot;&quot;\"></p>", "<p value='script:\"\"'");
@@ -256,14 +252,14 @@ public class DefaultHTMLCleanerTest
     public void restrictedHtml()
     {
         HTMLCleanerConfiguration configuration = this.cleaner.getDefaultConfiguration();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.putAll(configuration.getParameters());
         parameters.put("restricted", "true");
         configuration.setParameters(parameters);
 
         String result = HTMLUtils.toString(this.cleaner.clean(
             new StringReader("<script>alert(\"foo\")</script>"), configuration));
-        assertEquals(HEADER_FULL + "<pre>alert(\"foo\")</pre>" + FOOTER, result);
+        assertEquals(HEADER_FULL + "<pre>alert(&quot;foo&quot;)</pre>" + FOOTER, result);
 
         result = HTMLUtils.toString(this.cleaner.clean(
             new StringReader("<style>p {color:white;}</style>"), configuration));
@@ -340,7 +336,6 @@ public class DefaultHTMLCleanerTest
      * {@link HTMLCleanerConfiguration#NAMESPACES_AWARE} is set to false.
      */
     @Test
-    @Disabled("See https://sourceforge.net/p/htmlcleaner/bugs/168/")
     public void cleanHTMLTagWithNamespace()
     {
         String input = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>";

@@ -155,7 +155,7 @@ public class XWikiDOMSerializer
             Map.Entry<String, String> entry = entryIterator.next();
             String attrName = entry.getKey();
             String attrValue = entry.getValue();
-            if (escapeXml) {
+            if (shouldEscapeOrTranslateEntities()) {
                 attrValue = Utils.escapeXml(attrValue, props, true);
             }
 
@@ -189,7 +189,7 @@ public class XWikiDOMSerializer
             boolean specialCase = this.props.isUseCdataForScriptAndStyle() && isScriptOrStyle(element);
             String content = bufferedContent.toString();
 
-            if (this.escapeXml && !specialCase) {
+            if (shouldEscapeOrTranslateEntities() && !specialCase) {
                 content = Utils.escapeXml(content, this.props, true);
             } else if (specialCase) {
                 content = processCDATABlocks(content);
@@ -300,7 +300,7 @@ public class XWikiDOMSerializer
                     for (Map.Entry<String, String> entry : attributes.entrySet()) {
                         String attrName = entry.getKey();
                         String attrValue = entry.getValue();
-                        if (this.escapeXml) {
+                        if (shouldEscapeOrTranslateEntities()) {
                             attrValue = Utils.escapeXml(attrValue, this.props, true);
                         }
                         subelement.setAttribute(attrName, attrValue);
@@ -318,5 +318,10 @@ public class XWikiDOMSerializer
             }
             flushContent(document, element, bufferedContent, null);
         }
+    }
+
+    private boolean shouldEscapeOrTranslateEntities()
+    {
+        return this.escapeXml || this.props.isRecognizeUnicodeChars() || this.props.isTranslateSpecialEntities();
     }
 }
