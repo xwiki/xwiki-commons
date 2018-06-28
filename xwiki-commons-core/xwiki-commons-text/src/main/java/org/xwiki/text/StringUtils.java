@@ -19,6 +19,8 @@
  */
 package org.xwiki.text;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Extends {@link org.apache.commons.lang3.StringUtils} with some more useful tools. Note that the reason we're
  * extending Commons Lang instead of creating a separate class is because we're using this class as a Velocity tool
@@ -72,6 +74,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
      * @return the alpha numeric equivalent
      * @since 10.6RC1
      */
+    @Unstable
     public static String convertToAlphaNumeric(String text)
     {
         if (isEmpty(text)) {
