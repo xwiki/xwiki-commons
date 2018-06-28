@@ -67,7 +67,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
     }
 
     /**
-     * Removes all non alpha numerical characters from the passed text. First tries to convert accented chars to their
+     * Removes all non alpha numerical characters from the passed text. First tries to convert diacritics to their
      * alpha numeric representation.
      *
      * @param text the text to convert
@@ -81,14 +81,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
             return text;
         }
 
-        String textNoAccents = stripAccents(text);
-        StringBuilder result = new StringBuilder(textNoAccents.length());
-        for (char textChar : textNoAccents.toCharArray()) {
-            if (Character.isLetterOrDigit(textChar) && textChar < 128) {
-                result.append(textChar);
-            }
-        }
-
-        return result.toString();
+        return stripAccents(text).replaceAll("[^a-zA-Z0-9]", "");
     }
 }
