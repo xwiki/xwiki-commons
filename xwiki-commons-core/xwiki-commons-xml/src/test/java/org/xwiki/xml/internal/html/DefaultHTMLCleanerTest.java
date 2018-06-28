@@ -429,8 +429,12 @@ public class DefaultHTMLCleanerTest
     @Test
     public void escapeHTMLCharsInAttributes() throws Exception
     {
-        assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee\">content</div>",
-            "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee\">content</div>");
+        // Note: single quotes are not escaped since they're valid chars in attribute values that are surrounded by
+        // quotes. And HTMLCleaner will convert single quoted attributes into double-quoted ones.
+        assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee'fff\">content</div>",
+            "<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff\">content</div>");
+        assertHTML("<div foo=\"aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee'fff\">content</div>",
+            "<div foo='aaa&quot;bbb&amp;ccc&gt;ddd&lt;eee&apos;fff'>content</div>");
     }
 
     private void assertHTML(String expected, String actual)
