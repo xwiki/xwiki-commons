@@ -75,7 +75,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
      * @since 10.6RC1
      */
     @Unstable
-    public static String convertToAlphaNumeric(String text)
+    public static String toAlphaNumeric(String text)
     {
         if (isEmpty(text)) {
             return text;

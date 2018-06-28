@@ -47,19 +47,19 @@ class StringUtilsTest
 
     @Test
     @DisplayName("Alphanumeric conversion")
-    void convertToAlphaNumeric()
+    void toAlphaNumeric()
     {
-        assertNull(StringUtils.convertToAlphaNumeric(null));
-        assertEquals("", StringUtils.convertToAlphaNumeric(""));
-        assertEquals("abc123", StringUtils.convertToAlphaNumeric("abc123"));
-        assertEquals("MainWebHome", StringUtils.convertToAlphaNumeric("Main.WebHome"));
+        assertNull(StringUtils.toAlphaNumeric(null));
+        assertEquals("", StringUtils.toAlphaNumeric(""));
+        assertEquals("abc123", StringUtils.toAlphaNumeric("abc123"));
+        assertEquals("MainWebHome", StringUtils.toAlphaNumeric("Main.WebHome"));
         assertEquals(
             "TheQuickBrownFoxjumpsoverthelazydog",
-            StringUtils.convertToAlphaNumeric("The Quick Brown Fox jumps over the lazy dog")
+            StringUtils.toAlphaNumeric("The Quick Brown Fox jumps over the lazy dog")
         );
         assertEquals(
             "DesNoelouunzephyrhaimevetdeglaconswurmiensjedinedexquisrotisdebufaukiralaydagemurctera",
-            StringUtils.convertToAlphaNumeric("Dès Noël où un zéphyr haï me vêt de glaçons würmiens je dîne d’exquis " +
+            StringUtils.toAlphaNumeric("Dès Noël où un zéphyr haï me vêt de glaçons würmiens je dîne d’exquis " +
                 "rôtis de bœuf au kir à l’aÿ d’âge mûr & cætera !")
         );
     }
