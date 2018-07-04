@@ -163,7 +163,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
     protected void processInjectMockComponents(Object testInstance, Field field, InjectMockComponents annotation,
         MockitoComponentManager mcm) throws Exception
     {
-        // Must be an instance
+        // Must not be an instance
         if (field.getType().isInterface()) {
             throw new Exception(String.format("The type of the field [%s] annotated with @%s cannot be an interface.",
                 InjectMockComponents.class.getSimpleName(), field.getName()));
