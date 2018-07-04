@@ -2253,7 +2253,7 @@
               <dependency>
                 <groupId>eu.stamp-project</groupId>
                 <artifactId>descartes</artifactId>
-                <version>1.2</version>
+                <version>1.2.2</version>
               </dependency>
             </dependencies>
           </plugin>
