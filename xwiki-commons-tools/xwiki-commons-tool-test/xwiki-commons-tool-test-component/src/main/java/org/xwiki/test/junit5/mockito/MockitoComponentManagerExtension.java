@@ -42,7 +42,7 @@ import org.xwiki.test.mockito.MockitoComponentMocker;
 
 /**
  * JUnit5 extension to help write unit tests for XWiki Components.
- *
+ * <p>
  * For example:
  *
  * <pre>
@@ -91,8 +91,7 @@ import org.xwiki.test.mockito.MockitoComponentMocker;
  * @version $Id$
  * @since 10.3RC1
  */
-public class MockitoComponentManagerExtension implements TestInstancePostProcessor, AfterAllCallback,
-    ParameterResolver
+public class MockitoComponentManagerExtension implements TestInstancePostProcessor, AfterAllCallback, ParameterResolver
 {
     private static final Namespace NAMESPACE = Namespace.create(MockitoComponentManagerExtension.class);
 
@@ -143,14 +142,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
             InjectMockComponents annotation = field.getAnnotation(InjectMockComponents.class);
             if (annotation != null) {
-                // Find Component descriptors
-                List<ComponentDescriptor> descriptors = LOADER.getComponentsDescriptors(field.getType());
-                ComponentDescriptor<?> descriptor = getDescriptor(annotation.role(), descriptors, field);
-                MockitoComponentMocker<?> mocker = new MockitoComponentMocker<>(mcm, field.getType(),
-                    descriptor.getRoleType(), descriptor.getRoleHint());
-                mocker.mockComponent(testInstance);
-                Object component = mcm.getInstance(descriptor.getRoleType(), descriptor.getRoleHint());
-                ReflectionUtils.setFieldValue(testInstance, field.getName(), component);
+                processInjectMockComponents(testInstance, field, annotation, mcm);
             }
         }
 
@@ -166,6 +158,25 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         // Also note that all fields annotated with @InjectMocks will have their fields replaced by all mocks found
         // in the test class.
         MockitoAnnotations.initMocks(testInstance);
+    }
+
+    protected void processInjectMockComponents(Object testInstance, Field field, InjectMockComponents annotation,
+        MockitoComponentManager mcm) throws Exception
+    {
+        // Must be an instance
+        if (field.getType().isInterface()) {
+            throw new Exception(String.format("The type of the field [%s] annotated with @%s cannot be an interface.",
+                InjectMockComponents.class.getSimpleName(), field.getName()));
+        }
+
+        // Find Component descriptors
+        List<ComponentDescriptor> descriptors = LOADER.getComponentsDescriptors(field.getType());
+        ComponentDescriptor<?> descriptor = getDescriptor(annotation.role(), descriptors, field);
+        MockitoComponentMocker<?> mocker =
+            new MockitoComponentMocker<>(mcm, field.getType(), descriptor.getRoleType(), descriptor.getRoleHint());
+        mocker.mockComponent(testInstance);
+        Object component = mcm.getInstance(descriptor.getRoleType(), descriptor.getRoleHint());
+        ReflectionUtils.setFieldValue(testInstance, field.getName(), component);
     }
 
     /**
@@ -212,8 +223,9 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         if (role.equals(InjectMockComponents.class)) {
             if (descriptors.size() > 1) {
                 // Force user to specify a role in case of several
-                throw new Exception(String.format("The component under field [%s] is implementing several roles. "
-                    + "Please disambiguate by using the \"role\" parameter of the @%s annotation.",
+                throw new Exception(String.format(
+                    "The component under field [%s] is implementing several roles. "
+                        + "Please disambiguate by using the \"role\" parameter of the @%s annotation.",
                     field.getName(), InjectMockComponents.class.getSimpleName()));
             } else {
                 return descriptors.get(0);
@@ -225,8 +237,9 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
                     return descriptor;
                 }
             }
-            throw new Exception(String.format("The role type specified in the @%s annotation for field [%s] isn't "
-                + "implemented by the component.", field.getName(), InjectMockComponents.class.getSimpleName()));
+            throw new Exception(String.format(
+                "The role type specified in the @%s annotation for field [%s] isn't " + "implemented by the component.",
+                field.getName(), InjectMockComponents.class.getSimpleName()));
         }
     }
 
@@ -244,8 +257,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         store.remove(testClass);
     }
 
-    private void saveComponentManager(ExtensionContext context,
-        MockitoComponentManager componentManager)
+    private void saveComponentManager(ExtensionContext context, MockitoComponentManager componentManager)
     {
         ExtensionContext.Store store = getStore(context);
         Class<?> testClass = context.getRequiredTestClass();
