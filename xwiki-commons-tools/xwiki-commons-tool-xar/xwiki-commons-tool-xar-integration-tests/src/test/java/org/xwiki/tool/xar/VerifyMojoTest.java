@@ -43,11 +43,13 @@ public class VerifyMojoTest extends AbstractMojoTest
     }
 
     @Test
-    public void executeWithWrongAttachmentAuthors() throws Exception
+    public void executeWithWrongAttachmentAuthorsAndMimetypes() throws Exception
     {
-        verifyExecution("/wrongAttachmentAuthors", "Verifying [Space/WebHome.xml]... errors",
-            "- Attachment author must [xwiki:XWiki.Admin] but was []",
-            "- Attachment author must [xwiki:XWiki.Admin] but was [wrong author]");
+        verifyExecution("/wrongAttachmentAuthorsAndMimetypes", "Verifying [Space/WebHome.xml]... errors",
+            "- Attachment author must be [xwiki:XWiki.Admin] but was []",
+            "- Attachment author must be [xwiki:XWiki.Admin] but was [wrong author]",
+            "- Missing mimetype for attachment [applications.png]",
+            "- Missing mimetype for attachment [configuration.png]");
     }
 
     @Test

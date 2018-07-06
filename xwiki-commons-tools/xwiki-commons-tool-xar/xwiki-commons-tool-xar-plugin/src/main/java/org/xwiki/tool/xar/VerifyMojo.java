@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -47,6 +48,8 @@ import org.xwiki.tool.xar.internal.XWikiDocument;
  *   <li>ensure that Translations pages are using the plain/1.0 syntax</li>
  *   <li>ensure that Translations pages don't have a GLOBAL or USER visibility (USER makes no sense and GLOBAL would
  *       require Programming Rights, which is an issue in farm-based use cases)</li>
+ *   <li>ensure that attachments have a mimetype set. If the mimetype is missing then the attachment won't be
+ *       filterable in the attachment view in Page Index.</li>
  * </ul>
  *
  * @version $Id$
@@ -113,7 +116,7 @@ public class VerifyMojo extends AbstractVerifyMojo
                     AUTHOR, xdoc.getContentAuthor()));
             verifyAuthor(errors, xdoc.getCreator(), String.format("Creator must be [%s] but was [%s]",
                 AUTHOR, xdoc.getCreator()));
-            verifyAttachmentAuthors(errors, xdoc.getAttachmentAuthors());
+            verifyAttachmentAuthors(errors, xdoc.getAttachmentData());
 
             // Verification 3: Check for orphans, except for Main.WebHome since it's the topmost document
             if (StringUtils.isEmpty(xdoc.getParent()) && !xdoc.getReference().equals("Main.WebHome")) {
@@ -170,6 +173,9 @@ public class VerifyMojo extends AbstractVerifyMojo
                 }
             }
 
+            // Verification 12: Verify that  attachments have a mimetype set.
+            verifyAttachmentMimetypes(errors, xdoc.getAttachmentData());
+
             // Display errors
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
@@ -195,15 +201,26 @@ public class VerifyMojo extends AbstractVerifyMojo
 
     private void verifyAuthor(List<String> errors, String author, String message)
     {
-        if (!author.equals(AUTHOR)) {
+        if (!AUTHOR.equals(author)) {
             errors.add(message);
         }
     }
 
-    private void verifyAttachmentAuthors(List<String> errors, List<String> authors)
+    private void verifyAttachmentAuthors(List<String> errors, List<Map<String, String>> attachmentData)
     {
-        for (String author : authors) {
-            verifyAuthor(errors, author, String.format("Attachment author must [%s] but was [%s]", AUTHOR, author));
+        for (Map<String, String> data : attachmentData) {
+            String author = data.get("author");
+            verifyAuthor(errors, author, String.format("Attachment author must be [%s] but was [%s]", AUTHOR, author));
+        }
+    }
+
+    private void verifyAttachmentMimetypes(List<String> errors, List<Map<String, String>> attachmentData)
+    {
+        for (Map<String, String> data : attachmentData) {
+            String mimetype = data.get("mimetype");
+            if (mimetype == null) {
+                errors.add(String.format("Missing mimetype for attachment [%s]", data.get("filename")));
+            }
         }
     }
 }

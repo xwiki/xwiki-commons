@@ -22,7 +22,9 @@ package org.xwiki.tool.xar.internal;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -38,6 +40,10 @@ import org.dom4j.io.SAXReader;
 public class XWikiDocument
 {
     private static final String AUTHOR_TAG = "author";
+
+    private static final String MIMETYPE_TAG = "mimetype";
+
+    private static final String FILENAME_TAG = "filename";
 
     /**
      * @see #getReference()
@@ -72,10 +78,10 @@ public class XWikiDocument
     private String contentAuthor;
 
     /**
-     * @see #getAttachmentAuthors()
-     * @since 7.0RC1
+     * @see #getAttachmentData()
+     * @since 10.6RC1
      */
-    private List<String> attachmentAuthors;
+    private List<Map<String, String>> attachmentData;
 
     /**
      * @see #getVersion()
@@ -193,7 +199,7 @@ public class XWikiDocument
         this.parent = readElement(rootElement, "parent");
         this.comment = readElement(rootElement, "comment");
         this.minorEdit = readElement(rootElement, "minorEdit");
-        this.attachmentAuthors = readAttachmentAuthors(rootElement);
+        this.attachmentData = readAttachmentData(rootElement);
         this.isHidden = Boolean.parseBoolean(readElement(rootElement, "hidden"));
         this.title = readElement(rootElement, "title");
         this.syntaxId = readElement(rootElement, "syntaxId");
@@ -227,13 +233,26 @@ public class XWikiDocument
         return result;
     }
 
-    private List<String> readAttachmentAuthors(Element rootElement)
+    private List<Map<String, String>> readAttachmentData(Element rootElement)
     {
-        List<String> authors = new ArrayList<>();
+        List<Map<String, String>> data = new ArrayList<>();
         for (Object attachmentNode : rootElement.elements("attachment")) {
-            authors.add(readElement((Element) attachmentNode, AUTHOR_TAG));
+            Map<String, String> map = new HashMap<>();
+            String authorValue = readElement((Element) attachmentNode, AUTHOR_TAG);
+            if (authorValue != null) {
+                map.put(AUTHOR_TAG, authorValue);
+            }
+            String mimetypeValue = readElement((Element) attachmentNode, MIMETYPE_TAG);
+            if (mimetypeValue != null) {
+                map.put(MIMETYPE_TAG, mimetypeValue);
+            }
+            String filenameValue = readElement((Element) attachmentNode, FILENAME_TAG);
+            if (filenameValue != null) {
+                map.put(FILENAME_TAG, filenameValue);
+            }
+            data.add(map);
         }
-        return authors;
+        return data;
     }
 
     /**
@@ -345,12 +364,12 @@ public class XWikiDocument
     }
 
     /**
-     * @return the attachment authors and an empty list if there's no attachment
-     * @since 7.0RC1
+     * @return the attachment data (authors, mimetypes, etc) and an empty list if there's no attachment
+     * @since 10.6RC1
      */
-    public List<String> getAttachmentAuthors()
+    public List<Map<String, String>> getAttachmentData()
     {
-        return this.attachmentAuthors;
+        return this.attachmentData;
     }
 
     /**
