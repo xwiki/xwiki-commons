@@ -25,12 +25,48 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.extension.version.Version;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DefaultVersionTest
 {
+    @Test
+    public void testCompareTo()
+    {
+        assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1")));
+        assertTrue(new DefaultVersion("1.2").compareTo(new DefaultVersion("1.1")) > 0);
+        assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.2")) < 0);
+
+        assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1w")) < 0);
+
+        assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1-milestone-1")) > 0);
+        assertTrue(new DefaultVersion("1.1.1").compareTo(new DefaultVersion("1.1-milestone-1")) > 0);
+    }
+
+    @Test
+    public void getType()
+    {
+        assertEquals(Version.Type.SNAPSHOT, new DefaultVersion("1.1-SNAPSHOT").getType());
+        assertEquals(Version.Type.BETA, new DefaultVersion("1.1-milestone-1").getType());
+        assertEquals(Version.Type.STABLE, new DefaultVersion("1.1").getType());
+    }
+
+    @Test
+    public void serialize() throws IOException, ClassNotFoundException
+    {
+        validateSerialize(new DefaultVersion("1.1"));
+        validateSerialize(new DefaultVersion("1.1-milestone-1"));
+    }
+
+    @Test
+    public void getTypeForBigInteger()
+    {
+        new DefaultVersion("1.2147483648").getType();
+    }
+
     private void validateSerialize(Version version) throws IOException, ClassNotFoundException
     {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -41,42 +77,8 @@ public class DefaultVersionTest
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
         ObjectInputStream in = new ObjectInputStream(inputStream);
-        Assert.assertEquals(version, in.readObject());
+        assertEquals(version, in.readObject());
         in.close();
         inputStream.close();
-    }
-
-    @Test
-    public void testCompareTo()
-    {
-        Assert.assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1")));
-        Assert.assertTrue(new DefaultVersion("1.2").compareTo(new DefaultVersion("1.1")) > 0);
-        Assert.assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.2")) < 0);
-
-        Assert.assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1w")) < 0);
-
-        Assert.assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1-milestone-1")) > 0);
-        Assert.assertTrue(new DefaultVersion("1.1.1").compareTo(new DefaultVersion("1.1-milestone-1")) > 0);
-    }
-
-    @Test
-    public void testType()
-    {
-        Assert.assertEquals(Version.Type.SNAPSHOT, new DefaultVersion("1.1-SNAPSHOT").getType());
-        Assert.assertEquals(Version.Type.BETA, new DefaultVersion("1.1-milestone-1").getType());
-        Assert.assertEquals(Version.Type.STABLE, new DefaultVersion("1.1").getType());
-    }
-
-    @Test
-    public void testSerialize() throws IOException, ClassNotFoundException
-    {
-        validateSerialize(new DefaultVersion("1.1"));
-        validateSerialize(new DefaultVersion("1.1-milestone-1"));
-    }
-
-    @Test
-    public void testBigInteger()
-    {
-        new DefaultVersion("1.2147483648").getType();
     }
 }
