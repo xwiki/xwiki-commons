@@ -167,8 +167,6 @@
                     "package": "org.xwiki.stability",
                     "classQualifiedName": "org.xwiki.stability.Unstable",
                     "classSimpleName": "Unstable",
-                    "oldArchive": "org.xwiki.commons:xwiki-commons-stability:jar:10.5",
-                    "newArchive": "org.xwiki.commons:xwiki-commons-stability:jar:10.6-SNAPSHOT",
                     "elementKind": "@interface",
                     "justification": "Not a breakage."
                   }
