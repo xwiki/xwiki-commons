@@ -19,11 +19,14 @@
  */
 package org.xwiki.logging.marker;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test {@link TranslationMarker}.
@@ -34,7 +37,7 @@ public class TranslationMarkerTest
 {
     private TranslationMarker marker;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         this.marker = new TranslationMarker("translation.key");
@@ -43,58 +46,58 @@ public class TranslationMarkerTest
     @Test
     public void getTranslationKey()
     {
-        Assert.assertEquals("translation.key", this.marker.getTranslationKey());
+        assertEquals("translation.key", this.marker.getTranslationKey());
     }
 
     @Test
     public void getName()
     {
-        Assert.assertEquals(TranslationMarker.NAME, this.marker.getName());
+        assertEquals(TranslationMarker.NAME, this.marker.getName());
     }
 
     @Test
     public void add()
     {
         this.marker.add(MarkerFactory.getMarker("marker"));
-        Assert.assertTrue(this.marker.hasChildren());
+        assertTrue(this.marker.hasChildren());
     }
 
     @Test
     public void remove()
     {
-        Assert.assertFalse(this.marker.remove(null));
+        assertFalse(this.marker.remove(null));
     }
 
     @Test
     public void hasChildren()
     {
-        Assert.assertFalse(this.marker.hasChildren());
+        assertFalse(this.marker.hasChildren());
     }
 
     @Test
     public void hasReferences()
     {
-        Assert.assertFalse(this.marker.hasReferences());
+        assertFalse(this.marker.hasReferences());
     }
 
     @Test
     public void iterator()
     {
-        Assert.assertFalse(this.marker.iterator().hasNext());
+        assertFalse(this.marker.iterator().hasNext());
     }
 
     @Test
     public void containsString()
     {
-        Assert.assertFalse(this.marker.contains("name"));
-        Assert.assertTrue(this.marker.contains(this.marker.getName()));
+        assertFalse(this.marker.contains("name"));
+        assertTrue(this.marker.contains(this.marker.getName()));
     }
 
     @Test
     public void containsMarker()
     {
-        Assert.assertFalse(this.marker.contains(MarkerFactory.getMarker("name")));
-        Assert.assertTrue(this.marker.contains(this.marker));
+        assertFalse(this.marker.contains(MarkerFactory.getMarker("name")));
+        assertTrue(this.marker.contains(this.marker));
     }
 
     @Test
@@ -104,9 +107,9 @@ public class TranslationMarkerTest
         Marker otherTMarker = new TranslationMarker("translation.otherkey");
         Marker otherMarker = MarkerFactory.getMarker("name");
 
-        Assert.assertEquals(equalsTMarker.hashCode(), this.marker.hashCode());
-        Assert.assertFalse(this.marker.hashCode() == otherTMarker.hashCode());
-        Assert.assertFalse(this.marker.hashCode() == otherMarker.hashCode());
+        assertEquals(equalsTMarker.hashCode(), this.marker.hashCode());
+        assertFalse(this.marker.hashCode() == otherTMarker.hashCode());
+        assertFalse(this.marker.hashCode() == otherMarker.hashCode());
     }
 
     @Test
@@ -116,8 +119,8 @@ public class TranslationMarkerTest
         Marker otherTMarker = new TranslationMarker("translation.otherkey");
         Marker otherMarker = MarkerFactory.getMarker("name");
 
-        Assert.assertEquals(equalsTMarker, this.marker);
-        Assert.assertFalse(this.marker.equals(otherTMarker));
-        Assert.assertFalse(this.marker.equals(otherMarker));
+        assertEquals(equalsTMarker, this.marker);
+        assertFalse(this.marker.equals(otherTMarker));
+        assertFalse(this.marker.equals(otherMarker));
     }
 }

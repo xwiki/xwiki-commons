@@ -19,9 +19,11 @@
  */
 package org.xwiki.logging.internal.helpers;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Validate {@link MessageParser}.
@@ -31,90 +33,90 @@ import org.xwiki.logging.internal.helpers.MessageParser.MessageIndex;
 public class MessageParserTest
 {
     @Test
-    public void testPlain()
+    public void plain()
     {
         MessageParser parser = new MessageParser("plain text", false);
 
-        Assert.assertEquals("plain text", parser.next().getString());
-        Assert.assertNull(parser.next());
+        assertEquals("plain text", parser.next().getString());
+        assertNull(parser.next());
 
         parser = new MessageParser("plain text", true);
 
-        Assert.assertEquals("plain text", parser.next().getString());
-        Assert.assertNull(parser.next());
+        assertEquals("plain text", parser.next().getString());
+        assertNull(parser.next());
     }
 
     @Test
-    public void testLogWithTwoArguments()
+    public void logWithTwoArguments()
     {
         MessageParser parser = new MessageParser("hello {} world {}", false);
 
-        Assert.assertEquals("hello ", parser.next().getString());
-        Assert.assertEquals("{}", parser.next().getString());
-        Assert.assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertEquals(" world ", parser.next().getString());
-        Assert.assertEquals("{}", parser.next().getString());
-        Assert.assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertNull(parser.next());
+        assertEquals("hello ", parser.next().getString());
+        assertEquals("{}", parser.next().getString());
+        assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertEquals(" world ", parser.next().getString());
+        assertEquals("{}", parser.next().getString());
+        assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertNull(parser.next());
 
         parser = new MessageParser("hello {} world {}", true);
 
-        Assert.assertEquals("hello ", parser.next().getString());
-        Assert.assertEquals("{}", parser.next().getString());
-        Assert.assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertEquals(" world ", parser.next().getString());
-        Assert.assertEquals("{}", parser.next().getString());
-        Assert.assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertNull(parser.next());
+        assertEquals("hello ", parser.next().getString());
+        assertEquals("{}", parser.next().getString());
+        assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertEquals(" world ", parser.next().getString());
+        assertEquals("{}", parser.next().getString());
+        assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertNull(parser.next());
     }
 
     @Test
-    public void testLogWithEscaping()
+    public void logWithEscaping()
     {
         MessageParser parser = new MessageParser("one \\{} two \\\\{} three \\\\\\{}", false);
 
-        Assert.assertEquals("one {} two \\", parser.next().getString());
-        Assert.assertEquals("\\{}", parser.next().getString());
-        Assert.assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertEquals(" three \\\\", parser.next().getString());
-        Assert.assertEquals("\\{}", parser.next().getString());
-        Assert.assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertNull(parser.next());
+        assertEquals("one {} two \\", parser.next().getString());
+        assertEquals("\\{}", parser.next().getString());
+        assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertEquals(" three \\\\", parser.next().getString());
+        assertEquals("\\{}", parser.next().getString());
+        assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertNull(parser.next());
 
         parser = new MessageParser("one \\{} two \\\\{} three \\\\\\{}", true);
 
-        Assert.assertEquals("one {} two \\", parser.next().getString());
-        Assert.assertEquals("\\{}", parser.next().getString());
-        Assert.assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertEquals(" three \\\\", parser.next().getString());
-        Assert.assertEquals("\\{}", parser.next().getString());
-        Assert.assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertNull(parser.next());
+        assertEquals("one {} two \\", parser.next().getString());
+        assertEquals("\\{}", parser.next().getString());
+        assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertEquals(" three \\\\", parser.next().getString());
+        assertEquals("\\{}", parser.next().getString());
+        assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertNull(parser.next());
     }
 
     @Test
-    public void testLogWithIndices()
+    public void logWithIndices()
     {
         MessageParser parser;
 
         parser = new MessageParser("one {1} zero {0} two {}", false);
 
-        Assert.assertEquals("one {1} zero {0} two ", parser.next().getString());
-        Assert.assertEquals("{}", parser.next().getString());
-        Assert.assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertNull(parser.next());
+        assertEquals("one {1} zero {0} two ", parser.next().getString());
+        assertEquals("{}", parser.next().getString());
+        assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertNull(parser.next());
 
         parser = new MessageParser("one {1} zero {0} two {}", true);
 
-        Assert.assertEquals("one ", parser.next().getString());
-        Assert.assertEquals("{1}", parser.next().getString());
-        Assert.assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertEquals(" zero ", parser.next().getString());
-        Assert.assertEquals("{0}", parser.next().getString());
-        Assert.assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertEquals(" two ", parser.next().getString());
-        Assert.assertEquals("{}", parser.next().getString());
-        Assert.assertEquals(2, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
-        Assert.assertNull(parser.next());
+        assertEquals("one ", parser.next().getString());
+        assertEquals("{1}", parser.next().getString());
+        assertEquals(1, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertEquals(" zero ", parser.next().getString());
+        assertEquals("{0}", parser.next().getString());
+        assertEquals(0, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertEquals(" two ", parser.next().getString());
+        assertEquals("{}", parser.next().getString());
+        assertEquals(2, ((MessageIndex) parser.getCurrentMessageElement()).getIndex());
+        assertNull(parser.next());
     }
 }

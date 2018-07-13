@@ -21,8 +21,10 @@ package org.xwiki.logging.internal.helpers;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Validate {@link ExtendedMessageFormatter}.
@@ -32,69 +34,68 @@ import org.junit.Test;
 public class ExtendedMessageFormatterTest
 {
     @Test
-    public void testNullMessage()
+    public void nullMessage()
     {
-        Assert.assertNull(ExtendedMessageFormatter.parseMessage(null, new Object[] {}));
+        assertNull(ExtendedMessageFormatter.parseMessage(null, new Object[] {}));
     }
 
     @Test
-    public void testEmptyMessage()
+    public void emptyMessage()
     {
-        Assert.assertEquals(Arrays.asList(""), ExtendedMessageFormatter.parseMessage("", new Object[] {}));
+        assertEquals(Arrays.asList(""), ExtendedMessageFormatter.parseMessage("", new Object[] {}));
     }
 
     @Test
-    public void testNullArguments()
+    public void nNullArguments()
     {
-        Assert.assertEquals(Arrays.asList("message"), ExtendedMessageFormatter.parseMessage("message", null));
+        assertEquals(Arrays.asList("message"), ExtendedMessageFormatter.parseMessage("message", null));
     }
 
     @Test
-    public void testEmptyArguments()
+    public void emptyArguments()
     {
-        Assert
-            .assertEquals(Arrays.asList("message"), ExtendedMessageFormatter.parseMessage("message", new Object[] {}));
+        assertEquals(Arrays.asList("message"), ExtendedMessageFormatter.parseMessage("message", new Object[] {}));
     }
 
     @Test
-    public void testPlain()
+    public void plain()
     {
-        Assert.assertEquals(Arrays.asList("message"),
+        assertEquals(Arrays.asList("message"),
             ExtendedMessageFormatter.parseMessage("message", new Object[] { "0" }));
     }
 
     @Test
-    public void testWithArguments()
+    public void withArguments()
     {
-        Assert.assertEquals(Arrays.asList("hello ", " world"),
+        assertEquals(Arrays.asList("hello ", " world"),
             ExtendedMessageFormatter.parseMessage("hello {} world", new Object[] { "0" }));
     }
 
     @Test
-    public void testWithoutArguments()
+    public void withoutArguments()
     {
-        Assert.assertEquals(Arrays.asList("hello {} world"),
+        assertEquals(Arrays.asList("hello {} world"),
             ExtendedMessageFormatter.parseMessage("hello {} world", new Object[] {}));
     }
 
     @Test
-    public void testWithEndingArgument()
+    public void withEndingArgument()
     {
-        Assert.assertEquals(Arrays.asList("hello ", ""),
+        assertEquals(Arrays.asList("hello ", ""),
             ExtendedMessageFormatter.parseMessage("hello {}", new Object[] { "0" }));
     }
 
     @Test
-    public void testWithoutTooMuchArguments()
+    public void withoutTooMuchArguments()
     {
-        Assert.assertEquals(Arrays.asList("hello ", " world"),
+        assertEquals(Arrays.asList("hello ", " world"),
             ExtendedMessageFormatter.parseMessage("hello {} world", new Object[] { "0", "1" }));
     }
 
     @Test
-    public void testWithOnlyArguments()
+    public void withOnlyArguments()
     {
-        Assert.assertEquals(Arrays.asList("", "", ""),
+        assertEquals(Arrays.asList("", "", ""),
             ExtendedMessageFormatter.parseMessage("{}{}", new Object[] { "0", "1" }));
     }
 }
