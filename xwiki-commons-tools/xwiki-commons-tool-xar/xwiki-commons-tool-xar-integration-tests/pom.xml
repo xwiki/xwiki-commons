@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tool-xar</artifactId>
-    <version>10.6-SNAPSHOT</version>
+    <version>10.6-rc-1</version>
   </parent>
   <artifactId>xwiki-commons-tool-xar-integration-tests</artifactId>
   <name>XWiki Commons - Tools - XAR Tools - Functional Tests</name>
