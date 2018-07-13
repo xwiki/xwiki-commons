@@ -82,18 +82,11 @@ public class XWikiDOMSerializer
     private CleanerProperties props;
 
     /**
-     * Whether XML entities should be escaped or not.
-     */
-    private boolean escapeXml;
-
-    /**
      * @param props the HTML Cleaner properties set by the user to control the HTML cleaning.
-     * @param escapeXml if true then escape XML entities
      */
-    public XWikiDOMSerializer(CleanerProperties props, boolean escapeXml)
+    public XWikiDOMSerializer(CleanerProperties props)
     {
         this.props = props;
-        this.escapeXml = escapeXml;
     }
 
     /**
@@ -155,9 +148,7 @@ public class XWikiDOMSerializer
             Map.Entry<String, String> entry = entryIterator.next();
             String attrName = entry.getKey();
             String attrValue = entry.getValue();
-            if (shouldEscapeOrTranslateEntities()) {
-                attrValue = Utils.escapeXml(attrValue, props, true);
-            }
+            attrValue = Utils.escapeXml(attrValue, props, true);
 
             document.getDocumentElement().setAttribute(attrName, attrValue);
 
@@ -189,7 +180,7 @@ public class XWikiDOMSerializer
             boolean specialCase = this.props.isUseCdataForScriptAndStyle() && isScriptOrStyle(element);
             String content = bufferedContent.toString();
 
-            if (shouldEscapeOrTranslateEntities() && !specialCase) {
+            if (!specialCase) {
                 content = Utils.escapeXml(content, this.props, true);
             } else if (specialCase) {
                 content = processCDATABlocks(content);
@@ -300,9 +291,7 @@ public class XWikiDOMSerializer
                     for (Map.Entry<String, String> entry : attributes.entrySet()) {
                         String attrName = entry.getKey();
                         String attrValue = entry.getValue();
-                        if (shouldEscapeOrTranslateEntities()) {
-                            attrValue = Utils.escapeXml(attrValue, this.props, true);
-                        }
+                        attrValue = Utils.escapeXml(attrValue, this.props, true);
                         subelement.setAttribute(attrName, attrValue);
                     }
 
@@ -318,10 +307,5 @@ public class XWikiDOMSerializer
             }
             flushContent(document, element, bufferedContent, null);
         }
-    }
-
-    private boolean shouldEscapeOrTranslateEntities()
-    {
-        return this.escapeXml || this.props.isRecognizeUnicodeChars() || this.props.isTranslateSpecialEntities();
     }
 }

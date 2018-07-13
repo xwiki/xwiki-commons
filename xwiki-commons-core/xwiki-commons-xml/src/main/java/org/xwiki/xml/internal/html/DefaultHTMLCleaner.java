@@ -20,7 +20,6 @@
 package org.xwiki.xml.internal.html;
 
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.Arrays;
 
 import javax.inject.Inject;
@@ -39,8 +38,6 @@ import org.htmlcleaner.TagTransformation;
 import org.htmlcleaner.XWikiDOMSerializer;
 import org.w3c.dom.Document;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.xml.html.HTMLCleaner;
@@ -57,7 +54,7 @@ import org.xwiki.xml.html.filter.HTMLFilter;
  */
 @Component
 @Singleton
-public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
+public class DefaultHTMLCleaner implements HTMLCleaner
 {
     /**
      * {@link HTMLFilter} for filtering html lists.
@@ -104,23 +101,6 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
 
     @Inject
     private Execution execution;
-
-    @Override
-    public void initialize() throws InitializationException
-    {
-        // The clean method below is thread safe. However it seems that DOMOutputter.output() is not fully thread safe
-        // since it causes the following exception on the first time it's called from different threads:
-        //  Caused by: org.jdom.JDOMException: Reflection failed while creating new JAXP document:
-        //  duplicate class definition: org/apache/xerces/jaxp/DocumentBuilderFactoryImpl
-        //  at org.jdom.adapters.JAXPDOMAdapter.createDocument(JAXPDOMAdapter.java:191)
-        //  at org.jdom.adapters.AbstractDOMAdapter.createDocument(AbstractDOMAdapter.java:133)
-        //  at org.jdom.output.DOMOutputter.createDOMDocument(DOMOutputter.java:208)
-        //  at org.jdom.output.DOMOutputter.output(DOMOutputter.java:127)
-        // Since this only happens once, we call it first here at initialization time (since there's no thread
-        // contention at that time). Note: This email thread seems to say it's thread safe but that's not what we see
-        // here: http:osdir.com/ml/text.xml.xforms.chiba.devel/2006-09/msg00025.html
-        clean(new StringReader(""));
-    }
 
     @Override
     public Document clean(Reader originalHtmlContent)
@@ -175,7 +155,7 @@ public class DefaultHTMLCleaner implements HTMLCleaner, Initializable
             cleanedNode.setDocType(new DoctypeToken("html", "PUBLIC", "-//W3C//DTD XHTML 1.0 Strict//EN",
                 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"));
             result =
-                new XWikiDOMSerializer(cleanerProperties, true).createDOM(getAvailableDocumentBuilder(), cleanedNode);
+                new XWikiDOMSerializer(cleanerProperties).createDOM(getAvailableDocumentBuilder(), cleanedNode);
         } catch (ParserConfigurationException ex) {
             throw new RuntimeException("Error while serializing TagNode into w3c dom.", ex);
         }
