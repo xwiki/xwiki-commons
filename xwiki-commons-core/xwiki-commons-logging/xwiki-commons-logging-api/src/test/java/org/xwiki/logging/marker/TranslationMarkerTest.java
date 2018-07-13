@@ -56,6 +56,7 @@ public class TranslationMarkerTest
     public void add()
     {
         this.marker.add(MarkerFactory.getMarker("marker"));
+        Assert.assertTrue(this.marker.hasChildren());
     }
 
     @Test
