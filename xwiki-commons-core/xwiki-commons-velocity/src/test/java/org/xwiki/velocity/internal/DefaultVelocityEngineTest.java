@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.context.Context;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,7 +42,6 @@ import org.junit.Test;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.velocity.VelocityConfiguration;
 import org.xwiki.velocity.XWikiVelocityException;
-import org.xwiki.velocity.introspection.ChainingUberspector;
 import org.xwiki.velocity.introspection.DeprecatedCheckUberspector;
 import org.xwiki.velocity.introspection.SecureUberspector;
 
@@ -60,9 +60,8 @@ public class DefaultVelocityEngineTest
     public void setUp() throws Exception
     {
         Properties properties = new Properties();
-        properties.put("runtime.introspector.uberspect", ChainingUberspector.class.getName());
-        properties.put("runtime.introspector.uberspect.chainClasses", SecureUberspector.class.getName() + ","
-            + DeprecatedCheckUberspector.class.getName());
+        properties.put("runtime.introspector.uberspect", StringUtils.join(
+            new String[] { SecureUberspector.class.getName(), DeprecatedCheckUberspector.class.getName() }, ','));
         properties.put("directive.set.null.allowed", Boolean.TRUE.toString());
         properties.put("velocimacro.permissions.allow.inline.local.scope", Boolean.TRUE.toString());
 

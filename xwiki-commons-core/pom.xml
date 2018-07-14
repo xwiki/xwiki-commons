@@ -169,6 +169,42 @@
                     "classSimpleName": "Unstable",
                     "elementKind": "@interface",
                     "justification": "Not a breakage."
+                  },
+                  {
+                    "code": "java.class.removed",
+                    "old": "class org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "package": "org.xwiki.velocity.introspection",
+                    "classQualifiedName": "org.xwiki.velocity.introspection.AbstractChainableUberspector",
+                    "classSimpleName": "AbstractChainableUberspector",
+                    "elementKind": "class",
+                    "justification": "Not a breakage: class moved to a legacy module"
+                  },
+                  {
+                    "code": "java.class.removed",
+                    "old": "interface org.xwiki.velocity.introspection.ChainableUberspector",
+                    "package": "org.xwiki.velocity.introspection",
+                    "classQualifiedName": "org.xwiki.velocity.introspection.ChainableUberspector",
+                    "classSimpleName": "ChainableUberspector",
+                    "elementKind": "interface",
+                    "justification": "Not a breakage: class moved to a legacy module"
+                  },
+                  {
+                    "code": "java.class.removed",
+                    "old": "class org.xwiki.velocity.introspection.ChainingUberspector",
+                    "package": "org.xwiki.velocity.introspection",
+                    "classQualifiedName": "org.xwiki.velocity.introspection.ChainingUberspector",
+                    "classSimpleName": "ChainingUberspector",
+                    "elementKind": "class",
+                    "justification": "Not a breakage: class moved to a legacy module"
+                  },
+                  {
+                    "code": "java.class.removed",
+                    "old": "class org.xwiki.velocity.introspection.LinkingUberspector",
+                    "package": "org.xwiki.velocity.introspection",
+                    "classQualifiedName": "org.xwiki.velocity.introspection.LinkingUberspector",
+                    "classSimpleName": "LinkingUberspector",
+                    "elementKind": "class",
+                    "justification": "Not a breakage: class moved to a legacy module"
                   }
                 ]
               }

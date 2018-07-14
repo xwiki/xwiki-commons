@@ -24,28 +24,37 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-core</artifactId>
+    <artifactId>xwiki-commons-legacy</artifactId>
     <version>10.7-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-legacy</artifactId>
-  <name>XWiki Commons - Legacy</name>
-  <packaging>pom</packaging>
-  <description>XWiki Commons - Legacy</description>
+  <artifactId>xwiki-commons-legacy-velocity</artifactId>
+  <name>XWiki Commons - Legacy - Velocity</name>
+  <packaging>jar</packaging>
+  <description>XWiki Commons - Legacy - Velocity</description>
   <properties>
-    <!-- Skip Enforcer check on legacy dependencies since we allow legacy modules to depend on other legacy modules -->
-    <xwiki.enforcer.no-legacy-dependencies.skip>true</xwiki.enforcer.no-legacy-dependencies.skip>
+    <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>73</xwiki.pitest.mutationThreshold>
   </properties>
-  <modules>
-    <module>xwiki-commons-legacy-component</module>
-    <module>xwiki-commons-legacy-configuration</module>
-    <module>xwiki-commons-legacy-properties</module>
-    <module>xwiki-commons-legacy-velocity</module>
-  </modules>
   <dependencies>
-    <!-- Needed for backward compatibility Aspects -->
     <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-velocity</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Tests dependencies -->
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <!-- Trigger legacy version -->
+        <exclusion>
+          <groupId>org.xwiki.commons</groupId>
+          <artifactId>xwiki-commons-component-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>
+       
