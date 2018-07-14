@@ -38,7 +38,6 @@ import org.apache.velocity.util.introspection.VelPropertySet;
  *
  * @since 1.5M1
  * @version $Id$
- * @see ChainableUberspector
  */
 public class DeprecatedCheckUberspector extends AbstractChainableUberspector implements Uberspect, UberspectLoggable
 {

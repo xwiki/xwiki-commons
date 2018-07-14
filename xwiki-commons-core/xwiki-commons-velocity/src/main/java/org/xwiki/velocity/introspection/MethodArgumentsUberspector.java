@@ -49,7 +49,6 @@ import org.xwiki.properties.ConverterManager;
  *
  * @since 4.1M2
  * @version $Id$
- * @see ChainableUberspector
  */
 public class MethodArgumentsUberspector extends AbstractChainableUberspector implements RuntimeServicesAware
 {
