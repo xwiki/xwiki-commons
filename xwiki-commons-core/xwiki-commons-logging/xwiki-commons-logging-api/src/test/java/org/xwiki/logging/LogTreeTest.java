@@ -21,9 +21,10 @@ package org.xwiki.logging;
 
 import java.util.Iterator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.logging.event.LogEvent;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link LogTree}.
@@ -33,19 +34,19 @@ import org.xwiki.logging.event.LogEvent;
 public class LogTreeTest
 {
     @Test
-    public void testTwoLevel0()
+    public void twoLevel0()
     {
         LogTree logTree = new LogTree();
 
         logTree.error("message1");
         logTree.error("message2");
 
-        Assert.assertEquals(2, logTree.size(false));
-        Assert.assertEquals(2, logTree.size(true));
+        assertEquals(2, logTree.size(false));
+        assertEquals(2, logTree.size(true));
     }
 
     @Test
-    public void test3Levels()
+    public void ThreeLevels()
     {
         LogTree logTree = new LogTree();
 
@@ -65,15 +66,15 @@ public class LogTreeTest
         logTree.error(LogEvent.MARKER_END, "end22");
         logTree.error(LogEvent.MARKER_END, "end2");
 
-        Assert.assertEquals(2, logTree.size(false));
-        Assert.assertEquals(14, logTree.size(true));
+        assertEquals(2, logTree.size(false));
+        assertEquals(14, logTree.size(true));
 
         Iterator<LogEvent> iterator0 = logTree.iterator();
 
         LogTreeNode node1 = (LogTreeNode) iterator0.next();
 
-        Assert.assertEquals(3, node1.size(false));
-        Assert.assertEquals(6, node1.size(true));
+        assertEquals(3, node1.size(false));
+        assertEquals(6, node1.size(true));
 
         Iterator<LogEvent> iterator1 = node1.iterator();
 
@@ -81,7 +82,7 @@ public class LogTreeTest
 
         LogTreeNode node11 = (LogTreeNode) iterator1.next();
 
-        Assert.assertEquals(3, node11.size(false));
-        Assert.assertEquals(3, node11.size(true));
+        assertEquals(3, node11.size(false));
+        assertEquals(3, node11.size(true));
     }
 }

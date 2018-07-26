@@ -23,10 +23,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Validate {@link StringUtils}.
- * 
+ *
  * @version $Id$
  */
 class StringUtilsTest
@@ -35,12 +36,31 @@ class StringUtilsTest
     @DisplayName("Doubling of characters")
     void doubleChar()
     {
-        assertEquals(null, StringUtils.doubleChar(null, 'a'));
+        assertNull(StringUtils.doubleChar(null, 'a'));
         assertEquals("", StringUtils.doubleChar("", 'a'));
         assertEquals("b", StringUtils.doubleChar("b", 'a'));
         assertEquals("aa", StringUtils.doubleChar("a", 'a'));
         assertEquals("aaaa", StringUtils.doubleChar("aa", 'a'));
         assertEquals("baabaa", StringUtils.doubleChar("baba", 'a'));
         assertEquals("aabaab", StringUtils.doubleChar("abab", 'a'));
+    }
+
+    @Test
+    @DisplayName("Alphanumeric conversion")
+    void toAlphaNumeric()
+    {
+        assertNull(StringUtils.toAlphaNumeric(null));
+        assertEquals("", StringUtils.toAlphaNumeric(""));
+        assertEquals("abc123", StringUtils.toAlphaNumeric("abc123"));
+        assertEquals("MainWebHome", StringUtils.toAlphaNumeric("Main.WebHome"));
+        assertEquals(
+            "TheQuickBrownFoxjumpsoverthelazydog",
+            StringUtils.toAlphaNumeric("The Quick Brown Fox jumps over the lazy dog")
+        );
+        assertEquals(
+            "DesNoelouunzephyrhaimevetdeglaconswurmiensjedinedexquisrotisdebufaukiralaydagemurctera",
+            StringUtils.toAlphaNumeric("Dès Noël où un zéphyr haï me vêt de glaçons würmiens je dîne d’exquis " +
+                "rôtis de bœuf au kir à l’aÿ d’âge mûr & cætera !")
+        );
     }
 }

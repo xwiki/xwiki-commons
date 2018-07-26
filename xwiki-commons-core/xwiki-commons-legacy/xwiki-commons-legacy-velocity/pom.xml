@@ -25,21 +25,21 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-legacy</artifactId>
-    <version>10.5-SNAPSHOT</version>
+    <version>10.7-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-legacy-velocity</artifactId>
   <name>XWiki Commons - Legacy - Velocity</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Legacy - Velocity</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
+    <xwiki.jacoco.instructionRatio>0.70</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>73</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-velocity</artifactId>
       <version>${project.version}</version>
-      <exclusions>
         <!-- Trigger legacy version -->
         <exclusion>
           <groupId>org.xwiki.commons</groupId>
@@ -52,6 +52,7 @@
       <artifactId>xwiki-commons-legacy-component-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <!-- Tests dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>

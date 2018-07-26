@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -18,19 +16,32 @@
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
--->
+ */
+package org.xwiki.component.namespace;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.xwiki.commons</groupId>
-    <artifactId>xwiki-commons-filter</artifactId>
-    <version>10.7-SNAPSHOT</version>
-  </parent>
-  <artifactId>xwiki-commons-filter-events</artifactId>
-  <packaging>pom</packaging>
-  <name>XWiki Commons - Filter - Events</name>
-  <modules>
-    <module>xwiki-commons-filter-event-extension</module>
-  </modules>
-</project>
+import java.util.concurrent.Callable;
+
+import org.xwiki.component.annotation.Role;
+
+/**
+ * Allow executing some code in the context of the specified namespace.
+ *
+ * @version $Id$
+ * @since 10.6RC1
+ * @since 10.5
+ * @since 9.11.6
+ */
+@Role
+public interface NamespaceContextExecutor
+{
+    /**
+     * Execute the passed {@link Callable} in the context of the specified namespace.
+     *
+     * @param namespace the namespace to use
+     * @param callable the task to execute
+     * @param <V> the result type of method <tt>call</tt>
+     * @return computed result
+     * @throws Exception if unable to compute a result
+     */
+    <V> V execute(Namespace namespace, Callable<V> callable) throws Exception;
+}

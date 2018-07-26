@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-pom</artifactId>
-    <version>10.6-SNAPSHOT</version>
+    <version>10.7-SNAPSHOT</version>
     <relativePath>../xwiki-commons-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-core</artifactId>
@@ -171,7 +171,7 @@
                     "classQualifiedName": "org.xwiki.velocity.introspection.AbstractChainableUberspector",
                     "classSimpleName": "AbstractChainableUberspector",
                     "elementKind": "class",
-                    "justification": "Not a breakage, moved to legacy module"
+                    "justification": "Not a breakage: class moved to a legacy module"
                   },
                   {
                     "code": "java.class.removed",
@@ -180,7 +180,7 @@
                     "classQualifiedName": "org.xwiki.velocity.introspection.ChainableUberspector",
                     "classSimpleName": "ChainableUberspector",
                     "elementKind": "interface",
-                    "justification": "Not a breakage, moved to legacy module"
+                    "justification": "Not a breakage: class moved to a legacy module"
                   },
                   {
                     "code": "java.class.removed",
@@ -198,7 +198,7 @@
                     "classQualifiedName": "org.xwiki.velocity.introspection.DeprecatedCheckUberspector",
                     "classSimpleName": "DeprecatedCheckUberspector",
                     "elementKind": "class",
-                    "justification": "Not a breakage, moved to legacy module"
+                    "justification": "Not a breakage: class moved to a legacy module"
                   },
                   {
                     "code": "java.class.removed",
@@ -207,7 +207,7 @@
                     "classQualifiedName": "org.xwiki.velocity.introspection.LinkingUberspector",
                     "classSimpleName": "LinkingUberspector",
                     "elementKind": "class",
-                    "justification": "Not a breakage, moved to legacy module"
+                    "justification": "Not a breakage: class moved to a legacy module"
                   },
                   {
                     "code": "java.field.typeChanged",

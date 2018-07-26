@@ -25,15 +25,15 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-core</artifactId>
-    <version>10.6-SNAPSHOT</version>
+    <version>10.7-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-xml</artifactId>
   <name>XWiki Commons - XML</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - XML</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.60</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>62</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.61</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>63</xwiki.pitest.mutationThreshold>
     <!-- There's a utility class with lots of features, allow it to have many dependencies;
          There's a SAX event listener, which requires complex code -->
     <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>

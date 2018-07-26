@@ -22,10 +22,11 @@ package org.xwiki.logging.event;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LogQueue;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test {@link LogEvent}.
@@ -39,19 +40,19 @@ public class LogEventTest
     {
         LogEvent logEvent = new LogEvent(null, LogLevel.ERROR, "", null, null);
 
-        Assert.assertEquals(logEvent.getMessageElements(), Arrays.asList(""));
+        assertEquals(logEvent.getMessageElements(), Arrays.asList(""));
 
         logEvent = new LogEvent(null, LogLevel.ERROR, "", ArrayUtils.EMPTY_OBJECT_ARRAY, null);
 
-        Assert.assertEquals(logEvent.getMessageElements(), Arrays.asList(""));
+        assertEquals(logEvent.getMessageElements(), Arrays.asList(""));
 
         logEvent = new LogEvent(null, LogLevel.ERROR, "message", ArrayUtils.EMPTY_OBJECT_ARRAY, null);
 
-        Assert.assertEquals(logEvent.getMessageElements(), Arrays.asList("message"));
+        assertEquals(logEvent.getMessageElements(), Arrays.asList("message"));
 
         logEvent = new LogEvent(null, LogLevel.ERROR, "message {}", new Object[] { "" }, null);
 
-        Assert.assertEquals(logEvent.getMessageElements(), Arrays.asList("message ", ""));
+        assertEquals(logEvent.getMessageElements(), Arrays.asList("message ", ""));
     }
 
     @Test
@@ -63,6 +64,6 @@ public class LogEventTest
 
         logEvent.log(queue);
 
-        Assert.assertEquals(logEvent.getMessage(), "message");
+        assertEquals(logEvent.getMessage(), "message");
     }
 }

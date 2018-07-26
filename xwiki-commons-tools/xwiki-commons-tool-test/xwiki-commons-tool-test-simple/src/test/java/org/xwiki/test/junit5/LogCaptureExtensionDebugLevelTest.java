@@ -38,7 +38,7 @@ public class LogCaptureExtensionDebugLevelTest
     public static final Logger LOGGER = LoggerFactory.getLogger(LogCaptureExtensionDebugLevelTest.class);
 
     @RegisterExtension
-    static LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.DEBUG);
 
     @Test
     public void staticLogger()

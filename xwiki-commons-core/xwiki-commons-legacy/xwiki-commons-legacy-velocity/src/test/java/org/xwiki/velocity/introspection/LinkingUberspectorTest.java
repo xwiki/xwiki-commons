@@ -26,31 +26,39 @@ import java.util.Properties;
 
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.util.introspection.UberspectImpl;
-import org.junit.Assert;
-import org.junit.Test;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.mockito.MockitoComponentManager;
 import org.xwiki.velocity.VelocityEngine;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link LinkingUberspector}.
  *
  * @version $Id$
  */
-public class LinkingUberspectorTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class LinkingUberspectorTest
 {
     private VelocityEngine engine;
 
-    @Override
-    protected void registerComponents() throws Exception
+    @BeforeEach
+    public void setUp(MockitoComponentManager componentManager) throws Exception
     {
-        this.engine = getComponentManager().getInstance(VelocityEngine.class);
+        componentManager.registerMemoryConfigurationSource();
+        this.engine = componentManager.getInstance(VelocityEngine.class);
     }
 
     /*
      * Tests that the uberspectors in the list are called, and without a real uberspector no methods are found.
      */
     @Test
-    public void testEmptyArray() throws Exception
+    public void emptyArray() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
@@ -69,7 +77,7 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
      * the chain, and after a method is found no further calls are performed.
      */
     @Test
-    public void testBasicArray() throws Exception
+    public void basicArray() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
@@ -91,7 +99,7 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
      * Tests that invalid uberspectors classnames are ignored.
      */
     @Test
-    public void testInvalidUberspectorsAreIgnored() throws Exception
+    public void invalidUberspectorsAreIgnored() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
@@ -114,7 +122,7 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
      * Checks that the default (non-secure) uberspector works and allows calling restricted methods.
      */
     @Test
-    public void testDefaultUberspectorWorks() throws Exception
+    public void defaultUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
@@ -130,7 +138,7 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
      * Checks that the secure uberspector works and does not allow calling restricted methods.
      */
     @Test
-    public void testSecureUberspectorWorks() throws Exception
+    public void secureUberspectorWorks() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());
@@ -146,7 +154,7 @@ public class LinkingUberspectorTest extends AbstractComponentTestCase
      * Checks that when the array property is not configured, by default the secure ubespector is used.
      */
     @Test
-    public void testSecureUberspectorEnabledByDefault() throws Exception
+    public void secureUberspectorEnabledByDefault() throws Exception
     {
         Properties prop = new Properties();
         prop.setProperty(RuntimeConstants.UBERSPECT_CLASSNAME, LinkingUberspector.class.getCanonicalName());

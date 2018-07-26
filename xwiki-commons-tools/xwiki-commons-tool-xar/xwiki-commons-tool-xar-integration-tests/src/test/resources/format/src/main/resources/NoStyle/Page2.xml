@@ -47,6 +47,7 @@
 <!-- Also verify that attachment authors are modified when not correct -->
 <attachment>
 <filename>applications.png</filename>
+<mimetype>image/png</mimetype>
 <author></author>
 <date>1296854749000</date>
 <version>1.1</version>
@@ -56,6 +57,7 @@
 </attachment>
 <attachment>
 <filename>configuration.png</filename>
+<mimetype>image/png</mimetype>
 <author>wrong author</author>
 <date>1299688703000</date>
 <version>1.1</version>

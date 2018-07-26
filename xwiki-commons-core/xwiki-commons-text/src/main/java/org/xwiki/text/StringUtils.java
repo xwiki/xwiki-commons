@@ -19,11 +19,13 @@
  */
 package org.xwiki.text;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * Extends {@link org.apache.commons.lang3.StringUtils} with some more useful tools. Note that the reason we're
  * extending Commons Lang instead of creating a separate class is because we're using this class as a Velocity tool
  * and we want to offer a single binding to users.
- * 
+ *
  * @version $Id$
  * @since 6.2
  */
@@ -32,7 +34,7 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
     /**
      * An attempt to make doubling a character (usually for escaping purposes) as fast as it can be. A lot faster than
      * the usual <code>mystring.replace("a", "aa")</code> for example.
-     * 
+     *
      * @param str the string to modify
      * @param c the character to double
      * @return the modified string
@@ -62,5 +64,23 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
         buf.append(str.substring(start));
 
         return buf.toString();
+    }
+
+    /**
+     * Removes all non alpha numerical characters from the passed text. First tries to convert diacritics to their
+     * alpha numeric representation.
+     *
+     * @param text the text to convert
+     * @return the alpha numeric equivalent
+     * @since 10.6RC1
+     */
+    @Unstable
+    public static String toAlphaNumeric(String text)
+    {
+        if (isEmpty(text)) {
+            return text;
+        }
+
+        return stripAccents(text).replaceAll("[^a-zA-Z0-9]", "");
     }
 }

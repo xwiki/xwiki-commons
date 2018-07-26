@@ -19,9 +19,10 @@
  */
 package org.xwiki.logging;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.logging.test.Utils;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test {@link CompositeLogger}.
@@ -38,11 +39,11 @@ public class CompositeLoggerTest
 
         Logger logger = new CompositeLogger(logQueue, logTree);
 
-        Assert.assertTrue(logger.isTraceEnabled());
-        Assert.assertTrue(logger.isDebugEnabled());
-        Assert.assertTrue(logger.isInfoEnabled());
-        Assert.assertTrue(logger.isWarnEnabled());
-        Assert.assertTrue(logger.isErrorEnabled());
+        assertTrue(logger.isTraceEnabled());
+        assertTrue(logger.isDebugEnabled());
+        assertTrue(logger.isInfoEnabled());
+        assertTrue(logger.isWarnEnabled());
+        assertTrue(logger.isErrorEnabled());
 
         Utils.populateLogger(logger);
 

@@ -21,9 +21,14 @@ package org.xwiki.logging;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.logging.event.LogEvent;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test {@link LogQueue}.
@@ -33,88 +38,88 @@ import org.xwiki.logging.event.LogEvent;
 public class LogQueueTest
 {
     @Test
-    public void testError()
+    public void error()
     {
         LogQueue queue = new LogQueue();
         LogEvent logEvent;
 
         queue.error("");
         logEvent = queue.poll();
-        Assert.assertEquals(Arrays.asList(""), logEvent.getMessageElements());
-        Assert.assertEquals("", logEvent.getFormattedMessage());
+        assertEquals(Arrays.asList(""), logEvent.getMessageElements());
+        assertEquals("", logEvent.getFormattedMessage());
 
         queue.error("message");
-        Assert.assertEquals("message", queue.poll().getFormattedMessage());
+        assertEquals("message", queue.poll().getFormattedMessage());
 
         queue.error("message {}", "param");
-        Assert.assertEquals("message param", queue.poll().getFormattedMessage());
+        assertEquals("message param", queue.poll().getFormattedMessage());
 
         queue.error("message {} {}", "param1", "param2");
         logEvent = queue.poll();
-        Assert.assertEquals("message param1 param2", logEvent.getFormattedMessage());
-        Assert.assertEquals(Arrays.asList("message ", " ", ""), logEvent.getMessageElements());
-        Assert.assertEquals(Arrays.asList("param1", "param2"), Arrays.asList(logEvent.getArgumentArray()));
+        assertEquals("message param1 param2", logEvent.getFormattedMessage());
+        assertEquals(Arrays.asList("message ", " ", ""), logEvent.getMessageElements());
+        assertEquals(Arrays.asList("param1", "param2"), Arrays.asList(logEvent.getArgumentArray()));
 
         queue.error("message {}", "param1", new Exception());
         logEvent = queue.poll();
-        Assert.assertEquals("message param1", logEvent.getFormattedMessage());
-        Assert.assertEquals(Arrays.asList("message ", ""), logEvent.getMessageElements());
-        Assert.assertEquals(Arrays.asList("param1"), Arrays.asList(logEvent.getArgumentArray()));
-        Assert.assertNotNull(logEvent.getThrowable());
-        Assert.assertNull(logEvent.getTranslationKey());
+        assertEquals("message param1", logEvent.getFormattedMessage());
+        assertEquals(Arrays.asList("message ", ""), logEvent.getMessageElements());
+        assertEquals(Arrays.asList("param1"), Arrays.asList(logEvent.getArgumentArray()));
+        assertNotNull(logEvent.getThrowable());
+        assertNull(logEvent.getTranslationKey());
 
         queue.error("message {}", new Object[] { "param1", new Exception() });
         logEvent = queue.poll();
-        Assert.assertEquals("message param1", logEvent.getFormattedMessage());
-        Assert.assertEquals(Arrays.asList("message ", ""), logEvent.getMessageElements());
-        Assert.assertEquals(Arrays.asList("param1"), Arrays.asList(logEvent.getArgumentArray()));
-        Assert.assertNotNull(logEvent.getThrowable());
-        Assert.assertNull(logEvent.getTranslationKey());
+        assertEquals("message param1", logEvent.getFormattedMessage());
+        assertEquals(Arrays.asList("message ", ""), logEvent.getMessageElements());
+        assertEquals(Arrays.asList("param1"), Arrays.asList(logEvent.getArgumentArray()));
+        assertNotNull(logEvent.getThrowable());
+        assertNull(logEvent.getTranslationKey());
 
         queue.error(new TranslationMarker("translation.key"), "message");
         logEvent = queue.poll();
-        Assert.assertEquals("translation.key", logEvent.getTranslationKey());
-        Assert.assertEquals(Arrays.asList("message"), logEvent.getMessageElements());
-        Assert.assertEquals(Arrays.asList(), Arrays.asList(logEvent.getArgumentArray()));
+        assertEquals("translation.key", logEvent.getTranslationKey());
+        assertEquals(Arrays.asList("message"), logEvent.getMessageElements());
+        assertEquals(Arrays.asList(), Arrays.asList(logEvent.getArgumentArray()));
     }
 
     @Test
-    public void testContainLogsFrom()
+    public void containLogsFrom()
     {
         LogQueue queue = new LogQueue();
 
-        Assert.assertFalse(queue.containLogsFrom(LogLevel.TRACE));
-        Assert.assertFalse(queue.containLogsFrom(LogLevel.DEBUG));
-        Assert.assertFalse(queue.containLogsFrom(LogLevel.INFO));
-        Assert.assertFalse(queue.containLogsFrom(LogLevel.WARN));
-        Assert.assertFalse(queue.containLogsFrom(LogLevel.ERROR));
+        assertFalse(queue.containLogsFrom(LogLevel.TRACE));
+        assertFalse(queue.containLogsFrom(LogLevel.DEBUG));
+        assertFalse(queue.containLogsFrom(LogLevel.INFO));
+        assertFalse(queue.containLogsFrom(LogLevel.WARN));
+        assertFalse(queue.containLogsFrom(LogLevel.ERROR));
 
         queue.warn("");
 
-        Assert.assertTrue(queue.containLogsFrom(LogLevel.TRACE));
-        Assert.assertTrue(queue.containLogsFrom(LogLevel.DEBUG));
-        Assert.assertTrue(queue.containLogsFrom(LogLevel.INFO));
-        Assert.assertTrue(queue.containLogsFrom(LogLevel.WARN));
-        Assert.assertFalse(queue.containLogsFrom(LogLevel.ERROR));
+        assertTrue(queue.containLogsFrom(LogLevel.TRACE));
+        assertTrue(queue.containLogsFrom(LogLevel.DEBUG));
+        assertTrue(queue.containLogsFrom(LogLevel.INFO));
+        assertTrue(queue.containLogsFrom(LogLevel.WARN));
+        assertFalse(queue.containLogsFrom(LogLevel.ERROR));
     }
 
     @Test
-    public void testGetLogsFrom()
+    public void getLogsFrom()
     {
         LogQueue queue = new LogQueue();
 
-        Assert.assertTrue(queue.getLogsFrom(LogLevel.TRACE).isEmpty());
-        Assert.assertTrue(queue.getLogsFrom(LogLevel.DEBUG).isEmpty());
-        Assert.assertTrue(queue.getLogsFrom(LogLevel.INFO).isEmpty());
-        Assert.assertTrue(queue.getLogsFrom(LogLevel.WARN).isEmpty());
-        Assert.assertTrue(queue.getLogsFrom(LogLevel.ERROR).isEmpty());
+        assertTrue(queue.getLogsFrom(LogLevel.TRACE).isEmpty());
+        assertTrue(queue.getLogsFrom(LogLevel.DEBUG).isEmpty());
+        assertTrue(queue.getLogsFrom(LogLevel.INFO).isEmpty());
+        assertTrue(queue.getLogsFrom(LogLevel.WARN).isEmpty());
+        assertTrue(queue.getLogsFrom(LogLevel.ERROR).isEmpty());
 
         queue.warn("");
 
-        Assert.assertFalse(queue.getLogsFrom(LogLevel.TRACE).isEmpty());
-        Assert.assertFalse(queue.getLogsFrom(LogLevel.DEBUG).isEmpty());
-        Assert.assertFalse(queue.getLogsFrom(LogLevel.INFO).isEmpty());
-        Assert.assertFalse(queue.getLogsFrom(LogLevel.WARN).isEmpty());
-        Assert.assertTrue(queue.getLogsFrom(LogLevel.ERROR).isEmpty());
+        assertFalse(queue.getLogsFrom(LogLevel.TRACE).isEmpty());
+        assertFalse(queue.getLogsFrom(LogLevel.DEBUG).isEmpty());
+        assertFalse(queue.getLogsFrom(LogLevel.INFO).isEmpty());
+        assertFalse(queue.getLogsFrom(LogLevel.WARN).isEmpty());
+        assertTrue(queue.getLogsFrom(LogLevel.ERROR).isEmpty());
     }
 }

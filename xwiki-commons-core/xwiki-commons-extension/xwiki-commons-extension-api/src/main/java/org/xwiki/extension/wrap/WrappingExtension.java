@@ -20,9 +20,11 @@
 package org.xwiki.extension.wrap;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionAuthor;
 import org.xwiki.extension.ExtensionDependency;
@@ -94,7 +96,9 @@ public class WrappingExtension<E extends Extension> extends AbstractWrappingObje
     public Collection<ExtensionId> getExtensionFeatures()
     {
         if (this.overwrites.containsKey(Extension.FIELD_EXTENSIONFEATURES)) {
-            return (Collection<ExtensionId>) this.overwrites.get(Extension.FIELD_EXTENSIONFEATURES);
+            return ObjectUtils.defaultIfNull(
+                (Collection<ExtensionId>) this.overwrites.get(Extension.FIELD_EXTENSIONFEATURES),
+                Collections.emptyList());
         }
 
         return getWrapped().getExtensionFeatures();

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.util.introspection.DeprecatedCheckUberspector;
 import org.junit.jupiter.api.BeforeEach;

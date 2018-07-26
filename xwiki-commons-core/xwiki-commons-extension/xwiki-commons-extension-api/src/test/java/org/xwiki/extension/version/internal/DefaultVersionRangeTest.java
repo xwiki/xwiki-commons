@@ -19,110 +19,122 @@
  */
 package org.xwiki.extension.version.internal;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.extension.version.InvalidVersionRangeException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DefaultVersionRangeTest
 {
     @Test
-    public void testIsCompatible() throws InvalidVersionRangeException
+    public void isCompatible() throws InvalidVersionRangeException
     {
         // Compatible
-        Assert.assertTrue(new DefaultVersionRange("[1.0]").isCompatible(new DefaultVersionRange("[1.0]")));
-        Assert.assertTrue(new DefaultVersionRange("[1.0,2.0]").isCompatible(new DefaultVersionRange("[1.0]")));
-        Assert.assertTrue(new DefaultVersionRange("[1.0,2.0]").isCompatible(new DefaultVersionRange("[1.0,3.0]")));
-        Assert.assertTrue(new DefaultVersionRange("[1.0,2.0]").isCompatible(new DefaultVersionRange("[2.0,3.0]")));
-        Assert.assertTrue(new DefaultVersionRange("(,2.0]").isCompatible(new DefaultVersionRange("[2.0,)")));
-        Assert.assertTrue(new DefaultVersionRange("(,2.0]").isCompatible(new DefaultVersionRange("[1.0,)")));
-        Assert.assertTrue(new DefaultVersionRange("(,2.0)").isCompatible(new DefaultVersionRange("(1.0,)")));
+        assertTrue(new DefaultVersionRange("[1.0]").isCompatible(new DefaultVersionRange("[1.0]")));
+        assertTrue(new DefaultVersionRange("[1.0,2.0]").isCompatible(new DefaultVersionRange("[1.0]")));
+        assertTrue(new DefaultVersionRange("[1.0,2.0]").isCompatible(new DefaultVersionRange("[1.0,3.0]")));
+        assertTrue(new DefaultVersionRange("[1.0,2.0]").isCompatible(new DefaultVersionRange("[2.0,3.0]")));
+        assertTrue(new DefaultVersionRange("(,2.0]").isCompatible(new DefaultVersionRange("[2.0,)")));
+        assertTrue(new DefaultVersionRange("(,2.0]").isCompatible(new DefaultVersionRange("[1.0,)")));
+        assertTrue(new DefaultVersionRange("(,2.0)").isCompatible(new DefaultVersionRange("(1.0,)")));
 
         // Not compatible
-        Assert.assertFalse(new DefaultVersionRange("[1.0,2.0)").isCompatible(new DefaultVersionRange("(2.0,3.0]")));
-        Assert.assertFalse(new DefaultVersionRange("(,2.0)").isCompatible(new DefaultVersionRange("(2.0,)")));
-        Assert.assertFalse(new DefaultVersionRange("[1.0]").isCompatible(new DefaultVersionRange("[2.0]")));
+        assertFalse(new DefaultVersionRange("[1.0,2.0)").isCompatible(new DefaultVersionRange("(2.0,3.0]")));
+        assertFalse(new DefaultVersionRange("(,2.0)").isCompatible(new DefaultVersionRange("(2.0,)")));
+        assertFalse(new DefaultVersionRange("[1.0]").isCompatible(new DefaultVersionRange("[2.0]")));
     }
 
     @Test
-    public void testGetValue()
+    public void getValue()
     {
-        Assert.assertEquals("[1.0,2.0]", new DefaultVersionRange(new DefaultVersion("1.0"), true, new DefaultVersion(
+        assertEquals("[1.0,2.0]", new DefaultVersionRange(new DefaultVersion("1.0"), true, new DefaultVersion(
             "2.0"), true).getValue());
-        Assert.assertEquals("(1.0,2.0]", new DefaultVersionRange(new DefaultVersion("1.0"), false, new DefaultVersion(
+        assertEquals("(1.0,2.0]", new DefaultVersionRange(new DefaultVersion("1.0"), false, new DefaultVersion(
             "2.0"), true).getValue());
-        Assert.assertEquals("[1.0,2.0)", new DefaultVersionRange(new DefaultVersion("1.0"), true, new DefaultVersion(
+        assertEquals("[1.0,2.0)", new DefaultVersionRange(new DefaultVersion("1.0"), true, new DefaultVersion(
             "2.0"), false).getValue());
-        Assert.assertEquals("(1.0,2.0)", new DefaultVersionRange(new DefaultVersion("1.0"), false, new DefaultVersion(
+        assertEquals("(1.0,2.0)", new DefaultVersionRange(new DefaultVersion("1.0"), false, new DefaultVersion(
             "2.0"), false).getValue());
 
-        Assert
-            .assertEquals("(1.0,)", new DefaultVersionRange(new DefaultVersion("1.0"), false, null, false).getValue());
-        Assert.assertEquals("[1.0,)", new DefaultVersionRange(new DefaultVersion("1.0"), true, null, false).getValue());
-        Assert.assertEquals("(1.0,]", new DefaultVersionRange(new DefaultVersion("1.0"), false, null, true).getValue());
-        Assert.assertEquals("[1.0,]", new DefaultVersionRange(new DefaultVersion("1.0"), true, null, true).getValue());
+        assertEquals("(1.0,)", new DefaultVersionRange(new DefaultVersion("1.0"), false, null, false).getValue());
+        assertEquals("[1.0,)", new DefaultVersionRange(new DefaultVersion("1.0"), true, null, false).getValue());
+        assertEquals("(1.0,]", new DefaultVersionRange(new DefaultVersion("1.0"), false, null, true).getValue());
+        assertEquals("[1.0,]", new DefaultVersionRange(new DefaultVersion("1.0"), true, null, true).getValue());
     }
 
     @Test
     public void testToString()
     {
-        Assert.assertEquals("[1.0,2.0]", new DefaultVersionRange(new DefaultVersion("1.0"), true, new DefaultVersion(
+        assertEquals("[1.0,2.0]", new DefaultVersionRange(new DefaultVersion("1.0"), true, new DefaultVersion(
             "2.0"), true).toString());
     }
 
     @Test
     public void testHashCode() throws InvalidVersionRangeException
     {
-        Assert.assertEquals(new DefaultVersionRange("[1.0,2.0]").hashCode(),
+        assertEquals(new DefaultVersionRange("[1.0,2.0]").hashCode(),
             new DefaultVersionRange("[1.0,2.0]").hashCode());
-        Assert.assertEquals(new DefaultVersionRange("[1.0]").hashCode(),
+        assertEquals(new DefaultVersionRange("[1.0]").hashCode(),
             new DefaultVersionRange("[1.0,1.0]").hashCode());
 
-        Assert.assertNotEquals(new DefaultVersionRange("[1.0,2.0)").hashCode(),
+        assertNotEquals(new DefaultVersionRange("[1.0,2.0)").hashCode(),
             new DefaultVersionRange("[1.0.2.0]").hashCode());
     }
 
     @Test
     public void testEquals() throws InvalidVersionRangeException
     {
-        Assert.assertEquals(new DefaultVersionRange("[1.0,2.0]"), new DefaultVersionRange("[1.0,2.0]"));
-        Assert.assertEquals(new DefaultVersionRange("[1.0]"), new DefaultVersionRange("[1.0,1.0]"));
+        assertEquals(new DefaultVersionRange("[1.0,2.0]"), new DefaultVersionRange("[1.0,2.0]"));
+        assertEquals(new DefaultVersionRange("[1.0]"), new DefaultVersionRange("[1.0,1.0]"));
 
-        Assert.assertNotEquals(new DefaultVersionRange("[1.0,2.0)"), new DefaultVersionRange("[1.0.2.0]"));
+        assertNotEquals(new DefaultVersionRange("[1.0,2.0)"), new DefaultVersionRange("[1.0.2.0]"));
     }
 
     @Test
-    public void testContainsVersion() throws InvalidVersionRangeException
+    public void containsVersion() throws InvalidVersionRangeException
     {
-        Assert.assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new DefaultVersion("1.0")));
-        Assert.assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new DefaultVersion("2.0")));
+        assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new DefaultVersion("1.0")));
+        assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new DefaultVersion("2.0")));
 
-        Assert.assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new DefaultVersion("1.0")));
-        Assert.assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new DefaultVersion("3.0")));
-        Assert.assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("1.0")));
-        Assert.assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("2.0")));
+        assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new DefaultVersion("1.0")));
+        assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new DefaultVersion("3.0")));
+        assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("1.0")));
+        assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("2.0")));
     }
 
-    @Test(expected = InvalidVersionRangeException.class)
-    public void testInvalidVersionRangeWithSingleVersionWithLowerBoundInclusive() throws InvalidVersionRangeException
+    @Test
+    public void invalidVersionRangeWithSingleVersionWithLowerBoundInclusive()
     {
-        new DefaultVersionRange("]1.0]");
+        assertThrows(InvalidVersionRangeException.class, () -> {
+            new DefaultVersionRange("]1.0]");
+        });
     }
 
-    @Test(expected = InvalidVersionRangeException.class)
-    public void testInvalidVersionRangeWithSingleVersionWithUpperBoundInclusive() throws InvalidVersionRangeException
+    @Test
+    public void invalidVersionRangeWithSingleVersionWithUpperBoundInclusive()
     {
-        new DefaultVersionRange("[1.0[");
+        assertThrows(InvalidVersionRangeException.class, () -> {
+            new DefaultVersionRange("[1.0[");
+        });
     }
 
-    @Test(expected = InvalidVersionRangeException.class)
-    public void testInvalidVersionRangeWithRangeMoreThanTwoBound() throws InvalidVersionRangeException
+    @Test
+    public void invalidVersionRangeWithRangeMoreThanTwoBound()
     {
-        new DefaultVersionRange("[1.0,2.0,3.0]");
+        assertThrows(InvalidVersionRangeException.class, () -> {
+            new DefaultVersionRange("[1.0,2.0,3.0]");
+        });
     }
 
-    @Test(expected = InvalidVersionRangeException.class)
-    public void testInvalidVersionRangeWithLowerBoundGreaterThanUpperBound() throws InvalidVersionRangeException
+    @Test
+    public void invalidVersionRangeWithLowerBoundGreaterThanUpperBound()
     {
-        new DefaultVersionRange("[2.0,1.0]");
+        assertThrows(InvalidVersionRangeException.class, () -> {
+            new DefaultVersionRange("[2.0,1.0]");
+        });
     }
 }
