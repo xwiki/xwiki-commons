@@ -134,6 +134,21 @@ public class XWikiDocument
     private List<String> translationVisibilities = new ArrayList<>();
 
     /**
+     * @see #datePresent()
+     */
+    private boolean datePresent;
+
+    /**
+     * @see #contentUpdateDatePresent()
+     */
+    private boolean contentUpdateDatePresent;
+
+    /**
+     * @see #creationDatePresent()
+     */
+    private boolean creationDatePresent;
+
+    /**
      * Parse XML file to extract document information.
      *
      * @param file the xml file
@@ -170,20 +185,7 @@ public class XWikiDocument
 
         Element rootElement = domdoc.getRootElement();
 
-        this.reference = rootElement.attributeValue("reference");
-        if (this.reference == null) {
-            String name = readElement(rootElement, "name");
-            String space = readElement(rootElement, "web");
-
-            // If the reference, name and space don't exist we consider that we're not reading an XML that corresponds
-            // to a wiki page.
-            if (name == null && space == null) {
-                throw new DocumentException(String.format("Content doesn't point to valid wiki page XML",
-                    domdoc.getName()));
-            }
-
-            this.reference = space == null ? name : escapeSpaceOrPageName(space) + '.' + escapeSpaceOrPageName(name);
-        }
+        this.reference = readDocumentReference(domdoc);
 
         this.locale = rootElement.attributeValue("locale");
         if (this.locale == null) {
@@ -204,6 +206,10 @@ public class XWikiDocument
         this.title = readElement(rootElement, "title");
         this.syntaxId = readElement(rootElement, "syntaxId");
 
+        this.datePresent = isElementPresent(rootElement, "date");
+        this.contentUpdateDatePresent = isElementPresent(rootElement, "contentUpdateDate");
+        this.creationDatePresent = isElementPresent(rootElement, "creationDate");
+
         // Does this document contain a XWiki.TranslationDocumentClass xobject?
         if (rootElement.selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']").size() > 0) {
             this.containsTranslations = true;
@@ -217,13 +223,51 @@ public class XWikiDocument
     }
 
     /**
+     * @param domdoc the DOM document containing and XML wiki page
+     * @return the reference of the wiki page
+     * @throws DocumentException if it is not a valid XML wiki page
+     */
+    private static String readDocumentReference(Document domdoc) throws DocumentException
+    {
+        Element rootElement = domdoc.getRootElement();
+
+        String result = rootElement.attributeValue("reference");
+        if (result == null) {
+            String name = readElement(rootElement, "name");
+            String space = readElement(rootElement, "web");
+
+            // If the reference, name and space don't exist we consider that we're not reading an XML that corresponds
+            // to a wiki page.
+            if (name == null && space == null) {
+                throw new DocumentException(
+                    String.format("Content doesn't point to valid wiki page XML", domdoc.getName()));
+            }
+
+            result = space == null ? name : escapeSpaceOrPageName(space) + '.' + escapeSpaceOrPageName(name);
+        }
+
+        return result;
+    }
+
+    /**
+     * @param rootElement the root XML element under which to find the element
+     * @param elementName the name of the element to read
+     * @return {@code true} if the element is present; {@code false} otherwise
+     */
+    public static boolean isElementPresent(Element rootElement, String elementName)
+    {
+        Element element = rootElement.element(elementName);
+        return element != null;
+    }
+
+    /**
      * Read an element from the XML.
      *
      * @param rootElement the root XML element under which to find the element
      * @param elementName the name of the element to read
      * @return null or the element value as a String
      */
-    private String readElement(Element rootElement, String elementName)
+    public static String readElement(Element rootElement, String elementName)
     {
         String result = null;
         Element element = rootElement.element(elementName);
@@ -233,7 +277,7 @@ public class XWikiDocument
         return result;
     }
 
-    private List<Map<String, String>> readAttachmentData(Element rootElement)
+    public static List<Map<String, String>> readAttachmentData(Element rootElement)
     {
         List<Map<String, String>> data = new ArrayList<>();
         for (Object attachmentNode : rootElement.elements("attachment")) {
@@ -429,7 +473,7 @@ public class XWikiDocument
      * @param name the name to escape
      * @return the escaped name
      */
-    private String escapeSpaceOrPageName(String name)
+    public static String escapeSpaceOrPageName(String name)
     {
         return name != null ? name.replaceAll("[\\\\\\.]", "\\\\$0") : null;
     }
@@ -450,5 +494,29 @@ public class XWikiDocument
         }
 
         return doc.getReference();
+    }
+
+    /**
+     * @return {@code true} if the date field is present; false otherwise
+     */
+    public boolean isDatePresent()
+    {
+        return datePresent;
+    }
+
+    /**
+     * @return {@code true} if the contentUpdateDate field is present; false otherwise
+     */
+    public boolean isContentUpdateDatePresent()
+    {
+        return contentUpdateDatePresent;
+    }
+
+    /**
+     * @return {@code true} if the creationDate field is present; false otherwise
+     */
+    public boolean isCreationeDatePresent()
+    {
+        return creationDatePresent;
     }
 }

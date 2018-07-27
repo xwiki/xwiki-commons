@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -72,12 +73,28 @@ public class VerifyMojo extends AbstractVerifyMojo
     private boolean skip;
 
     /**
-     * Disables the plugin execution.
+     * Disables the translations visibility check.
      *
      * @since 4.3M1
      */
     @Parameter(property = "xar.verify.translationVisibility.skip", defaultValue = "false")
     private boolean translationVisibilitySkip;
+
+    /**
+     * Disables the check for the existence of the date fields.
+     *
+     * @since 10.7M1
+     */
+    @Parameter(property = "xar.dates.skip", defaultValue = "false")
+    private boolean skipDates;
+
+    /**
+     * Disables the check for the existence of the date fields.
+     *
+     * @since 10.7M1
+     */
+    @Parameter(property = "xar.dates.skip.documentList")
+    private Set<String> skipDatesDocumentList;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
@@ -176,6 +193,11 @@ public class VerifyMojo extends AbstractVerifyMojo
             // Verification 12: Verify that  attachments have a mimetype set.
             verifyAttachmentMimetypes(errors, xdoc.getAttachmentData());
 
+            // Verification 13: Verify that date fields are not set.
+            if (!skipDates) {
+                verifyDateFields(errors, xdoc);
+            }
+
             // Display errors
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
@@ -196,6 +218,23 @@ public class VerifyMojo extends AbstractVerifyMojo
         if (this.formatLicense) {
             getLog().info("Checking for missing XAR XML license headers...");
             executeLicenseGoal("check");
+        }
+    }
+
+    private void verifyDateFields(List<String> errors, XWikiDocument xdoc)
+    {
+        if (!skipDatesDocumentList.contains(xdoc.getReference())) {
+            if (xdoc.isDatePresent()) {
+                errors.add("'date' field is present");
+            }
+
+            if (xdoc.isContentUpdateDatePresent()) {
+                errors.add("'contentUpdateDate' field is present");
+            }
+
+            if (xdoc.isCreationeDatePresent()) {
+                errors.add("'creationDate' field is present");
+            }
         }
     }
 
