@@ -277,6 +277,10 @@ public class XWikiDocument
         return result;
     }
 
+    /**
+     * @param rootElement the root element of the XML document
+     * @return the list of data for each attachment
+     */
     public static List<Map<String, String>> readAttachmentData(Element rootElement)
     {
         List<Map<String, String>> data = new ArrayList<>();

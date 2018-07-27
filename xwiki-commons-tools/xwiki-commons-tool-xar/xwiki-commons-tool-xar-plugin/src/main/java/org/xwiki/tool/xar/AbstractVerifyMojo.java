@@ -107,6 +107,22 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     protected Properties titles;
 
     /**
+     * Disables the check for the existence of the date fields.
+     *
+     * @since 10.7RC1
+     */
+    @Parameter(property = "xar.dates.skip", defaultValue = "false")
+    protected boolean skipDates;
+
+    /**
+     * Disables the check for the existence of the date fields.
+     *
+     * @since 10.7RC1
+     */
+    @Parameter(property = "xar.dates.skip.documentList")
+    protected Set<String> skipDatesDocumentList;
+
+    /**
      * Explicitly define a list of pages (it's a regex) that should be considered as content pages (rather than
      * technical pages). Note that content pages must have a non empty default language specified and note that if a
      * page is not in this list and it doesn't have any translation then it's considered by default to be a technical
@@ -132,22 +148,6 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      */
     @Parameter(property = "session", required = true, readonly = true)
     private MavenSession mavenSession;
-
-    /**
-     * Disables the check for the existence of the date fields.
-     *
-     * @since 10.7RC1
-     */
-    @Parameter(property = "xar.dates.skip", defaultValue = "false")
-    protected boolean skipDates;
-
-    /**
-     * Disables the check for the existence of the date fields.
-     *
-     * @since 10.7RC1
-     */
-    @Parameter(property = "xar.dates.skip.documentList")
-    protected Set<String> skipDatesDocumentList;
 
     /**
      * The Maven BuildPluginManager component.
