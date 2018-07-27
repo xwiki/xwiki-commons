@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -79,22 +78,6 @@ public class VerifyMojo extends AbstractVerifyMojo
      */
     @Parameter(property = "xar.verify.translationVisibility.skip", defaultValue = "false")
     private boolean translationVisibilitySkip;
-
-    /**
-     * Disables the check for the existence of the date fields.
-     *
-     * @since 10.7M1
-     */
-    @Parameter(property = "xar.dates.skip", defaultValue = "false")
-    private boolean skipDates;
-
-    /**
-     * Disables the check for the existence of the date fields.
-     *
-     * @since 10.7M1
-     */
-    @Parameter(property = "xar.dates.skip.documentList")
-    private Set<String> skipDatesDocumentList;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException
