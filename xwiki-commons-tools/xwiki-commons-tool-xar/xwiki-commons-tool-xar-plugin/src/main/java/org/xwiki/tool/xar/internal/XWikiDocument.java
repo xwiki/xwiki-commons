@@ -227,7 +227,7 @@ public class XWikiDocument
      * @return the reference of the wiki page
      * @throws DocumentException if it is not a valid XML wiki page
      */
-    private static String readDocumentReference(Document domdoc) throws DocumentException
+    public static String readDocumentReference(Document domdoc) throws DocumentException
     {
         Element rootElement = domdoc.getRootElement();
 

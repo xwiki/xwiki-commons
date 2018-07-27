@@ -39,6 +39,7 @@ import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionScheme;
+import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
  * Pretty prints and set valid authors and version to XAR XML files.
@@ -170,12 +171,39 @@ public class FormatMojo extends AbstractVerifyMojo
         if (isTechnicalPage(fileName)) {
             element.setText("true");
         }
+
+        // Remove date fields
+        String documentName = "";
+        try {
+            documentName = XWikiDocument.readDocumentReference(domdoc);
+        } catch (DocumentException e) {
+            getLog().error("Failed to get the document reference", e);
+        }
+        if (!this.skipDates && !this.skipDatesDocumentList.contains(documentName)) {
+            removeNode("xwikidoc/creationDate", domdoc);
+            removeNode("xwikidoc/date", domdoc);
+            removeNode("xwikidoc/contentUpdateDate", domdoc);
+        }
     }
 
     private void removeContent(Element element)
     {
         if (element.hasContent()) {
             element.content().get(0).detach();
+        }
+    }
+
+    /**
+     * Remove the node if found with the xpath expression
+     *
+     * @param xpathExpression the xpath expression of the node
+     * @param domdoc The dom document
+     */
+    private void removeNode(String xpathExpression, Document domdoc)
+    {
+        Node node = domdoc.selectSingleNode(xpathExpression);
+        if (node != null) {
+            node.detach();
         }
     }
 }

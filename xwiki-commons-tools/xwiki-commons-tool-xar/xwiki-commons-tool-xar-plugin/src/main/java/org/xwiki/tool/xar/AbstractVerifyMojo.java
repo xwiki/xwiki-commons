@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -131,6 +132,22 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
      */
     @Parameter(property = "session", required = true, readonly = true)
     private MavenSession mavenSession;
+
+    /**
+     * Disables the check for the existence of the date fields.
+     *
+     * @since 10.7RC1
+     */
+    @Parameter(property = "xar.dates.skip", defaultValue = "false")
+    protected boolean skipDates;
+
+    /**
+     * Disables the check for the existence of the date fields.
+     *
+     * @since 10.7RC1
+     */
+    @Parameter(property = "xar.dates.skip.documentList")
+    protected Set<String> skipDatesDocumentList;
 
     /**
      * The Maven BuildPluginManager component.
