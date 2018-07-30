@@ -2219,6 +2219,12 @@
               <mutationThreshold>${xwiki.pitest.mutationThreshold}</mutationThreshold>
               <mutationEngine>descartes</mutationEngine>
               <threads>4</threads>
+              <outputFormats>
+                <value>HTML</value>
+                <value>JSON</value>
+                <value>METHODS</value>
+                <value>ISSUES</value>
+              </outputFormats>
               <!-- List of mutations we want to run for each test -->
               <mutators>
                 <mutator>void</mutator>
@@ -2253,7 +2259,7 @@
               <dependency>
                 <groupId>eu.stamp-project</groupId>
                 <artifactId>descartes</artifactId>
-                <version>1.2.2</version>
+                <version>1.2.4</version>
               </dependency>
             </dependencies>
           </plugin>
