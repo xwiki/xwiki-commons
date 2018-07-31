@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -180,9 +181,10 @@ public class FormatMojo extends AbstractVerifyMojo
             getLog().error("Failed to get the document reference", e);
         }
         if (!this.skipDates && !this.skipDatesDocumentList.contains(documentName)) {
-            removeNode("xwikidoc/creationDate", domdoc);
-            removeNode("xwikidoc/date", domdoc);
-            removeNode("xwikidoc/contentUpdateDate", domdoc);
+            removeNodes("xwikidoc/creationDate", domdoc);
+            removeNodes("xwikidoc/date", domdoc);
+            removeNodes("xwikidoc/contentUpdateDate", domdoc);
+            removeNodes("xwikidoc//attachment/date", domdoc);
         }
     }
 
@@ -194,15 +196,15 @@ public class FormatMojo extends AbstractVerifyMojo
     }
 
     /**
-     * Remove the node if found with the xpath expression
+     * Remove the nodes found with the xpath expression.
      *
-     * @param xpathExpression the xpath expression of the node
-     * @param domdoc The dom document
+     * @param xpathExpression the xpath expression of the nodes
+     * @param domdoc The DOM document
      */
-    private void removeNode(String xpathExpression, Document domdoc)
+    private void removeNodes(String xpathExpression, Document domdoc)
     {
-        Node node = domdoc.selectSingleNode(xpathExpression);
-        if (node != null) {
+        List<Node> nodes = domdoc.selectNodes(xpathExpression);
+        for (Node node : nodes) {
             node.detach();
         }
     }

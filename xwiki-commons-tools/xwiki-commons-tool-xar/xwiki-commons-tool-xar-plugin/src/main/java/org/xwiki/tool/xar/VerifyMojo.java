@@ -218,6 +218,10 @@ public class VerifyMojo extends AbstractVerifyMojo
             if (xdoc.isCreationeDatePresent()) {
                 errors.add("'creationDate' field is present");
             }
+
+            if (xdoc.isAttachmentDatePresent()) {
+                errors.add("'attachment/date' field is present");
+            }
         }
     }
 

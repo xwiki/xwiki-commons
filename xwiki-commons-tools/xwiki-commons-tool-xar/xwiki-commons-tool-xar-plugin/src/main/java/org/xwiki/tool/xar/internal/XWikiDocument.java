@@ -149,6 +149,11 @@ public class XWikiDocument
     private boolean creationDatePresent;
 
     /**
+     * @see #isAttachmentDatePresent()
+     */
+    private boolean attachmentDatePresent;
+
+    /**
      * Parse XML file to extract document information.
      *
      * @param file the xml file
@@ -209,6 +214,7 @@ public class XWikiDocument
         this.datePresent = isElementPresent(rootElement, "date");
         this.contentUpdateDatePresent = isElementPresent(rootElement, "contentUpdateDate");
         this.creationDatePresent = isElementPresent(rootElement, "creationDate");
+        this.attachmentDatePresent = rootElement.selectSingleNode("//attachment/date") != null;
 
         // Does this document contain a XWiki.TranslationDocumentClass xobject?
         if (rootElement.selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']").size() > 0) {
@@ -522,5 +528,13 @@ public class XWikiDocument
     public boolean isCreationeDatePresent()
     {
         return creationDatePresent;
+    }
+
+    /**
+     * @return {@code true} if the date field is present for an attachment; false otherwise
+     */
+    public boolean isAttachmentDatePresent()
+    {
+        return attachmentDatePresent;
     }
 }
