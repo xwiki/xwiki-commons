@@ -119,6 +119,10 @@ public class TestResources
     public static final ExtensionId REMOTE_WITH_OVERWRITTEN_MANAGED_DEPENDENY_ID =
         new ExtensionId("rwithoverwrittenmanageddependency", "version");
 
+    public static final ExtensionId REMOTE_CROSSDEPENDENCY1 = new ExtensionId("crossdependency1", "version");
+
+    public static final ExtensionId REMOTE_CROSSDEPENDENCY2 = new ExtensionId("crossdependency2", "version");
+
     // Methods
 
     public void init(InstalledExtensionRepository installedExtensionRepository) throws ResolveException

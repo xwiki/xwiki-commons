@@ -26,8 +26,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.xwiki.extension.CoreExtension;
@@ -129,6 +131,23 @@ public final class ExtensionUtils
         }
 
         return newManagedDependencies;
+    }
+
+    /**
+     * "add" an object in a readonly {@link Set}. This method return a new Set which contains the passed set and object
+     * to add.
+     * 
+     * @param readonly the {@link Set} to add an object to
+     * @param obj the object to add
+     * @return the new {@link Set}
+     */
+    public static <T> Set<T> append(Set<T> readonly, T obj)
+    {
+        Set<T> writable = readonly != null ? new HashSet<>(readonly) : new HashSet<>();
+
+        writable.add(obj);
+
+        return writable;
     }
 
     /**
