@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extension>
+  <id>crossdependency1</id>
+  <version>version</version>
+  <type>test</type>
+  <dependencies>
+    <dependency>
+      <id>crossdependency2</id>
+      <version>version</version>
+    </dependency>
+  </dependencies>
+</extension>
