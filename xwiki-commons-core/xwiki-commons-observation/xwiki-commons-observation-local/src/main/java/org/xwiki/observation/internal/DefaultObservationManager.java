@@ -183,7 +183,7 @@ public class DefaultObservationManager implements ObservationManager
             removeListener(eventListener.getName());
 
             this.logger.warn(
-                "The [{}] listener is overwritting a previously "
+                "The [{}] listener is overwriting a previously "
                     + "registered listener [{}] since they both are registered under the same id [{}]. "
                     + "In the future consider removing a Listener first if you really want to register it again.",
                 new Object[] { eventListener.getClass().getName(), previousListener.getClass().getName(),

@@ -203,7 +203,7 @@ public class ObservationManagerTest
         this.mocker.getComponentUnderTest().addListener(listener);
 
         final Logger logger = this.mocker.getMockedLogger();
-        verify(logger).warn(contains("listener is overwritting a previously registered listener"), any(), any(), any());
+        verify(logger).warn(contains("listener is overwriting a previously registered listener"), any(), any(), any());
 
         // Verify that no log is logged if we remove the listener before re-registering it
         this.mocker.getComponentUnderTest().removeListener("mylistener");
