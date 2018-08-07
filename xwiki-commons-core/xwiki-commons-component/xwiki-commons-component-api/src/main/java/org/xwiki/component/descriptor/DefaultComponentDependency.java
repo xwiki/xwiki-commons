@@ -122,7 +122,7 @@ public class DefaultComponentDependency<T> extends DefaultComponentRole<T> imple
             if (object == null || object.getClass() != getClass()) {
                 result = false;
             } else {
-                // object must be Syntax at this point
+                // object must be ComponentDependency at this point
                 result = equals((ComponentDependency) object);
             }
         }
