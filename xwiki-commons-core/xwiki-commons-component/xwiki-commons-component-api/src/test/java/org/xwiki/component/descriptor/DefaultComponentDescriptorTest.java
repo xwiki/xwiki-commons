@@ -120,5 +120,17 @@ public class DefaultComponentDescriptorTest
         cd8.addComponentDependency(dep3);
 
         assertNotEquals(cd7, cd8);
+
+        // Indirectly verify DefaultComponentDependency.equals() when it's not equals
+        DefaultComponentDescriptor cd9 = new DefaultComponentDescriptor();
+        cd9.setImplementation(ImplRole.class);
+        cd9.setRoleType(Role.class);
+        cd9.setRoleHint("hint");
+        DefaultComponentDependency dep4 = new DefaultComponentDependency();
+        dep4.setName("name2");
+        dep4.setRoleType(String.class);
+        cd9.addComponentDependency(dep4);
+
+        assertNotEquals(cd6, cd9);
     }
 }

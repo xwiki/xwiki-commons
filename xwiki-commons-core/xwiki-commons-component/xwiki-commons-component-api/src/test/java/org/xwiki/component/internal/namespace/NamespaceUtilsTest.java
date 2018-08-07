@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.component.namespace.Namespace;
 import org.xwiki.component.namespace.NamespaceUtils;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -52,5 +53,21 @@ public class NamespaceUtilsTest
         assertEquals(new Namespace("t:pe", "val\\ue"), NamespaceUtils.toNamespace("t\\:pe:val\\ue"));
         assertEquals(new Namespace("", "value"), NamespaceUtils.toNamespace(":value"));
         assertEquals(Namespace.ROOT, NamespaceUtils.toNamespace("{}"));
+    }
+
+    @Test
+    public void testEquals()
+    {
+        Namespace ns1 = new Namespace("type1", "value1");
+        assertEquals(ns1, ns1);
+
+        Namespace ns2 = new Namespace("type2", "value1");
+        assertNotEquals(ns1, ns2);
+
+        Namespace ns3 = new Namespace("type1", "value2");
+        assertNotEquals(ns1, ns3);
+
+        Namespace ns4 = new Namespace("type1", "value1");
+        assertEquals(ns1, ns4);
     }
 }
