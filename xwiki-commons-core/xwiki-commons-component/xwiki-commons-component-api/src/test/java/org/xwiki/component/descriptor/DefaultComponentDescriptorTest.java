@@ -19,8 +19,10 @@
  */
 package org.xwiki.component.descriptor;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Unit tests for {@link DefaultComponentDescriptor}.
@@ -54,28 +56,28 @@ public class DefaultComponentDescriptorTest
         cd1.setRoleType(Role.class);
         cd1.setRoleHint("hint");
 
-        Assert.assertEquals(cd1, cd1);
+        assertEquals(cd1, cd1);
 
         DefaultComponentDescriptor cd2 = new DefaultComponentDescriptor();
         cd2.setImplementation(ImplRole.class);
         cd2.setRoleType(Role.class);
         cd2.setRoleHint("hint");
 
-        Assert.assertEquals(cd1, cd2);
+        assertEquals(cd1, cd2);
 
         DefaultComponentDescriptor cd3 = new DefaultComponentDescriptor();
         cd3.setImplementation(ImplRole.class);
         cd3.setRoleType(OtherRole.class);
         cd3.setRoleHint("hint");
 
-        Assert.assertFalse(cd1.equals(cd3));
+        assertFalse(cd1.equals(cd3));
 
         DefaultComponentDescriptor cd4 = new DefaultComponentDescriptor();
         cd4.setImplementation(ImplOtherRole.class);
         cd4.setRoleType(Role.class);
         cd4.setRoleHint("hint");
 
-        Assert.assertFalse(cd1.equals(cd4));
+        assertFalse(cd1.equals(cd4));
 
         DefaultComponentDescriptor cd5 = new DefaultComponentDescriptor();
         cd5.setImplementation(ImplRole.class);
@@ -83,7 +85,7 @@ public class DefaultComponentDescriptorTest
         cd5.setRoleHint("hint");
         cd5.setInstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP);
 
-        Assert.assertFalse(cd1.equals(cd5));
+        assertFalse(cd1.equals(cd5));
 
         DefaultComponentDescriptor cd6 = new DefaultComponentDescriptor();
         cd6.setImplementation(ImplRole.class);
@@ -94,7 +96,7 @@ public class DefaultComponentDescriptorTest
         dep.setMappingType(String.class);
         cd6.addComponentDependency(dep);
 
-        Assert.assertFalse(cd1.equals(cd6));
+        assertFalse(cd1.equals(cd6));
 
         DefaultComponentDescriptor cd7 = new DefaultComponentDescriptor();
         cd7.setImplementation(ImplRole.class);
@@ -105,7 +107,7 @@ public class DefaultComponentDescriptorTest
         dep2.setMappingType(String.class);
         cd7.addComponentDependency(dep2);
 
-        Assert.assertEquals(cd6, cd7);
+        assertEquals(cd6, cd7);
 
         DefaultComponentDescriptor cd8 = new DefaultComponentDescriptor();
         cd8.setImplementation(ImplRole.class);
@@ -117,6 +119,6 @@ public class DefaultComponentDescriptorTest
         cd8.addComponentDependency(dep3);
         cd8.addComponentDependency(dep3);
 
-        Assert.assertFalse(cd7.equals(cd8));
+        assertFalse(cd7.equals(cd8));
     }
 }

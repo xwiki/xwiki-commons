@@ -21,11 +21,13 @@ package org.xwiki.component.internal.namespace;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.namespace.NamespaceNotAllowedException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link DefaultNamespaceValidator}.
@@ -35,8 +37,6 @@ import static org.junit.Assert.assertTrue;
 public class DefaultNamespaceValidatorTest
 {
     private DefaultNamespaceValidator validator = new DefaultNamespaceValidator();
-
-    // Tests
 
     @Test
     public void isAllowed()
@@ -59,9 +59,12 @@ public class DefaultNamespaceValidatorTest
         this.validator.checkAllowed(Arrays.asList("namespace"), "namespace");
     }
 
-    @Test(expected = NamespaceNotAllowedException.class)
-    public void checkNoAllowed() throws NamespaceNotAllowedException
+    @Test
+    public void checkNoAllowed()
     {
-        this.validator.checkAllowed(Arrays.asList("namespace"), "wrong");
+        Throwable exception = assertThrows(NamespaceNotAllowedException.class, () -> {
+            this.validator.checkAllowed(Arrays.asList("namespace"), "wrong");
+        });
+        assertEquals("Allowed namespace list [[namespace]] does not matches namespace [wrong]", exception.getMessage());
     }
 }

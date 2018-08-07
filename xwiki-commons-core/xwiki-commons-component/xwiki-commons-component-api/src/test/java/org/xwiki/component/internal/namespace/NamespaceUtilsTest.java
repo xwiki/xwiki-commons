@@ -19,12 +19,12 @@
  */
 package org.xwiki.component.internal.namespace;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.namespace.Namespace;
 import org.xwiki.component.namespace.NamespaceUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Validate {@link NamespaceUtils}.

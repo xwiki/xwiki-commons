@@ -19,8 +19,10 @@
  */
 package org.xwiki.component.descriptor;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Unit tests for {@link DefaultComponentRole}.
@@ -45,24 +47,24 @@ public class DefaultComponentRoleTest
         cr1.setRoleType(Role.class);
         cr1.setRoleHint("hint");
 
-        Assert.assertEquals(cr1, cr1);
+        assertEquals(cr1, cr1);
 
         DefaultComponentRole cr2 = new DefaultComponentRole();
         cr2.setRoleType(Role.class);
         cr2.setRoleHint("hint");
 
-        Assert.assertEquals(cr1, cr2);
+        assertEquals(cr1, cr2);
 
         DefaultComponentRole cr3 = new DefaultComponentRole();
         cr3.setRoleType(Role.class);
         cr3.setRoleHint("other");
 
-        Assert.assertFalse(cr1.equals(cr3));
+        assertFalse(cr1.equals(cr3));
 
         DefaultComponentRole cr4 = new DefaultComponentRole();
         cr4.setRoleType(OtherRole.class);
         cr4.setRoleHint("hint");
 
-        Assert.assertFalse(cr1.equals(cr4));
+        assertFalse(cr1.equals(cr4));
     }
 }
