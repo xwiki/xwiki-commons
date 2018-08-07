@@ -22,11 +22,11 @@ package org.xwiki.component.descriptor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Unit tests for {@link DefaultComponentDescriptor}.
- * 
+ *
  * @version $Id$
  * @since 3.3M1
  */
@@ -43,7 +43,7 @@ public class DefaultComponentDescriptorTest
     private class ImplRole
     {
     }
-    
+
     private class ImplOtherRole
     {
     }
@@ -70,14 +70,14 @@ public class DefaultComponentDescriptorTest
         cd3.setRoleType(OtherRole.class);
         cd3.setRoleHint("hint");
 
-        assertFalse(cd1.equals(cd3));
+        assertNotEquals(cd1, cd3);
 
         DefaultComponentDescriptor cd4 = new DefaultComponentDescriptor();
         cd4.setImplementation(ImplOtherRole.class);
         cd4.setRoleType(Role.class);
         cd4.setRoleHint("hint");
 
-        assertFalse(cd1.equals(cd4));
+        assertNotEquals(cd1, cd4);
 
         DefaultComponentDescriptor cd5 = new DefaultComponentDescriptor();
         cd5.setImplementation(ImplRole.class);
@@ -85,7 +85,7 @@ public class DefaultComponentDescriptorTest
         cd5.setRoleHint("hint");
         cd5.setInstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP);
 
-        assertFalse(cd1.equals(cd5));
+        assertNotEquals(cd1, cd5);
 
         DefaultComponentDescriptor cd6 = new DefaultComponentDescriptor();
         cd6.setImplementation(ImplRole.class);
@@ -96,7 +96,7 @@ public class DefaultComponentDescriptorTest
         dep.setMappingType(String.class);
         cd6.addComponentDependency(dep);
 
-        assertFalse(cd1.equals(cd6));
+        assertNotEquals(cd1, cd6);
 
         DefaultComponentDescriptor cd7 = new DefaultComponentDescriptor();
         cd7.setImplementation(ImplRole.class);
@@ -119,6 +119,6 @@ public class DefaultComponentDescriptorTest
         cd8.addComponentDependency(dep3);
         cd8.addComponentDependency(dep3);
 
-        assertFalse(cd7.equals(cd8));
+        assertNotEquals(cd7, cd8);
     }
 }
