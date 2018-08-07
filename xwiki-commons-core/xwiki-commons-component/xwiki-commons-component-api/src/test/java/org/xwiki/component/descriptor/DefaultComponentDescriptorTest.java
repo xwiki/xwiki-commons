@@ -93,7 +93,7 @@ public class DefaultComponentDescriptorTest
         cd6.setRoleHint("hint");
         DefaultComponentDependency dep = new DefaultComponentDependency();
         dep.setName("name");
-        dep.setMappingType(String.class);
+        dep.setRoleType(String.class);
         cd6.addComponentDependency(dep);
 
         assertNotEquals(cd1, cd6);
@@ -104,7 +104,7 @@ public class DefaultComponentDescriptorTest
         cd7.setRoleHint("hint");
         DefaultComponentDependency dep2 = new DefaultComponentDependency();
         dep2.setName("name");
-        dep2.setMappingType(String.class);
+        dep2.setRoleType(String.class);
         cd7.addComponentDependency(dep2);
 
         assertEquals(cd6, cd7);
@@ -115,7 +115,7 @@ public class DefaultComponentDescriptorTest
         cd8.setRoleHint("hint");
         DefaultComponentDependency dep3 = new DefaultComponentDependency();
         dep3.setName("name");
-        dep3.setMappingType(String.class);
+        dep3.setRoleType(String.class);
         cd8.addComponentDependency(dep3);
         cd8.addComponentDependency(dep3);
 
