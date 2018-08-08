@@ -104,24 +104,30 @@ public class UnstableAnnotationCheck extends AbstractCheck
         if (AnnotationUtility.containsAnnotation(ast)) {
             DetailAST holder = AnnotationUtility.getAnnotationHolder(ast);
             for (DetailAST annotation : findAllTokens(holder, TokenTypes.ANNOTATION)) {
-                String annotationName = annotation.findFirstToken(TokenTypes.IDENT).getText();
-                if (annotationName.equals("Unstable")) {
-                    FileContents contents = getFileContents();
-                    String annotatedElementName = ast.findFirstToken(TokenTypes.IDENT).getText();
-                    // Get the Javadoc before the annotation in order to locate a @Since annotation and to extract
-                    // the XWiki version mentioned there.
-                    List<String> sinceVersions = Collections.emptyList();
-                    TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
-                    if (cmt != null) {
-                        sinceVersions = extractSinceVersionsFromJavadoc(cmt.getText(), annotation, annotatedElementName);
+                DetailAST detail = annotation.findFirstToken(TokenTypes.IDENT);
+                if (detail != null) {
+                    String annotationName = detail.getText();
+                    if (annotationName.equals("Unstable")) {
+                        FileContents contents = getFileContents();
+                        String annotatedElementName = ast.findFirstToken(TokenTypes.IDENT).getText();
+                        // Get the Javadoc before the annotation in order to locate a @Since annotation and to extract
+                        // the XWiki version mentioned there.
+                        List<String> sinceVersions = Collections.emptyList();
+                        TextBlock cmt = contents.getJavadocBefore(ast.getLineNo());
+                        if (cmt != null) {
+                            sinceVersions =
+                                extractSinceVersionsFromJavadoc(cmt.getText(), annotation, annotatedElementName);
+                        }
+                        if (sinceVersions.isEmpty()) {
+                            log(annotation.getLineNo(), annotation.getColumnNo(),
+                                String.format(
+                                    "There is an @Unstable "
+                                        + "annotation for [%s] but the @since javadoc tag is missing, you must add it!",
+                                    computeElementName(annotatedElementName)));
+                            return;
+                        }
+                        checkSinceVersions(sinceVersions, annotation, annotatedElementName);
                     }
-                    if (sinceVersions.isEmpty()) {
-                        log(annotation.getLineNo(), annotation.getColumnNo(), String.format("There is an @Unstable "
-                            + "annotation for [%s] but the @since javadoc tag is missing, you must add it!",
-                            computeElementName(annotatedElementName)));
-                        return;
-                    }
-                    checkSinceVersions(sinceVersions, annotation, annotatedElementName);
                 }
             }
         }
