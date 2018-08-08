@@ -25,13 +25,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.xwiki.job.event.status.JobStatus;
 import org.xwiki.job.internal.xstream.SafeXStream;
 
@@ -74,17 +74,28 @@ public class JobStatusSerializer
     {
         File tempFile = File.createTempFile(file.getName(), ".tmp");
 
-        FileOutputStream stream = FileUtils.openOutputStream(tempFile);
-
-        try {
+        try (FileOutputStream stream = FileUtils.openOutputStream(tempFile)) {
             write(status, stream);
-        } finally {
-            IOUtils.closeQuietly(stream);
         }
 
         // Copy the file to its final destination
         file.mkdirs();
-        Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        for (int i = 0; i < 10; ++i) {
+            try {
+                Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                // Stop the retry loop if it succeeded
+                break;
+            } catch (FileAlreadyExistsException e) {
+                // Yes it sounds pretty weird but it can happen so we try 10 times before giving up
+                // We a bit before retrying
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ei) {
+                    throw e;
+                }
+            }
+        }
     }
 
     /**
