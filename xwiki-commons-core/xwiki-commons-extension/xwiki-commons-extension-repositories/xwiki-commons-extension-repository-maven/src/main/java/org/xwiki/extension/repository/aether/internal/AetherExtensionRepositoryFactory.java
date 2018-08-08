@@ -24,6 +24,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.eclipse.aether.RepositorySystem;
@@ -88,9 +89,17 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
             RemoteRepository.Builder aetherRepositoryBuilder = new RemoteRepository.Builder(
                 repositoryDescriptor.getId(), "default", repositoryDescriptor.getURI().toString());
 
-            // Don't use cached data
-            aetherRepositoryBuilder.setPolicy(new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_ALWAYS,
-                RepositoryPolicy.CHECKSUM_POLICY_WARN));
+            // Checksum policy
+            String checksumPolicy = repositoryDescriptor.getProperty("checksumPolicy");
+            if (StringUtils.isEmpty(checksumPolicy)) {
+                checksumPolicy = RepositoryPolicy.CHECKSUM_POLICY_WARN;
+            }
+
+            // Update policy
+            String updatePolicy = RepositoryPolicy.UPDATE_POLICY_ALWAYS;
+
+            // Don't cached SNAPSHOTs
+            aetherRepositoryBuilder.setPolicy(new RepositoryPolicy(true, updatePolicy, checksumPolicy));
 
             // Authentication
             String username = repositoryDescriptor.getProperty("auth.user");
