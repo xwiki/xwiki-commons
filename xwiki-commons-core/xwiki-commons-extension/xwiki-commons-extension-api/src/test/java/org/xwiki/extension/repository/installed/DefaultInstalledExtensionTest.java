@@ -24,19 +24,28 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.repository.internal.installed.DefaultInstalledExtension;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Validate {@link DefaultInstalledExtension}.
+ * 
+ * @version $Id$
+ */
 public class DefaultInstalledExtensionTest
 {
     private DefaultInstalledExtension installedExtension;
 
-    @Before
-    public void setUp()
+    @BeforeEach
+    public void beforeEach()
     {
         DefaultLocalExtension localExtension =
             new DefaultLocalExtension(null, new ExtensionId("installed", "version"), "type");
@@ -44,129 +53,164 @@ public class DefaultInstalledExtensionTest
     }
 
     @Test
-    public void testIsInstalled()
+    public void isInstalled()
     {
-        Assert.assertFalse(this.installedExtension.isInstalled());
-        Assert.assertFalse(this.installedExtension.isInstalled("namespace"));
+        assertFalse(this.installedExtension.isInstalled());
+        assertFalse(this.installedExtension.isInstalled("namespace"));
 
         this.installedExtension.setInstalled(true);
 
-        Assert.assertTrue(this.installedExtension.isInstalled());
-        Assert.assertTrue(this.installedExtension.isInstalled("namespace"));
+        assertTrue(this.installedExtension.isInstalled());
+        assertTrue(this.installedExtension.isInstalled("namespace"));
 
         this.installedExtension.setInstalled(true, "namespace");
 
-        Assert.assertTrue(this.installedExtension.isInstalled());
-        Assert.assertTrue(this.installedExtension.isInstalled("namespace"));
+        assertTrue(this.installedExtension.isInstalled());
+        assertTrue(this.installedExtension.isInstalled("namespace"));
 
         this.installedExtension.setInstalled(false);
 
-        Assert.assertFalse(this.installedExtension.isInstalled());
-        Assert.assertFalse(this.installedExtension.isInstalled("namespace"));
+        assertFalse(this.installedExtension.isInstalled());
+        assertFalse(this.installedExtension.isInstalled("namespace"));
     }
 
     @Test
-    public void testIsValid()
+    public void isValid()
     {
-        Assert.assertTrue(this.installedExtension.isValid(null));
-        Assert.assertTrue(this.installedExtension.isValid("namespace"));
+        assertTrue(this.installedExtension.isValid(null));
+        assertTrue(this.installedExtension.isValid("namespace"));
 
         this.installedExtension.setValid(null, false);
 
-        Assert.assertFalse(this.installedExtension.isValid(null));
-        Assert.assertTrue(this.installedExtension.isValid("namespace"));
-    }
+        assertFalse(this.installedExtension.isValid(null));
+        assertTrue(this.installedExtension.isValid("namespace"));
 
-    @Test
-    public void testIsDependency()
-    {
-        Assert.assertFalse(this.installedExtension.isDependency());
-        Assert.assertFalse(this.installedExtension.isDependency("namespace"));
+        this.installedExtension.setValid("namespace", false);
 
-        this.installedExtension.setInstalled(true);
-
-        Assert.assertFalse(this.installedExtension.isDependency());
-        Assert.assertFalse(this.installedExtension.isDependency("namespace"));
-
-        this.installedExtension.setDependency(true, null);
-
-        Assert.assertTrue(this.installedExtension.isDependency());
-        Assert.assertTrue(this.installedExtension.isDependency("namespace"));
+        assertFalse(this.installedExtension.isValid(null));
+        assertFalse(this.installedExtension.isValid("namespace"));
 
         this.installedExtension.setInstalled(true, "namespace");
 
-        Assert.assertFalse(this.installedExtension.isDependency("namespace"));
+        assertFalse(this.installedExtension.isValid(null));
+        assertTrue(this.installedExtension.isValid("namespace"));
+
+        this.installedExtension.setValid("namespace", false);
+
+        assertFalse(this.installedExtension.isValid(null));
+        assertFalse(this.installedExtension.isValid("namespace"));
+
+        this.installedExtension.setInstalled(false, "namespace");
+
+        assertFalse(this.installedExtension.isValid(null));
+        assertTrue(this.installedExtension.isValid("namespace"));
+    }
+
+    @Test
+    public void isDependency()
+    {
+        assertFalse(this.installedExtension.isDependency());
+        assertFalse(this.installedExtension.isDependency("namespace"));
+
+        this.installedExtension.setInstalled(true);
+
+        assertFalse(this.installedExtension.isDependency());
+        assertFalse(this.installedExtension.isDependency("namespace"));
+
+        this.installedExtension.setDependency(true, null);
+
+        assertTrue(this.installedExtension.isDependency());
+        assertTrue(this.installedExtension.isDependency("namespace"));
+
+        this.installedExtension.setInstalled(true, "namespace");
+
+        assertFalse(this.installedExtension.isDependency("namespace"));
 
         this.installedExtension.setDependency(true, "namespace");
 
-        Assert.assertTrue(this.installedExtension.isDependency("namespace"));
+        assertTrue(this.installedExtension.isDependency("namespace"));
 
         this.installedExtension.setDependency(false, "namespace");
 
-        Assert.assertFalse(this.installedExtension.isDependency("namespace"));
+        assertFalse(this.installedExtension.isDependency("namespace"));
 
         this.installedExtension.setDependency(false, null);
         this.installedExtension.setDependency(true, "namespace");
 
-        Assert.assertTrue(this.installedExtension.isDependency("namespace"));
+        assertTrue(this.installedExtension.isDependency("namespace"));
     }
 
     @Test
-    public void testGetNamespaces()
+    public void getNamespaces()
     {
-        Assert.assertNull(this.installedExtension.getNamespaces());
+        assertNull(this.installedExtension.getNamespaces());
 
         this.installedExtension.setInstalled(true, "namespace1");
 
-        Assert
-            .assertEquals(Arrays.asList("namespace1"), new ArrayList<String>(this.installedExtension.getNamespaces()));
+        assertEquals(Arrays.asList("namespace1"), new ArrayList<String>(this.installedExtension.getNamespaces()));
 
         this.installedExtension.setInstalled(true, "namespace2");
 
-        Assert.assertEquals(new HashSet<String>(Arrays.asList("namespace1", "namespace2")), new HashSet<String>(
-            this.installedExtension.getNamespaces()));
+        assertEquals(new HashSet<String>(Arrays.asList("namespace1", "namespace2")),
+            new HashSet<String>(this.installedExtension.getNamespaces()));
 
         this.installedExtension.setNamespaces(Arrays.asList("namespace3"));
 
-        Assert
-            .assertEquals(Arrays.asList("namespace3"), new ArrayList<String>(this.installedExtension.getNamespaces()));
+        assertEquals(Arrays.asList("namespace3"), new ArrayList<String>(this.installedExtension.getNamespaces()));
 
     }
 
     @Test
-    public void testSetInstallDate()
+    public void setInstallDate()
     {
         Date date = new Date(13);
 
         this.installedExtension.setInstallDate(date, "foo");
-        Assert.assertNull(this.installedExtension.getInstallDate("foo"));
+        assertNull(this.installedExtension.getInstallDate("foo"));
 
         this.installedExtension.setInstallDate(date, null);
-        Assert.assertNull(this.installedExtension.getInstallDate(null));
+        assertNull(this.installedExtension.getInstallDate(null));
 
         this.installedExtension.setInstalled(true, "foo");
         this.installedExtension.setInstallDate(date, "foo");
-        Assert.assertEquals(date, this.installedExtension.getInstallDate("foo"));
-        Assert.assertNull(this.installedExtension.getInstallDate("bar"));
-        Assert.assertNull(this.installedExtension.getInstallDate(null));
+        assertEquals(date, this.installedExtension.getInstallDate("foo"));
+        assertNull(this.installedExtension.getInstallDate("bar"));
+        assertNull(this.installedExtension.getInstallDate(null));
 
         this.installedExtension.setInstalled(false, "foo");
-        Assert.assertNull(this.installedExtension.getInstallDate("foo"));
+        assertNull(this.installedExtension.getInstallDate("foo"));
 
         this.installedExtension.setInstalled(true, null);
         this.installedExtension.setInstallDate(date, null);
-        Assert.assertEquals(date, this.installedExtension.getInstallDate(null));
-        Assert.assertEquals(date, this.installedExtension.getInstallDate("foo"));
+        assertEquals(date, this.installedExtension.getInstallDate(null));
+        assertEquals(date, this.installedExtension.getInstallDate("foo"));
 
         this.installedExtension.setInstalled(false, null);
-        Assert.assertNull(this.installedExtension.getInstallDate(null));
-        Assert.assertNull(this.installedExtension.getInstallDate("foo"));
+        assertNull(this.installedExtension.getInstallDate(null));
+        assertNull(this.installedExtension.getInstallDate("foo"));
 
         this.installedExtension.setInstalled(true, "foo");
         this.installedExtension.setInstallDate(new Date(27), "foo");
         this.installedExtension.setInstalled(true, null);
         this.installedExtension.setInstallDate(date, null);
-        Assert.assertEquals(date, this.installedExtension.getInstallDate(null));
-        Assert.assertEquals(date, this.installedExtension.getInstallDate("foo"));
+        assertEquals(date, this.installedExtension.getInstallDate(null));
+        assertEquals(date, this.installedExtension.getInstallDate("foo"));
+    }
+
+    @Test
+    public void isValidated()
+    {
+        assertFalse(this.installedExtension.isValidated("namespace1"));
+        assertFalse(this.installedExtension.isValidated("namespace2"));
+
+        this.installedExtension.setValid("namespace1", true);
+
+        assertTrue(this.installedExtension.isValidated("namespace1"));
+        assertFalse(this.installedExtension.isValidated("namespace2"));
+
+        this.installedExtension.setValid("namespace2", false);
+
+        assertTrue(this.installedExtension.isValidated("namespace1"));
+        assertTrue(this.installedExtension.isValidated("namespace2"));
     }
 }

@@ -29,14 +29,41 @@ import org.junit.jupiter.api.Test;
 import org.xwiki.extension.version.Version;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Validate {@link DefaultVersion}.
+ * 
+ * @version $Id$
+ */
 public class DefaultVersionTest
 {
+    private void validateSerialize(Version version) throws IOException, ClassNotFoundException
+    {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(outputStream);
+        out.writeObject(version);
+        out.close();
+        outputStream.close();
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+        ObjectInputStream in = new ObjectInputStream(inputStream);
+        assertEquals(version, in.readObject());
+        in.close();
+        inputStream.close();
+    }
+
+    // Tests
+
     @Test
-    public void testCompareTo()
+    public void compareTo()
     {
         assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1")));
+        assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1.0")));
+        assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1.")));
+        assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1ga")));
+        assertEquals(0, new DefaultVersion("1.1").compareTo(new DefaultVersion("1.1final")));
         assertTrue(new DefaultVersion("1.2").compareTo(new DefaultVersion("1.1")) > 0);
         assertTrue(new DefaultVersion("1.1").compareTo(new DefaultVersion("1.2")) < 0);
 
@@ -67,18 +94,12 @@ public class DefaultVersionTest
         new DefaultVersion("1.2147483648").getType();
     }
 
-    private void validateSerialize(Version version) throws IOException, ClassNotFoundException
+    @Test
+    public void testHashCode()
     {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(outputStream);
-        out.writeObject(version);
-        out.close();
-        outputStream.close();
+        assertEquals(new DefaultVersion("1.1").hashCode(), new DefaultVersion("1.1").hashCode());
+        assertEquals(new DefaultVersion("1.1").hashCode(), new DefaultVersion("1.1.0").hashCode());
 
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-        ObjectInputStream in = new ObjectInputStream(inputStream);
-        assertEquals(version, in.readObject());
-        in.close();
-        inputStream.close();
+        assertNotEquals(new DefaultVersion("1.1").hashCode(), new DefaultVersion("2.0").hashCode());
     }
 }

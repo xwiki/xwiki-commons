@@ -50,7 +50,7 @@ public class DefaultCoreExtensionRepositoryTest
      * Validate core extension loading and others initializations.
      */
     @Test
-    public void testInit()
+    public void init()
     {
         Assert.assertTrue(this.coreExtensionRepository.countExtensions() > 0);
     }

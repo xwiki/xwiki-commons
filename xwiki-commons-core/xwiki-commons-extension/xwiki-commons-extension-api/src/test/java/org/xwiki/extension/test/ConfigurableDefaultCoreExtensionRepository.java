@@ -42,22 +42,24 @@ public class ConfigurableDefaultCoreExtensionRepository extends DefaultCoreExten
         }
     }
 
-    private ConfigurableEnvironmentExtension environmentExtension;
+    private ConfigurableEnvironmentExtension configurableEnvironmentExtension;
 
     public ConfigurableDefaultCoreExtensionRepository()
     {
-        this.environmentExtension = new ConfigurableEnvironmentExtension(this);
+        this.configurableEnvironmentExtension = new ConfigurableEnvironmentExtension(this);
     }
 
     @Override
     public CoreExtension getEnvironmentExtension()
     {
-        return getConfigurableEnvironmentExtension();
+        CoreExtension coreExtension = super.getEnvironmentExtension();
+
+        return coreExtension != null ? coreExtension : getConfigurableEnvironmentExtension();
     }
 
     public ConfigurableEnvironmentExtension getConfigurableEnvironmentExtension()
     {
-        return this.environmentExtension;
+        return this.configurableEnvironmentExtension;
     }
 
     @Override

@@ -231,7 +231,7 @@ public class DefaultVersion implements Version
         private static final Map<String, Integer> QUALIFIERS;
 
         static {
-            QUALIFIERS = new HashMap<String, Integer>();
+            QUALIFIERS = new HashMap<>();
             QUALIFIERS.put("alpha", Integer.valueOf(-5));
             QUALIFIERS.put("a", Integer.valueOf(-5));
             QUALIFIERS.put("beta", Integer.valueOf(-4));
@@ -429,7 +429,7 @@ public class DefaultVersion implements Version
      */
     private void parse()
     {
-        this.elements = new ArrayList<Element>();
+        this.elements = new ArrayList<>();
 
         try {
             for (Tokenizer tokenizer = new Tokenizer(this.rawVersion); tokenizer.next();) {

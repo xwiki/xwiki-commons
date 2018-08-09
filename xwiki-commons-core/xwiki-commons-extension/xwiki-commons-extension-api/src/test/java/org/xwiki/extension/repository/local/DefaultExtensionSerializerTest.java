@@ -21,84 +21,84 @@ package org.xwiki.extension.repository.local;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.extension.DefaultExtensionAuthor;
-import org.xwiki.extension.DefaultExtensionDependency;
+import org.xwiki.extension.AbstractExtensionTest;
 import org.xwiki.extension.DefaultExtensionIssueManagement;
 import org.xwiki.extension.DefaultExtensionScm;
 import org.xwiki.extension.DefaultExtensionScmConnection;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.ExtensionLicense;
 import org.xwiki.extension.InvalidExtensionException;
 import org.xwiki.extension.internal.ExtensionFactory;
 import org.xwiki.extension.repository.internal.DefaultExtensionSerializer;
-import org.xwiki.extension.repository.internal.ExtensionSerializer;
 import org.xwiki.extension.repository.internal.local.DefaultLocalExtension;
-import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.ComponentList;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+@ComponentTest
 @ComponentList(ExtensionFactory.class)
 public class DefaultExtensionSerializerTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<ExtensionSerializer> componentManager =
-        new MockitoComponentMockingRule<ExtensionSerializer>(DefaultExtensionSerializer.class);
+    @InjectMockComponents
+    private DefaultExtensionSerializer serializer;
 
     private DefaultLocalExtension serializeAndUnserialize(DefaultLocalExtension extension)
-        throws ParserConfigurationException, TransformerException, InvalidExtensionException, ComponentLookupException
+        throws ParserConfigurationException, TransformerException, InvalidExtensionException
     {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        this.componentManager.getComponentUnderTest().saveExtensionDescriptor(extension, os);
+        this.serializer.saveExtensionDescriptor(extension, os);
 
         ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
 
-        DefaultLocalExtension unserializedExtension =
-            this.componentManager.getComponentUnderTest().loadLocalExtensionDescriptor(null, is);
+        DefaultLocalExtension unserializedExtension = this.serializer.loadLocalExtensionDescriptor(null, is);
 
-        Assert.assertEquals(extension, unserializedExtension);
-        Assert.assertEquals(extension.getDescription(), unserializedExtension.getDescription());
-        Assert.assertEquals(extension.getName(), unserializedExtension.getName());
-        Assert.assertEquals(extension.getCategory(), unserializedExtension.getCategory());
-        Assert.assertEquals(extension.getSummary(), unserializedExtension.getSummary());
-        Assert.assertEquals(extension.getWebSite(), unserializedExtension.getWebSite());
-        Assert.assertEquals(extension.getAuthors(), unserializedExtension.getAuthors());
-        Assert.assertEquals(new ArrayList<ExtensionId>(extension.getExtensionFeatures()),
-            new ArrayList<ExtensionId>(unserializedExtension.getExtensionFeatures()));
-        Assert.assertEquals(new ArrayList<String>(extension.getFeatures()),
-            new ArrayList<String>(unserializedExtension.getFeatures()));
-        Assert.assertEquals(new ArrayList<String>(extension.getAllowedNamespaces()),
-            new ArrayList<String>(unserializedExtension.getAllowedNamespaces()));
-        Assert.assertEquals(new ArrayList<ExtensionLicense>(extension.getLicenses()),
-            new ArrayList<ExtensionLicense>(unserializedExtension.getLicenses()));
-        Assert.assertEquals(extension.getScm(), unserializedExtension.getScm());
-        Assert.assertEquals(extension.getIssueManagement(), unserializedExtension.getIssueManagement());
-        Assert.assertEquals(extension.getProperties(), unserializedExtension.getProperties());
+        assertEquals(extension, unserializedExtension);
+        assertEquals(extension.getDescription(), unserializedExtension.getDescription());
+        assertEquals(extension.getName(), unserializedExtension.getName());
+        assertEquals(extension.getCategory(), unserializedExtension.getCategory());
+        assertEquals(extension.getSummary(), unserializedExtension.getSummary());
+        assertEquals(extension.getWebSite(), unserializedExtension.getWebSite());
+        assertEquals(extension.getAuthors(), unserializedExtension.getAuthors());
+        assertEquals(new ArrayList<>(extension.getExtensionFeatures()),
+            new ArrayList<>(unserializedExtension.getExtensionFeatures()));
+        assertEquals(new ArrayList<>(extension.getFeatures()), new ArrayList<>(unserializedExtension.getFeatures()));
+        if (extension.getAllowedNamespaces() != null) {
+            assertEquals(new ArrayList<>(extension.getAllowedNamespaces()),
+                new ArrayList<>(unserializedExtension.getAllowedNamespaces()));
+        } else {
+            assertNull(unserializedExtension.getAllowedNamespaces());
+        }
+        assertEquals(new ArrayList<>(extension.getLicenses()), new ArrayList<>(unserializedExtension.getLicenses()));
+        assertEquals(extension.getScm(), unserializedExtension.getScm());
+        assertEquals(extension.getIssueManagement(), unserializedExtension.getIssueManagement());
+        assertEquals(extension.getProperties(), unserializedExtension.getProperties());
 
+        assertEquals(extension.getDependencies().size(), unserializedExtension.getDependencies().size());
         for (int i = 0; i < extension.getDependencies().size(); ++i) {
-            Assert.assertEquals(extension.getDependencies().get(i), unserializedExtension.getDependencies().get(i));
-            Assert.assertEquals(extension.getDependencies().get(i).getProperties(),
+            assertEquals(extension.getDependencies().get(i), unserializedExtension.getDependencies().get(i));
+            assertEquals(extension.getDependencies().get(i).getProperties(),
                 unserializedExtension.getDependencies().get(i).getProperties());
         }
 
+        assertEquals(extension.getManagedDependencies().size(), unserializedExtension.getManagedDependencies().size());
         for (int i = 0; i < extension.getManagedDependencies().size(); ++i) {
-            Assert.assertEquals(extension.getManagedDependencies().get(i),
+            assertEquals(extension.getManagedDependencies().get(i),
                 unserializedExtension.getManagedDependencies().get(i));
-            Assert.assertEquals(extension.getManagedDependencies().get(i).getProperties(),
+            assertEquals(extension.getManagedDependencies().get(i).getProperties(),
                 unserializedExtension.getManagedDependencies().get(i).getProperties());
         }
 
@@ -108,21 +108,27 @@ public class DefaultExtensionSerializerTest
     // Tests
 
     @Test
-    public void testSerialize() throws ParserConfigurationException, TransformerException, InvalidExtensionException,
-        MalformedURLException, ComponentLookupException
+    public void testSerializeAndUnserialize()
+        throws ParserConfigurationException, TransformerException, InvalidExtensionException, ComponentLookupException
     {
         DefaultLocalExtension extension =
             new DefaultLocalExtension(null, new ExtensionId("extensionid", "extensionversion"), "type");
 
         // Minimum extension
-        // serializeAndUnserialize(extension);
+        serializeAndUnserialize(extension);
 
-        DefaultExtensionDependency dependency =
-            new DefaultExtensionDependency("dependencyid", new DefaultVersionConstraint("dependencyversion"));
-        extension.addDependency(dependency);
+        extension.addDependency(AbstractExtensionTest.DEPENDENCY1);
 
         // Minimum extension with minimum dependency
-        // serializeAndUnserialize(extension);
+        serializeAndUnserialize(extension);
+
+        extension.addDependency(AbstractExtensionTest.DEPENDENCY2);
+
+        AbstractExtensionTest.DEPENDENCY1
+            .setProperties(Collections.<String, Object>singletonMap("dependencykey", "dependencyvalue"));
+
+        extension.addManagedDependency(AbstractExtensionTest.DEPENDENCY1);
+        extension.addManagedDependency(AbstractExtensionTest.DEPENDENCY2);
 
         extension.setDescription("description");
         extension.setSummary("summary");
@@ -133,19 +139,21 @@ public class DefaultExtensionSerializerTest
 
         extension.putProperty("key1", "value1");
         extension.putProperty("key2", true);
-        extension.putProperty("key3", 42);
-        extension.putProperty("key4", Arrays.asList("list1", "list2"));
-        extension.putProperty("key5", new HashSet<String>(Arrays.asList("list1", "list2")));
-        extension.putProperty("key6", Collections.<String, Object>singletonMap("key", "value"));
-        extension.putProperty("key7", Collections.<String, Object>singletonMap("key",
-            Collections.<String, Object>singletonMap("subkey", "subvalue")));
+        extension.putProperty("key3", false);
+        extension.putProperty("key4", 42);
+        extension.putProperty("key5", Arrays.asList("list1", "list2"));
+        extension.putProperty("key6", new HashSet<String>(Arrays.asList("list1", "list2")));
+        extension.putProperty("key7", Collections.singletonMap("key", "value"));
+        extension.putProperty("key8", Collections.singletonMap("key", Collections.singletonMap("subkey", "subvalue")));
+        extension.putProperty("key9", new Date(0));
 
-        extension.addAuthor(new DefaultExtensionAuthor("authorname", "http://authorurl"));
+        extension.addAuthor(AbstractExtensionTest.AUTHOR1);
+        extension.addAuthor(AbstractExtensionTest.AUTHOR2);
         extension.addFeature("feature1");
         extension.addExtensionFeature(new ExtensionId("feature2", "version"));
         extension.addAllowedNamespace("namespae1");
-        extension.addLicense(new ExtensionLicense("licensename", Arrays.asList("license content")));
-        dependency.setProperties(Collections.<String, Object>singletonMap("dependencykey", "dependencyvalue"));
+        extension.addLicense(AbstractExtensionTest.LICENSE1);
+        extension.addLicense(AbstractExtensionTest.LICENSE2);
 
         extension.setScm(new DefaultExtensionScm("url", new DefaultExtensionScmConnection("system", "path"),
             new DefaultExtensionScmConnection("system2", "path2")));
