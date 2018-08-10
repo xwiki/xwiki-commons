@@ -27,10 +27,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.StackingComponentEventManager;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.observation.event.Event;
 import org.xwiki.observation.internal.DefaultObservationManager;
-import org.xwiki.observation.test.TestEventListener;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import static org.mockito.Mockito.mock;
