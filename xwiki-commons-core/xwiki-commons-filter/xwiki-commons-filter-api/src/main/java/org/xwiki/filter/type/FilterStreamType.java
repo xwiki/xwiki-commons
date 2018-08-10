@@ -260,7 +260,8 @@ public class FilterStreamType implements Comparable<FilterStreamType>
         } else {
             if (object instanceof FilterStreamType) {
                 result = Objects.equals(getType(), ((FilterStreamType) object).getType())
-                    && Objects.equals(getDataFormat(), ((FilterStreamType) object).getDataFormat());
+                    && Objects.equals(getDataFormat(), ((FilterStreamType) object).getDataFormat())
+                    && Objects.equals(getVersion(), ((FilterStreamType) object).getVersion());
             } else {
                 result = false;
             }
