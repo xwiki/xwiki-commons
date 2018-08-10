@@ -25,12 +25,17 @@ import java.lang.reflect.Proxy;
 
 import org.xwiki.filter.test.TestFilter;
 
+/**
+ * Test manipulating a descriptor generated from a proxy.
+ * 
+ * @version $Id$
+ */
 public class ProxyFilterDescriptorManagerTest extends AbstractFilterDescriptorManagerTest
 {
     public ProxyFilterDescriptorManagerTest()
     {
-        super(Proxy.newProxyInstance(ProxyFilterDescriptorManagerTest.class.getClassLoader(), new Class[] { TestFilter.class },
-            new InvocationHandler()
+        super(Proxy.newProxyInstance(ProxyFilterDescriptorManagerTest.class.getClassLoader(),
+            new Class[] { TestFilter.class }, new InvocationHandler()
             {
                 @Override
                 public Object invoke(Object proxy, Method method, Object[] args) throws Throwable

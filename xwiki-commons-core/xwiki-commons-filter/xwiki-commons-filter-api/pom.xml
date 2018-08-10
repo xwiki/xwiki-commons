@@ -32,8 +32,8 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Filter - API</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>11</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.30</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>15</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>

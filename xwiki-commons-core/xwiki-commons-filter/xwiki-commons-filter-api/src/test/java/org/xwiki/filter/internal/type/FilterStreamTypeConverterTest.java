@@ -17,54 +17,53 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.filter.internal;
+package org.xwiki.filter.internal.type;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.filter.internal.type.FilterStreamTypeConverter;
+import org.junit.jupiter.api.Test;
 import org.xwiki.filter.type.FilterStreamType;
-import org.xwiki.properties.converter.Converter;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for {@link FilterStreamTypeConverter}.
  *
  * @version $Id$
  */
+@ComponentTest
 public class FilterStreamTypeConverterTest
 {
-    @Rule
-    public MockitoComponentMockingRule<Converter<FilterStreamType>> mocker =
-        new MockitoComponentMockingRule<Converter<FilterStreamType>>(FilterStreamTypeConverter.class);
+    @InjectMockComponents
+    private FilterStreamTypeConverter converter;
 
     @Test
     public void convertToTypeObject() throws Exception
     {
         FilterStreamType type =
-            this.mocker.getComponentUnderTest().convert(FilterStreamType.class,
-                FilterStreamType.XWIKI_XAR_CURRENT.serialize());
-        Assert.assertEquals(FilterStreamType.XWIKI_XAR_CURRENT, type);
+            this.converter.convert(FilterStreamType.class, FilterStreamType.XWIKI_XAR_CURRENT.serialize());
+        assertEquals(FilterStreamType.XWIKI_XAR_CURRENT, type);
     }
 
     @Test
     public void convertToTypeObjectWhenNull() throws Exception
     {
-        FilterStreamType type = this.mocker.getComponentUnderTest().convert(FilterStreamType.class, null);
-        Assert.assertNull(type);
+        FilterStreamType type = this.converter.convert(FilterStreamType.class, null);
+        assertNull(type);
     }
 
     @Test
     public void convertToString() throws Exception
     {
-        String typeId = this.mocker.getComponentUnderTest().convert(String.class, FilterStreamType.XWIKI_XAR_CURRENT);
-        Assert.assertEquals(FilterStreamType.XWIKI_XAR_CURRENT.serialize(), typeId);
+        String typeId = this.converter.convert(String.class, FilterStreamType.XWIKI_XAR_CURRENT);
+        assertEquals(FilterStreamType.XWIKI_XAR_CURRENT.serialize(), typeId);
     }
 
     @Test
     public void convertToStringWhenNull() throws Exception
     {
-        String typeId = this.mocker.getComponentUnderTest().convert(String.class, null);
-        Assert.assertNull(typeId);
+        String typeId = this.converter.convert(String.class, null);
+        assertNull(typeId);
     }
 }

@@ -20,6 +20,7 @@
 package org.xwiki.test.junit5.mockito;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -40,6 +41,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({ TYPE, METHOD, ANNOTATION_TYPE })
 @ExtendWith(MockitoComponentManagerExtension.class)
+@Inherited
 public @interface ComponentTest
 {
 }

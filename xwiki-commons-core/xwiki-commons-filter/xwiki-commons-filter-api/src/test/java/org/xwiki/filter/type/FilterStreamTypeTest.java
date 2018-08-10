@@ -19,8 +19,12 @@
  */
 package org.xwiki.filter.type;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link FilterStreamType}.
@@ -36,7 +40,7 @@ public class FilterStreamTypeTest
     {
         FilterStreamType type = new FilterStreamType(new SystemType("type"), "data", "version");
 
-        Assert.assertEquals("type+data/version", type.serialize());
+        assertEquals("type+data/version", type.serialize());
     }
 
     @Test
@@ -44,9 +48,9 @@ public class FilterStreamTypeTest
     {
         FilterStreamType type = FilterStreamType.unserialize("type+data/version");
 
-        Assert.assertEquals("type", type.getType().getId());
-        Assert.assertEquals("data", type.getDataFormat());
-        Assert.assertEquals("version", type.getVersion());
+        assertEquals("type", type.getType().getId());
+        assertEquals("data", type.getDataFormat());
+        assertEquals("version", type.getVersion());
     }
 
     @Test
@@ -54,9 +58,9 @@ public class FilterStreamTypeTest
     {
         FilterStreamType type = FilterStreamType.unserialize("type+data");
 
-        Assert.assertEquals("type", type.getType().getId());
-        Assert.assertEquals("data", type.getDataFormat());
-        Assert.assertNull(type.getVersion());
+        assertEquals("type", type.getType().getId());
+        assertEquals("data", type.getDataFormat());
+        assertNull(type.getVersion());
     }
 
     @Test
@@ -64,9 +68,9 @@ public class FilterStreamTypeTest
     {
         FilterStreamType type = FilterStreamType.unserialize("type+");
 
-        Assert.assertEquals("type", type.getType().getId());
-        Assert.assertEquals("", type.getDataFormat());
-        Assert.assertNull(type.getVersion());
+        assertEquals("type", type.getType().getId());
+        assertEquals("", type.getDataFormat());
+        assertNull(type.getVersion());
     }
 
     @Test
@@ -74,9 +78,9 @@ public class FilterStreamTypeTest
     {
         FilterStreamType type = FilterStreamType.unserialize("type/version");
 
-        Assert.assertEquals("type", type.getType().getId());
-        Assert.assertNull(type.getDataFormat());
-        Assert.assertEquals("version", type.getVersion());
+        assertEquals("type", type.getType().getId());
+        assertNull(type.getDataFormat());
+        assertEquals("version", type.getVersion());
     }
 
     @Test
@@ -84,8 +88,30 @@ public class FilterStreamTypeTest
     {
         FilterStreamType type = FilterStreamType.unserialize("type/");
 
-        Assert.assertEquals("type", type.getType().getId());
-        Assert.assertNull(type.getDataFormat());
-        Assert.assertEquals("", type.getVersion());
+        assertEquals("type", type.getType().getId());
+        assertNull(type.getDataFormat());
+        assertEquals("", type.getVersion());
+    }
+
+    @Test
+    public void equals()
+    {
+        FilterStreamType type = new FilterStreamType(new SystemType("type"), "data", "version");
+
+        assertEquals(type, new FilterStreamType(new SystemType("type"), "data", "version"));
+
+        assertNotEquals(type, new FilterStreamType(new SystemType("type2"), "data", "version"));
+        assertNotEquals(type, new FilterStreamType(new SystemType("type"), "data2", "version"));
+        assertNotEquals(type, new FilterStreamType(new SystemType("type"), "data", "version2"));
+    }
+
+    @Test
+    public void compareTo()
+    {
+        FilterStreamType type = new FilterStreamType(new SystemType("type"), "data", "2.0");
+
+        assertEquals(0, type.compareTo(new FilterStreamType(new SystemType("type"), "data", "2.0")));
+        assertTrue(type.compareTo(new FilterStreamType(new SystemType("type"), "data", "1.0")) > 0);
+        assertTrue(type.compareTo(new FilterStreamType(new SystemType("type"), "data", "3.0")) < 0);
     }
 }

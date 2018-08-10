@@ -21,6 +21,11 @@ package org.xwiki.filter.internal;
 
 import org.xwiki.filter.test.TestFilterImplementation;
 
+/**
+ * Test manipulating a descriptor generated from a usual POJO.
+ * 
+ * @version $Id$
+ */
 public class ImplementationDescriptorManagerTest extends AbstractFilterDescriptorManagerTest
 {
     public ImplementationDescriptorManagerTest()
