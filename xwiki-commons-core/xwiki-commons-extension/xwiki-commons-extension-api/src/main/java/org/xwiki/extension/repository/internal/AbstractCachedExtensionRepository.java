@@ -215,30 +215,25 @@ public abstract class AbstractCachedExtensionRepository<E extends Extension> ext
     public IterableResult<Version> resolveVersions(String id, int offset, int nb) throws ResolveException
     {
         if (id == null) {
-            return new CollectionIterableResult<Version>(0, offset, Collections.<Version>emptyList());
+            return new CollectionIterableResult<>(0, offset, Collections.<Version>emptyList());
         }
 
-        List<E> versions = this.extensionsVersions.get(id);
+        List<E> extensionVersions = this.extensionsVersions.get(id);
 
-        if (versions == null) {
+        if (extensionVersions == null) {
             throw new ExtensionNotFoundException("Can't find extension with id [" + id + "]");
         }
 
-        if (nb == 0 || offset >= versions.size()) {
-            return new CollectionIterableResult<Version>(versions.size(), offset, Collections.<Version>emptyList());
+        if (nb == 0 || offset >= extensionVersions.size()) {
+            return new CollectionIterableResult<>(extensionVersions.size(), offset, Collections.<Version>emptyList());
         }
 
-        int fromId = offset < 0 ? 0 : offset;
-        int toId = offset + nb > versions.size() || nb < 0 ? versions.size() - 1 : offset + nb;
-
-        List<Version> result = new ArrayList<Version>(toId - fromId);
-
-        // Invert to sort in ascendent order
-        for (int i = toId - 1; i >= fromId; --i) {
-            result.add(versions.get(i).getId().getVersion());
+        List<Version> versions = new ArrayList<>(extensionVersions.size());
+        for (E extension : extensionVersions) {
+            versions.add(extension.getId().getVersion());
         }
 
-        return new CollectionIterableResult<Version>(versions.size(), offset, result);
+        return RepositoryUtils.getIterableResult(offset, nb, versions);
     }
 
     // Searchable
