@@ -393,7 +393,7 @@ public final class RepositoryUtils
      * @param repositories the repositories
      * @return the found extensions descriptors, empty list if nothing could be found
      * @throws SearchException error when trying to search provided query
-     * @since 9.12RC1
+     * @since 10.0RC1
      */
     public static IterableResult<Extension> search(ExtensionQuery query, Iterable<ExtensionRepository> repositories)
         throws SearchException

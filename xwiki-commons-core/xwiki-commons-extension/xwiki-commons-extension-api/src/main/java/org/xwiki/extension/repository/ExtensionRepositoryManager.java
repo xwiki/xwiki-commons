@@ -34,7 +34,7 @@ import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.version.Version;
 
 /**
- * Proxy repository in to make easier to search in all remove extension repositories.
+ * Proxy repository in to make easier to search in all remote extension repositories.
  *
  * @version $Id$
  * @since 4.0M1
