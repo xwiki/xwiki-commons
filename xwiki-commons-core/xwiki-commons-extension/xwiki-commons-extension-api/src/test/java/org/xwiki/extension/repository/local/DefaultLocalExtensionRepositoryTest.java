@@ -37,6 +37,7 @@ import org.xwiki.extension.repository.search.ExtensionQuery;
 import org.xwiki.extension.repository.search.ExtensionQuery.COMPARISON;
 import org.xwiki.extension.repository.search.SearchException;
 import org.xwiki.extension.test.MockitoRepositoryUtilsRule;
+import org.xwiki.extension.version.Version;
 import org.xwiki.extension.version.internal.DefaultVersionConstraint;
 import org.xwiki.test.annotation.AllComponents;
 import org.xwiki.test.mockito.MockitoComponentManagerRule;
@@ -262,5 +263,16 @@ public class DefaultLocalExtensionRepositoryTest
             .contains(localExtension));
         Assert.assertFalse(this.localExtensionRepository
             .getLocalExtensionVersions(TestResources.INSTALLED_ID.getId() + "-feature").contains(localExtension));
+    }
+
+    @Test
+    public void resolveVersions() throws ResolveException
+    {
+        IterableResult<Version> versions =
+            this.localExtensionRepository.resolveVersions(TestResources.INSTALLED_ONNAMESPACE_ID.getId(), 0, -1);
+
+        assertEquals(1, versions.getTotalHits());
+        assertEquals(1, versions.getSize());
+        assertEquals(TestResources.INSTALLED_ONNAMESPACE_ID.getVersion(), versions.iterator().next());
     }
 }
