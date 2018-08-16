@@ -88,7 +88,7 @@ public class JobStatusSerializer
                 break;
             } catch (FileAlreadyExistsException e) {
                 // Yes it sounds pretty weird but it can happen so we try 10 times before giving up
-                // We a bit before retrying
+                // Wait a bit before retrying
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ei) {
