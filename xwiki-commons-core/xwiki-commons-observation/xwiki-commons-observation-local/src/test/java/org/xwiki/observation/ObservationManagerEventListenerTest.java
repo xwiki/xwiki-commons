@@ -21,16 +21,20 @@ package org.xwiki.observation;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.component.internal.StackingComponentEventManager;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.manager.ComponentRepositoryException;
 import org.xwiki.observation.event.Event;
 import org.xwiki.observation.internal.DefaultObservationManager;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,13 +43,14 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
+@ComponentTest
 public class ObservationManagerEventListenerTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<ObservationManager> mocker =
-        new MockitoComponentMockingRule<ObservationManager>(DefaultObservationManager.class);
+    @InjectMockComponents
+    private DefaultObservationManager manager;
 
-    private ObservationManager manager;
+    @InjectComponentManager
+    private ComponentManager componentManager;
 
     private EventListener eventListenerMock;
 
@@ -53,19 +58,18 @@ public class ObservationManagerEventListenerTest
 
     private DefaultComponentDescriptor<EventListener> componentDescriptor;
 
-    @Before
-    public void setUp() throws Exception
+    @BeforeEach
+    public void setUp()
     {
-        this.manager = this.mocker.getComponentUnderTest();
         StackingComponentEventManager componentEventManager = new StackingComponentEventManager();
         componentEventManager.shouldStack(false);
         componentEventManager.setObservationManager(this.manager);
-        this.mocker.setComponentEventManager(componentEventManager);
+        this.componentManager.setComponentEventManager(componentEventManager);
 
         this.eventListenerMock = mock(EventListener.class);
         this.eventMock = mock(Event.class);
 
-        this.componentDescriptor = new DefaultComponentDescriptor<EventListener>();
+        this.componentDescriptor = new DefaultComponentDescriptor<>();
         this.componentDescriptor.setImplementation(this.eventListenerMock.getClass());
         this.componentDescriptor.setRoleType(EventListener.class);
         this.componentDescriptor.setRoleHint("mylistener");
@@ -76,19 +80,20 @@ public class ObservationManagerEventListenerTest
     }
 
     @Test
-    public void newListenerComponent() throws Exception
+    public void newListenerComponent() throws ComponentRepositoryException
     {
-        this.mocker.registerComponent(this.componentDescriptor, this.eventListenerMock);
+        this.componentManager.registerComponent(this.componentDescriptor, this.eventListenerMock);
 
-        Assert.assertSame(this.eventListenerMock, this.manager.getListener("mylistener"));
+        assertSame(this.eventListenerMock, this.manager.getListener("mylistener"));
     }
 
     @Test
     public void removedListenerComponent() throws Exception
     {
-        this.mocker.registerComponent(this.componentDescriptor, this.eventListenerMock);
-        this.mocker.unregisterComponent(this.componentDescriptor.getRoleType(), this.componentDescriptor.getRoleHint());
+        this.componentManager.registerComponent(this.componentDescriptor, this.eventListenerMock);
+        this.componentManager.unregisterComponent(this.componentDescriptor.getRoleType(),
+            this.componentDescriptor.getRoleHint());
 
-        Assert.assertNull(this.manager.getListener("mylistener"));
+        assertNull(this.manager.getListener("mylistener"));
     }
 }
