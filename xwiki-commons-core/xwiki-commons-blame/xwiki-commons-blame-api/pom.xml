@@ -24,7 +24,7 @@
   <parent>
     <artifactId>xwiki-commons-blame</artifactId>
     <groupId>org.xwiki.commons</groupId>
-    <version>10.7-rc-1</version>
+    <version>10.7-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-blame-api</artifactId>
   <name>XWiki Commons - Blame - API</name>
