@@ -95,7 +95,7 @@
     <jacoco.version>0.8.1</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.10.1</checkstyle.version>
+    <checkstyle.version>8.11</checkstyle.version>
 
     <!-- Spoon -->
     <spoon.version>7.0.0</spoon.version>
@@ -1015,7 +1015,7 @@
         <artifactId>objenesis</artifactId>
         <version>2.6</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-java</artifactId>
