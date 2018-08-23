@@ -24,20 +24,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.impl.RepositoryConnectorProvider;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.ArtifactRequest;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.spi.connector.ArtifactDownload;
 import org.eclipse.aether.spi.connector.RepositoryConnector;
 import org.eclipse.aether.transfer.NoRepositoryConnectorException;
 import org.xwiki.extension.ExtensionFile;
+import org.xwiki.extension.ResolveException;
 
 /**
  * @version $Id$
@@ -51,14 +49,13 @@ public class AetherExtensionFile implements ExtensionFile
 
     static class AetherExtensionFileInputStream extends FileInputStream
     {
-        private XWikiRepositorySystemSession session;
+        private File file;
 
-        public AetherExtensionFileInputStream(File file, XWikiRepositorySystemSession session)
-            throws FileNotFoundException
+        public AetherExtensionFileInputStream(File file) throws FileNotFoundException
         {
             super(file);
 
-            this.session = session;
+            this.file = file;
         }
 
         @Override
@@ -66,8 +63,9 @@ public class AetherExtensionFile implements ExtensionFile
         {
             super.close();
 
-            // Cleanup AETHER session
-            this.session.close();
+            if (this.file.exists()) {
+                Files.delete(this.file.toPath());
+            }
         }
     }
 
@@ -87,7 +85,12 @@ public class AetherExtensionFile implements ExtensionFile
     @Override
     public InputStream openStream() throws IOException
     {
-        XWikiRepositorySystemSession session = this.repository.createRepositorySystemSession();
+        XWikiRepositorySystemSession session;
+        try {
+            session = this.repository.createRepositorySystemSession();
+        } catch (ResolveException e) {
+            throw new IOException("Failed to create the repository system session", e);
+        }
 
         List<RemoteRepository> repositories = this.repository.newResolutionRepositories(session);
         RemoteRepository repository = repositories.get(0);
@@ -100,32 +103,30 @@ public class AetherExtensionFile implements ExtensionFile
             throw new IOException("Failed to download artifact [" + this.artifact + "]", e);
         }
 
+        File file = this.repository.createTemporaryFile(this.artifact.getArtifactId(), this.artifact.getExtension());
+
         ArtifactDownload download = new ArtifactDownload();
         download.setArtifact(this.artifact);
         download.setRepositories(repositories);
+        download.setFile(file);
 
         try {
             connector.get(Arrays.asList(download), null);
         } finally {
             connector.close();
+            session.close();
         }
 
         // /////////////////////////////////////////////////////////////////////////////:
 
-        ArtifactRequest artifactRequest = new ArtifactRequest();
-        artifactRequest.setRepositories(repositories);
-        artifactRequest.setArtifact(this.artifact);
+        /*
+         * ArtifactRequest artifactRequest = new ArtifactRequest(); artifactRequest.setRepositories(repositories);
+         * artifactRequest.setArtifact(this.artifact); ArtifactResult artifactResult; try { RepositorySystem
+         * repositorySystem = this.repository.getRepositorySystem(); artifactResult =
+         * repositorySystem.resolveArtifact(session, artifactRequest); } catch (ArtifactResolutionException e) { throw
+         * new IOException("Failed to resolve artifact", e); } File aetherFile = artifactResult.getArtifact().getFile();
+         */
 
-        ArtifactResult artifactResult;
-        try {
-            RepositorySystem repositorySystem = this.repository.getRepositorySystem();
-            artifactResult = repositorySystem.resolveArtifact(session, artifactRequest);
-        } catch (ArtifactResolutionException e) {
-            throw new IOException("Failed to resolve artifact", e);
-        }
-
-        File aetherFile = artifactResult.getArtifact().getFile();
-
-        return new AetherExtensionFileInputStream(aetherFile, session);
+        return new AetherExtensionFileInputStream(file);
     }
 }

@@ -163,10 +163,9 @@
     <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
 
     <!-- Version of Maven used at runtime (by Extension Manager mostly) -->
-    <maven.runtime.version>3.3.9</maven.runtime.version>
+    <maven.runtime.version>3.5.4</maven.runtime.version>
     <!-- Minimum version of Maven supported at build time  -->
-    <!-- Some custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
-    <maven.build.version>3.3.9</maven.build.version>
+    <maven.build.version>3.5.4</maven.build.version>
     <!--
       The version of Maven used when declaring dependencies.
       Use runtime version by default, overwrite it to change to build version (usually for Maven plugins)
@@ -886,11 +885,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
-        <artifactId>maven-aether-provider</artifactId>
-        <version>${maven.dependencies.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
         <version>${maven.dependencies.version}</version>
       </dependency>
@@ -898,6 +892,13 @@
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
         <version>${maven.dependencies.version}</version>
+        <exclusions>
+          <!-- Remove exclusion when https://jira.xwiki.org/browse/XCOMMONS-1155 is fixed -->
+          <exclusion>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
@@ -927,6 +928,11 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model-builder</artifactId>
+        <version>${maven.dependencies.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-resolver-provider</artifactId>
         <version>${maven.dependencies.version}</version>
       </dependency>
       <dependency>

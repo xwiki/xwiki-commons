@@ -21,6 +21,8 @@ package org.xwiki.extension.repository.aether.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -36,9 +38,8 @@ import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.util.artifact.DefaultArtifactTypeRegistry;
 import org.eclipse.aether.util.repository.JreProxySelector;
 import org.eclipse.aether.util.repository.SimpleArtifactDescriptorPolicy;
+import org.xwiki.environment.Environment;
 import org.xwiki.extension.maven.internal.MavenUtils;
-
-import com.google.common.io.Files;
 
 /**
  * Encapsulate {@link DefaultRepositorySystemSession} to generate and clean a temporary local repository for each
@@ -66,8 +67,10 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
     /**
      * @param repositorySystem the AETHER repository system component
+     * @param enviroment the environment component
+     * @throws IOException when failing to create a temporary directory to download the required files
      */
-    public XWikiRepositorySystemSession(RepositorySystem repositorySystem)
+    public XWikiRepositorySystemSession(RepositorySystem repositorySystem, Environment enviroment) throws IOException
     {
         DefaultRepositorySystemSession wsession = MavenRepositorySystemUtils.newSession();
         this.session = wsession;
@@ -75,7 +78,9 @@ public class XWikiRepositorySystemSession extends AbstractForwardingRepositorySy
 
         // Local repository
 
-        File localDir = Files.createTempDir();
+        Path downloadDirectory = enviroment.getTemporaryDirectory().toPath().resolve("extension/download");
+        Files.createDirectories(downloadDirectory);
+        File localDir = Files.createTempDirectory(downloadDirectory, "repository").toFile();
         LocalRepository localRepository = new LocalRepository(localDir);
         wsession.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(wsession, localRepository));
 

@@ -310,12 +310,8 @@ public class AetherDefaultRepositoryManagerTest
     {
         Extension extension = this.repositoryManager.resolve(this.extensionId);
 
-        InputStream is = extension.getFile().openStream();
-
-        try {
+        try (InputStream is = extension.getFile().openStream()) {
             Assert.assertEquals("content", IOUtils.toString(is));
-        } finally {
-            is.close();
         }
     }
 
@@ -324,12 +320,8 @@ public class AetherDefaultRepositoryManagerTest
     {
         Extension extension = this.repositoryManager.resolve(this.snapshotExtensionId);
 
-        InputStream is = extension.getFile().openStream();
-
-        try {
+        try (InputStream is = extension.getFile().openStream()) {
             Assert.assertEquals("snapshot content", IOUtils.toString(is));
-        } finally {
-            is.close();
         }
     }
 
@@ -338,12 +330,8 @@ public class AetherDefaultRepositoryManagerTest
     {
         Extension extension = this.repositoryManager.resolve(this.extensionIdClassifier);
 
-        InputStream is = extension.getFile().openStream();
-
-        try {
+        try (InputStream is = extension.getFile().openStream()) {
             Assert.assertEquals("classifier content", IOUtils.toString(is));
-        } finally {
-            is.close();
         }
     }
 
@@ -352,12 +340,8 @@ public class AetherDefaultRepositoryManagerTest
     {
         Extension extension = this.repositoryManager.resolve(this.bundleExtensionId);
 
-        InputStream is = extension.getFile().openStream();
-
-        try {
+        try (InputStream is = extension.getFile().openStream()) {
             Assert.assertEquals("content", IOUtils.toString(is));
-        } finally {
-            is.close();
         }
     }
 

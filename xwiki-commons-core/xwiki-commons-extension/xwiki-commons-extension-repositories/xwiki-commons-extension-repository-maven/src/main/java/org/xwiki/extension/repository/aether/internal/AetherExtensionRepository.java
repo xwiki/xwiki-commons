@@ -20,6 +20,7 @@
 package org.xwiki.extension.repository.aether.internal;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -169,13 +170,23 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return this.repositoryConnectorProvider;
     }
 
-    protected XWikiRepositorySystemSession createRepositorySystemSession()
+    protected XWikiRepositorySystemSession createRepositorySystemSession() throws ResolveException
     {
-        XWikiRepositorySystemSession session = this.repositoryFactory.createRepositorySystemSession();
+        XWikiRepositorySystemSession session;
+        try {
+            session = this.repositoryFactory.createRepositorySystemSession();
+        } catch (IOException e) {
+            throw new ResolveException("Failed to create the repository system session", e);
+        }
 
         session.addConfigurationProperties(getDescriptor().getProperties());
 
         return session;
+    }
+
+    protected File createTemporaryFile(String prefix, String suffix) throws IOException
+    {
+        return this.repositoryFactory.createTemporaryFile(prefix, suffix);
     }
 
     @Override
@@ -392,9 +403,9 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     {
         // Get Maven descriptor
 
-        Model model;
+        Artifact pomArtifact;
         try {
-            model = loadPom(artifact, session);
+            pomArtifact = downloadPom(artifact, session);
         } catch (ArtifactResolutionException e1) {
             if (e1.getResult() != null && !e1.getResult().getExceptions().isEmpty()
                 && e1.getResult().getExceptions().get(0) instanceof ArtifactNotFoundException) {
@@ -404,6 +415,13 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
             }
         } catch (Exception e2) {
             throw new ResolveException("Failed to resolve artifact [" + artifact + "] descriptor", e2);
+        }
+
+        Model model;
+        try {
+            model = createModel(pomArtifact.getFile(), session);
+        } catch (ModelBuildingException e) {
+            throw new ResolveException("Failed to create Maven model", e);
         }
 
         if (model == null) {
@@ -424,10 +442,10 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
 
         Extension mavenExtension = this.extensionConverter.convert(Extension.class, model);
 
-        Artifact filerArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(),
-            artifact.getClassifier(), artifactExtension, artifact.getVersion());
+        Artifact fileArtifact = new DefaultArtifact(pomArtifact.getGroupId(), pomArtifact.getArtifactId(),
+            artifact.getClassifier(), artifactExtension, pomArtifact.getVersion());
 
-        AetherExtension extension = new AetherExtension(mavenExtension, filerArtifact, this, factory);
+        AetherExtension extension = new AetherExtension(mavenExtension, fileArtifact, this, factory);
 
         // Convert Maven dependencies to Aether dependencies
         extension.setDependencies(toAetherDependencies(mavenExtension.getDependencies(), session));
@@ -499,6 +517,22 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         VersionResult versionResult = this.versionResolver.resolveVersion(session, versionRequest);
 
         return pomArtifact.setVersion(versionResult.getVersion());
+    }
+
+    private Artifact downloadPom(Artifact artifact, RepositorySystemSession session)
+        throws VersionResolutionException, ArtifactResolutionException
+    {
+        List<RemoteRepository> repositories = newResolutionRepositories(session);
+
+        Artifact pomArtifact = resolveVersion(artifact, repositories, session);
+
+        // Download pom file
+
+        ArtifactRequest resolveRequest = new ArtifactRequest(pomArtifact, repositories, "");
+        ArtifactResult resolveResult = this.artifactResolver.resolveArtifact(session, resolveRequest);
+        pomArtifact = resolveResult.getArtifact();
+
+        return pomArtifact;
     }
 
     private Model loadPom(Artifact artifact, RepositorySystemSession session)

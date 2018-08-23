@@ -19,6 +19,11 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -36,6 +41,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.environment.Environment;
 import org.xwiki.extension.ExtensionManagerConfiguration;
 import org.xwiki.extension.repository.AbstractExtensionRepositoryFactory;
 import org.xwiki.extension.repository.ExtensionRepository;
@@ -60,8 +66,11 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
     @Inject
     private ExtensionManagerConfiguration configuration;
 
-    private RepositorySystem repositorySystem;
+    @Inject
+    private Environment environment;
 
+    private RepositorySystem repositorySystem;
+    
     @Override
     public void initialize() throws InitializationException
     {
@@ -72,9 +81,10 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         }
     }
 
-    public XWikiRepositorySystemSession createRepositorySystemSession()
+    public XWikiRepositorySystemSession createRepositorySystemSession() throws IOException
     {
-        XWikiRepositorySystemSession session = new XWikiRepositorySystemSession(this.repositorySystem);
+        XWikiRepositorySystemSession session =
+            new XWikiRepositorySystemSession(this.repositorySystem, this.environment);
 
         session.setUserAgent(this.configuration.getUserAgent());
 
@@ -121,5 +131,12 @@ public class AetherExtensionRepositoryFactory extends AbstractExtensionRepositor
         } catch (Exception e) {
             throw new ExtensionRepositoryException("Failed to create repository [" + repositoryDescriptor + "]", e);
         }
+    }
+
+    public File createTemporaryFile(String prefix, String suffix) throws IOException
+    {
+        Path filesDirectory = this.environment.getTemporaryDirectory().toPath().resolve("extension/download/files/");
+        Files.createDirectories(filesDirectory);
+        return Files.createTempFile(filesDirectory, prefix, suffix).toFile();
     }
 }
