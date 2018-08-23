@@ -117,16 +117,6 @@ public class AetherExtensionFile implements ExtensionFile
             session.close();
         }
 
-        // /////////////////////////////////////////////////////////////////////////////:
-
-        /*
-         * ArtifactRequest artifactRequest = new ArtifactRequest(); artifactRequest.setRepositories(repositories);
-         * artifactRequest.setArtifact(this.artifact); ArtifactResult artifactResult; try { RepositorySystem
-         * repositorySystem = this.repository.getRepositorySystem(); artifactResult =
-         * repositorySystem.resolveArtifact(session, artifactRequest); } catch (ArtifactResolutionException e) { throw
-         * new IOException("Failed to resolve artifact", e); } File aetherFile = artifactResult.getArtifact().getFile();
-         */
-
         return new AetherExtensionFileInputStream(file);
     }
 }

@@ -535,24 +535,6 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
         return pomArtifact;
     }
 
-    private Model loadPom(Artifact artifact, RepositorySystemSession session)
-        throws VersionResolutionException, ArtifactResolutionException, ModelBuildingException
-    {
-        List<RemoteRepository> repositories = newResolutionRepositories(session);
-
-        Artifact pomArtifact = resolveVersion(artifact, repositories, session);
-
-        // Download pom file
-
-        ArtifactRequest resolveRequest = new ArtifactRequest(pomArtifact, repositories, "");
-        ArtifactResult resolveResult = this.artifactResolver.resolveArtifact(session, resolveRequest);
-        pomArtifact = resolveResult.getArtifact();
-
-        // Create model
-
-        return createModel(pomArtifact.getFile(), session);
-    }
-
     private Model createModel(File pomFile, RepositorySystemSession session) throws ModelBuildingException
     {
         // Search for parent pom in all available Aether repositories
