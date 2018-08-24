@@ -63,7 +63,8 @@ import org.xwiki.properties.RawProperties;
 public class DefaultBeanManager implements BeanManager
 {
     /**
-     * Cache the already parsed classes.
+     * Cache the already parsed classes. We store weak reference since the classes might come from extension later
+     * uninstalled or reloaded.
      */
     private Map<Class<?>, BeanDescriptor> beanDescriptorCache = new WeakHashMap<>();
 
