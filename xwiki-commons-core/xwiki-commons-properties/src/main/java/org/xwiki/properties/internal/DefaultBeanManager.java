@@ -22,10 +22,11 @@ package org.xwiki.properties.internal;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -64,8 +65,9 @@ public class DefaultBeanManager implements BeanManager
     /**
      * Cache the already parsed classes.
      */
-    private Map<Class<?>, BeanDescriptor> beanDescriptorCache =
-        Collections.synchronizedMap(new HashMap<Class<?>, BeanDescriptor>());
+    private Map<Class<?>, BeanDescriptor> beanDescriptorCache = new WeakHashMap<>();
+
+    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     /**
      * The logger to use for logging.
@@ -220,13 +222,24 @@ public class DefaultBeanManager implements BeanManager
         BeanDescriptor beanDescriptor = null;
 
         if (beanClass != null) {
-            // Since the bean descriptor are cached, lock based on the class to not generate twice the same bean
-            // descriptor.
-            synchronized (beanClass) {
+            this.lock.readLock().lock();
+
+            // Get the bean descriptor from the cache
+            try {
                 beanDescriptor = this.beanDescriptorCache.get(beanClass);
-                if (beanDescriptor == null) {
+            } finally {
+                this.lock.readLock().unlock();
+            }
+
+            // Create a new one if none could be found
+            if (beanDescriptor == null) {
+                this.lock.writeLock().lock();
+
+                try {
                     beanDescriptor = new DefaultBeanDescriptor(beanClass);
                     this.beanDescriptorCache.put(beanClass, beanDescriptor);
+                } finally {
+                    this.lock.writeLock().unlock();
                 }
             }
         }
