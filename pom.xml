@@ -941,6 +941,11 @@
         <version>3.5.2</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-shared-utils</artifactId>
+        <version>3.2.1</version>
+      </dependency>
 
       <!-- Everybody tests -->
       <dependency>
