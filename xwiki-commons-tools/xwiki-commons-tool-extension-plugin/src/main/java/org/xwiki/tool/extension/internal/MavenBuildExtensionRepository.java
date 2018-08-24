@@ -19,6 +19,9 @@
  */
 package org.xwiki.tool.extension.internal;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.maven.RepositoryUtils;
@@ -75,6 +78,16 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
             new XWikiRepositorySystemSession(this.mavenSession.getRepositorySession());
 
         return session;
+    }
+
+    @Override
+    protected File createTemporaryFile(String prefix, String suffix) throws IOException
+    {
+        File targetDirectory = new File(this.mavenSession.getTopLevelProject().getBuild().getDirectory());
+        File downloadFirectory = new File(targetDirectory, "extension/download/files/");
+        downloadFirectory.mkdirs();
+
+        return Files.createTempFile(downloadFirectory.toPath(), prefix, suffix).toFile();
     }
 
     @Override
