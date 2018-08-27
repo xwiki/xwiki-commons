@@ -19,23 +19,11 @@
  */
 package org.xwiki.extension.repository.aether.internal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.impl.RepositoryConnectorProvider;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.spi.connector.ArtifactDownload;
-import org.eclipse.aether.spi.connector.RepositoryConnector;
-import org.eclipse.aether.transfer.NoRepositoryConnectorException;
 import org.xwiki.extension.ExtensionFile;
-import org.xwiki.extension.ResolveException;
 
 /**
  * @version $Id$
@@ -46,28 +34,6 @@ public class AetherExtensionFile implements ExtensionFile
     private Artifact artifact;
 
     private AetherExtensionRepository repository;
-
-    static class AetherExtensionFileInputStream extends FileInputStream
-    {
-        private File file;
-
-        public AetherExtensionFileInputStream(File file) throws FileNotFoundException
-        {
-            super(file);
-
-            this.file = file;
-        }
-
-        @Override
-        public void close() throws IOException
-        {
-            super.close();
-
-            if (this.file.exists()) {
-                Files.delete(this.file.toPath());
-            }
-        }
-    }
 
     public AetherExtensionFile(Artifact artifact, AetherExtensionRepository repository)
     {
@@ -85,38 +51,6 @@ public class AetherExtensionFile implements ExtensionFile
     @Override
     public InputStream openStream() throws IOException
     {
-        XWikiRepositorySystemSession session;
-        try {
-            session = this.repository.createRepositorySystemSession();
-        } catch (ResolveException e) {
-            throw new IOException("Failed to create the repository system session", e);
-        }
-
-        List<RemoteRepository> repositories = this.repository.newResolutionRepositories(session);
-        RemoteRepository repository = repositories.get(0);
-
-        RepositoryConnector connector;
-        try {
-            RepositoryConnectorProvider repositoryConnectorProvider = this.repository.getRepositoryConnectorProvider();
-            connector = repositoryConnectorProvider.newRepositoryConnector(session, repository);
-        } catch (NoRepositoryConnectorException e) {
-            throw new IOException("Failed to download artifact [" + this.artifact + "]", e);
-        }
-
-        File file = this.repository.createTemporaryFile(this.artifact.getArtifactId(), this.artifact.getExtension());
-
-        ArtifactDownload download = new ArtifactDownload();
-        download.setArtifact(this.artifact);
-        download.setRepositories(repositories);
-        download.setFile(file);
-
-        try {
-            connector.get(Arrays.asList(download), null);
-        } finally {
-            connector.close();
-            session.close();
-        }
-
-        return new AetherExtensionFileInputStream(file);
+        return this.repository.openStream(this.artifact);
     }
 }

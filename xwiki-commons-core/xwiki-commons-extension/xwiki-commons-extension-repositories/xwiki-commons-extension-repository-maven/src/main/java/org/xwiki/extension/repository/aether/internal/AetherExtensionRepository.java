@@ -20,7 +20,11 @@
 package org.xwiki.extension.repository.aether.internal;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,7 +69,10 @@ import org.eclipse.aether.resolution.VersionRangeResult;
 import org.eclipse.aether.resolution.VersionRequest;
 import org.eclipse.aether.resolution.VersionResolutionException;
 import org.eclipse.aether.resolution.VersionResult;
+import org.eclipse.aether.spi.connector.ArtifactDownload;
+import org.eclipse.aether.spi.connector.RepositoryConnector;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
+import org.eclipse.aether.transfer.NoRepositoryConnectorException;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -97,6 +104,31 @@ import org.xwiki.properties.converter.Converter;
  */
 public class AetherExtensionRepository extends AbstractExtensionRepository
 {
+    protected static class AetherExtensionFileInputStream extends FileInputStream
+    {
+        private final File file;
+
+        private final boolean delete;
+
+        public AetherExtensionFileInputStream(File file, boolean delete) throws FileNotFoundException
+        {
+            super(file);
+
+            this.file = file;
+            this.delete = delete;
+        }
+
+        @Override
+        public void close() throws IOException
+        {
+            super.close();
+
+            if (this.delete && this.file.exists()) {
+                Files.delete(this.file.toPath());
+            }
+        }
+    }
+
     /**
      * Used to parse the version.
      */
@@ -187,6 +219,43 @@ public class AetherExtensionRepository extends AbstractExtensionRepository
     protected File createTemporaryFile(String prefix, String suffix) throws IOException
     {
         return this.repositoryFactory.createTemporaryFile(prefix, suffix);
+    }
+
+    protected InputStream openStream(Artifact artifact) throws IOException
+    {
+        XWikiRepositorySystemSession session;
+        try {
+            session = createRepositorySystemSession();
+        } catch (ResolveException e) {
+            throw new IOException("Failed to create the repository system session", e);
+        }
+
+        List<RemoteRepository> repositories = newResolutionRepositories(session);
+        RemoteRepository repository = repositories.get(0);
+
+        RepositoryConnector connector;
+        try {
+            RepositoryConnectorProvider repositoryConnectorProvider = getRepositoryConnectorProvider();
+            connector = repositoryConnectorProvider.newRepositoryConnector(session, repository);
+        } catch (NoRepositoryConnectorException e) {
+            throw new IOException("Failed to download artifact [" + artifact + "]", e);
+        }
+
+        File file = createTemporaryFile(artifact.getArtifactId(), artifact.getExtension());
+
+        ArtifactDownload download = new ArtifactDownload();
+        download.setArtifact(artifact);
+        download.setRepositories(repositories);
+        download.setFile(file);
+
+        try {
+            connector.get(Arrays.asList(download), null);
+        } finally {
+            connector.close();
+            session.close();
+        }
+
+        return new AetherExtensionFileInputStream(file, true);
     }
 
     @Override

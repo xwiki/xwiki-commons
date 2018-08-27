@@ -21,7 +21,7 @@ package org.xwiki.tool.extension.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.maven.RepositoryUtils;
@@ -29,8 +29,11 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.codehaus.plexus.PlexusContainer;
+import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResult;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.internal.ExtensionFactory;
@@ -81,13 +84,29 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
     }
 
     @Override
-    protected File createTemporaryFile(String prefix, String suffix) throws IOException
+    public InputStream openStream(org.eclipse.aether.artifact.Artifact artifact) throws IOException
     {
-        File targetDirectory = new File(this.mavenSession.getTopLevelProject().getBuild().getDirectory());
-        File downloadFirectory = new File(targetDirectory, "extension/download/files/");
-        downloadFirectory.mkdirs();
+        XWikiRepositorySystemSession session = createRepositorySystemSession();
 
-        return Files.createTempFile(downloadFirectory.toPath(), prefix, suffix).toFile();
+        List<RemoteRepository> repositories = newResolutionRepositories(session);
+
+        // /////////////////////////////////////////////////////////////////////////////:
+
+        ArtifactRequest artifactRequest = new ArtifactRequest();
+        artifactRequest.setRepositories(repositories);
+        artifactRequest.setArtifact(artifact);
+
+        ArtifactResult artifactResult;
+        try {
+            RepositorySystem repositorySystem = getRepositorySystem();
+            artifactResult = repositorySystem.resolveArtifact(session, artifactRequest);
+        } catch (org.eclipse.aether.resolution.ArtifactResolutionException e) {
+            throw new IOException("Failed to resolve artifact", e);
+        }
+
+        File aetherFile = artifactResult.getArtifact().getFile();
+
+        return new AetherExtensionFileInputStream(aetherFile, false);
     }
 
     @Override
