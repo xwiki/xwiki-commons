@@ -83,6 +83,14 @@ public class MavenBuildExtensionRepository extends AetherExtensionRepository
         return session;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Override standard {@link #openStream(org.eclipse.aether.artifact.Artifact)} to reuse running Maven session which
+     * is much faster.
+     * 
+     * @see org.xwiki.extension.repository.aether.internal.AetherExtensionRepository#openStream(org.eclipse.aether.artifact.Artifact)
+     */
     @Override
     public InputStream openStream(org.eclipse.aether.artifact.Artifact artifact) throws IOException
     {
