@@ -161,8 +161,10 @@
 
     <!-- Version of Maven used at runtime (by Extension Manager mostly) -->
     <maven.runtime.version>3.5.4</maven.runtime.version>
-    <!-- Minimum version of Maven supported at build time  -->
+    <!-- Version of Maven used by the plugins  -->
     <maven.build.version>3.5.4</maven.build.version>
+    <!-- Minimum version required -->
+    <maven.minimum.version>3.5.0</maven.minimum.version>
     <!--
       The version of Maven used when declaring dependencies.
       Use runtime version by default, overwrite it to change to build version (usually for Maven plugins)
@@ -187,7 +189,7 @@
     <xwiki.nexus.skipStaging>false</xwiki.nexus.skipStaging>
   </properties>
   <prerequisites>
-    <maven>${maven.build.version}</maven>
+    <maven>${maven.minimum.version}</maven>
   </prerequisites>
   <licenses>
     <license>
