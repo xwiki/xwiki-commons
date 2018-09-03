@@ -232,6 +232,7 @@ public class XWikiDocument
      * @param domdoc the DOM document containing and XML wiki page
      * @return the reference of the wiki page
      * @throws DocumentException if it is not a valid XML wiki page
+     * @since 10.8RC1
      */
     public static String readDocumentReference(Document domdoc) throws DocumentException
     {
@@ -259,6 +260,7 @@ public class XWikiDocument
      * @param rootElement the root XML element under which to find the element
      * @param elementName the name of the element to read
      * @return {@code true} if the element is present; {@code false} otherwise
+     * @since 10.8RC1
      */
     public static boolean isElementPresent(Element rootElement, String elementName)
     {
@@ -272,6 +274,7 @@ public class XWikiDocument
      * @param rootElement the root XML element under which to find the element
      * @param elementName the name of the element to read
      * @return null or the element value as a String
+     * @since 10.8RC1
      */
     public static String readElement(Element rootElement, String elementName)
     {
@@ -286,6 +289,7 @@ public class XWikiDocument
     /**
      * @param rootElement the root element of the XML document
      * @return the list of data for each attachment
+     * @since 10.8RC1
      */
     public static List<Map<String, String>> readAttachmentData(Element rootElement)
     {
@@ -482,6 +486,7 @@ public class XWikiDocument
     /**
      * @param name the name to escape
      * @return the escaped name
+     * @since 10.8RC1
      */
     public static String escapeSpaceOrPageName(String name)
     {
@@ -508,6 +513,7 @@ public class XWikiDocument
 
     /**
      * @return {@code true} if the date field is present; false otherwise
+     * @since 10.8RC1
      */
     public boolean isDatePresent()
     {
@@ -516,6 +522,7 @@ public class XWikiDocument
 
     /**
      * @return {@code true} if the contentUpdateDate field is present; false otherwise
+     * @since 10.8RC1
      */
     public boolean isContentUpdateDatePresent()
     {
@@ -524,6 +531,7 @@ public class XWikiDocument
 
     /**
      * @return {@code true} if the creationDate field is present; false otherwise
+     * @since 10.8RC1
      */
     public boolean isCreationeDatePresent()
     {
@@ -532,6 +540,7 @@ public class XWikiDocument
 
     /**
      * @return {@code true} if the date field is present for an attachment; false otherwise
+     * @since 10.8RC1
      */
     public boolean isAttachmentDatePresent()
     {
