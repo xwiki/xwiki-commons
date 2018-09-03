@@ -109,7 +109,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * Disables the check for the existence of the date fields.
      *
-     * @since 10.7RC1
+     * @since 10.8RC1
      */
     @Parameter(property = "xar.dates.skip", defaultValue = "false")
     protected boolean skipDates;
@@ -117,7 +117,7 @@ public abstract class AbstractVerifyMojo extends AbstractXARMojo
     /**
      * Disables the check for the existence of the date fields.
      *
-     * @since 10.7RC1
+     * @since 10.8RC1
      */
     @Parameter(property = "xar.dates.skip.documentList")
     protected Set<String> skipDatesDocumentList;
