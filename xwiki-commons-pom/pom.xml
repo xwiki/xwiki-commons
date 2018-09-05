@@ -281,6 +281,9 @@
               <!-- Since there's no comment syntax for Maven IT tests's goal.txt file we need to exclude it -->
               <exclude>**/it/**/goals.txt</exclude>
               <exclude>**/goal.txt</exclude>
+              <!-- Don't check DSpot-generated tests for license headers since DSpot generates modifies headers
+                   See https://github.com/STAMP-project/dspot/issues/538 -->
+              <exclude>src/test/dspot/**/*.*</exclude>
             </excludes>
           </configuration>
           <!-- Add a dependency since this is where the license-maven-plugin plugin will find the license.txt file -->
