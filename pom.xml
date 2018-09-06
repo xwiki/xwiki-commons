@@ -2199,6 +2199,7 @@
             </executions>
             <configuration>
               <skip>${xwiki.pitest.skip}</skip>
+              <failWhenNoMutations>false</failWhenNoMutations>
               <mutationThreshold>${xwiki.pitest.mutationThreshold}</mutationThreshold>
               <mutationEngine>descartes</mutationEngine>
               <threads>4</threads>
