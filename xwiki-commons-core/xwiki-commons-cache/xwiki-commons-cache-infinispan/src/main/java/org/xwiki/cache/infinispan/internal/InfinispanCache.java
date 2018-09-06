@@ -153,17 +153,9 @@ public class InfinispanCache<T> extends AbstractCache<T>
     @CacheEntryRemoved
     public void nodeRemoved(CacheEntryRemovedEvent<String, T> event)
     {
-        String key = event.getKey();
-        T value = event.getValue();
-
-        if (event.isPre()) {
-            if (value != null) {
-                this.preEventData.put(key, value);
-            }
-        } else {
-            cacheEntryRemoved(event.getKey(), this.preEventData.get(key));
-
-            this.preEventData.remove(key);
+        // TODO: remove != null when https://issues.jboss.org/browse/ISPN-9491 is fixed
+        if (!event.isPre() && event.getOldValue() != null) {
+            cacheEntryRemoved(event.getKey(), event.getOldValue());
         }
     }
 

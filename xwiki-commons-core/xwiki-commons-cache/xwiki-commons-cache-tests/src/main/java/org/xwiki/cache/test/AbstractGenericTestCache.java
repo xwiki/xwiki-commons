@@ -160,6 +160,11 @@ public abstract class AbstractGenericTestCache extends AbstractTestCache
         Assert.assertSame(cache, eventListener.getRemovedEvent().getCache());
         Assert.assertEquals(KEY, eventListener.getRemovedEvent().getEntry().getKey());
         Assert.assertEquals(VALUE2, eventListener.getRemovedEvent().getEntry().getValue());
+
+        eventListener.reinitRemovedEvent();
+        cache.remove(KEY);
+
+        Assert.assertNull(eventListener.getRemovedEvent());
     }
 
     /**
