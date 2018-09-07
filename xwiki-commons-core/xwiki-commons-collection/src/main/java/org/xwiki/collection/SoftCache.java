@@ -23,6 +23,8 @@ import java.lang.ref.SoftReference;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.xwiki.stability.Unstable;
+
 /**
  * A concurrent version of {@link WeakHashMap} in which the values are soft references.
  * 
@@ -30,7 +32,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @param <V> the type of mapped values
  * @version $Id$
  * @since 10.8RC1
+ * @since 9.11.8
  */
+@Unstable
 public class SoftCache<K, V>
 {
     private WeakHashMap<K, SoftReference<V>> map = new WeakHashMap<>();
