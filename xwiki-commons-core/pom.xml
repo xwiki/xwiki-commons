@@ -41,6 +41,7 @@
     <module>xwiki-commons-blame</module>
     <module>xwiki-commons-cache</module>
     <module>xwiki-commons-classloader</module>
+    <module>xwiki-commons-collection</module>
     <module>xwiki-commons-component</module>
     <module>xwiki-commons-configuration</module>
     <module>xwiki-commons-context</module>

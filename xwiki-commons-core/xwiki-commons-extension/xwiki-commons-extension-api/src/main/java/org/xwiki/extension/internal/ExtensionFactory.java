@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 
+import org.xwiki.collection.SoftCache;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.extension.DefaultExtensionAuthor;
 import org.xwiki.extension.DefaultExtensionDependency;

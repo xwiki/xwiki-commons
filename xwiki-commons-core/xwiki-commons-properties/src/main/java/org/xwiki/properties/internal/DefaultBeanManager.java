@@ -25,8 +25,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,6 +35,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.slf4j.Logger;
+import org.xwiki.collection.SoftCache;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.BeanManager;
@@ -63,12 +62,10 @@ import org.xwiki.properties.RawProperties;
 public class DefaultBeanManager implements BeanManager
 {
     /**
-     * Cache the already parsed classes. We store weak reference since the classes might come from extension later
-     * uninstalled or reloaded.
+     * Cache the already parsed classes. We store weak reference since the classes might come from extensions later
+     * uninstalled/upgraded or from scripts.
      */
-    private Map<Class<?>, BeanDescriptor> beanDescriptorCache = new WeakHashMap<>();
-
-    private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private SoftCache<Class<?>, BeanDescriptor> beanDescriptorCache = new SoftCache<>();
 
     /**
      * The logger to use for logging.
@@ -223,25 +220,13 @@ public class DefaultBeanManager implements BeanManager
         BeanDescriptor beanDescriptor = null;
 
         if (beanClass != null) {
-            this.lock.readLock().lock();
-
             // Get the bean descriptor from the cache
-            try {
-                beanDescriptor = this.beanDescriptorCache.get(beanClass);
-            } finally {
-                this.lock.readLock().unlock();
-            }
+            beanDescriptor = this.beanDescriptorCache.get(beanClass);
 
             // Create a new one if none could be found
             if (beanDescriptor == null) {
-                this.lock.writeLock().lock();
-
-                try {
-                    beanDescriptor = new DefaultBeanDescriptor(beanClass);
-                    this.beanDescriptorCache.put(beanClass, beanDescriptor);
-                } finally {
-                    this.lock.writeLock().unlock();
-                }
+                beanDescriptor = new DefaultBeanDescriptor(beanClass);
+                this.beanDescriptorCache.put(beanClass, beanDescriptor);
             }
         }
 
