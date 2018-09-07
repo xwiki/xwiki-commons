@@ -27,60 +27,25 @@
     <artifactId>xwiki-commons-core</artifactId>
     <version>9.11.8-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-commons-properties</artifactId>
-  <name>XWiki Commons - Properties</name>
+  <artifactId>xwiki-commons-collection</artifactId>
+  <name>XWiki Commons - Collection</name>
   <packaging>jar</packaging>
-  <description>XWiki Commons - Properties</description>
+  <description>Offers collection-related APIs</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.76</xwiki.jacoco.instructionRatio>
-    <!-- There's a method that is supposed to return HashSet, that the type it's handling... -->
-    <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
+    <xwiki.jacoco.instructionRatio>0.83</xwiki.jacoco.instructionRatio>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-component-api</artifactId>
+      <artifactId>xwiki-commons-stability</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-collection</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
     </dependency>
 
-    <!-- Tests dependencies -->
+    <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-tool-test-component</artifactId>
+      <artifactId>xwiki-commons-tool-test-simple</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <version>4.3.0.Final</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
