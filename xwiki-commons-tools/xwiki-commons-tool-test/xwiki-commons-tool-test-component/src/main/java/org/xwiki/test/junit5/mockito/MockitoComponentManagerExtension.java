@@ -118,6 +118,13 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             saveComponentManager(context, mcm);
         }
 
+        // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
+        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
+            if (field.isAnnotationPresent(InjectComponentManager.class)) {
+                ReflectionUtils.setFieldValue(testInstance, field.getName(), mcm);
+            }
+        }
+
         // Register a mock component for all fields annotated with @MockComponent
         for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
             if (field.isAnnotationPresent(MockComponent.class)) {
@@ -143,13 +150,6 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             InjectMockComponents annotation = field.getAnnotation(InjectMockComponents.class);
             if (annotation != null) {
                 processInjectMockComponents(testInstance, field, annotation, mcm);
-            }
-        }
-
-        // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
-        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
-            if (field.isAnnotationPresent(InjectComponentManager.class)) {
-                ReflectionUtils.setFieldValue(testInstance, field.getName(), mcm);
             }
         }
 

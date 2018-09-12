@@ -76,7 +76,11 @@ public class MockitoComponentManagerExtensionTest
     @BeforeComponent
     public void beforeComponent(MockitoComponentManager componentManager) throws Exception
     {
+        // Verify that we can pass a MockitoComponentManager in parameter
         componentManager.registerComponent(Component2Role.class, mock(Component2Role.class, "beforeComponent"));
+
+        // Verify also that any fields annotated with @InjectComponentManager have been injected at this stage
+        assertNotNull(this.componentManager);
     }
 
     @BeforeEach
