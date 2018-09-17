@@ -481,7 +481,16 @@ public class ExtensionMojoHelper implements AutoCloseable
     {
         // Get path
         // WAR plugin use based version for the name of the actual file stored in the package
-        File path = new File(directory, artifact.getArtifactId() + '-' + artifact.getBaseVersion() + ".xed");
+        StringBuilder builder = new StringBuilder();
+        builder.append(artifact.getArtifactId());
+        builder.append('-');
+        builder.append(artifact.getBaseVersion());
+        if (artifact.getClassifier() != null) {
+            builder.append('-');
+            builder.append(artifact.getClassifier());
+        }
+        builder.append(".xed");
+        File path = new File(directory, builder.toString());
 
         try {
             serializeExtension(path, artifact);
