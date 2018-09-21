@@ -353,7 +353,8 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
-        <version>2.5.0</version>
+        <!-- DBCP2 requires JDBC 4.1 starting with 2.4.0 and JDBC 4.2 with 2.5.0 -->
+        <version>2.3.0</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
