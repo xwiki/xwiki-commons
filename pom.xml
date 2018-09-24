@@ -1797,7 +1797,15 @@
           <version>${clover.version}</version>
           <configuration>
             <skip>${xwiki.clover.skip}</skip>
-            <includesTestSourceRoots>false</includesTestSourceRoots>
+            <!-- We want to incude test source roots in order to have more information in the Clover report, such as:
+                 - which tests are covering whichg part of the code
+                 - how many tests were executed overall
+                 However, for comparison purposes between reportsn, we need to recomute the TPC by excluding all
+                 tests classes from the computation as otherwise it skews the results. This is what we do in the
+                 Jenkins Clover pipeline that we use, see
+                 https://github.com/xwiki/xwiki-jenkins-pipeline/blob/master/scripts/clover.groovy
+            -->
+            <includesTestSourceRoots>true</includesTestSourceRoots>
           </configuration>
         </plugin>
         <plugin>
