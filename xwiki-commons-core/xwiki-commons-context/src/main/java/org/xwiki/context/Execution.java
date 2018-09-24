@@ -19,6 +19,8 @@
  */
 package org.xwiki.context;
 
+import java.util.EmptyStackException;
+
 import org.xwiki.component.annotation.Role;
 
 /**
@@ -47,6 +49,8 @@ public interface Execution
 
     /**
      * Remove a context level in the current thread.
+     *
+     * @throws EmptyStackException if this stack is empty.
      */
     void popContext();
 
