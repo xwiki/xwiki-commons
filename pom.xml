@@ -1796,7 +1796,6 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
           <configuration>
-            <skip>${xwiki.clover.skip}</skip>
             <!-- We want to incude test source roots in order to have more information in the Clover report, such as:
                  - which tests are covering whichg part of the code
                  - how many tests were executed overall
@@ -2108,8 +2107,6 @@
     <profile>
       <id>clover</id>
       <properties>
-        <!-- By default don't skip Clover plugin execution when in the Clover profile! -->
-        <xwiki.clover.skip>false</xwiki.clover.skip>
         <!-- We need to skip checkstyle execution since otherwise it conflicts with Clover -->
         <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
         <!-- Skip backward-compatiblity checks since we don't need it when computing test coverage and it speeds up

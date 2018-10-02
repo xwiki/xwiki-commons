@@ -157,5 +157,21 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>clover</id>
+      <build>
+        <plugins>
+          <!-- Override the skip done at the level of commons-tools since that's needed when running with the clover
+               profile -->
+          <plugin>
+            <groupId>org.openclover</groupId>
+            <artifactId>clover-maven-plugin</artifactId>
+            <configuration>
+              <skip>false</skip>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>

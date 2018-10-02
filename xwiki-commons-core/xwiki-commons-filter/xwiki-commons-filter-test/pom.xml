@@ -33,9 +33,6 @@
   <properties>
     <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
     <xwiki.pitest.mutationThreshold>7</xwiki.pitest.mutationThreshold>
-    <!-- Don't cloverify test since we don't want our global TPC to include test TPC. We want to include only
-         runtime code -->
-    <xwiki.clover.skip>true</xwiki.clover.skip>
   </properties>
   <dependencies>
     <dependency>

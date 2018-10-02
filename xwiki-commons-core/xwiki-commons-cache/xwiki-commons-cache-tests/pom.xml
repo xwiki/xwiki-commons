@@ -37,9 +37,6 @@
     <xwiki.jacoco.instructionRatio>0.00</xwiki.jacoco.instructionRatio>
     <!-- Old names of this module used for retro compatibility when resolving dependencies of old extensions -->
     <xwiki.extension.features>org.xwiki.platform:xwiki-platform-cache-tests</xwiki.extension.features>
-    <!-- Don't cloverify test since we don't want our global TPC to include test TPC. We want to include only
-         runtime code -->
-    <xwiki.clover.skip>true</xwiki.clover.skip>
   </properties>
   <dependencies>
     <dependency>
