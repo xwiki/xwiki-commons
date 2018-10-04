@@ -25,8 +25,9 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -37,7 +38,6 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.mockito.MockitoComponentManager;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.xwiki.test.mockito.MockitoComponentMocker;
 
 /**
@@ -91,7 +91,7 @@ import org.xwiki.test.mockito.MockitoComponentMocker;
  * @version $Id$
  * @since 10.3RC1
  */
-public class MockitoComponentManagerExtension implements TestInstancePostProcessor, AfterAllCallback, ParameterResolver
+public class MockitoComponentManagerExtension implements TestInstancePostProcessor, AfterEachCallback, ParameterResolver
 {
     private static final Namespace NAMESPACE = Namespace.create(MockitoComponentManagerExtension.class);
 
@@ -194,7 +194,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
     }
 
     @Override
-    public void afterAll(ExtensionContext extensionContext) throws Exception
+    public void afterEach(ExtensionContext extensionContext) throws Exception
     {
         MockitoComponentManager mcm = loadComponentManager(extensionContext);
         if (mcm != null) {
