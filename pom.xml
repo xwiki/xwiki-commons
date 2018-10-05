@@ -1077,10 +1077,11 @@
         <scope>runtime</scope>
       </dependency>
       <!-- Mail -->
+      <!-- Note that javamail.providers service seems broken in javax.mail 1.6.2 -->
       <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>javax.mail</artifactId>
-        <version>1.6.2</version>
+        <version>1.6.1</version>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
