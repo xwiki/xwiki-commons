@@ -51,6 +51,7 @@ import org.xwiki.extension.job.internal.InstallJob;
 import org.xwiki.extension.job.plan.ExtensionPlan;
 import org.xwiki.extension.job.plan.ExtensionPlanAction;
 import org.xwiki.extension.job.plan.ExtensionPlanAction.Action;
+import org.xwiki.extension.maven.ArtifactModel;
 import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.repository.ExtensionRepositoryManager;
 import org.xwiki.extension.repository.InstalledExtensionRepository;
@@ -85,7 +86,7 @@ public class ExtensionMojoHelper implements AutoCloseable
     private ExtensionRepositoryManager repositories;
 
     @Inject
-    private Converter<Model> converter;
+    private Converter<ArtifactModel> extensionConverter;
 
     @Inject
     @Named(DependenciesJob.JOBTYPE)
@@ -281,28 +282,23 @@ public class ExtensionMojoHelper implements AutoCloseable
     {
         MavenProject project = getMavenProject(artifact);
 
-        return getExtension(project);
+        return toExtension(toArtifactModel(artifact, project.getModel()));
     }
 
-    public Extension getExtension(MavenProject project)
+    public Extension toExtension(ArtifactModel model)
     {
-        Extension mavenExtension = toExtension(project.getModel());
+        Extension extension = this.extensionConverter.convert(Extension.class, model);
 
-        DefaultLocalExtension extension = new DefaultLocalExtension(null, mavenExtension);
-        extension.setFile(project.getArtifact().getFile());
+        MutableExtension mutableExtension;
 
-        return extension;
-    }
-
-    public Extension toExtension(Model model)
-    {
-        Extension extension = this.converter.convert(Extension.class, model);
+        if (!(extension instanceof MutableExtension)) {
+            mutableExtension = new DefaultLocalExtension(null, extension);
+        } else {
+            mutableExtension = (MutableExtension) extension;
+        }
 
         // Apply overrides
-        if (!(extension instanceof MutableExtension)) {
-            extension = new DefaultLocalExtension(null, extension);
-        }
-        override((MutableExtension) extension);
+        override(mutableExtension);
 
         return extension;
     }
@@ -439,14 +435,29 @@ public class ExtensionMojoHelper implements AutoCloseable
         // Get MavenProject instance
         MavenProject mavenProject = getMavenProject(artifact);
 
-        serializeExtension(path, mavenProject.getModel());
+        serializeExtension(path, artifact, mavenProject.getModel());
     }
 
-    public void serializeExtension(File path, Model model)
+    public void serializeExtension(File path, Artifact artifact, Model model)
+        throws IOException, ParserConfigurationException, TransformerException
+    {
+        serializeExtension(path, toArtifactModel(artifact, model));
+    }
+
+    public ArtifactModel toArtifactModel(Artifact artifact, Model model)
+    {
+        ArtifactModel artifactModel = new ArtifactModel(model);
+        artifactModel.setClassifier(artifact.getClassifier());
+        artifactModel.setType(artifact.getType());
+
+        return artifactModel;
+    }
+
+    public void serializeExtension(File path, ArtifactModel artifactModel)
         throws IOException, ParserConfigurationException, TransformerException
     {
         // Get Extension instance
-        Extension mavenExtension = toExtension(model);
+        Extension mavenExtension = toExtension(artifactModel);
 
         if (!path.exists()) {
             // Save the Extension descriptor

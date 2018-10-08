@@ -26,7 +26,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
 import org.xwiki.extension.DefaultExtensionScmConnection;
+import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionScmConnection;
+import org.xwiki.extension.version.Version;
+import org.xwiki.extension.version.internal.DefaultVersion;
 
 /**
  * Various Maven related helpers.
@@ -103,6 +106,40 @@ public class MavenUtils
         }
 
         return builder.toString();
+    }
+
+    /**
+     * Create a extension identifier from Maven artifact identifier elements.
+     * 
+     * @param groupId the group id
+     * @param artifactId the artifact id
+     * @param classifier the classifier
+     * @param version the version
+     * @return the extension identifier
+     * @since 10.9RC1
+     * @since 10.8.1
+     */
+    public static ExtensionId toExtensionId(String groupId, String artifactId, String classifier, String version)
+    {
+        return toExtensionId(groupId, artifactId, classifier, version != null ? new DefaultVersion(version) : null);
+    }
+
+    /**
+     * Create a extension identifier from Maven artifact identifier elements.
+     * 
+     * @param groupId the group id
+     * @param artifactId the artifact id
+     * @param classifier the classifier
+     * @param version the version
+     * @return the extension identifier
+     * @since 10.9RC1
+     * @since 10.8.1
+     */
+    public static ExtensionId toExtensionId(String groupId, String artifactId, String classifier, Version version)
+    {
+        String extensionId = toExtensionId(groupId, artifactId, classifier);
+
+        return new ExtensionId(extensionId, version);
     }
 
     /**

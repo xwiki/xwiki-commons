@@ -93,7 +93,7 @@
             <id>default</id>
             <configuration>
               <excludes>
-                **/ModelConverter.java,
+                **/AbstractModelConverter.java,
                 **/MavenUtils.java,
                 **/MavenExtensionScanner.java
               </excludes>

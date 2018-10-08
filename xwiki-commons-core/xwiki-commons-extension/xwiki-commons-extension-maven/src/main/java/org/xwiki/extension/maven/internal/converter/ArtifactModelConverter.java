@@ -28,6 +28,7 @@ import org.apache.maven.model.Model;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.maven.ArtifactModel;
 import org.xwiki.extension.maven.internal.MavenExtension;
 import org.xwiki.extension.maven.internal.MavenUtils;
 import org.xwiki.properties.converter.ConversionException;
@@ -41,30 +42,33 @@ import org.xwiki.properties.converter.Converter;
  */
 @Component
 @Singleton
-public class ModelConverter extends AbstractModelConverter<Model>
+public class ArtifactModelConverter extends AbstractModelConverter<ArtifactModel>
 {
     /**
      * The role of the component.
      */
-    public static final ParameterizedType ROLE = new DefaultParameterizedType(null, Converter.class, Model.class);
+    public static final ParameterizedType ROLE =
+        new DefaultParameterizedType(null, Converter.class, ArtifactModel.class);
 
     @Override
     public <G> G convert(Type targetType, Object sourceValue)
     {
         if (targetType == Extension.class) {
-            return (G) convertToExtension((Model) sourceValue);
+            return (G) convertToExtension((ArtifactModel) sourceValue);
         } else {
             throw new ConversionException(String.format("Unsupported target type [%s]", targetType));
         }
     }
 
-    private MavenExtension convertToExtension(Model model)
+    private MavenExtension convertToExtension(ArtifactModel artifactModel)
     {
-        String groupId = MavenUtils.resolveGroupId(model);
-        String artifactId = model.getArtifactId();
-        String type = MavenUtils.packagingToType(model.getPackaging());
-        String version = MavenUtils.resolveVersion(model);
+        String groupId = MavenUtils.resolveGroupId(artifactModel.getModel());
+        String artifactId = artifactModel.getModel().getArtifactId();
+        String classifier = artifactModel.getClassifier();
+        String type = MavenUtils.packagingToType(
+            artifactModel.getType() != null ? artifactModel.getType() : artifactModel.getModel().getPackaging());
+        String version = MavenUtils.resolveVersion(artifactModel.getModel());
 
-        return convertToExtension(model, groupId, artifactId, null, type, version);
+        return convertToExtension(artifactModel.getModel(), groupId, artifactId, classifier, type, version);
     }
 }

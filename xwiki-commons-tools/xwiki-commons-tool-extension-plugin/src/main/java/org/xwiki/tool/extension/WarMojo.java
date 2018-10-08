@@ -62,7 +62,8 @@ public class WarMojo extends AbstractExtensionMojo
 
         // Write descriptor
         try {
-            this.extensionHelper.serializeExtension(new File(directory, "extension.xed"), this.project.getModel());
+            this.extensionHelper.serializeExtension(new File(directory, "extension.xed"), this.project.getArtifact(),
+                this.project.getModel());
         } catch (Exception e) {
             throw new MojoExecutionException("Failed to write WAR descriptor", e);
         }
