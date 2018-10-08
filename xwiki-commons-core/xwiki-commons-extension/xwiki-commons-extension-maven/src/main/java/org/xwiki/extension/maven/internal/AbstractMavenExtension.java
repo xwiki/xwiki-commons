@@ -55,6 +55,14 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
     public static final String PKEY_MAVEN_GROUPID = PKEY_MAVENPRFIX + "groupid";
 
     /**
+     * The name of the property containing the classifier.
+     * 
+     * @since 10.9RC1
+     * @since 10.8.1
+     */
+    public static final String PKEY_MAVEN_CLASSIFIER = PKEY_MAVENPRFIX + "classifier";
+
+    /**
      * @param repository the repository where this extension comes from
      * @param groupId the maven artifact group id
      * @param artifactId the maven artifact artifact id
@@ -81,10 +89,29 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
     public AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, Version version,
         String type)
     {
-        super(repository, new ExtensionId(groupId + ':' + artifactId, version), type);
+        this(repository, groupId, artifactId, null, version, type);
+    }
+
+    /**
+     * @param repository the repository where this extension comes from
+     * @param groupId the maven artifact group id
+     * @param artifactId the maven artifact artifact id
+     * @param classifier the maven artifact classifier
+     * @param version the maven artifact version
+     * @param type the extension type
+     * @since 10.9RC1
+     * @since 10.8.1
+     */
+    public AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, String classifier,
+        Version version, String type)
+    {
+        super(repository, MavenUtils.toExtensionId(groupId, artifactId, classifier, version), type);
 
         setMavenGroupId(groupId);
         setMavenArtifactId(artifactId);
+        if (classifier != null) {
+            setMavenClassifier(classifier);
+        }
     }
 
     /**
@@ -131,6 +158,16 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
     public void setMavenArtifactId(String artifactId)
     {
         putProperty(PKEY_MAVEN_ARTIFACTID, artifactId);
+    }
+
+    /**
+     * @param classifier the Maven classifier
+     * @since 10.9RC1
+     * @since 10.8.1
+     */
+    public void setMavenClassifier(String classifier)
+    {
+        putProperty(PKEY_MAVEN_CLASSIFIER, classifier);
     }
 
     /**

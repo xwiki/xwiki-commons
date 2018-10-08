@@ -20,6 +20,7 @@
 package org.xwiki.extension.maven.internal;
 
 import org.xwiki.extension.Extension;
+import org.xwiki.extension.ExtensionFile;
 import org.xwiki.extension.repository.ExtensionRepository;
 import org.xwiki.extension.version.Version;
 
@@ -59,6 +60,22 @@ public class DefaultMavenExtension extends AbstractMavenExtension
     }
 
     /**
+     * @param repository the repository where this extension comes from
+     * @param groupId the maven artifact group id
+     * @param artifactId the maven artifact artifact id
+     * @param classifier the maven artifact classifier
+     * @param version the maven artifact version
+     * @param type the extension type
+     * @since 10.9RC1
+     * @since 10.8.1
+     */
+    public DefaultMavenExtension(ExtensionRepository repository, String groupId, String artifactId, String classifier,
+        Version version, String type)
+    {
+        super(repository, groupId, artifactId, classifier, version, type);
+    }
+
+    /**
      * Create new Maven extension descriptor by copying provided one.
      *
      * @param repository the repository where this extension comes from
@@ -67,5 +84,18 @@ public class DefaultMavenExtension extends AbstractMavenExtension
     public DefaultMavenExtension(ExtensionRepository repository, Extension extension)
     {
         super(repository, extension);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.extension.AbstractExtension#setFile(org.xwiki.extension.ExtensionFile)
+     * @since 10.9RC1
+     * @since 10.8.1
+     */
+    @Override
+    public void setFile(ExtensionFile file)
+    {
+        super.setFile(file);
     }
 }
