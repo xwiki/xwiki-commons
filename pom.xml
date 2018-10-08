@@ -1740,12 +1740,12 @@
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.10.4</version>
+          <version>0.10.5</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.18.0</version>
+              <version>0.18.1</version>
             </dependency>
           </dependencies>
           <executions>
@@ -1759,6 +1759,10 @@
           <configuration>
             <oldVersion>${xwiki.compatibility.previous.version}</oldVersion>
             <skip>${xwiki.revapi.skip}</skip>
+            <!-- Only output minimal differences required when revapi fails, so that we don't copy unnecessary
+                 differences which could lead to issues when releasing XWiki, see
+                 https://github.com/revapi/revapi/issues/137 for more info. -->
+            <outputNonIdentifyingDifferenceInfo>false</outputNonIdentifyingDifferenceInfo>
           </configuration>
         </plugin>
         <plugin>
