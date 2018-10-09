@@ -98,20 +98,19 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         this.defaultTools.setProperty("niotool", NIOTool.class.getName());
 
         // Default Velocity properties
-        this.defaultProperties.setProperty("directive.set.null.allowed", Boolean.TRUE.toString());
         this.defaultProperties.setProperty(RuntimeConstants.VM_MESSAGES_ON, Boolean.FALSE.toString());
         this.defaultProperties.setProperty(RuntimeConstants.VM_MAX_DEPTH, "100");
         this.defaultProperties.setProperty(RuntimeConstants.RESOURCE_MANAGER_LOGWHENFOUND, Boolean.FALSE.toString());
         this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_INLINE_LOCAL, Boolean.TRUE.toString());
         this.defaultProperties.setProperty(RuntimeConstants.VM_PERM_ALLOW_INLINE_REPLACE_GLOBAL,
             Boolean.TRUE.toString());
-        // Enable the extra scope variables $template and $macro, similar to $foreach
-        this.defaultProperties.setProperty("template.provide.scope.control", Boolean.TRUE.toString());
-        this.defaultProperties.setProperty("macro.provide.scope.control", Boolean.TRUE.toString());
         // [Retro compatibility] Make empty string #if evaluate to true
         this.defaultProperties.setProperty(RuntimeConstants.CHECK_EMPTY_OBJECTS, Boolean.FALSE.toString());
         // [Retro compatibility] Use Velocity 1.x Space Gobbling
         this.defaultProperties.setProperty(RuntimeConstants.SPACE_GOBBLING, "bc");
+        // [Retro compatibility] Allow "-" in variables names
+        // TODO: "parser.allows.dash.in.identifiers"
+        this.defaultProperties.setProperty(RuntimeConstants.ENABLE_DASH_IN_VARIABLE, Boolean.TRUE.toString());
 
         // Prevents users from calling #parse on files outside the /templates/ directory
         this.defaultProperties.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE,
