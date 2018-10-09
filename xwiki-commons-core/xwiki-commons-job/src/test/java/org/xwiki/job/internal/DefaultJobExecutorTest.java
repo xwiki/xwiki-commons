@@ -24,6 +24,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.xwiki.component.internal.ContextComponentManagerProvider;
 import org.xwiki.job.DefaultRequest;
+import org.xwiki.job.Job;
 import org.xwiki.job.JobGroupPath;
 import org.xwiki.job.event.status.JobStatus.State;
 import org.xwiki.job.test.TestBasicGroupedJob;
@@ -33,6 +34,7 @@ import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Validate {@link DefaultJobExecutor};
@@ -46,8 +48,41 @@ public class DefaultJobExecutorTest
     @InjectMockComponents
     private DefaultJobExecutor executor;
 
+    private void waitJobWaiting(Job job)
+    {
+        waitJobState(State.WAITING, job);
+    }
+
+    private void waitJobFinished(Job job)
+    {
+        waitJobState(State.FINISHED, job);
+    }
+
+    private void waitJobState(State expected, Job job)
+    {
+        int wait = 0;
+
+        do {
+            if (expected == job.getStatus().getState()) {
+                return;
+            }
+
+            // Wait a bit
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                fail("Job state monitor has been interrupted");
+            }
+
+            wait += 1;
+        } while (wait < 100);
+
+        fail("Job never reached expected state [" + expected + "]. Still [" + job.getStatus().getState()
+            + "] after 100 milliseconds");
+    }
+
     @Test
-    public void matchingGroupPathAreBlocked() throws InterruptedException
+    public void matchingGroupPathAreBlocked()
     {
         TestBasicGroupedJob jobA = groupedJob("A");
         TestBasicGroupedJob jobAB = groupedJob("A", "B");
@@ -61,22 +96,18 @@ public class DefaultJobExecutorTest
         job12.lock();
         job1.lock();
 
-        // Give all jobs to JobExecutor
+        // Give first jobs to JobExecutor
         this.executor.execute(jobA);
-        // Give enough time for the job to be fully taken into account
-        Thread.sleep(10);
-
-        this.executor.execute(jobAB);
-        // Give enough time for the job to be fully taken into account
-        Thread.sleep(10);
-
         this.executor.execute(job12);
-        // Give enough time for the job to be fully taken into account
-        Thread.sleep(10);
 
+        // Give enough time for the jobs to be fully taken into account
+        waitJobWaiting(jobA);
+        waitJobWaiting(job12);
+
+        // Give following jobs to JobExecutor (to make sure they are actually after since the grouped job executor queue
+        // is not "fair")
+        this.executor.execute(jobAB);
         this.executor.execute(job1);
-        // Give enough time for the job to be fully taken into account
-        Thread.sleep(10);
 
         ////////////////////
         // A and A/B
@@ -86,14 +117,14 @@ public class DefaultJobExecutorTest
 
         // Next job
         jobA.unlock();
-        Thread.sleep(10);
+        waitJobWaiting(jobAB);
 
         assertSame(State.FINISHED, jobA.getStatus().getState());
         assertSame(State.WAITING, jobAB.getStatus().getState());
 
         // Next job
         jobAB.unlock();
-        Thread.sleep(10);
+        waitJobFinished(jobAB);
 
         assertSame(State.FINISHED, jobA.getStatus().getState());
         assertSame(State.FINISHED, jobAB.getStatus().getState());
@@ -106,14 +137,14 @@ public class DefaultJobExecutorTest
 
         // Next job
         job12.unlock();
-        Thread.sleep(10);
+        waitJobWaiting(job1);
 
         assertSame(State.FINISHED, job12.getStatus().getState());
         assertSame(State.WAITING, job1.getStatus().getState());
 
         // Next job
         job1.unlock();
-        Thread.sleep(10);
+        waitJobFinished(job1);
 
         assertSame(State.FINISHED, job1.getStatus().getState());
         assertSame(State.FINISHED, job1.getStatus().getState());

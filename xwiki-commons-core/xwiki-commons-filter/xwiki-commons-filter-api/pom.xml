@@ -25,15 +25,15 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-filter</artifactId>
-    <version>10.7-SNAPSHOT</version>
+    <version>10.9-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-filter-api</artifactId>
   <name>XWiki Commons - Filter - API</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Filter - API</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>11</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.30</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>15</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>

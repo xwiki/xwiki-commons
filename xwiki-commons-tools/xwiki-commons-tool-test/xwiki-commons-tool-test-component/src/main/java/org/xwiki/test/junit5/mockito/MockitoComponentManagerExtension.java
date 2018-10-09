@@ -25,8 +25,9 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -37,7 +38,6 @@ import org.xwiki.component.descriptor.ComponentDescriptor;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.test.mockito.MockitoComponentManager;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.xwiki.test.mockito.MockitoComponentMocker;
 
 /**
@@ -91,7 +91,7 @@ import org.xwiki.test.mockito.MockitoComponentMocker;
  * @version $Id$
  * @since 10.3RC1
  */
-public class MockitoComponentManagerExtension implements TestInstancePostProcessor, AfterAllCallback, ParameterResolver
+public class MockitoComponentManagerExtension implements TestInstancePostProcessor, AfterEachCallback, ParameterResolver
 {
     private static final Namespace NAMESPACE = Namespace.create(MockitoComponentManagerExtension.class);
 
@@ -116,6 +116,13 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
         if (initializeCM) {
             mcm = new MockitoComponentManager();
             saveComponentManager(context, mcm);
+        }
+
+        // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
+        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
+            if (field.isAnnotationPresent(InjectComponentManager.class)) {
+                ReflectionUtils.setFieldValue(testInstance, field.getName(), mcm);
+            }
         }
 
         // Register a mock component for all fields annotated with @MockComponent
@@ -143,13 +150,6 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
             InjectMockComponents annotation = field.getAnnotation(InjectMockComponents.class);
             if (annotation != null) {
                 processInjectMockComponents(testInstance, field, annotation, mcm);
-            }
-        }
-
-        // Inject the Mockito Component Manager in all fields annotated with @InjectComponentManager
-        for (Field field : ReflectionUtils.getAllFields(testInstance.getClass())) {
-            if (field.isAnnotationPresent(InjectComponentManager.class)) {
-                ReflectionUtils.setFieldValue(testInstance, field.getName(), mcm);
             }
         }
 
@@ -194,7 +194,7 @@ public class MockitoComponentManagerExtension implements TestInstancePostProcess
     }
 
     @Override
-    public void afterAll(ExtensionContext extensionContext) throws Exception
+    public void afterEach(ExtensionContext extensionContext) throws Exception
     {
         MockitoComponentManager mcm = loadComponentManager(extensionContext);
         if (mcm != null) {

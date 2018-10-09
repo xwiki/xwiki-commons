@@ -24,7 +24,7 @@
   <artifactId>xwiki-commons</artifactId>
   <name>XWiki Commons - Parent POM</name>
   <packaging>pom</packaging>
-  <version>10.7-SNAPSHOT</version>
+  <version>10.9-SNAPSHOT</version>
   <description>A collaborative development platform runtime based on the wiki paradigm</description>
   <!-- This special URL automatically finds the correct documentation page or javadoc for the module based on the
        passed maven coordinates (groupid:artifactid:version). Starting with 6.2-milestone-1, the version has been
@@ -46,20 +46,20 @@
   <properties>
     <!-- Define it here because we can't use ${project.version} for plugins and it's useful for
          commons children anyway -->
-    <commons.version>10.7-SNAPSHOT</commons.version>
+    <commons.version>10.9-SNAPSHOT</commons.version>
 
     <!-- The previous stable version of this project to check against for finding backward incompatibility
          (binary and source). -->
-    <xwiki.compatibility.previous.version>10.5</xwiki.compatibility.previous.version>
+    <xwiki.compatibility.previous.version>10.7</xwiki.compatibility.previous.version>
 
     <!-- Java -->
     <java.version>1.8</java.version>
 
     <!-- Jackson -->
-    <jackson.version>2.9.6</jackson.version>
+    <jackson.version>2.9.7</jackson.version>
 
     <!-- ASM -->
-    <asm.version>6.2</asm.version>
+    <asm.version>6.2.1</asm.version>
 
     <!-- Selenium -->
     <selenium.version>2.44.0</selenium.version>
@@ -72,36 +72,33 @@
 
     <!-- JUnit -->
     <junit.version>4.12</junit.version>
-    <junit5.version>5.1.1</junit5.version>
-    <junit.platform.version>1.1.1</junit.platform.version>
-    <junit.vintage.version>5.1.1</junit.vintage.version>
+    <junit5.version>5.3.1</junit5.version>
+    <junit.platform.version>1.3.1</junit.platform.version>
+    <junit.vintage.version>5.3.1</junit.vintage.version>
 
     <!-- Used to keep the surefire and failsafe plugins in sync (to avoid having different behaviors when tests
          are executed with surefire or failsafe) -->
-    <!-- TODO: We need to use 2.19.1 currently and not move to 2.20 since that one is incompatible with
-     JUnit5 (causing OOMs). Note that 2.20.1 isn't working either. Upgrade and remove this todo once
-     a new version of Surefire is released and works for us -->
-    <surefire.version>2.19.1</surefire.version>
+    <surefire.version>2.22.0</surefire.version>
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
-    <mockito.version>2.19.0</mockito.version>
+    <mockito.version>2.22.0</mockito.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.1</aspectj.version>
 
     <!-- Clover & Jacoco -->
-    <clover.version>4.2.1</clover.version>
-    <jacoco.version>0.8.1</jacoco.version>
+    <clover.version>4.3.1</clover.version>
+    <jacoco.version>0.8.2</jacoco.version>
 
     <!-- Checkstyle -->
-    <checkstyle.version>8.10.1</checkstyle.version>
+    <checkstyle.version>8.13</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>6.2.0</spoon.version>
+    <spoon.version>7.0.0</spoon.version>
 
     <!-- Groovy -->
-    <groovy.version>2.5.0</groovy.version>
+    <groovy.version>2.5.2</groovy.version>
 
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
@@ -164,10 +161,11 @@
     <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
 
     <!-- Version of Maven used at runtime (by Extension Manager mostly) -->
-    <maven.runtime.version>3.3.9</maven.runtime.version>
-    <!-- Minimum version of Maven supported at build time  -->
-    <!-- Some custom lifecycle configuration (used by webjar handler for example) require 3.3.9 -->
-    <maven.build.version>3.3.9</maven.build.version>
+    <maven.runtime.version>3.5.4</maven.runtime.version>
+    <!-- Version of Maven used by the plugins  -->
+    <maven.build.version>3.5.4</maven.build.version>
+    <!-- Minimum version required -->
+    <maven.minimum.version>3.5.0</maven.minimum.version>
     <!--
       The version of Maven used when declaring dependencies.
       Use runtime version by default, overwrite it to change to build version (usually for Maven plugins)
@@ -192,7 +190,7 @@
     <xwiki.nexus.skipStaging>false</xwiki.nexus.skipStaging>
   </properties>
   <prerequisites>
-    <maven>${maven.build.version}</maven>
+    <maven>${maven.minimum.version}</maven>
   </prerequisites>
   <licenses>
     <license>
@@ -259,7 +257,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.7</version>
+        <version>3.8.1</version>
       </dependency>
       <!-- We don't use Commons Lang 2.x ourselves (we use Commons Lang 3.x) but some of our transitive dependencies
            require Commons Lang. The issue is that Maven uses a "closest-to-root" strategy to resolve dependency
@@ -275,7 +273,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
-        <version>4.1</version>
+        <version>4.2</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -305,13 +303,13 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.4</version>
+        <version>1.5</version>
       </dependency>
       <!-- Apache HttpComponents -->
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.5.5</version>
+        <version>4.5.6</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
           <exclusion>
@@ -323,22 +321,22 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpmime</artifactId>
-        <version>4.5.5</version>
+        <version>4.5.6</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.4.9</version>
+        <version>4.4.10</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
-        <version>4.4.9</version>
+        <version>4.4.10</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpasyncclient</artifactId>
-        <version>4.1.3</version>
+        <version>4.1.4</version>
       </dependency>
       <!-- Old httpclient -->
       <dependency>
@@ -356,6 +354,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-dbcp2</artifactId>
+        <!-- DBCP2 requires JDBC 4.1 starting with 2.4.0 and JDBC 4.2 with 2.5.0 -->
         <version>2.3.0</version>
         <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
         <exclusions>
@@ -403,7 +402,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-configuration2</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
          <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
          <exclusions>
            <exclusion>
@@ -415,7 +414,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.17</version>
+        <version>1.18</version>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
@@ -448,7 +447,7 @@
       <dependency>
         <groupId>org.dom4j</groupId>
         <artifactId>dom4j</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.jdom</groupId>
@@ -486,7 +485,7 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.11.0</version>
+        <version>2.12.0</version>
       </dependency>
       <!-- xerces require this version of xml-apis -->
       <dependency>
@@ -546,12 +545,12 @@
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
-        <version>2.3.0</version>
+        <version>2.3.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-core</artifactId>
-        <version>2.3.0</version>
+        <version>2.3.0.1</version>
       </dependency>
 
       <!-- Json -->
@@ -675,7 +674,7 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.21</version>
+        <version>1.23</version>
       </dependency>
 
       <!-- JAX-RS -->
@@ -696,17 +695,17 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcprov-jdk15on</artifactId>
-        <version>1.59</version>
+        <version>1.60</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcpkix-jdk15on</artifactId>
-        <version>1.59</version>
+        <version>1.60</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcmail-jdk15on</artifactId>
-        <version>1.59</version>
+        <version>1.60</version>
       </dependency>
 
       <!-- Various project are using it to scan the classpath -->
@@ -714,13 +713,6 @@
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
         <version>0.9.11</version>
-      </dependency>
-
-      <!-- netcdf 4.2-min wrongly embbeds jcip classes -->
-      <dependency>
-        <groupId>edu.ucar</groupId>
-        <artifactId>netcdf</artifactId>
-        <version>4.2.20</version>
       </dependency>
 
       <!-- Used by reflections and other projects in commons, platform and rendering -->
@@ -867,6 +859,11 @@
         <version>2.5.2</version>
       </dependency>
       <dependency>
+        <groupId>org.sonatype.plexus</groupId>
+        <artifactId>plexus-sec-dispatcher</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.plexus</artifactId>
         <version>0.3.3</version>
@@ -887,11 +884,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
-        <artifactId>maven-aether-provider</artifactId>
-        <version>${maven.dependencies.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
         <version>${maven.dependencies.version}</version>
       </dependency>
@@ -899,6 +891,13 @@
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
         <version>${maven.dependencies.version}</version>
+        <exclusions>
+          <!-- Remove exclusion when https://jira.xwiki.org/browse/XCOMMONS-1155 is fixed -->
+          <exclusion>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
@@ -931,10 +930,20 @@
         <version>${maven.dependencies.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-resolver-provider</artifactId>
+        <version>${maven.dependencies.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.maven.plugin-tools</groupId>
         <artifactId>maven-plugin-annotations</artifactId>
-        <version>3.5</version>
+        <version>3.5.2</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-shared-utils</artifactId>
+        <version>3.2.1</version>
       </dependency>
 
       <!-- Everybody tests -->
@@ -1016,7 +1025,7 @@
         <artifactId>objenesis</artifactId>
         <version>2.6</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-java</artifactId>
@@ -1054,7 +1063,7 @@
       <dependency>
         <groupId>net.sourceforge.cssparser</groupId>
         <artifactId>cssparser</artifactId>
-        <version>0.9.25</version>
+        <version>0.9.26</version>
       </dependency>
       <!-- Bean validation -->
       <dependency>
@@ -1069,6 +1078,7 @@
         <scope>runtime</scope>
       </dependency>
       <!-- Mail -->
+      <!-- Note that javamail.providers service seems broken in javax.mail 1.6.2 -->
       <dependency>
         <groupId>com.sun.mail</groupId>
         <artifactId>javax.mail</artifactId>
@@ -1077,6 +1087,7 @@
       <dependency>
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
+        <version>1.1.1</version>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
@@ -1160,13 +1171,6 @@
         <groupId>antlr</groupId>
         <artifactId>antlr</artifactId>
         <version>2.7.7</version>
-      </dependency>
-
-      <!-- OSGI -->
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.core</artifactId>
-        <version>6.0.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -1468,7 +1472,7 @@
         <plugin>
           <groupId>fr.inria.gforge.spoon</groupId>
           <artifactId>spoon-maven-plugin</artifactId>
-          <version>3.0</version>
+          <version>3.1</version>
           <dependencies>
             <dependency>
               <groupId>fr.inria.gforge.spoon</groupId>
@@ -1542,7 +1546,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.7.0</version>
+          <version>3.8.0</version>
           <configuration>
             <source>${java.version}</source>
             <target>${java.version}</target>
@@ -1572,24 +1576,6 @@
               </property>
             </systemProperties>
           </configuration>
-          <dependencies>
-            <!-- Allow running both JUnit4 and JUnit5 tests -->
-            <dependency>
-              <groupId>org.junit.platform</groupId>
-              <artifactId>junit-platform-surefire-provider</artifactId>
-              <version>${junit.platform.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.junit.jupiter</groupId>
-              <artifactId>junit-jupiter-engine</artifactId>
-              <version>${junit5.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.junit.vintage</groupId>
-              <artifactId>junit-vintage-engine</artifactId>
-              <version>${junit.vintage.version}</version>
-            </dependency>
-          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1742,6 +1728,21 @@
           <artifactId>build-helper-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
           <version>3.0.0</version>
+          <executions>
+            <!-- Used to execute the tests generated by DSpot -->
+            <execution>
+              <id>dspot-test-source</id>
+              <phase>generate-test-sources</phase>
+              <goals>
+                <goal>add-test-source</goal>
+              </goals>
+              <configuration>
+                <sources>
+                  <source>src/test/dspot</source>
+                </sources>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1766,12 +1767,12 @@
           <groupId>org.revapi</groupId>
           <artifactId>revapi-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>0.10.3</version>
+          <version>0.10.5</version>
           <dependencies>
             <dependency>
               <groupId>org.revapi</groupId>
               <artifactId>revapi-java</artifactId>
-              <version>0.17.1</version>
+              <version>0.18.1</version>
             </dependency>
           </dependencies>
           <executions>
@@ -1785,6 +1786,10 @@
           <configuration>
             <oldVersion>${xwiki.compatibility.previous.version}</oldVersion>
             <skip>${xwiki.revapi.skip}</skip>
+            <!-- Only output minimal differences required when revapi fails, so that we don't copy unnecessary
+                 differences which could lead to issues when releasing XWiki, see
+                 https://github.com/revapi/revapi/issues/137 for more info. -->
+            <outputNonIdentifyingDifferenceInfo>false</outputNonIdentifyingDifferenceInfo>
           </configuration>
         </plugin>
         <plugin>
@@ -1797,7 +1802,7 @@
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>3.5.0</version>
+          <version>4.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.openclover</groupId>
@@ -1805,8 +1810,15 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>${clover.version}</version>
           <configuration>
-            <skip>${xwiki.clover.skip}</skip>
-            <includesTestSourceRoots>false</includesTestSourceRoots>
+            <!-- We want to incude test source roots in order to have more information in the Clover report, such as:
+                 - which tests are covering whichg part of the code
+                 - how many tests were executed overall
+                 However, for comparison purposes between reportsn, we need to recomute the TPC by excluding all
+                 tests classes from the computation as otherwise it skews the results. This is what we do in the
+                 Jenkins Clover pipeline that we use, see
+                 https://github.com/xwiki/xwiki-jenkins-pipeline/blob/master/scripts/clover.groovy
+            -->
+            <includesTestSourceRoots>true</includesTestSourceRoots>
           </configuration>
         </plugin>
         <plugin>
@@ -1819,7 +1831,7 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>2.6</version>
+          <version>3.3.0.603</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1854,48 +1866,6 @@
               <version>2.6</version>
             </dependency>
           </dependencies>
-          <configuration>
-            <reportPlugins>
-              <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                  <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
-                       the repository locations of the dependencies in the report. -->
-                  <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
-                <reports>
-                  <report>summary</report>
-                  <report>index</report>
-                  <report>dependencies</report>
-                  <report>dependency-convergence</report>
-                  <report>mailing-list</report>
-                  <report>issue-tracking</report>
-                  <report>scm</report>
-                </reports>
-              </plugin>
-              <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                  <!-- Always exclude the internal package since it's not user-public -->
-                  <excludePackageNames>*.internal.*</excludePackageNames>
-                  <!-- Make sure javadoc has enough memory -->
-                  <maxmemory>300m</maxmemory>
-                </configuration>
-                <!-- Don't generate test javadoc -->
-                <reports>
-                  <report>javadoc</report>
-                </reports>
-              </plugin>
-              <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.1</version>
-              </plugin>
-            </reportPlugins>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
@@ -1951,6 +1921,7 @@
         <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
           <artifactId>maven-jaxb2-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
           <version>0.14.0</version>
           <configuration>
             <extension>true</extension>
@@ -1976,6 +1947,7 @@
         <plugin>
           <groupId>net.alchim31.maven</groupId>
           <artifactId>yuicompressor-maven-plugin</artifactId>
+          <!-- Lock down plugin version for build reproducibility -->
           <version>1.5.1</version>
         </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -2112,7 +2084,7 @@
           <plugin>
             <groupId>net.sigmalab.maven.plugins</groupId>
             <artifactId>jira-maven-plugin</artifactId>
-            <version>0.5</version>
+            <version>0.7</version>
             <configuration>
             <skip>${xwiki.release.jira.skip}</skip>
             <settingsKey>${xwiki.release.jira.settingsKey}</settingsKey>
@@ -2149,8 +2121,6 @@
     <profile>
       <id>clover</id>
       <properties>
-        <!-- By default don't skip Clover plugin execution when in the Clover profile! -->
-        <xwiki.clover.skip>false</xwiki.clover.skip>
         <!-- We need to skip checkstyle execution since otherwise it conflicts with Clover -->
         <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
         <!-- Skip backward-compatiblity checks since we don't need it when computing test coverage and it speeds up
@@ -2243,9 +2213,16 @@
             </executions>
             <configuration>
               <skip>${xwiki.pitest.skip}</skip>
+              <failWhenNoMutations>false</failWhenNoMutations>
               <mutationThreshold>${xwiki.pitest.mutationThreshold}</mutationThreshold>
               <mutationEngine>descartes</mutationEngine>
               <threads>4</threads>
+              <outputFormats>
+                <value>HTML</value>
+                <value>JSON</value>
+                <value>METHODS</value>
+                <value>ISSUES</value>
+              </outputFormats>
               <!-- List of mutations we want to run for each test -->
               <mutators>
                 <mutator>void</mutator>
@@ -2280,7 +2257,7 @@
               <dependency>
                 <groupId>eu.stamp-project</groupId>
                 <artifactId>descartes</artifactId>
-                <version>1.2.2</version>
+                <version>1.2.4</version>
               </dependency>
             </dependencies>
           </plugin>
@@ -2333,4 +2310,54 @@
     <module>xwiki-commons-pom</module>
     <module>xwiki-commons-tools</module>
   </modules>
+  <reporting>
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-project-info-reports-plugin</artifactId>
+      <version>2.4</version>
+      <configuration>
+                  <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
+                       the repository locations of the dependencies in the report. -->
+        <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+      </configuration>
+      <reportSets>
+        <reportSet>
+          <reports>
+            <report>summary</report>
+            <report>index</report>
+            <report>dependencies</report>
+            <report>dependency-convergence</report>
+            <report>mailing-list</report>
+            <report>issue-tracking</report>
+            <report>scm</report>
+          </reports>
+        </reportSet>
+      </reportSets>
+    </plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-javadoc-plugin</artifactId>
+      <configuration>
+        <!-- Always exclude the internal package since it's not user-public -->
+        <excludePackageNames>*.internal.*</excludePackageNames>
+        <!-- Make sure javadoc has enough memory -->
+        <maxmemory>300m</maxmemory>
+      </configuration>
+      <!-- Don't generate test javadoc -->
+      <reportSets>
+        <reportSet>
+          <reports>
+            <report>javadoc</report>
+          </reports>
+        </reportSet>
+      </reportSets>
+    </plugin>
+    <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>cobertura-maven-plugin</artifactId>
+      <version>2.5.1</version>
+    </plugin>
+  </plugins>
+  </reporting>
 </project>

@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-tools</artifactId>
-    <version>10.7-SNAPSHOT</version>
+    <version>10.9-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-tool-extension-plugin</artifactId>
   <name>XWiki Commons - Tools - Extension Plugin</name>
@@ -153,6 +153,22 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>clover</id>
+      <build>
+        <plugins>
+          <!-- Override the skip done at the level of commons-tools since that's needed when running with the clover
+               profile -->
+          <plugin>
+            <groupId>org.openclover</groupId>
+            <artifactId>clover-maven-plugin</artifactId>
+            <configuration>
+              <skip>false</skip>
+            </configuration>
           </plugin>
         </plugins>
       </build>

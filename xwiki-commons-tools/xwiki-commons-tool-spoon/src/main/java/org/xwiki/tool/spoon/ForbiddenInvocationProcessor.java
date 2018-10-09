@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.log4j.Level;
 
+import spoon.SpoonException;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Property;
 import spoon.reflect.code.CtExpression;
@@ -55,8 +56,7 @@ public class ForbiddenInvocationProcessor extends AbstractProcessor<CtInvocation
                     getFactory().getEnvironment().report(this, Level.ERROR, element, message);
 
                     // Forcing the build to stop
-                    // FIXME: Remove that when https://github.com/INRIA/spoon/issues/1534 is implemented
-                    throw new RuntimeException(message);
+                    throw new SpoonException(message);
                 }
             }
         }

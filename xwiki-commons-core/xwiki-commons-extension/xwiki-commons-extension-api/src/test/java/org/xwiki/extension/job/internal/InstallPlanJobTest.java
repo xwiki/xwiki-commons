@@ -750,6 +750,29 @@ public class InstallPlanJobTest extends AbstractExtensionHandlerTest
         Assert.assertEquals(0, node.getChildren().size());
     }
 
+    @Test
+    public void testInstallPlanWithCrossDependencies() throws Throwable
+    {
+        ExtensionPlan plan = installPlan(TestResources.REMOTE_CROSSDEPENDENCY1);
+
+        // Tree
+
+        Assert.assertEquals(1, plan.getTree().size());
+
+        ExtensionPlanNode node = plan.getTree().iterator().next();
+
+        ExtensionPlanAction action = node.getAction();
+
+        Assert.assertEquals(TestResources.REMOTE_CROSSDEPENDENCY1, action.getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, node.getAction().getAction());
+        Assert.assertEquals(1, node.getChildren().size());
+
+        ExtensionPlanNode childnode = node.getChildren().iterator().next();
+
+        Assert.assertEquals(TestResources.REMOTE_CROSSDEPENDENCY2, childnode.getAction().getExtension().getId());
+        Assert.assertEquals(Action.INSTALL, node.getAction().getAction());
+    }
+
     // Failures
 
     @Test(expected = InstallException.class)

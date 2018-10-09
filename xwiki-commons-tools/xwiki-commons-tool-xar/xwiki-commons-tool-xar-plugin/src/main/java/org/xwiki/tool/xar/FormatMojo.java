@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -39,6 +40,7 @@ import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionScheme;
+import org.xwiki.tool.xar.internal.XWikiDocument;
 
 /**
  * Pretty prints and set valid authors and version to XAR XML files.
@@ -170,12 +172,40 @@ public class FormatMojo extends AbstractVerifyMojo
         if (isTechnicalPage(fileName)) {
             element.setText("true");
         }
+
+        // Remove date fields
+        String documentName = "";
+        try {
+            documentName = XWikiDocument.readDocumentReference(domdoc);
+        } catch (DocumentException e) {
+            getLog().error("Failed to get the document reference", e);
+        }
+        if (!this.skipDates && !this.skipDatesDocumentList.contains(documentName)) {
+            removeNodes("xwikidoc/creationDate", domdoc);
+            removeNodes("xwikidoc/date", domdoc);
+            removeNodes("xwikidoc/contentUpdateDate", domdoc);
+            removeNodes("xwikidoc//attachment/date", domdoc);
+        }
     }
 
     private void removeContent(Element element)
     {
         if (element.hasContent()) {
             element.content().get(0).detach();
+        }
+    }
+
+    /**
+     * Remove the nodes found with the xpath expression.
+     *
+     * @param xpathExpression the xpath expression of the nodes
+     * @param domdoc The DOM document
+     */
+    private void removeNodes(String xpathExpression, Document domdoc)
+    {
+        List<Node> nodes = domdoc.selectNodes(xpathExpression);
+        for (Node node : nodes) {
+            node.detach();
         }
     }
 }

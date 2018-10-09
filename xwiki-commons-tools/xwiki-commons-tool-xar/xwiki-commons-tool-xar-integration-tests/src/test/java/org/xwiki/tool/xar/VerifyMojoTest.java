@@ -29,7 +29,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Integration tests for the Verify Mojo.
- * 
+ *
  * @version $Id$
  * @since 4.0M2
  */
@@ -114,7 +114,7 @@ public class VerifyMojoTest extends AbstractMojoTest
     {
         verifyExecution("/wrongPageTitle", "Verifying [Space/WebPreferences.xml]... errors",
             "- [WebPreferences.xml] ([Space.WebPreferences]) page must have a title matching regex "
-            + "[\\$services\\.localization\\.render\\('admin.preferences.title'\\)]",
+                + "[\\$services\\.localization\\.render\\('admin.preferences.title'\\)]",
             "There are errors in the XAR XML files!");
     }
 
@@ -130,11 +130,13 @@ public class VerifyMojoTest extends AbstractMojoTest
     @Test
     public void executeContentAndTechnicalPages() throws Exception
     {
+        // @formatter:off
         verifyExecution("/contentAndTechnical",
             "Verifying [Main/EditTranslations.xml]... errors",
             "- Technical documents must be hidden",
             "Verifying [Main/Translations.xml]... errors",
             "- Default Language should have been [en] but was []");
+        // @formatter:on
     }
 
     @Test
@@ -189,5 +191,40 @@ public class VerifyMojoTest extends AbstractMojoTest
     private void verifyExecution(String testDirectory, String... messages) throws Exception
     {
         verifyExecution(createVerifier(testDirectory), messages);
+    }
+
+    @Test
+    public void executeWithDatesPresent() throws Exception
+    {
+        // @formatter:off
+        verifyExecution("/datesPresent",
+            "Verifying [Space/WebHome.xml]... errors",
+            "- 'date' field is present",
+            "- 'contentUpdateDate' field is present",
+            "- 'creationDate' field is present",
+            "Verifying [Space/Test.xml]... errors",
+            "- 'date' field is present",
+            "- 'contentUpdateDate' field is present",
+            "- 'creationDate' field is present",
+            "There are errors in the XAR XML files!");
+        // @formatter:on
+    }
+
+    @Test
+    public void executeWithSkippedDatesCheck() throws Exception
+    {
+        Verifier verifier = createVerifier("/datesPresent");
+        verifier.addCliOption("-Dxar.dates.skip=true");
+        verifier.executeGoal("install");
+        verifier.verifyErrorFreeLog();
+    }
+
+    @Test
+    public void executeWithSkippedDatesCheckDocument() throws Exception
+    {
+        Verifier verifier = createVerifier("/datesPresent");
+        verifier.addCliOption("-Dxar.dates.skip.documentList=Space.WebHome,Space.Test");
+        verifier.executeGoal("install");
+        verifier.verifyErrorFreeLog();
     }
 }

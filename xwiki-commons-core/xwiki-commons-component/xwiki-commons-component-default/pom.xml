@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-component</artifactId>
-    <version>10.7-SNAPSHOT</version>
+    <version>10.9-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-component-default</artifactId>
   <name>XWiki Commons - Component - Default Implementation</name>
@@ -81,6 +81,11 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <!-- Add test source root for executing DSpot-generated tests -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

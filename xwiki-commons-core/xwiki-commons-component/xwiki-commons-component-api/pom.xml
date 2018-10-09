@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-component</artifactId>
-    <version>10.7-SNAPSHOT</version>
+    <version>10.9-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-commons-component-api</artifactId>
   <name>XWiki Commons - Component - API</name>
@@ -34,8 +34,8 @@
   <properties>
     <!-- Skipping revapi since xwiki-commons-legacy-component-api wraps this module and runs checks on it -->
     <xwiki.revapi.skip>true</xwiki.revapi.skip>
-    <xwiki.jacoco.instructionRatio>0.41</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>30</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.45</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>47</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <!-- Even though this module may not use the stability API, we declare a dependency here since this module is

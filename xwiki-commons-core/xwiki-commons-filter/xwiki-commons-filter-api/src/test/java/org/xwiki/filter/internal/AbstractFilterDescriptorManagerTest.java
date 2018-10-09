@@ -24,11 +24,8 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.filter.FilterDescriptor;
 import org.xwiki.filter.FilterDescriptorManager;
@@ -39,19 +36,31 @@ import org.xwiki.filter.UnknownFilter;
 import org.xwiki.filter.test.TestFilterImplementation;
 import org.xwiki.properties.ConverterManager;
 import org.xwiki.properties.converter.ConversionException;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+import org.xwiki.test.junit5.mockito.MockComponent;
 
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * @version $Id$
+ */
+@ComponentTest
 public abstract class AbstractFilterDescriptorManagerTest
 {
-    @Rule
-    public MockitoComponentMockingRule<FilterDescriptorManager> mocker =
-        new MockitoComponentMockingRule<FilterDescriptorManager>(DefaultFilterDescriptorManager.class);
+    @MockComponent
+    private ConverterManager converter;
+
+    @InjectMockComponents
+    private DefaultFilterDescriptorManager manager;
 
     private Object filter;
 
@@ -62,18 +71,17 @@ public abstract class AbstractFilterDescriptorManagerTest
         this.filter = filter;
     }
 
-    @Before
-    public void before() throws ComponentLookupException
+    @BeforeEach
+    public void beforeEach()
     {
-        ConverterManager converter = this.mocker.getInstance(ConverterManager.class);
+        when(this.converter.convert(int.class, "42")).thenReturn(42);
+        when(this.converter.convert(String.class, "default value")).thenReturn("default value");
+        when(this.converter.convert(Color.class, "#ffffff")).thenReturn(Color.WHITE);
+        when(this.converter
+            .convert(new DefaultParameterizedType(null, Map.class, new Type[] { String.class, String.class }), ""))
+                .thenThrow(ConversionException.class);
 
-        when(converter.convert(int.class, "42")).thenReturn(42);
-        when(converter.convert(String.class, "default value")).thenReturn("default value");
-        when(converter.convert(Color.class, "#ffffff")).thenReturn(Color.WHITE);
-        when(converter.convert(new DefaultParameterizedType(null, Map.class, new Type[] { String.class, String.class }),
-            "")).thenThrow(ConversionException.class);
-
-        this.filterDescriptor = this.mocker.getComponentUnderTest().getFilterDescriptor(this.filter.getClass());
+        this.filterDescriptor = this.manager.getFilterDescriptor(this.filter.getClass());
     }
 
     @Test
@@ -81,14 +89,14 @@ public abstract class AbstractFilterDescriptorManagerTest
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithparameters");
 
-        Assert.assertNotNull(filterElement);
+        assertNotNull(filterElement);
 
         FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
         parameter0 = filterElement.getParameter("param0");
 
-        Assert.assertEquals("param0", parameter0.getName());
-        Assert.assertEquals(0, parameter0.getIndex());
-        Assert.assertEquals(String.class, parameter0.getType());
+        assertEquals("param0", parameter0.getName());
+        assertEquals(0, parameter0.getIndex());
+        assertEquals(String.class, parameter0.getType());
     }
 
     @Test
@@ -96,59 +104,59 @@ public abstract class AbstractFilterDescriptorManagerTest
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithnamedparameters");
 
-        Assert.assertNotNull(filterElement);
+        assertNotNull(filterElement);
 
         FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
         parameter0 = filterElement.getParameter("namedParam");
 
-        Assert.assertNotNull(parameter0);
+        assertNotNull(parameter0);
 
-        Assert.assertEquals("namedParam", parameter0.getName());
-        Assert.assertEquals(0, parameter0.getIndex());
-        Assert.assertEquals(String.class, parameter0.getType());
+        assertEquals("namedParam", parameter0.getName());
+        assertEquals(0, parameter0.getIndex());
+        assertEquals(String.class, parameter0.getType());
     }
 
     @Test
-    public void nameInheritance() throws ComponentLookupException
+    public void nameInheritance()
     {
-        FilterElementDescriptor filterElement = this.mocker.getComponentUnderTest()
-            .getFilterDescriptor(TestFilterImplementation.class).getElement("containerwithnamedparameters");
+        FilterElementDescriptor filterElement =
+            this.manager.getFilterDescriptor(TestFilterImplementation.class).getElement("containerwithnamedparameters");
 
-        Assert.assertNotNull(filterElement);
+        assertNotNull(filterElement);
 
         FilterElementParameterDescriptor<?> parameter0 = filterElement.getParameters()[0];
         parameter0 = filterElement.getParameter("namedParam");
 
-        Assert.assertNotNull(parameter0);
+        assertNotNull(parameter0);
 
-        Assert.assertEquals("namedParam", parameter0.getName());
-        Assert.assertEquals(0, parameter0.getIndex());
-        Assert.assertEquals(String.class, parameter0.getType());
+        assertEquals("namedParam", parameter0.getName());
+        assertEquals(0, parameter0.getIndex());
+        assertEquals(String.class, parameter0.getType());
     }
 
     @Test
-    public void withDefaultValue() throws ComponentLookupException
+    public void withDefaultValue()
     {
-        FilterElementDescriptor filterElement = this.mocker.getComponentUnderTest()
-            .getFilterDescriptor(TestFilterImplementation.class).getElement("childwithdefaultvalue");
+        FilterElementDescriptor filterElement =
+            this.manager.getFilterDescriptor(TestFilterImplementation.class).getElement("childwithdefaultvalue");
 
-        Assert.assertNotNull(filterElement);
+        assertNotNull(filterElement);
 
         FilterElementParameterDescriptor<Integer> parameter0 = filterElement.getParameter("int");
 
-        Assert.assertEquals(Integer.valueOf(42), parameter0.getDefaultValue());
+        assertEquals(Integer.valueOf(42), parameter0.getDefaultValue());
 
         FilterElementParameterDescriptor<String> parameter1 = filterElement.getParameter("string");
 
-        Assert.assertEquals("default value", parameter1.getDefaultValue());
+        assertEquals("default value", parameter1.getDefaultValue());
 
         FilterElementParameterDescriptor<Color> parameter2 = filterElement.getParameter("color");
 
-        Assert.assertEquals(Color.WHITE, parameter2.getDefaultValue());
+        assertEquals(Color.WHITE, parameter2.getDefaultValue());
 
         FilterElementParameterDescriptor<Map<String, String>> parameter3 = filterElement.getParameter("map");
 
-        Assert.assertEquals(Collections.EMPTY_MAP, parameter3.getDefaultValue());
+        assertEquals(Collections.EMPTY_MAP, parameter3.getDefaultValue());
     }
 
     @Test
@@ -156,10 +164,10 @@ public abstract class AbstractFilterDescriptorManagerTest
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("childwithname");
 
-        Assert.assertNotNull(filterElement);
-        Assert.assertNull(filterElement.getBeginMethod());
-        Assert.assertNull(filterElement.getEndMethod());
-        Assert.assertNotNull(filterElement.getOnMethod());
+        assertNotNull(filterElement);
+        assertNull(filterElement.getBeginMethod());
+        assertNull(filterElement.getEndMethod());
+        assertNotNull(filterElement.getOnMethod());
     }
 
     @Test
@@ -167,23 +175,23 @@ public abstract class AbstractFilterDescriptorManagerTest
     {
         FilterElementDescriptor filterElement = this.filterDescriptor.getElement("containerwithname");
 
-        Assert.assertNotNull(filterElement);
-        Assert.assertNotNull(filterElement.getBeginMethod());
-        Assert.assertNotNull(filterElement.getEndMethod());
-        Assert.assertNull(filterElement.getOnMethod());
+        assertNotNull(filterElement);
+        assertNotNull(filterElement.getBeginMethod());
+        assertNotNull(filterElement.getEndMethod());
+        assertNull(filterElement.getOnMethod());
     }
 
-    @Test(expected = FilterException.class)
-    public void proxyFailing() throws FilterException, ComponentLookupException
+    @Test
+    public void proxyFailing() throws FilterException
     {
         UnknownFilter filter = mock(UnknownFilter.class);
         doThrow(FilterException.class).when(filter).onUnknwon(any(), any());
 
-        UnknownFilter proxyFilter = this.mocker.getComponentUnderTest().createFilterProxy(filter, UnknownFilter.class,
-            FilterDescriptorManager.class);
+        UnknownFilter proxyFilter =
+            this.manager.createFilterProxy(filter, UnknownFilter.class, FilterDescriptorManager.class);
 
         assertNotSame(filter, proxyFilter);
 
-        proxyFilter.onUnknwon(null, null);
+        assertThrows(FilterException.class, () -> proxyFilter.onUnknwon(null, null));
     }
 }

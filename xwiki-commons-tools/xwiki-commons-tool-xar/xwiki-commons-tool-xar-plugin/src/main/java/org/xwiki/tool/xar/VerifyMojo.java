@@ -72,7 +72,7 @@ public class VerifyMojo extends AbstractVerifyMojo
     private boolean skip;
 
     /**
-     * Disables the plugin execution.
+     * Disables the translations visibility check.
      *
      * @since 4.3M1
      */
@@ -176,6 +176,11 @@ public class VerifyMojo extends AbstractVerifyMojo
             // Verification 12: Verify that  attachments have a mimetype set.
             verifyAttachmentMimetypes(errors, xdoc.getAttachmentData());
 
+            // Verification 13: Verify that date fields are not set.
+            if (!skipDates) {
+                verifyDateFields(errors, xdoc);
+            }
+
             // Display errors
             if (errors.isEmpty()) {
                 getLog().info(String.format("  Verifying [%s/%s]... ok", parentName, file.getName()));
@@ -196,6 +201,27 @@ public class VerifyMojo extends AbstractVerifyMojo
         if (this.formatLicense) {
             getLog().info("Checking for missing XAR XML license headers...");
             executeLicenseGoal("check");
+        }
+    }
+
+    private void verifyDateFields(List<String> errors, XWikiDocument xdoc)
+    {
+        if (!skipDatesDocumentList.contains(xdoc.getReference())) {
+            if (xdoc.isDatePresent()) {
+                errors.add("'date' field is present");
+            }
+
+            if (xdoc.isContentUpdateDatePresent()) {
+                errors.add("'contentUpdateDate' field is present");
+            }
+
+            if (xdoc.isCreationeDatePresent()) {
+                errors.add("'creationDate' field is present");
+            }
+
+            if (xdoc.isAttachmentDatePresent()) {
+                errors.add("'attachment/date' field is present");
+            }
         }
     }
 

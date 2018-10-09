@@ -19,12 +19,14 @@
  */
 package org.xwiki.component.descriptor;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Unit tests for {@link DefaultComponentDescriptor}.
- * 
+ *
  * @version $Id$
  * @since 3.3M1
  */
@@ -41,7 +43,7 @@ public class DefaultComponentDescriptorTest
     private class ImplRole
     {
     }
-    
+
     private class ImplOtherRole
     {
     }
@@ -54,28 +56,28 @@ public class DefaultComponentDescriptorTest
         cd1.setRoleType(Role.class);
         cd1.setRoleHint("hint");
 
-        Assert.assertEquals(cd1, cd1);
+        assertEquals(cd1, cd1);
 
         DefaultComponentDescriptor cd2 = new DefaultComponentDescriptor();
         cd2.setImplementation(ImplRole.class);
         cd2.setRoleType(Role.class);
         cd2.setRoleHint("hint");
 
-        Assert.assertEquals(cd1, cd2);
+        assertEquals(cd1, cd2);
 
         DefaultComponentDescriptor cd3 = new DefaultComponentDescriptor();
         cd3.setImplementation(ImplRole.class);
         cd3.setRoleType(OtherRole.class);
         cd3.setRoleHint("hint");
 
-        Assert.assertFalse(cd1.equals(cd3));
+        assertNotEquals(cd1, cd3);
 
         DefaultComponentDescriptor cd4 = new DefaultComponentDescriptor();
         cd4.setImplementation(ImplOtherRole.class);
         cd4.setRoleType(Role.class);
         cd4.setRoleHint("hint");
 
-        Assert.assertFalse(cd1.equals(cd4));
+        assertNotEquals(cd1, cd4);
 
         DefaultComponentDescriptor cd5 = new DefaultComponentDescriptor();
         cd5.setImplementation(ImplRole.class);
@@ -83,7 +85,7 @@ public class DefaultComponentDescriptorTest
         cd5.setRoleHint("hint");
         cd5.setInstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP);
 
-        Assert.assertFalse(cd1.equals(cd5));
+        assertNotEquals(cd1, cd5);
 
         DefaultComponentDescriptor cd6 = new DefaultComponentDescriptor();
         cd6.setImplementation(ImplRole.class);
@@ -91,10 +93,10 @@ public class DefaultComponentDescriptorTest
         cd6.setRoleHint("hint");
         DefaultComponentDependency dep = new DefaultComponentDependency();
         dep.setName("name");
-        dep.setMappingType(String.class);
+        dep.setRoleType(String.class);
         cd6.addComponentDependency(dep);
 
-        Assert.assertFalse(cd1.equals(cd6));
+        assertNotEquals(cd1, cd6);
 
         DefaultComponentDescriptor cd7 = new DefaultComponentDescriptor();
         cd7.setImplementation(ImplRole.class);
@@ -102,10 +104,10 @@ public class DefaultComponentDescriptorTest
         cd7.setRoleHint("hint");
         DefaultComponentDependency dep2 = new DefaultComponentDependency();
         dep2.setName("name");
-        dep2.setMappingType(String.class);
+        dep2.setRoleType(String.class);
         cd7.addComponentDependency(dep2);
 
-        Assert.assertEquals(cd6, cd7);
+        assertEquals(cd6, cd7);
 
         DefaultComponentDescriptor cd8 = new DefaultComponentDescriptor();
         cd8.setImplementation(ImplRole.class);
@@ -113,10 +115,22 @@ public class DefaultComponentDescriptorTest
         cd8.setRoleHint("hint");
         DefaultComponentDependency dep3 = new DefaultComponentDependency();
         dep3.setName("name");
-        dep3.setMappingType(String.class);
+        dep3.setRoleType(String.class);
         cd8.addComponentDependency(dep3);
         cd8.addComponentDependency(dep3);
 
-        Assert.assertFalse(cd7.equals(cd8));
+        assertNotEquals(cd7, cd8);
+
+        // Indirectly verify DefaultComponentDependency.equals() when it's not equals
+        DefaultComponentDescriptor cd9 = new DefaultComponentDescriptor();
+        cd9.setImplementation(ImplRole.class);
+        cd9.setRoleType(Role.class);
+        cd9.setRoleHint("hint");
+        DefaultComponentDependency dep4 = new DefaultComponentDependency();
+        dep4.setName("name2");
+        dep4.setRoleType(String.class);
+        cd9.addComponentDependency(dep4);
+
+        assertNotEquals(cd6, cd9);
     }
 }

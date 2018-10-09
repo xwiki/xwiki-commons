@@ -39,7 +39,6 @@ import org.xwiki.classloader.ClassLoaderManager;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.InstalledExtension;
 import org.xwiki.extension.ResolveException;
 import org.xwiki.extension.UninstallException;
@@ -76,7 +75,7 @@ public class JarExtensionJobFinishingListener implements EventListener
             if (!this.rootNamespace) {
                 if (namespace != null) {
                     if (this.namespaces == null) {
-                        this.namespaces = new HashSet<String>();
+                        this.namespaces = new HashSet<>();
                     }
                     this.namespaces.add(namespace);
                 } else {
@@ -168,7 +167,7 @@ public class JarExtensionJobFinishingListener implements EventListener
                 (Stack<UninstalledExtensionCollection>) context.getProperty(contextKey);
 
             if (extensions == null && create) {
-                extensions = new Stack<UninstalledExtensionCollection>();
+                extensions = new Stack<>();
                 context.setProperty(contextKey, extensions);
             }
 
@@ -200,7 +199,7 @@ public class JarExtensionJobFinishingListener implements EventListener
         return null;
     }
 
-    private void addUninstalledExtension(ExtensionId id, String namespace)
+    private void addUninstalledExtension(String namespace)
     {
         UninstalledExtensionCollection collection = getCurrentJobUninstalledExtensions(true);
 
@@ -228,7 +227,7 @@ public class JarExtensionJobFinishingListener implements EventListener
     private void onExtensionRemovedEvent(ExtensionEvent event, InstalledExtension extension)
     {
         if (JarExtensionHandler.isSupported(extension.getType())) {
-            addUninstalledExtension(event.getExtensionId(), event.getNamespace());
+            addUninstalledExtension(event.getNamespace());
         }
     }
 
@@ -310,7 +309,7 @@ public class JarExtensionJobFinishingListener implements EventListener
         Set<InstalledExtension> unloadedExtensionsInNamespace = unloadedExtensions.get(namespace);
 
         if (unloadedExtensionsInNamespace == null) {
-            unloadedExtensionsInNamespace = new HashSet<InstalledExtension>();
+            unloadedExtensionsInNamespace = new HashSet<>();
             unloadedExtensions.put(namespace, unloadedExtensionsInNamespace);
         }
 

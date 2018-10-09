@@ -19,13 +19,11 @@
  */
 package org.xwiki.component.embed;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Type;
 
 import org.xwiki.component.descriptor.ComponentDescriptor;
-import org.xwiki.component.internal.RoleHint;
 import org.xwiki.component.manager.ComponentLookupException;
 
 /**

@@ -17,11 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.extension.internal;
+package org.xwiki.collection;
 
 import java.lang.ref.SoftReference;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.xwiki.stability.Unstable;
 
 /**
  * A concurrent version of {@link WeakHashMap} in which the values are soft references.
@@ -29,9 +31,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  * @version $Id$
- * @since 9.1RC1
- * @since 8.4.3
+ * @since 10.8RC1
+ * @since 9.11.8
  */
+@Unstable
 public class SoftCache<K, V>
 {
     private WeakHashMap<K, SoftReference<V>> map = new WeakHashMap<>();

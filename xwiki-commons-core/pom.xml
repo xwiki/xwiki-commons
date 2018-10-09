@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-pom</artifactId>
-    <version>10.7-SNAPSHOT</version>
+    <version>10.9-SNAPSHOT</version>
     <relativePath>../xwiki-commons-pom</relativePath>
   </parent>
   <artifactId>xwiki-commons-core</artifactId>
@@ -41,6 +41,7 @@
     <module>xwiki-commons-blame</module>
     <module>xwiki-commons-cache</module>
     <module>xwiki-commons-classloader</module>
+    <module>xwiki-commons-collection</module>
     <module>xwiki-commons-component</module>
     <module>xwiki-commons-configuration</module>
     <module>xwiki-commons-context</module>

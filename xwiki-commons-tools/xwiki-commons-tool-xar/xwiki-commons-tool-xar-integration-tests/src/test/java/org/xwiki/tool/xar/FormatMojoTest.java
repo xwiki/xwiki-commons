@@ -26,7 +26,8 @@ import org.apache.maven.it.Verifier;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Integration tests for the Format Mojo.
@@ -64,6 +65,11 @@ public class FormatMojoTest extends AbstractMojoTest
         expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStylePage3.fr.xml"));
         assertEquals(expected, content);
 
+        // Test with document dates present
+        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Page4.xml"));
+        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStylePage4.xml"));
+        assertEquals(expected, content);
+
         // Test that technical pages are set as hidden
         content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Translations.xml"));
         expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStyleTranslations.xml"));
@@ -76,11 +82,6 @@ public class FormatMojoTest extends AbstractMojoTest
         } catch (VerificationException expectedException) {
             // Passed!
         }
-
-        // Verify the right version of XML is set for XAR 1.3
-        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/NoStyle/Translations.xml"));
-        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedNoStyleTranslations.xml"));
-        assertEquals(expected, content);
     }
 
     @Test
@@ -99,6 +100,16 @@ public class FormatMojoTest extends AbstractMojoTest
         // Test with a XML file having a license header
         content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/Pretty/Page2.xml"));
         expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedPrettyPage2.xml"));
+        assertEquals(expected, content);
+
+        // Test with document dates present
+        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/Pretty/Page3.xml"));
+        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedPrettyPage3.xml"));
+        assertEquals(expected, content);
+
+        // Verify the right version of XML is set for XAR 1.3
+        content = FileUtils.fileRead(new File(verifier.getBasedir(), "src/main/resources/Pretty/Page4.xml"));
+        expected = FileUtils.fileRead(new File(verifier.getBasedir(), "ExpectedPrettyPage4.xml"));
         assertEquals(expected, content);
     }
 }

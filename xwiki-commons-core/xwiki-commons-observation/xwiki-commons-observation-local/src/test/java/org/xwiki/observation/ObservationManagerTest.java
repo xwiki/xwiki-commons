@@ -22,20 +22,20 @@ package org.xwiki.observation;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.xwiki.component.manager.ComponentLookupException;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.observation.event.ActionExecutionEvent;
 import org.xwiki.observation.event.AllEvent;
 import org.xwiki.observation.event.Event;
 import org.xwiki.observation.internal.DefaultObservationManager;
-import org.xwiki.test.mockito.MockitoComponentMockingRule;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -47,50 +47,53 @@ import static org.mockito.Mockito.when;
  *
  * @version $Id$
  */
+@ComponentTest
 public class ObservationManagerTest
 {
-    @Rule
-    public final MockitoComponentMockingRule<ObservationManager> mocker =
-        new MockitoComponentMockingRule<ObservationManager>(DefaultObservationManager.class);
+    @InjectMockComponents
+    private DefaultObservationManager manager;
+
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.WARN);
 
     @Test
-    public void testNotifyWhenMatching() throws ComponentLookupException
+    public void notifyWhenMatching()
     {
-        final EventListener listener = mock(EventListener.class);
-        final Event event = mock(Event.class);
+        EventListener listener = mock(EventListener.class);
+        Event event = mock(Event.class);
 
         when(listener.getName()).thenReturn("mylistener");
         when(listener.getEvents()).thenReturn(Arrays.asList(event));
         when(event.matches(event)).thenReturn(true);
 
-        this.mocker.getComponentUnderTest().addListener(listener);
-        Assert.assertSame(listener, this.mocker.getComponentUnderTest().getListener("mylistener"));
-        this.mocker.getComponentUnderTest().notify(event, "some source", "some data");
+        this.manager.addListener(listener);
+        assertSame(listener, this.manager.getListener("mylistener"));
+        this.manager.notify(event, "some source", "some data");
         verify(listener).onEvent(event, "some source", "some data");
     }
 
     @Test
-    public void testRemoveListener() throws ComponentLookupException
+    public void removeListener()
     {
-        final EventListener listener = mock(EventListener.class);
-        final Event event = mock(Event.class);
+        EventListener listener = mock(EventListener.class);
+        Event event = mock(Event.class);
 
         when(listener.getName()).thenReturn("mylistener");
         when(listener.getEvents()).thenReturn(Arrays.asList(event));
 
-        this.mocker.getComponentUnderTest().addListener(listener);
-        this.mocker.getComponentUnderTest().removeListener("mylistener");
-        this.mocker.getComponentUnderTest().notify(event, null);
+        this.manager.addListener(listener);
+        this.manager.removeListener("mylistener");
+        this.manager.notify(event, null);
         verify(listener, never()).onEvent(any(Event.class), any(), any());
     }
 
     @Test
-    public void testAddEvent() throws Exception
+    public void addEvent()
     {
-        final EventListener listener = mock(EventListener.class);
-        final Event initialEvent = mock(Event.class, "initial");
-        final Event afterEvent = mock(Event.class, "after");
-        final Event notifyEvent = mock(Event.class, "notify");
+        EventListener listener = mock(EventListener.class);
+        Event initialEvent = mock(Event.class, "initial");
+        Event afterEvent = mock(Event.class, "after");
+        Event notifyEvent = mock(Event.class, "notify");
 
         when(listener.getName()).thenReturn("mylistener");
         when(listener.getEvents()).thenReturn(Arrays.asList(initialEvent));
@@ -100,37 +103,37 @@ public class ObservationManagerTest
         when(initialEvent.matches(notifyEvent)).thenReturn(false);
         when(afterEvent.matches(notifyEvent)).thenReturn(true);
 
-        this.mocker.getComponentUnderTest().addListener(listener);
-        this.mocker.getComponentUnderTest().addEvent("mylistener", afterEvent);
-        this.mocker.getComponentUnderTest().notify(notifyEvent, null);
+        this.manager.addListener(listener);
+        this.manager.addEvent("mylistener", afterEvent);
+        this.manager.notify(notifyEvent, null);
         verify(listener).onEvent(notifyEvent, null, null);
     }
 
     @Test
-    public void testAddEventWithNoInitialEvent() throws Exception
+    public void addEventWithNoInitialEvent()
     {
-        final EventListener listener = mock(EventListener.class);
-        final Event afterEvent = mock(Event.class, "after");
-        final Event notifyEvent = mock(Event.class, "notify");
+        EventListener listener = mock(EventListener.class);
+        Event afterEvent = mock(Event.class, "after");
+        Event notifyEvent = mock(Event.class, "notify");
 
         when(listener.getName()).thenReturn("mylistener");
         when(listener.getEvents()).thenReturn(Collections.<Event>emptyList());
 
         when(afterEvent.matches(notifyEvent)).thenReturn(true);
 
-        this.mocker.getComponentUnderTest().addListener(listener);
-        this.mocker.getComponentUnderTest().addEvent("mylistener", afterEvent);
-        this.mocker.getComponentUnderTest().notify(notifyEvent, null);
+        this.manager.addListener(listener);
+        this.manager.addEvent("mylistener", afterEvent);
+        this.manager.notify(notifyEvent, null);
         verify(listener).onEvent(notifyEvent, null, null);
     }
 
     @Test
-    public void testRemoveEvent() throws ComponentLookupException
+    public void removeEvent()
     {
-        final EventListener listener = mock(EventListener.class);
-        final Event initialEvent = mock(Event.class, "initial");
-        final Event afterEvent = mock(Event.class, "after");
-        final Event notifyEvent = mock(Event.class, "notify");
+        EventListener listener = mock(EventListener.class);
+        Event initialEvent = mock(Event.class, "initial");
+        Event afterEvent = mock(Event.class, "after");
+        Event notifyEvent = mock(Event.class, "notify");
 
         when(listener.getName()).thenReturn("mylistener");
         when(listener.getEvents()).thenReturn(Arrays.asList(initialEvent));
@@ -140,23 +143,25 @@ public class ObservationManagerTest
         // we still want the test to fail if that doesn't work).
         when(initialEvent.matches(same(notifyEvent))).thenReturn(false);
 
-        this.mocker.getComponentUnderTest().addListener(listener);
-        this.mocker.getComponentUnderTest().addEvent("mylistener", afterEvent);
-        this.mocker.getComponentUnderTest().removeEvent("mylistener", afterEvent);
-        this.mocker.getComponentUnderTest().notify(notifyEvent, null);
+        this.manager.addListener(listener);
+        this.manager.addEvent("mylistener", afterEvent);
+        this.manager.removeEvent("mylistener", afterEvent);
+        this.manager.notify(notifyEvent, null);
         // Ensure that the afterEvent is never called since we're adding it and removing it
         verify(afterEvent, never()).matches(same(notifyEvent));
         verify(listener, never()).onEvent(afterEvent, null, null);
     }
 
-    /** Verify that we can register two listeners on the same event and they'll both receive the event. */
+    /**
+     * Verify that we can register two listeners on the same event and they'll both receive the event.
+     */
     @Test
-    public void testRegisterSeveralListenersForSameEvent() throws ComponentLookupException
+    public void registerSeveralListenersForSameEvent()
     {
-        final EventListener listener1 = mock(EventListener.class, "listener1");
-        final EventListener listener2 = mock(EventListener.class, "listener2");
-        final Event event = mock(Event.class, "event");
-        final Event notifyEvent = mock(Event.class, "notify");
+        EventListener listener1 = mock(EventListener.class, "listener1");
+        EventListener listener2 = mock(EventListener.class, "listener2");
+        Event event = mock(Event.class, "event");
+        Event notifyEvent = mock(Event.class, "notify");
 
         when(listener1.getName()).thenReturn("listener 1");
         when(listener2.getName()).thenReturn("listener 2");
@@ -165,51 +170,55 @@ public class ObservationManagerTest
 
         when(event.matches(notifyEvent)).thenReturn(true);
 
-        this.mocker.getComponentUnderTest().addListener(listener1);
-        this.mocker.getComponentUnderTest().addListener(listener2);
-        this.mocker.getComponentUnderTest().notify(notifyEvent, null);
+        this.manager.addListener(listener1);
+        this.manager.addListener(listener2);
+        this.manager.notify(notifyEvent, null);
         verify(listener1).onEvent(notifyEvent, null, null);
         verify(listener2).onEvent(notifyEvent, null, null);
     }
 
-    /** Verify that we can register a listener to receive any kind of event using AllEvent event type. */
+    /**
+     * Verify that we can register a listener to receive any kind of event using AllEvent event type.
+     */
     @Test
-    public void testRegisterListenerForAllEvents() throws ComponentLookupException
+    public void registerListenerForAllEvents()
     {
-        final EventListener listener = mock(EventListener.class);
-        final Event event = mock(Event.class);
+        EventListener listener = mock(EventListener.class);
+        Event event = mock(Event.class);
 
         when(listener.getName()).thenReturn("mylistener");
         when(listener.getEvents()).thenReturn(Arrays.asList(AllEvent.ALLEVENT));
 
-        this.mocker.getComponentUnderTest().addListener(listener);
-        Assert.assertSame(listener, this.mocker.getComponentUnderTest().getListener("mylistener"));
-        this.mocker.getComponentUnderTest().notify(event, "some source", "some data");
+        this.manager.addListener(listener);
+        assertSame(listener, this.manager.getListener("mylistener"));
+        this.manager.notify(event, "some source", "some data");
         verify(listener).onEvent(event, "some source", "some data");
     }
 
-    /** Verify that a warning is logged is we try to register a listener with the same name. */
+    /**
+     * Verify that a warning is logged is we try to register a listener with the same name.
+     */
     @Test
-    public void testRegisterSameListenerSeveralTimes() throws ComponentLookupException
+    public void registerSameListenerSeveralTimes()
     {
-        final EventListener listener = mock(EventListener.class);
+        EventListener listener = mock(EventListener.class);
 
         when(listener.getName()).thenReturn("mylistener");
         when(listener.getEvents()).thenReturn(Arrays.asList(AllEvent.ALLEVENT));
         // The check is performed here, we verify that a warning is correctly logged
 
-        this.mocker.getComponentUnderTest().addListener(listener);
+        this.manager.addListener(listener);
         // Will raise log warning on the next line
-        this.mocker.getComponentUnderTest().addListener(listener);
+        this.manager.addListener(listener);
 
-        final Logger logger = this.mocker.getMockedLogger();
-        verify(logger).warn(contains("listener is overwritting a previously registered listener"), any(), any(), any());
+        assertTrue(this.logCapture.getMessage(0).matches("The \\[.*\\] listener is overwriting a previously registered "
+            + "listener \\[.*\\] since they both are registered under the same id \\[mylistener\\]\\. In the future "
+            + "consider removing a Listener first if you really want to register it again\\."));
 
         // Verify that no log is logged if we remove the listener before re-registering it
-        this.mocker.getComponentUnderTest().removeListener("mylistener");
+        this.manager.removeListener("mylistener");
         // Next line will not log any warning
-        this.mocker.getComponentUnderTest().addListener(listener);
-        Mockito.verifyNoMoreInteractions(logger);
+        this.manager.addListener(listener);
     }
 
     /**
@@ -217,20 +226,18 @@ public class ObservationManagerTest
      * it will receive both events.
      */
     @Test
-    public void testRegisterListenerForTwoEventsOfSameType() throws ComponentLookupException
+    public void registerListenerForTwoEventsOfSameType()
     {
-        final EventListener listener = mock(EventListener.class);
-        @SuppressWarnings("deprecation")
-        final Event eventMatcher1 = new ActionExecutionEvent("action1");
-        @SuppressWarnings("deprecation")
-        final Event eventMatcher2 = new ActionExecutionEvent("action2");
+        EventListener listener = mock(EventListener.class);
+        Event eventMatcher1 = new ActionExecutionEvent("action1");
+        Event eventMatcher2 = new ActionExecutionEvent("action2");
 
         when(listener.getName()).thenReturn("mylistener");
         when(listener.getEvents()).thenReturn(Arrays.asList(eventMatcher1, eventMatcher2));
 
-        this.mocker.getComponentUnderTest().addListener(listener);
-        this.mocker.getComponentUnderTest().notify(eventMatcher1, "some source", "some data");
-        this.mocker.getComponentUnderTest().notify(eventMatcher2, "some source", "some data");
+        this.manager.addListener(listener);
+        this.manager.notify(eventMatcher1, "some source", "some data");
+        this.manager.notify(eventMatcher2, "some source", "some data");
         verify(listener).onEvent(eventMatcher1, "some source", "some data");
         verify(listener).onEvent(eventMatcher2, "some source", "some data");
     }

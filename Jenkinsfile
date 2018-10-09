@@ -23,7 +23,7 @@
 // @Library("XWiki@<branch, tag, sha1>") _
 // See https://github.com/jenkinsci/workflow-cps-global-lib-plugin for details.
 
-def globalMavenOpts = '-Xmx1536m -XX:MaxPermSize=512m -Xms256m'
+def globalMavenOpts = '-Xmx1024m -Xms256m'
 
 stage ('Commons Builds') {
   parallel(
@@ -34,6 +34,7 @@ stage ('Commons Builds') {
         // can benefit from them even though some quality checks have not yet passed. In // we start a build with the
         // quality profile that executes various quality checks.
         xwikiBuild('Main') {
+          xvnc = false
           mavenOpts = globalMavenOpts
           profiles = 'legacy,integration-tests'
           properties = '-Dxwiki.checkstyle.skip=true -Dxwiki.surefire.captureconsole.skip=true -Dxwiki.revapi.skip=true'
@@ -47,6 +48,7 @@ stage ('Commons Builds') {
       node {
         // Simulate a release and verify all is fine, in preparation for the release day.
         xwikiBuild('TestRelease') {
+          xvnc = false
           mavenOpts = globalMavenOpts
           goals = 'clean install'
           profiles = 'legacy,integration-tests'
@@ -58,6 +60,7 @@ stage ('Commons Builds') {
       node {
         // Run the quality checks.
         xwikiBuild('Quality') {
+          xvnc = false
           mavenOpts = globalMavenOpts
           goals = 'clean install jacoco:report'
           profiles = 'quality,legacy'
@@ -70,6 +73,7 @@ stage ('Commons Builds') {
         // Checkstyle side. This is for the Checkstyle project itself so that they can verify that when they bring
         // changes to Checkstyle, there's no regression to the XWiki build.
         xwikiBuild('Checkstyle') {
+          xvnc = false
           mavenOpts = globalMavenOpts
           goals = 'clean test-compile checkstyle:check'
           profiles = 'legacy'

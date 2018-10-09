@@ -19,14 +19,15 @@
  */
 package org.xwiki.component.util;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xwiki.component.test.TestImplementation;
 import org.xwiki.component.test.TestInheritedAnnotation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Unit tests for {@link ReflectionMethodUtils}.
- * 
+ *
  * @version $Id$
  */
 public class ReflectionMethodUtilsTest
@@ -34,16 +35,16 @@ public class ReflectionMethodUtilsTest
     @Test
     public void testGetMethodParameterAnnotations() throws SecurityException, NoSuchMethodException
     {
-        Assert.assertEquals(
+        assertEquals(
             1,
             ReflectionMethodUtils.getMethodParameterAnnotations(
-                TestImplementation.class.getMethod("methodWithAnnotationParameter", new Class< ? >[] {Object.class}),
+                TestImplementation.class.getMethod("methodWithAnnotationParameter", new Class<?>[]{ Object.class }),
                 0, TestInheritedAnnotation.class, true).size());
 
-        Assert.assertEquals(
+        assertEquals(
             0,
             ReflectionMethodUtils.getMethodParameterAnnotations(
-                TestImplementation.class.getMethod("methodWithAnnotationParameter", new Class< ? >[] {Object.class}),
+                TestImplementation.class.getMethod("methodWithAnnotationParameter", new Class<?>[]{ Object.class }),
                 0, TestInheritedAnnotation.class, false).size());
     }
 }

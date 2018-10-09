@@ -20,7 +20,9 @@
 package org.xwiki.extension.version.internal;
 
 import org.junit.jupiter.api.Test;
+import org.xwiki.extension.test.TestVersion;
 import org.xwiki.extension.version.InvalidVersionRangeException;
+import org.xwiki.extension.version.Version;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -97,13 +99,21 @@ public class DefaultVersionRangeTest
     @Test
     public void containsVersion() throws InvalidVersionRangeException
     {
-        assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new DefaultVersion("1.0")));
-        assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new DefaultVersion("2.0")));
+        assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion((Version) new DefaultVersion("1.0")));
+        assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion((Version) new DefaultVersion("2.0")));
 
-        assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new DefaultVersion("1.0")));
-        assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new DefaultVersion("3.0")));
-        assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("1.0")));
-        assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new DefaultVersion("2.0")));
+        assertFalse(new DefaultVersionRange("[2.0]").containsVersion((Version) new DefaultVersion("1.0")));
+        assertFalse(new DefaultVersionRange("[2.0]").containsVersion((Version) new DefaultVersion("3.0")));
+        assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion((Version) new DefaultVersion("1.0")));
+        assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion((Version) new DefaultVersion("2.0")));
+
+        assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new TestVersion("1.0")));
+        assertTrue(new DefaultVersionRange("[1.0,2.0]").containsVersion(new TestVersion("2.0")));
+
+        assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new TestVersion("1.0")));
+        assertFalse(new DefaultVersionRange("[2.0]").containsVersion(new TestVersion("3.0")));
+        assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new TestVersion("1.0")));
+        assertFalse(new DefaultVersionRange("(1.0,2.0)").containsVersion(new TestVersion("2.0")));
     }
 
     @Test

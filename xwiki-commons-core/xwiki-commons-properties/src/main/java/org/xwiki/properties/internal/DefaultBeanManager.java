@@ -22,7 +22,6 @@ package org.xwiki.properties.internal;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -36,6 +35,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.slf4j.Logger;
+import org.xwiki.collection.SoftCache;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.BeanManager;
@@ -62,10 +62,10 @@ import org.xwiki.properties.RawProperties;
 public class DefaultBeanManager implements BeanManager
 {
     /**
-     * Cache the already parsed classes.
+     * Cache the already parsed classes. We store weak reference since the classes might come from extensions later
+     * uninstalled/upgraded or from scripts.
      */
-    private Map<Class<?>, BeanDescriptor> beanDescriptorCache =
-        Collections.synchronizedMap(new HashMap<Class<?>, BeanDescriptor>());
+    private SoftCache<Class<?>, BeanDescriptor> beanDescriptorCache = new SoftCache<>();
 
     /**
      * The logger to use for logging.
@@ -220,14 +220,13 @@ public class DefaultBeanManager implements BeanManager
         BeanDescriptor beanDescriptor = null;
 
         if (beanClass != null) {
-            // Since the bean descriptor are cached, lock based on the class to not generate twice the same bean
-            // descriptor.
-            synchronized (beanClass) {
-                beanDescriptor = this.beanDescriptorCache.get(beanClass);
-                if (beanDescriptor == null) {
-                    beanDescriptor = new DefaultBeanDescriptor(beanClass);
-                    this.beanDescriptorCache.put(beanClass, beanDescriptor);
-                }
+            // Get the bean descriptor from the cache
+            beanDescriptor = this.beanDescriptorCache.get(beanClass);
+
+            // Create a new one if none could be found
+            if (beanDescriptor == null) {
+                beanDescriptor = new DefaultBeanDescriptor(beanClass);
+                this.beanDescriptorCache.put(beanClass, beanDescriptor);
             }
         }
 
