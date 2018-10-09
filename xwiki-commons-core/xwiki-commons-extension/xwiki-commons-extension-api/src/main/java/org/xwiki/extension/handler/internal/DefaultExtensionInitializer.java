@@ -90,7 +90,7 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
     @Override
     public void initialize(String namespaceToInitialize, String type)
     {
-        Map<String, Set<InstalledExtension>> initializedExtensions = new HashMap<String, Set<InstalledExtension>>();
+        Map<String, Set<InstalledExtension>> initializedExtensions = new HashMap<>();
 
         // Load extensions from local repository
         Collection<InstalledExtension> installedExtensions;
@@ -153,7 +153,7 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
         Set<InstalledExtension> initializedExtensionsInNamespace = initializedExtensions.get(namespace);
 
         if (initializedExtensionsInNamespace == null) {
-            initializedExtensionsInNamespace = new HashSet<InstalledExtension>();
+            initializedExtensionsInNamespace = new HashSet<>();
             initializedExtensions.put(namespace, initializedExtensionsInNamespace);
         }
 
@@ -189,7 +189,7 @@ public class DefaultExtensionInitializer implements ExtensionInitializer, Initia
                         initializeExtensionInNamespace(dependencyExtension, namespace, initializedExtensions);
                     } catch (Exception e) {
                         if (dependency.isOptional()) {
-                            this.logger.warn("Failed to initialize dependency [{}]: ", dependency,
+                            this.logger.warn("Failed to initialize dependency [{}]: {}", dependency,
                                 ExceptionUtils.getRootCauseMessage(e));
                         } else {
                             throw new ExtensionException("Failed to initialize dependency [" + dependency + "]", e);
