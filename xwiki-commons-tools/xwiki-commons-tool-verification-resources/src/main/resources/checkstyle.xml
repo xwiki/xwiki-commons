@@ -100,7 +100,7 @@
         ArrayIndexOutOfBoundsException, Exception, RuntimeException, IllegalArgumentException, IllegalStateException, IndexOutOfBoundsException, NullPointerException, Throwable, SecurityException, UnsupportedOperationException,
         List, ArrayList, Deque, Queue, LinkedList, Set, HashSet, SortedSet, TreeSet, Map, HashMap, SortedMap, TreeMap, Collections, Collection, Arrays,
         ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser, PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue,
-        Logger, LoggerFactory, StringUtils, IOUtils,
+        Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils,
         Inject, Named, Component, Role, Singleton, InstantiationStrategy, ComponentInstantiationStrategy, Unstable, Override, Deprecated, SafeVarargs, SuppressWarnings"/>
     </module>
 
