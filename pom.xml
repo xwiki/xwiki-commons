@@ -82,7 +82,7 @@
 
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
-    <mockito.version>2.22.0</mockito.version>
+    <mockito.version>2.23.0</mockito.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.1</aspectj.version>
