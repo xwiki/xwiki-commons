@@ -19,6 +19,7 @@
  */
 package org.xwiki.job;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -232,5 +233,17 @@ public abstract class AbstractRequest implements Request
     public void setStatusSerialized(Boolean statusSerialized)
     {
         this.statusSerialized = statusSerialized;
+    }
+
+    @Override
+    public Map<String, Serializable> getContext()
+    {
+        return getProperty(PROPERTY_CONTEXT);
+    }
+
+    @Override
+    public void setContext(Map<String, Serializable> context)
+    {
+        setProperty(PROPERTY_CONTEXT, context);
     }
 }

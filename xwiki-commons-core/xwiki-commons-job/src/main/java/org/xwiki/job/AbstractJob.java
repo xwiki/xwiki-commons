@@ -19,7 +19,9 @@
  */
 package org.xwiki.job;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -30,11 +32,13 @@ import javax.inject.Provider;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
+import org.xwiki.context.concurrent.ContextStoreManager;
 import org.xwiki.job.event.JobFinishedEvent;
 import org.xwiki.job.event.JobFinishingEvent;
 import org.xwiki.job.event.JobStartedEvent;
@@ -87,6 +91,9 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
      */
     @Inject
     protected LoggerManager loggerManager;
+
+    @Inject
+    protected ContextStoreManager contextStore;
 
     /**
      * Used to store the results of the jobs execution.
@@ -214,9 +221,24 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
 
     /**
      * Called when the job is starting.
+     * 
+     * @throws ComponentLookupException
      */
     protected void jobStarting()
     {
+        // Restore context if any
+        Map<String, Serializable> context = getRequest().getContext();
+        if (context != null && !context.isEmpty()) {
+            initialize context
+
+            try {
+                this.contextStore.restore(context);
+            } catch (ComponentLookupException e) {
+                // TODO: throw a runtime exception ?
+                this.logger.error("Failed to restore the job context", e);
+            }
+        }
+
         this.jobContext.pushCurrentJob(this);
 
         this.observationManager.notify(new JobStartedEvent(getRequest().getId(), getType(), this.request), this);
