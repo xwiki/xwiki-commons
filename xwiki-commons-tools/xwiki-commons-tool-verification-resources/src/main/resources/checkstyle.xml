@@ -96,7 +96,7 @@
     <module name="ClassFanOutComplexity">
       <!--
           1) Default excludes (taken from https://github.com/checkstyle/checkstyle/blob/master/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java)
-          2) Non XWiki exceludes
+          2) Non XWiki excludes
           3) XWiki excludes
       -->
       <property name="excludedClasses" value="boolean, byte, char, double, float, int, long, short, void,
