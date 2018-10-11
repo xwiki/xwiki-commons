@@ -94,14 +94,23 @@
     -->
 
     <module name="ClassFanOutComplexity">
+      <!--
+          1) Default excludes (taken from https://github.com/checkstyle/checkstyle/blob/master/src/main/java/com/puppycrawl/tools/checkstyle/checks/metrics/AbstractClassCouplingCheck.java)
+          2) Non XWiki exceludes
+          3) XWiki excludes
+      -->
       <property name="excludedClasses" value="boolean, byte, char, double, float, int, long, short, void,
         Boolean, Byte, Character, Double, Float, Integer, Long, Short, Void,
         Object, Class, String, StringBuffer, StringBuilder,
         ArrayIndexOutOfBoundsException, Exception, RuntimeException, IllegalArgumentException, IllegalStateException, IndexOutOfBoundsException, NullPointerException, Throwable, SecurityException, UnsupportedOperationException,
-        List, ArrayList, Deque, Queue, LinkedList, Set, HashSet, SortedSet, TreeSet, Map, HashMap, SortedMap, TreeMap, Collections, Collection, Arrays,
-        ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser, PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue,
-        Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils,
-        Inject, Named, Component, Role, Singleton, InstantiationStrategy, ComponentInstantiationStrategy, Unstable, Override, Deprecated, SafeVarargs, SuppressWarnings"/>
+        List, ArrayList, Deque, Queue, LinkedList, Set, HashSet, SortedSet, TreeSet, Map, HashMap, SortedMap, TreeMap,
+        Override, Deprecated, SafeVarargs, SuppressWarnings, FunctionalInterface,
+
+        IOException, Collections, Collection, Arrays, ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser,
+        PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils,
+        Inject, Named, Singleton,
+
+        Component, Role, InstantiationStrategy, ComponentInstantiationStrategy, Unstable"/>
     </module>
 
     <module name="ClassTypeParameterName"/>
