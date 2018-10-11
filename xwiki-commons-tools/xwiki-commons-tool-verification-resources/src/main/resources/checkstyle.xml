@@ -107,7 +107,7 @@
         Override, Deprecated, SafeVarargs, SuppressWarnings, FunctionalInterface,
 
         IOException, Collections, Collection, Arrays, ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser,
-        PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader
+        PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader, ExceptionUtils,
         Inject, Provider, Named, Singleton,
 
         Component, Role, InstantiationStrategy, ComponentInstantiationStrategy, Unstable"/>
