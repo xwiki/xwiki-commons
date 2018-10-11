@@ -107,10 +107,11 @@
         Override, Deprecated, SafeVarargs, SuppressWarnings, FunctionalInterface,
 
         IOException, Collections, Collection, Arrays, ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser,
-        PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils,
+        PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader
         Inject, Provider, Named, Singleton,
 
         Component, Role, InstantiationStrategy, ComponentInstantiationStrategy, Unstable"/>
+      <property name="excludedPackages" value="org.apache.maven.plugins.annotations"/>
     </module>
 
     <module name="ClassTypeParameterName"/>
