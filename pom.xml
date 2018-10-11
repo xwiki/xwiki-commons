@@ -1949,6 +1949,11 @@
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.pitest</groupId>
+          <artifactId>pitest-maven</artifactId>
+          <version>1.4.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -2174,7 +2179,6 @@
           <plugin>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-maven</artifactId>
-            <version>1.4.0</version>
             <executions>
               <execution>
                 <id>pitest-check</id>
