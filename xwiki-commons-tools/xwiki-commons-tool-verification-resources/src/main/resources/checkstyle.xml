@@ -111,7 +111,7 @@
         Inject, Provider, Named, Singleton, NavigableSet,
 
         Component, Role, InstantiationStrategy, ComponentInstantiationStrategy, Unstable"/>
-      <property name="excludedPackages" value="org.apache.maven.plugins.annotations"/>
+      <property name="excludedPackages" value="org.apache.maven.plugins.annotations, javax.annotation.concurrent"/>
     </module>
 
     <module name="ClassTypeParameterName"/>
