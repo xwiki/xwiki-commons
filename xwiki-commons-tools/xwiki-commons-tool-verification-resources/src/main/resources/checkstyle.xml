@@ -108,7 +108,7 @@
 
         IOException, Collections, Collection, Arrays, ConcurrentHashMap, ConcurrentLinkedDeque, ConcurrentLinkedQueue, DelayQueue, FutureTask, LinkedBlockinDeque, LinkedBlockinQueue, Phaser,
         PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader, ExceptionUtils,
-        Inject, Provider, Named, Singleton,
+        Inject, Provider, Named, Singleton, NavigableSet,
 
         Component, Role, InstantiationStrategy, ComponentInstantiationStrategy, Unstable"/>
       <property name="excludedPackages" value="org.apache.maven.plugins.annotations"/>
