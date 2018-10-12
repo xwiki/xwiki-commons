@@ -110,8 +110,8 @@
         PriorityBlockingQueue, RejectedExecutionException, SynchronousQueue, Logger, LoggerFactory, StringUtils, FieldUtils, IOUtils, StringWriter, StringReader, ExceptionUtils,
         Inject, Provider, Named, Singleton, NavigableSet,
 
-        Component, Role, InstantiationStrategy, ComponentInstantiationStrategy, Unstable"/>
-      <property name="excludedPackages" value="org.apache.maven.plugins.annotations, javax.annotation.concurrent"/>
+        ComponentInstantiationStrategy, Unstable"/>
+      <property name="excludedPackages" value="org.apache.maven.plugins.annotations, javax.annotation.concurrent, org.xwiki.component.annotation"/>
     </module>
 
     <module name="ClassTypeParameterName"/>
