@@ -109,8 +109,9 @@ public class DefaultVelocityConfiguration implements Initializable, VelocityConf
         // [Retro compatibility] Use Velocity 1.x Space Gobbling
         this.defaultProperties.setProperty(RuntimeConstants.SPACE_GOBBLING, "bc");
         // [Retro compatibility] Allow "-" in variables names
-        // TODO: "parser.allows.dash.in.identifiers"
-        this.defaultProperties.setProperty(RuntimeConstants.ENABLE_DASH_IN_VARIABLE, Boolean.TRUE.toString());
+        this.defaultProperties.setProperty(RuntimeConstants.PARSER_DASH_ALLOWED, Boolean.TRUE.toString());
+        // [Retro compatibility] Keep original variable name when passing null parameter
+        this.defaultProperties.setProperty(RuntimeConstants.VM_PRESERVE_ARGUMENTS_LITERALS, Boolean.TRUE.toString());
 
         // Prevents users from calling #parse on files outside the /templates/ directory
         this.defaultProperties.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE,

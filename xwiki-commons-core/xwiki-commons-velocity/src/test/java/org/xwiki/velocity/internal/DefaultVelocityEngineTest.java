@@ -294,8 +294,10 @@ public class DefaultVelocityEngineTest
     }
 
     @Test
-    public void testMacroReturn() throws Exception
+    public void test MacroReturn() throws Exception
     {
+        // TODO
+        
         this.engine.initialize(new Properties());
 
         assertEvaluate("42$return", "#macro (testMacro $toto $return $titi)#setVariable('$return' 42)#end"
