@@ -180,4 +180,23 @@ public class CancelableEventTest
         assertTrue(event.isCanceled());
         assertEquals(reason, event.getReason());
     }
+
+    @Test
+    public void matchesWhenCanceled()
+    {
+        TestCancelableEvent event = new TestCancelableEvent("name");
+
+        // matches
+
+        assertTrue(event.matches(event));
+        assertTrue(event.matches(new TestCancelableEvent("name")));
+        assertTrue(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+
+        event.cancel();
+        assertTrue(event.isCanceled());
+
+        assertFalse(event.matches(event));
+        assertFalse(event.matches(new TestCancelableEvent("name")));
+        assertFalse(event.matches(new TestCancelableEvent(new FixedNameEventFilter("name"))));
+    }
 }
