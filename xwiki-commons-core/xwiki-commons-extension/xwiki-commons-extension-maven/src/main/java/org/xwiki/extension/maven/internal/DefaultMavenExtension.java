@@ -66,7 +66,7 @@ public class DefaultMavenExtension extends AbstractMavenExtension
      * @param classifier the maven artifact classifier
      * @param version the maven artifact version
      * @param type the extension type
-     * @since 10.9RC1
+     * @since 10.9
      * @since 10.8.1
      */
     public DefaultMavenExtension(ExtensionRepository repository, String groupId, String artifactId, String classifier,
@@ -90,7 +90,7 @@ public class DefaultMavenExtension extends AbstractMavenExtension
      * {@inheritDoc}
      * 
      * @see org.xwiki.extension.AbstractExtension#setFile(org.xwiki.extension.ExtensionFile)
-     * @since 10.9RC1
+     * @since 10.9
      * @since 10.8.1
      */
     @Override

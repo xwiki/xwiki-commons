@@ -57,7 +57,7 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
     /**
      * The name of the property containing the classifier.
      * 
-     * @since 10.9RC1
+     * @since 10.9
      * @since 10.8.1
      */
     public static final String PKEY_MAVEN_CLASSIFIER = PKEY_MAVENPRFIX + "classifier";
@@ -99,7 +99,7 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
      * @param classifier the maven artifact classifier
      * @param version the maven artifact version
      * @param type the extension type
-     * @since 10.9RC1
+     * @since 10.9
      * @since 10.8.1
      */
     public AbstractMavenExtension(ExtensionRepository repository, String groupId, String artifactId, String classifier,
@@ -162,7 +162,7 @@ public abstract class AbstractMavenExtension extends AbstractExtension implement
 
     /**
      * @param classifier the Maven classifier
-     * @since 10.9RC1
+     * @since 10.9
      * @since 10.8.1
      */
     public void setMavenClassifier(String classifier)

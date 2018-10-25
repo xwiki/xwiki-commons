@@ -62,7 +62,7 @@ import org.xwiki.properties.converter.AbstractConverter;
  * Create an {@link Extension} from a Maven {@link Model}.
  * 
  * @version $Id$
- * @since 10.9RC1
+ * @since 10.9
  * @since 10.8
  */
 public class AbstractModelConverter<T> extends AbstractConverter<T>

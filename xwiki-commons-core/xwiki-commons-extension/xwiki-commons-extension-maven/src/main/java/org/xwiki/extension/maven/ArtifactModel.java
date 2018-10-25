@@ -29,7 +29,7 @@ import org.xwiki.stability.Unstable;
  * different artifacts (with different classifier and type). {@code packaging} is only the default type.
  * 
  * @version $Id$
- * @since 10.9RC1
+ * @since 10.9
  * @since 10.8.1
  */
 @Unstable
