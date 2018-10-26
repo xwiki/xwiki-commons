@@ -207,7 +207,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
         addCoreExtension(extensions, coreExtension, this.logger);
     }
 
-    static public void addCoreExtension(Map<String, DefaultCoreExtension> extensions,
+    public static void addCoreExtension(Map<String, DefaultCoreExtension> extensions,
         DefaultCoreExtension coreExtension, Logger logger)
     {
         DefaultCoreExtension existingCoreExtension = extensions.get(coreExtension.getId().getId());
@@ -300,7 +300,7 @@ public class DefaultCoreExtensionScanner implements CoreExtensionScanner, Dispos
 
         Collection<URL> jars = getJARs();
 
-        this.logger.debug("Found the following JARs: ", jars);
+        this.logger.debug("Found the following JARs: {}", jars);
 
         ////////////////////
         // Try to find associated xed files
