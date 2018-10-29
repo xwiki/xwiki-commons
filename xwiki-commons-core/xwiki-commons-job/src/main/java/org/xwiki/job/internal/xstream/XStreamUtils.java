@@ -19,6 +19,7 @@
  */
 package org.xwiki.job.internal.xstream;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,30 +66,46 @@ public final class XStreamUtils
 
     /**
      * @param item the item to serialize
-     * @return true of the item is serializable
+     * @return true if the item is serializable
      */
     public static boolean isSerializable(Object item)
     {
-        if (item != null) {
-            Serializable serializable = item.getClass().getAnnotation(Serializable.class);
-            if (serializable != null) {
-                return serializable.value();
-            } else {
-                if (item instanceof java.io.Serializable) {
-                    return true;
-                }
-            }
+        return item == null || isSerializable(item.getClass());
+    }
 
-            if (!item.getClass().isAnnotationPresent(Component.class)) {
-                for (Class<?> clazz : UNSERIALIZABLE_CLASSES) {
-                    if (clazz.isInstance(item)) {
-                        return false;
-                    }
-                }
+    /**
+     * @param field the field to serialize
+     * @return true if the field is serializable
+     * @since 10.10RC1
+     */
+    public static boolean isSerializable(Field field)
+    {
+        return isSerializable(field.getType());
+    }
 
+    /**
+     * @param itemClass the class of the object to serialize
+     * @return true of the class describe serializable object
+     * @since 10.10RC1
+     */
+    public static boolean isSerializable(Class<?> itemClass)
+    {
+        Serializable serializable = itemClass.getAnnotation(Serializable.class);
+        if (serializable != null) {
+            return serializable.value();
+        } else {
+            if (java.io.Serializable.class.isAssignableFrom(itemClass)) {
                 return true;
             }
-        } else {
+        }
+
+        if (!itemClass.isAnnotationPresent(Component.class)) {
+            for (Class<?> clazz : UNSERIALIZABLE_CLASSES) {
+                if (clazz.isAssignableFrom(itemClass)) {
+                    return false;
+                }
+            }
+
             return true;
         }
 

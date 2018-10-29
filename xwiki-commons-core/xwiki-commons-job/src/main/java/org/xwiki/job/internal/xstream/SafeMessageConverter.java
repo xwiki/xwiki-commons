@@ -80,9 +80,9 @@ public class SafeMessageConverter extends SafeArrayConverter
             writer.startNode(FIELD_ARGUMENTARRAY);
             for (Object argument : message.getArgumentArray()) {
                 if (isSerializable(argument)) {
-                    writeItem(argument, context, writer);
+                    writeCompleteItem(argument, context, writer);
                 } else {
-                    writeItem(argument.toString(), context, writer);
+                    writeCompleteItem(argument.toString(), context, writer);
                 }
             }
             writer.endNode();
@@ -147,7 +147,7 @@ public class SafeMessageConverter extends SafeArrayConverter
 
         while (reader.hasMoreChildren()) {
             reader.moveDown();
-            Object argument = readItem(reader, context, null);
+            Object argument = readBareItem(reader, context, null);
             arguments.add(argument);
             reader.moveUp();
         }

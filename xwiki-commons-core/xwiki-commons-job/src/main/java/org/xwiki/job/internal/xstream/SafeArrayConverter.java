@@ -56,11 +56,11 @@ public class SafeArrayConverter extends ArrayConverter
     }
 
     @Override
-    protected Object readItem(HierarchicalStreamReader reader, UnmarshallingContext context, Object current)
+    protected Object readBareItem(HierarchicalStreamReader reader, UnmarshallingContext context, Object current)
     {
         Object value;
         try {
-            value = super.readItem(reader, context, current);
+            value = super.readBareItem(reader, context, current);
         } catch (Throwable e) {
             LOGGER.debug("Failed to read field", e);
 
@@ -71,10 +71,10 @@ public class SafeArrayConverter extends ArrayConverter
     }
 
     @Override
-    protected void writeItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer)
+    protected void writeCompleteItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer)
     {
         if (XStreamUtils.isSerializable(item)) {
-            super.writeItem(item, context, writer);
+            super.writeCompleteItem(item, context, writer);
         } else {
             String str;
             try {
@@ -86,7 +86,7 @@ public class SafeArrayConverter extends ArrayConverter
                 str = null;
             }
 
-            super.writeItem(str, context, writer);
+            super.writeCompleteItem(str, context, writer);
         }
     }
 }
