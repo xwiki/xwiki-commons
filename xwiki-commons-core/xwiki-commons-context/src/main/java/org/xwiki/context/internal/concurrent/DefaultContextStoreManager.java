@@ -37,7 +37,7 @@ import org.xwiki.context.concurrent.ContextStoreManager;
  * Default implementation of {@link ContextStoreManager}.
  * 
  * @version $Id$
- * @since 10.9RC1
+ * @since 10.10RC1
  */
 public class DefaultContextStoreManager implements ContextStoreManager
 {

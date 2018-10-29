@@ -30,7 +30,7 @@ import org.xwiki.stability.Unstable;
  * Save and restore contextual data.
  * 
  * @version $Id$
- * @since 10.9RC1
+ * @since 10.10RC1
  */
 @Role
 @Unstable

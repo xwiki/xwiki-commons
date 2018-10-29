@@ -30,7 +30,7 @@ import org.xwiki.stability.Unstable;
  * Entry point to manipulate all {@link ContextStore}s.
  * 
  * @version $Id$
- * @since 10.9RC1
+ * @since 10.10RC1
  */
 @Unstable
 public interface ContextStoreManager
