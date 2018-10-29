@@ -2043,7 +2043,7 @@
           <plugin>
             <groupId>net.sigmalab.maven.plugins</groupId>
             <artifactId>jira-maven-plugin</artifactId>
-            <version>0.8</version>
+            <version>0.7</version>
             <configuration>
             <skip>${xwiki.release.jira.skip}</skip>
             <settingsKey>${xwiki.release.jira.settingsKey}</settingsKey>
