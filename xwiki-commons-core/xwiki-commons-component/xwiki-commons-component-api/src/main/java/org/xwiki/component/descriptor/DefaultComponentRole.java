@@ -58,8 +58,18 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
      */
     public DefaultComponentRole(ComponentRole<T> componentRole)
     {
-        setRoleType(componentRole.getRoleType());
-        setRoleHint(componentRole.getRoleHint());
+        this(componentRole.getRoleType(), componentRole.getRoleHint());
+    }
+
+    /**
+     * @param roleType the role type
+     * @param roleHint the role hint
+     * @since 10.10RC1
+     */
+    public DefaultComponentRole(Type roleType, String roleHint)
+    {
+        setRoleType(roleType);
+        setRoleHint(roleHint);
     }
 
     @Override
@@ -110,7 +120,7 @@ public class DefaultComponentRole<T> implements ComponentRole<T>
             if (object == null || object.getClass() != getClass()) {
                 result = false;
             } else {
-                // object must be Syntax at this point
+                // object must be ComponentRole at this point
                 ComponentRole<?> cr = (ComponentRole<?>) object;
                 result =
                     Objects.equals(getRoleType(), cr.getRoleType()) && Objects.equals(getRoleHint(), cr.getRoleHint());
