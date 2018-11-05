@@ -17,9 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.context.internal;
+package org.xwiki.context.internal.concurrent;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,9 +37,26 @@ import org.xwiki.context.concurrent.ContextStore;
  */
 public abstract class AbstractContextStore implements ContextStore
 {
+    @FunctionalInterface
     protected interface SubContextStore
     {
         void save(String key, String subkey);
+    }
+
+    private List<String> supportedEntries;
+
+    /**
+     * @param entries the supported entries
+     */
+    public AbstractContextStore(String... entries)
+    {
+        this.supportedEntries = Collections.unmodifiableList(Arrays.asList(entries));
+    }
+
+    @Override
+    public Collection<String> getSupportedEntries()
+    {
+        return this.supportedEntries;
     }
 
     protected void save(Map<String, Serializable> contextStore, String key, Serializable value, Set<String> entries)

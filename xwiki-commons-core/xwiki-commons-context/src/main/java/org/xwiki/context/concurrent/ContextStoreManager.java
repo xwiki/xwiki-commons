@@ -20,9 +20,11 @@
 package org.xwiki.context.concurrent;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.xwiki.component.annotation.Role;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.stability.Unstable;
 
@@ -32,9 +34,16 @@ import org.xwiki.stability.Unstable;
  * @version $Id$
  * @since 10.10RC1
  */
+@Role
 @Unstable
 public interface ContextStoreManager
 {
+    /**
+     * @return the names of the context entries supported by the various {@link ContextStore} components
+     * @throws ComponentLookupException when failing to get {@link ContextStore} components
+     */
+    Collection<String> getSupportedEntries() throws ComponentLookupException;
+
     /**
      * Save only the passed context entries in the map.
      * 

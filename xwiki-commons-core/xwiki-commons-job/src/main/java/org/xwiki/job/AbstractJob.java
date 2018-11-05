@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
@@ -116,12 +117,6 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
     @Inject
     protected JobProgressManager progressManager;
 
-    @Inject
-    private Execution jobExecution;
-
-    @Inject
-    private ExecutionContextManager jobExecutionContextManager;
-
     /**
      * The job request.
      */
@@ -148,17 +143,13 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
      * Used to get the Execution Context.
      */
     @Inject
-    private Provider<Execution> executionProvider;
+    private Execution jobExecution;
 
     /**
      * Used to create a new Execution Context from scratch.
      */
     @Inject
     private Provider<ExecutionContextManager> executionContextManagerProvider;
-
-    private ExecutionContext previousExecutionContext;
-
-    private ExecutionContext jobExecutionContext;
 
     @Override
     public R getRequest()
@@ -183,11 +174,14 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
     public void run()
     {
         if (this.initExecutionContext) {
-            Execution execution = this.executionProvider.get();
+            ExecutionContext previousContext = null;
+
+            // Get context to restore
+            Map<String, Serializable> storedContext = getRequest().getContext();
 
             // Initialize a new context only if there is not already one
             ExecutionContext context;
-            if (execution.getContext() == null) {
+            if (storedContext != null || this.jobExecution.getContext() == null) {
                 // Create a clean Execution Context
                 context = new ExecutionContext();
             } else {
@@ -196,17 +190,36 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
 
             try {
                 if (context != null) {
+                    // Remember previous context
+                    previousContext = this.jobExecution.getContext();
+
                     try {
                         this.executionContextManagerProvider.get().initialize(context);
                     } catch (ExecutionContextException e) {
                         throw new RuntimeException("Failed to initialize Job [" + this + "] execution context", e);
+                    }
+
+                    // Restore stored context
+                    if (MapUtils.isNotEmpty(storedContext)) {
+                        try {
+                            this.contextStore.restore(storedContext);
+                        } catch (ComponentLookupException e) {
+                            throw new RuntimeException("Failed to restore context requested for the job [" + this + "]",
+                                e);
+                        }
                     }
                 }
 
                 runInContext();
             } finally {
                 if (context != null) {
-                    execution.removeContext();
+                    // Get rid of job context
+                    this.jobExecution.removeContext();
+
+                    // Restore previous context
+                    if (previousContext != null) {
+                        this.jobExecution.setContext(previousContext);
+                    }
                 }
             }
         } else {
@@ -229,41 +242,6 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
         }
     }
 
-    protected void pushContext() throws ExecutionContextException
-    {
-        Map<String, Serializable> context = getRequest().getContext();
-        if (context != null) {
-            // Remember previous context
-            this.previousExecutionContext = this.jobExecution.getContext();
-
-            // Set and initialize a new ExecutionContext
-            this.jobExecutionContext = new ExecutionContext();
-            this.jobExecutionContextManager.initialize(this.jobExecutionContext);
-
-            // Restore stored context
-            if (context.isEmpty()) {
-                try {
-                    this.contextStore.restore(context);
-                } catch (ComponentLookupException e) {
-                    // TODO: throw a runtime exception ?
-                    this.logger.error("Failed to restore the job context", e);
-                }
-            }
-        }
-    }
-
-    protected void popContext()
-    {
-        if (this.jobExecutionContext != null) {
-            // Get rid of job context
-            this.jobExecution.removeContext();
-            this.jobExecutionContext = null;
-
-            // Restore previous context
-            this.jobExecution.setContext(this.previousExecutionContext);
-        }
-    }
-
     /**
      * Called when the job is starting.
      * 
@@ -271,13 +249,6 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
      */
     protected void jobStarting()
     {
-        // Restore the job context (if any)
-        try {
-            pushContext();
-        } catch (ExecutionContextException e) {
-            this.logger.error("Failed to restore job context", e);
-        }
-
         this.jobContext.pushCurrentJob(this);
 
         this.observationManager.notify(new JobStartedEvent(getRequest().getId(), getType(), this.request), this);
@@ -343,9 +314,6 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
 
             // Remove the job from the current jobs context
             this.jobContext.popCurrentJob();
-
-            // Get rid of the job context (if any)
-            popContext();
 
             // Store the job status
             try {

@@ -20,14 +20,18 @@
 package org.xwiki.context.internal.concurrent;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.context.concurrent.ContextStore;
@@ -39,10 +43,26 @@ import org.xwiki.context.concurrent.ContextStoreManager;
  * @version $Id$
  * @since 10.10RC1
  */
+@Component
+@Singleton
 public class DefaultContextStoreManager implements ContextStoreManager
 {
     @Inject
     private ComponentManager componentManager;
+
+    @Override
+    public Collection<String> getSupportedEntries() throws ComponentLookupException
+    {
+        Set<String> entries = new HashSet<>();
+
+        List<ContextStore> stores = this.componentManager.getInstanceList(ContextStore.class);
+
+        for (ContextStore store : stores) {
+            entries.addAll(store.getSupportedEntries());
+        }
+
+        return entries;
+    }
 
     @Override
     public Map<String, Serializable> save(Set<String> entries) throws ComponentLookupException

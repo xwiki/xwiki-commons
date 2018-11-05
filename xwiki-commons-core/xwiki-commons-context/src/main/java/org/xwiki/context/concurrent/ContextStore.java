@@ -20,6 +20,7 @@
 package org.xwiki.context.concurrent;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,6 +37,11 @@ import org.xwiki.stability.Unstable;
 @Unstable
 public interface ContextStore
 {
+    /**
+     * @return the names of the context entries supported by the {@link ContextStore}
+     */
+    Collection<String> getSupportedEntries();
+
     /**
      * Save only the passed context entries in the map.
      * 
