@@ -244,8 +244,6 @@ public abstract class AbstractJob<R extends Request, S extends JobStatus> implem
 
     /**
      * Called when the job is starting.
-     * 
-     * @throws ComponentLookupException
      */
     protected void jobStarting()
     {
