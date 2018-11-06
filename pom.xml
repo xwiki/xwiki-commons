@@ -100,6 +100,9 @@
     <!-- Groovy -->
     <groovy.version>2.5.3</groovy.version>
 
+    <!-- Ivy -->
+    <ivy.version>2.4.0</ivy.version>
+
     <!-- By default Checkstyle, Backward compatibility check, Enforcer, License plugins, etc are on -->
     <xwiki.checkstyle.skip>false</xwiki.checkstyle.skip>
     <xwiki.revapi.skip>false</xwiki.revapi.skip>
@@ -1156,7 +1159,6 @@
         <artifactId>asm-util</artifactId>
         <version>${asm.version}</version>
       </dependency>
-
       <!-- ANTLR -->
       <dependency>
         <groupId>org.antlr</groupId>
