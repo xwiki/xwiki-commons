@@ -81,6 +81,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      */
     private Method writeMethod;
 
+    /**
+     * @see #isDeprecated()
+     */
+    private boolean deprecated;
+
     @Override
     public String getId()
     {
@@ -239,5 +244,20 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     public Method getWriteMethod()
     {
         return this.writeMethod;
+    }
+
+    @Override
+    public boolean isDeprecated()
+    {
+        return this.deprecated;
+    }
+
+    /**
+     * @param deprecated indicates if the parameter is deprecated
+     * @see #isDeprecated()
+     */
+    public void setDeprecated(boolean deprecated)
+    {
+        this.deprecated = deprecated;
     }
 }
