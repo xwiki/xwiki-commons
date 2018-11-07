@@ -93,4 +93,10 @@ public interface PropertyDescriptor
      * @since 4.2M1
      */
     Field getField();
+
+    /**
+     * @return indicates if the property is deprecated.
+     * @since 10.10RC1
+     */
+    boolean isDeprecated();
 }
