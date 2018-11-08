@@ -124,6 +124,10 @@
          commits. Thus the idea is that the CI will set this as a system property to run it using a scheduler. It can
          also be execute locally by running "mvn install -Pquality -Dxwiki.pitest.skip=false" -->
     <xwiki.pitest.skip>true</xwiki.pitest.skip>
+    <!-- Default Pitest timeout factor. Increasing the value will increase the duration of a build
+         but might change the mutation score: some mutation might take longer than the timeout to be killed
+         on some machines. See: https://github.com/STAMP-project/pitest-descartes/issues/62 -->
+    <xwiki.pitest.timeoutFactor>1.25</xwiki.pitest.timeoutFactor>
 
     <!-- Enable by default auto release on Jira -->
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
@@ -2176,6 +2180,7 @@
               <failWhenNoMutations>false</failWhenNoMutations>
               <mutationThreshold>${xwiki.pitest.mutationThreshold}</mutationThreshold>
               <mutationEngine>descartes</mutationEngine>
+              <timeoutFactor>${xwiki.pitest.timeoutFactor}</timeoutFactor>
               <threads>4</threads>
               <outputFormats>
                 <value>HTML</value>
