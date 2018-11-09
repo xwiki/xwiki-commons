@@ -172,6 +172,8 @@
     <maven.minimum.version>3.5.0</maven.minimum.version>
     <!-- The current Maven version declared in the dependency management (so that it can be change for the distribution for example) -->
     <maven.version>${maven.build.version}</maven.version>
+    <maven.resolver.build.version>1.1.1</maven.resolver.build.version>
+    <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
 
     <!-- The version of Maven Enforcer plugin -->
     <maven-enforcer.version>1.4.1</maven-enforcer.version>
@@ -951,6 +953,37 @@
         <artifactId>maven-shared-utils</artifactId>
         <version>3.2.1</version>
       </dependency>
+      <!-- Maven Resolver -->
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-api</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-util</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-impl</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-connector-basic</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-transport-http</artifactId>
+        <version>${maven.resolver.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-transport-file</artifactId>
+        <version>${maven.resolver.version}</version>
+    </dependency>
 
       <!-- Everybody tests -->
       <dependency>
