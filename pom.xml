@@ -166,17 +166,12 @@
          for ITs -->
     <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
 
-    <!-- Version of Maven used at runtime (by Extension Manager mostly) -->
-    <maven.runtime.version>3.5.4</maven.runtime.version>
-    <!-- Version of Maven used by the plugins  -->
+    <!-- Version of Maven used during the build (the one used as dependency when building and during Maven plugins executions)  -->
     <maven.build.version>3.5.4</maven.build.version>
-    <!-- Minimum version required -->
+    <!-- Minimum version of the actual Maven binary required to build -->
     <maven.minimum.version>3.5.0</maven.minimum.version>
-    <!--
-      The version of Maven used when declaring dependencies.
-      Use runtime version by default, overwrite it to change to build version (usually for Maven plugins)
-    -->
-    <maven.dependencies.version>${maven.runtime.version}</maven.dependencies.version>
+    <!-- The current Maven version declared in the dependency management (so that it can be change for the distribution for example) -->
+    <maven.version>${maven.build.version}</maven.version>
 
     <!-- The version of Maven Enforcer plugin -->
     <maven-enforcer.version>1.4.1</maven-enforcer.version>
@@ -888,17 +883,17 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
         <exclusions>
           <!-- Remove exclusion when https://jira.xwiki.org/browse/XCOMMONS-1155 is fixed -->
           <exclusion>
@@ -910,37 +905,37 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-plugin-api</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-compat</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-settings</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-settings-builder</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-repository-metadata</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model-builder</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-resolver-provider</artifactId>
-        <version>${maven.dependencies.version}</version>
+        <version>${maven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.plugin-tools</groupId>
