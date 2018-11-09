@@ -67,6 +67,9 @@ public class DefaultBeanDescriptorTest
 
         PropertyDescriptor deprecatedDescriptor = this.beanDescriptor.getProperty("deprecatedParameter");
         Assert.assertTrue(deprecatedDescriptor.isDeprecated());
+
+        PropertyDescriptor advancedDescriptor = this.beanDescriptor.getProperty("advancedParameter");
+        Assert.assertTrue(advancedDescriptor.isAdvanced());
     }
 
     @Test

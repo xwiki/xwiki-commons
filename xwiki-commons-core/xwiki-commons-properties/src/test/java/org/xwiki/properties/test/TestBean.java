@@ -21,6 +21,7 @@ package org.xwiki.properties.test;
 
 import java.util.List;
 
+import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
@@ -48,6 +49,8 @@ public class TestBean
     public String propertyWithDifferentId;
 
     private String deprecatedParameter;
+
+    private String advancedParameter;
 
     @PropertyName("Public Field")
     @PropertyDescription("a public field")
@@ -155,5 +158,16 @@ public class TestBean
     public void setDeprecatedParameter(String deprecatedParameter)
     {
         this.deprecatedParameter = deprecatedParameter;
+    }
+
+    @PropertyAdvanced
+    public String getAdvancedParameter()
+    {
+        return advancedParameter;
+    }
+
+    public void setAdvancedParameter(String advancedParameter)
+    {
+        this.advancedParameter = advancedParameter;
     }
 }

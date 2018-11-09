@@ -106,5 +106,7 @@ public interface PropertyDescriptor
      * @return indicates if the property is advanced.
      * @since 10.10RC1
      */
-    boolean isAdvanced();
+    default boolean isAdvanced() {
+        return false;
+    }
 }
