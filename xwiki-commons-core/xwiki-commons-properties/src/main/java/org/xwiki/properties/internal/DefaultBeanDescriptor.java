@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.PropertyDescriptor;
+import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
@@ -166,6 +167,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 desc.setMandatory(parameterMandatory != null);
 
                 desc.setDeprecated(extractPropertyAnnotation(writeMethod, readMethod, Deprecated.class) != null);
+                desc.setAdvanced(extractPropertyAnnotation(writeMethod, readMethod, PropertyAdvanced.class) != null);
 
                 if (defaultInstance != null && readMethod != null) {
                     // get default value

@@ -99,4 +99,10 @@ public interface PropertyDescriptor
      * @since 10.10RC1
      */
     boolean isDeprecated();
+
+    /**
+     * @return indicates if the property is advanced.
+     * @since 10.10RC1
+     */
+    boolean isAdvanced();
 }

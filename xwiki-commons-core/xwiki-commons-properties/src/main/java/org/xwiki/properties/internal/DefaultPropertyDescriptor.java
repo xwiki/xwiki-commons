@@ -86,6 +86,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      */
     private boolean deprecated;
 
+    /**
+     * @see #isAdvanced()
+     */
+    private boolean advanced;
+
     @Override
     public String getId()
     {
@@ -259,5 +264,20 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     public void setDeprecated(boolean deprecated)
     {
         this.deprecated = deprecated;
+    }
+
+    @Override
+    public boolean isAdvanced()
+    {
+        return this.advanced;
+    }
+
+    /**
+     * @param advanced indicates if the parameter is advanced
+     * @see #isAdvanced()
+     */
+    public void setAdvanced(boolean advanced)
+    {
+        this.advanced = advanced;
     }
 }
