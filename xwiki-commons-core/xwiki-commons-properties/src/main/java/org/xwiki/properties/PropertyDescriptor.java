@@ -98,7 +98,9 @@ public interface PropertyDescriptor
      * @return indicates if the property is deprecated.
      * @since 10.10RC1
      */
-    boolean isDeprecated();
+    default boolean isDeprecated() {
+        return false;
+    }
 
     /**
      * @return indicates if the property is advanced.

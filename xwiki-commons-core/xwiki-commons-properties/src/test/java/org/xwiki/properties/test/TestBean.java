@@ -47,6 +47,8 @@ public class TestBean
 
     public String propertyWithDifferentId;
 
+    private String deprecatedParameter;
+
     @PropertyName("Public Field")
     @PropertyDescription("a public field")
     public String publicField;
@@ -141,5 +143,17 @@ public class TestBean
     public void setPropertyWithDifferentId(String propertyWithDifferentId)
     {
         this.propertyWithDifferentId = propertyWithDifferentId;
+    }
+
+    @Deprecated
+    public String getDeprecatedParameter()
+    {
+        return deprecatedParameter;
+    }
+
+    @Deprecated
+    public void setDeprecatedParameter(String deprecatedParameter)
+    {
+        this.deprecatedParameter = deprecatedParameter;
     }
 }
