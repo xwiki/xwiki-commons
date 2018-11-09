@@ -1468,7 +1468,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-remote-resources-plugin</artifactId>
           <!-- Lock down plugin version for build reproducibility -->
-          <version>1.5</version>
+          <version>1.6.0</version>
         </plugin>
         <plugin>
           <!-- Since 2.0-beta-9 maven-release-plugin uses remote tagging by default. Remote tagging implies that SCM
