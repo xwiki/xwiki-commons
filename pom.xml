@@ -553,12 +553,7 @@
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
         <artifactId>jaxb-runtime</artifactId>
-        <version>2.3.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-core</artifactId>
-        <version>2.3.0.1</version>
+        <version>2.3.1</version>
       </dependency>
 
       <!-- Json -->
@@ -1270,10 +1265,11 @@
               <rules>
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
-                  <message>XWiki uses "org.glassfish.jaxb" version of the JAXB implementation. Don't use the "com.sun.xml.bind" one</message>
+                  <message>XWiki uses org.glassfish.jaxb:jaxb-runtime instead</message>
                   <excludes>
                     <exclude>com.sun.xml.bind:jaxb-impl</exclude>
                     <exclude>com.sun.xml.bind:jaxb-core</exclude>
+                    <exclude>org.glassfish.jaxb:jaxb-core</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
