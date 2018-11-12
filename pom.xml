@@ -115,6 +115,7 @@
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
     <xwiki.enforcer.enforce-javax.activation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.activation-api.skip>
+    <xwiki.enforcer.enforce-javax.mail.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.mail.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
@@ -1379,10 +1380,32 @@
                 <bannedDependencies>
                   <searchTransitive>true</searchTransitive>
                   <message>
-                    Javax Activation artifact id changed
+                    Javax Activation artifact id changed, the current one is javax.activation:javax.activation-api
                   </message>
                   <excludes>
                     <exclude>javax.activation:activation</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using com.sun.mail:javax.mail and the various older ids -->
+          <execution>
+            <id>enforce-javax.mail</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-javax.mail.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Mail artifact id changed, the current one is com.sun.mail:javax.mail
+                  </message>
+                  <excludes>
+                    <exclude>javax.mail:mail</exclude>
+                    <exclude>javax.mail:mailapi</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
