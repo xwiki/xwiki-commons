@@ -114,6 +114,7 @@
     <xwiki.enforcer.enforce-glassfish-el.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-glassfish-el.skip>
     <xwiki.enforcer.enforce-commons-lang3.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-lang3.skip>
     <xwiki.enforcer.enforce-commons-configuration2.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-commons-configuration2.skip>
+    <xwiki.enforcer.enforce-javax.activation-api.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javax.activation-api.skip>
     <xwiki.enforcer.enforce-bouncycastle-ids.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-bouncycastle-ids.skip>
     <xwiki.enforcer.enforce-javase-dependencies.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-javase-dependencies.skip>
     <xwiki.enforcer.enforce-upper-bounds.skip>${xwiki.enforcer.skip}</xwiki.enforcer.enforce-upper-bounds.skip>
@@ -1117,11 +1118,18 @@
         <groupId>com.sun.mail</groupId>
         <artifactId>javax.mail</artifactId>
         <version>1.6.1</version>
+        <exclusions>
+          <exclusion>
+            <!-- Artifact id changed -->
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.activation</groupId>
-        <artifactId>activation</artifactId>
-        <version>1.1.1</version>
+        <artifactId>javax.activation-api</artifactId>
+        <version>1.2.0</version>
       </dependency>
       <!-- Diff tools used in commons for diff and blame -->
       <dependency>
@@ -1354,6 +1362,27 @@
                   </message>
                   <excludes>
                     <exclude>commons-configuration:commons-configuration</exclude>
+                  </excludes>
+                </bannedDependencies>
+              </rules>
+            </configuration>
+          </execution>
+          <!-- Check that we're using javax.activation-api and not activation -->
+          <execution>
+            <id>enforce-javax.activation-api</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <skip>${xwiki.enforcer.enforce-javax.activation-api.skip}</skip>
+              <rules>
+                <bannedDependencies>
+                  <searchTransitive>true</searchTransitive>
+                  <message>
+                    Javax Activation artifact id changed
+                  </message>
+                  <excludes>
+                    <exclude>javax.activation:activation</exclude>
                   </excludes>
                 </bannedDependencies>
               </rules>
