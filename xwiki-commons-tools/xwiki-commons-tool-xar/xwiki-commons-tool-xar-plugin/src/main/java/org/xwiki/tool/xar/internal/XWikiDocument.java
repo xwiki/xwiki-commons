@@ -124,6 +124,11 @@ public class XWikiDocument
     private String syntaxId;
 
     /**
+     * @see #getContent()
+     */
+    private String content;
+
+    /**
      * @see #containsTranslations()
      */
     private boolean containsTranslations;
@@ -163,7 +168,7 @@ public class XWikiDocument
     {
         SAXReader reader = new SAXReader();
         fromXML(reader.read(file));
-        
+
     }
 
     /**
@@ -210,6 +215,7 @@ public class XWikiDocument
         this.isHidden = Boolean.parseBoolean(readElement(rootElement, "hidden"));
         this.title = readElement(rootElement, "title");
         this.syntaxId = readElement(rootElement, "syntaxId");
+        this.content = readElement(rootElement, "content");
 
         this.datePresent = isElementPresent(rootElement, "date");
         this.contentUpdateDatePresent = isElementPresent(rootElement, "contentUpdateDate");
@@ -220,9 +226,8 @@ public class XWikiDocument
         if (rootElement.selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']").size() > 0) {
             this.containsTranslations = true;
             // Record the visibility
-            for (Node node : rootElement.selectNodes(
-                "//object/className[text() = 'XWiki.TranslationDocumentClass']/../property/scope"))
-            {
+            for (Node node : rootElement
+                .selectNodes("//object/className[text() = 'XWiki.TranslationDocumentClass']/../property/scope")) {
                 this.translationVisibilities.add(node.getStringValue());
             }
         }
@@ -274,13 +279,19 @@ public class XWikiDocument
      * @param rootElement the root XML element under which to find the element
      * @param elementName the name of the element to read
      * @return null or the element value as a String
+     * @throws DocumentException if it is not a valid XML wiki page
      * @since 10.8RC1
      */
-    public static String readElement(Element rootElement, String elementName)
+    public static String readElement(Element rootElement, String elementName) throws DocumentException
     {
         String result = null;
         Element element = rootElement.element(elementName);
         if (element != null) {
+            // Make sure the element does not have any child element
+            if (!element.isTextOnly()) {
+                throw new DocumentException("Unexpected non-text content found in element [" + elementName + "]");
+            }
+
             result = element.getText();
         }
         return result;
@@ -289,9 +300,10 @@ public class XWikiDocument
     /**
      * @param rootElement the root element of the XML document
      * @return the list of data for each attachment
+     * @throws DocumentException if it is not a valid XML wiki page
      * @since 10.8RC1
      */
-    public static List<Map<String, String>> readAttachmentData(Element rootElement)
+    public static List<Map<String, String>> readAttachmentData(Element rootElement) throws DocumentException
     {
         List<Map<String, String>> data = new ArrayList<>();
         for (Object attachmentNode : rootElement.elements("attachment")) {
@@ -481,6 +493,15 @@ public class XWikiDocument
     public String getSyntaxId()
     {
         return this.syntaxId;
+    }
+
+    /**
+     * @return the content of the document
+     * @since 10.10RC1
+     */
+    public String getContent()
+    {
+        return this.content;
     }
 
     /**
