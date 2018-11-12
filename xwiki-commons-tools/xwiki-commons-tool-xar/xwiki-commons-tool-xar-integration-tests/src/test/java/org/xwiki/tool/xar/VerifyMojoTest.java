@@ -19,6 +19,8 @@
  */
 package org.xwiki.tool.xar;
 
+import java.util.Arrays;
+
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.hamcrest.CoreMatchers;
@@ -226,5 +228,18 @@ public class VerifyMojoTest extends AbstractMojoTest
         verifier.addCliOption("-Dxar.dates.skip.documentList=Space.WebHome,Space.Test");
         verifier.executeGoal("install");
         verifier.verifyErrorFreeLog();
+    }
+
+
+    @Test
+    public void invalidXml() throws Exception
+    {
+        Verifier verifier = createVerifier("/invalidContent");
+        try {
+            verifier.executeGoals(Arrays.asList("clean", "package"));
+            fail("Should have failed with an exception here!");
+        } catch (VerificationException expected) {
+            verifier.verifyTextInLog("Unexpected non-text content found in element [content]");
+        }
     }
 }
