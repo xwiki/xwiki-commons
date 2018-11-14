@@ -19,11 +19,13 @@
  */
 package org.xwiki.displayer;
 
+import java.util.Map;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 /**
- * Display an html element based on the given class.
+ * Display an html element based on the class of {@link T}.
  *
  * @version $Id$
  * @since 10.10RC1
@@ -33,13 +35,20 @@ import org.xwiki.stability.Unstable;
 public interface HTMLDisplayer<T>
 {
     /**
-     * @return the html element of the class
+     * @return the html element related to the class
      */
     String display();
 
     /**
-     * @param type the display type
-     * @return the html element of the class
+     * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
+     * @return the html element related to the class
      */
-    String display(String type);
+    String display(Map<String, String> parameters);
+
+    /**
+     * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
+     * @param type the display type (view, edit, ...)
+     * @return the html element related to the class
+     */
+    String display(Map<String, String> parameters, String type);
 }
