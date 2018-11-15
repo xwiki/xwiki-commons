@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import org.xwiki.properties.PropertyDescriptor;
 
@@ -90,6 +91,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      * @see #isAdvanced()
      */
     private boolean advanced;
+
+    /**
+     * @see #getGroups()
+     */
+    private List<String> groups;
 
     @Override
     public String getId()
@@ -281,5 +287,20 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     public void setAdvanced(boolean advanced)
     {
         this.advanced = advanced;
+    }
+
+    @Override
+    public List<String> getGroups()
+    {
+        return this.groups;
+    }
+
+    /**
+     * @param groups the property hierarchy of groups
+     * @see #getGroups()
+     */
+    public void setGroups(List<String> groups)
+    {
+        this.groups = groups;
     }
 }
