@@ -225,6 +225,8 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
             desc.setMandatory(parameterMandatory != null);
 
+            desc.setDeprecated(field.getAnnotation(Deprecated.class) != null);
+
             if (defaultInstance != null) {
                 // get default value
                 try {
