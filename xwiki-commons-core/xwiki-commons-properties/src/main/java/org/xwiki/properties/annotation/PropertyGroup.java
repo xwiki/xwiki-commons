@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Inherited
-public @interface PropertyGroups
+public @interface PropertyGroup
 {
     /**
      * @return the hierarchy of groups.

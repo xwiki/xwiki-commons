@@ -38,7 +38,7 @@ import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
-import org.xwiki.properties.annotation.PropertyGroups;
+import org.xwiki.properties.annotation.PropertyGroup;
 import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
 import org.xwiki.properties.annotation.PropertyMandatory;
@@ -171,10 +171,10 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 desc.setDeprecated(extractPropertyAnnotation(writeMethod, readMethod, Deprecated.class) != null);
                 desc.setAdvanced(extractPropertyAnnotation(writeMethod, readMethod, PropertyAdvanced.class) != null);
 
-                PropertyGroups parameterGroups =
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyGroups.class);
-                if (parameterGroups != null) {
-                    desc.setGroups(Arrays.asList(parameterGroups.value()));
+                PropertyGroup parameterGroup =
+                        extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class);
+                if (parameterGroup != null) {
+                    desc.setGroups(Arrays.asList(parameterGroup.value()));
                 }
 
                 if (defaultInstance != null && readMethod != null) {
