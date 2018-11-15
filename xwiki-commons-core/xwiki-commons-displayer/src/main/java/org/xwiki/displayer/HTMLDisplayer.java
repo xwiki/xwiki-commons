@@ -25,7 +25,7 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 /**
- * Display an html element based on the class of {@link T}.
+ * Display an html element based on the type of {@link T}.
  *
  * @version $Id$
  * @since 10.10RC1
@@ -35,11 +35,6 @@ import org.xwiki.stability.Unstable;
 public interface HTMLDisplayer<T>
 {
     /**
-     * @return the html element related to the class
-     */
-    String display();
-
-    /**
      * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
      * @return the html element related to the class
      */
@@ -47,8 +42,8 @@ public interface HTMLDisplayer<T>
 
     /**
      * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
-     * @param type the display type (view, edit, ...)
+     * @param mode the display mode (view, edit, ...)
      * @return the html element related to the class
      */
-    String display(Map<String, String> parameters, String type);
+    String display(Map<String, String> parameters, String mode);
 }
