@@ -196,6 +196,10 @@
     <xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>true</xwiki.nexus.keepStagingRepositoryOnCloseRuleFailure>
     <xwiki.nexus.skipLocalStaging>false</xwiki.nexus.skipLocalStaging>
     <xwiki.nexus.skipStaging>false</xwiki.nexus.skipStaging>
+
+    <!-- Control Maven output directory -->
+    <maven.build.dir>${project.basedir}/target</maven.build.dir>
+
   </properties>
   <prerequisites>
     <maven>${maven.minimum.version}</maven>
@@ -1213,6 +1217,7 @@
   </dependencyManagement>
   <build>
     <defaultGoal>install</defaultGoal>
+    <directory>${maven.build.dir}</directory>
     <plugins>
       <!-- Ensure that we lock down all plugin versions -->
       <plugin>
