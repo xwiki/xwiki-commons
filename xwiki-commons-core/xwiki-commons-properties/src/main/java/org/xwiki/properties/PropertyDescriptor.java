@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Describe a property in a bean.
@@ -116,7 +115,7 @@ public interface PropertyDescriptor
      * @return the hierarchy of groups.
      * @since 10.10RC1
      */
-    default List<String> getGroups() {
+    default PropertyGroupContainer getGroup() {
         return Collections.emptyList();
     }
 }

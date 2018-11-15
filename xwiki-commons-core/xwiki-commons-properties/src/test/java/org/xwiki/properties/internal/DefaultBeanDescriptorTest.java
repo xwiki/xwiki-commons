@@ -71,8 +71,8 @@ public class DefaultBeanDescriptorTest
         PropertyDescriptor advancedDescriptor = this.beanDescriptor.getProperty("advancedParameter");
         Assert.assertTrue(advancedDescriptor.isAdvanced());
 
-        Assert.assertEquals("test1", advancedDescriptor.getGroups().get(0));
-        Assert.assertEquals("test2", advancedDescriptor.getGroups().get(1));
+        Assert.assertEquals("test1", advancedDescriptor.getGroup().get(0));
+        Assert.assertEquals("test2", advancedDescriptor.getGroup().get(1));
     }
 
     @Test

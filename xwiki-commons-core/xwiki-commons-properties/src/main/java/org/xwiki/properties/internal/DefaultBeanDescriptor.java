@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.PropertyDescriptor;
+import org.xwiki.properties.PropertyGroupContainer;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyGroup;
@@ -174,7 +175,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                 PropertyGroup parameterGroup =
                         extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class);
                 if (parameterGroup != null) {
-                    desc.setGroups(Arrays.asList(parameterGroup.value()));
+                    desc.setGroup(new PropertyGroupContainer(Arrays.asList(parameterGroup.value())));
                 }
 
                 if (defaultInstance != null && readMethod != null) {

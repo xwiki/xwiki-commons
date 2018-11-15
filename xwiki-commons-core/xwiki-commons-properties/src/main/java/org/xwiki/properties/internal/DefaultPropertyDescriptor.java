@@ -23,9 +23,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 
 import org.xwiki.properties.PropertyDescriptor;
+import org.xwiki.properties.PropertyGroupContainer;
 
 /**
  * Default implementation for {@link PropertyDescriptor}.
@@ -93,9 +93,9 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     private boolean advanced;
 
     /**
-     * @see #getGroups()
+     * @see #getGroup()
      */
-    private List<String> groups;
+    private PropertyGroupContainer group;
 
     @Override
     public String getId()
@@ -290,17 +290,17 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     }
 
     @Override
-    public List<String> getGroups()
+    public PropertyGroupContainer getGroup()
     {
-        return this.groups;
+        return this.group;
     }
 
     /**
-     * @param groups the property hierarchy of groups
-     * @see #getGroups()
+     * @param group the property hierarchy of groups
+     * @see #getGroup()
      */
-    public void setGroups(List<String> groups)
+    public void setGroup(PropertyGroupContainer group)
     {
-        this.groups = groups;
+        this.group = group;
     }
 }
