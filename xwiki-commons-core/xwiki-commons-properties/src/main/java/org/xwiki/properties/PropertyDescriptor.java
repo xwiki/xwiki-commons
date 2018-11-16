@@ -115,7 +115,7 @@ public interface PropertyDescriptor
      * @return the hierarchy of groups.
      * @since 10.10RC1
      */
-    default PropertyGroupContainer getGroup() {
-        return Collections.emptyList();
+    default PropertyGroupDescriptor getGroupDescriptor() {
+        return new PropertyGroupDescriptor(Collections.emptyList());
     }
 }

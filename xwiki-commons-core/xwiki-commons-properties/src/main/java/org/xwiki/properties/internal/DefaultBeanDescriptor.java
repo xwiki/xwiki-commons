@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.properties.BeanDescriptor;
 import org.xwiki.properties.PropertyDescriptor;
-import org.xwiki.properties.PropertyGroupContainer;
+import org.xwiki.properties.PropertyGroupDescriptor;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
 import org.xwiki.properties.annotation.PropertyGroup;
@@ -138,45 +138,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             PropertyHidden parameterHidden = extractPropertyAnnotation(writeMethod, readMethod, PropertyHidden.class);
 
             if (parameterHidden == null) {
-                // get parameter id
-                PropertyId propertyId = extractPropertyAnnotation(writeMethod, readMethod, PropertyId.class);
-                desc.setId(propertyId != null ? propertyId.value() : propertyDescriptor.getName());
-
-                // set parameter type
-                Type propertyType;
-                if (readMethod != null) {
-                    propertyType = readMethod.getGenericReturnType();
-                } else {
-                    propertyType = writeMethod.getGenericParameterTypes()[0];
-                }
-                desc.setPropertyType(propertyType);
-
-                // get parameter display name
-                PropertyName parameterName = extractPropertyAnnotation(writeMethod, readMethod, PropertyName.class);
-
-                desc.setName(parameterName != null ? parameterName.value() : desc.getId());
-
-                // get parameter description
-                PropertyDescription parameterDescription =
-                    extractPropertyAnnotation(writeMethod, readMethod, PropertyDescription.class);
-
-                desc.setDescription(parameterDescription != null ? parameterDescription.value() : propertyDescriptor
-                    .getShortDescription());
-
-                // is parameter mandatory
-                PropertyMandatory parameterMandatory =
-                    extractPropertyAnnotation(writeMethod, readMethod, PropertyMandatory.class);
-
-                desc.setMandatory(parameterMandatory != null);
-
-                desc.setDeprecated(extractPropertyAnnotation(writeMethod, readMethod, Deprecated.class) != null);
-                desc.setAdvanced(extractPropertyAnnotation(writeMethod, readMethod, PropertyAdvanced.class) != null);
-
-                PropertyGroup parameterGroup =
-                        extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class);
-                if (parameterGroup != null) {
-                    desc.setGroup(new PropertyGroupContainer(Arrays.asList(parameterGroup.value())));
-                }
+                setProperties(propertyDescriptor, desc, writeMethod, readMethod);
 
                 if (defaultInstance != null && readMethod != null) {
                     // get default value
@@ -195,6 +157,49 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
                 this.parameterDescriptorMap.put(desc.getId(), desc);
             }
+        }
+    }
+
+    private void setProperties(java.beans.PropertyDescriptor propertyDescriptor, DefaultPropertyDescriptor desc,
+            Method writeMethod, Method readMethod)
+    {
+        // get parameter id
+        PropertyId propertyId = extractPropertyAnnotation(writeMethod, readMethod, PropertyId.class);
+        desc.setId(propertyId != null ? propertyId.value() : propertyDescriptor.getName());
+
+        // set parameter type
+        Type propertyType;
+        if (readMethod != null) {
+            propertyType = readMethod.getGenericReturnType();
+        } else {
+            propertyType = writeMethod.getGenericParameterTypes()[0];
+        }
+        desc.setPropertyType(propertyType);
+
+        // get parameter display name
+        PropertyName parameterName = extractPropertyAnnotation(writeMethod, readMethod, PropertyName.class);
+
+        desc.setName(parameterName != null ? parameterName.value() : desc.getId());
+
+        // get parameter description
+        PropertyDescription parameterDescription =
+                extractPropertyAnnotation(writeMethod, readMethod, PropertyDescription.class);
+
+        desc.setDescription(parameterDescription != null ? parameterDescription.value() : propertyDescriptor
+                .getShortDescription());
+
+        // is parameter mandatory
+        PropertyMandatory parameterMandatory =
+                extractPropertyAnnotation(writeMethod, readMethod, PropertyMandatory.class);
+
+        desc.setMandatory(parameterMandatory != null);
+
+        desc.setDeprecated(extractPropertyAnnotation(writeMethod, readMethod, Deprecated.class) != null);
+        desc.setAdvanced(extractPropertyAnnotation(writeMethod, readMethod, PropertyAdvanced.class) != null);
+
+        PropertyGroup parameterGroup = extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class);
+        if (parameterGroup != null) {
+            desc.setGroup(new PropertyGroupDescriptor(Arrays.asList(parameterGroup.value())));
         }
     }
 

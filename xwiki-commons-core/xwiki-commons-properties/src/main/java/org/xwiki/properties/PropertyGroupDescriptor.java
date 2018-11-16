@@ -27,15 +27,23 @@ import java.util.List;
  * @version $Id$
  * @since 10.10RC1
  */
-public class PropertyGroupContainer
+public class PropertyGroupDescriptor
 {
     private List<String> group;
 
-    public PropertyGroupContainer(List<String> group)
+    /**
+     * Default constructor.
+     *
+     * @param group hierarchy of groups
+     */
+    public PropertyGroupDescriptor(List<String> group)
     {
         this.group = group;
     }
 
+    /**
+     * @return the hierarchy of groups
+     */
     public List<String> getGroup()
     {
         return group;
