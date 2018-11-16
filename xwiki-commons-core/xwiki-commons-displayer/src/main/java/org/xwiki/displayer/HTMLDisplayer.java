@@ -38,21 +38,24 @@ public interface HTMLDisplayer<T>
     /**
      * @param value the value on which the display is based on
      * @return the html element based on the value and the type
+     * @throws HTMLDisplayerException if an error occurs during the display
      */
-    String display(T value);
+    String display(T value) throws HTMLDisplayerException;
 
     /**
      * @param value the value on which the display is based on
      * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
      * @return the html element based on the value and the type
+     * @throws HTMLDisplayerException if an error occurs during the display
      */
-    String display(T value, Map<String, String> parameters);
+    String display(T value, Map<String, String> parameters) throws HTMLDisplayerException;
 
     /**
      * @param value the value on which the display is based on
      * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
      * @param mode the display mode (view, edit, ...)
      * @return the html element based on the value and the type
+     * @throws HTMLDisplayerException if an error occurs during the display
      */
-    String display(T value, Map<String, String> parameters, String mode);
+    String display(T value, Map<String, String> parameters, String mode) throws HTMLDisplayerException;
 }
