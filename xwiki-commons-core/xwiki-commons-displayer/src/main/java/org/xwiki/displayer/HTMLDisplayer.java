@@ -27,6 +27,7 @@ import org.xwiki.stability.Unstable;
 /**
  * Display an html element based on the type of {@link T}.
  *
+ * @param <T> type used for the display
  * @version $Id$
  * @since 10.10RC1
  */
@@ -35,15 +36,23 @@ import org.xwiki.stability.Unstable;
 public interface HTMLDisplayer<T>
 {
     /**
-     * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
-     * @return the html element related to the class
+     * @param value the value on which the display is based on
+     * @return the html element based on the value and the type
      */
-    String display(Map<String, String> parameters);
+    String display(T value);
 
     /**
+     * @param value the value on which the display is based on
+     * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
+     * @return the html element based on the value and the type
+     */
+    String display(T value, Map<String, String> parameters);
+
+    /**
+     * @param value the value on which the display is based on
      * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
      * @param mode the display mode (view, edit, ...)
-     * @return the html element related to the class
+     * @return the html element based on the value and the type
      */
-    String display(Map<String, String> parameters, String mode);
+    String display(T value, Map<String, String> parameters, String mode);
 }

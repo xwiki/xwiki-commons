@@ -31,6 +31,9 @@
   <name>XWiki Commons - Displayer</name>
   <packaging>jar</packaging>
   <description>XWiki Commons - Displayer</description>
+  <properties>
+    <xwiki.jacoco.instructionRatio>1.00</xwiki.jacoco.instructionRatio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
