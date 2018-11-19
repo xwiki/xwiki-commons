@@ -22,7 +22,6 @@ package org.xwiki.context.concurrent;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
@@ -48,7 +47,7 @@ public interface ContextStore
      * @param contextStore the stored context data
      * @param entries the list of context entries to take into account
      */
-    void save(Map<String, Serializable> contextStore, Set<String> entries);
+    void save(Map<String, Serializable> contextStore, Collection<String> entries);
 
     /**
      * Inject in the current context data found in the passed map.

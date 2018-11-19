@@ -65,7 +65,7 @@ public class DefaultContextStoreManager implements ContextStoreManager
     }
 
     @Override
-    public Map<String, Serializable> save(Set<String> entries) throws ComponentLookupException
+    public Map<String, Serializable> save(Collection<String> entries) throws ComponentLookupException
     {
         if (entries == null) {
             return null;

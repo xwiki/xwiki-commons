@@ -22,7 +22,6 @@ package org.xwiki.context.concurrent;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.component.manager.ComponentLookupException;
@@ -51,7 +50,7 @@ public interface ContextStoreManager
      * @return the saved context entries
      * @throws ComponentLookupException when failing to get {@link ContextStore} components
      */
-    Map<String, Serializable> save(Set<String> entries) throws ComponentLookupException;
+    Map<String, Serializable> save(Collection<String> entries) throws ComponentLookupException;
 
     /**
      * Inject in the current context data found in the passed map.

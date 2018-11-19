@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.xwiki.context.concurrent.ContextStore;
 
@@ -59,14 +58,15 @@ public abstract class AbstractContextStore implements ContextStore
         return this.supportedEntries;
     }
 
-    protected void save(Map<String, Serializable> contextStore, String key, Serializable value, Set<String> entries)
+    protected void save(Map<String, Serializable> contextStore, String key, Serializable value,
+        Collection<String> entries)
     {
         if (entries.contains(key)) {
             contextStore.put(key, value);
         }
     }
 
-    protected void save(SubContextStore store, String prefix, Set<String> entries)
+    protected void save(SubContextStore store, String prefix, Collection<String> entries)
     {
         for (String key : entries) {
             if (key.startsWith(prefix)) {
