@@ -61,8 +61,9 @@
     <!-- ASM -->
     <asm.version>7.0</asm.version>
 
-    <!-- Selenium -->
-    <selenium.version>2.44.0</selenium.version>
+    <!-- Guava -->
+    <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
+    <guava.version>20.0</guava.version>
 
     <!-- SLF4J -->
     <slf4j.version>1.7.25</slf4j.version>
@@ -83,6 +84,9 @@
     <!-- Mock libraries -->
     <jmock.version>2.6.0</jmock.version>
     <mockito.version>2.23.0</mockito.version>
+
+    <!-- Byte Buddy -->
+    <bytebuddy.version>1.9.4</bytebuddy.version>
 
     <!-- AspectJ -->
     <aspectj.version>1.9.2</aspectj.version>
@@ -725,16 +729,15 @@
       </dependency>
 
       <!-- Used by reflections and other projects in commons, platform and rendering -->
-      <!-- FIXME: Can't upgrade to Guava 21 because Solr 6.3.0 use a method that have been deleted in Guava 21... -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>20.0</version>
+        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava-testlib</artifactId>
-        <version>20.0</version>
+        <version>${guava.version}</version>
       </dependency>
 
       <!-- Groovy engine. Used in both commons and platform -->
@@ -1065,25 +1068,12 @@
         <artifactId>objenesis</artifactId>
         <version>2.6</version>
       </dependency>
-
       <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-java</artifactId>
-        <version>${selenium.version}</version>
-        <exclusions>
-          <!-- We want to choose the SLF4J binding only when XWiki is packaged. -->
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <!-- It has a dependency on testng which we need to exclude to prevent
-               Maven Surefire plugin to think we're executing TestNG tests. -->
-          <exclusion>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${bytebuddy.version}</version>
       </dependency>
+
       <!-- Several modules depend on the servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
