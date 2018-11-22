@@ -275,6 +275,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     /**
      * @param advanced indicates if the parameter is advanced
      * @see #isAdvanced()
+     * @since 10.10RC1
      */
     public void setAdvanced(boolean advanced)
     {
