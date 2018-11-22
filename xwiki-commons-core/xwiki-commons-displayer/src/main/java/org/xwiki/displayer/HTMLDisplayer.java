@@ -29,7 +29,7 @@ import org.xwiki.stability.Unstable;
  *
  * @param <T> type used for the display
  * @version $Id$
- * @since 10.10RC1
+ * @since 10.11RC1
  */
 @Role
 @Unstable

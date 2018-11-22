@@ -21,6 +21,7 @@ package org.xwiki.displayer.internal;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,7 +40,7 @@ import org.xwiki.displayer.HTMLDisplayerManager;
  * Default implementation for {@link org.xwiki.displayer.HTMLDisplayerManager}.
  *
  * @version $Id$
- * @since 10.10RC1
+ * @since 10.11RC1
  */
 @Component
 @Singleton
@@ -65,5 +66,24 @@ public class DefaultDisplayerManager implements HTMLDisplayerManager
             throw new HTMLDisplayerException(
                     "Failed to retrieve the HTML displayer for target type [" + targetType + "]", e);
         }
+    }
+
+    @Override
+    public <T> String display(Type targetType, T value) throws HTMLDisplayerException
+    {
+        return getHTMLDisplayer(targetType).display(value);
+    }
+
+    @Override
+    public <T> String display(Type targetType, T value, Map<String, String> parameters) throws HTMLDisplayerException
+    {
+        return getHTMLDisplayer(targetType).display(value, parameters);
+    }
+
+    @Override
+    public <T> String display(Type targetType, T value, Map<String, String> parameters, String mode)
+            throws HTMLDisplayerException
+    {
+        return getHTMLDisplayer(targetType).display(value, parameters, mode);
     }
 }

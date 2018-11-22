@@ -23,7 +23,7 @@ package org.xwiki.displayer;
  * Base exception for the HTML Displayer.
  *
  * @version $Id$
- * @since 10.10RC1
+ * @since 10.11RC1
  */
 public class HTMLDisplayerException extends Exception
 {

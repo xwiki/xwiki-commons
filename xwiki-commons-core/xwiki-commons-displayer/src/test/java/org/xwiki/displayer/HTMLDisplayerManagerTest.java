@@ -28,6 +28,7 @@ import javax.inject.Provider;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.Answer;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.displayer.internal.DefaultDisplayerManager;
 import org.xwiki.test.junit5.mockito.ComponentTest;
@@ -64,11 +65,13 @@ public class HTMLDisplayerManagerTest
     {
         when(componentManagerProvider.get()).thenReturn(componentManager);
         when(stringHTMLDisplayer.display(anyString())).thenAnswer(i -> "<input>" + i.getArgument(0) + "</input>");
-        when(stringHTMLDisplayer.display(anyString(), anyMap())).thenAnswer(i -> {
+        Answer answer = i -> {
             String attributes = i.<Map<String, String>>getArgument(1).entrySet().stream()
                     .map(entry -> entry.getKey() + "='" + entry.getValue() + "'").collect(Collectors.joining(" "));
             return "<input " + attributes + ">" + i.getArgument(0) + "</input>";
-        });
+        };
+        when(stringHTMLDisplayer.display(anyString(), anyMap())).thenAnswer(answer);
+        when(stringHTMLDisplayer.display(anyString(), anyMap(), anyString())).thenAnswer(answer);
     }
 
     @Test
@@ -83,6 +86,12 @@ public class HTMLDisplayerManagerTest
         parameters.put("id", "testid");
         parameters.put("class", "testclass");
         assertEquals("<input id='testid' class='testclass'>test</input>", htmlDisplayer.display("test", parameters));
+        assertEquals("<input>test</input>",
+                this.htmlDisplayerManager.display(String.class, "test"));
+        assertEquals("<input id='testid' class='testclass'>test</input>",
+                this.htmlDisplayerManager.display(String.class, "test", parameters));
+        assertEquals("<input id='testid' class='testclass'>test</input>",
+                this.htmlDisplayerManager.display(String.class, "test", parameters, "view"));
 
         assertThrows(HTMLDisplayerException.class, () -> this.htmlDisplayerManager.getHTMLDisplayer(Boolean.class));
     }
