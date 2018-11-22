@@ -260,6 +260,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     /**
      * @param deprecated indicates if the parameter is deprecated
      * @see #isDeprecated()
+     * @since 10.10RC1
      */
     public void setDeprecated(boolean deprecated)
     {
