@@ -19,13 +19,14 @@
  */
 package org.xwiki.properties;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Contains a {@code List<String>} to view the group as a single object.
  *
  * @version $Id$
- * @since 10.10RC1
+ * @since 10.11RC1
  */
 public class PropertyGroupDescriptor
 {
@@ -38,7 +39,7 @@ public class PropertyGroupDescriptor
      */
     public PropertyGroupDescriptor(List<String> group)
     {
-        this.group = group;
+        this.group = Collections.unmodifiableList(group);
     }
 
     /**

@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * Use this annotation to group properties.
  *
  * @version $Id$
- * @since 10.10RC1
+ * @since 10.11RC1
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })

@@ -113,7 +113,7 @@ public interface PropertyDescriptor
 
     /**
      * @return the hierarchy of groups.
-     * @since 10.10RC1
+     * @since 10.11RC1
      */
     default PropertyGroupDescriptor getGroupDescriptor() {
         return new PropertyGroupDescriptor(Collections.emptyList());

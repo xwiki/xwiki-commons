@@ -298,6 +298,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     /**
      * @param group the property hierarchy of groups
      * @see #getGroupDescriptor()
+     * @since 10.11RC1
      */
     public void setGroup(PropertyGroupDescriptor group)
     {
