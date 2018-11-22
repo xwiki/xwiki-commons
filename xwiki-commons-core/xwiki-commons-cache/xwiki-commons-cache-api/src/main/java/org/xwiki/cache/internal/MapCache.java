@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.xwiki.cache.Cache;
+import org.xwiki.cache.CacheEntry;
+import org.xwiki.cache.event.CacheEntryEvent;
 import org.xwiki.cache.util.AbstractCache;
 
 /**
@@ -37,6 +39,37 @@ public class MapCache<T> extends AbstractCache<T>
 {
     private Map<String, T> map = new HashMap<>();
 
+    class MapCacheEntry implements CacheEntry<T>
+    {
+        private final String key;
+
+        private final T value;
+
+        MapCacheEntry(String key, T value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public Cache<T> getCache()
+        {
+            return MapCache.this;
+        }
+
+        @Override
+        public String getKey()
+        {
+            return this.key;
+        }
+
+        @Override
+        public T getValue()
+        {
+            return this.value;
+        }
+    }
+
     /**
      * Default constructor.
      */
@@ -45,10 +78,30 @@ public class MapCache<T> extends AbstractCache<T>
         super(null);
     }
 
+    private CacheEntryEvent<T> toEvent(final String key, final T value)
+    {
+        return new CacheEntryEvent<T>()
+        {
+            @Override
+            public CacheEntry<T> getEntry()
+            {
+                return new MapCacheEntry(key, value);
+            }
+
+            @Override
+            public Cache<T> getCache()
+            {
+                return MapCache.this;
+            }
+        };
+    }
+
     @Override
     public void set(String key, T value)
     {
         this.map.put(key, value);
+
+        sendEntryAddedEvent(toEvent(key, value));
     }
 
     @Override
@@ -60,12 +113,30 @@ public class MapCache<T> extends AbstractCache<T>
     @Override
     public void remove(String key)
     {
-        this.map.remove(key);
+        if (this.map.containsKey(key)) {
+            T value = this.map.remove(key);
+
+            sendEntryRemovedEvent(toEvent(key, value));
+        } else {
+            this.map.remove(key);
+        }
     }
 
     @Override
     public void removeAll()
     {
         this.map.clear();
+
+        Map<String, T> eventMap = new HashMap<>(this.map);
+
+        for (Map.Entry<String, T> entry : eventMap.entrySet()) {
+            sendEntryRemovedEvent(toEvent(entry.getKey(), entry.getValue()));
+        }
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.map.toString();
     }
 }
