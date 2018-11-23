@@ -199,7 +199,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
         PropertyGroup parameterGroup = extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class);
         if (parameterGroup != null) {
-            desc.setGroup(new PropertyGroupDescriptor(Arrays.asList(parameterGroup.value())));
+            desc.setGroupDescriptor(new PropertyGroupDescriptor(Arrays.asList(parameterGroup.value())));
         }
     }
 

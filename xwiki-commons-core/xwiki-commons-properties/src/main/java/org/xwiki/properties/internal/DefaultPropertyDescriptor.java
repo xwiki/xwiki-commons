@@ -300,7 +300,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      * @see #getGroupDescriptor()
      * @since 10.11RC1
      */
-    public void setGroup(PropertyGroupDescriptor group)
+    public void setGroupDescriptor(PropertyGroupDescriptor group)
     {
         this.group = group;
     }
