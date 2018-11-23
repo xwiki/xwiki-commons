@@ -22,6 +22,7 @@ package org.xwiki.properties;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Collections;
 
 /**
  * Describe a property in a bean.
@@ -108,5 +109,13 @@ public interface PropertyDescriptor
      */
     default boolean isAdvanced() {
         return false;
+    }
+
+    /**
+     * @return the hierarchy of groups.
+     * @since 10.11RC1
+     */
+    default PropertyGroupDescriptor getGroupDescriptor() {
+        return new PropertyGroupDescriptor(Collections.emptyList());
     }
 }

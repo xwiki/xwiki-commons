@@ -25,6 +25,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import org.xwiki.properties.PropertyDescriptor;
+import org.xwiki.properties.PropertyGroupDescriptor;
 
 /**
  * Default implementation for {@link PropertyDescriptor}.
@@ -90,6 +91,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      * @see #isAdvanced()
      */
     private boolean advanced;
+
+    /**
+     * @see #getGroupDescriptor()
+     */
+    private PropertyGroupDescriptor group;
 
     @Override
     public String getId()
@@ -281,5 +287,21 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     public void setAdvanced(boolean advanced)
     {
         this.advanced = advanced;
+    }
+
+    @Override
+    public PropertyGroupDescriptor getGroupDescriptor()
+    {
+        return this.group;
+    }
+
+    /**
+     * @param group the property hierarchy of groups
+     * @see #getGroupDescriptor()
+     * @since 10.11RC1
+     */
+    public void setGroupDescriptor(PropertyGroupDescriptor group)
+    {
+        this.group = group;
     }
 }
