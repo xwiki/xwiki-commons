@@ -73,6 +73,7 @@ public class DefaultBeanDescriptorTest
 
         Assert.assertEquals("test1", advancedDescriptor.getGroupDescriptor().getGroup().get(0));
         Assert.assertEquals("test2", advancedDescriptor.getGroupDescriptor().getGroup().get(1));
+        Assert.assertEquals("feature", advancedDescriptor.getFeature());
     }
 
     @Test

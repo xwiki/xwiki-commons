@@ -118,4 +118,12 @@ public interface PropertyDescriptor
     default PropertyGroupDescriptor getGroupDescriptor() {
         return new PropertyGroupDescriptor(Collections.emptyList());
     }
+
+    /**
+     * @return the name of the feature associated to the parameter.
+     * @since 10.11RC1
+     */
+    default String getFeature() {
+        return null;
+    }
 }

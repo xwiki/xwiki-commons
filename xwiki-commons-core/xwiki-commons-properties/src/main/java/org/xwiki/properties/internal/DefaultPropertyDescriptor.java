@@ -97,6 +97,11 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
      */
     private PropertyGroupDescriptor groupDescriptor;
 
+    /**
+     * @see #getFeature()
+     */
+    private String feature;
+
     @Override
     public String getId()
     {
@@ -303,5 +308,21 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     public void setGroupDescriptor(PropertyGroupDescriptor groupDescriptor)
     {
         this.groupDescriptor = groupDescriptor;
+    }
+
+    @Override
+    public String getFeature()
+    {
+        return feature;
+    }
+
+    /**
+     * @param feature the feature name
+     * @see #getFeature()
+     * @since 10.11RC1
+     */
+    public void setFeature(String feature)
+    {
+        this.feature = feature;
     }
 }

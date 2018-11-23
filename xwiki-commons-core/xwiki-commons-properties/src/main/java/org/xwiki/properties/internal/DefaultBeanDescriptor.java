@@ -39,6 +39,7 @@ import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyFeature;
 import org.xwiki.properties.annotation.PropertyGroup;
 import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
@@ -201,6 +202,11 @@ public class DefaultBeanDescriptor implements BeanDescriptor
         if (parameterGroup != null) {
             desc.setGroupDescriptor(new PropertyGroupDescriptor(Arrays.asList(parameterGroup.value())));
         }
+
+        PropertyFeature parameterFeature = extractPropertyAnnotation(writeMethod, readMethod, PropertyFeature.class);
+        if (parameterFeature != null) {
+            desc.setFeature(parameterFeature.value());
+        }
     }
 
     /**
@@ -245,6 +251,11 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             PropertyGroup parameterGroup = field.getAnnotation(PropertyGroup.class);
             if (parameterGroup != null) {
                 desc.setGroupDescriptor(new PropertyGroupDescriptor(Arrays.asList(parameterGroup.value())));
+            }
+
+            PropertyFeature parameterFeature = field.getAnnotation(PropertyFeature.class);
+            if (parameterFeature != null) {
+                desc.setFeature(parameterFeature.value());
             }
 
             if (defaultInstance != null) {

@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyFeature;
 import org.xwiki.properties.annotation.PropertyGroup;
 import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
@@ -163,6 +164,7 @@ public class TestBean
 
     @PropertyAdvanced
     @PropertyGroup({"test1", "test2"})
+    @PropertyFeature("feature")
     public String getAdvancedParameter()
     {
         return advancedParameter;
