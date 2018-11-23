@@ -242,6 +242,11 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             desc.setDeprecated(field.getAnnotation(Deprecated.class) != null);
             desc.setAdvanced(field.getAnnotation(PropertyAdvanced.class) != null);
 
+            PropertyGroup parameterGroup = field.getAnnotation(PropertyGroup.class);
+            if (parameterGroup != null) {
+                desc.setGroupDescriptor(new PropertyGroupDescriptor(Arrays.asList(parameterGroup.value())));
+            }
+
             if (defaultInstance != null) {
                 // get default value
                 try {

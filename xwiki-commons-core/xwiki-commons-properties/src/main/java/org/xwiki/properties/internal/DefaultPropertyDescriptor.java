@@ -95,7 +95,7 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     /**
      * @see #getGroupDescriptor()
      */
-    private PropertyGroupDescriptor group;
+    private PropertyGroupDescriptor groupDescriptor;
 
     @Override
     public String getId()
@@ -292,16 +292,16 @@ public class DefaultPropertyDescriptor implements PropertyDescriptor
     @Override
     public PropertyGroupDescriptor getGroupDescriptor()
     {
-        return this.group;
+        return this.groupDescriptor;
     }
 
     /**
-     * @param group the property hierarchy of groups
+     * @param groupDescriptor the hierarchy of groups
      * @see #getGroupDescriptor()
      * @since 10.11RC1
      */
-    public void setGroupDescriptor(PropertyGroupDescriptor group)
+    public void setGroupDescriptor(PropertyGroupDescriptor groupDescriptor)
     {
-        this.group = group;
+        this.groupDescriptor = groupDescriptor;
     }
 }
