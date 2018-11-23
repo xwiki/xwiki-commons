@@ -56,15 +56,49 @@ public class DefaultDisplayerManager implements HTMLDisplayerManager
     @Override
     public <T> HTMLDisplayer<T> getHTMLDisplayer(Type targetType) throws HTMLDisplayerException
     {
+        return this.getHTMLDisplayer(targetType, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Example: if the target type is <code>A&lt;B&lt;C&gt;&gt;</code> with {@code hint} hint,
+     * the following lookups will be made until a {@link HTMLDisplayer} component is found:
+     * <ul>
+     *     <li>Component: <code>HTMLDisplayer&lt;A&lt;B&lt;C&gt;&gt;&gt;</code>; Role: {@code hint}
+     *     <li>Component: <code>HTMLDisplayer&lt;A&lt;B&gt;&gt;</code>; Role: {@code hint}
+     *     <li>Component: <code>HTMLDisplayer&lt;A&gt;</code>; Role: {@code hint}
+     *     <li>Component: {@code HTMLDisplayer}; Role: {@code hint}
+     *     <li>Component: {@code HTMLDisplayer}; Role: default
+     * </ul>
+     */
+    @Override
+    public <T> HTMLDisplayer<T> getHTMLDisplayer(Type targetType, String roleHint) throws HTMLDisplayerException
+    {
         try {
+            HTMLDisplayer<T> component;
             ComponentManager componentManager = this.componentManagerProvider.get();
 
-            ParameterizedType converterType = new DefaultParameterizedType(null, HTMLDisplayer.class, targetType);
+            Type type = targetType;
+            Type converterType = new DefaultParameterizedType(null, HTMLDisplayer.class, type);
+            while (!componentManager.hasComponent(converterType, roleHint) && type instanceof ParameterizedType) {
+                type = ((ParameterizedType) type).getRawType();
+                converterType = new DefaultParameterizedType(null, HTMLDisplayer.class, type);
+            }
+            if (!componentManager.hasComponent(converterType, roleHint)) {
+                converterType = HTMLDisplayer.class;
+            }
+            if (componentManager.hasComponent(converterType, roleHint)) {
+                component = componentManager.getInstance(converterType, roleHint);
+            } else {
+                component = componentManager.getInstance(converterType);
+            }
 
-            return componentManager.getInstance(converterType);
+            return component;
         } catch (ComponentLookupException e) {
             throw new HTMLDisplayerException(
-                    "Failed to retrieve the HTML displayer for target type [" + targetType + "]", e);
+                    "Failed to initialized the HTML displayer for target type [" + targetType + "] and role [" + String
+                            .valueOf(roleHint) + "]", e);
         }
     }
 

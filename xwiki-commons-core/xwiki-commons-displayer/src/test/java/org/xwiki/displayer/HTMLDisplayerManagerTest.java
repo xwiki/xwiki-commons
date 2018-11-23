@@ -19,7 +19,9 @@
  */
 package org.xwiki.displayer;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -29,17 +31,21 @@ import javax.inject.Provider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.component.util.DefaultParameterizedType;
 import org.xwiki.displayer.internal.DefaultDisplayerManager;
 import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectComponentManager;
 import org.xwiki.test.junit5.mockito.InjectMockComponents;
 import org.xwiki.test.junit5.mockito.MockComponent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -51,7 +57,17 @@ import static org.mockito.Mockito.when;
 public class HTMLDisplayerManagerTest
 {
     @MockComponent
+    private HTMLDisplayer defaultHTMLDisplayer;
+
+    @MockComponent
     private HTMLDisplayer<String> stringHTMLDisplayer;
+
+    @MockComponent
+    private HTMLDisplayer<List<String>> listStringHTMLDisplayer;
+
+    @MockComponent
+    @Named("test")
+    private HTMLDisplayer<Boolean> booleanHTMLDisplayer;
 
     @MockComponent
     @Named("context")
@@ -63,15 +79,19 @@ public class HTMLDisplayerManagerTest
     @BeforeEach
     public void configure(ComponentManager componentManager) throws Exception
     {
-        when(componentManagerProvider.get()).thenReturn(componentManager);
-        when(stringHTMLDisplayer.display(anyString())).thenAnswer(i -> "<input>" + i.getArgument(0) + "</input>");
+        when(this.componentManagerProvider.get()).thenReturn(componentManager);
         Answer answer = i -> {
-            String attributes = i.<Map<String, String>>getArgument(1).entrySet().stream()
-                    .map(entry -> entry.getKey() + "='" + entry.getValue() + "'").collect(Collectors.joining(" "));
+            String attributes = "";
+            if (i.getArguments().length > 1) {
+                attributes = i.<Map<String, String>>getArgument(1).entrySet().stream()
+                        .map(entry -> entry.getKey() + "='" + entry.getValue() + "'")
+                        .collect(Collectors.joining(" "));
+            }
             return "<input " + attributes + ">" + i.getArgument(0) + "</input>";
         };
-        when(stringHTMLDisplayer.display(anyString(), anyMap())).thenAnswer(answer);
-        when(stringHTMLDisplayer.display(anyString(), anyMap(), anyString())).thenAnswer(answer);
+        when(this.stringHTMLDisplayer.display(anyString())).thenAnswer(answer);
+        when(this.stringHTMLDisplayer.display(anyString(), anyMap())).thenAnswer(answer);
+        when(this.stringHTMLDisplayer.display(anyString(), anyMap(), anyString())).thenAnswer(answer);
     }
 
     @Test
@@ -80,19 +100,32 @@ public class HTMLDisplayerManagerTest
         HTMLDisplayer<String> htmlDisplayer = this.htmlDisplayerManager.getHTMLDisplayer(String.class);
         assertEquals(this.stringHTMLDisplayer, htmlDisplayer);
 
-        assertEquals("<input>test</input>", htmlDisplayer.display("test"));
+        assertEquals("<input >test</input>", htmlDisplayer.display("test"));
 
         Map<String, String> parameters = new LinkedHashMap<>();
         parameters.put("id", "testid");
         parameters.put("class", "testclass");
         assertEquals("<input id='testid' class='testclass'>test</input>", htmlDisplayer.display("test", parameters));
-        assertEquals("<input>test</input>",
+        assertEquals("<input >test</input>",
                 this.htmlDisplayerManager.display(String.class, "test"));
         assertEquals("<input id='testid' class='testclass'>test</input>",
                 this.htmlDisplayerManager.display(String.class, "test", parameters));
         assertEquals("<input id='testid' class='testclass'>test</input>",
                 this.htmlDisplayerManager.display(String.class, "test", parameters, "view"));
 
-        assertThrows(HTMLDisplayerException.class, () -> this.htmlDisplayerManager.getHTMLDisplayer(Boolean.class));
+        assertEquals(this.listStringHTMLDisplayer, this.htmlDisplayerManager
+                .getHTMLDisplayer(new DefaultParameterizedType(null, List.class, String.class)));
+        assertEquals(this.defaultHTMLDisplayer, this.htmlDisplayerManager
+                .getHTMLDisplayer(new DefaultParameterizedType(null, Collections.class, String.class)));
+
+        assertEquals(this.defaultHTMLDisplayer, this.htmlDisplayerManager.getHTMLDisplayer(Boolean.class));
+        assertEquals(this.booleanHTMLDisplayer, this.htmlDisplayerManager.getHTMLDisplayer(Boolean.class, "test"));
+        assertEquals(this.defaultHTMLDisplayer, this.htmlDisplayerManager.getHTMLDisplayer(Boolean.class, "test2"));
+
+        ComponentManager fakeComponentManager = mock(ComponentManager.class);
+        when(fakeComponentManager.hasComponent(any(), any())).thenReturn(true);
+        when(fakeComponentManager.getInstance(any(), any())).thenThrow(new ComponentLookupException(""));
+        when(this.componentManagerProvider.get()).thenReturn(fakeComponentManager);
+        assertThrows(HTMLDisplayerException.class, () -> this.htmlDisplayerManager.getHTMLDisplayer(String.class));
     }
 }

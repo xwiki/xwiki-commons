@@ -46,6 +46,17 @@ public interface HTMLDisplayerManager
     <T> HTMLDisplayer<T> getHTMLDisplayer(Type targetType) throws HTMLDisplayerException;
 
     /**
+     * Retrieve the appropriate HTML Displayer based on the given type and hint.
+     *
+     * @param <T> the type of the HTML Displayer
+     * @param targetType the type used to retrieve the HTML Displayer
+     * @param roleHint the component hint. Could be null for default component
+     * @return the HTML Displayer of type {@code <T>}
+     * @throws HTMLDisplayerException if the HTML Displayer cannot be found
+     */
+    <T> HTMLDisplayer<T> getHTMLDisplayer(Type targetType, String roleHint) throws HTMLDisplayerException;
+
+    /**
      * @param <T> the type of the HTML Displayer
      * @param targetType the type used to retrieve the HTML Displayer
      * @param value the value on which the display is based on
