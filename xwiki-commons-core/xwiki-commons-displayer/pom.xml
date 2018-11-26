@@ -33,6 +33,7 @@
   <description>XWiki Commons - Displayer</description>
   <properties>
     <xwiki.jacoco.instructionRatio>1.00</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>100</xwiki.pitest.mutationThreshold>
   </properties>
   <dependencies>
     <dependency>
