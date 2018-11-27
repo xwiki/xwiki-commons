@@ -80,18 +80,18 @@ public class DefaultDisplayerManager implements HTMLDisplayerManager
             ComponentManager componentManager = this.componentManagerProvider.get();
 
             Type type = targetType;
-            Type converterType = new DefaultParameterizedType(null, HTMLDisplayer.class, type);
-            while (!componentManager.hasComponent(converterType, roleHint) && type instanceof ParameterizedType) {
+            Type displayerType = new DefaultParameterizedType(null, HTMLDisplayer.class, type);
+            while (!componentManager.hasComponent(displayerType, roleHint) && type instanceof ParameterizedType) {
                 type = ((ParameterizedType) type).getRawType();
-                converterType = new DefaultParameterizedType(null, HTMLDisplayer.class, type);
+                displayerType = new DefaultParameterizedType(null, HTMLDisplayer.class, type);
             }
-            if (!componentManager.hasComponent(converterType, roleHint)) {
-                converterType = HTMLDisplayer.class;
+            if (!componentManager.hasComponent(displayerType, roleHint)) {
+                displayerType = HTMLDisplayer.class;
             }
-            if (componentManager.hasComponent(converterType, roleHint)) {
-                component = componentManager.getInstance(converterType, roleHint);
+            if (componentManager.hasComponent(displayerType, roleHint)) {
+                component = componentManager.getInstance(displayerType, roleHint);
             } else {
-                component = componentManager.getInstance(converterType);
+                component = componentManager.getInstance(displayerType);
             }
 
             return component;

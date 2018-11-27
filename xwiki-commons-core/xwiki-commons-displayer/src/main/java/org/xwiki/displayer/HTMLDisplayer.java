@@ -25,9 +25,9 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.stability.Unstable;
 
 /**
- * Display an html element based on the type of {@link T}.
+ * Generates the HTML used to display the values of a given type {@link T}.
  *
- * @param <T> type used for the display
+ * @param <T> the type of values that are being displayed as HTML
  * @version $Id$
  * @since 10.11RC1
  */
@@ -36,25 +36,25 @@ import org.xwiki.stability.Unstable;
 public interface HTMLDisplayer<T>
 {
     /**
-     * @param value the value on which the display is based on
-     * @return the html element based on the value and the type
+     * @param value the value to be displayed
+     * @return the HTML that can be used to display the given value
      * @throws HTMLDisplayerException if an error occurs during the display
      */
     String display(T value) throws HTMLDisplayerException;
 
     /**
-     * @param value the value on which the display is based on
+     * @param value the value to be displayed
      * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
-     * @return the html element based on the value and the type
+     * @return the HTML that can be used to display the given value
      * @throws HTMLDisplayerException if an error occurs during the display
      */
     String display(T value, Map<String, String> parameters) throws HTMLDisplayerException;
 
     /**
-     * @param value the value on which the display is based on
+     * @param value the value to be displayed
      * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
      * @param mode the display mode (view, edit, ...)
-     * @return the html element based on the value and the type
+     * @return the HTML that can be used to display the given value
      * @throws HTMLDisplayerException if an error occurs during the display
      */
     String display(T value, Map<String, String> parameters, String mode) throws HTMLDisplayerException;
