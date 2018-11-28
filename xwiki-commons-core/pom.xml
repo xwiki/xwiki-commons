@@ -46,22 +46,23 @@
     <module>xwiki-commons-configuration</module>
     <module>xwiki-commons-context</module>
     <module>xwiki-commons-crypto</module>
+    <module>xwiki-commons-diff</module>
+    <module>xwiki-commons-displayer</module>
     <module>xwiki-commons-environment</module>
     <module>xwiki-commons-extension</module>
     <module>xwiki-commons-filter</module>
-    <module>xwiki-commons-repository</module>
     <module>xwiki-commons-groovy</module>
     <module>xwiki-commons-job</module>
     <module>xwiki-commons-logging</module>
     <module>xwiki-commons-management</module>
     <module>xwiki-commons-observation</module>
     <module>xwiki-commons-properties</module>
+    <module>xwiki-commons-repository</module>
     <module>xwiki-commons-script</module>
     <module>xwiki-commons-stability</module>
     <module>xwiki-commons-text</module>
     <module>xwiki-commons-velocity</module>
     <module>xwiki-commons-xml</module>
-    <module>xwiki-commons-diff</module>
   </modules>
   <build>
     <pluginManagement>
