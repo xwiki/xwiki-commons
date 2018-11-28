@@ -64,16 +64,19 @@ public class DefaultBeanDescriptorTest
         PropertyDescriptor prop1Descriptor = this.beanDescriptor.getProperty("prop1");
 
         Assert.assertEquals("defaultprop1", prop1Descriptor.getDefaultValue());
+        Assert.assertEquals("feature1", prop1Descriptor.getGroupDescriptor().getFeature());
 
         PropertyDescriptor deprecatedDescriptor = this.beanDescriptor.getProperty("deprecatedParameter");
         Assert.assertTrue(deprecatedDescriptor.isDeprecated());
+        Assert.assertEquals("test1", deprecatedDescriptor.getGroupDescriptor().getGroup().get(0));
+        Assert.assertEquals("test2", deprecatedDescriptor.getGroupDescriptor().getGroup().get(1));
+        Assert.assertEquals("feature2", deprecatedDescriptor.getGroupDescriptor().getFeature());
 
         PropertyDescriptor advancedDescriptor = this.beanDescriptor.getProperty("advancedParameter");
         Assert.assertTrue(advancedDescriptor.isAdvanced());
-
         Assert.assertEquals("test1", advancedDescriptor.getGroupDescriptor().getGroup().get(0));
         Assert.assertEquals("test2", advancedDescriptor.getGroupDescriptor().getGroup().get(1));
-        Assert.assertEquals("feature", advancedDescriptor.getFeature());
+        Assert.assertEquals("feature2", advancedDescriptor.getGroupDescriptor().getFeature());
     }
 
     @Test

@@ -84,6 +84,7 @@ public class TestBean
     }
 
     @PropertyDescription("prop1 description")
+    @PropertyFeature("feature1")
     public void setProp1(String prop1)
     {
         this.prop1 = prop1;
@@ -157,6 +158,7 @@ public class TestBean
     }
 
     @Deprecated
+    @PropertyGroup({"test1", "test2"})
     public void setDeprecatedParameter(String deprecatedParameter)
     {
         this.deprecatedParameter = deprecatedParameter;
@@ -164,7 +166,7 @@ public class TestBean
 
     @PropertyAdvanced
     @PropertyGroup({"test1", "test2"})
-    @PropertyFeature("feature")
+    @PropertyFeature("feature2")
     public String getAdvancedParameter()
     {
         return advancedParameter;

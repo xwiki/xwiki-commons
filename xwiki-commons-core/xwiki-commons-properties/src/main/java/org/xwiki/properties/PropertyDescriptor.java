@@ -22,7 +22,6 @@ package org.xwiki.properties;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Collections;
 
 /**
  * Describe a property in a bean.
@@ -116,14 +115,6 @@ public interface PropertyDescriptor
      * @since 10.11RC1
      */
     default PropertyGroupDescriptor getGroupDescriptor() {
-        return new PropertyGroupDescriptor(Collections.emptyList());
-    }
-
-    /**
-     * @return the name of the feature associated to the parameter.
-     * @since 10.11RC1
-     */
-    default String getFeature() {
-        return null;
+        return new PropertyGroupDescriptor(null);
     }
 }
