@@ -44,7 +44,7 @@ import org.xwiki.displayer.HTMLDisplayerManager;
  */
 @Component
 @Singleton
-public class DefaultDisplayerManager implements HTMLDisplayerManager
+public class DefaultHTMLDisplayerManager implements HTMLDisplayerManager
 {
     /**
      * Use to find the proper {@link org.xwiki.displayer.HTMLDisplayer} component for the provided target type.
@@ -105,19 +105,31 @@ public class DefaultDisplayerManager implements HTMLDisplayerManager
     @Override
     public <T> String display(Type targetType, T value) throws HTMLDisplayerException
     {
-        return getHTMLDisplayer(targetType).display(value);
+        if (targetType == null && value != null) {
+            return getHTMLDisplayer(value.getClass()).display(value);
+        } else {
+            return getHTMLDisplayer(targetType).display(value);
+        }
     }
 
     @Override
     public <T> String display(Type targetType, T value, Map<String, String> parameters) throws HTMLDisplayerException
     {
-        return getHTMLDisplayer(targetType).display(value, parameters);
+        if (targetType == null && value != null) {
+            return getHTMLDisplayer(value.getClass()).display(value, parameters);
+        } else {
+            return getHTMLDisplayer(targetType).display(value, parameters);
+        }
     }
 
     @Override
     public <T> String display(Type targetType, T value, Map<String, String> parameters, String mode)
             throws HTMLDisplayerException
     {
-        return getHTMLDisplayer(targetType).display(value, parameters, mode);
+        if (targetType == null && value != null) {
+            return getHTMLDisplayer(value.getClass()).display(value, parameters, mode);
+        } else {
+            return getHTMLDisplayer(targetType).display(value, parameters, mode);
+        }
     }
 }
