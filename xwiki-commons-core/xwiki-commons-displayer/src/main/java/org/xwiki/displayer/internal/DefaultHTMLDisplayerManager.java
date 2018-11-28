@@ -105,31 +105,31 @@ public class DefaultHTMLDisplayerManager implements HTMLDisplayerManager
     @Override
     public <T> String display(Type targetType, T value) throws HTMLDisplayerException
     {
-        if (targetType == null && value != null) {
-            return getHTMLDisplayer(value.getClass()).display(value);
-        } else {
-            return getHTMLDisplayer(targetType).display(value);
-        }
+        Type type = getType(targetType, value);
+        return getHTMLDisplayer(type).display(type, value);
     }
 
     @Override
     public <T> String display(Type targetType, T value, Map<String, String> parameters) throws HTMLDisplayerException
     {
-        if (targetType == null && value != null) {
-            return getHTMLDisplayer(value.getClass()).display(value, parameters);
-        } else {
-            return getHTMLDisplayer(targetType).display(value, parameters);
-        }
+        Type type = getType(targetType, value);
+        return getHTMLDisplayer(type).display(type, value, parameters);
     }
 
     @Override
     public <T> String display(Type targetType, T value, Map<String, String> parameters, String mode)
             throws HTMLDisplayerException
     {
+        Type type = getType(targetType, value);
+        return getHTMLDisplayer(type).display(type, value, parameters, mode);
+    }
+
+    private <T> Type getType(Type targetType, T value)
+    {
         if (targetType == null && value != null) {
-            return getHTMLDisplayer(value.getClass()).display(value, parameters, mode);
+            return value.getClass();
         } else {
-            return getHTMLDisplayer(targetType).display(value, parameters, mode);
+            return targetType;
         }
     }
 }

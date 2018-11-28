@@ -79,23 +79,38 @@ public class HTMLDisplayerManagerTest
     public void configure(ComponentManager componentManager) throws Exception
     {
         when(this.componentManagerProvider.get()).thenReturn(componentManager);
-        Answer answer = i -> {
+
+        Answer answer1 = i -> {
             String attributes = "";
-            if (i.getArguments().length > 1) {
-                attributes = i.<Map<String, String>>getArgument(1).entrySet().stream()
+            if (i.getArguments().length > 2) {
+                attributes = i.<Map<String, String>>getArgument(2).entrySet().stream()
                         .map(entry -> entry.getKey() + "='" + entry.getValue() + "'")
                         .collect(Collectors.joining(" "));
             }
-            return "<input " + attributes + ">" + i.getArgument(0) + "</input>";
+            return "<input " + attributes + ">" + i.getArgument(1) + "</input>";
+        };
+        Answer answer2 = i -> {
+            String parameters = "";
+            String mode = "";
+            if (i.getArguments().length > 2) {
+                parameters = i.<Map<String, String>>getArgument(2).entrySet().stream()
+                        .map(entry -> entry.getKey() + ":" + entry.getValue())
+                        .collect(Collectors.joining(", "));
+            }
+            if (i.getArguments().length > 3) {
+                mode = i.getArgument(3);
+            }
+            return "Value[" + i.getArgument(1) + "]; Parameters: [" + parameters + "]" + "; Mode:[" + mode + "]";
         };
 
 
-        when(this.defaultHTMLDisplayer.display(any())).thenAnswer(answer);
-        when(this.defaultHTMLDisplayer.display(any(), anyMap())).thenAnswer(answer);
-        when(this.defaultHTMLDisplayer.display(any(), anyMap(), anyString())).thenAnswer(answer);
-        when(this.stringHTMLDisplayer.display(any())).thenAnswer(answer);
-        when(this.stringHTMLDisplayer.display(any(), anyMap())).thenAnswer(answer);
-        when(this.stringHTMLDisplayer.display(any(), anyMap(), anyString())).thenAnswer(answer);
+        when(this.stringHTMLDisplayer.display(any(), any())).thenAnswer(answer1);
+        when(this.stringHTMLDisplayer.display(any(), any(), anyMap())).thenAnswer(answer1);
+        when(this.stringHTMLDisplayer.display(any(), any(), anyMap(), anyString())).thenAnswer(answer1);
+
+        when(this.defaultHTMLDisplayer.display(any(), any())).thenAnswer(answer2);
+        when(this.defaultHTMLDisplayer.display(any(), any(), anyMap())).thenAnswer(answer2);
+        when(this.defaultHTMLDisplayer.display(any(), any(), anyMap(), anyString())).thenAnswer(answer2);
     }
 
     @Test
@@ -122,7 +137,7 @@ public class HTMLDisplayerManagerTest
     @Test
     public void displayWithoutParametersTest() throws Exception
     {
-        assertEquals("<input >null</input>",
+        assertEquals("Value[null]; Parameters: []; Mode:[]",
                 this.defaultDisplayerManager.display(null, null));
         assertEquals("<input >null</input>",
                 this.defaultDisplayerManager.display(String.class, null));
@@ -139,7 +154,7 @@ public class HTMLDisplayerManagerTest
         parameters.put("id", "testid");
         parameters.put("class", "testclass");
 
-        assertEquals("<input id='testid' class='testclass'>null</input>",
+        assertEquals("Value[null]; Parameters: [id:testid, class:testclass]; Mode:[]",
                 this.defaultDisplayerManager.display(null, null, parameters));
         assertEquals("<input id='testid' class='testclass'>null</input>",
                 this.defaultDisplayerManager.display(String.class, null, parameters));
@@ -156,7 +171,7 @@ public class HTMLDisplayerManagerTest
         parameters.put("id", "testid");
         parameters.put("class", "testclass");
 
-        assertEquals("<input id='testid' class='testclass'>null</input>",
+        assertEquals("Value[null]; Parameters: [id:testid, class:testclass]; Mode:[view]",
                 this.defaultDisplayerManager.display(null, null, parameters, "view"));
         assertEquals("<input id='testid' class='testclass'>null</input>",
                 this.defaultDisplayerManager.display(String.class, null, parameters, "view"));
