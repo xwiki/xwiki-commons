@@ -37,7 +37,7 @@ public class PropertyGroupDescriptor
     /**
      * Default constructor.
      *
-     * @param group hierarchy of groups or null
+     * @param group hierarchy of groups or null if no group is required (to only specify the feature)
      */
     public PropertyGroupDescriptor(List<String> group)
     {
@@ -49,7 +49,7 @@ public class PropertyGroupDescriptor
     }
 
     /**
-     * @return the hierarchy of groups or null
+     * @return the hierarchy of groups or null if no group was provided
      */
     public List<String> getGroup()
     {
@@ -65,7 +65,7 @@ public class PropertyGroupDescriptor
     }
 
     /**
-     * @return the feature associated to this group or null
+     * @return the feature associated to this group or null if no feature was provided
      */
     public String getFeature()
     {

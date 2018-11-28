@@ -273,13 +273,16 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             group = new PropertyGroupDescriptor(null);
         }
         desc.setGroupDescriptor(group);
-        this.groups.put(parameterGroup, group);
+        if (parameterGroup != null) {
+            this.groups.put(parameterGroup, group);
+        }
 
         PropertyFeature parameterFeature = (PropertyFeature) annotations.get(PropertyFeature.class);
         if (parameterFeature != null) {
             if (group.getFeature() != null) {
-                LOGGER.warn("Property [" + desc.getId() + "] has overriden a feature. (previous: [" + group.getFeature()
-                        + "], new: [" + parameterFeature.value() + "]");
+                throw new RuntimeException(
+                        "Property [" + desc.getId() + "] has overriden a feature. (previous: [" + group.getFeature()
+                                + "], new: [" + parameterFeature.value() + "]");
             }
             group.setFeature(parameterFeature.value());
         }
