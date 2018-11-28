@@ -1,1 +1,2 @@
-org.xwiki.displayer.internal.DefaultDisplayerManager
+org.xwiki.displayer.internal.DefaultHTMLDisplayer
+org.xwiki.displayer.internal.DefaultHTMLDisplayerManager

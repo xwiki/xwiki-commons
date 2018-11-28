@@ -19,6 +19,7 @@
  */
 package org.xwiki.displayer;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
@@ -36,26 +37,29 @@ import org.xwiki.stability.Unstable;
 public interface HTMLDisplayer<T>
 {
     /**
+     * @param type the actual type to use for the display
      * @param value the value to be displayed
      * @return the HTML that can be used to display the given value
      * @throws HTMLDisplayerException if an error occurs during the display
      */
-    String display(T value) throws HTMLDisplayerException;
+    String display(Type type, T value) throws HTMLDisplayerException;
 
     /**
+     * @param type the actual type to use for the display
      * @param value the value to be displayed
      * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
      * @return the HTML that can be used to display the given value
      * @throws HTMLDisplayerException if an error occurs during the display
      */
-    String display(T value, Map<String, String> parameters) throws HTMLDisplayerException;
+    String display(Type type, T value, Map<String, String> parameters) throws HTMLDisplayerException;
 
     /**
+     * @param type the actual type to use for the display
      * @param value the value to be displayed
      * @param parameters parameters used while generating the html. Could be the attributes of an input for instance.
      * @param mode the display mode (view, edit, ...)
      * @return the HTML that can be used to display the given value
      * @throws HTMLDisplayerException if an error occurs during the display
      */
-    String display(T value, Map<String, String> parameters, String mode) throws HTMLDisplayerException;
+    String display(Type type, T value, Map<String, String> parameters, String mode) throws HTMLDisplayerException;
 }
