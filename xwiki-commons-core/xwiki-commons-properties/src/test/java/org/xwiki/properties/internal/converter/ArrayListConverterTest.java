@@ -21,36 +21,34 @@ package org.xwiki.properties.internal.converter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.xwiki.properties.ConverterManager;
-import org.xwiki.test.jmock.AbstractComponentTestCase;
+import org.junit.jupiter.api.Test;
+import org.xwiki.properties.internal.DefaultConverterManager;
+import org.xwiki.test.annotation.AllComponents;
+import org.xwiki.test.junit5.mockito.ComponentTest;
+import org.xwiki.test.junit5.mockito.InjectMockComponents;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Validate {@link ArrayListConverter} component.
  *
  * @version $Id$
  */
-public class ArrayListConverterTest extends AbstractComponentTestCase
+@ComponentTest
+@AllComponents
+public class ArrayListConverterTest
 {
-    private ConverterManager converterManager;
-
-    @Before
-    @Override
-    public void setUp() throws Exception
-    {
-        super.setUp();
-
-        this.converterManager = getComponentManager().getInstance(ConverterManager.class);
-    }
+    @InjectMockComponents
+    private DefaultConverterManager converterManager;
 
     @Test
     public void testConvertToString()
     {
-        Assert.assertEquals("1, 2, 3",
-            this.converterManager.convert(String.class, new ArrayList<String>(Arrays.asList("1", "2", "3"))));
+        assertEquals("1, 2, 3",
+                this.converterManager.convert(String.class, new ArrayList<>(Arrays.asList("1", "2", "3"))));
     }
 
     @Test
@@ -58,6 +56,13 @@ public class ArrayListConverterTest extends AbstractComponentTestCase
     {
         ArrayList<String> expect = new ArrayList<String>(Arrays.asList("1", "2", "3"));
 
-        Assert.assertSame(expect, this.converterManager.convert(ArrayList.class, expect));
+        assertSame(expect, this.converterManager.convert(ArrayList.class, expect));
+    }
+
+    @Test
+    public void testConvertFromBoolean()
+    {
+        assertEquals(Collections.singletonList("false"),
+                this.converterManager.convert(ArrayList.class, false));
     }
 }

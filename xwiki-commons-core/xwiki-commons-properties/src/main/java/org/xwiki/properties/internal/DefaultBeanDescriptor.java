@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.PropertyGroupDescriptor;
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyFeature;
 import org.xwiki.properties.annotation.PropertyGroup;
 import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
@@ -66,7 +68,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
     /**
      * The properties of the bean.
      */
-    private Map<String, PropertyDescriptor> parameterDescriptorMap = new LinkedHashMap<String, PropertyDescriptor>();
+    private Map<String, PropertyDescriptor> parameterDescriptorMap = new LinkedHashMap<>();
+
+    private Map<PropertyGroup, PropertyGroupDescriptor> groups = new HashMap<>();
 
     /**
      * @param beanClass the class of the JAVA bean.
@@ -89,7 +93,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             defaultInstance = getBeanClass().newInstance();
         } catch (Exception e) {
             LOGGER.debug("Failed to create a new default instance for class " + this.beanClass
-                + ". The BeanDescriptor will not contains any default value information.", e);
+                    + ". The BeanDescriptor will not contains any default value information.", e);
         }
 
         try {
@@ -138,7 +142,43 @@ public class DefaultBeanDescriptor implements BeanDescriptor
             PropertyHidden parameterHidden = extractPropertyAnnotation(writeMethod, readMethod, PropertyHidden.class);
 
             if (parameterHidden == null) {
-                setProperties(propertyDescriptor, desc, writeMethod, readMethod);
+                // get parameter id
+                PropertyId propertyId = extractPropertyAnnotation(writeMethod, readMethod, PropertyId.class);
+                desc.setId(propertyId != null ? propertyId.value() : propertyDescriptor.getName());
+
+                // set parameter type
+                Type propertyType;
+                if (readMethod != null) {
+                    propertyType = readMethod.getGenericReturnType();
+                } else {
+                    propertyType = writeMethod.getGenericParameterTypes()[0];
+                }
+                desc.setPropertyType(propertyType);
+
+                // get parameter display name
+                PropertyName parameterName = extractPropertyAnnotation(writeMethod, readMethod, PropertyName.class);
+
+                desc.setName(parameterName != null ? parameterName.value() : desc.getId());
+
+                // get parameter description
+                PropertyDescription parameterDescription =
+                        extractPropertyAnnotation(writeMethod, readMethod, PropertyDescription.class);
+
+                desc.setDescription(parameterDescription != null ? parameterDescription.value() : propertyDescriptor
+                        .getShortDescription());
+
+                Map<Class, Annotation> annotations = new HashMap<>();
+                annotations.put(PropertyMandatory.class,
+                        extractPropertyAnnotation(writeMethod, readMethod, PropertyMandatory.class));
+                annotations.put(Deprecated.class, extractPropertyAnnotation(writeMethod, readMethod, Deprecated.class));
+                annotations.put(PropertyAdvanced.class,
+                        extractPropertyAnnotation(writeMethod, readMethod, PropertyAdvanced.class));
+                annotations.put(PropertyGroup.class,
+                        extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class));
+                annotations.put(PropertyFeature.class,
+                                extractPropertyAnnotation(writeMethod, readMethod, PropertyFeature.class));
+
+                setCommonProperties(desc, annotations);
 
                 if (defaultInstance != null && readMethod != null) {
                     // get default value
@@ -146,8 +186,9 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                         desc.setDefaultValue(readMethod.invoke(defaultInstance));
                     } catch (Exception e) {
                         LOGGER.error(MessageFormat.format(
-                            "Failed to get default property value from getter {0} in class {1}", readMethod.getName(),
-                            this.beanClass), e);
+                                "Failed to get default property value from getter {0} in class {1}",
+                                readMethod.getName(),
+                                this.beanClass), e);
                     }
                 }
 
@@ -157,49 +198,6 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
                 this.parameterDescriptorMap.put(desc.getId(), desc);
             }
-        }
-    }
-
-    private void setProperties(java.beans.PropertyDescriptor propertyDescriptor, DefaultPropertyDescriptor desc,
-            Method writeMethod, Method readMethod)
-    {
-        // get parameter id
-        PropertyId propertyId = extractPropertyAnnotation(writeMethod, readMethod, PropertyId.class);
-        desc.setId(propertyId != null ? propertyId.value() : propertyDescriptor.getName());
-
-        // set parameter type
-        Type propertyType;
-        if (readMethod != null) {
-            propertyType = readMethod.getGenericReturnType();
-        } else {
-            propertyType = writeMethod.getGenericParameterTypes()[0];
-        }
-        desc.setPropertyType(propertyType);
-
-        // get parameter display name
-        PropertyName parameterName = extractPropertyAnnotation(writeMethod, readMethod, PropertyName.class);
-
-        desc.setName(parameterName != null ? parameterName.value() : desc.getId());
-
-        // get parameter description
-        PropertyDescription parameterDescription =
-                extractPropertyAnnotation(writeMethod, readMethod, PropertyDescription.class);
-
-        desc.setDescription(parameterDescription != null ? parameterDescription.value() : propertyDescriptor
-                .getShortDescription());
-
-        // is parameter mandatory
-        PropertyMandatory parameterMandatory =
-                extractPropertyAnnotation(writeMethod, readMethod, PropertyMandatory.class);
-
-        desc.setMandatory(parameterMandatory != null);
-
-        desc.setDeprecated(extractPropertyAnnotation(writeMethod, readMethod, Deprecated.class) != null);
-        desc.setAdvanced(extractPropertyAnnotation(writeMethod, readMethod, PropertyAdvanced.class) != null);
-
-        PropertyGroup parameterGroup = extractPropertyAnnotation(writeMethod, readMethod, PropertyGroup.class);
-        if (parameterGroup != null) {
-            desc.setGroupDescriptor(new PropertyGroupDescriptor(Arrays.asList(parameterGroup.value())));
         }
     }
 
@@ -234,18 +232,14 @@ public class DefaultBeanDescriptor implements BeanDescriptor
 
             desc.setDescription(parameterDescription != null ? parameterDescription.value() : desc.getId());
 
-            // is parameter mandatory
-            PropertyMandatory parameterMandatory = field.getAnnotation(PropertyMandatory.class);
+            Map<Class, Annotation> annotations = new HashMap<>();
+            annotations.put(PropertyMandatory.class, field.getAnnotation(PropertyMandatory.class));
+            annotations.put(Deprecated.class, field.getAnnotation(Deprecated.class));
+            annotations.put(PropertyAdvanced.class, field.getAnnotation(PropertyAdvanced.class));
+            annotations.put(PropertyGroup.class, field.getAnnotation(PropertyGroup.class));
+            annotations.put(PropertyFeature.class, field.getAnnotation(PropertyFeature.class));
 
-            desc.setMandatory(parameterMandatory != null);
-
-            desc.setDeprecated(field.getAnnotation(Deprecated.class) != null);
-            desc.setAdvanced(field.getAnnotation(PropertyAdvanced.class) != null);
-
-            PropertyGroup parameterGroup = field.getAnnotation(PropertyGroup.class);
-            if (parameterGroup != null) {
-                desc.setGroupDescriptor(new PropertyGroupDescriptor(Arrays.asList(parameterGroup.value())));
-            }
+            setCommonProperties(desc, annotations);
 
             if (defaultInstance != null) {
                 // get default value
@@ -253,14 +247,44 @@ public class DefaultBeanDescriptor implements BeanDescriptor
                     desc.setDefaultValue(field.get(defaultInstance));
                 } catch (Exception e) {
                     LOGGER.error(
-                        MessageFormat.format("Failed to get default property value from field {0} in class {1}",
-                            field.getName(), this.beanClass), e);
+                            MessageFormat.format("Failed to get default property value from field {0} in class {1}",
+                                    field.getName(), this.beanClass), e);
                 }
             }
 
             desc.setField(field);
 
             this.parameterDescriptorMap.put(desc.getId(), desc);
+        }
+    }
+
+    private void setCommonProperties(DefaultPropertyDescriptor desc, Map<Class, Annotation> annotations)
+    {
+
+        desc.setMandatory(annotations.get(PropertyMandatory.class) != null);
+        desc.setDeprecated(annotations.get(Deprecated.class) != null);
+        desc.setAdvanced(annotations.get(PropertyAdvanced.class) != null);
+
+        PropertyGroup parameterGroup = (PropertyGroup) annotations.get(PropertyGroup.class);
+        PropertyGroupDescriptor group = this.groups.get(parameterGroup);
+        if (group == null && parameterGroup != null) {
+            group = new PropertyGroupDescriptor(Arrays.asList(parameterGroup.value()));
+        } else if (group == null) {
+            group = new PropertyGroupDescriptor(null);
+        }
+        desc.setGroupDescriptor(group);
+        if (parameterGroup != null) {
+            this.groups.put(parameterGroup, group);
+        }
+
+        PropertyFeature parameterFeature = (PropertyFeature) annotations.get(PropertyFeature.class);
+        if (parameterFeature != null) {
+            if (group.getFeature() != null) {
+                throw new RuntimeException(
+                        "Property [" + desc.getId() + "] has overriden a feature. (previous: [" + group.getFeature()
+                                + "], new: [" + parameterFeature.value() + "]");
+            }
+            group.setFeature(parameterFeature.value());
         }
     }
 
@@ -274,7 +298,7 @@ public class DefaultBeanDescriptor implements BeanDescriptor
      * @return this element's annotation for the specified annotation type if present on this element, else null.
      */
     protected <T extends Annotation> T extractPropertyAnnotation(Method writeMethod, Method readMethod,
-        Class<T> annotationClass)
+            Class<T> annotationClass)
     {
         T parameterDescription = writeMethod.getAnnotation(annotationClass);
 

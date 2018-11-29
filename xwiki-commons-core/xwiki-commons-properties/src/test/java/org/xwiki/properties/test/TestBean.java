@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.xwiki.properties.annotation.PropertyAdvanced;
 import org.xwiki.properties.annotation.PropertyDescription;
+import org.xwiki.properties.annotation.PropertyFeature;
 import org.xwiki.properties.annotation.PropertyGroup;
 import org.xwiki.properties.annotation.PropertyHidden;
 import org.xwiki.properties.annotation.PropertyId;
@@ -83,6 +84,7 @@ public class TestBean
     }
 
     @PropertyDescription("prop1 description")
+    @PropertyFeature("feature1")
     public void setProp1(String prop1)
     {
         this.prop1 = prop1;
@@ -156,6 +158,7 @@ public class TestBean
     }
 
     @Deprecated
+    @PropertyGroup({"test1", "test2"})
     public void setDeprecatedParameter(String deprecatedParameter)
     {
         this.deprecatedParameter = deprecatedParameter;
@@ -163,6 +166,7 @@ public class TestBean
 
     @PropertyAdvanced
     @PropertyGroup({"test1", "test2"})
+    @PropertyFeature("feature2")
     public String getAdvancedParameter()
     {
         return advancedParameter;

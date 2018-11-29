@@ -32,8 +32,8 @@
   <packaging>jar</packaging>
   <description>XWiki Commons - Properties</description>
   <properties>
-    <xwiki.jacoco.instructionRatio>0.79</xwiki.jacoco.instructionRatio>
-    <xwiki.pitest.mutationThreshold>82</xwiki.pitest.mutationThreshold>
+    <xwiki.jacoco.instructionRatio>0.82</xwiki.jacoco.instructionRatio>
+    <xwiki.pitest.mutationThreshold>85</xwiki.pitest.mutationThreshold>
     <!-- There's a method that is supposed to return HashSet, that the type it's handling... -->
     <checkstyle.suppressions.location>${basedir}/src/main/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
   </properties>

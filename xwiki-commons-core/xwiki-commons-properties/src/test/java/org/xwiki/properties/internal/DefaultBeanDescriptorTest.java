@@ -22,11 +22,21 @@ package org.xwiki.properties.internal;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.xwiki.properties.PropertyDescriptor;
 import org.xwiki.properties.test.TestBean;
+import org.xwiki.properties.test.TestBeanError;
+import org.xwiki.test.LogLevel;
+import org.xwiki.test.junit5.LogCaptureExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Validate {@link DefaultBeanDescriptor}.
@@ -35,200 +45,227 @@ import org.xwiki.properties.test.TestBean;
  */
 public class DefaultBeanDescriptorTest
 {
+    @RegisterExtension
+    LogCaptureExtension logCapture = new LogCaptureExtension(LogLevel.ERROR);
+
     private DefaultBeanDescriptor beanDescriptor;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         this.beanDescriptor = new DefaultBeanDescriptor(TestBean.class);
     }
 
     @Test
-    public void testPropertyDescriptor()
+    public void propertyDescriptorTest()
     {
-        Assert.assertNull(this.beanDescriptor.getProperty("hiddenProperty"));
+        assertNull(this.beanDescriptor.getProperty("hiddenProperty"));
 
         PropertyDescriptor lowerPropertyDescriptor = this.beanDescriptor.getProperty("lowerprop");
 
-        Assert.assertNotNull(lowerPropertyDescriptor);
-        Assert.assertEquals("lowerprop", lowerPropertyDescriptor.getId());
-        Assert.assertEquals("lowerprop", lowerPropertyDescriptor.getName());
-        Assert.assertEquals("lowerprop", lowerPropertyDescriptor.getDescription());
-        Assert.assertSame(String.class, lowerPropertyDescriptor.getPropertyClass());
-        Assert.assertNull(lowerPropertyDescriptor.getDefaultValue());
-        Assert.assertFalse(lowerPropertyDescriptor.isMandatory());
-        Assert.assertNotNull(lowerPropertyDescriptor.getWriteMethod());
-        Assert.assertNotNull(lowerPropertyDescriptor.getReadMethod());
-        Assert.assertNull(lowerPropertyDescriptor.getField());
+        assertNotNull(lowerPropertyDescriptor);
+        assertEquals("lowerprop", lowerPropertyDescriptor.getId());
+        assertEquals("lowerprop", lowerPropertyDescriptor.getName());
+        assertEquals("lowerprop", lowerPropertyDescriptor.getDescription());
+        assertSame(String.class, lowerPropertyDescriptor.getPropertyClass());
+        assertNull(lowerPropertyDescriptor.getDefaultValue());
+        assertFalse(lowerPropertyDescriptor.isMandatory());
+        assertNotNull(lowerPropertyDescriptor.getWriteMethod());
+        assertNotNull(lowerPropertyDescriptor.getReadMethod());
+        assertNull(lowerPropertyDescriptor.getField());
 
         PropertyDescriptor prop1Descriptor = this.beanDescriptor.getProperty("prop1");
 
-        Assert.assertEquals("defaultprop1", prop1Descriptor.getDefaultValue());
+        assertEquals("defaultprop1", prop1Descriptor.getDefaultValue());
+        assertEquals("feature1", prop1Descriptor.getGroupDescriptor().getFeature());
 
         PropertyDescriptor deprecatedDescriptor = this.beanDescriptor.getProperty("deprecatedParameter");
-        Assert.assertTrue(deprecatedDescriptor.isDeprecated());
+        assertTrue(deprecatedDescriptor.isDeprecated());
+        assertEquals("test1", deprecatedDescriptor.getGroupDescriptor().getGroup().get(0));
+        assertEquals("test2", deprecatedDescriptor.getGroupDescriptor().getGroup().get(1));
+        assertEquals("feature2", deprecatedDescriptor.getGroupDescriptor().getFeature());
 
         PropertyDescriptor advancedDescriptor = this.beanDescriptor.getProperty("advancedParameter");
-        Assert.assertTrue(advancedDescriptor.isAdvanced());
-
-        Assert.assertEquals("test1", advancedDescriptor.getGroupDescriptor().getGroup().get(0));
-        Assert.assertEquals("test2", advancedDescriptor.getGroupDescriptor().getGroup().get(1));
+        assertTrue(advancedDescriptor.isAdvanced());
+        assertEquals("test1", advancedDescriptor.getGroupDescriptor().getGroup().get(0));
+        assertEquals("test2", advancedDescriptor.getGroupDescriptor().getGroup().get(1));
+        assertEquals("feature2", advancedDescriptor.getGroupDescriptor().getFeature());
     }
 
     @Test
-    public void testPropertyDescriptorWithUpperCase()
+    public void propertyDescriptorWithUpperCaseTest()
     {
         PropertyDescriptor upperPropertyDescriptor = this.beanDescriptor.getProperty("upperProp");
 
-        Assert.assertNotNull(upperPropertyDescriptor);
-        Assert.assertEquals("upperProp", upperPropertyDescriptor.getId());
-        Assert.assertEquals("upperProp", upperPropertyDescriptor.getName());
-        Assert.assertEquals("upperProp", upperPropertyDescriptor.getDescription());
-        Assert.assertSame(String.class, upperPropertyDescriptor.getPropertyClass());
-        Assert.assertFalse(upperPropertyDescriptor.isMandatory());
-        Assert.assertNotNull(upperPropertyDescriptor.getWriteMethod());
-        Assert.assertNotNull(upperPropertyDescriptor.getReadMethod());
-        Assert.assertNull(upperPropertyDescriptor.getField());
+        assertNotNull(upperPropertyDescriptor);
+        assertEquals("upperProp", upperPropertyDescriptor.getId());
+        assertEquals("upperProp", upperPropertyDescriptor.getName());
+        assertEquals("upperProp", upperPropertyDescriptor.getDescription());
+        assertSame(String.class, upperPropertyDescriptor.getPropertyClass());
+        assertFalse(upperPropertyDescriptor.isMandatory());
+        assertNotNull(upperPropertyDescriptor.getWriteMethod());
+        assertNotNull(upperPropertyDescriptor.getReadMethod());
+        assertNull(upperPropertyDescriptor.getField());
     }
 
     @Test
-    public void testPropertyDescriptorPublicField()
+    public void propertyDescriptorPublicFieldTest()
     {
         PropertyDescriptor publicFieldPropertyDescriptor = this.beanDescriptor.getProperty("publicField");
 
-        Assert.assertNotNull(publicFieldPropertyDescriptor);
-        Assert.assertEquals("publicField", publicFieldPropertyDescriptor.getId());
-        Assert.assertEquals("Public Field", publicFieldPropertyDescriptor.getName());
-        Assert.assertEquals("a public field", publicFieldPropertyDescriptor.getDescription());
-        Assert.assertSame(String.class, publicFieldPropertyDescriptor.getPropertyClass());
-        Assert.assertFalse(publicFieldPropertyDescriptor.isMandatory());
-        Assert.assertNull(publicFieldPropertyDescriptor.getWriteMethod());
-        Assert.assertNull(publicFieldPropertyDescriptor.getReadMethod());
-        Assert.assertNotNull(publicFieldPropertyDescriptor.getField());
+        assertNotNull(publicFieldPropertyDescriptor);
+        assertEquals("publicField", publicFieldPropertyDescriptor.getId());
+        assertEquals("Public Field", publicFieldPropertyDescriptor.getName());
+        assertEquals("a public field", publicFieldPropertyDescriptor.getDescription());
+        assertSame(String.class, publicFieldPropertyDescriptor.getPropertyClass());
+        assertFalse(publicFieldPropertyDescriptor.isMandatory());
+        assertNull(publicFieldPropertyDescriptor.getWriteMethod());
+        assertNull(publicFieldPropertyDescriptor.getReadMethod());
+        assertNotNull(publicFieldPropertyDescriptor.getField());
     }
 
     @Test
-    public void testPropertyDescriptorPublicStaticField()
+    public void propertyDescriptorPublicStaticFieldTest()
     {
-        Assert.assertNull(this.beanDescriptor.getProperty("STATICFIELD"));
+        assertNull(this.beanDescriptor.getProperty("STATICFIELD"));
     }
 
     @Test
-    public void testPropertyDescriptorWithDescription()
+    public void propertyDescriptorWithDescriptionTest()
     {
         PropertyDescriptor prop1Descriptor = this.beanDescriptor.getProperty("prop1");
 
-        Assert.assertNotNull(prop1Descriptor);
-        Assert.assertEquals("prop1", prop1Descriptor.getId());
-        Assert.assertEquals("prop1 description", prop1Descriptor.getDescription());
-        Assert.assertSame(String.class, prop1Descriptor.getPropertyClass());
-        Assert.assertFalse(prop1Descriptor.isMandatory());
-        Assert.assertNotNull(prop1Descriptor.getWriteMethod());
-        Assert.assertNotNull(prop1Descriptor.getReadMethod());
-        Assert.assertNull(prop1Descriptor.getField());
+        assertNotNull(prop1Descriptor);
+        assertEquals("prop1", prop1Descriptor.getId());
+        assertEquals("prop1 description", prop1Descriptor.getDescription());
+        assertSame(String.class, prop1Descriptor.getPropertyClass());
+        assertFalse(prop1Descriptor.isMandatory());
+        assertNotNull(prop1Descriptor.getWriteMethod());
+        assertNotNull(prop1Descriptor.getReadMethod());
+        assertNull(prop1Descriptor.getField());
     }
 
     @Test
-    public void testPropertyDescriptorWithDescriptionAndMandatory()
+    public void propertyDescriptorWithDescriptionAndMandatoryTest()
     {
         PropertyDescriptor prop2Descriptor = this.beanDescriptor.getProperty("prop2");
 
-        Assert.assertNotNull(prop2Descriptor);
-        Assert.assertEquals("prop2", prop2Descriptor.getId());
-        Assert.assertEquals("prop2 description", prop2Descriptor.getDescription());
-        Assert.assertSame(int.class, prop2Descriptor.getPropertyClass());
-        Assert.assertTrue(prop2Descriptor.isMandatory());
-        Assert.assertNotNull(prop2Descriptor.getWriteMethod());
-        Assert.assertNotNull(prop2Descriptor.getReadMethod());
-        Assert.assertNull(prop2Descriptor.getField());
+        assertNotNull(prop2Descriptor);
+        assertEquals("prop2", prop2Descriptor.getId());
+        assertEquals("prop2 description", prop2Descriptor.getDescription());
+        assertSame(int.class, prop2Descriptor.getPropertyClass());
+        assertTrue(prop2Descriptor.isMandatory());
+        assertNotNull(prop2Descriptor.getWriteMethod());
+        assertNotNull(prop2Descriptor.getReadMethod());
+        assertNull(prop2Descriptor.getField());
     }
 
     @Test
-    public void testPropertyDescriptorWithDescriptionAndMandatoryOnSetter()
+    public void propertyDescriptorWithDescriptionAndMandatoryOnSetterTest()
     {
         PropertyDescriptor prop3Descriptor = this.beanDescriptor.getProperty("prop3");
 
-        Assert.assertNotNull(prop3Descriptor);
-        Assert.assertEquals("prop3", prop3Descriptor.getId());
-        Assert.assertEquals("prop3 description", prop3Descriptor.getDescription());
-        Assert.assertSame(boolean.class, prop3Descriptor.getPropertyClass());
-        Assert.assertTrue(prop3Descriptor.isMandatory());
-        Assert.assertNotNull(prop3Descriptor.getWriteMethod());
-        Assert.assertNotNull(prop3Descriptor.getReadMethod());
-        Assert.assertNull(prop3Descriptor.getField());
+        assertNotNull(prop3Descriptor);
+        assertEquals("prop3", prop3Descriptor.getId());
+        assertEquals("prop3 description", prop3Descriptor.getDescription());
+        assertSame(boolean.class, prop3Descriptor.getPropertyClass());
+        assertTrue(prop3Descriptor.isMandatory());
+        assertNotNull(prop3Descriptor.getWriteMethod());
+        assertNotNull(prop3Descriptor.getReadMethod());
+        assertNull(prop3Descriptor.getField());
     }
 
     @Test
-    public void testPropertyDescriptorGeneric()
+    public void propertyDescriptorGenericTest()
     {
         PropertyDescriptor genericPropertyDescriptor = this.beanDescriptor.getProperty("genericProp");
 
-        Assert.assertNotNull(genericPropertyDescriptor);
-        Assert.assertEquals("genericProp", genericPropertyDescriptor.getId());
-        Assert.assertEquals("genericProp", genericPropertyDescriptor.getName());
-        Assert.assertEquals("genericProp", genericPropertyDescriptor.getDescription());
-        Assert.assertSame(List.class, ((ParameterizedType) genericPropertyDescriptor.getPropertyType()).getRawType());
-        Assert.assertSame(Integer.class,
+        assertNotNull(genericPropertyDescriptor);
+        assertEquals("genericProp", genericPropertyDescriptor.getId());
+        assertEquals("genericProp", genericPropertyDescriptor.getName());
+        assertEquals("genericProp", genericPropertyDescriptor.getDescription());
+        assertSame(List.class, ((ParameterizedType) genericPropertyDescriptor.getPropertyType()).getRawType());
+        assertSame(Integer.class,
             ((ParameterizedType) genericPropertyDescriptor.getPropertyType()).getActualTypeArguments()[0]);
-        Assert.assertNull(genericPropertyDescriptor.getDefaultValue());
-        Assert.assertFalse(genericPropertyDescriptor.isMandatory());
-        Assert.assertNotNull(genericPropertyDescriptor.getWriteMethod());
-        Assert.assertNotNull(genericPropertyDescriptor.getReadMethod());
-        Assert.assertNull(genericPropertyDescriptor.getField());
+        assertNull(genericPropertyDescriptor.getDefaultValue());
+        assertFalse(genericPropertyDescriptor.isMandatory());
+        assertNotNull(genericPropertyDescriptor.getWriteMethod());
+        assertNotNull(genericPropertyDescriptor.getReadMethod());
+        assertNull(genericPropertyDescriptor.getField());
 
         PropertyDescriptor prop1Descriptor = this.beanDescriptor.getProperty("prop1");
 
-        Assert.assertEquals("defaultprop1", prop1Descriptor.getDefaultValue());
+        assertEquals("defaultprop1", prop1Descriptor.getDefaultValue());
     }
 
     @Test
-    public void testPropertyDescriptorGenericField()
+    public void propertyDescriptorGenericFieldTest()
     {
         PropertyDescriptor genericFieldPropertyDescriptor = this.beanDescriptor.getProperty("genericField");
 
-        Assert.assertNotNull(genericFieldPropertyDescriptor);
-        Assert.assertEquals("genericField", genericFieldPropertyDescriptor.getId());
-        Assert.assertEquals("genericField", genericFieldPropertyDescriptor.getName());
-        Assert.assertEquals("genericField", genericFieldPropertyDescriptor.getDescription());
-        Assert.assertSame(List.class,
+        assertNotNull(genericFieldPropertyDescriptor);
+        assertEquals("genericField", genericFieldPropertyDescriptor.getId());
+        assertEquals("genericField", genericFieldPropertyDescriptor.getName());
+        assertEquals("genericField", genericFieldPropertyDescriptor.getDescription());
+        assertSame(List.class,
             ((ParameterizedType) genericFieldPropertyDescriptor.getPropertyType()).getRawType());
-        Assert.assertSame(Integer.class,
+        assertSame(Integer.class,
             ((ParameterizedType) genericFieldPropertyDescriptor.getPropertyType()).getActualTypeArguments()[0]);
-        Assert.assertFalse(genericFieldPropertyDescriptor.isMandatory());
-        Assert.assertNull(genericFieldPropertyDescriptor.getWriteMethod());
-        Assert.assertNull(genericFieldPropertyDescriptor.getReadMethod());
-        Assert.assertNotNull(genericFieldPropertyDescriptor.getField());
+        assertFalse(genericFieldPropertyDescriptor.isMandatory());
+        assertNull(genericFieldPropertyDescriptor.getWriteMethod());
+        assertNull(genericFieldPropertyDescriptor.getReadMethod());
+        assertNotNull(genericFieldPropertyDescriptor.getField());
     }
 
     @Test
-    public void testPropertyDescriptorFieldWithDifferentId()
+    public void propertyDescriptorFieldWithDifferentIdTest()
     {
         PropertyDescriptor propertyDescriptor = this.beanDescriptor.getProperty("impossible.field.name");
 
-        Assert.assertNotNull(propertyDescriptor);
-        Assert.assertEquals("impossible.field.name", propertyDescriptor.getId());
-        Assert.assertEquals("impossible.field.name", propertyDescriptor.getName());
-        Assert.assertEquals("impossible.field.name", propertyDescriptor.getDescription());
-        Assert.assertSame(String.class, propertyDescriptor.getPropertyType());
-        Assert.assertFalse(propertyDescriptor.isMandatory());
-        Assert.assertNull(propertyDescriptor.getWriteMethod());
-        Assert.assertNull(propertyDescriptor.getReadMethod());
-        Assert.assertNotNull(propertyDescriptor.getField());
+        assertNotNull(propertyDescriptor);
+        assertEquals("impossible.field.name", propertyDescriptor.getId());
+        assertEquals("impossible.field.name", propertyDescriptor.getName());
+        assertEquals("impossible.field.name", propertyDescriptor.getDescription());
+        assertSame(String.class, propertyDescriptor.getPropertyType());
+        assertFalse(propertyDescriptor.isMandatory());
+        assertNull(propertyDescriptor.getWriteMethod());
+        assertNull(propertyDescriptor.getReadMethod());
+        assertNotNull(propertyDescriptor.getField());
     }
 
     @Test
-    public void testPropertyDescriptorMethodWithDifferentId()
+    public void propertyDescriptorMethodWithDifferentIdTest()
     {
         PropertyDescriptor propertyDescriptor = this.beanDescriptor.getProperty("impossible.method.name");
 
-        Assert.assertNotNull(propertyDescriptor);
-        Assert.assertEquals("impossible.method.name", propertyDescriptor.getId());
-        Assert.assertEquals("impossible.method.name", propertyDescriptor.getName());
-        Assert.assertEquals("propertyWithDifferentId", propertyDescriptor.getDescription());
-        Assert.assertSame(String.class, propertyDescriptor.getPropertyType());
-        Assert.assertFalse(propertyDescriptor.isMandatory());
-        Assert.assertNotNull(propertyDescriptor.getWriteMethod());
-        Assert.assertNotNull(propertyDescriptor.getReadMethod());
-        Assert.assertNull(propertyDescriptor.getField());
+        assertNotNull(propertyDescriptor);
+        assertEquals("impossible.method.name", propertyDescriptor.getId());
+        assertEquals("impossible.method.name", propertyDescriptor.getName());
+        assertEquals("propertyWithDifferentId", propertyDescriptor.getDescription());
+        assertSame(String.class, propertyDescriptor.getPropertyType());
+        assertFalse(propertyDescriptor.isMandatory());
+        assertNotNull(propertyDescriptor.getWriteMethod());
+        assertNotNull(propertyDescriptor.getReadMethod());
+        assertNull(propertyDescriptor.getField());
+    }
+
+    @Test
+    public void propertyDescriptorErrorTest()
+    {
+        new DefaultBeanDescriptor(TestBeanError.class);
+        assertEquals("Failed to load bean descriptor for class class org.xwiki.properties.test.TestBeanError",
+                logCapture.getMessage(0));
+    }
+
+    @Test
+    public void propertyDescriptorbackwardCompatible()
+    {
+        PropertyDescriptor propertyDescriptor =
+                new BackwardCompatiblePropertyDescriptor(this.beanDescriptor.getProperty("lowerprop"));
+
+        assertFalse(propertyDescriptor.isDeprecated());
+        assertFalse(propertyDescriptor.isAdvanced());
+        assertNull(propertyDescriptor.getGroupDescriptor().getGroup());
+        assertNull(propertyDescriptor.getGroupDescriptor().getFeature());
     }
 }
