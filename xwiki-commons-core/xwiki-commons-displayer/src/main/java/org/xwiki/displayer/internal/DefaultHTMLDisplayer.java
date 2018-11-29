@@ -27,7 +27,6 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.displayer.HTMLDisplayer;
-import org.xwiki.displayer.HTMLDisplayerException;
 
 /**
  * Default implementation of {@code HTMLDisplayer}.
