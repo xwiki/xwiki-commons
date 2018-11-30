@@ -2362,8 +2362,8 @@
       <artifactId>maven-project-info-reports-plugin</artifactId>
       <version>2.4</version>
       <configuration>
-                  <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
-                       the repository locations of the dependencies in the report. -->
+        <!-- Since contacting the Maven Repositories can take a very long time, tell the plugin not to display
+             the repository locations of the dependencies in the report. -->
         <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
       </configuration>
       <reportSets>
