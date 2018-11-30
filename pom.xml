@@ -18,7 +18,8 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.xwiki.commons</groupId>
   <artifactId>xwiki-commons</artifactId>
@@ -172,11 +173,13 @@
          for ITs -->
     <sonar.jacoco.itReportPath>${xwiki.jacoco.itDestFile}</sonar.jacoco.itReportPath>
 
-    <!-- Version of Maven used during the build (the one used as dependency when building and during Maven plugins executions)  -->
+    <!-- Version of Maven used during the build (the one used as dependency when building and during Maven plugins
+         executions)  -->
     <maven.build.version>3.5.4</maven.build.version>
     <!-- Minimum version of the actual Maven binary required to build -->
     <maven.minimum.version>3.5.0</maven.minimum.version>
-    <!-- The current Maven version declared in the dependency management (so that it can be change for the distribution for example) -->
+    <!-- The current Maven version declared in the dependency management (so that it can be change for the distribution
+         for example) -->
     <maven.version>${maven.build.version}</maven.version>
     <maven.resolver.build.version>1.1.1</maven.resolver.build.version>
     <maven.resolver.version>${maven.resolver.build.version}</maven.resolver.version>
@@ -511,7 +514,8 @@
         <artifactId>xml-apis</artifactId>
         <version>1.4.01</version>
       </dependency>
-      <!-- Used by several projects (HTMLCleaner, Formula renderer, etc.) directly or indirectly to do XPath and XSLT transformations -->
+      <!-- Used by several projects (HTMLCleaner, Formula renderer, etc.) directly or indirectly to do XPath and XSLT
+           transformations -->
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
@@ -1456,7 +1460,8 @@
               </rules>
             </configuration>
           </execution>
-          <!-- Check that we don't trigger a dependency containing stuff already included the minimum Java SE version supported by XWiki -->
+          <!-- Check that we don't trigger a dependency containing stuff already included the minimum Java SE version
+               supported by XWiki -->
           <execution>
             <id>enforce-javase-dependencies</id>
             <goals>
@@ -1885,7 +1890,8 @@
             <maxmemory>1024m</maxmemory>
           </configuration>
         </plugin>
-        <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule complain if we don't define it -->
+        <!-- We don't use site plugin but we org.apache.maven.plugins.enforcer.RequirePluginVersions enforcer rule
+             complain if we don't define it -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
