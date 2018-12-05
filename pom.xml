@@ -2353,8 +2353,6 @@
       <name>XWiki Maven Development Repository for Snapshots</name>
       <url>http://nexus.xwiki.org/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
-    <-- Note: By default we don't define any <repository> and thus all artifacts will be deployed to
-        Maven Central -->
   </distributionManagement>
   <modules>
     <!-- Sorted Alphabetically -->
