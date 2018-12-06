@@ -19,6 +19,8 @@
  */
 package org.xwiki.job.internal.xstream;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -46,8 +48,8 @@ public final class XStreamUtils
      * Some famous unserializable classes. Fields with this classes are supposed to be made <code>transient</code> in
      * placed that may end up serialized but never too careful...
      */
-    private final static List<Class<?>> UNSERIALIZABLE_CLASSES =
-        Arrays.<Class<?>>asList(Logger.class, Provider.class, ComponentManager.class);
+    private static final List<Class<?>> UNSERIALIZABLE_CLASSES = Arrays.<Class<?>>asList(Logger.class, Provider.class,
+        ComponentManager.class, OutputStream.class, InputStream.class);
 
     private XStreamUtils()
     {
@@ -99,17 +101,19 @@ public final class XStreamUtils
             }
         }
 
-        if (!itemClass.isAnnotationPresent(Component.class)) {
-            for (Class<?> clazz : UNSERIALIZABLE_CLASSES) {
-                if (clazz.isAssignableFrom(itemClass)) {
-                    return false;
-                }
-            }
-
-            return true;
+        // We don't serialize components by default since it does not make sense most of the time
+        if (itemClass.isAnnotationPresent(Component.class)) {
+            return false;
         }
 
-        return false;
+        // Filter some well known unserializable classes
+        for (Class<?> clazz : UNSERIALIZABLE_CLASSES) {
+            if (clazz.isAssignableFrom(itemClass)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static void serializeField(String name, Class<?> defaultType, Object value, HierarchicalStreamWriter writer,
