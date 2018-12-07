@@ -110,6 +110,7 @@
             <id>default</id>
             <configuration>
               <excludes>
+                **/ExtensionOverride.java,
                 **/ExtensionMojoHelper.java,
                 **/MavenBuildExtensionRepositor.java,
                 **/ExtensionMojoCoreExtensionRepository.java,
