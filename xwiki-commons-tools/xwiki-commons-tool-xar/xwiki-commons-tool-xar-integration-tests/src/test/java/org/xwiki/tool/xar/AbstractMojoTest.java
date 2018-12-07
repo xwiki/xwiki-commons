@@ -23,6 +23,9 @@ import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.it.Verifier;
+import org.apache.maven.shared.utils.io.FileUtils;
+
+import static org.apache.maven.it.util.ResourceExtractor.extractResourcePath;
 
 /**
  * Commons Test class for Integration tests.
@@ -34,7 +37,9 @@ public abstract class AbstractMojoTest
 {
     protected Verifier createVerifier(String projectName) throws Exception
     {
-        File testDir = FixedResourceExtractor.simpleExtractResources(getClass(), projectName);
+        File tempDir = new File("target/verifier");
+        FileUtils.deleteDirectory(tempDir);
+        File testDir = extractResourcePath(getClass(), projectName, tempDir, true);
         Verifier verifier = new Verifier(testDir.getAbsolutePath());
         verifier.deleteArtifact("org.xwiki.commons", "xwiki-commons-tool-xar-plugin-test", "1.0", "pom");
 
