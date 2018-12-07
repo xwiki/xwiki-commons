@@ -100,7 +100,7 @@
     <checkstyle.version>8.15</checkstyle.version>
 
     <!-- Spoon -->
-    <spoon.version>7.1.0</spoon.version>
+    <spoon.version>7.2.0</spoon.version>
 
     <!-- Groovy -->
     <groovy.version>2.5.4</groovy.version>
