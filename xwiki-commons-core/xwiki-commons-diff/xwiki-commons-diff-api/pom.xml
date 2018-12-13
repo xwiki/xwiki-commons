@@ -70,9 +70,7 @@
             <id>default</id>
             <configuration>
               <excludes>
-                **/DefaultDiffManager.java,
-                **/DiffConfiguration.java,
-                **/MergeConfiguration.java
+                **/DefaultDiffManager.java
               </excludes>
             </configuration>
           </execution>
