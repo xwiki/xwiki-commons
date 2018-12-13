@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +53,7 @@ public class DefaultContextStoreManager implements ContextStoreManager
     @Override
     public Collection<String> getSupportedEntries() throws ComponentLookupException
     {
-        Set<String> entries = new HashSet<>();
+        Set<String> entries = new LinkedHashSet<>();
 
         List<ContextStore> stores = this.componentManager.getInstanceList(ContextStore.class);
 
