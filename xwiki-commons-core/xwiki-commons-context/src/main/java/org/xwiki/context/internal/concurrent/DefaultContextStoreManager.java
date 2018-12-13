@@ -23,10 +23,10 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -53,7 +53,8 @@ public class DefaultContextStoreManager implements ContextStoreManager
     @Override
     public Collection<String> getSupportedEntries() throws ComponentLookupException
     {
-        Set<String> entries = new HashSet<>();
+        // Make sure to return a stable list
+        Set<String> entries = new TreeSet<>();
 
         List<ContextStore> stores = this.componentManager.getInstanceList(ContextStore.class);
 
