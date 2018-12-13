@@ -183,7 +183,12 @@
 
     <!--module name="IllegalTokenText"/-->
 
-    <module name="IllegalType"/>
+    <module name="IllegalType">
+      <!-- Disable CLASS_DEF introduced in Checkstyle 8.15 -->
+      <!-- TODO: discuss if we want to enable it or not -->
+      <property name="tokens"
+        value="ANNOTATION_FIELD_DEF, INTERFACE_DEF, METHOD_CALL, METHOD_DEF, METHOD_REF, PARAMETER_DEF, VARIABLE_DEF"/>
+    </module>
 
     <!--module name="ImportControl"/-->
 
