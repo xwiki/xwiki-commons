@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 public class HTMLDisplayerManagerTest
 {
     @MockComponent
-    private HTMLDisplayer defaultHTMLDisplayer;
+    private HTMLDisplayer<Object> defaultHTMLDisplayer;
 
     @MockComponent
     private HTMLDisplayer<String> stringHTMLDisplayer;
@@ -80,7 +80,7 @@ public class HTMLDisplayerManagerTest
     {
         when(this.componentManagerProvider.get()).thenReturn(componentManager);
 
-        Answer answer1 = i -> {
+        Answer<String> answer1 = i -> {
             String attributes = "";
             if (i.getArguments().length > 2) {
                 attributes = i.<Map<String, String>>getArgument(2).entrySet().stream()
@@ -89,7 +89,7 @@ public class HTMLDisplayerManagerTest
             }
             return "<input " + attributes + ">" + i.getArgument(1) + "</input>";
         };
-        Answer answer2 = i -> {
+        Answer<String> answer2 = i -> {
             String parameters = "";
             String mode = "";
             if (i.getArguments().length > 2) {

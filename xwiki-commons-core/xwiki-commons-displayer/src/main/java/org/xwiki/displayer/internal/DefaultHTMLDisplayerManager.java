@@ -61,15 +61,15 @@ public class DefaultHTMLDisplayerManager implements HTMLDisplayerManager
 
     /**
      * {@inheritDoc}
-     *
-     * <p>Example: if the target type is <code>A&lt;B&lt;C&gt;&gt;</code> with {@code hint} hint,
-     * the following lookups will be made until a {@link HTMLDisplayer} component is found:
+     * <p>
+     * Example: if the target type is <code>A&lt;B&lt;C&gt;&gt;</code> with {@code hint} hint, the following lookups
+     * will be made until a {@link HTMLDisplayer} component is found:
      * <ul>
-     *     <li>Component: <code>HTMLDisplayer&lt;A&lt;B&lt;C&gt;&gt;&gt;</code>; Role: {@code hint}
-     *     <li>Component: <code>HTMLDisplayer&lt;A&lt;B&gt;&gt;</code>; Role: {@code hint}
-     *     <li>Component: <code>HTMLDisplayer&lt;A&gt;</code>; Role: {@code hint}
-     *     <li>Component: {@code HTMLDisplayer}; Role: {@code hint}
-     *     <li>Component: {@code HTMLDisplayer}; Role: default
+     * <li>Component: <code>HTMLDisplayer&lt;A&lt;B&lt;C&gt;&gt;&gt;</code>; Role: {@code hint}
+     * <li>Component: <code>HTMLDisplayer&lt;A&lt;B&gt;&gt;</code>; Role: {@code hint}
+     * <li>Component: <code>HTMLDisplayer&lt;A&gt;</code>; Role: {@code hint}
+     * <li>Component: {@code HTMLDisplayer}; Role: {@code hint}
+     * <li>Component: {@code HTMLDisplayer}; Role: default
      * </ul>
      */
     @Override
@@ -86,7 +86,7 @@ public class DefaultHTMLDisplayerManager implements HTMLDisplayerManager
                 displayerType = new DefaultParameterizedType(null, HTMLDisplayer.class, type);
             }
             if (!componentManager.hasComponent(displayerType, roleHint)) {
-                displayerType = HTMLDisplayer.class;
+                displayerType = new DefaultParameterizedType(null, HTMLDisplayer.class, Object.class);
             }
             if (componentManager.hasComponent(displayerType, roleHint)) {
                 component = componentManager.getInstance(displayerType, roleHint);
@@ -96,9 +96,8 @@ public class DefaultHTMLDisplayerManager implements HTMLDisplayerManager
 
             return component;
         } catch (ComponentLookupException e) {
-            throw new HTMLDisplayerException(
-                    "Failed to initialized the HTML displayer for target type [" + targetType + "] and role [" + String
-                            .valueOf(roleHint) + "]", e);
+            throw new HTMLDisplayerException("Failed to initialized the HTML displayer for target type [" + targetType
+                + "] and role [" + String.valueOf(roleHint) + "]", e);
         }
     }
 
@@ -118,7 +117,7 @@ public class DefaultHTMLDisplayerManager implements HTMLDisplayerManager
 
     @Override
     public <T> String display(Type targetType, T value, Map<String, String> parameters, String mode)
-            throws HTMLDisplayerException
+        throws HTMLDisplayerException
     {
         Type type = getType(targetType, value);
         return getHTMLDisplayer(type).display(type, value, parameters, mode);
