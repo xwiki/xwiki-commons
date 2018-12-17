@@ -331,6 +331,28 @@
             </titles>
           </configuration>
         </plugin>
+        <!-- Add archiving support for various XWiki specific formats in the dependency plugin -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-tool-archiver</artifactId>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <!-- Add archiving support for various XWiki specific formats in the assembly plugin -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.xwiki.commons</groupId>
+              <artifactId>xwiki-commons-tool-archiver</artifactId>
+            </dependency>
+          </dependencies>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
