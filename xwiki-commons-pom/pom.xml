@@ -339,6 +339,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-archiver</artifactId>
+              <version>${commons.version}</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -350,6 +351,7 @@
             <dependency>
               <groupId>org.xwiki.commons</groupId>
               <artifactId>xwiki-commons-tool-archiver</artifactId>
+              <version>${commons.version}</version>
             </dependency>
           </dependencies>
         </plugin>
