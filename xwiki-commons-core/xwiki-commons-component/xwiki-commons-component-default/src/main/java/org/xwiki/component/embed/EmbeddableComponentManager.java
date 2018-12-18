@@ -91,6 +91,11 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
          */
         public volatile R instance;
 
+        /**
+         * Flag used when computing the disposal order.
+         */
+        public boolean disposing = false;
+
         public ComponentEntry(ComponentDescriptor<R> descriptor, R instance)
         {
             this.descriptor = descriptor;
@@ -606,54 +611,40 @@ public class EmbeddableComponentManager implements NamespacedComponentManager, D
         }
     }
 
-    private int sortEntry(List<RoleHint<?>> keys, int index)
+    private void addForDisposalReversedOrder(ComponentEntry<?> componentEntry, List<RoleHint<?>> keys)
     {
-        int oldIndex = index;
-        int newIndex = index;
-
-        RoleHint<?> key = keys.get(index);
-        ComponentEntry<?> componentEntry = getComponentEntry(key.getRoleType(), key.getHint());
-
-        for (ComponentDependency<?> dependency : componentEntry.descriptor.getComponentDependencies()) {
-            RoleHint<?> dependencyRole = new RoleHint<>(dependency.getRoleType(), dependency.getRoleHint());
-
-            int dependencyIndex = keys.indexOf(dependencyRole);
-
-            if (dependencyIndex != -1 && dependencyIndex < newIndex) {
-                dependencyIndex = sortEntry(keys, dependencyIndex);
-
-                newIndex = dependencyIndex;
+        if (!componentEntry.disposing) {
+            componentEntry.disposing = true;
+            ComponentDescriptor<?> descriptor = componentEntry.descriptor;
+            for (ComponentDependency<?> dependency : descriptor.getComponentDependencies()) {
+                ComponentEntry<?> dependencyEntry = getComponentEntry(dependency.getRoleType(), dependency.getRoleHint());
+                if (dependencyEntry != null) {
+                    addForDisposalReversedOrder(dependencyEntry, keys);
+                }
             }
+            keys.add(new RoleHint<>(descriptor.getRoleType(), descriptor.getRoleHint()));
         }
-
-        if (newIndex != oldIndex) {
-            key = keys.remove(oldIndex);
-            keys.add(newIndex, key);
-        }
-
-        return newIndex;
     }
 
     @Override
     public void dispose()
     {
         List<RoleHint<?>> keys = new ArrayList<>(this.componentEntries.size() * 2);
+
+        // Add components based on dependencies relations.
         for (Map<String, ComponentEntry<?>> entries : this.componentEntries.values()) {
             for (ComponentEntry<?> entry : entries.values()) {
-                keys.add(new RoleHint<>(entry.descriptor.getRoleType(), entry.descriptor.getRoleHint()));
+                addForDisposalReversedOrder(entry, keys);
             }
         }
+        Collections.reverse(keys);
 
         // Exclude this component
         RoleHint<ComponentManager> cmRoleHint = new RoleHint<>(ComponentManager.class);
         ComponentEntry<?> cmEntry = getComponentEntry(cmRoleHint.getRoleType(), cmRoleHint.getHint());
         if (cmEntry != null && cmEntry.instance == this) {
+            cmEntry.disposing = false;
             keys.remove(cmRoleHint);
-        }
-
-        // Order component based on dependencies relations
-        for (int i = 0; i < keys.size(); ++i) {
-            i = sortEntry(keys, i);
         }
 
         // Sort component by DisposePriority
