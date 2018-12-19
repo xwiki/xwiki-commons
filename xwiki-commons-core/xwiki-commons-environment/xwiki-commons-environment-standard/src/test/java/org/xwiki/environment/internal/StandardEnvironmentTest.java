@@ -131,7 +131,8 @@ public class StandardEnvironmentTest
     @Test
     public void testGetConfiguredPermanentDirectory()
     {
-        final File persistentDir = new File(System.getProperty("java.io.tmpdir"), "xwiki-test-persistentDir");
+        final File persistentDir =
+            new File(System.getProperty("java.io.tmpdir"), "xwiki-test-persistentDir").getAbsoluteFile();
         this.setPersistentDir(persistentDir.getAbsolutePath());
 
         final Logger logger = this.mockery.mock(Logger.class);
