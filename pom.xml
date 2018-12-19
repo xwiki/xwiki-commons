@@ -1635,6 +1635,15 @@
                 <name>xwiki.test.verifyRunningXWikiAtStart</name>
                 <value>${xwiki.test.verifyRunningXWikiAtStart}</value>
               </property>
+              <property>
+                <!-- Try to ensure that tests only output data in target/ and not in external tmp directories which
+                     can lead to 2 problems
+                     - filling the disk if that tmp dir is not cleaned regularly
+                     - preventing Jenkins to relativize paths from the workspace directory
+                -->
+                <name>java.io.tmpdir</name>
+                <value>target/tmp</value>
+              </property>
             </systemProperties>
           </configuration>
         </plugin>
