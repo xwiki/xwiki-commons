@@ -28,7 +28,6 @@ import org.xwiki.extension.Extension;
 import org.xwiki.extension.ExtensionId;
 import org.xwiki.extension.ExtensionRewriter;
 import org.xwiki.job.Request;
-import org.xwiki.stability.Unstable;
 
 /**
  * Extension manipulation related {@link Request}.
@@ -40,21 +39,21 @@ public interface ExtensionRequest extends Request
 {
     /**
      * The prefix put behind all job ids.
-     * 
+     *
      * @since 8.2RC1
      */
     String JOBID_PREFIX = "extension";
 
     /**
      * The prefix put behind all job ids which are actual actions.
-     * 
+     *
      * @since 8.2RC1
      */
     String JOBID_ACTION_PREFIX = "action";
 
     /**
      * The prefix put behind all job ids which are information gathering.
-     * 
+     *
      * @since 8.2RC1
      */
     String JOBID_PLAN_PREFIX = "plan";
@@ -107,13 +106,12 @@ public interface ExtensionRequest extends Request
 
     /**
      * Allow modifying manipulated {@link Extension}s on the fly (change allowed namespaces, dependencies, etc.).
-     * 
+     *
      * @return the filter
      * @since 8.4.2
      * @since 9.0RC1
      */
     @Transient
-    @Unstable
     default ExtensionRewriter getRewriter()
     {
         return null;
@@ -123,7 +121,6 @@ public interface ExtensionRequest extends Request
      * @return true if it's allowed remove extension in conflict with the new extension(s)
      * @since 9.1RC1
      */
-    @Unstable
     default boolean isUninstallAllowed()
     {
         return true;
